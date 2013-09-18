@@ -6,42 +6,27 @@ package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
-import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.TypedQuery;
 import com.haulmont.cuba.core.entity.SendingAttachment;
 import com.haulmont.cuba.core.entity.SendingMessage;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.core.sys.CubaMailSender;
 import com.haulmont.cuba.security.app.Authentication;
-import com.haulmont.cuba.security.global.LoginException;
-import org.apache.commons.codec.EncoderException;
-import org.apache.commons.codec.net.QCodec;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.core.task.TaskExecutor;
 
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
 import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import javax.inject.Inject;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
-import java.io.*;
+import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.RejectedExecutionException;
 
 /**
- * Emailer MBean implementation.
- * <p/>
- * Provides email functionality, allows to set some emailing parameters through JMX-console.
- *
  * @author krivopustov
  * @version $Id$
  */
@@ -50,177 +35,151 @@ public class Emailer implements EmailerAPI {
 
     private Log log = LogFactory.getLog(Emailer.class);
 
-    private JavaMailSender mailSender;
+    protected EmailerConfig config;
 
-    private EmailerConfig config;
+    protected volatile int callCount = 0;
 
-    @Inject
-    private EmailManagerAPI emailManager;
-
-    @Inject
-    private UserSessionSource userSessionSource;
+    @Resource(name = "mailSendTaskExecutor")
+    protected TaskExecutor mailSendTaskExecutor;
 
     @Inject
-    private TimeSource timeSource;
+    protected UserSessionSource userSessionSource;
 
     @Inject
-    private Persistence persistence;
+    protected TimeSource timeSource;
+
+    @Inject
+    protected Persistence persistence;
+
+    @Inject
+    protected Metadata metadata;
 
     @Inject
     protected Authentication authentication;
 
-    @Resource(name = CubaMailSender.NAME)
-    public void setMailSender(JavaMailSender mailSender) {
-        this.mailSender = mailSender;
-    }
+    @Inject
+    protected EmailSenderAPI emailSender;
+
+    @Inject
+    protected Resources resources;
 
     @Inject
     public void setConfig(Configuration configuration) {
         this.config = configuration.getConfig(EmailerConfig.class);
     }
 
-    @Override
-    public void sendEmail(EmailInfo info) throws EmailException {
-        sendEmail(info, true);
+    protected String getEmailerLogin() {
+        return AppContext.getProperty("cuba.emailerUserLogin");
     }
 
     @Override
-    public void sendEmail(EmailInfo info, boolean sync) throws EmailException {
-        if (sync) {
-            sendEmailSync(info);
-        } else {
-            sendEmailAsync(info, null, null);
-        }
-    }
-
-    private void sendEmailSync(EmailInfo info) throws EmailException {
-        prepareMessageBody(info);
-        sendEmail(info.getAddresses(), info.getCaption(), info.getBody(), info.getFrom() != null ? info.getFrom() : getFromAddress(), info.getAttachment());
-    }
-
-    private void prepareMessageBody(EmailInfo info) {
-        if (info.getTemplatePath() != null) {
-            Map map = info.getTemplateParameters() == null ? Collections.EMPTY_MAP : info.getTemplateParameters();
-            info.setBody(TemplateHelper.processTemplateFromFile(info.getTemplatePath(), map));
-        }
+    public void sendEmail(String addresses, String caption, String body, EmailAttachment... attachments)
+            throws EmailException {
+        sendEmail(new EmailInfo(addresses, caption, null, body, attachments));
     }
 
     @Override
-    public List<SendingMessage> sendEmailAsync(EmailInfo info, Integer attemptsCount, Date deadline) {
-        prepareMessageBody(info);
-        List<SendingMessage> sendingMessageList = splitEmail(info, attemptsCount, deadline);
-        return emailManager.addEmailsToQueue(sendingMessageList);
+    public void sendEmail(EmailInfo info) throws EmailException {
+        prepareEmailInfo(info);
+        persistAndSendEmail(info);
     }
 
     @Override
     public List<SendingMessage> sendEmailAsync(EmailInfo info) {
-        prepareMessageBody(info);
-        List<SendingMessage> sendingMessageList = splitEmail(info);
-        return emailManager.addEmailsToQueue(sendingMessageList);
+        List<SendingMessage> result = sendEmailAsync(info, null, null);
+        return result;
     }
 
     @Override
-    public void scheduledSendEmail(SendingMessage sendingMessage) throws LoginException, EmailException {
-        authentication.begin(AppContext.getProperty("cuba.emailerUserLogin"));
-        try {
-            sendEmail(sendingMessage);
-        } finally {
-            authentication.end();
+    public List<SendingMessage> sendEmailAsync(EmailInfo info, Integer attemptsCount, Date deadline) {
+        prepareEmailInfo(info);
+        List<SendingMessage> messages = splitEmail(info, attemptsCount, deadline);
+        persistMessages(messages, SendingStatus.QUEUE);
+        return messages;
+    }
+
+    protected void prepareEmailInfo(EmailInfo emailInfo) {
+        processBodyTemplate(emailInfo);
+
+        if (emailInfo.getFrom() == null) {
+            String defaultFromAddress = config.getFromAddress();
+            if (defaultFromAddress == null) {
+                throw new IllegalStateException("cuba.email.fromAddress not set in the system");
+            }
+            emailInfo.setFrom(defaultFromAddress);
         }
     }
 
-    private List<SendingMessage> splitEmail(EmailInfo info, Integer attemptsCount, Date deadline) {
-        List<SendingMessage> sendingMessageList = new LinkedList<>();
-        String[] addrArr = info.getAddresses().split("[,;]");
-        for (String addr : addrArr) {
-            try {
-                addr = addr.trim();
-                String fromEmail;
-                if (info.getFrom() == null) {
-                    fromEmail = getFromAddress();
-                } else {
-                    fromEmail = info.getFrom();
-                }
-                SendingMessage sendingMessage = createSendingMessage(addr, fromEmail, info.getCaption(), info.getBody(),
-                        info.getAttachment(), attemptsCount, deadline);
+    protected void processBodyTemplate(EmailInfo info) {
+        String templatePath = info.getTemplatePath();
+        if (templatePath == null) {
+            return;
+        }
 
-                sendingMessageList.add(sendingMessage);
-            } catch (Exception e) {
-                log.error("Exception while creating SendingMessage:" + ExceptionUtils.getStackTrace(e));
-            }
+        Map<String, Serializable> params = info.getTemplateParameters() == null
+                ? Collections.<String, Serializable>emptyMap()
+                : info.getTemplateParameters();
+        String templateContents = resources.getResourceAsString(templatePath);
+        if (templateContents == null) {
+            throw new IllegalArgumentException("Could not find template by path: " + templatePath);
+        }
+        String body = TemplateHelper.processTemplate(templateContents, params);
+        info.setBody(body);
+    }
+
+    protected List<SendingMessage> splitEmail(EmailInfo info, @Nullable Integer attemptsCount, @Nullable Date deadline) {
+        List<SendingMessage> sendingMessageList = new ArrayList<>();
+        String[] splitAddresses = info.getAddresses().split("[,;]");
+        for (String address : splitAddresses) {
+            address = address.trim();
+            SendingMessage sendingMessage = convertToSendingMessage(address, info.getFrom(), info.getCaption(),
+                    info.getBody(), info.getAttachments(), attemptsCount, deadline);
+
+            sendingMessageList.add(sendingMessage);
         }
         return sendingMessageList;
     }
 
-    private List<SendingMessage> splitEmail(EmailInfo info) {
-        return splitEmail(info, null, null);
-    }
-
-    @Override
-    public void sendEmail(String addresses, String caption, String body, EmailAttachment... attachment)
-            throws EmailException {
-        sendEmail(addresses, caption, body, getFromAddress(), attachment);
-    }
-
-    public void sendEmail(SendingMessage sendingMessage) {
+    protected void sendSendingMessage(SendingMessage sendingMessage) {
         Objects.requireNonNull(sendingMessage, "sendingMessage is null");
         Objects.requireNonNull(sendingMessage.getAddress(), "sendingMessage.address is null");
         Objects.requireNonNull(sendingMessage.getCaption(), "sendingMessage.caption is null");
         Objects.requireNonNull(sendingMessage.getContentText(), "sendingMessage.contentText is null");
+        Objects.requireNonNull(sendingMessage.getFrom(), "sendingMessage.from is null");
         try {
-            String addr = sendingMessage.getAddress().trim();
-            String fromEmail;
-            if (sendingMessage.getFrom() == null) {
-                fromEmail = getFromAddress();
-            } else {
-                fromEmail = sendingMessage.getFrom();
-            }
-//            updateSendingMessageStatus(sendingMessage, SendingStatus.SENDING);
-            MimeMessage message = createMessage(addr, sendingMessage.getCaption(), sendingMessage.getContentText(), getEmailAttachments(sendingMessage), fromEmail);
-            send(addr, message);
-
-            updateSendingMessageStatus(sendingMessage, SendingStatus.SENT);
+            emailSender.sendEmail(sendingMessage);
+            markAsSent(sendingMessage);
         } catch (Exception e) {
             log.warn("Unable to send email to '" + sendingMessage.getAddress() + "'", e);
-            updateSendingMessageStatus(sendingMessage, SendingStatus.QUEUE);
+            returnToQueue(sendingMessage);
         }
     }
 
-    public void sendEmail(String addresses, String caption, String body, @Nullable String from,
-                          @Nullable EmailAttachment... attachment) throws EmailException {
+    protected void persistAndSendEmail(EmailInfo emailInfo) throws EmailException {
+        Objects.requireNonNull(emailInfo.getAddresses(), "addresses are null");
+        Objects.requireNonNull(emailInfo.getCaption(), "caption is null");
+        Objects.requireNonNull(emailInfo.getBody(), "body is null");
+        Objects.requireNonNull(emailInfo.getFrom(), "from is null");
 
-        Objects.requireNonNull(addresses, "addresses are null");
-        Objects.requireNonNull(caption, "caption is null");
-        Objects.requireNonNull(body, "body is null");
-
-        String[] addrArr = addresses.split("[,;]");
+        List<SendingMessage> messages = splitEmail(emailInfo, null, null);
 
         List<String> failedAddresses = new ArrayList<>();
         List<String> errorMessages = new ArrayList<>();
 
-        for (String addr : addrArr) {
-            SendingMessage sendingMessage = null;
-            try {
-                addr = addr.trim();
-                String fromEmail;
-                if (from == null) {
-                    fromEmail = getFromAddress();
-                } else {
-                    fromEmail = from;
-                }
-                sendingMessage = storeMessage(addr, fromEmail, caption, body, attachment, SendingStatus.SENDING);
-                MimeMessage message = createMessage(addr, caption, body, attachment, fromEmail);
-                send(addr, message);
+        for (SendingMessage sendingMessage : messages) {
+            persistMessages(Collections.singletonList(sendingMessage), SendingStatus.SENDING);
 
-                updateSendingMessageStatus(sendingMessage, SendingStatus.SENT);
+            try {
+                emailSender.sendEmail(sendingMessage);
+                markAsSent(sendingMessage);
             } catch (Exception e) {
-                log.warn("Unable to send email to '" + addr + "'", e);
-                failedAddresses.add(addr);
+                log.warn("Unable to send email to '" + sendingMessage.getAddress() + "'", e);
+                failedAddresses.add(sendingMessage.getAddress());
                 errorMessages.add(e.getMessage());
-                if (sendingMessage != null)
-                    updateSendingMessageStatus(sendingMessage, SendingStatus.NOTSENT);
+                markAsNonSent(sendingMessage);
             }
         }
+
         if (!failedAddresses.isEmpty()) {
             throw new EmailException(
                     failedAddresses.toArray(new String[failedAddresses.size()]),
@@ -229,234 +188,247 @@ public class Emailer implements EmailerAPI {
         }
     }
 
-    private void updateSendingMessageStatus(SendingMessage sendingMessage, SendingStatus status) {
-        if (sendingMessage != null) {
-            boolean increaseAttemptsMade = !status.equals(SendingStatus.SENDING);
-            Date currentTimestamp = timeSource.currentTimestamp();
-
-            Transaction tx = persistence.createTransaction();
-            try {
-                EntityManager em = persistence.getEntityManager();
-                StringBuilder queryStr = new StringBuilder(
-                        "update sys$SendingMessage sm set sm.status = :status, sm.updateTs=:updateTs, sm.updatedBy = :updatedBy");
-                if (increaseAttemptsMade)
-                    queryStr.append(", sm.attemptsMade = sm.attemptsMade + 1 ");
-                if (status.equals(SendingStatus.SENT))
-                    queryStr.append(", sm.dateSent = :dateSent");
-                queryStr.append("\n where sm.id=:id");
-                Query query = em.createQuery(queryStr.toString())
-                        .setParameter("status", status.getId())
-                        .setParameter("id", sendingMessage.getId())
-                        .setParameter("updateTs", currentTimestamp)
-                        .setParameter("updatedBy", userSessionSource.getUserSession().getUser().getLogin());
-                if (status.equals(SendingStatus.SENT))
-                    query.setParameter("dateSent", currentTimestamp);
-                query.executeUpdate();
-                tx.commit();
-            } finally {
-                tx.end();
-            }
-        }
-    }
-
-    private void send(String addr, MimeMessage message) throws MessagingException {
-        if (getSendAllToAdmin()) {
-            addr = getAdminAddress();
-        }
-        InternetAddress internetAddress = new InternetAddress(addr);
-        message.setRecipient(Message.RecipientType.TO, internetAddress);
-        mailSender.send(message);
-        log.info("Email '" + message.getSubject() + "' to '" + addr + "' sent succesfully");
-    }
-
-    private MimeMessage createMessage(
-            String address,
-            String caption,
-            String text,
-            EmailAttachment[] attachments, String from) throws MessagingException {
-        MimeMessage msg = mailSender.createMimeMessage();
-        msg.addRecipients(Message.RecipientType.TO, address);
-        msg.setSubject(caption, "UTF-8");
-        msg.setSentDate(new Date());
-
-        InternetAddress[] internetAddresses = InternetAddress.parse(from);
-        for (InternetAddress internetAddress : internetAddresses) {
-            if (org.apache.commons.lang.StringUtils.isNotEmpty(internetAddress.getPersonal())) {
-                try {
-                    internetAddress.setPersonal(internetAddress.getPersonal(), "UTF-8");
-                } catch (UnsupportedEncodingException e) {
-                    throw new MessagingException("Unsupported encoding type", e);
-                }
-            }
-        }
-
-        if (internetAddresses.length == 1) {
-            msg.setFrom(internetAddresses[0]);
-        } else {
-            msg.addFrom(internetAddresses);
-        }
-
-        MimeMultipart content = new MimeMultipart("mixed");
-        MimeBodyPart textBodyPart = new MimeBodyPart();
-        MimeMultipart textPart = new MimeMultipart("related");
-        MimeBodyPart contentBodyPart = new MimeBodyPart();
-        if (text.trim().startsWith("<html>")) {
-            contentBodyPart.setContent(text, "text/html; charset=UTF-8");
-        } else {
-            contentBodyPart.setContent(text, "text/plain; charset=UTF-8");
-        }
-        textPart.addBodyPart(contentBodyPart);
-        textBodyPart.setContent(textPart);
-        content.addBodyPart(textBodyPart);
-
-        if (attachments != null) {
-            for (EmailAttachment attachment : attachments) {
-                MimeBodyPart attachBodyPart = new MimeBodyPart();
-
-                DataSource source = new ByteArrayDataSource(attachment.getData());
-                attachBodyPart.setDataHandler(new DataHandler(source));
-
-                String contentType = FileTypesHelper.getMIMEType(attachment.getName());
-
-                String encodedFileName;
-                try {
-                    QCodec codec = new QCodec();
-                    encodedFileName = codec.encode(attachment.getName());
-                } catch (EncoderException e) {
-                    encodedFileName = attachment.getName();
-                }
-
-                String contentId = attachment.getContentId();
-                if (contentId == null) {
-                    contentId = encodedFileName;
-                    content.addBodyPart(attachBodyPart);
-                } else
-                    textPart.addBodyPart(attachBodyPart);
-
-                attachBodyPart.setHeader("Content-ID", "<" + contentId + ">");
-                attachBodyPart.setHeader("Content-Type", contentType + "; charset=utf-8; name=" + encodedFileName);
-                attachBodyPart.setFileName(encodedFileName);
-                attachBodyPart.setDisposition("inline");
-            }
-        }
-
-        msg.setContent(content);
-        msg.saveChanges();
-
-        return msg;
-    }
-
-    protected String getFromAddress() {
-        return config.getFromAddress();
-    }
-
-    protected String getAdminAddress() {
-        return config.getAdminAddress();
-    }
-
-    protected boolean getSendAllToAdmin() {
-        return config.getSendAllToAdmin();
-    }
-
-    private static class ByteArrayDataSource implements DataSource {
-        private byte[] data;
-
-        public ByteArrayDataSource(byte[] data) {
-            this.data = data;
-        }
-
-        @Override
-        public String getContentType() {
-            return "application/octet-stream";
-        }
-
-        @Override
-        public InputStream getInputStream() throws IOException {
-            return new ByteArrayInputStream(data);
-        }
-
-        @Override
-        public String getName() {
-            return "ByteArray";
-        }
-
-        @Override
-        public OutputStream getOutputStream() throws IOException {
+    @Override
+    public String processQueuedEmails() {
+        int callsToSkip = config.getDelayCallCount();
+        if (callCount < callsToSkip) {
+            callCount++;
             return null;
         }
+
+        String resultMessage;
+        try {
+            authentication.begin(getEmailerLogin());
+            try {
+                resultMessage = sendQueuedEmails();
+            } finally {
+                authentication.end();
+            }
+        } catch (Throwable e) {
+            log.error("Error", e);
+            resultMessage = e.getMessage();
+        }
+        return resultMessage;
     }
 
-    private SendingMessage storeMessage(String addr, String from, String caption, String body,
-                                        EmailAttachment[] attachment, SendingStatus status) {
-        SendingMessage sendingMessage = createSendingMessage(addr, from, caption, body, attachment, null, null);
-        if (status != null)
-            sendingMessage.setStatus(status);
+    protected String sendQueuedEmails() {
+        List<SendingMessage> messagesToSend = loadEmailsToSend();
+
+        for (SendingMessage msg : messagesToSend) {
+            submitExecutorTask(msg);
+        }
+
+        if (messagesToSend.isEmpty()) {
+            return "";
+        }
+
+        return String.format("Processed %d emails", messagesToSend.size());
+    }
+
+    protected boolean shouldMarkNotSent(SendingMessage sendingMessage) {
+        Date deadline = sendingMessage.getDeadline();
+        if (deadline != null && deadline.before(timeSource.currentTimestamp())) {
+            return true;
+        }
+
+        Integer messageAttemptsLimit = sendingMessage.getAttemptsCount();
+        int defaultLimit = config.getDefaultSendingAttemptsCount();
+        int attemptsLimit = messageAttemptsLimit != null ? messageAttemptsLimit : defaultLimit;
+        boolean res = sendingMessage.getAttemptsMade() != null && sendingMessage.getAttemptsMade() >= attemptsLimit;
+        return res;
+    }
+
+    protected void submitExecutorTask(SendingMessage msg) {
+        try {
+            Runnable mailSendTask = new EmailSendTask(msg);
+            mailSendTaskExecutor.execute(mailSendTask);
+        } catch (RejectedExecutionException e) {
+            returnToQueue(msg);
+        } catch (Exception e) {
+            log.error("Exception while sending email: ", e);
+            returnToQueue(msg);
+        }
+    }
+
+    protected List<SendingMessage> loadEmailsToSend() {
+        Date sendTimeoutTime = DateUtils.addSeconds(timeSource.currentTimestamp(), -config.getMaxSendingTimeSec());
+
+        List<SendingMessage> emailsToSend = new ArrayList<>();
+
         Transaction tx = persistence.createTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
-            em.persist(sendingMessage);
-            if (sendingMessage.getAttachments() != null && !sendingMessage.getAttachments().isEmpty()) {
-                for (SendingAttachment attach : sendingMessage.getAttachments())
-                    em.persist(attach);
+            TypedQuery<SendingMessage> query = em.createQuery(
+                    "select sm from sys$SendingMessage sm" +
+                            " where sm.status = :statusQueue or (sm.status = :statusSending and sm.updateTs < :time)" +
+                            " order by sm.createTs",
+                    SendingMessage.class
+            );
+            query.setParameter("statusQueue", SendingStatus.QUEUE.getId());
+            query.setParameter("time", sendTimeoutTime);
+            query.setParameter("statusSending", SendingStatus.SENDING.getId());
+            query.setViewName("sendingMessage.loadFromQueue");
+            query.setMaxResults(config.getMessageQueueCapacity());
+
+            List<SendingMessage> resList = query.getResultList();
+
+            for (SendingMessage msg : resList) {
+                if (shouldMarkNotSent(msg)) {
+                    msg.setStatus(SendingStatus.NOTSENT);
+                } else {
+                    msg.setStatus(SendingStatus.SENDING);
+                    emailsToSend.add(msg);
+                }
             }
             tx.commit();
-            return sendingMessage;
-        } catch (Exception e) {
-            log.error("Failed to store message: " + ExceptionUtils.getStackTrace(e));
-            return null;
+            return emailsToSend;
         } finally {
             tx.end();
         }
     }
 
-    private SendingMessage createSendingMessage(String addr, String from, String caption, String body,
-                                                EmailAttachment[] attachment, Integer attemptsCount, Date deadline) {
+    protected void persistMessages(List<SendingMessage> sendingMessageList, SendingStatus status) {
+        Transaction tx = persistence.createTransaction();
+        try {
+            EntityManager em = persistence.getEntityManager();
+            for (SendingMessage message : sendingMessageList) {
+                message.setStatus(status);
 
-        SendingMessage sendingMessage = new SendingMessage();
-        StringBuilder attachmentsName = new StringBuilder();
-        List<SendingAttachment> sendingAttachments = null;
-        if (attachment != null) {
-            sendingAttachments = new ArrayList<>(attachment.length);
-            for (EmailAttachment ea : attachment) {
-                if (ea != null) {
-                    attachmentsName.append(ea.getName()).append(";");
-                    SendingAttachment sendingAttachment = new SendingAttachment();
-                    sendingAttachment.setContent(ea.getData());
-                    sendingAttachment.setMessage(sendingMessage);
-                    sendingAttachment.setContentId(ea.getContentId());
-                    sendingAttachment.setName(ea.getName());
-                    sendingAttachments.add(sendingAttachment);
+                em.persist(message);
+                if (message.getAttachments() != null) {
+                    for (SendingAttachment attachment : message.getAttachments()) {
+                        em.persist(attachment);
+                    }
                 }
             }
+            tx.commit();
+        } finally {
+            tx.end();
         }
-        sendingMessage.setAttachments(sendingAttachments);
-        if (getSendAllToAdmin())
-            addr = getAdminAddress();
-        sendingMessage.setAddress(addr);
+    }
+
+    protected void returnToQueue(SendingMessage sendingMessage) {
+        Transaction tx = persistence.createTransaction();
+        try {
+            EntityManager em = persistence.getEntityManager();
+            SendingMessage msg = em.merge(sendingMessage);
+
+            msg.setAttemptsMade(msg.getAttemptsMade() + 1);
+            msg.setStatus(SendingStatus.QUEUE);
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+    }
+
+    protected void markAsSent(SendingMessage sendingMessage) {
+        Transaction tx = persistence.createTransaction();
+        try {
+            EntityManager em = persistence.getEntityManager();
+            SendingMessage msg = em.merge(sendingMessage);
+
+            msg.setStatus(SendingStatus.SENT);
+            msg.setAttemptsMade(msg.getAttemptsMade() + 1);
+            msg.setDateSent(timeSource.currentTimestamp());
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+    }
+
+    protected void markAsNonSent(SendingMessage sendingMessage) {
+        Transaction tx = persistence.createTransaction();
+        try {
+            EntityManager em = persistence.getEntityManager();
+            SendingMessage msg = em.merge(sendingMessage);
+
+            msg.setStatus(SendingStatus.NOTSENT);
+            msg.setAttemptsMade(msg.getAttemptsMade() + 1);
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+    }
+
+    protected SendingMessage convertToSendingMessage(String address, String from, String caption, String body,
+                                                     @Nullable EmailAttachment[] attachments,
+                                                     @Nullable Integer attemptsCount, @Nullable Date deadline) {
+        SendingMessage sendingMessage = metadata.create(SendingMessage.class);
+
+        sendingMessage.setAddress(address);
         sendingMessage.setFrom(from);
         sendingMessage.setContentText(body);
         sendingMessage.setCaption(caption);
-        sendingMessage.setStatus(SendingStatus.QUEUE);
-        sendingMessage.setAttachmentsName(attachmentsName.toString());
         sendingMessage.setAttemptsCount(attemptsCount);
         sendingMessage.setDeadline(deadline);
+        sendingMessage.setAttemptsMade(0);
+
+        if (attachments != null && attachments.length > 0) {
+            StringBuilder attachmentsName = new StringBuilder();
+            List<SendingAttachment> sendingAttachments = new ArrayList<>(attachments.length);
+            for (EmailAttachment ea : attachments) {
+                attachmentsName.append(ea.getName()).append(";");
+
+                SendingAttachment sendingAttachment = toSendingAttachment(ea);
+                sendingAttachment.setMessage(sendingMessage);
+                sendingAttachments.add(sendingAttachment);
+            }
+            sendingMessage.setAttachments(sendingAttachments);
+            sendingMessage.setAttachmentsName(attachmentsName.toString());
+        }
+
+        replaceRecipientIfNecessary(sendingMessage);
+
         return sendingMessage;
     }
 
-    private EmailAttachment[] getEmailAttachments(SendingMessage sendingMessage) {
-        EmailAttachment[] res;
-        List<EmailAttachment> emailAttachmentList = new LinkedList<>();
-        List<SendingAttachment> sendingAttachments = sendingMessage.getAttachments();
-        if (sendingAttachments != null && sendingAttachments.size() > 0) {
-            for (SendingAttachment attachment : sendingAttachments)
-                emailAttachmentList.add(createEmailAttachment(attachment));
-            res = new EmailAttachment[emailAttachmentList.size()];
-            return emailAttachmentList.toArray(res);
-        } else
-            return null;
+    protected void replaceRecipientIfNecessary(SendingMessage msg) {
+        if (config.getSendAllToAdmin()) {
+            String adminAddress = config.getAdminAddress();
+            log.warn(String.format(
+                    "Replacing actual email recipient '%s' by admin address '%s'", msg.getAddress(), adminAddress
+            ));
+            msg.setAddress(adminAddress);
+        }
     }
 
-    private EmailAttachment createEmailAttachment(SendingAttachment attachment) {
-        return new EmailAttachment(attachment.getContent(), attachment.getName(), attachment.getContentId());
+    protected SendingAttachment toSendingAttachment(EmailAttachment ea) {
+        SendingAttachment sendingAttachment = metadata.create(SendingAttachment.class);
+        sendingAttachment.setContent(ea.getData());
+        sendingAttachment.setContentId(ea.getContentId());
+        sendingAttachment.setName(ea.getName());
+        sendingAttachment.setEncoding(ea.getEncoding());
+        sendingAttachment.setDisposition(ea.getDisposition());
+        return sendingAttachment;
+    }
+
+    protected static class EmailSendTask implements Runnable {
+
+        private SendingMessage sendingMessage;
+        private Log log = LogFactory.getLog(EmailSendTask.class);
+
+        public EmailSendTask(SendingMessage message) {
+            sendingMessage = message;
+        }
+
+        @Override
+        public void run() {
+            try {
+                Authentication authentication = AppBeans.get(Authentication.NAME);
+                Emailer emailer = AppBeans.get(EmailerAPI.NAME);
+
+                authentication.begin(emailer.getEmailerLogin());
+                try {
+                    emailer.sendSendingMessage(sendingMessage);
+                } finally {
+                    authentication.end();
+                }
+            } catch (Exception e) {
+                log.error("Exception while sending email: ", e);
+            }
+        }
     }
 }

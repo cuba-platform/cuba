@@ -4,7 +4,7 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<views xmlns="http://schemas.haulmont.com/cuba/4.0/view.xsd">
+<views xmlns="http://schemas.haulmont.com/cuba/4.1/view.xsd">
 
     <view class="com.haulmont.cuba.security.entity.User" name="app">
         <property name="login"/>
@@ -151,8 +151,20 @@
         <property name="updateTs"/>
     </view>
 
-    <view class="com.haulmont.cuba.core.entity.SendingMessage" name="sendingMessage.browse.detail" extends="sendingMessage.browse">
+    <view class="com.haulmont.cuba.core.entity.SendingMessage" name="sendingMessage.browse.detail"
+          extends="sendingMessage.browse">
         <property name="contentText"/>
+    </view>
+
+    <view class="com.haulmont.cuba.core.entity.SendingMessage" name="sendingMessage.loadFromQueue" extends="_local"
+          systemProperties="true">
+        <property name="attachments" view="sendingAttachment.loadFromQueue"/>
+        <property name="version"/>
+    </view>
+
+    <view class="com.haulmont.cuba.core.entity.SendingAttachment" name="sendingAttachment.loadFromQueue"
+          extends="_local" systemProperties="true">
+
     </view>
 
     <view class="com.haulmont.cuba.core.entity.CategoryAttributeValue" name="categoryAttributeValue" extends="_local">

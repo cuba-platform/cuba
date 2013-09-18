@@ -12,5 +12,6 @@
     <bean id="cuba_UserSessionSource" class="com.haulmont.cuba.testsupport.TestUserSessionSource"/>
 
     <bean id="cuba_MBeanExporter" class="com.haulmont.cuba.testsupport.TestMBeanExporter"/>
-
+    <bean id="cuba_MailSender" class="com.haulmont.cuba.testsupport.TestMailSender"/>
+    <bean id="mailSendTaskExecutor" class="org.springframework.core.task.SyncTaskExecutor"/>
 </beans>

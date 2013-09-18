@@ -248,10 +248,19 @@ create table SYS_SENDING_ATTACHMENT (
     ID varchar2(32) not null,
     CREATE_TS timestamp,
     CREATED_BY varchar2(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar2(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar2(50),
+
     MESSAGE_ID varchar2(32),
     CONTENT blob,
     CONTENT_ID varchar2(50),
     NAME varchar2(500),
+    DISPOSITION varchar2(50),
+    TEXT_ENCODING varchar2(50),
+
     primary key(ID)
 )^
 create index SYS_SENDING_ATTACHMENT_MES_IDX on SYS_SENDING_ATTACHMENT(MESSAGE_ID)^

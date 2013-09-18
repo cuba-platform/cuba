@@ -610,11 +610,18 @@ create table SYS_SENDING_ATTACHMENT (
     ID uuid,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
     --
     MESSAGE_ID uuid,
     CONTENT bytea,
     CONTENT_ID varchar(50),
     NAME varchar(500),
+    DISPOSITION varchar(50),
+    TEXT_ENCODING varchar(50),
     --
     primary key (ID),
     constraint FK_SYS_SENDING_ATTACHMENT_SENDING_MESSAGE foreign key (MESSAGE_ID) references SYS_SENDING_MESSAGE (ID)

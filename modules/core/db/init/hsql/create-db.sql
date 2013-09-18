@@ -644,11 +644,19 @@ create table SYS_SENDING_ATTACHMENT (
     ID varchar(36) not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
     --
     MESSAGE_ID varchar(36),
     CONTENT longvarbinary,
     CONTENT_ID varchar(50),
     NAME varchar(500),
+    DISPOSITION varchar(50),
+    TEXT_ENCODING varchar(50),
+
     --
     primary key (ID)
 )^

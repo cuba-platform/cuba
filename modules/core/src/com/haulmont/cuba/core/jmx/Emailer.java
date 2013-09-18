@@ -5,11 +5,11 @@
 
 package com.haulmont.cuba.core.jmx;
 
-import com.haulmont.cuba.security.app.Authenticated;
 import com.haulmont.cuba.core.app.EmailerAPI;
 import com.haulmont.cuba.core.app.EmailerConfig;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.EmailAttachment;
+import com.haulmont.cuba.security.app.Authenticated;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
 import javax.annotation.ManagedBean;
@@ -75,7 +75,7 @@ public class Emailer implements EmailerMBean {
     public String sendTestEmail(String addresses) {
         try {
             String att = "<html><body><h1>Test attachment</h1></body></html>";
-            EmailAttachment emailAtt = new EmailAttachment(att.getBytes(), "test attachment.html");
+            EmailAttachment emailAtt = EmailAttachment.createTextAttachment(att, "UTF-8", "test attachment.html");
             emailer.sendEmail(addresses, "Test email", "<html><body><h1>Test email</h1></body></html>", emailAtt);
             return "Email to '" + addresses + "' sent succesfully";
         } catch (Exception e) {

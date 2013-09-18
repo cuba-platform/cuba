@@ -634,11 +634,19 @@ create table SYS_SENDING_ATTACHMENT (
     ID uniqueidentifier,
     CREATE_TS datetime,
     CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS datetime,
+    UPDATED_BY varchar(50),
+    DELETE_TS datetime,
+    DELETED_BY varchar(50),
     --
     MESSAGE_ID uniqueidentifier,
     CONTENT image,
     CONTENT_ID varchar(50),
     NAME varchar(500),
+    DISPOSITION varchar(50),
+    TEXT_ENCODING varchar(50),
+
     --
     primary key nonclustered (ID),
     constraint FK_SYS_SENDING_ATTACHMENT_SENDING_MESSAGE foreign key (MESSAGE_ID) references SYS_SENDING_MESSAGE (ID)

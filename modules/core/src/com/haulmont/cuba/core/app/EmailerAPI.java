@@ -8,8 +8,8 @@ import com.haulmont.cuba.core.entity.SendingMessage;
 import com.haulmont.cuba.core.global.EmailAttachment;
 import com.haulmont.cuba.core.global.EmailException;
 import com.haulmont.cuba.core.global.EmailInfo;
-import com.haulmont.cuba.security.global.LoginException;
 
+import javax.annotation.Nullable;
 import java.util.Date;
 import java.util.List;
 
@@ -20,7 +20,7 @@ import java.util.List;
  * or asynchronous (email is persisted in a DB queue and sent later by scheduled task).
  * <br/>
  * In order to send emails asynchronously, you should register a scheduled task that periodically invokes
- * {@link com.haulmont.cuba.core.app.EmailManagerAPI#queueEmailsToSend()} method.
+ * {@link #processQueuedEmails()} method.
  *
  * @author krivopustov
  * @version $Id$
@@ -35,11 +35,10 @@ public interface EmailerAPI {
      * @param address    comma or semicolon separated list of addresses
      * @param caption    email subject
      * @param body       email body
-     * @param attachment email attachments
+     * @param attachments email attachments
      * @throws EmailException in case of any errors
      */
-    void sendEmail(String address, String caption, String body, EmailAttachment... attachment)
-            throws EmailException;
+    void sendEmail(String address, String caption, String body, EmailAttachment... attachments) throws EmailException;
 
     /**
      * Send email synchronously.
@@ -50,25 +49,18 @@ public interface EmailerAPI {
     void sendEmail(EmailInfo info) throws EmailException;
 
     /**
-     * Send email synchronously or asynchronously.
-     *
-     * @param info email details
-     * @param sync synchronous sending if true
-     * @throws EmailException in case of error on synchronous sending
-     */
-    void sendEmail(EmailInfo info, boolean sync) throws EmailException;
-
-    /**
      * Send email asynchronously, with limited number of attempts.
      *
      * @param info email details
-     * @param attemptsCount  count of attempts to send (1 attempt = 1 emailer cron tick)
+     * @param attemptsCount  count of attempts to send (1 attempt per scheduler tick). If not specified,
+     *              {@link com.haulmont.cuba.core.app.EmailerConfig#getDefaultSendingAttemptsCount()} is used
+     *
      * @param deadline Emailer tries to send message till deadline.
      *              If deadline has come and message has not been sent, status of this message is changed to
      *              {@link com.haulmont.cuba.core.global.SendingStatus#NOTSENT}
      * @return list of created {@link SendingMessage}s
      */
-    List<SendingMessage> sendEmailAsync(EmailInfo info, Integer attemptsCount, Date deadline);
+    List<SendingMessage> sendEmailAsync(EmailInfo info, @Nullable Integer attemptsCount, @Nullable Date deadline);
 
     /**
      * Send email asynchronously.
@@ -78,6 +70,11 @@ public interface EmailerAPI {
      */
     List<SendingMessage> sendEmailAsync(EmailInfo info);
 
-    /** For internal use only. Don't call from application code. */
-    void scheduledSendEmail(SendingMessage sendingMessage) throws LoginException, EmailException;
+    /**
+     * Send emails added to the queue.
+     * <p/> This method should be called periodically from a scheduled task.
+     *
+     * @return short message describing how many emails were sent, or error message
+     */
+    String processQueuedEmails();
 }

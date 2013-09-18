@@ -22,63 +22,42 @@ import java.util.List;
 @Entity(name = "sys$SendingMessage")
 @Table(name = "SYS_SENDING_MESSAGE")
 @SystemLevel
-public class SendingMessage extends BaseUuidEntity implements Updatable, SoftDelete {
+public class SendingMessage extends StandardEntity {
 
     private static final long serialVersionUID = -8156998515878702538L;
 
-    public SendingMessage() {
-        attemptsMade = 0;
-        version = 0;
-    }
-
-    @Column(name = "VERSION")
-    protected Integer version;
-
-    @Column(name = "UPDATE_TS")
-    protected Date updateTs;
-
-    @Column(name = "UPDATED_BY", length = LOGIN_FIELD_LEN)
-    protected String updatedBy;
-
-    @Column(name = "DELETE_TS")
-    protected Date deleteTs;
-
-    @Column(name = "DELETED_BY", length = LOGIN_FIELD_LEN)
-    protected String deletedBy;
-
     @Column(name = "ADDRESS_TO")
-    private String address;
+    protected String address;
 
     @Column(name = "ADDRESS_FROM")
-    private String from;
+    protected String from;
 
     @Column(name = "CAPTION")
-    private String caption;
+    protected String caption;
 
     @Column(name = "CONTENT_TEXT")
-    private String contentText;
+    protected String contentText;
 
     @Column(name = "STATUS")
-    private Integer status;
+    protected Integer status;
 
     @Column(name = "DATE_SENT")
-    private Date dateSent;
+    protected Date dateSent;
 
     @Column(name = "ATTACHMENTS_NAME")
-    private String attachmentsName;
+    protected String attachmentsName;
 
     @Column(name = "DEADLINE")
-    private Date deadline;
+    protected Date deadline;
 
     @Column(name = "ATTEMPTS_COUNT")
-    private Integer attemptsCount;
+    protected Integer attemptsCount;
 
     @Column(name = "ATTEMPTS_MADE")
-    private Integer attemptsMade;
+    protected Integer attemptsMade;
 
-
-    @OneToMany(mappedBy = "message", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
-    private List<SendingAttachment> attachments;
+    @OneToMany(mappedBy = "message", fetch = FetchType.LAZY)
+    protected List<SendingAttachment> attachments;
 
     public SendingMessage(Integer attemptsCount) {
         this.attemptsCount = attemptsCount;

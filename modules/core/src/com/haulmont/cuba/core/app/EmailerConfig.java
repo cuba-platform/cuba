@@ -70,16 +70,17 @@ public interface EmailerConfig extends Config {
     String getSmtpPassword();
 
     /**
-     * How many calls of <code>EmailManager.queueEmailsToSend()</code> to skip after a server startup.
+     * How many scheduler ticks to skip after server startup.
      * Actual sending will start with the next call.
      * <p/> This reduces the server load on startup.
      */
     @Property("cuba.email.delayCallCount")
     @Default("2")
     int getDelayCallCount();
+    void setDelayCallCount(int delayCallCount);
 
     /**
-     * Max number of messages to read from queue in one <code>EmailManager.queueEmailsToSend()</code> call.
+     * Scheduler will process no more than given number of queued messages per every scheduler tick.
      */
     @Property("cuba.email.messageQueueCapacity")
     @Default("100")
@@ -101,11 +102,12 @@ public interface EmailerConfig extends Config {
     int getMaxSendingTimeSec();
 
     /**
-     * All emails go to this address if <code>cuba.email.sendAllToAdmin=true</code>, regardless of actual recipient.
+     * All emails go to this address if {@link #getSendAllToAdmin()} is enabled, regardless of actual recipient.
      */
     @Property("cuba.email.adminAddress")
     @Default("admin@localhost")
     String getAdminAddress();
+    void setAdminAddress(String adminAddress);
 
     /**
      * If this parameter is set to true, all email messages go to <code>cuba.email.adminAddress</code>.
@@ -113,4 +115,5 @@ public interface EmailerConfig extends Config {
     @Property("cuba.email.sendAllToAdmin")
     @DefaultBoolean(false)
     boolean getSendAllToAdmin();
+    void setSendAllToAdmin(boolean sendAllToAdmin);
 }

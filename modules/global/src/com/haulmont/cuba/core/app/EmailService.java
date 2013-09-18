@@ -8,6 +8,7 @@ import com.haulmont.cuba.core.global.EmailAttachment;
 import com.haulmont.cuba.core.global.EmailException;
 import com.haulmont.cuba.core.global.EmailInfo;
 
+import javax.annotation.Nullable;
 import java.util.Date;
 
 /**
@@ -49,7 +50,7 @@ public interface EmailService {
      *              If deadline has come and message has not been sent, status of this message is changed to
      *              {@link com.haulmont.cuba.core.global.SendingStatus#NOTSENT}
      */
-    void sendEmailAsync(EmailInfo info, Integer attemptsCount, Date deadline);
+    void sendEmailAsync(EmailInfo info, @Nullable Integer attemptsCount, @Nullable Date deadline);
 
     /**
      * Send email asynchronously.

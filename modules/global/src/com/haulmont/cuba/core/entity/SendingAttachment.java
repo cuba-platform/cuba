@@ -6,7 +6,6 @@
 package com.haulmont.cuba.core.entity;
 
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
-import com.haulmont.cuba.core.global.EmailAttachment;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
@@ -16,39 +15,31 @@ import javax.persistence.Entity;
  *
  * @author ovchinnikov
  */
-
 @Entity(name = "sys$SendingAttachment")
 @Table(name = "SYS_SENDING_ATTACHMENT")
 @SystemLevel
-public class SendingAttachment extends BaseUuidEntity {
-
+public class SendingAttachment extends StandardEntity {
     private static final long serialVersionUID = -8253918579521701435L;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @Column(name = "MESSAGE_ID")
-    private SendingMessage message;
+    protected SendingMessage message;
 
     @Basic(fetch = FetchType.LAZY)
     @Column(name = "CONTENT")
-    private byte[] content;
+    protected byte[] content;
 
-    @Column(name = "NAME")
-    private String name;
+    @Column(name = "NAME", length = 500)
+    protected String name;
 
-    @Column(name = "CONTENT_ID")
-    private String contentId;
+    @Column(name = "CONTENT_ID", length = 50)
+    protected String contentId;
 
-    public SendingAttachment(EmailAttachment ea, SendingMessage message) {
-        super();
-        this.content = ea.getData();
-        this.contentId = ea.getContentId();
-        this.name = ea.getName();
-        this.message = message;
-    }
+    @Column(name = "DISPOSITION", length = 50)
+    protected String disposition;
 
-    public SendingAttachment() {
-        super();
-    }
+    @Column(name = "TEXT_ENCODING", length = 50)
+    protected String encoding;
 
     public SendingMessage getMessage() {
         return message;
@@ -80,5 +71,21 @@ public class SendingAttachment extends BaseUuidEntity {
 
     public void setContentId(String contentId) {
         this.contentId = contentId;
+    }
+
+    public String getDisposition() {
+        return disposition;
+    }
+
+    public void setDisposition(String disposition) {
+        this.disposition = disposition;
+    }
+
+    public String getEncoding() {
+        return encoding;
+    }
+
+    public void setEncoding(String encoding) {
+        this.encoding = encoding;
     }
 }

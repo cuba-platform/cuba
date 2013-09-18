@@ -117,8 +117,6 @@
                        value-ref="cuba_ScriptingManagerMBean"/>
                 <entry key="${cuba.webContextName}.cuba:type=ServerInfo"
                        value-ref="cuba_ServerInfoMBean"/>
-                <entry key="${cuba.webContextName}.cuba:type=EmailManager"
-                       value-ref="cuba_EmailManagerMBean"/>
                 <entry key="${cuba.webContextName}.cuba:type=Scheduling"
                        value-ref="cuba_SchedulingMBean"/>
                 <entry key="${cuba.webContextName}.cuba:type=ObjectsCacheManager"

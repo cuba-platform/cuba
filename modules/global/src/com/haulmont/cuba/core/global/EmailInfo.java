@@ -11,55 +11,41 @@ import java.util.Map;
 
 /**
  * Contains email details: list of recipients, from address, caption, body and attachments.
- * Used by {@link com.haulmont.cuba.core.app.EmailService#sendEmail(EmailInfo)} method.
  *
  * @author degtyarjov
  * @version $Id$
+ * @see com.haulmont.cuba.core.app.EmailService
  */
 public class EmailInfo implements Serializable {
 
     private static final long serialVersionUID = -382773435130109083L;
 
+    /**
+     * Recipient email addresses separated with "," or ";" symbol.
+     */
     private String addresses;
     private String caption;
     private String from;
     private String templatePath;
     private Map<String, Serializable> templateParameters;
     private String body;
-    private EmailAttachment[] attachment;
-
-    /**
-     * @deprecated Please use one of other constructors:
-     * one which uses template path and parameters,
-     * or another which uses pre-formed body.
-     */
-    @Deprecated
-    public EmailInfo(String addresses, String caption, String from, String templatePath,
-                     Map<String, Serializable> templateParameters, String body, EmailAttachment... attachment) {
-        this.addresses = addresses;
-        this.caption = caption;
-        this.templatePath = templatePath;
-        this.body = body;
-        this.attachment = attachment;
-        this.templateParameters = templateParameters;
-        this.from = from;
-    }
+    private EmailAttachment[] attachments;
 
     public EmailInfo(String addresses, String caption, @Nullable String from, String templatePath,
-                     Map<String, Serializable> templateParameters, EmailAttachment... attachment) {
+                     Map<String, Serializable> templateParameters, EmailAttachment... attachments) {
         this.addresses = addresses;
         this.caption = caption;
         this.templatePath = templatePath;
-        this.attachment = attachment;
+        this.attachments = attachments;
         this.templateParameters = templateParameters;
         this.from = from;
     }
 
-    public EmailInfo(String addresses, String caption, @Nullable String from, String body, EmailAttachment... attachment) {
+    public EmailInfo(String addresses, String caption, @Nullable String from, String body, EmailAttachment... attachments) {
         this.addresses = addresses;
         this.caption = caption;
         this.body = body;
-        this.attachment = attachment;
+        this.attachments = attachments;
         this.from = from;
     }
 
@@ -105,12 +91,12 @@ public class EmailInfo implements Serializable {
         this.body = body;
     }
 
-    public EmailAttachment[] getAttachment() {
-        return attachment;
+    public EmailAttachment[] getAttachments() {
+        return attachments;
     }
 
-    public void setAttachment(EmailAttachment[] attachment) {
-        this.attachment = attachment;
+    public void setAttachments(EmailAttachment[] attachments) {
+        this.attachments = attachments;
     }
 
     public Map<String, Serializable> getTemplateParameters() {

@@ -25,7 +25,7 @@ import java.util.Map;
  */
 public class TemplateHelper {
 
-    public static String processTemplate(String templateStr, Map<String, Object> parameterValues) {
+    public static String processTemplate(String templateStr, Map<String, ?> parameterValues) {
         final StringTemplateLoader templateLoader = new StringTemplateLoader();
         templateLoader.putTemplate("template", templateStr);
         return __processTemplate(templateLoader, "template", parameterValues);
@@ -43,7 +43,8 @@ public class TemplateHelper {
         return __processTemplate(templateLoader, templatePath, parameterValues);
     }
 
-    protected static String __processTemplate(TemplateLoader templateLoader, String templateName, Map<String, Object> parameterValues) {
+    protected static String __processTemplate(TemplateLoader templateLoader, String templateName,
+                                              Map<String, ?> parameterValues) {
         Map<String, Object> params = prepareParams(parameterValues);
 
         final StringWriter writer = new StringWriter();
@@ -60,8 +61,8 @@ public class TemplateHelper {
         }
     }
 
-    private static Map<String, Object> prepareParams(Map<String, Object> parameterValues) {
-        Map<String, Object> params = new HashMap<String, Object>(parameterValues);
+    private static Map<String, Object> prepareParams(Map<String, ?> parameterValues) {
+        Map<String, Object> params = new HashMap<>(parameterValues);
         params.put("statics", BeansWrapper.getDefaultInstance().getStaticModels());
 
         for (String name : AppContext.getPropertyNames()) {
