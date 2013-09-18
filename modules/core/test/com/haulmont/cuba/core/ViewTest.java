@@ -97,7 +97,7 @@ public class ViewTest extends CubaTestCase {
                     .addProperty("login")
                     .addProperty("group",
                             new View(Group.class)
-                                .addProperty("name")
+                                    .addProperty("name")
                     );
             em.setView(view);
 
@@ -124,7 +124,7 @@ public class ViewTest extends CubaTestCase {
                     .addProperty("login")
                     .addProperty("group",
                             new View(Group.class, false)
-                                .addProperty("name")
+                                    .addProperty("name")
                     );
             em.setView(view);
 
@@ -175,9 +175,9 @@ public class ViewTest extends CubaTestCase {
             em = persistence.getEntityManager();
             em.setView(view);
             user = em.find(User.class, userId);
-            
+
             tx.commitRetaining();
-            
+
             user.setName(new Date().toString());
             em = persistence.getEntityManager();
             em.merge(user);
@@ -186,6 +186,37 @@ public class ViewTest extends CubaTestCase {
 
             assertTrue(getCurrentUpdateTs().after(ts));
 
+        } finally {
+            tx.end();
+        }
+    }
+
+    /*
+     * Test that entity which is loaded with view, can lazily fetch not-loaded attributes until transaction ends.
+     */
+    public void testLazyLoadAfterLoadWithView() {
+        View view = new View(User.class, false).addProperty("name");
+
+        User user;
+        Transaction tx = persistence.createTransaction();
+        try {
+            EntityManager em = persistence.getEntityManager();
+            user = em.find(User.class, userId, view);
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+        assertNull(user.getLogin()); // login is not loaded after transaction is finished
+
+        tx = persistence.createTransaction();
+        try {
+            EntityManager em = persistence.getEntityManager();
+            user = em.find(User.class, userId, view);
+
+            em.setView(null);
+            assertNotNull(user.getLogin()); // field is loaded lazily
+
+            tx.commit();
         } finally {
             tx.end();
         }
