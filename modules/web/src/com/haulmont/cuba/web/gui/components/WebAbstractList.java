@@ -21,8 +21,8 @@ public abstract class WebAbstractList<T extends AbstractSelect>
     extends
         WebAbstractActionsHolderComponent<T>
     implements
-        ListComponent
-{
+        ListComponent {
+
     protected CollectionDatasource datasource;
 
     @Override
@@ -74,6 +74,9 @@ public abstract class WebAbstractList<T extends AbstractSelect>
 
     @Override
     public void setSelected(Entity item) {
+        if (component.isReadOnly())
+            return;
+
         if (item == null) {
             component.setValue(null);
         } else {
@@ -83,6 +86,9 @@ public abstract class WebAbstractList<T extends AbstractSelect>
 
     @Override
     public void setSelected(Collection<Entity> items) {
+        if (component.isReadOnly())
+            return;
+
         Set itemIds = new HashSet();
         for (Entity item : items) {
             if (!datasource.containsItem(item.getId())) {

@@ -13,8 +13,6 @@ import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-import java.util.Collections;
-
 /**
  * @author krivopustov
  * @version $Id$
@@ -37,6 +35,9 @@ public class TreeLoader extends ComponentLoader {
         assignXmlDescriptor(component, element);
         loadId(component, element);
         loadVisible(component, element);
+
+        loadEnable(component, element);
+        loadEditable(component, element);
 
         loadHeight(component, element);
         loadWidth(component, element);

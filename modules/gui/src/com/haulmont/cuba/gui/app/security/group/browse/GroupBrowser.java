@@ -44,9 +44,6 @@ public class GroupBrowser extends AbstractWindow {
     protected EditAction groupEditAction;
 
     @Inject
-    protected Button removeButton;
-
-    @Inject
     protected PopupButton groupCreateButton;
 
     @Inject
@@ -76,6 +73,7 @@ public class GroupBrowser extends AbstractWindow {
     protected GroupPropertyCreateAction constraintCreateAction;
     protected GroupPropertyCreateAction userCreateAction;
 
+    @Override
     public void init(final Map<String, Object> params) {
         groupCreateAction.setCaption(getMessage("action.create"));
 
@@ -91,29 +89,22 @@ public class GroupBrowser extends AbstractWindow {
                 usersTable.getDatasource().refresh();
             }
         };
+
+        groupsTree.addAction(groupCreateAction);
+        groupsTree.addAction(groupCopyAction);
         groupsTree.addAction(new RemoveAction(groupsTree) {
 
-            protected boolean enabledFlag = false;
-
             @Override
-            public void setEnabled(boolean enabled) {
-                this.enabledFlag = enabled;
-                super.setEnabled(enabled);
-            }
-
-            @Override
-            public boolean isEnabled() {
-                return this.enabledFlag && super.isEnabled();
-            }
-
-            @Override
-            public void actionPerform(Component component) {
-                setEnabled(true);
-                super.actionPerform(component);
+            public boolean isApplicableTo(Datasource.State state, Entity item) {
+                return super.isApplicableTo(state, item)
+                        && groupsDs.getChildren((UUID) item.getId()).isEmpty();
             }
         });
         usersTable.addAction(userCreateAction);
         usersTable.addAction(new ItemTrackingAction("moveToGroup") {
+            {
+                refreshState();
+            }
 
             @Override
             public String getIcon() {
@@ -145,9 +136,9 @@ public class GroupBrowser extends AbstractWindow {
             }
 
             @Override
-            public boolean isApplicableTo(Datasource.State state, Entity item) {
-                return super.isApplicableTo(state, item) && userSession.isEntityOpPermitted(metadata.getSession().getClass(User.class),
-                        EntityOp.UPDATE);
+            public void refreshState() {
+                setEnabled(userSession.isEntityOpPermitted(metadata.getSession().getClass(User.class),
+                        EntityOp.UPDATE));
             }
         });
 
@@ -163,6 +154,10 @@ public class GroupBrowser extends AbstractWindow {
                 }
         );
 
+        final boolean hasPermissionsToCreateGroup =
+                userSession.isEntityOpPermitted(metadata.getSession().getClass(Group.class),
+                        EntityOp.CREATE);
+
         // enable actions if group is selected
         groupsDs.addListener(new DsListenerAdapter<Group>() {
             @Override
@@ -173,8 +168,7 @@ public class GroupBrowser extends AbstractWindow {
                     attributeCreateAction.setEnabled(item != null);
                 if (constraintCreateAction != null)
                     constraintCreateAction.setEnabled(item != null);
-                groupCopyAction.setEnabled(item != null);
-                removeButton.setEnabled(item != null && groupsDs.getChildren(item.getId()).isEmpty());
+                groupCopyAction.setEnabled(hasPermissionsToCreateGroup && item != null);
             }
         });
 
@@ -186,13 +180,8 @@ public class GroupBrowser extends AbstractWindow {
             groupsTree.setSelected(groupsDs.getItem(itemIds.iterator().next()));
         }
 
-        boolean hasPermissionsToCreateGroup =
-                userSession.isEntityOpPermitted(metadata.getSession().getClass(Group.class),
-                        EntityOp.CREATE);
-
-        if (groupCreateButton != null) {
-            groupCreateButton.setEnabled(hasPermissionsToCreateGroup);
-        }
+        groupCreateButton.setEnabled(hasPermissionsToCreateGroup);
+        groupCopyAction.setEnabled(hasPermissionsToCreateGroup);
     }
 
     public void copyGroup() {

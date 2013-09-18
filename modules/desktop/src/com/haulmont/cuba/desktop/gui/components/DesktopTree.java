@@ -12,6 +12,7 @@ import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.data.TreeModelAdapter;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
@@ -37,13 +38,13 @@ import java.util.Set;
  */
 public class DesktopTree
         extends DesktopAbstractActionsHolderComponent<JTree>
-        implements Tree {
+        implements Tree, Component.Wrapper {
 
     protected String hierarchyProperty;
     protected HierarchicalDatasource<Entity<Object>, Object> datasource;
-    private JScrollPane treeView;
-    private CaptionMode captionMode = CaptionMode.ITEM;
-    private String captionProperty;
+    protected JScrollPane treeView;
+    protected CaptionMode captionMode = CaptionMode.ITEM;
+    protected String captionProperty;
     protected TreeModelAdapter model;
 
     public DesktopTree() {
@@ -260,12 +261,18 @@ public class DesktopTree
 
     @Override
     public void setSelected(Entity item) {
+        if (!isEditable())
+            return;
+
         TreePath path = model.getTreePath(item);
         impl.setSelectionPath(path);
     }
 
     @Override
     public void setSelected(Collection<Entity> items) {
+        if (!isEditable())
+            return;
+
         TreePath[] paths = new TreePath[items.size()];
         int i = 0;
         for (Entity item : items) {
@@ -284,7 +291,17 @@ public class DesktopTree
         datasource.refresh();
     }
 
-    private class SelectionListener implements TreeSelectionListener {
+    @Override
+    public boolean isEditable() {
+        return impl.isEditable();
+    }
+
+    @Override
+    public void setEditable(boolean editable) {
+        impl.setEditable(editable);
+    }
+
+    protected class SelectionListener implements TreeSelectionListener {
 
         @Override
         public void valueChanged(TreeSelectionEvent e) {

@@ -10,7 +10,7 @@ import com.haulmont.cuba.gui.data.HierarchicalDatasource;
  * @author krivopustov
  * @version $Id$
  */
-public interface Tree extends ListComponent {
+public interface Tree extends ListComponent, Component.Editable {
     String NAME = "tree";
 
     void expandTree();
