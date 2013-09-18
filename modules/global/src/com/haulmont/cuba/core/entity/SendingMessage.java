@@ -150,48 +150,4 @@ public class SendingMessage extends StandardEntity {
     public void setAttemptsMade(Integer attemptsMade) {
         this.attemptsMade = attemptsMade;
     }
-
-    public Integer getVersion() {
-        return version;
-    }
-
-    public void setVersion(Integer version) {
-        this.version = version;
-    }
-
-    public Date getUpdateTs() {
-        return updateTs;
-    }
-
-    public void setUpdateTs(Date updateTs) {
-        this.updateTs = updateTs;
-    }
-
-    public String getUpdatedBy() {
-        return updatedBy;
-    }
-
-    public void setUpdatedBy(String updatedBy) {
-        this.updatedBy = updatedBy;
-    }
-
-    public Boolean isDeleted() {
-        return deleteTs != null;
-    }
-
-    public Date getDeleteTs() {
-        return deleteTs;
-    }
-
-    public void setDeleteTs(Date deleteTs) {
-        this.deleteTs = deleteTs;
-    }
-
-    public String getDeletedBy() {
-        return deletedBy;
-    }
-
-    public void setDeletedBy(String deletedBy) {
-        this.deletedBy = deletedBy;
-    }
 }
