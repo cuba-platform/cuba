@@ -1,7 +1,6 @@
 /*
- * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
 package com.haulmont.cuba.core.app;
@@ -56,7 +55,7 @@ public class EmailSender implements EmailSenderAPI {
     public void sendEmail(SendingMessage sendingMessage) throws MessagingException {
         MimeMessage msg = createMimeMessage(sendingMessage);
         mailSender.send(msg);
-        log.info("Email '" + msg.getSubject() + "' to '" + sendingMessage.getAddress() + "' sent successfully");
+        log.info("Email '" + msg.getSubject() + "' to '" + sendingMessage.getAddress() + "' has been sent successfully");
     }
 
     protected MimeMessage createMimeMessage(SendingMessage sendingMessage) throws MessagingException {

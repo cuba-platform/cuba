@@ -1,7 +1,6 @@
 /*
- * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
 package com.haulmont.cuba.core.app;
@@ -184,8 +183,8 @@ public class EmailerTest extends CubaTestCase {
             emailer.sendEmail("myemail@example.com", "Test Email", "Test Body 2");
             fail("Must fail with EmailException");
         } catch (EmailException e) {
-            assertEquals(1,  e.getFailedAddresses().length);
-            assertEquals("myemail@example.com",  e.getFailedAddresses()[0]);
+            assertEquals(1, e.getFailedAddresses().length);
+            assertEquals("myemail@example.com", e.getFailedAddresses()[0]);
             assertTrue(testMailSender.isEmpty());
         } finally {
             testMailSender.workNormallyPlease();
@@ -356,7 +355,7 @@ public class EmailerTest extends CubaTestCase {
     public void testInlineImage() throws Exception {
         testMailSender.clearBuffer();
 
-        byte[] imageBytes = new byte[] {1, 2, 3, 4, 5};
+        byte[] imageBytes = new byte[]{1, 2, 3, 4, 5};
         String fileName = "logo.png";
         EmailAttachment imageAttach = new EmailAttachment(imageBytes, fileName, "logo");
 
@@ -384,7 +383,7 @@ public class EmailerTest extends CubaTestCase {
     public void testPdfAttachment() throws Exception {
         testMailSender.clearBuffer();
 
-        byte[] pdfBytes = new byte[] {1, 2, 3, 4, 6};
+        byte[] pdfBytes = new byte[]{1, 2, 3, 4, 6};
         String fileName = "invoice.pdf";
         EmailAttachment imageAttach = new EmailAttachment(pdfBytes, fileName);
 

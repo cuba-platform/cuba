@@ -1,7 +1,6 @@
 /*
- * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
 package com.haulmont.cuba.core.app;
@@ -12,7 +11,7 @@ import javax.mail.MessagingException;
 
 /**
  * Adapter to javax.mail email sending API.
- *
+ * <p/>
  * Should not be used from application code, use {@link EmailerAPI}.
  *
  * @author Alexander Budarov
@@ -23,7 +22,7 @@ public interface EmailSenderAPI {
 
     /**
      * Sends email with help of {@link org.springframework.mail.javamail.JavaMailSender}.
-     *
+     * <p/>
      * Use {@link EmailerAPI} instead if you need email to be delivered reliably and stored to email history.
      *
      * @throws MessagingException if delivery fails
