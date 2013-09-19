@@ -18,15 +18,16 @@
     </dsContext>
 
     <layout expand="sessionsTable" spacing="true">
-        <hbox spacing="true" width="100%">
-            <groupBox caption="msg://filter" orientation="horizontal" spacing="true" width="-1px">
+        <hbox spacing="true" expand="spacer" width="100%">
+            <groupBox caption="msg://filter" orientation="horizontal" spacing="true" width="AUTO">
                 <textField id="userLogin" caption="msg://login"/>
                 <textField id="userName" caption="msg://userName"/>
                 <textField id="userAddress" caption="msg://address"/>
                 <textField id="userInfo" caption="msg://clientInfo"/>
                 <button id="clearButton" caption="msg://clear" align="BOTTOM_RIGHT" invoke="clearTextFields"/>
             </groupBox>
-            <label id="sessionsInfo" align="TOP_RIGHT"/>
+            <label id="spacer" width="100%"/>
+            <label id="sessionsInfo" width="AUTO"/>
         </hbox>
         <groupTable id="sessionsTable" multiselect="true" width="100%">
             <actions>
