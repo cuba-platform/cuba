@@ -556,6 +556,14 @@ task transformSecurity(type: TransformDocbook) {
     classpath = configurations.buildDoc
 }
 
+def commonXslParameters = [
+        'toc.section.depth': '5',
+        'chunk.section.depth': '5',
+        'section.autolabel': '1',
+        'chapter.autolabel': '1',
+        'appendix.autolabel': 'A'
+    ]
+
 task buildManualWebHelp(type: DocBook2WebHelp, dependsOn: transformManual) {
     sourceFile = transformManual.destFile
     imagesDir = new File(transformManual.sourceDir, "img")
@@ -564,13 +572,18 @@ task buildManualWebHelp(type: DocBook2WebHelp, dependsOn: transformManual) {
     searchDir = new File(docToolsDir, "webhelp/search")
     brand = "CUBA"
     language = "ru"
-    xslParameters = [
-        'toc.section.depth': '5',
-        'chunk.section.depth': '5',
-        'section.autolabel': '1',
-        'chapter.autolabel': '1',
-        'appendix.autolabel': 'A'
-    ]
+    xslParameters = commonXslParameters
+}
+
+task buildSecurityWebHelp(type: DocBook2WebHelp, dependsOn: transformSecurity) {
+    sourceFile = transformSecurity.destFile
+    imagesDir = new File(transformSecurity.sourceDir, "img")
+    destDir = new File(docDstDir, "security/ru/webhelp")
+    templateDir = new File(docToolsDir, "webhelp/template")
+    searchDir = new File(docToolsDir, "webhelp/search")
+    brand = "CUBA"
+    language = "ru"
+    xslParameters = commonXslParameters
 }
 
 task buildSecurityXhtml(type: Docbook2Xhtml, dependsOn: transformSecurity) {
@@ -647,7 +660,7 @@ task buildSecuritySingleHtml(type: Docbook2Xhtml, dependsOn: transformSecurity) 
 }
 
 task buildDoc(type: Zip, description: 'Build documentation',
-        dependsOn: [buildManualSingleHtml, buildSecuritySingleHtml, buildSecurityPdf, buildManualWebHelp]) {
+        dependsOn: [buildManualSingleHtml, buildSecuritySingleHtml, buildSecurityPdf, buildManualWebHelp, buildSecurityWebHelp]) {
     //dependsOn: [buildManualSingleHtml,buildManualPdf,buildSecuritySingleHtml,buildSecurityPdf]) {
     from 'build/doc'
     destinationDir = file('build/distributions')
