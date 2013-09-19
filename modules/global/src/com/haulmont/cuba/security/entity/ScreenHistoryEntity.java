@@ -4,11 +4,11 @@
  */
 package com.haulmont.cuba.security.entity;
 
-import javax.persistence.*;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import org.apache.openjpa.persistence.Persistent;
 
+import javax.persistence.*;
 import java.util.UUID;
 
 @javax.persistence.Entity(name = "sec$ScreenHistory")
@@ -20,17 +20,17 @@ public class ScreenHistoryEntity extends BaseUuidEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID")
-    private User user;
+    protected User user;
 
     @Column(name = "CAPTION", length = 255)
-    private String caption;
+    protected String caption;
 
     @Column(name = "URL", length = 4000)
-    private String url;
+    protected String url;
 
     @Column(name = "ENTITY_ID")
     @Persistent
-    private UUID entityId;
+    protected UUID entityId;
 
     public User getUser() {
         return user;

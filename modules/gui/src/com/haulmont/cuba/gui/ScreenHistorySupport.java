@@ -67,8 +67,9 @@ public class ScreenHistorySupport {
             String caption = window.getCaption();
             UUID entityId = null;
             IFrame frame = window.getFrame();
+            Entity entity = null;
             if (frame instanceof Window.Editor) {
-                Entity entity = ((Window.Editor) frame).getItem();
+                entity = ((Window.Editor) frame).getItem();
                 if (entity != null) {
                     if (PersistenceHelper.isNew(entity)) {
                         return;
@@ -83,10 +84,15 @@ public class ScreenHistorySupport {
             screenHistoryEntity.setUser(uss.getUserSession().getCurrentOrSubstitutedUser());
             screenHistoryEntity.setUrl(makeLink(window));
             screenHistoryEntity.setEntityId(entityId);
+            addAdditionalFields(screenHistoryEntity, entity);
 
             CommitContext cc = new CommitContext(Collections.singleton(screenHistoryEntity));
             AppBeans.get(DataService.class).commit(cc);
         }
+    }
+
+    protected void addAdditionalFields(ScreenHistoryEntity screenHistoryEntity, Entity entity) {
+
     }
 
     protected String makeLink(Window window) {
