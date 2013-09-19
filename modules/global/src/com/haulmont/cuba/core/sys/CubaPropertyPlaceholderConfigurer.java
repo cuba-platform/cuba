@@ -8,6 +8,10 @@ import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 
 import java.util.Properties;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class CubaPropertyPlaceholderConfigurer extends PropertyPlaceholderConfigurer {
 
     public CubaPropertyPlaceholderConfigurer() {
@@ -16,5 +20,21 @@ public class CubaPropertyPlaceholderConfigurer extends PropertyPlaceholderConfig
             properties.setProperty(name, AppContext.getProperty(name));
         }
         setProperties(properties);
+    }
+
+    @Override
+    protected String resolvePlaceholder(String placeholder, Properties props, int systemPropertiesMode) {
+        String key = placeholder;
+        String defValue = null;
+        String[] parts = placeholder.split("\\?:");
+        if (parts.length == 2) {
+            key = parts[0];
+            defValue = parts[1];
+        }
+        String value = super.resolvePlaceholder(key, props, systemPropertiesMode);
+        if (value == null && defValue != null) {
+            value = defValue;
+        }
+        return value;
     }
 }
