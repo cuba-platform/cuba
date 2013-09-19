@@ -69,7 +69,6 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox>
             };
             component.addActionHandler(actionHandler);
         }
-        container.setSizeFull();
     }
 
     @Override

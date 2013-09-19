@@ -6,6 +6,7 @@
 package com.haulmont.cuba.web.toolkit.ui.client.groupbox;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style;
 import com.haulmont.cuba.web.toolkit.ui.CubaGroupBox;
 import com.haulmont.cuba.web.toolkit.ui.client.Tools;
 import com.vaadin.client.ApplicationConnection;
@@ -50,24 +51,6 @@ public class CubaGroupBoxConnector extends PanelConnector {
     }
 
     @Override
-    public void init() {
-        super.init();
-
-        getLayoutManager().registerDependency(this, getWidget().expander);
-        getLayoutManager().registerDependency(this, getWidget().captionStartDeco);
-        getLayoutManager().registerDependency(this, getWidget().captionEndDeco);
-    }
-
-    @Override
-    public void onUnregister() {
-        super.onUnregister();
-
-        getLayoutManager().unregisterDependency(this, getWidget().expander);
-        getLayoutManager().unregisterDependency(this, getWidget().captionStartDeco);
-        getLayoutManager().unregisterDependency(this, getWidget().captionEndDeco);
-    }
-
-    @Override
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
         super.updateFromUIDL(uidl, client);
 
@@ -77,6 +60,16 @@ public class CubaGroupBoxConnector extends PanelConnector {
         Tools.replaceClassNames(getWidget().contentNode, VPanel.CLASSNAME, getWidget().getStylePrimaryName());
         Tools.replaceClassNames(getWidget().bottomDecoration, VPanel.CLASSNAME, getWidget().getStylePrimaryName());
         Tools.replaceClassNames(getWidget().getElement(), VPanel.CLASSNAME, getWidget().getStylePrimaryName());
+    }
+
+    @Override
+    public void layout() {
+        super.layout();
+
+        // do not set width: 100% for captionEndDeco in CSS
+        // it brokes layout with width: AUTO
+        getWidget().captionWrap.getStyle().setWidth(getWidget().contentNode.getOffsetWidth(), Style.Unit.PX);
+        getWidget().captionEndDeco.getStyle().setWidth(100, Style.Unit.PCT);
     }
 
     @Override

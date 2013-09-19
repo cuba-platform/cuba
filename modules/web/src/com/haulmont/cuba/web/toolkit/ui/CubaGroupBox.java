@@ -7,7 +7,10 @@ package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.web.toolkit.ui.client.groupbox.CubaGroupBoxServerRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.groupbox.CubaGroupBoxState;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.ComponentContainer;
+import com.vaadin.ui.Layout;
+import com.vaadin.ui.Panel;
 
 import java.util.Iterator;
 
@@ -34,8 +37,9 @@ public class CubaGroupBox extends Panel implements ComponentContainer {
         registerRpc(rpc);
 
         Layout content = new CubaVerticalActionsLayout();
-        content.setSizeFull();
         setContent(content);
+
+        setWidth(100, Unit.PERCENTAGE);
     }
 
     @Override
@@ -46,6 +50,51 @@ public class CubaGroupBox extends Panel implements ComponentContainer {
     @Override
     protected CubaGroupBoxState getState(boolean markAsDirty) {
         return (CubaGroupBoxState) super.getState(markAsDirty);
+    }
+
+    @Override
+    public void setWidth(float width, Unit unit) {
+        super.setWidth(width, unit);
+
+        if (getContent() != null) {
+            if (width < 0) {
+                getContent().setWidth(-1, Unit.PIXELS);
+            } else {
+                getContent().setWidth(100, Unit.PERCENTAGE);
+            }
+        }
+    }
+
+    @Override
+    public void setHeight(float height, Unit unit) {
+        super.setHeight(height, unit);
+
+        if (getContent() != null) {
+            if (height < 0) {
+                getContent().setHeight(-1, Unit.PIXELS);
+            } else {
+                getContent().setHeight(100, Unit.PERCENTAGE);
+            }
+        }
+    }
+
+    @Override
+    public void setContent(Component content) {
+        super.setContent(content);
+
+        if (content != null) {
+            if (getHeight() < 0) {
+                getContent().setHeight(-1, Unit.PIXELS);
+            } else {
+                getContent().setHeight(100, Unit.PERCENTAGE);
+            }
+
+            if (getWidth() < 0) {
+                getContent().setWidth(-1, Unit.PIXELS);
+            } else {
+                getContent().setWidth(100, Unit.PERCENTAGE);
+            }
+        }
     }
 
     public boolean isExpanded() {
