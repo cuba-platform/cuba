@@ -58,9 +58,9 @@
   .#{$primaryStyleName}-expander {
     width: 9px;
     height: 9px;
-    float: left;
     cursor: pointer;
-    margin-top: 4px;
+    display: inline-block;
+    margin-top: 2px;
     margin-right: 2px;
     background: transparent;
     background-repeat: no-repeat;
