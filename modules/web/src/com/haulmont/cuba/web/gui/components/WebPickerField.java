@@ -6,7 +6,6 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Action;
@@ -121,15 +120,16 @@ public class WebPickerField
     public void setDatasource(Datasource datasource, String property) {
         this.datasource = datasource;
 
-        MetaClass metaClass = datasource.getMetaClass();
-        this.metaProperty = metaClass.getProperty(property);
-        if (metaProperty == null) {
+        final MetaClass metaClass = datasource.getMetaClass();
+        metaPropertyPath = metaClass.getPropertyPath(property);
+        try {
+            metaProperty = metaPropertyPath.getMetaProperty();
+        } catch (ArrayIndexOutOfBoundsException e) {
             throw new RuntimeException(String.format("Property '%s' not found in class %s", property, metaClass));
         }
 
-        final MetaPropertyPath propertyPath = new MetaPropertyPath(metaProperty.getDomain(), metaProperty);
-        final ItemWrapper wrapper = createDatasourceWrapper(datasource, Collections.singleton(propertyPath));
-        final Property itemProperty = wrapper.getItemProperty(propertyPath);
+        final ItemWrapper wrapper = createDatasourceWrapper(datasource, Collections.singleton(metaPropertyPath));
+        final Property itemProperty = wrapper.getItemProperty(metaPropertyPath);
 
         component.setPropertyDataSource(itemProperty);
 
@@ -138,7 +138,7 @@ public class WebPickerField
                     @Override
                     public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
                         Object prevValue = getValue();
-                        Object newValue = InstanceUtils.getValueEx(item, propertyPath.getPath());
+                        Object newValue = InstanceUtils.getValueEx(item, metaPropertyPath.getPath());
                         setValue(newValue);
                         fireValueChanged(prevValue, newValue);
                     }
@@ -146,7 +146,7 @@ public class WebPickerField
                     @Override
                     public void valueChanged(Entity source, String property, Object prevValue, Object value) {
 
-                        if (property.equals(propertyPath.toString())) {
+                        if (property.equals(metaPropertyPath.toString())) {
                             setValue(value);
                             fireValueChanged(prevValue, value);
                         }
@@ -155,9 +155,9 @@ public class WebPickerField
         );
 
         if (datasource.getState() == Datasource.State.VALID && datasource.getItem() != null) {
-            if (property.equals(propertyPath.toString())) {
+            if (property.equals(metaPropertyPath.toString())) {
                 Object prevValue = getValue();
-                Object newValue = InstanceUtils.getValueEx(datasource.getItem(), propertyPath.getPath());
+                Object newValue = InstanceUtils.getValueEx(datasource.getItem(), metaPropertyPath.getPath());
                 setValue(newValue);
                 fireValueChanged(prevValue, newValue);
             }
