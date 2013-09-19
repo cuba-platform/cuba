@@ -135,9 +135,10 @@ public class CubaTooltip extends VTooltip {
                 element = element.getParentElement().cast();
 
                 int index = DOM.getChildIndex(element.getParentElement().<Element>cast(), element);
-                element = DOM.getChild(element.getParentElement().<Element>cast(), index - 1);
+                int indexOfComponent = index == 0 ? index + 1 : index - 1;
+                element = DOM.getChild(element.getParentElement().<Element>cast(), indexOfComponent);
                 //special case for ResizableTextArea.
-                if(CubaResizableTextAreaWidget.TEXT_AREA_WRAPPER.equals(element.getClassName())) {
+                if (CubaResizableTextAreaWidget.TEXT_AREA_WRAPPER.equals(element.getClassName())) {
                     element = DOM.getChild(element, 0);
                 }
             }
