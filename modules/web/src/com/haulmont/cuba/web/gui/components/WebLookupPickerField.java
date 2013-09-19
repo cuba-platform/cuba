@@ -11,10 +11,12 @@ import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.LookupPickerField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.web.toolkit.ui.CubaComboBox;
+import com.vaadin.data.Property;
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.UserError;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
+import org.apache.commons.lang.ObjectUtils;
 
 import java.util.Collection;
 
@@ -25,6 +27,7 @@ import java.util.Collection;
 public class WebLookupPickerField extends WebLookupField implements LookupPickerField {
 
     protected WebPickerField pickerField;
+    protected boolean updateComponentValue = false;
 
     public WebLookupPickerField() {
         // delegate error indication
@@ -39,15 +42,47 @@ public class WebLookupPickerField extends WebLookupField implements LookupPicker
             }
         };
 
-        final Component selectComponent = component;
-        WebPickerField.Picker picker = new WebPickerField.Picker(this, component) {
+        final ComboBox selectComponent = component;
+        final WebPickerField.Picker picker = new WebPickerField.Picker(this, component) {
             @Override
             public void setRequired(boolean required) {
                 super.setRequired(required);
-                ((CubaComboBox) selectComponent).setNullSelectionAllowed(!required);
+                selectComponent.setNullSelectionAllowed(!required);
             }
         };
         pickerField = new WebPickerField(picker);
+
+        initValueSync(selectComponent, picker);
+    }
+
+    protected void initValueSync(final ComboBox selectComponent, final WebPickerField.Picker picker) {
+        selectComponent.addValueChangeListener(new Property.ValueChangeListener() {
+            @Override
+            public void valueChange(Property.ValueChangeEvent event) {
+                if (updateComponentValue)
+                    return;
+
+                updateComponentValue = true;
+                if (!ObjectUtils.equals(selectComponent.getValue(), picker.getValue())) {
+                    picker.setValue(selectComponent.getValue());
+                }
+                updateComponentValue = false;
+            }
+        });
+
+        picker.addValueChangeListener(new Property.ValueChangeListener() {
+            @Override
+            public void valueChange(Property.ValueChangeEvent event) {
+                if (updateComponentValue)
+                    return;
+
+                updateComponentValue = true;
+                if (!ObjectUtils.equals(selectComponent.getValue(), picker.getValue())) {
+                    selectComponent.setValue(picker.getValue());
+                }
+                updateComponentValue = false;
+            }
+        });
     }
 
     @Override
