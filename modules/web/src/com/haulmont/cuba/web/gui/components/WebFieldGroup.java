@@ -14,14 +14,10 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.web.gui.WebWindow;
-import com.haulmont.cuba.web.gui.data.ItemWrapper;
-import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaCheckBox;
 import com.haulmont.cuba.web.toolkit.ui.CubaFieldGroup;
 import com.haulmont.cuba.web.toolkit.ui.CubaFieldGroupLayout;
 import com.haulmont.cuba.web.toolkit.ui.CubaFieldWrapper;
-import com.vaadin.data.Item;
-import com.vaadin.data.util.converter.Converter;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -50,8 +46,6 @@ public class WebFieldGroup
     protected FieldFactory fieldFactory = new WebFieldGroupFieldFactory();
 
     protected int cols = 1;
-
-    protected Item itemWrapper;
 
     protected Security security = AppBeans.get(Security.class);
 
@@ -302,8 +296,6 @@ public class WebFieldGroup
         }
 
         if (datasource != null) {
-            itemWrapper = createDatasourceWrapper(datasource, fieldsMetaProps);
-
             if (!this.fields.isEmpty()) {
                 //Removes custom fieldsMetaProps from the list. We shouldn't to create components for custom fieldsMetaProps
                 for (MetaPropertyPath propertyPath : new ArrayList<>(fieldsMetaProps)) {
@@ -696,10 +688,6 @@ public class WebFieldGroup
         f.setCaption(caption);
     }
 
-    protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {
-        return new FieldGroupItemWrapper(datasource, propertyPaths);
-    }
-
     @Override
     public void postInit() {
     }
@@ -717,6 +705,8 @@ public class WebFieldGroup
     @Override
     public void validate() throws ValidationException {
         final Map<Object, Exception> problems = new HashMap<>();
+
+        // todo use cuba fields for validation
 
         for (FieldConfig field : getFields()) {
             com.vaadin.ui.Field f = component.getField(field.getId());
@@ -769,52 +759,6 @@ public class WebFieldGroup
             return StringUtils.isBlank((String) value);
         } else {
             return value == null;
-        }
-    }
-
-    public class FieldGroupItemWrapper extends ItemWrapper {
-
-        private static final long serialVersionUID = -7877886198903628220L;
-
-        public FieldGroupItemWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {
-            super(datasource, propertyPaths);
-        }
-
-        public Datasource getDatasource() {
-            return (Datasource) item;
-        }
-
-        @Override
-        protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
-            return new PropertyWrapper(item, propertyPath) {
-                @Override
-                public boolean isReadOnly() {
-                    FieldConfig field = fields.get(propertyPath.toString());
-                    return !isEditable(field);
-                }
-
-                @Override
-                public void setValue(Object newValue) throws ReadOnlyException, Converter.ConversionException {
-                    if (newValue instanceof String) {
-                        newValue = ((String) newValue).trim();
-                    }
-                    super.setValue(newValue);
-                }
-
-                @Override
-                public String getFormattedValue() {
-                    Object value = getValue();
-                    if (value == null) {
-                        return "";
-                    }
-
-                    FieldConfig field = fields.get(propertyPath.toString());
-                    if (field.getFormatter() != null) {
-                        return field.getFormatter().format(value);
-                    }
-                    return super.getFormattedValue();
-                }
-            };
         }
     }
 

@@ -52,6 +52,7 @@ public class WebLookupPickerField extends WebLookupField implements LookupPicker
         };
         pickerField = new WebPickerField(picker);
 
+        // Required for custom components in fieldgroup
         initValueSync(selectComponent, picker);
     }
 

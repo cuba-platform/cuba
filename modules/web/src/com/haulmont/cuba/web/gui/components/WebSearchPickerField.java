@@ -38,6 +38,7 @@ public class WebSearchPickerField extends WebSearchField implements SearchPicker
         };
         pickerField = new WebPickerField(picker);
 
+        // Required for custom components in fieldgroup
         initValueSync(selectComponent, picker);
     }
 
