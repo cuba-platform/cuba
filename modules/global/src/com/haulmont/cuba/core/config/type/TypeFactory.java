@@ -18,12 +18,14 @@
 
 package com.haulmont.cuba.core.config.type;
 
+import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.cuba.core.config.ConfigUtil;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import org.apache.commons.lang.ClassUtils;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -81,42 +83,68 @@ public abstract class TypeFactory
                 } else {
                     String methodName = factory.method();
                     Method factoryMethod = returnType.getMethod(methodName, String.class);
-                    if (!Modifier.isStatic(factoryMethod.getModifiers()) ||
-                            !Modifier.isPublic(factoryMethod.getModifiers()) ||
-                            !returnType.isAssignableFrom(factoryMethod.getReturnType()))
-                    {
-                        throw new Exception("Invalid factory method: " + factoryMethod);
+                    if (!isAcceptableMethod(returnType, factoryMethod)) {
+                        throw new IllegalArgumentException("Invalid factory method: " + factoryMethod);
                     }
                     return new StaticTypeFactory(factoryMethod);
                 }
-            } catch (Exception ex) {
-                throw new RuntimeException("Type factory error", ex);
+            } catch (NoSuchMethodException | InstantiationException | IllegalAccessException e) {
+                throw new RuntimeException("Unable to instantiate an type factory", e);
             }
         } else {
-
-            if (Entity.class.isAssignableFrom(returnType)){
+            if (Entity.class.isAssignableFrom(returnType)) {
                 return AppBeans.get(ENTITY_FACTORY_BEAN_NAME, TypeFactory.class);
-            } else {
-                for (String methodName : FACTORY_METHOD_NAMES) {
-                    try {
-                        Method factoryMethod = returnType.getMethod(methodName, String.class);
-                        if (Modifier.isStatic(factoryMethod.getModifiers()) &&
-                                Modifier.isPublic(factoryMethod.getModifiers()) &&
-                                returnType.isAssignableFrom(factoryMethod.getReturnType())) {
-                            return new StaticTypeFactory(factoryMethod);
-                        }
-                    } catch (NoSuchMethodException ex) {
-                    }
-                }
+            } else if (EnumClass.class.isAssignableFrom(returnType)) {
+                @SuppressWarnings("unchecked")
+                Class<EnumClass> enumeration = (Class<EnumClass>) returnType;
+                Class<?> idType = ConfigUtil.getEnumIdType(enumeration);
+                TypeFactory idFactory = getInferred(idType);
                 try {
-                    Constructor ctor = returnType.getConstructor(String.class);
-                    if (Modifier.isPublic(ctor.getModifiers())) {
-                        return new ConstructorTypeFactory(ctor);
+                    Method fromIdMethod = returnType.getMethod("fromId", idType);
+                    if (!isAcceptableMethod(returnType, fromIdMethod) || idFactory == null) {
+                        throw new IllegalArgumentException("Cannot use method as factory method: " + method);
                     }
-                } catch (NoSuchMethodException ex) {
+                    return new EnumClassFactory(idFactory, fromIdMethod);
+                } catch (NoSuchMethodException e) {
+                    throw new IllegalArgumentException("fromId method is not found for " + enumeration.getName());
                 }
-                throw new IllegalArgumentException("Unsupported return type: " + method);
+            } else {
+                TypeFactory factoryT = getInferred(returnType);
+                if (factoryT == null) {
+                    throw new IllegalArgumentException("Unsupported return type for " + method);
+                }
+                return factoryT;
             }
         }
+    }
+
+    @Nullable
+    private static TypeFactory getInferred(Class<?> returnType) {
+        for (String methodName : FACTORY_METHOD_NAMES) {
+            try {
+                Method factoryMethod = returnType.getMethod(methodName, String.class);
+                if (isAcceptableMethod(returnType, factoryMethod)) {
+                    return new StaticTypeFactory(factoryMethod);
+                }
+            } catch (NoSuchMethodException ex) {
+                // Ignore failure.
+            }
+        }
+        try {
+            Constructor ctor = returnType.getConstructor(String.class);
+            if (Modifier.isPublic(ctor.getModifiers())) {
+                return new ConstructorTypeFactory(ctor);
+            }
+        } catch (NoSuchMethodException e) {
+            return null;
+        }
+        return null;
+    }
+
+    private static boolean isAcceptableMethod(Class<?> returnType, Method factoryMethod) {
+        int modifiers = factoryMethod.getModifiers();
+        return  Modifier.isStatic(modifiers) &&
+                Modifier.isPublic(modifiers) &&
+                returnType.isAssignableFrom(factoryMethod.getReturnType());
     }
 }

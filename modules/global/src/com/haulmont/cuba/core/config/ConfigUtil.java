@@ -18,16 +18,17 @@
 
 package com.haulmont.cuba.core.config;
 
+import com.haulmont.chile.core.datatypes.impl.EnumClass;
+import com.haulmont.cuba.core.config.defaults.Default;
+import com.haulmont.cuba.core.config.type.TypeFactory;
+import com.haulmont.cuba.core.config.type.TypeStringify;
+import org.apache.commons.lang.ClassUtils;
+import org.apache.commons.lang.StringUtils;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.commons.lang.ClassUtils;
-import org.apache.commons.lang.StringUtils;
-import com.haulmont.cuba.core.config.defaults.Default;
-import com.haulmont.cuba.core.config.type.TypeFactory;
-import com.haulmont.cuba.core.config.type.TypeStringify;
 
 /**
  * Various configuration utility methods.
@@ -310,6 +311,21 @@ public class ConfigUtil
             }
         }
         return source.type();
+    }
+
+    /**
+     * Returns id type parameter for classes that implement {@link EnumClass}.
+     * Id type is usually known for concrete enum classes, but if type is unavailable,
+     * {@code IllegalArgumentException} is thrown.
+     * @param enumeration class describing subclass of {@code EnumClass}
+     * @return id type parameter
+     */
+    public static Class<?> getEnumIdType(Class<? extends EnumClass> enumeration) {
+        try {
+            return enumeration.getMethod("getId").getReturnType();
+        } catch (NoSuchMethodException e) {
+            throw new IllegalArgumentException("Cannot infer generic type parameter for " + enumeration.getName());
+        }
     }
 }
 
