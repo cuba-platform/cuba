@@ -73,14 +73,14 @@ public interface EmailerConfig extends Config {
     /**
      * SMTP connection timeout value in seconds.
      */
-    @Property("cuba.email.smtpConnectionTimeout")
+    @Property("cuba.email.smtpConnectionTimeoutSec")
     @DefaultInt(20)
     int getSmtpConnectionTimeoutSec();
 
     /**
      * SMTP I/O timeout value in seconds.
      */
-    @Property("cuba.email.smtpTimeout")
+    @Property("cuba.email.smtpTimeoutSec")
     @DefaultInt(60)
     int getSmtpTimeoutSec();
 
