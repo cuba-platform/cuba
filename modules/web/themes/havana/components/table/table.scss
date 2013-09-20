@@ -62,12 +62,14 @@
       }
 
       .#{$primaryStyleName}-resizer {
+        @include box-defaults;
+
         display: block;
         height: 23px;
         float: right;
-        background-color: $theme_fieldBorderColor;
-        background-clip: padding-box;
-        border-left: 3px solid transparent;
+        background: transparent;
+        border-right: 1px solid $theme_fieldBorderColor;
+        width: 3px;
         cursor: col-resize;
       }
 
