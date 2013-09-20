@@ -16,15 +16,6 @@
 
     <!-- Enums -->
 
-    <xs:simpleType name="openType">
-        <xs:restriction base="xs:string">
-            <xs:enumeration value="NEW_TAB"/>
-            <xs:enumeration value="THIS_TAB"/>
-            <xs:enumeration value="DIALOG"/>
-            <xs:enumeration value="NEW_WINDOW"/>
-        </xs:restriction>
-    </xs:simpleType>
-
     <xs:simpleType name="operatorEnum">
         <xs:restriction base="xs:string">
             <xs:enumeration value="STARTS_WITH"/>
