@@ -51,7 +51,7 @@ public class CubaMenuBarWidget extends VMenuBar {
                         .append("><span class=\"")
                         .append(getStylePrimaryName())
                         .append("-submenu-indicator-icon\"")
-                        .append(">&#x25BA;</span></span>");
+                        .append("><span class=\"text\">&#x25BA;</span></span></span>");
             } else {
                 String shortcut = "";
                 if (item.hasAttribute("shortcut")) {

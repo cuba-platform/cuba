@@ -157,10 +157,16 @@
       display: table-cell;
       min-width: 10px;
       position: relative;
+      text-align: right;
+      right: auto;
+      width: auto;
+      height: auto;
     }
 
     .#{$primaryStyleName}-submenu-indicator-icon {
-      display: block;
+
+      margin-top: 1px;
+      display: inline-block;
       width: 16px;
       height: 16px;
       min-width: 10px;
@@ -169,6 +175,10 @@
       background-repeat: no-repeat;
       background-position: right center;
       background-image: url(sprites/submenu-icon.png);  /** sprite-ref: components; */
+
+      .text {
+        visibility: hidden;
+      }
     }
 
     .#{$primaryStyleName}-submenu-indicator + .#{$primaryStyleName}-menuitem-caption {
