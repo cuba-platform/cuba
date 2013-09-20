@@ -35,12 +35,14 @@ public class RemoteException extends RuntimeException {
         private Throwable throwable;
 
         public Cause(Throwable throwable) {
-            className = throwable.getClass().getName();
-            message = throwable.getMessage();
-            if (throwable.getClass().getName().startsWith("java.")
-                    || throwable.getClass().getAnnotation(SupportedByClient.class) != null) {
-                this.throwable = throwable;
-            }
+            this.className = throwable.getClass().getName();
+            this.message = throwable.getMessage();
+            this.throwable = throwable;
+        }
+
+        public Cause(String className, String message) {
+            this.className = className;
+            this.message = message;
         }
 
         public String getClassName() {
@@ -67,9 +69,26 @@ public class RemoteException extends RuntimeException {
     @SuppressWarnings("unchecked")
     public RemoteException(Throwable throwable) {
         List<Throwable> list = ExceptionUtils.getThrowableList(throwable);
-        for (Throwable t : list) {
-            causes.add(new Cause(t));
+        for (int i = 0; i < list.size(); i++) {
+            Throwable t = list.get(i);
+            boolean suitable = true;
+            List<Throwable> causesOfT = list.subList(i, list.size());
+            for (Throwable aCauseOfT : causesOfT) {
+                if (!isSuitable(aCauseOfT)) {
+                    suitable = false;
+                    break;
+                }
+            }
+            if (suitable)
+                causes.add(new Cause(t));
+            else
+                causes.add(new Cause(t.getClass().getName(), t.getMessage()));
         }
+    }
+
+    private boolean isSuitable(Throwable throwable) {
+        return (throwable.getClass().getName().startsWith("java.")
+                || throwable.getClass().isAnnotationPresent(SupportedByClient.class));
     }
 
     public List<Cause> getCauses() {

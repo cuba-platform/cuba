@@ -5,6 +5,8 @@
 
 package com.haulmont.cuba.desktop.exception;
 
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.security.global.NoUserSessionException;
@@ -16,9 +18,8 @@ import javax.annotation.Nullable;
 /**
  * Handles {@link NoUserSessionException}.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class NoUserSessionHandler extends AbstractExceptionHandler {
 
@@ -49,6 +50,10 @@ public class NoUserSessionHandler extends AbstractExceptionHandler {
         } catch (Throwable th) {
             log.error(th);
         }
+    }
+
+    protected String getMessage(String key) {
+        return AppBeans.get(Messages.class).getMainMessage(key, App.getInstance().getLocale());
     }
 
     private class LoginAction extends DialogAction {
