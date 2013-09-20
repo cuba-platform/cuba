@@ -25,7 +25,9 @@ import com.haulmont.cuba.core.config.type.TypeStringify;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.StringUtils;
 
+import javax.annotation.Nullable;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -279,22 +281,45 @@ public class ConfigUtil
             if (defaultValue != null) {
                 return defaultValue.value();
             } else {
+                TypeStringify stringConverter = TypeStringify.getInstance(configInterface, method);
                 Class<?> type = method.getReturnType();
-                String name = "Default" + StringUtils.capitalize(ClassUtils.getShortClassName(type));
-                for (Annotation annotation : method.getAnnotations()) {
-                    Class annotationType = annotation.annotationType();
-                    if (name.equals(ClassUtils.getShortClassName(annotationType))) {
-                        Method valueMethod = annotationType.getMethod("value");
-                        Object value = valueMethod.invoke(annotation);
-                        TypeStringify stringifier = TypeStringify.getInstance(configInterface, method);
-                        return stringifier.stringify(value);
+                if (EnumClass.class.isAssignableFrom(type)) {
+                    @SuppressWarnings("unchecked")
+                    Class<EnumClass> enumeration = (Class<EnumClass>) type;
+                    EnumStore mode = getAnnotation(configInterface, method, EnumStore.class, true);
+                    if (EnumStoreMode.ID == mode.value()) {
+                        Class<?> idType = getEnumIdType(enumeration);
+                        String name = "Default" + StringUtils.capitalize(ClassUtils.getShortClassName(idType));
+                        Object value = getAnnotationValue(method, name);
+                        if (value != null) {
+                            Method fromId = enumeration.getDeclaredMethod("fromId", idType);
+                            return stringConverter.stringify(fromId.invoke(null, value));
+                        }
+                        return NO_DEFAULT;
                     }
+                }
+                String name = "Default" + StringUtils.capitalize(ClassUtils.getShortClassName(type));
+                Object value = getAnnotationValue(method, name);
+                if (value != null) {
+                    return stringConverter.stringify(value);
                 }
             }
             return NO_DEFAULT;
         } catch (Exception ex) {
             throw new RuntimeException("Default value error", ex);
         }
+    }
+
+    @Nullable
+    private static Object getAnnotationValue(AnnotatedElement annotated, String name) throws ReflectiveOperationException {
+        for (Annotation annotation : annotated.getAnnotations()) {
+            Class annotationType = annotation.annotationType();
+            if (name.equals(ClassUtils.getShortClassName(annotationType))) {
+                Method method = annotationType.getMethod("value");
+                return method.invoke(annotation);
+            }
+        }
+        return null;
     }
 
     public static SourceType getSourceType(Class<?> configInterface, Method method) {

@@ -20,6 +20,8 @@ package com.haulmont.cuba.core.config.type;
 
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.cuba.core.config.ConfigUtil;
+import com.haulmont.cuba.core.config.EnumStore;
+import com.haulmont.cuba.core.config.EnumStoreMode;
 import com.haulmont.cuba.core.entity.Entity;
 
 import java.lang.reflect.Method;
@@ -68,10 +70,13 @@ public abstract class TypeStringify
                         return new EntityStringify();
                 }
                 if (EnumClass.class.isAssignableFrom(methodType)) {
-                    @SuppressWarnings("unchecked")
-                    Class<EnumClass> enumeration = (Class<EnumClass>) methodType;
-                    TypeStringify idStringify = getInferred(ConfigUtil.getEnumIdType(enumeration));
-                    return new EnumClassStringify(idStringify);
+                    EnumStore mode = ConfigUtil.getAnnotation(configInterface, method, EnumStore.class, true);
+                    if (mode != null && EnumStoreMode.ID == mode.value()) {
+                        @SuppressWarnings("unchecked")
+                        Class<EnumClass> enumeration = (Class<EnumClass>) methodType;
+                        TypeStringify idStringify = getInferred(ConfigUtil.getEnumIdType(enumeration));
+                        return new EnumClassStringify(idStringify);
+                    }
                 }
                 return getInferred(methodType);
             }

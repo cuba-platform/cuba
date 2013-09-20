@@ -20,6 +20,8 @@ package com.haulmont.cuba.core.config.type;
 
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.cuba.core.config.ConfigUtil;
+import com.haulmont.cuba.core.config.EnumStore;
+import com.haulmont.cuba.core.config.EnumStoreMode;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -94,21 +96,25 @@ public abstract class TypeFactory
         } else {
             if (Entity.class.isAssignableFrom(returnType)) {
                 return AppBeans.get(ENTITY_FACTORY_BEAN_NAME, TypeFactory.class);
-            } else if (EnumClass.class.isAssignableFrom(returnType)) {
-                @SuppressWarnings("unchecked")
-                Class<EnumClass> enumeration = (Class<EnumClass>) returnType;
-                Class<?> idType = ConfigUtil.getEnumIdType(enumeration);
-                TypeFactory idFactory = getInferred(idType);
-                try {
-                    Method fromIdMethod = returnType.getMethod("fromId", idType);
-                    if (!isAcceptableMethod(returnType, fromIdMethod) || idFactory == null) {
-                        throw new IllegalArgumentException("Cannot use method as factory method: " + method);
-                    }
-                    return new EnumClassFactory(idFactory, fromIdMethod);
-                } catch (NoSuchMethodException e) {
-                    throw new IllegalArgumentException("fromId method is not found for " + enumeration.getName());
-                }
             } else {
+                if (EnumClass.class.isAssignableFrom(returnType)) {
+                    EnumStore mode = ConfigUtil.getAnnotation(configInterface, method, EnumStore.class, true);
+                    if (mode != null && EnumStoreMode.ID == mode.value()) {
+                        @SuppressWarnings("unchecked")
+                        Class<EnumClass> enumeration = (Class<EnumClass>) returnType;
+                        Class<?> idType = ConfigUtil.getEnumIdType(enumeration);
+                        TypeFactory idFactory = getInferred(idType);
+                        try {
+                            Method fromIdMethod = returnType.getMethod("fromId", idType);
+                            if (!isAcceptableMethod(returnType, fromIdMethod) || idFactory == null) {
+                                throw new IllegalArgumentException("Cannot use method as factory method: " + method);
+                            }
+                            return new EnumClassFactory(idFactory, fromIdMethod);
+                        } catch (NoSuchMethodException e) {
+                            throw new IllegalArgumentException("fromId method is not found for " + enumeration.getName());
+                        }
+                    }
+                }
                 TypeFactory factoryT = getInferred(returnType);
                 if (factoryT == null) {
                     throw new IllegalArgumentException("Unsupported return type for " + method);
