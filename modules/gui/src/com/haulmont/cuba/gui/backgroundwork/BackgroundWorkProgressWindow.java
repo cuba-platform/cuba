@@ -74,7 +74,7 @@ public class BackgroundWorkProgressWindow<T extends Number, V> extends AbstractW
         params.put("total", total);
         params.put("cancelAllowed", cancelAllowed);
         params.put("percentProgress", percentProgress);
-        task.getOwnerFrame().openWindow("core$BackgroundWorkProgressWindow", WindowManager.OpenType.DIALOG, params);
+        task.getOwnerFrame().openWindow("backgroundWorkProgressWindow", WindowManager.OpenType.DIALOG, params);
     }
 
     /**

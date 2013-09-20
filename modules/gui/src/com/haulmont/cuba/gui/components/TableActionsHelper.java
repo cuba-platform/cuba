@@ -193,7 +193,7 @@ public class TableActionsHelper extends ListActionsHelper<Table> {
             Map<String, Object> params = new HashMap<String, Object>();
             params.put("table", TableActionsHelper.this.component);
             params.put("exportDisplay", display);
-            frame.openWindow("cuba$ExcelExport", WindowManager.OpenType.DIALOG, params);
+            frame.openWindow("excelExport", WindowManager.OpenType.DIALOG, params);
         }
     }
 }

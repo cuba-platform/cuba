@@ -55,7 +55,7 @@ public class ExcelAction extends AbstractAction {
      * The action uses default name.
      * @param table         table containing this action
      * @param display       ExportDisplay implementation
-     * @param parameterized if true, the special window "cuba$ExcelExport" will be opened instead of direct export via
+     * @param parameterized if true, the special window "excelExport" will be opened instead of direct export via
      * {@link ExcelExporter}
      */
     public ExcelAction(Table table, ExportDisplay display, boolean parameterized) {
@@ -66,7 +66,7 @@ public class ExcelAction extends AbstractAction {
      * Constructor that allows to specify all parameters.
      * @param table         table containing this action
      * @param display       ExportDisplay implementation
-     * @param parameterized if true, the special window "cuba$ExcelExport" will be opened instead of direct export via
+     * @param parameterized if true, the special window "excelExport" will be opened instead of direct export via
      * {@link ExcelExporter}
      * @param id            action's name
      */
@@ -99,12 +99,12 @@ public class ExcelAction extends AbstractAction {
     }
 
     /**
-     * Export via screen "cuba$ExcelExport".
+     * Export via screen "excelExport".
      */
     protected void parameterizedExport() {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("table", table);
         params.put("exportDisplay", display);
-        table.getFrame().openWindow("cuba$ExcelExport", WindowManager.OpenType.DIALOG, params);
+        table.getFrame().openWindow("excelExport", WindowManager.OpenType.DIALOG, params);
     }
 }

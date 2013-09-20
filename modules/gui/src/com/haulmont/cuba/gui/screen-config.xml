@@ -79,10 +79,10 @@
 
     <screen id="sysInfoWindow" template="/com/haulmont/cuba/gui/app/core/showinfo/show-info.xml"/>
 
-    <screen id="sys$BackgroundWorkWindow"
+    <screen id="backgroundWorkWindow"
             template="/com/haulmont/cuba/gui/backgroundwork/background-work-window.xml"/>
 
-    <screen id="core$BackgroundWorkProgressWindow"
+    <screen id="backgroundWorkProgressWindow"
             template="/com/haulmont/cuba/gui/backgroundwork/background-work-progress-window.xml"/>
 
     <screen id="sys$FileDescriptor.browse"
@@ -90,6 +90,9 @@
 
     <screen id="sys$FileDescriptor.edit"
             template="/com/haulmont/cuba/gui/app/core/file/file-edit.xml"/>
+
+    <screen id="sys$Category.browse"
+            template="/com/haulmont/cuba/gui/categories/category-browse.xml"/>
 
     <screen id="sys$Category.edit"
             template="/com/haulmont/cuba/gui/categories/category-edit.xml"/>
@@ -132,6 +135,7 @@
 
     <screen id="entityLog"
             template="/com/haulmont/cuba/gui/app/core/entitylog/entity-log-browse.xml"/>
+
     <screen id="sys$SendingMessage.browse"
             template="/com/haulmont/cuba/gui/app/core/sendingmessage/browse/sending-message-browse.xml"/>
 </screen-config>

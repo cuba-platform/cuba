@@ -7,7 +7,7 @@
 
     <include file="/com/haulmont/cuba/gui/screen-config.xml"/>
 
-    <screen id="cuba$ExcelExport"
+    <screen id="excelExport"
             template="/com/haulmont/cuba/web/app/ui/export/excel/excel-export.xml"/>
 
     <screen id="settings"
@@ -19,28 +19,28 @@
     <screen id="logWindow"
             class="com.haulmont.cuba.web.log.LogWindowLauncher"/>
 
-    <screen id="fts$Search"
+    <screen id="ftsSearch"
             class="com.haulmont.fts.web.ui.results.SearchLauncher"/>
 
-    <screen id="fts$SearchResults"
+    <screen id="ftsSearchResults"
             template="/com/haulmont/fts/web/ui/results/search-results.xml"/>
 
-    <screen id="sys$Entity.restore"
+    <screen id="entityRestore"
             template="/com/haulmont/cuba/web/app/ui/core/restore/entity-restore.xml"/>
 
-    <screen id="sec$SaveSetWindow" template="/com/haulmont/cuba/web/app/folders/save-set-window.xml"/>
+    <screen id="saveSetInFolder" template="/com/haulmont/cuba/web/app/folders/save-set-window.xml"/>
 
     <!-- JMX control -->
-    <screen id="jmxcontrol$DisplayMbeans"
+    <screen id="jmxConsole"
             template="/com/haulmont/cuba/web/app/ui/jmxcontrol/browse/display-mbeans.xml" multipleOpen="true"/>
 
-    <screen id="jmxcontrol$InspectMbean"
+    <screen id="jmxConsoleInspectMbean"
             template="/com/haulmont/cuba/web/app/ui/jmxcontrol/inspect/mbean-inspect.xml"/>
 
-    <screen id="jmxcontrol$EditAttribute"
+    <screen id="jmxConsoleEditAttribute"
             template="/com/haulmont/cuba/web/app/ui/jmxcontrol/inspect/attribute/attribute-edit.xml"/>
 
-    <screen id="jmxcontrol$OperationResult"
+    <screen id="jmxConsoleOperationResult"
             template="/com/haulmont/cuba/web/app/ui/jmxcontrol/inspect/operation/operation-result.xml"/>
 
     <screen id="sys$JmxInstance.lookup"
@@ -53,16 +53,13 @@
     <screen id="sec$ScreenHistory.browse"
             template="/com/haulmont/cuba/web/app/ui/security/history/screen-history-browse.xml"/>
 
-    <screen id="sys$Categories.browse"
-            template="/com/haulmont/cuba/gui/categories/category-browse.xml"/>
-
-    <screen id="logcontrol$ServerLog"
+    <screen id="serverLog"
             template="/com/haulmont/cuba/web/app/ui/serverlogviewer/server-log-window.xml" multipleOpen="true"/>
 
-    <screen id="logcontrol$AddLoggerDialog"
+    <screen id="serverLogAddLoggerDialog"
             template="/com/haulmont/cuba/web/app/ui/serverlogviewer/addition-logger-window.xml" multipleOpen="true"/>
 
-    <screen id="logcontrol$LoggerControlDialog"
+    <screen id="serverLogLoggerControlDialog"
             template="/com/haulmont/cuba/web/app/ui/serverlogviewer/control-logger-window.xml" multipleOpen="true"/>
 
     <screen id="printDomain"

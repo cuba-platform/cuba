@@ -12,12 +12,12 @@
         <item id="sec$Role.browse"/>
         <item id="-"/>
         <item id="sec$UserSessionEntity.browse"/>
+        <item id="sys$LockInfo.browse"/>
         <item id="sys$FileDescriptor.browse"/>
         <item id="sys$SendingMessage.browse"/>
-        <item id="sys$LockInfo.browse"/>
-        <item id="entityInspector.browse"/>
         <item id="sys$ScheduledTask.browse"/>
         <item id="entityLog"/>
+        <item id="entityInspector.browse"/>
     </menu>
 
     <menu id="help">

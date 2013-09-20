@@ -10,28 +10,30 @@
         <item id="sec$Group.browse"/>
         <item id="sec$Role.browse"/>
         <separator/>
-        <item id="sys$Categories.browse"/>
+        <item id="sys$Category.browse"/>
         <separator/>
         <item id="sec$UserSessionEntity.browse"/>
         <item id="sys$LockInfo.browse"/>
         <item id="sys$FileDescriptor.browse"/>
         <item id="sys$SendingMessage.browse"/>
         <item id="sys$ScheduledTask.browse"/>
-        <item id="sys$Entity.restore"/>
+        <item id="entityRestore"/>
+        <item id="entityLog"/>
         <item id="entityInspector.browse"/>
         <separator/>
-        <item id="jmxcontrol$DisplayMbeans"/>
-        <item id="logcontrol$ServerLog"/>
-        <item id="entityLog"/>
+        <item id="jmxConsole"/>
+        <item id="serverLog"/>
     </menu>
 
     <menu id="help">
         <item id="aboutWindow" openType="DIALOG"/>
+        <item id="printDomain"/>
+        <separator/>
         <item id="settings"/>
         <item id="feedback"/>
-        <item id="sec$ScreenHistory.browse"/>
         <item id="logWindow"/>
-        <item id="printDomain"/>
+        <separator/>
+        <item id="sec$ScreenHistory.browse"/>
     </menu>
 
 </menu-config>
