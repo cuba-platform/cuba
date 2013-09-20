@@ -21,9 +21,9 @@ public class CubaWidgetsTree extends com.vaadin.ui.Tree implements ComponentCont
 
     protected WidgetBuilder widgetBuilder;
 
-    protected List<Component> nodeWidgets;
+    protected final List<Component> nodeWidgets = new ArrayList<>();
 
-    protected List<Object> itemIds;
+    protected final List<Object> itemIds = new ArrayList<>();
 
     @Override
     public void containerItemSetChange(Container.ItemSetChangeEvent event) {
@@ -39,9 +39,19 @@ public class CubaWidgetsTree extends com.vaadin.ui.Tree implements ComponentCont
         refreshRenderedComponents();
     }
 
+    protected void detachGeneratedComponents() {
+        for (Component c : nodeWidgets) {
+            if (c.isAttached()) {
+                c.detach();
+            }
+        }
+    }
+
     protected void refreshRenderedComponents() {
-        nodeWidgets = new ArrayList<>();
-        itemIds = new ArrayList<>();
+        detachGeneratedComponents();
+
+        nodeWidgets.clear();
+        itemIds.clear();
 
         if (widgetBuilder != null) {
             // Iterates through hierarchical tree using a stack of iterators
@@ -108,10 +118,7 @@ public class CubaWidgetsTree extends com.vaadin.ui.Tree implements ComponentCont
 
     @Override
     public Iterator<Component> iterator() {
-        if (nodeWidgets != null)
-            return nodeWidgets.iterator();
-        else
-            return Collections.<Component>emptyList().iterator();
+        return nodeWidgets.iterator();
     }
 
     @Override
@@ -121,11 +128,7 @@ public class CubaWidgetsTree extends com.vaadin.ui.Tree implements ComponentCont
 
     @Override
     public int getComponentCount() {
-        if (nodeWidgets != null) {
-            return nodeWidgets.size();
-        } else {
-            return 0;
-        }
+        return nodeWidgets.size();
     }
 
     @Override
