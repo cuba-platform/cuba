@@ -9,6 +9,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.PasswordEncryption;
 import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.global.LoginException;
+import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -34,7 +35,6 @@ import java.util.Map;
  * @version $Id$
  */
 @Controller
-@RequestMapping(value = "/api/login")
 public class LoginServiceController {
 
     @Inject
@@ -51,7 +51,7 @@ public class LoginServiceController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.POST)
+    @RequestMapping(value = "/api/login", method = RequestMethod.POST)
     public void loginByPost(@RequestBody String requestBody,
                             @RequestHeader(value = "Content-Type") MimeType contentType,
                             HttpServletResponse response) throws IOException, JSONException {
@@ -96,10 +96,10 @@ public class LoginServiceController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(value = "/api/login", method = RequestMethod.GET)
     public void loginByGet(@RequestParam(value = "u") String username,
                            @RequestParam(value = "p") String password,
-                           @RequestParam(value = "l", required=false) String localeStr,
+                           @RequestParam(value = "l", required = false) String localeStr,
                            HttpServletResponse response) throws IOException, JSONException {
 
         response.addHeader("Access-Control-Allow-Origin", "*");
@@ -107,7 +107,7 @@ public class LoginServiceController {
         try {
             LoginService loginService = AppBeans.get(LoginService.NAME);
 
-            UserSession userSession = loginService.login(username,  passwordEncryption.getPlainHash(password), locale);
+            UserSession userSession = loginService.login(username, passwordEncryption.getPlainHash(password), locale);
             response.setStatus(HttpServletResponse.SC_OK);
             PrintWriter writer = new PrintWriter(response.getOutputStream());
             writer.write(userSession.getId().toString());
@@ -115,6 +115,50 @@ public class LoginServiceController {
 
             log.debug(String.format("User %s logged in with REST-API, session id: %s", username, userSession.getId()));
         } catch (LoginException e) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        }
+    }
+
+    @RequestMapping(value = "/api/logout", method = RequestMethod.POST)
+    public void logoutByPost(@RequestBody String requestBody, @RequestHeader(value = "Content-Type") MimeType contentType,
+                             HttpServletResponse response) throws IOException, JSONException {
+
+        String sessionUUID;
+        if (contentType.match(JSONConvertor.MIME_TYPE_JSON)) {
+            JSONObject json = new JSONObject(requestBody);
+            sessionUUID = json.getString("session");
+        } else if (contentType.match(FORM_TYPE)) {
+            String[] fields = requestBody.split("=");
+            sessionUUID = URLDecoder.decode(fields[1], "UTF-8");
+        } else {
+            throw new IllegalStateException("Unsupported content type: " + contentType);
+        }
+        try {
+            Authentication authentication = Authentication.me(sessionUUID);
+            if (authentication != null) {
+                LoginService loginService = AppBeans.get(LoginService.NAME);
+                loginService.logout();
+            } else {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            }
+        } catch (NoUserSessionException e) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        }
+    }
+
+    @RequestMapping(value = "/api/logout", method = RequestMethod.GET)
+    public void logoutByGet(@RequestParam(value = "session") String sessionUUID,
+                            HttpServletResponse response) throws IOException, JSONException {
+
+        try {
+            Authentication authentication = Authentication.me(sessionUUID);
+            if (authentication != null) {
+                LoginService loginService = AppBeans.get(LoginService.NAME);
+                loginService.logout();
+            } else {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            }
+        } catch (NoUserSessionException e) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         }
     }
