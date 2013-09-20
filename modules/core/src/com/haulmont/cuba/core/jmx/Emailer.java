@@ -98,6 +98,7 @@ public class Emailer implements EmailerMBean {
         }
     }
 
+    @Authenticated
     @Override
     public String migrateEmailsToFileStorage(String password) {
         if (!"do migration".equals(password)) {
