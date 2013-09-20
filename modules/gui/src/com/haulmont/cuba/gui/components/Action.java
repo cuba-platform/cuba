@@ -64,8 +64,12 @@ public interface Action {
     void setVisible(boolean visible);
 
     /**
-     * Refresh enabled, visible, caption, icon, etc properties <br/>
-     * Used in components and system actions for activation permissions
+     * Refresh internal state of the action to initialize enabled, visible, caption, icon, etc. properties depending
+     * on programmatically set values and user permissions set at runtime.
+     *
+     * <p/> For example, this method is called by visual components holding actions when they are connected to
+     * datasources. At this moment the action can find out what entity it is connected to and change its state
+     * according to the user permissions.
      */
     void refreshState();
 
