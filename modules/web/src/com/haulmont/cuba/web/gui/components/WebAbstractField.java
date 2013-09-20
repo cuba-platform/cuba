@@ -175,9 +175,9 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
 
                 if (!ObjectUtils.equals(value, newValue)) {
                     WebAbstractField.this.component.setValue(newValue);
-
-                    fireValueChanged(oldValue, newValue);
                 }
+
+                fireValueChanged(oldValue, newValue);
 
                 settingValue = false;
             }
