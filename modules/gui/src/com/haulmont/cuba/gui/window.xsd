@@ -273,13 +273,13 @@
 
     <xs:attributeGroup name="isTableComponent">
         <xs:attribute name="multiselect" type="xs:boolean" use="optional"/>
-        <xs:attribute name="margin" type="xs:string" use="optional"/>
         <xs:attribute name="sortable" type="xs:boolean" use="optional"/>
         <xs:attribute name="reorderingAllowed" type="xs:boolean" use="optional"/>
         <xs:attribute name="columnControlVisible" type="xs:boolean" use="optional"/>
 
         <xs:attribute name="aggregatable" type="xs:boolean" use="optional"/>
         <xs:attribute name="presentations" type="xs:boolean" use="optional"/>
+        <xs:attribute name="allowPopupMenu" type="xs:boolean" use="optional"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="isLayoutComponent">
@@ -674,6 +674,7 @@
         <xs:attributeGroup ref="hasId"/>
         <xs:attributeGroup ref="hasSize"/>
         <xs:attributeGroup ref="hasCaption"/>
+        <xs:attributeGroup ref="hasVisibility"/>
     </xs:complexType>
 
     <!-- Tree -->
@@ -692,7 +693,6 @@
         <xs:attributeGroup ref="hasId"/>
         <xs:attributeGroup ref="hasSize"/>
         <xs:attribute name="multiselect" type="xs:boolean" use="optional"/>
-        <xs:attribute name="allowPopupMenu" type="xs:boolean" use="optional"/>
     </xs:complexType>
 
     <!-- Button -->
@@ -811,11 +811,10 @@
 
         <xs:attributeGroup ref="hasSize"/>
         <xs:attributeGroup ref="hasStyle"/>
-        <xs:attributeGroup ref="hasEditable"/>
         <xs:attributeGroup ref="hasVisibility"/>
+        <xs:attributeGroup ref="hasEditState"/>
 
         <xs:attributeGroup ref="isTableComponent"/>
-        <xs:attribute name="allowPopupMenu" type="xs:boolean" use="optional"/>
     </xs:complexType>
 
     <!-- GroupTable -->
@@ -834,8 +833,8 @@
 
         <xs:attributeGroup ref="hasSize"/>
         <xs:attributeGroup ref="hasStyle"/>
-        <xs:attributeGroup ref="hasEditable"/>
         <xs:attributeGroup ref="hasVisibility"/>
+        <xs:attributeGroup ref="hasEditState"/>
 
         <xs:attributeGroup ref="isTableComponent"/>
 
