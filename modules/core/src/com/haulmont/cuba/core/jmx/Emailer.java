@@ -85,6 +85,16 @@ public class Emailer implements EmailerMBean {
         return config.getSmtpStarttlsEnable();
     }
 
+    @Override
+    public int getSmtpTimeoutSec() {
+        return config.getSmtpTimeoutSec();
+    }
+
+    @Override
+    public int getSmtpConnectionTimeoutSec() {
+        return config.getSmtpConnectionTimeoutSec();
+    }
+
     @Authenticated
     @Override
     public String sendTestEmail(String addresses) {

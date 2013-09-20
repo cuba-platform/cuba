@@ -293,7 +293,7 @@ public class Emailer implements EmailerAPI {
     }
 
     protected List<SendingMessage> loadEmailsToSend() {
-        Date sendTimeoutTime = DateUtils.addSeconds(timeSource.currentTimestamp(), -config.getMaxSendingTimeSec());
+        Date sendTimeoutTime = DateUtils.addSeconds(timeSource.currentTimestamp(), -config.getSendingTimeoutSec());
 
         List<SendingMessage> emailsToSend = new ArrayList<>();
 

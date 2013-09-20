@@ -27,6 +27,10 @@ public interface EmailerMBean {
 
     boolean getStarttlsEnable();
 
+    int getSmtpTimeoutSec();
+
+    int getSmtpConnectionTimeoutSec();
+
     @ManagedOperationParameters({@ManagedOperationParameter(name = "addresses", description = "")})
     String sendTestEmail(String addresses);
 

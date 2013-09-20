@@ -71,6 +71,20 @@ public interface EmailerConfig extends Config {
     String getSmtpPassword();
 
     /**
+     * SMTP connection timeout value in seconds.
+     */
+    @Property("cuba.email.smtpConnectionTimeout")
+    @DefaultInt(20)
+    int getSmtpConnectionTimeoutSec();
+
+    /**
+     * SMTP I/O timeout value in seconds.
+     */
+    @Property("cuba.email.smtpTimeout")
+    @DefaultInt(60)
+    int getSmtpTimeoutSec();
+
+    /**
      * How many scheduler ticks to skip after server startup.
      * Actual sending will start with the next call.
      * <p/> This reduces the server load on startup.
@@ -96,12 +110,12 @@ public interface EmailerConfig extends Config {
     int getDefaultSendingAttemptsCount();
 
     /**
-     * Max estimated time needed to send a message to SMTP server. This is used to optimize the loading
-     * messages from queue.
+     * Timeout in seconds for message in {@link com.haulmont.cuba.core.global.SendingStatus#SENDING} status
+     * to be successfully sent or failed. After this time passes, emailer will try to resend email again.
      */
-    @Property("cuba.email.maxSendingTimeSec")
-    @DefaultInt(120)
-    int getMaxSendingTimeSec();
+    @Property("cuba.email.sendingTimeoutSec")
+    @DefaultInt(240)
+    int getSendingTimeoutSec();
 
     /**
      * All emails go to this address if {@link #getSendAllToAdmin()} is enabled, regardless of actual recipient.

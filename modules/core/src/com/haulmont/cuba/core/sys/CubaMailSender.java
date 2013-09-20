@@ -78,9 +78,14 @@ public class CubaMailSender extends JavaMailSenderImpl {
     @Override
     public synchronized Session getSession() {
         if (!propertiesInitialized) {
+            long connectionTimeoutMillis = config.getSmtpConnectionTimeoutSec() * 1000;
+            long timeoutMillis = config.getSmtpTimeoutSec() * 1000;
+
             Properties properties = new Properties();
             properties.setProperty("mail.smtp.auth", String.valueOf(config.getSmtpAuthRequired()));
             properties.setProperty("mail.smtp.starttls.enable", String.valueOf(config.getSmtpStarttlsEnable()));
+            properties.setProperty("mail.smtp.connectiontimeout", String.valueOf(connectionTimeoutMillis));
+            properties.setProperty("mail.smtp.timeout", String.valueOf(timeoutMillis));
             setJavaMailProperties(properties);
             propertiesInitialized = true;
         }
