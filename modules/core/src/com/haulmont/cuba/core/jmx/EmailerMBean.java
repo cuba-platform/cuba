@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.core.jmx;
 
+import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.jmx.export.annotation.ManagedOperationParameter;
 import org.springframework.jmx.export.annotation.ManagedOperationParameters;
 
@@ -28,4 +29,7 @@ public interface EmailerMBean {
 
     @ManagedOperationParameters({@ManagedOperationParameter(name = "addresses", description = "")})
     String sendTestEmail(String addresses);
+
+    @ManagedOperation(description = "Migrate existing email history to use file storage")
+    String migrateEmailsToFileStorage(String password);
 }

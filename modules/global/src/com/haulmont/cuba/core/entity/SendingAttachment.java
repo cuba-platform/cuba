@@ -25,9 +25,16 @@ public class SendingAttachment extends StandardEntity {
     @Column(name = "MESSAGE_ID")
     protected SendingMessage message;
 
+    /**
+     * Attachment data is stored either in this field or in {@link #contentFile}.
+     */
     @Basic(fetch = FetchType.LAZY)
     @Column(name = "CONTENT")
     protected byte[] content;
+
+    @JoinColumn(name = "CONTENT_FILE_ID")
+    @OneToOne(fetch = FetchType.LAZY)
+    protected FileDescriptor contentFile;
 
     @Column(name = "NAME", length = 500)
     protected String name;
@@ -87,5 +94,13 @@ public class SendingAttachment extends StandardEntity {
 
     public void setEncoding(String encoding) {
         this.encoding = encoding;
+    }
+
+    public FileDescriptor getContentFile() {
+        return contentFile;
+    }
+
+    public void setContentFile(FileDescriptor contentFile) {
+        this.contentFile = contentFile;
     }
 }

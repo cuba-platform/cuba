@@ -630,6 +630,7 @@ create table SYS_SENDING_MESSAGE (
     ADDRESS_FROM varchar(100),
     CAPTION varchar(500),
     CONTENT_TEXT longvarchar,
+    CONTENT_TEXT_FILE_ID varchar(36),
     DEADLINE timestamp,
     STATUS integer,
     DATE_SENT timestamp,
@@ -639,6 +640,8 @@ create table SYS_SENDING_MESSAGE (
     --
     primary key (ID)
 )^
+
+alter table SYS_SENDING_MESSAGE add constraint FK_SYS_SENDING_MESSAGE_CONTENT_FILE foreign key (CONTENT_TEXT_FILE_ID) references SYS_FILE(ID)^
 
 create table SYS_SENDING_ATTACHMENT (
     ID varchar(36) not null,
@@ -652,6 +655,7 @@ create table SYS_SENDING_ATTACHMENT (
     --
     MESSAGE_ID varchar(36),
     CONTENT longvarbinary,
+    CONTENT_FILE_ID varchar(36),
     CONTENT_ID varchar(50),
     NAME varchar(500),
     DISPOSITION varchar(50),
@@ -662,6 +666,7 @@ create table SYS_SENDING_ATTACHMENT (
 )^
 
 alter table SYS_SENDING_ATTACHMENT add constraint FK_SYS_SENDING_ATTACHMENT_SENDING_MESSAGE foreign key (MESSAGE_ID) references SYS_SENDING_MESSAGE (ID)^
+alter table SYS_SENDING_ATTACHMENT add constraint FK_SYS_SENDING_ATTACHMENT_CONTENT_FILE foreign key (CONTENT_FILE_ID) references SYS_FILE (ID)^
 
 CREATE INDEX SYS_SENDING_ATTACHMENT_MESSAGE_IDX
   ON SYS_SENDING_ATTACHMENT(MESSAGE_ID )^

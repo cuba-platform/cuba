@@ -66,8 +66,8 @@
     </view>
 
     <view entity="sec$Role" name="role.lookup">
-         <property name="name"/>
-     </view>
+        <property name="name"/>
+    </view>
 
     <view entity="sec$Role" name="role.browse">
         <property name="name"/>
@@ -151,20 +151,20 @@
         <property name="updateTs"/>
     </view>
 
-    <view class="com.haulmont.cuba.core.entity.SendingMessage" name="sendingMessage.browse.detail"
-          extends="sendingMessage.browse">
-        <property name="contentText"/>
-    </view>
-
     <view class="com.haulmont.cuba.core.entity.SendingMessage" name="sendingMessage.loadFromQueue" extends="_local"
           systemProperties="true">
         <property name="attachments" view="sendingAttachment.loadFromQueue"/>
-        <property name="version"/>
+        <property name="contentTextFile" view="_local"/>
     </view>
 
     <view class="com.haulmont.cuba.core.entity.SendingAttachment" name="sendingAttachment.loadFromQueue"
           extends="_local" systemProperties="true">
+        <property name="contentFile" view="_local"/>
+    </view>
 
+    <view class="com.haulmont.cuba.core.entity.SendingMessage" name="sendingMessage.loadContentText">
+        <property name="contentTextFile" view="_local"/>
+        <property name="contentText"/>
     </view>
 
     <view class="com.haulmont.cuba.core.entity.CategoryAttributeValue" name="categoryAttributeValue" extends="_local">
@@ -200,7 +200,7 @@
         <property name="userName"/>
         <property name="since"/>
         <property name="lastUsedTs"/>
-      </view>
+    </view>
 
     <view class="com.haulmont.cuba.security.entity.LoggedEntity"
           name="loggedAttrs">

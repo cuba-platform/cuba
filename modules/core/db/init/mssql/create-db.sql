@@ -612,6 +612,7 @@ create table SYS_SENDING_MESSAGE (
     ADDRESS_FROM varchar(100),
     CAPTION varchar(500),
     CONTENT_TEXT varchar(max),
+    CONTENT_TEXT_FILE_ID uniqueidentifier,
     DEADLINE datetime,
     STATUS int,
     DATE_SENT datetime,
@@ -619,7 +620,8 @@ create table SYS_SENDING_MESSAGE (
     ATTEMPTS_MADE int,
     ATTACHMENTS_NAME varchar(500),
     --
-    primary key nonclustered (ID)
+    primary key nonclustered (ID),
+    constraint FK_SYS_SENDING_MESSAGE_CONTENT_FILE foreign key (CONTENT_TEXT_FILE_ID) references SYS_FILE(ID)
 )^
 
 create index IDX_SYS_SENDING_MESSAGE_STATUS on SYS_SENDING_MESSAGE (STATUS)^
@@ -642,6 +644,7 @@ create table SYS_SENDING_ATTACHMENT (
     --
     MESSAGE_ID uniqueidentifier,
     CONTENT image,
+    CONTENT_FILE_ID uniqueidentifier,
     CONTENT_ID varchar(50),
     NAME varchar(500),
     DISPOSITION varchar(50),
@@ -649,7 +652,8 @@ create table SYS_SENDING_ATTACHMENT (
 
     --
     primary key nonclustered (ID),
-    constraint FK_SYS_SENDING_ATTACHMENT_SENDING_MESSAGE foreign key (MESSAGE_ID) references SYS_SENDING_MESSAGE (ID)
+    constraint FK_SYS_SENDING_ATTACHMENT_SENDING_MESSAGE foreign key (MESSAGE_ID) references SYS_SENDING_MESSAGE (ID),
+    constraint FK_SYS_SENDING_ATTACHMENT_CONTENT_FILE foreign key (CONTENT_FILE_ID) references SYS_FILE (ID)
 )^
 
 create index SYS_SENDING_ATTACHMENT_MESSAGE_IDX on SYS_SENDING_ATTACHMENT (MESSAGE_ID)^

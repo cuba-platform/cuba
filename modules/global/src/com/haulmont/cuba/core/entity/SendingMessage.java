@@ -35,8 +35,15 @@ public class SendingMessage extends StandardEntity {
     @Column(name = "CAPTION")
     protected String caption;
 
+    /**
+     * Email body is stored either in this field or in {@link #contentTextFile}.
+     */
     @Column(name = "CONTENT_TEXT")
     protected String contentText;
+
+    @JoinColumn(name = "CONTENT_TEXT_FILE_ID")
+    @OneToOne(fetch = FetchType.LAZY)
+    protected FileDescriptor contentTextFile;
 
     @Column(name = "STATUS")
     protected Integer status;
@@ -145,5 +152,13 @@ public class SendingMessage extends StandardEntity {
 
     public void setAttemptsMade(Integer attemptsMade) {
         this.attemptsMade = attemptsMade;
+    }
+
+    public FileDescriptor getContentTextFile() {
+        return contentTextFile;
+    }
+
+    public void setContentTextFile(FileDescriptor contentTextFile) {
+        this.contentTextFile = contentTextFile;
     }
 }

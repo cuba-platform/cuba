@@ -22,6 +22,7 @@ public interface EmailSenderAPI {
 
     /**
      * Sends email with help of {@link org.springframework.mail.javamail.JavaMailSender}.
+     * Message body and attachments' content must be loaded from file storage.
      * <p/>
      * Use {@link EmailerAPI} instead if you need email to be delivered reliably and stored to email history.
      *

@@ -27,6 +27,7 @@ public interface EmailerConfig extends Config {
     @Property("cuba.email.fromAddress")
     @Default("DoNotReply@localhost")
     String getFromAddress();
+
     void setFromAddress(String fromAddress);
 
     /**
@@ -77,6 +78,7 @@ public interface EmailerConfig extends Config {
     @Property("cuba.email.delayCallCount")
     @Default("2")
     int getDelayCallCount();
+
     void setDelayCallCount(int delayCallCount);
 
     /**
@@ -107,13 +109,29 @@ public interface EmailerConfig extends Config {
     @Property("cuba.email.adminAddress")
     @Default("admin@localhost")
     String getAdminAddress();
+
     void setAdminAddress(String adminAddress);
 
     /**
-     * If this parameter is set to true, all email messages go to <code>cuba.email.adminAddress</code>.
+     * If this parameter is set to true, all email messages go to {@link #getAdminAddress()}.
      */
     @Property("cuba.email.sendAllToAdmin")
     @DefaultBoolean(false)
     boolean getSendAllToAdmin();
+
     void setSendAllToAdmin(boolean sendAllToAdmin);
+
+    /**
+     * When turned on, email body text and attachments will be stored in file storage
+     * instead of BLOB columns in database.
+     * Should be used if application stores lots of emails and/or email attachments.
+     *
+     * @see com.haulmont.cuba.core.entity.SendingMessage#contentTextFile
+     * @see com.haulmont.cuba.core.entity.SendingAttachment#contentFile
+     */
+    @Property("cuba.email.useFileStorage")
+    @DefaultBoolean(false)
+    boolean isFileStorageUsed();
+
+    void setFileStorageUsed(boolean fileStorageUsed);
 }

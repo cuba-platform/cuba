@@ -12,17 +12,15 @@
         <collectionDatasource
                 id="sendingMessageDs"
                 class="com.haulmont.cuba.core.entity.SendingMessage"
-                view="sendingMessage.browse" fetchMode="AUTO">
+                view="sendingMessage.browse">
             <query>
                 <![CDATA[select sm from sys$SendingMessage sm]]>
             </query>
         </collectionDatasource>
-        <datasource id="selectedMessageDs" class="com.haulmont.cuba.core.entity.SendingMessage"
-                    view="sendingMessage.browse.detail"/>
     </dsContext>
-    <layout>
-        <split id="split" orientation="horizontal" pos="70" width="100%" height="100%">
-            <vbox expand="table" spacing="true" width="100%" height="100%">
+    <layout expand="hbox">
+        <hbox id="hbox" spacing="true" width="100%" expand="leftBox">
+            <vbox id="leftBox" expand="table" spacing="true" height="100%">
                 <filter id="genericFilter" datasource="sendingMessageDs">
                     <properties include=".*"/>
                 </filter>
@@ -43,23 +41,21 @@
                     <rows datasource="sendingMessageDs"/>
                 </table>
             </vbox>
-            <vbox expand="fg" margin="true">
-                <fieldGroup id="fg" datasource="selectedMessageDs" width="500px" editable="false" border="visible">
-                    <column width="100%">
-                        <field id="address"/>
-                        <field id="from"/>
-                        <field id="caption"/>
-                        <field id="contentText" custom="true"/>
-                        <field id="status"/>
-                        <field id="attachmentsName"/>
-                        <field id="dateSent"/>
-                        <field id="updateTs"/>
-                        <field id="deadline"/>
-                        <field id="attemptsCount"/>
-                        <field id="attemptsMade"/>
-                    </column>
-                </fieldGroup>
-            </vbox>
-        </split>
+            <fieldGroup id="fg" datasource="sendingMessageDs" editable="false" border="visible" width="500px">
+                <column width="100%">
+                    <field id="address"/>
+                    <field id="from"/>
+                    <field id="caption"/>
+                    <field id="contentText" custom="true"/>
+                    <field id="status"/>
+                    <field id="attachmentsName"/>
+                    <field id="dateSent"/>
+                    <field id="updateTs"/>
+                    <field id="deadline"/>
+                    <field id="attemptsCount"/>
+                    <field id="attemptsMade"/>
+                </column>
+            </fieldGroup>
+        </hbox>
     </layout>
 </window>

@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.core.app;
 
+import com.haulmont.cuba.core.entity.SendingAttachment;
 import com.haulmont.cuba.core.entity.SendingMessage;
 import com.haulmont.cuba.core.global.EmailAttachment;
 import com.haulmont.cuba.core.global.EmailException;
@@ -32,9 +33,9 @@ public interface EmailerAPI {
     /**
      * Send email synchronously.
      *
-     * @param address    comma or semicolon separated list of addresses
-     * @param caption    email subject
-     * @param body       email body
+     * @param address     comma or semicolon separated list of addresses
+     * @param caption     email subject
+     * @param body        email body
      * @param attachments email attachments
      * @throws EmailException in case of any errors
      */
@@ -51,13 +52,12 @@ public interface EmailerAPI {
     /**
      * Send email asynchronously, with limited number of attempts.
      *
-     * @param info email details
-     * @param attemptsCount  count of attempts to send (1 attempt per scheduler tick). If not specified,
-     *              {@link com.haulmont.cuba.core.app.EmailerConfig#getDefaultSendingAttemptsCount()} is used
-     *
-     * @param deadline Emailer tries to send message till deadline.
-     *              If deadline has come and message has not been sent, status of this message is changed to
-     *              {@link com.haulmont.cuba.core.global.SendingStatus#NOTSENT}
+     * @param info          email details
+     * @param attemptsCount count of attempts to send (1 attempt per scheduler tick). If not specified,
+     *                      {@link com.haulmont.cuba.core.app.EmailerConfig#getDefaultSendingAttemptsCount()} is used
+     * @param deadline      Emailer tries to send message till deadline.
+     *                      If deadline has come and message has not been sent, status of this message is changed to
+     *                      {@link com.haulmont.cuba.core.global.SendingStatus#NOTSENT}
      * @return list of created {@link SendingMessage}s
      */
     List<SendingMessage> sendEmailAsync(EmailInfo info, @Nullable Integer attemptsCount, @Nullable Date deadline);
@@ -77,4 +77,21 @@ public interface EmailerAPI {
      * @return short message describing how many emails were sent, or error message
      */
     String processQueuedEmails();
+
+    /**
+     * Migrate list of existing messages to be stored in file storage, in a single transaction.
+     */
+    void migrateEmailsToFileStorage(List<SendingMessage> messages);
+
+    /**
+     * Migrate list of existing email attachments to be stored in file storage, in a single transaction.
+     */
+    void migrateAttachmentsToFileStorage(List<SendingAttachment> attachments);
+
+    /**
+     * Loads content text for given message.
+     *
+     * @return email content text
+     */
+    String loadContentText(SendingMessage sendingMessage);
 }

@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.core.app;
 
+import com.haulmont.cuba.core.entity.SendingMessage;
 import com.haulmont.cuba.core.global.EmailAttachment;
 import com.haulmont.cuba.core.global.EmailException;
 import com.haulmont.cuba.core.global.EmailInfo;
@@ -38,5 +39,10 @@ public class EmailServiceBean implements EmailService {
     @Override
     public void sendEmailAsync(EmailInfo info) {
         emailer.sendEmailAsync(info);
+    }
+
+    @Override
+    public String loadContentText(SendingMessage sendingMessage) {
+        return emailer.loadContentText(sendingMessage);
     }
 }

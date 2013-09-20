@@ -4,15 +4,18 @@
  */
 package com.haulmont.cuba.core.app;
 
+import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.TypedQuery;
+import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.entity.SendingAttachment;
 import com.haulmont.cuba.core.entity.SendingMessage;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.app.Authentication;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -23,6 +26,7 @@ import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import javax.inject.Inject;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.concurrent.RejectedExecutionException;
 
@@ -32,6 +36,9 @@ import java.util.concurrent.RejectedExecutionException;
  */
 @ManagedBean(EmailerAPI.NAME)
 public class Emailer implements EmailerAPI {
+
+    protected static final String BODY_STORAGE_ENCODING = "UTF-8";
+    protected static final String BODY_FILE_EXTENSION = "txt";
 
     private Log log = LogFactory.getLog(Emailer.class);
 
@@ -62,6 +69,9 @@ public class Emailer implements EmailerAPI {
 
     @Inject
     protected Resources resources;
+
+    @Inject
+    protected FileStorageAPI fileStorage;
 
     @Inject
     public void setConfig(Configuration configuration) {
@@ -167,25 +177,57 @@ public class Emailer implements EmailerAPI {
         List<String> errorMessages = new ArrayList<>();
 
         for (SendingMessage sendingMessage : messages) {
-            persistMessages(Collections.singletonList(sendingMessage), SendingStatus.SENDING);
+            SendingMessage persistedMessage = persistMessageIfPossible(sendingMessage);
 
             try {
                 emailSender.sendEmail(sendingMessage);
-                markAsSent(sendingMessage);
+                if (persistedMessage != null) {
+                    markAsSent(persistedMessage);
+                }
             } catch (Exception e) {
                 log.warn("Unable to send email to '" + sendingMessage.getAddress() + "'", e);
                 failedAddresses.add(sendingMessage.getAddress());
                 errorMessages.add(e.getMessage());
-                markAsNonSent(sendingMessage);
+                if (persistedMessage != null) {
+                    markAsNonSent(persistedMessage);
+                }
             }
         }
 
         if (!failedAddresses.isEmpty()) {
-            throw new EmailException(
-                    failedAddresses.toArray(new String[failedAddresses.size()]),
-                    errorMessages.toArray(new String[errorMessages.size()])
-            );
+            throw new EmailException(failedAddresses, errorMessages);
         }
+    }
+
+    /*
+     * Try to persist message and catch all errors to allow actual delivery
+     * in case of database or file storage failure.
+     */
+    @Nullable
+    protected SendingMessage persistMessageIfPossible(SendingMessage sendingMessage) {
+        // A copy of sendingMessage is created
+        // to avoid additional overhead to load body and attachments back from FS
+        try {
+            SendingMessage clonedMessage = createClone(sendingMessage);
+            persistMessages(Collections.<SendingMessage>singletonList(clonedMessage), SendingStatus.SENDING);
+            return clonedMessage;
+        } catch (Exception e) {
+            log.error("Failed to persist message " + sendingMessage.getCaption(), e);
+            return null;
+        }
+    }
+
+    protected SendingMessage createClone(SendingMessage srcMessage) {
+        SendingMessage clonedMessage = (SendingMessage) InstanceUtils.copy(srcMessage);
+        List<SendingAttachment> clonedList = new ArrayList<>();
+        for (SendingAttachment srcAttach : srcMessage.getAttachments()) {
+            SendingAttachment clonedAttach = (SendingAttachment) InstanceUtils.copy(srcAttach);
+            clonedAttach.setMessage(null);
+            clonedAttach.setMessage(clonedMessage);
+            clonedList.add(clonedAttach);
+        }
+        clonedMessage.setAttachments(clonedList);
+        return clonedMessage;
     }
 
     @Override
@@ -281,30 +323,147 @@ public class Emailer implements EmailerAPI {
                 }
             }
             tx.commit();
-            return emailsToSend;
         } finally {
             tx.end();
         }
+
+        for (SendingMessage message : emailsToSend) {
+            loadBodyAndAttachments(message);
+        }
+        return emailsToSend;
     }
 
-    protected void persistMessages(List<SendingMessage> sendingMessageList, SendingStatus status) {
+    @Override
+    public String loadContentText(SendingMessage sendingMessage) {
+        SendingMessage msg;
         Transaction tx = persistence.createTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
-            for (SendingMessage message : sendingMessageList) {
-                message.setStatus(status);
-
-                em.persist(message);
-                if (message.getAttachments() != null) {
-                    for (SendingAttachment attachment : message.getAttachments()) {
-                        em.persist(attachment);
-                    }
-                }
-            }
+            msg = em.reload(sendingMessage, "sendingMessage.loadContentText");
             tx.commit();
         } finally {
             tx.end();
         }
+        Objects.requireNonNull(msg, "Sending message not found: " + sendingMessage.getId());
+        if (msg.getContentTextFile() != null) {
+            byte[] bodyContent;
+            try {
+                bodyContent = fileStorage.loadFile(msg.getContentTextFile());
+            } catch (FileStorageException e) {
+                throw new RuntimeException(e);
+            }
+            String res = bodyTextFromByteArray(bodyContent);
+            return res;
+        } else {
+            return msg.getContentText();
+        }
+    }
+
+    protected void loadBodyAndAttachments(SendingMessage message) {
+        try {
+            if (message.getContentTextFile() != null) {
+                byte[] bodyContent = fileStorage.loadFile(message.getContentTextFile());
+                String body = bodyTextFromByteArray(bodyContent);
+                message.setContentText(body);
+            }
+
+            for (SendingAttachment attachment : message.getAttachments()) {
+                if (attachment.getContentFile() != null) {
+                    byte[] content = fileStorage.loadFile(attachment.getContentFile());
+                    attachment.setContent(content);
+                }
+            }
+        } catch (FileStorageException e) {
+            log.error("Failed to load body or attachments for " + message);
+        }
+    }
+
+    protected void persistMessages(List<SendingMessage> sendingMessageList, SendingStatus status) {
+        MessagePersistingContext context = new MessagePersistingContext();
+
+        try {
+            Transaction tx = persistence.createTransaction();
+            try {
+                EntityManager em = persistence.getEntityManager();
+                for (SendingMessage message : sendingMessageList) {
+                    message.setStatus(status);
+
+                    try {
+                        persistSendingMessage(em, message, context);
+                    } catch (FileStorageException e) {
+                        throw new RuntimeException("Failed to store message " + message.getCaption(), e);
+                    }
+                }
+                tx.commit();
+            } finally {
+                tx.end();
+            }
+            context.finished();
+        } finally {
+            removeOrphanFiles(context);
+        }
+    }
+
+    protected void removeOrphanFiles(MessagePersistingContext context) {
+        for (FileDescriptor file : context.files) {
+            try {
+                fileStorage.removeFile(file);
+            } catch (Exception e) {
+                log.error("Failed to remove file " + file);
+            }
+        }
+    }
+
+    protected void persistSendingMessage(EntityManager em, SendingMessage message,
+                                         MessagePersistingContext context) throws FileStorageException {
+        boolean useFileStorage = config.isFileStorageUsed();
+
+        if (useFileStorage) {
+            byte[] bodyBytes = bodyTextToBytes(message);
+
+            FileDescriptor contentTextFile = createBodyFileDescriptor(message, bodyBytes);
+            fileStorage.saveFile(contentTextFile, bodyBytes);
+            context.files.add(contentTextFile);
+
+            em.persist(contentTextFile);
+            message.setContentTextFile(contentTextFile);
+            message.setContentText(null);
+        }
+
+        em.persist(message);
+
+        for (SendingAttachment attachment : message.getAttachments()) {
+            if (useFileStorage) {
+                FileDescriptor contentFile = createAttachmentFileDescriptor(attachment);
+
+                fileStorage.saveFile(contentFile, attachment.getContent());
+                context.files.add(contentFile);
+                em.persist(contentFile);
+
+                attachment.setContentFile(contentFile);
+                attachment.setContent(null);
+            }
+
+            em.persist(attachment);
+        }
+    }
+
+    protected FileDescriptor createAttachmentFileDescriptor(SendingAttachment attachment) {
+        FileDescriptor contentFile = metadata.create(FileDescriptor.class);
+        contentFile.setCreateDate(timeSource.currentTimestamp());
+        contentFile.setName(attachment.getName());
+        contentFile.setExtension(FilenameUtils.getExtension(attachment.getName()));
+        contentFile.setSize(attachment.getContent().length);
+        return contentFile;
+    }
+
+    protected FileDescriptor createBodyFileDescriptor(SendingMessage message, byte[] bodyBytes) {
+        FileDescriptor contentTextFile = metadata.create(FileDescriptor.class);
+        contentTextFile.setCreateDate(timeSource.currentTimestamp());
+        contentTextFile.setName("Email_" + message.getId() + "." + BODY_FILE_EXTENSION);
+        contentTextFile.setExtension(BODY_FILE_EXTENSION);
+        contentTextFile.setSize(bodyBytes.length);
+        return contentTextFile;
     }
 
     protected void returnToQueue(SendingMessage sendingMessage) {
@@ -378,6 +537,8 @@ public class Emailer implements EmailerAPI {
             }
             sendingMessage.setAttachments(sendingAttachments);
             sendingMessage.setAttachmentsName(attachmentsName.toString());
+        } else {
+            sendingMessage.setAttachments(Collections.<SendingAttachment>emptyList());
         }
 
         replaceRecipientIfNecessary(sendingMessage);
@@ -405,6 +566,86 @@ public class Emailer implements EmailerAPI {
         return sendingAttachment;
     }
 
+    protected byte[] bodyTextToBytes(SendingMessage message) {
+        byte[] bodyBytes;
+        try {
+            bodyBytes = message.getContentText().getBytes(BODY_STORAGE_ENCODING);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+        return bodyBytes;
+    }
+
+
+    protected String bodyTextFromByteArray(byte[] bodyContent) {
+        try {
+            return new String(bodyContent, BODY_STORAGE_ENCODING);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void migrateEmailsToFileStorage(List<SendingMessage> messages) {
+        Transaction tx = persistence.createTransaction();
+        try {
+            EntityManager em = persistence.getEntityManager();
+
+            for (SendingMessage msg : messages) {
+                migrateMessage(em, msg);
+            }
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+    }
+
+    @Override
+    public void migrateAttachmentsToFileStorage(List<SendingAttachment> attachments) {
+        Transaction tx = persistence.createTransaction();
+        try {
+            EntityManager em = persistence.getEntityManager();
+
+            for (SendingAttachment attachment : attachments) {
+                migrateAttachment(em, attachment);
+            }
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+
+    }
+
+    protected void migrateMessage(EntityManager em, SendingMessage msg) {
+        msg = em.merge(msg);
+        byte[] bodyBytes = bodyTextToBytes(msg);
+        FileDescriptor bodyFile = createBodyFileDescriptor(msg, bodyBytes);
+
+        try {
+            fileStorage.saveFile(bodyFile, bodyBytes);
+        } catch (FileStorageException e) {
+            throw new RuntimeException(e);
+        }
+        em.persist(bodyFile);
+        msg.setContentTextFile(bodyFile);
+        msg.setContentText(null);
+    }
+
+    protected void migrateAttachment(EntityManager em, SendingAttachment attachment) {
+        attachment = em.merge(attachment);
+        FileDescriptor contentFile = createAttachmentFileDescriptor(attachment);
+
+        try {
+            fileStorage.saveFile(contentFile, attachment.getContent());
+        } catch (FileStorageException e) {
+            throw new RuntimeException(e);
+        }
+        em.persist(contentFile);
+        attachment.setContentFile(contentFile);
+        attachment.setContent(null);
+    }
+
     protected static class EmailSendTask implements Runnable {
 
         private SendingMessage sendingMessage;
@@ -429,6 +670,14 @@ public class Emailer implements EmailerAPI {
             } catch (Exception e) {
                 log.error("Exception while sending email: ", e);
             }
+        }
+    }
+
+    protected static class MessagePersistingContext {
+        public final List<FileDescriptor> files = new ArrayList<>();
+
+        public void finished() {
+            files.clear();
         }
     }
 }

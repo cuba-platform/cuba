@@ -77,15 +77,13 @@ public class EmailSender implements EmailSenderAPI {
         textBodyPart.setContent(textPart);
         content.addBodyPart(textBodyPart);
 
-        if (sendingMessage.getAttachments() != null) {
-            for (SendingAttachment attachment : sendingMessage.getAttachments()) {
-                MimeBodyPart attachmentPart = createAttachmentPart(attachment);
+        for (SendingAttachment attachment : sendingMessage.getAttachments()) {
+            MimeBodyPart attachmentPart = createAttachmentPart(attachment);
 
-                if (attachment.getContentId() == null) {
-                    content.addBodyPart(attachmentPart);
-                } else
-                    textPart.addBodyPart(attachmentPart);
-            }
+            if (attachment.getContentId() == null) {
+                content.addBodyPart(attachmentPart);
+            } else
+                textPart.addBodyPart(attachmentPart);
         }
 
         msg.setContent(content);

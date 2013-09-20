@@ -257,6 +257,7 @@ create table SYS_SENDING_ATTACHMENT (
     MESSAGE_ID varchar2(32),
     CONTENT blob,
     CONTENT_ID varchar2(50),
+    CONTENT_FILE_ID varchar2(32),
     NAME varchar2(500),
     DISPOSITION varchar2(50),
     TEXT_ENCODING varchar2(50),
@@ -278,6 +279,7 @@ create table SYS_SENDING_MESSAGE (
     ADDRESS_FROM varchar2(100),
     CAPTION varchar2(500),
     CONTENT_TEXT clob,
+    CONTENT_TEXT_FILE_ID varchar2(32),
     DEADLINE timestamp,
     STATUS integer,
     DATE_SENT timestamp,
@@ -586,7 +588,11 @@ alter table SYS_FOLDER add constraint FK_SYS_FOLDER_PARENT foreign key (PARENT_I
 
 alter table SYS_SCHEDULED_EXECUTION add constraint SYS_SCHEDULED_EXECUTION_TASK foreign key (TASK_ID) references SYS_SCHEDULED_TASK(ID)^
 
+alter table SYS_SENDING_MESSAGE add constraint FK_SYS_SENDING_MESSAGE_FILE foreign key (CONTENT_TEXT_FILE_ID) references SYS_FILE(ID)^
+
 alter table SYS_SENDING_ATTACHMENT add constraint FK_SYS_SENDING_ATT_SEN_MES foreign key (MESSAGE_ID) references SYS_SENDING_MESSAGE(ID)^
+
+alter table SYS_SENDING_ATTACHMENT add constraint FK_SYS_SENDING_ATTACH_FILE foreign key (CONTENT_FILE_ID) references SYS_FILE (ID)^
 
 alter table SEC_CONSTRAINT add constraint SEC_CONSTRAINT_GROUP foreign key (GROUP_ID) references SEC_GROUP(ID)^
 
