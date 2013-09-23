@@ -10,6 +10,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 import com.haulmont.chile.core.datatypes.Datatype;
@@ -22,10 +23,13 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
+ * <code>DateDatatype</code> works with <code>java.<b>sql</b>.Date</code> but is parameterized with <code>java.<b>util</b>.Date</code>
+ * to avoid problems with casting, e.g. <code>org.apache.openjpa.util.java$util$Date$proxy</code>.
+ *
  * @author krivopustov
  * @version $Id$
  */
-public class DateDatatype implements Datatype<java.sql.Date> {
+public class DateDatatype implements Datatype<Date> {
 
 	public static String NAME = "date";
 
@@ -37,7 +41,7 @@ public class DateDatatype implements Datatype<java.sql.Date> {
 
     @Nonnull
     @Override
-    public String format(java.sql.Date value) {
+    public String format(Date value) {
         if (value == null)
             return "";
 
@@ -52,7 +56,7 @@ public class DateDatatype implements Datatype<java.sql.Date> {
 
     @Nonnull
     @Override
-    public String format(java.sql.Date value, Locale locale) {
+    public String format(Date value, Locale locale) {
         if (value == null)
             return "";
 
@@ -90,7 +94,7 @@ public class DateDatatype implements Datatype<java.sql.Date> {
     }
 
     @Override
-	public java.sql.Date parse(String value) throws ParseException {
+	public Date parse(String value) throws ParseException {
         if (StringUtils.isBlank(value))
             return null;
 
@@ -105,7 +109,7 @@ public class DateDatatype implements Datatype<java.sql.Date> {
 	}
 
     @Override
-    public java.sql.Date parse(String value, Locale locale) throws ParseException {
+    public Date parse(String value, Locale locale) throws ParseException {
         if (StringUtils.isBlank(value))
             return null;
 
@@ -120,13 +124,13 @@ public class DateDatatype implements Datatype<java.sql.Date> {
     }
 
     @Override
-	public java.sql.Date read(ResultSet resultSet, int index) throws SQLException {
+	public Date read(ResultSet resultSet, int index) throws SQLException {
 		java.sql.Date value = resultSet.getDate(index);
 		return resultSet.wasNull() ? null : value;
 	}
 
     @Override
-	public void write(PreparedStatement statement, int index, java.sql.Date value) throws SQLException {
+	public void write(PreparedStatement statement, int index, Date value) throws SQLException {
 		if (value == null) {
 			statement.setString(index, null);
 		} else {

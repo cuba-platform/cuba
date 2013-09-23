@@ -17,14 +17,17 @@ import java.sql.*;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 /**
+ * <code>TimeDatatype</code> works with <code>java.sql.Time</code> but is parameterized with <code>java.util.Date</code>
+ * to avoid problems with casting, e.g. <code>org.apache.openjpa.util.java$util$Date$proxy</code>.
+ *
  * @author devyatkin
  * @version $Id$
  */
-public class TimeDatatype implements Datatype<Time> {
-
+public class TimeDatatype implements Datatype<Date> {
     public static String NAME = "time";
 
     private String formatPattern;
@@ -35,7 +38,7 @@ public class TimeDatatype implements Datatype<Time> {
 
     @Nonnull
     @Override
-    public String format(Time value) {
+    public String format(Date value) {
         if (value == null) {
             return "";
         } else {
@@ -52,7 +55,7 @@ public class TimeDatatype implements Datatype<Time> {
 
     @Nonnull
     @Override
-    public String format(Time value, Locale locale) {
+    public String format(Date value, Locale locale) {
         if (value == null) {
             return "";
         }
@@ -84,7 +87,7 @@ public class TimeDatatype implements Datatype<Time> {
     }
 
     @Override
-    public Time parse(String value) throws ParseException {
+    public Date parse(String value) throws ParseException {
         if (StringUtils.isBlank(value)) {
             return null;
         }
@@ -95,11 +98,11 @@ public class TimeDatatype implements Datatype<Time> {
             format = DateFormat.getTimeInstance();
         }
 
-        return new Time(format.parse(value.trim()).getTime());
+        return format.parse(value.trim());
     }
 
     @Override
-    public Time parse(String value, Locale locale) throws ParseException {
+    public Date parse(String value, Locale locale) throws ParseException {
         if (StringUtils.isBlank(value)) {
             return null;
         }
@@ -110,17 +113,17 @@ public class TimeDatatype implements Datatype<Time> {
         }
 
         DateFormat format = new SimpleDateFormat(formatStrings.getTimeFormat());
-        return new Time(format.parse(value.trim()).getTime());
+        return format.parse(value.trim());
     }
 
     @Override
-    public Time read(ResultSet resultSet, int index) throws SQLException {
-        Time value = resultSet.getTime(index);
+    public Date read(ResultSet resultSet, int index) throws SQLException {
+        Date value = resultSet.getTime(index);
         return resultSet.wasNull() ? null : value;
     }
 
     @Override
-    public void write(PreparedStatement statement, int index, Time value) throws SQLException {
+    public void write(PreparedStatement statement, int index, Date value) throws SQLException {
         if (value == null) {
             statement.setString(index, null);
         } else {
