@@ -62,10 +62,15 @@ public class LoginServiceController {
         String password;
         Locale locale;
         if (contentType.match(JSONConvertor.MIME_TYPE_JSON)) {
-            JSONObject json = new JSONObject(requestBody);
-            username = json.getString("username");
-            password = json.getString("password");
-            locale = new Locale(json.getString("locale"));
+            try {
+                JSONObject json = new JSONObject(requestBody);
+                username = json.getString("username");
+                password = json.getString("password");
+                locale = new Locale(json.getString("locale"));
+            } catch (JSONException e) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+                return;
+            }
         } else if (contentType.match(FORM_TYPE)) {
             String[] pairs = requestBody.split("\\&");
             Map<String, String> name2value = new HashMap<>();
@@ -125,8 +130,13 @@ public class LoginServiceController {
 
         String sessionUUID;
         if (contentType.match(JSONConvertor.MIME_TYPE_JSON)) {
-            JSONObject json = new JSONObject(requestBody);
-            sessionUUID = json.getString("session");
+            try {
+                JSONObject json = new JSONObject(requestBody);
+                sessionUUID = json.getString("session");
+            } catch (JSONException e) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+                return;
+            }
         } else if (contentType.match(FORM_TYPE)) {
             String[] fields = requestBody.split("=");
             sessionUUID = URLDecoder.decode(fields[1], "UTF-8");
