@@ -442,7 +442,7 @@ configure(desktopModule) {
         compile(guiModule)
         compile(group: 'com.miglayout', name: 'miglayout-swing', version: '4.2')
         compile(group: 'com.haulmont.thirdparty', name: 'glazedlists', version: '1.9.20110801')
-        compile(group: 'org.swinglabs', name: 'swingx-core', version: '1.6.2-2')
+        compile(group: 'com.haulmont.thirdparty', name: 'swingx-core', version: '1.6.5-1')
 
         assemble.dependsOn = [classes]
     }

@@ -5,7 +5,6 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
-import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.desktop.gui.data.TreeTableModelAdapter;
 import com.haulmont.cuba.desktop.sys.vcl.JXTreeTableExt;
@@ -25,11 +24,9 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.*;
 
 /**
@@ -85,47 +82,11 @@ public class DesktopTreeTable
                         || tableModel.isGeneratedColumn(editColumn);
             }
 
-            /* Copies the JTable standard behaviour, that was overridden in JXTreeTable,
-             * using reflection to access private fields and methods.
+            /* Copies the JTable standard behaviour, that was overridden in JXTreeTable.
              */
             @Override
-            public void setRowSorter(RowSorter sorter) {
-                try {
-                    RowSorter oldRowSorter = null;
-
-                    Class<?> cSortManager = ReflectionHelper.getClass("javax.swing.JTable$SortManager");
-                    Field fSortManager = JTable.class.getDeclaredField("sortManager");
-                    fSortManager.setAccessible(true);
-
-                    Object sortManager = fSortManager.get(this);
-                    if (sortManager != null) {
-                        Field fSorter = cSortManager.getDeclaredField("sorter");
-                        fSorter.setAccessible(true);
-                        oldRowSorter = (RowSorter) fSorter.get(sortManager);
-                        cSortManager.getDeclaredMethod("dispose").invoke(sortManager);
-                        fSortManager.set(this, null);
-                    }
-
-                    Field fRowModel = JTable.class.getDeclaredField("rowModel");
-                    fRowModel.setAccessible(true);
-                    fRowModel.set(this, null);
-
-                    Method mClearSelection = JTable.class.getDeclaredMethod("clearSelectionAndLeadAnchor");
-                    mClearSelection.setAccessible(true);
-                    mClearSelection.invoke(this);
-                    if (sorter != null) {
-                        Constructor cons =  cSortManager.getDeclaredConstructor(JTable.class, RowSorter.class);
-                        cons.setAccessible(true);
-                        fSortManager.set(this, cons.newInstance(this, sorter));
-                    }
-                    resizeAndRepaint();
-                    firePropertyChange("rowSorter", oldRowSorter, sorter);
-                    firePropertyChange("sorter", oldRowSorter, sorter);
-                    configureSorterProperties();
-                } catch (ReflectiveOperationException e) {
-                    // In fact should never happen.
-                    throw new RuntimeException("JXTreeTable row sorter is not set due to reflection exception", e);
-                }
+            public void setRowSorter(RowSorter<? extends TableModel> sorter) {
+                setTableRowSorter(sorter);
             }
 
             /* Default implementation uses row sorter to return rows count,
