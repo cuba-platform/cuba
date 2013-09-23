@@ -10,7 +10,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
 
 import com.haulmont.chile.core.datatypes.Datatype;
@@ -26,7 +25,7 @@ import javax.annotation.Nullable;
  * @author krivopustov
  * @version $Id$
  */
-public class DateDatatype implements Datatype<Date> {
+public class DateDatatype implements Datatype<java.sql.Date> {
 
 	public static String NAME = "date";
 
@@ -38,7 +37,7 @@ public class DateDatatype implements Datatype<Date> {
 
     @Nonnull
     @Override
-    public String format(Date value) {
+    public String format(java.sql.Date value) {
         if (value == null)
             return "";
 
@@ -53,7 +52,7 @@ public class DateDatatype implements Datatype<Date> {
 
     @Nonnull
     @Override
-    public String format(Date value, Locale locale) {
+    public String format(java.sql.Date value, Locale locale) {
         if (value == null)
             return "";
 
@@ -91,7 +90,7 @@ public class DateDatatype implements Datatype<Date> {
     }
 
     @Override
-	public Date parse(String value) throws ParseException {
+	public java.sql.Date parse(String value) throws ParseException {
         if (StringUtils.isBlank(value))
             return null;
 
@@ -106,7 +105,7 @@ public class DateDatatype implements Datatype<Date> {
 	}
 
     @Override
-    public Date parse(String value, Locale locale) throws ParseException {
+    public java.sql.Date parse(String value, Locale locale) throws ParseException {
         if (StringUtils.isBlank(value))
             return null;
 
@@ -121,13 +120,13 @@ public class DateDatatype implements Datatype<Date> {
     }
 
     @Override
-	public Date read(ResultSet resultSet, int index) throws SQLException {
+	public java.sql.Date read(ResultSet resultSet, int index) throws SQLException {
 		java.sql.Date value = resultSet.getDate(index);
 		return resultSet.wasNull() ? null : value;
 	}
 
     @Override
-	public void write(PreparedStatement statement, int index, Date value) throws SQLException {
+	public void write(PreparedStatement statement, int index, java.sql.Date value) throws SQLException {
 		if (value == null) {
 			statement.setString(index, null);
 		} else {
