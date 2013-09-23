@@ -76,6 +76,10 @@ public class LoginServiceController {
             Map<String, String> name2value = new HashMap<>();
             for (String pair : pairs) {
                 String[] fields = pair.split("=");
+                if (fields.length < 2) {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+                    return;
+                }
                 String name = URLDecoder.decode(fields[0], "UTF-8");
                 String value = URLDecoder.decode(fields[1], "UTF-8");
                 name2value.put(name, value);
@@ -139,6 +143,10 @@ public class LoginServiceController {
             }
         } else if (contentType.match(FORM_TYPE)) {
             String[] fields = requestBody.split("=");
+            if (fields.length < 2) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+                return;
+            }
             sessionUUID = URLDecoder.decode(fields[1], "UTF-8");
         } else {
             throw new IllegalStateException("Unsupported content type: " + contentType);
