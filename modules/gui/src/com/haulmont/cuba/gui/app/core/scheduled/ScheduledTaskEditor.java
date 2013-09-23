@@ -131,11 +131,13 @@ public class ScheduledTaskEditor extends AbstractEditor {
                 else {
                     availableMethods = availableBeans.get(value);
 
-                    HashMap<String, Object> optionsMap = new HashMap<>();
-                    for (MethodInfo availableMethod : availableMethods) {
-                        optionsMap.put(availableMethod.getMethodSignature(), availableMethod);
+                    if (availableMethods != null) {
+                        HashMap<String, Object> optionsMap = new HashMap<>();
+                        for (MethodInfo availableMethod : availableMethods) {
+                            optionsMap.put(availableMethod.getMethodSignature(), availableMethod);
+                        }
+                        methodNameField.setOptionsMap(optionsMap);
                     }
-                    methodNameField.setOptionsMap(optionsMap);
                 }
             }
         });
@@ -172,11 +174,12 @@ public class ScheduledTaskEditor extends AbstractEditor {
     /**
      * Method reads values of methodName and parameters from item,
      * finds appropriate MethodInfo object in methodInfoField's optionsList
-     * and sets founded value to methodInfoField
-     *
-     * @param task
+     * and sets found value to methodInfoField
      */
     private void setInitialMethodNameValue(ScheduledTask task) {
+        if (availableMethods == null)
+            return;
+
         List<MethodParameterInfo> methodParamInfos = task.getMethodParameters();
         MethodInfo currentMethodInfo = new MethodInfo(task.getMethodName(), methodParamInfos);
         for (MethodInfo availableMethod : availableMethods) {
