@@ -22,6 +22,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
@@ -78,7 +79,10 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implemen
                         Date date = sdf.parse(formattedValue);
                         if (component.getComponentError() != null)
                             component.setComponentError(null);
-                        return date;
+                        if (targetType == java.sql.Time.class) {
+                            return new Time(date.getTime());
+                        } else
+                            return date;
                     } catch (Exception e) {
                         log.debug("Unable to parse value of component " + getId() + "\n" + e.getMessage());
                         throw new ConversionException("Invalid value");
