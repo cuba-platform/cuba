@@ -22,7 +22,7 @@
     <datatype class="com.haulmont.chile.core.datatypes.impl.StringDatatype"/>
 
     <datatype class="com.haulmont.chile.core.datatypes.impl.DateTimeDatatype"
-              format="yyyy-MM-dd'T'HH:mm:ss.SSS"/>
+              format="yyyy-MM-dd HH:mm:ss.SSS"/>
 
     <datatype class="com.haulmont.chile.core.datatypes.impl.DateDatatype"
               format="yyyy-MM-dd"/>

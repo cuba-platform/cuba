@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.security.app;
 
+import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
@@ -58,7 +59,7 @@ public class EntityLog implements EntityLogAPI {
     protected Metadata metadata;
 
     @Inject
-    private UserSessionSource userSessionSource;
+    protected UserSessionSource userSessionSource;
 
     @Inject
     public EntityLog(Configuration configuration) {
@@ -324,15 +325,15 @@ public class EntityLog implements EntityLogAPI {
         }
     }
 
-    private String stringify(Object value) {
+    protected String stringify(Object value) {
         if (value == null)
             return "";
         else if (value instanceof Instance) {
             return ((Instance) value).getInstanceName();
         } else if (value instanceof Date) {
-            SimpleDateFormat df = new SimpleDateFormat(
-                    Datatypes.getFormatStrings(userSessionSource.getLocale()).getDateTimeFormat());
-            return df.format(value);
+            Datatype datatype = Datatypes.getNN(value.getClass());
+            //noinspection unchecked
+            return datatype.format(value);
         } else if (value instanceof Iterable) {
             StringBuilder sb = new StringBuilder();
             sb.append("[");
