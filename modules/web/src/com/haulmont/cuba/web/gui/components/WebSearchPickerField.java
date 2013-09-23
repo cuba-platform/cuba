@@ -149,6 +149,16 @@ public class WebSearchPickerField extends WebSearchField implements SearchPicker
     }
 
     @Override
+    public void setCaption(String caption) {
+        pickerField.setCaption(caption);
+    }
+
+    @Override
+    public String getCaption() {
+        return pickerField.getCaption();
+    }
+
+    @Override
     public Action getAction(String id) {
         return pickerField.getAction(id);
     }
