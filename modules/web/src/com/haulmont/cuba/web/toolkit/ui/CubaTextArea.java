@@ -15,6 +15,10 @@ import com.vaadin.ui.TextArea;
  * @version $Id$
  */
 public class CubaTextArea extends TextArea {
+    public CubaTextArea() {
+        setValidationVisible(false);
+    }
+
     @Override
     public ErrorMessage getErrorMessage() {
         ErrorMessage superError = super.getErrorMessage();

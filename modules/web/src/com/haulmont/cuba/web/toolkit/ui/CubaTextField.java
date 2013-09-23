@@ -16,6 +16,11 @@ import org.apache.commons.lang.StringUtils;
  * @version $Id$
  */
 public class CubaTextField extends TextField {
+
+    public CubaTextField() {
+        setValidationVisible(false);
+    }
+
     @Override
     public ErrorMessage getErrorMessage() {
         ErrorMessage superError = super.getErrorMessage();

@@ -45,6 +45,7 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
     public CubaPickerField(com.vaadin.ui.AbstractField field) {
         this.field = field;
         initLayout();
+        setValidationVisible(false);
     }
 
     @Override

@@ -14,6 +14,7 @@ import com.haulmont.cuba.web.toolkit.ui.client.textfield.CubaMaskedTextFieldStat
 public class CubaMaskedTextField extends CubaTextField {
 
     public CubaMaskedTextField() {
+        setValidationVisible(false);
         // directly init value locale to avoid unnecessary converted value setting
         setInternalValue(null);
     }
