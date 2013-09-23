@@ -4,7 +4,6 @@
  */
 package com.haulmont.cuba.web.exception;
 
-import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.core.app.EmailService;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
@@ -21,7 +20,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -48,6 +46,8 @@ public class ExceptionDialog extends Window {
     protected WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
 
     protected WebConfig webConfig = AppBeans.get(Configuration.class).getConfig(WebConfig.class);
+
+    protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.class);
 
     public ExceptionDialog(Throwable throwable) {
         super();
@@ -97,7 +97,7 @@ public class ExceptionDialog extends Window {
         });
         leftButtonsLayout.addComponent(showStackTraceButton);
 
-        if (!StringUtils.isBlank(webConfig.getSupportEmail())) {
+        if (!StringUtils.isBlank(webConfig.getSupportEmail()) && userSessionSource.getUserSession() != null) {
             final Button reportButton = new Button(messages.getMessage(getClass(), "exceptionDialog.reportBtn"));
             reportButton.addClickListener(new Button.ClickListener() {
                 @Override
@@ -234,7 +234,7 @@ public class ExceptionDialog extends Window {
 
     public void sendSupportEmail(String message, String stackTrace) {
         try {
-            User user = AppBeans.get(UserSessionSource.class).getUserSession().getUser();
+            User user = userSessionSource.getUserSession().getUser();
             TimeSource timeSource = AppBeans.get(TimeSource.class);
             String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(timeSource.currentTimestamp());
 
