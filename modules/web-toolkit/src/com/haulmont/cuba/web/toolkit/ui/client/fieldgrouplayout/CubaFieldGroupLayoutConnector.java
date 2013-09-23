@@ -99,7 +99,9 @@ public class CubaFieldGroupLayoutConnector extends CubaGridLayoutConnector {
             if (cell != null && isCaptionInlineApplicable(cell)) {
                 cell.slot.getCaption().setWidth(maxCaptionWidth + "px");
 
-                ((CubaFieldGroupLayoutComponentSlot) cell.slot).setInidcatorsWidth(maxIndicatorsWidth + "px");
+                if (cell.slot.isRelativeWidth()) {
+                    ((CubaFieldGroupLayoutComponentSlot) cell.slot).setInidcatorsWidth(maxIndicatorsWidth + "px");
+                }
             }
         }
     }

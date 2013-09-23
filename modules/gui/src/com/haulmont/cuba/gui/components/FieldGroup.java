@@ -18,6 +18,8 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
 
     String NAME = "fieldGroup";
 
+    String DEFAULT_FIELD_WIDTH = "200px";
+
     java.util.List<FieldConfig> getFields();
     FieldConfig getField(String id);
 
