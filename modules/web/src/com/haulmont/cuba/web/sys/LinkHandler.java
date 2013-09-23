@@ -125,6 +125,8 @@ public class LinkHandler {
             new NoSuchScreenHandler().handle(e, app);
         } catch (EntityAccessException e) {
             new EntityAccessExceptionHandler().handle(e, app);
+        } finally {
+            requestParams.clear();
         }
     }
 
