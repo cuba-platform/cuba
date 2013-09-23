@@ -90,7 +90,7 @@ public class UserChangePassw extends AbstractEditor {
         }
     }
 
-    private void assignPasswordToUser(String passw) {
+    protected void assignPasswordToUser(String passw) {
         User user = userDs.getItem();
         String passwordHash = passwordEncryption.getPasswordHash(user.getId(), passw);
 
