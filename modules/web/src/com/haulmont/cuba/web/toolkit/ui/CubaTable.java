@@ -170,7 +170,7 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
     @Override
     protected void paintActions(PaintTarget target, Set<Action> actionSet) throws PaintException {
         super.paintActions(target, actionSet);
-        shortcutsManager.paintActions(null, target);
+        //shortcutsManager.paintActions(null, target);
     }
 
     @Override
@@ -188,11 +188,13 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
 
     @Override
     public void addShortcutListener(ShortcutListener listener) {
+        super.addShortcutListener(listener);
         shortcutsManager.addAction(listener);
     }
 
     @Override
     public void removeShortcutListener(ShortcutListener listener) {
+        super.removeShortcutListener(listener);
         shortcutsManager.removeAction(listener);
     }
 

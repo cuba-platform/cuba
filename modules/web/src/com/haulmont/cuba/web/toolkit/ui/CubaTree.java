@@ -34,16 +34,17 @@ public class CubaTree extends Tree {
     @Override
     protected void paintActions(PaintTarget target, Set<Action> actionSet) throws PaintException {
         super.paintActions(target, actionSet);
-        shortcutsManager.paintActions(null, target);
     }
 
     @Override
     public void addShortcutListener(ShortcutListener listener) {
+        super.addShortcutListener(listener);
         shortcutsManager.addAction(listener);
     }
 
     @Override
     public void removeShortcutListener(ShortcutListener listener) {
+        super.removeShortcutListener(listener);
         shortcutsManager.removeAction(listener);
     }
 

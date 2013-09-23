@@ -12,6 +12,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
 import com.haulmont.cuba.web.gui.data.HierarchicalDsWrapper;
+import com.haulmont.cuba.web.toolkit.ui.CubaTree;
 import com.vaadin.data.Property;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.AbstractSelect;
@@ -24,7 +25,7 @@ import java.util.Set;
  */
 public class WebTree
         extends
-            WebAbstractList<com.vaadin.ui.Tree>
+            WebAbstractList<CubaTree>
         implements
             Tree, Component.Wrapper {
 
@@ -33,7 +34,7 @@ public class WebTree
     private String captionProperty;
     
     public WebTree() {
-        component = new com.vaadin.ui.Tree();
+        component = new CubaTree();
         component.setMultiSelect(false);
         component.setImmediate(true);
 
