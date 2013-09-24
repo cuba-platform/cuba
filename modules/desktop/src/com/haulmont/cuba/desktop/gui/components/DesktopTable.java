@@ -10,12 +10,13 @@ import com.haulmont.cuba.desktop.sys.vcl.JXTableExt;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import org.jdesktop.swingx.JXTable;
 
+import javax.swing.event.ChangeEvent;
+import javax.swing.table.TableCellEditor;
 import java.awt.*;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class DesktopTable extends DesktopAbstractTable<JXTable> {
 
@@ -26,6 +27,21 @@ public class DesktopTable extends DesktopAbstractTable<JXTable> {
             public void setFont(Font font) {
                 super.setFont(font);
                 applyFont(this, font);
+            }
+
+            @Override
+            public void editingStopped(ChangeEvent e) {
+                TableCellEditor editor = getCellEditor();
+                if (editor != null) {
+                    Object value = editor.getCellEditorValue();
+                    DesktopTable tableComponent = DesktopTable.this;
+                    Column editColumn = tableComponent.getColumns().get(editingColumn);
+                    if (tableComponent.isEditable() && editColumn.isEditable() &&
+                            !tableModel.isGeneratedColumn(editColumn)) {
+                        setValueAt(value, editingRow, editingColumn);
+                    }
+                    removeEditor();
+                }
             }
         };
 

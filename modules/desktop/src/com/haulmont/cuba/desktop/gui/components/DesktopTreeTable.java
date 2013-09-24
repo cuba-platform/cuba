@@ -17,10 +17,7 @@ import org.jdesktop.swingx.decorator.AbstractHighlighter;
 import org.jdesktop.swingx.decorator.ComponentAdapter;
 
 import javax.swing.*;
-import javax.swing.event.TreeExpansionEvent;
-import javax.swing.event.TreeExpansionListener;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
+import javax.swing.event.*;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
@@ -96,6 +93,20 @@ public class DesktopTreeTable
             @Override
             public int getRowCount() {
                 return getModel().getRowCount();
+            }
+
+            @Override
+            public void editingStopped(ChangeEvent e) {
+                TableCellEditor editor = getCellEditor();
+                if (editor != null) {
+                    Object value = editor.getCellEditorValue();
+                    DesktopTreeTable tableComponent = DesktopTreeTable.this;
+                    Column editColumn = tableComponent.getColumns().get(editingColumn);
+                    if (tableComponent.isEditable() && editColumn.isEditable() && !tableModel.isGeneratedColumn(editColumn)) {
+                        setValueAt(value, editingRow, editingColumn);
+                    }
+                    removeEditor();
+                }
             }
         };
 
