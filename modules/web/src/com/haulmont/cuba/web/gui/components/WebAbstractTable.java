@@ -285,7 +285,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             }
             com.vaadin.ui.Component rc = WebComponentsHelper.unwrap(rowsCount);
             topPanel.addComponent(rc);
-            topPanel.setExpandRatio(rc, 1);
+            topPanel.setComponentAlignment(rc, com.vaadin.ui.Alignment.BOTTOM_RIGHT);
         }
     }
 
