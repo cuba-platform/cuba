@@ -413,10 +413,12 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         component.addShortcutListener(new ShortcutListener("tableEnter", com.vaadin.event.ShortcutAction.KeyCode.ENTER, null) {
             @Override
             public void handleAction(Object sender, Object target) {
-                if (enterPressAction != null) {
-                    enterPressAction.actionPerform(WebAbstractTable.this);
-                } else {
-                    handleClickAction();
+                if (target == WebAbstractTable.this.component) {
+                    if (enterPressAction != null) {
+                        enterPressAction.actionPerform(WebAbstractTable.this);
+                    } else {
+                        handleClickAction();
+                    }
                 }
             }
         });
