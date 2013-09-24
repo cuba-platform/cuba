@@ -21,14 +21,25 @@ import java.util.Set;
  */
 public class CubaTree extends Tree {
 
+    private static final String POPUP_SELECTION = "popupSelection";
+
+    private boolean popupSelection = false;
+
     protected ActionManager shortcutsManager = new ActionManager();
 
     @Override
     public void changeVariables(Object source, Map<String, Object> variables) {
         super.changeVariables(source, variables);
+        popupSelection = Boolean.TRUE.equals(variables.get(POPUP_SELECTION));
         if (shortcutsManager != null) {
             shortcutsManager.handleActions(variables, this);
         }
+    }
+
+    @Override
+    public void paintContent(PaintTarget target) throws PaintException {
+        super.paintContent(target);
+        target.addAttribute(POPUP_SELECTION, popupSelection);
     }
 
     @Override

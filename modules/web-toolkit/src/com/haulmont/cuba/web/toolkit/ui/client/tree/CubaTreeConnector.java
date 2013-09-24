@@ -9,6 +9,7 @@ import com.haulmont.cuba.web.toolkit.ui.CubaTree;
 import com.vaadin.client.ApplicationConnection;
 import com.vaadin.client.UIDL;
 import com.vaadin.client.ui.ShortcutActionHandler;
+import com.vaadin.client.ui.VTree;
 import com.vaadin.client.ui.tree.TreeConnector;
 import com.vaadin.shared.ui.Connect;
 
@@ -41,5 +42,15 @@ public class CubaTreeConnector extends TreeConnector {
                 }
             }
         }
+    }
+
+    @Override
+    protected boolean isPopupSelection(UIDL uidl) {
+        return Boolean.TRUE.equals(uidl.getBooleanAttribute("popupSelection"));
+    }
+
+    @Override
+    protected VTree.TreeNode createNode(UIDL childUidl) {
+        return getWidget().new CubaTreeNode();
     }
 }

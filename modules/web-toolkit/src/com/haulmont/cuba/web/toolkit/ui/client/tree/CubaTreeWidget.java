@@ -36,4 +36,19 @@ public class CubaTreeWidget extends VTree implements ShortcutActionHandler.Short
             shortcutHandler.handleKeyboardEvent(event);
         }
     }
+
+    public class CubaTreeNode extends TreeNode {
+        @Override
+        public void showContextMenu(Event event) {
+            if (!readonly && !disabled && actionKeys != null) {
+                selectNodeForContextMenu();
+                super.showContextMenu(event);
+            }
+        }
+
+        protected void selectNodeForContextMenu() {
+            client.updateVariable(getPaintableId(), "popupSelection", true, false);
+            handleClickSelection(false, false);
+        }
+    }
 }
