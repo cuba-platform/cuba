@@ -86,7 +86,7 @@ public class CubaVaadinServletService extends VaadinServletService {
 
                 String redirectUri;
                 if (RequestContext.get() != null) {
-                    redirectUri = RequestContext.get().getRequest().getRequestURI();
+                    redirectUri = StringUtils.replace(RequestContext.get().getRequest().getRequestURI(), "/UIDL", "");
                 } else {
                     String webContext = AppContext.getProperty("cuba.webContextName");
                     redirectUri = "/" + webContext;
