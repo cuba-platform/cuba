@@ -6,7 +6,7 @@
 <window
         xmlns="http://schemas.haulmont.com/cuba/4.1/window.xsd"
         class="com.haulmont.cuba.web.app.ui.jmxcontrol.inspect.MbeanInspectWindow"
-        messagesPack="com.haulmont.cuba.web.app.ui.jmxcontrol.inspect"
+        messagesPack="com.haulmont.cuba.web.app.ui.jmxcontrol"
         datasource="mbeanDs"
         caption="msg://inspectMbean.title">
 
@@ -19,9 +19,12 @@
         </collectionDatasource>
     </dsContext>
 
-    <layout expand="scrollbox" spacing="true">
-        <grid spacing="true" margin="true">
-            <columns count="2"/>
+    <layout expand="contentScrollbox" spacing="true">
+        <grid spacing="true" stylename="cuba-mbeans-information-panel" width="100%">
+            <columns>
+                <column flex="0"/>
+                <column flex="1"/>
+            </columns>
             <rows>
                 <row>
                     <label value="msg://mbean.jmxConnection"/>
@@ -41,7 +44,8 @@
                 </row>
             </rows>
         </grid>
-        <scrollBox id="scrollbox" spacing="true" margin="true" scrollBars="vertical">
+
+        <scrollBox id="contentScrollbox" spacing="true" scrollBars="vertical">
             <label value="msg://mbean.attributes" stylename="h2"/>
             <table id="attributesTable" width="100%" height="300px" columnControlVisible="false">
                 <actions>

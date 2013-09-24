@@ -6,7 +6,7 @@
 <window
         xmlns="http://schemas.haulmont.com/cuba/4.1/window.xsd"
         class="com.haulmont.cuba.web.app.ui.jmxcontrol.inspect.attribute.AttributeEditWindow"
-        messagesPack="com.haulmont.cuba.web.app.ui.jmxcontrol.inspect.attribute"
+        messagesPack="com.haulmont.cuba.web.app.ui.jmxcontrol"
         datasource="attrDs"
         caption="msg://editAttribute.title">
 
@@ -14,24 +14,19 @@
         <datasource id="attrDs" class="com.haulmont.cuba.web.jmx.entity.ManagedBeanAttribute" view="_local"/>
     </dsContext>
 
-    <layout expand="windowActions">
-        <vbox spacing="true" id="vbox">
-            <scrollBox id="scrollbox" spacing="true">
-                <grid spacing="true" id="valueContainer">
-                    <columns>
-                        <column flex="1"/>
-                        <column flex="1"/>
-                    </columns>
-                    <rows>
-                        <row>
-                            <label value="msg://editAttribute.value"/>
+    <layout expand="windowActions" spacing="true">
+        <grid spacing="true" id="valueContainer">
+            <columns>
+                <column flex="1"/>
+                <column flex="1"/>
+            </columns>
+            <rows>
+                <row>
+                    <label value="msg://editAttribute.value"/>
 
-                        </row>
-                    </rows>
-                </grid>
-                <hbox></hbox>
-            </scrollBox>
-        </vbox>
+                </row>
+            </rows>
+        </grid>
         <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
     </layout>
 </window>

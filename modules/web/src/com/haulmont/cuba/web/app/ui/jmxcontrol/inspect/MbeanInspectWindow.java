@@ -115,7 +115,7 @@ public class MbeanInspectWindow extends AbstractEditor {
             BoxLayout vl = componentsFactory.createComponent(BoxLayout.VBOX);
             vl.setMargin(false, false, true, false);
             vl.setSpacing(true);
-            vl.setStyleName("cuba-mbeans-operationContainer");
+            vl.setStyleName("cuba-mbeans-operation-container");
 
             Label nameLbl = componentsFactory.createComponent(Label.NAME);
             nameLbl.setValue(op.getReturnType() + " " + op.getName() + "()");
