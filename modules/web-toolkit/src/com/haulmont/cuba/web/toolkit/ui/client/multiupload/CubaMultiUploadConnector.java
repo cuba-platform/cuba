@@ -20,9 +20,7 @@ import com.vaadin.shared.ui.Connect;
 @Connect(value = CubaMultiUpload.class, loadStyle = Connect.LoadStyle.LAZY)
 public class CubaMultiUploadConnector extends AbstractComponentConnector implements Paintable {
 
-    public static final String BASE_RESOURCES_PATH = "/../../resources/swfupload/";
-
-    private boolean initialized = false;
+    protected boolean initialized = false;
 
     @Override
     public CubaMultiUploadWidget getWidget() {
@@ -71,15 +69,16 @@ public class CubaMultiUploadConnector extends AbstractComponentConnector impleme
         if (!initialized) {
             initialized = true;
 
-            String themeUri = getConnection().getThemeUri();
             String appVersion = getConnection().getConfiguration().getApplicationVersion();
 
             CubaMultiUploadWidget widget = getWidget();
 
             widget.themeName = getConnection().getConfiguration().getThemeName();
-            widget.baseResourcesUri = themeUri + BASE_RESOURCES_PATH;
+
             widget.resourcesVersion = appVersion;
             widget.buttonImageUri = getResourceUrl(CubaMultiUploadState.BUTTON_IMAGE_KEY);
+            widget.bootstrapJsUrl = getResourceUrl(CubaMultiUploadState.SWFUPLOAD_BOOTSTRAP_JS_KEY);
+            widget.flashUrl = getResourceUrl(CubaMultiUploadState.SWFUPLOAD_FLASH_KEY);
 
             widget.targetUrl = client.translateVaadinUri(uidl.getStringVariable("action"));
 

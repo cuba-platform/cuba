@@ -8,9 +8,7 @@ package com.haulmont.cuba.web.toolkit.ui;
 import com.haulmont.cuba.web.auth.RequestContext;
 import com.haulmont.cuba.web.toolkit.ui.client.multiupload.CubaMultiUploadServerRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.multiupload.CubaMultiUploadState;
-import com.vaadin.server.PaintException;
-import com.vaadin.server.PaintTarget;
-import com.vaadin.server.Resource;
+import com.vaadin.server.*;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.LegacyComponent;
 import org.apache.commons.lang.ObjectUtils;
@@ -181,6 +179,11 @@ public class CubaMultiUpload extends AbstractComponent implements LegacyComponen
 
     public CubaMultiUpload() {
         registerRpc(rpc);
+
+        setResource(CubaMultiUploadState.SWFUPLOAD_BOOTSTRAP_JS_KEY,
+                new ThemeResource("../../resources/swfupload/swfupload.min.js"));
+        setResource(CubaMultiUploadState.SWFUPLOAD_FLASH_KEY,
+                new ThemeResource("../../resources/swfupload/swfupload.swf"));
     }
 
     public Resource getButtonImage() {

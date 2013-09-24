@@ -17,6 +17,8 @@ import com.google.gwt.user.client.ui.FormPanel;
 import com.haulmont.cuba.web.toolkit.ui.client.Properties;
 import com.vaadin.client.VConsole;
 
+import java.util.logging.Logger;
+
 /**
  * @author artamonov
  * @version $Id$
@@ -48,7 +50,9 @@ public class CubaMultiUploadWidget extends FormPanel {
     protected String buttonImageUri;
     protected String targetUrl;
     protected String resourcesVersion = "debug";
-    protected String baseResourcesUri = "";
+
+    protected String bootstrapJsUrl = "";
+    protected String flashUrl = "";
 
     protected String themeName;
 
@@ -92,8 +96,9 @@ public class CubaMultiUploadWidget extends FormPanel {
     }
 
     public void initComponent(String uploadId) {
-        this.jsIncludeUri = baseResourcesUri + "swfupload.min.js?v=" + resourcesVersion;
-        this.swfUri = baseResourcesUri + "swfupload.swf?v=" + resourcesVersion;
+        this.jsIncludeUri = bootstrapJsUrl + "?v=" + resourcesVersion;
+        this.swfUri = flashUrl + "?v=" + resourcesVersion;
+
         this.uploadId = uploadId;
 
         this.uploadButton.setId("upload_button_" + uploadId);
@@ -101,12 +106,12 @@ public class CubaMultiUploadWidget extends FormPanel {
 
         this.themeDiv.setClassName(themeName);
 
-        VConsole.log("Required js: " + jsIncludeUri);
+        Logger.getLogger("CubaMultiUpload").info("Required js: " + jsIncludeUri);
         if (!scriptInjected) {
             ScriptInjector.fromUrl(jsIncludeUri).setCallback(new Callback<Void, Exception>() {
                 @Override
                 public void onFailure(Exception reason) {
-                    VConsole.log("Unable to inject js: " + jsIncludeUri);
+                    Logger.getLogger("CubaMultiUpload").warning("Unable to inject js: " + jsIncludeUri);
 
                     if (bootstrapFailureHandler != null)
                         bootstrapFailureHandler.resourceLoadFailed();
@@ -116,7 +121,7 @@ public class CubaMultiUploadWidget extends FormPanel {
 
                 @Override
                 public void onSuccess(Void result) {
-                    VConsole.log("Successfully injected js: " + jsIncludeUri);
+                    Logger.getLogger("CubaMultiUpload").info("Successfully injected js: " + jsIncludeUri);
 
                     checkAndInitialize();
                 }
@@ -172,10 +177,10 @@ public class CubaMultiUploadWidget extends FormPanel {
         opts.set("button_placeholder_id", uploadButton.getId());
         // todo artamonov make configurable paddings, text and style
         opts.set("button_text_left_padding", "22");
-        opts.set("button_text_top_padding", "4");
+        opts.set("button_text_top_padding", "1");
         opts.set("button_text", "<span class=\"swfupload\">" + buttonCaption + "</span>");
         opts.set("button_text_style",
-                ".swfupload {font-size: 12px; font-family: verdana,Tahoma,sans-serif;}");
+                ".swfupload {font-size: 12px; font-family: Verdana,Tahoma,sans-serif;}");
 
         setDefaultOptions(opts);
 

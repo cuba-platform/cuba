@@ -15,6 +15,9 @@ public class CubaMultiUploadState extends AbstractComponentState {
 
     public static final String BUTTON_IMAGE_KEY = "buttonImage";
 
+    public static final String SWFUPLOAD_BOOTSTRAP_JS_KEY = "SWFUPLOAD_BOOTSTRAP_JS";
+    public static final String SWFUPLOAD_FLASH_KEY = "SWFUPLOAD_FLASH";
+
     public String buttonCaption = "Upload";
     public int buttonWidth = 90;
     public int buttonHeight = 25;
