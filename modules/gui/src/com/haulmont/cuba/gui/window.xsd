@@ -203,7 +203,7 @@
     </xs:attributeGroup>
 
     <xs:attributeGroup name="hasVisibility">
-        <xs:attribute name="visible" type="xs:string" use="optional"/>
+        <xs:attribute name="visible" type="xs:boolean" use="optional"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="hasAlign">
@@ -1177,10 +1177,11 @@
         <xs:attributeGroup ref="hasSize"/>
         <xs:attributeGroup ref="hasStyle"/>
         <xs:attributeGroup ref="hasExpand"/>
+        <xs:attributeGroup ref="hasVisibility"/>
+        <xs:attributeGroup ref="hasSpacingMargin"/>
 
         <xs:attribute name="collapsable" type="xs:boolean" use="optional"/>
         <xs:attribute name="collapsed" type="xs:boolean" use="optional"/>
-        <xs:attribute name="spacing" type="xs:boolean" use="optional"/>
         <xs:attribute name="orientation" default="vertical" type="orientation"/>
     </xs:complexType>
 
