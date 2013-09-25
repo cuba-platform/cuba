@@ -21,11 +21,13 @@ public class HBoxLoader extends ContainerLoader implements ComponentLoader {
         super(context, config, factory);
     }
 
+    @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         final BoxLayout component = factory.createComponent("hbox");
 
         assignXmlDescriptor(component, element);
         loadId(component, element);
+        loadEnable(component, element);
         loadVisible(component, element);
 
         loadStyleName(component, element);

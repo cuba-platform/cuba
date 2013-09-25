@@ -1022,8 +1022,9 @@
         </xs:sequence>
 
         <xs:attributeGroup ref="hasId"/>
-        <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasSize"/>
+        <xs:attributeGroup ref="hasEnableProp"/>
+        <xs:attributeGroup ref="hasVisibility"/>
     </xs:complexType>
 
     <!-- TwinColumn -->
@@ -1067,6 +1068,7 @@
         <xs:group ref="layoutOrComponent"/>
 
         <xs:attributeGroup ref="hasId"/>
+        <xs:attributeGroup ref="hasEnableProp"/>
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="isLayoutComponent"/>
     </xs:complexType>
@@ -1079,6 +1081,7 @@
         <xs:attributeGroup ref="hasSize"/>
         <xs:attributeGroup ref="hasAlign"/>
         <xs:attributeGroup ref="hasStyle"/>
+        <xs:attributeGroup ref="hasEnableProp"/>
         <xs:attributeGroup ref="hasSpacingMargin"/>
 
         <xs:attribute name="orientation" default="vertical" type="orientation"/>
@@ -1120,6 +1123,7 @@
 
         <xs:attributeGroup ref="hasId"/>
         <xs:attributeGroup ref="hasSize"/>
+        <xs:attributeGroup ref="hasEnableProp"/>
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasStyle"/>
     </xs:complexType>
@@ -1165,6 +1169,7 @@
         <xs:attributeGroup ref="hasSize"/>
         <xs:attributeGroup ref="hasStyle"/>
         <xs:attributeGroup ref="hasVisibility"/>
+        <xs:attributeGroup ref="hasEnableProp"/>
         <xs:attributeGroup ref="hasSpacingMargin"/>
     </xs:complexType>
 
@@ -1178,6 +1183,7 @@
         <xs:attributeGroup ref="hasStyle"/>
         <xs:attributeGroup ref="hasExpand"/>
         <xs:attributeGroup ref="hasVisibility"/>
+        <xs:attributeGroup ref="hasEnableProp"/>
         <xs:attributeGroup ref="hasSpacingMargin"/>
 
         <xs:attribute name="collapsable" type="xs:boolean" use="optional"/>

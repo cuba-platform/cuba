@@ -26,6 +26,7 @@ public class FlowBoxLayoutLoader extends ContainerLoader {
 
         assignXmlDescriptor(component, element);
         loadId(component, element);
+        loadEnable(component, element);
         loadVisible(component, element);
 
         loadStyleName(component, element);

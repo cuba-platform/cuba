@@ -34,6 +34,7 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
         GridLayout component = factory.createComponent("grid");
 
         loadId(component, element);
+        loadEnable(component, element);
         loadVisible(component, element);
 
         loadStyleName(component, element);
@@ -158,7 +159,7 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
         }
     }
 
-    private void addSubComponent(GridLayout grid, Component subComponent, int c1, int r1, int c2, int r2) {
+    protected void addSubComponent(GridLayout grid, Component subComponent, int c1, int r1, int c2, int r2) {
         if (subComponent instanceof QuasiComponent) {
             Collection<Component> realComponents = ((QuasiComponent) subComponent).getRealComponents();
             if (realComponents.size() == 1) {
@@ -174,7 +175,7 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
         }
     }
 
-    private void fillSpanMatrix(int col, int row, int cspan, int rspan) {
+    protected void fillSpanMatrix(int col, int row, int cspan, int rspan) {
         for (int i = col; i <= (col + cspan); i++) {
             for (int j = row; j <= (row + rspan); j++) {
                 if (spanMatrix[i][j]) throw new IllegalStateException();
@@ -182,5 +183,4 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
             }
         }
     }
-
 }
