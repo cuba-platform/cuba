@@ -60,6 +60,9 @@ public class SessionBrowser extends AbstractLookup {
     @Named("sessionsTable.message")
     protected Action messageAction;
 
+    @Named("sessionsTable.refresh")
+    protected Action refreshAction;
+
     public void init(Map<String, Object> params) {
         super.init(params);
         // TODO remove after implementing #1588
@@ -88,6 +91,8 @@ public class SessionBrowser extends AbstractLookup {
                 }
             }
         });
+
+        addAction(refreshAction);
     }
 
     public void refresh() {

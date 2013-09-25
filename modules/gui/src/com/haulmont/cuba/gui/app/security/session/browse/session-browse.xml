@@ -31,7 +31,7 @@
         </hbox>
         <groupTable id="sessionsTable" multiselect="true" width="100%">
             <actions>
-                <action id="refresh" caption="msg://refresh" invoke="refresh"/>
+                <action id="refresh" caption="msg://refresh" invoke="refresh" shortcut="SHIFT-ENTER"/>
                 <action id="message" caption="msg://message" invoke="message"/>
                 <action id="kill" caption="msg://kill" invoke="kill"/>
             </actions>
