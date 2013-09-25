@@ -182,7 +182,23 @@ public class FileTypesHelper {
             + "video/x-ms-asf                                  asf asx,"
             + "video/x-msvideo                                 avi,"
             + "video/x-sgi-movie                               movie,"
-            + "x-world/x-vrml                                  vrm vrml wrl";
+            + "x-world/x-vrml                                  vrm vrml wrl,"
+            + "application/vnd.oasis.opendocument.text                      odt,"
+            + "application/vnd.oasis.opendocument.text-template             ott,"
+            + "tapplication/vnd.oasis.opendocument.graphics                 odg,"
+            + "application/vnd.oasis.opendocument.graphics-template         otg,"
+            + "application/vnd.oasis.opendocument.presentation              odp,"
+            + "application/vnd.oasis.opendocument.presentation-template     otp,"
+            + "application/vnd.oasis.opendocument.spreadsheet               ods,"
+            + "application/vnd.oasis.opendocument.spreadsheet-template      ots,"
+            + "application/vnd.oasis.opendocument.chart                     odc,"
+            + "application/vnd.oasis.opendocument.chart-template            otc,"
+            + "application/vnd.oasis.opendocument.image                     odi,"
+            + "application/vnd.oasis.opendocument.image-template            oti,"
+            + "application/vnd.oasis.opendocument.formula                   odf,"
+            + "application/vnd.oasis.opendocument.formula-template          otf,"
+            + "application/vnd.oasis.opendocument.text-master               odm,"
+            + "application/vnd.oasis.opendocument.text-web                  oth";
 
     /**
      * File extension to MIME type mapping.
