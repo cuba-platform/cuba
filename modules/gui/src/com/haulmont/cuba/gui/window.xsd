@@ -1073,6 +1073,18 @@
         <xs:attributeGroup ref="isLayoutComponent"/>
     </xs:complexType>
 
+    <!-- FlowBoxLayout -->
+    <xs:complexType name="flowBoxLayout">
+        <xs:group ref="layoutOrComponent"/>
+
+        <xs:attributeGroup ref="hasId"/>
+        <xs:attributeGroup ref="hasSize"/>
+        <xs:attributeGroup ref="hasStyle"/>
+        <xs:attributeGroup ref="hasEnableProp"/>
+        <xs:attributeGroup ref="hasVisibility"/>
+        <xs:attributeGroup ref="hasSpacingMargin"/>
+    </xs:complexType>
+
     <!-- ScrollBoxLayout -->
     <xs:complexType name="scrollBoxLayout">
         <xs:group ref="layoutOrComponent"/>
@@ -1352,7 +1364,7 @@
             <xs:choice minOccurs="1" maxOccurs="unbounded">
                 <xs:element name="vbox" type="boxLayout"/>
                 <xs:element name="hbox" type="boxLayout"/>
-                <xs:element name="flowBox" type="boxLayout"/>
+                <xs:element name="flowBox" type="flowBoxLayout"/>
 
                 <xs:element name="htmlBox" type="htmlBoxLayout"/>
                 <xs:element name="scrollBox" type="scrollBoxLayout"/>
