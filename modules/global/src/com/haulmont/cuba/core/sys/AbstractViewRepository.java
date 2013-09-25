@@ -211,7 +211,7 @@ public class AbstractViewRepository implements ViewRepository {
     public View deployView(Element rootElem, Element viewElem) {
         String viewName = viewElem.attributeValue("name");
         if (StringUtils.isBlank(viewName))
-            throw new IllegalStateException("Invalid view definition: no 'name' attribute");
+            throw new DevelopmentException("Invalid view definition: no 'name' attribute present");
 
         MetaClass metaClass;
 
@@ -219,7 +219,7 @@ public class AbstractViewRepository implements ViewRepository {
         if (StringUtils.isBlank(entity)) {
             String className = viewElem.attributeValue("class");
             if (StringUtils.isBlank(className))
-                throw new IllegalStateException("Invalid view definition: no 'entity' or 'class' attribute");
+                throw new DevelopmentException("Invalid view definition: no 'entity' or 'class' attribute present");
             Class entityClass = ReflectionHelper.getClass(className);
             metaClass = metadata.getSession().getClassNN(entityClass);
         } else {
@@ -257,7 +257,7 @@ public class AbstractViewRepository implements ViewRepository {
             if (originalMetaClass != null)
                 ancestorView = retrieveView(originalMetaClass, ancestor, false);
             if (ancestorView == null)
-                throw new IllegalStateException("No ancestor view found: " + ancestor);
+                throw new DevelopmentException("No ancestor view found: " + ancestor);
         }
         return ancestorView;
     }
@@ -271,7 +271,7 @@ public class AbstractViewRepository implements ViewRepository {
 
             MetaProperty metaProperty = metaClass.getProperty(propertyName);
             if (metaProperty == null)
-                throw new IllegalStateException(
+                throw new DevelopmentException(
                         String.format("View %s/%s definition error: property %s doesn't exists", metaClass.getName(), viewName, propertyName)
                 );
 
@@ -290,7 +290,7 @@ public class AbstractViewRepository implements ViewRepository {
             if (refViewName != null && !inlineView) {
 
                 if (!range.isClass())
-                    throw new IllegalStateException(
+                    throw new DevelopmentException(
                             String.format("View %s/%s definition error: property %s is not an entity", metaClass.getName(), viewName, propertyName)
                     );
 
@@ -313,7 +313,7 @@ public class AbstractViewRepository implements ViewRepository {
                     }
 
                     if (refView == null)
-                        throw new IllegalStateException(
+                        throw new DevelopmentException(
                                 String.format(
                                         "View %s/%s definition error: unable to find/deploy referenced view %s/%s",
                                         metaClass.getName(), viewName, range.asClass().getName(), refViewName)
