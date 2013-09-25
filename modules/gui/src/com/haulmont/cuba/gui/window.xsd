@@ -139,6 +139,18 @@
         </xs:restriction>
     </xs:simpleType>
 
+    <xs:simpleType name="sourceCodeEditorMode">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Java"/>
+            <xs:enumeration value="HTML"/>
+            <xs:enumeration value="XML"/>
+            <xs:enumeration value="Groovy"/>
+            <xs:enumeration value="SQL"/>
+            <xs:enumeration value="JavaScript"/>
+            <xs:enumeration value="Text"/>
+        </xs:restriction>
+    </xs:simpleType>
+
     <xs:simpleType name="refreshMode">
         <xs:restriction base="xs:string">
             <xs:enumeration value="ALWAYS"/>
@@ -498,6 +510,15 @@
                 <xs:attribute name="maxLength" type="xs:int" use="optional"/>
                 <xs:attribute name="resizable" type="xs:boolean" use="optional"/>
                 <xs:attribute name="trim" type="xs:boolean" use="optional"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <!-- TextArea -->
+    <xs:complexType name="sourceCodeEditorComponent">
+        <xs:complexContent>
+            <xs:extension base="baseFieldComponent">
+                <xs:attribute name="mode" type="sourceCodeEditorMode" use="optional"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -1358,6 +1379,7 @@
                 <xs:element name="passwordField" type="passwordFieldComponent"/>
                 <xs:element name="richTextArea" type="richTextAreaComponent"/>
                 <xs:element name="autoCompleteTextField" type="autoCompleteTextFieldComponent"/>
+                <xs:element name="sourceCodeEditor" type="sourceCodeEditorComponent"/>
                 <xs:element name="maskedField" type="maskedFieldComponent"/>
 
                 <xs:element name="dateField" type="dateFieldComponent"/>
