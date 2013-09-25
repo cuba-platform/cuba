@@ -66,9 +66,14 @@ public class CubaGroupBoxConnector extends PanelConnector {
     public void layout() {
         super.layout();
 
-        // do not set width: 100% for captionEndDeco in CSS
-        // it brokes layout with width: AUTO
-        getWidget().captionWrap.getStyle().setWidth(getWidget().contentNode.getOffsetWidth(), Style.Unit.PX);
+        if (isUndefinedWidth()) {
+            // do not set width: 100% for captionEndDeco in CSS
+            // it brokes layout with width: AUTO
+            getWidget().captionWrap.getStyle().setWidth(getWidget().contentNode.getOffsetWidth(), Style.Unit.PX);
+        } else {
+            getWidget().captionWrap.getStyle().setWidth(100, Style.Unit.PCT);
+        }
+
         getWidget().captionEndDeco.getStyle().setWidth(100, Style.Unit.PCT);
     }
 
