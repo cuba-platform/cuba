@@ -7,9 +7,7 @@
 
 @mixin havana-label($primaryStyleName: v-label) {
   .#{$primaryStyleName} {
-    border-top: 4px transparent solid;
-    border-bottom: 5px transparent solid;
-    line-height: 16px;
+    line-height: 18px;
   }
 
   .#{$primaryStyleName}-empty {
@@ -20,7 +18,6 @@
     font-family: verdana, tahoma, sans-serif;
     font-size: 14px;
     border: 0;
-    line-height: 25px;
     font-weight: bold;
   }
 
@@ -30,6 +27,5 @@
     font-weight: bold;
     color: red;
     border: 0;
-    line-height: 25px;
   }
 }
