@@ -185,7 +185,7 @@ public class FileTypesHelper {
             + "x-world/x-vrml                                  vrm vrml wrl,"
             + "application/vnd.oasis.opendocument.text                      odt,"
             + "application/vnd.oasis.opendocument.text-template             ott,"
-            + "tapplication/vnd.oasis.opendocument.graphics                 odg,"
+            + "application/vnd.oasis.opendocument.graphics                  odg,"
             + "application/vnd.oasis.opendocument.graphics-template         otg,"
             + "application/vnd.oasis.opendocument.presentation              odp,"
             + "application/vnd.oasis.opendocument.presentation-template     otp,"
