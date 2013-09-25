@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.resizabletextarea;
 
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
@@ -35,6 +36,7 @@ public class CubaResizableTextAreaWidget extends VTextArea {
 
     public CubaResizableTextAreaWidget() {
         DOM.setStyleAttribute(getElement(), "resize", "none");
+        sinkEvents(Event.ONKEYDOWN);
     }
 
     public boolean isResizable() {
@@ -147,5 +149,19 @@ public class CubaResizableTextAreaWidget extends VTextArea {
         int regionEndX = DOM.getAbsoluteLeft(resizeElement) + resizeElement.getOffsetWidth();
 
         return regionEndX - mouseX < RESIZE_REGION && regionEndY - mouseY < RESIZE_REGION;
+    }
+
+    @Override
+    public void onBrowserEvent(Event event) {
+        int type = DOM.eventGetType(event);
+        if (type == Event.ONKEYDOWN
+                && event.getKeyCode() == KeyCodes.KEY_ENTER
+                && !event.getAltKey()
+                && !event.getShiftKey()
+                && !event.getCtrlKey()) {
+            event.stopPropagation();
+            return;
+        }
+        super.onBrowserEvent(event);
     }
 }
