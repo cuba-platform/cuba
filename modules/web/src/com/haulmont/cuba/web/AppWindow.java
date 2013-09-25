@@ -11,7 +11,6 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.NoSuchScreenException;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Action;
@@ -37,7 +36,6 @@ import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -239,6 +237,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
         layout.addComponent(menuBarLayout);
 
         emptyLayout = new HorizontalLayout();
+        emptyLayout.setStyleName("cuba-app-empty-layout");
         emptyLayout.setMargin(false);
         emptyLayout.setSpacing(false);
         emptyLayout.setSizeFull();
@@ -635,6 +634,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
 
         Component logoImage = getLogoImage();
         if (logoImage != null) {
+            titleLayout.setStyleName("cuba-app-icon");
             titleLayout.addComponent(logoImage);
             titleLayout.setComponentAlignment(logoImage, Alignment.MIDDLE_LEFT);
         }
@@ -932,7 +932,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
 
     protected class SubstitutedUserChangeListener implements Property.ValueChangeListener {
 
-        private final AbstractSelect substUserSelect;
+        protected final AbstractSelect substUserSelect;
 
         public SubstitutedUserChangeListener(AbstractSelect substUserSelect) {
             this.substUserSelect = substUserSelect;
@@ -975,15 +975,15 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
 
         private static final long serialVersionUID = 623307791240239175L;
 
-        private Map<Component, TabCloseHandler> closeHandlers = null;
+        protected Map<Component, TabCloseHandler> closeHandlers = null;
 
-        private com.vaadin.event.Action closeAllTabs;
+        protected com.vaadin.event.Action closeAllTabs;
 
-        private com.vaadin.event.Action closeOtherTabs;
+        protected com.vaadin.event.Action closeOtherTabs;
 
-        private com.vaadin.event.Action closeCurrentTab;
+        protected com.vaadin.event.Action closeCurrentTab;
 
-        private com.vaadin.event.Action showInfo;
+        protected com.vaadin.event.Action showInfo;
 
         public AppTabSheet() {
             setCloseHandler(new CloseHandler() {
@@ -1033,7 +1033,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
                          return (Window.Editor) breadCrumbs.getCurrentWindow();
                  }
              }
-            return null;
+             return null;
         }
 
         @Override

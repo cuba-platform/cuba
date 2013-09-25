@@ -48,6 +48,7 @@ public class WindowBreadCrumbs extends HorizontalLayout {
             setVisible(false);
 
         logoLayout = new HorizontalLayout();
+        logoLayout.setStyleName("cuba-breadcrumbs-logo");
         logoLayout.setMargin(true);
         logoLayout.setSpacing(true);
 
@@ -71,16 +72,17 @@ public class WindowBreadCrumbs extends HorizontalLayout {
         }
 
         HorizontalLayout enclosingLayout = new HorizontalLayout();
+        enclosingLayout.setStyleName("cuba-breadcrumbs-container");
         enclosingLayout.addComponent(linksLayout);
         enclosingLayout.setComponentAlignment(linksLayout, Alignment.MIDDLE_LEFT);
 
         addComponent(logoLayout);
         addComponent(enclosingLayout);
 
-        if (closeBtn != null)
+        if (closeBtn != null) {
             addComponent(closeBtn);
+        }
 
-        linksLayout.setSizeFull();
         setExpandRatio(enclosingLayout, 1);
     }
 

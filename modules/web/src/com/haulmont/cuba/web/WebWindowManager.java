@@ -46,32 +46,32 @@ public class WebWindowManager extends WindowManager {
 
     public static final int HUMANIZED_NOTIFICATION_DELAY_MSEC = 3000;
 
+    private static Log log = LogFactory.getLog(WebWindowManager.class);
+
     protected App app;
 
     protected final WebConfig webConfig;
 
     protected static class WindowData {
-        protected final Map<Layout, WindowBreadCrumbs> tabs = new HashMap<>();
+        protected final Map<ComponentContainer, WindowBreadCrumbs> tabs = new HashMap<>();
         protected final Map<WindowBreadCrumbs, Stack<Map.Entry<Window, Integer>>> stacks = new HashMap<>();
         protected final Map<Window, WindowOpenMode> windowOpenMode = new LinkedHashMap<>();
         protected final Map<Window, Integer> windows = new HashMap<>();
-        protected final Map<Layout, WindowBreadCrumbs> fakeTabs = new HashMap<>();
+        protected final Map<ComponentContainer, WindowBreadCrumbs> fakeTabs = new HashMap<>();
     }
 
     protected List<ShowStartupLayoutListener> showStartupLayoutListeners = new ArrayList<>();
 
     protected List<CloseStartupLayoutListener> closeStartupLayoutListeners = new ArrayList<>();
 
-    private Map<AppWindow, WindowData> appWindowMap = new HashMap<>();
+    protected Map<AppWindow, WindowData> appWindowMap = new HashMap<>();
 
     protected Map<String, Integer> debugIds = new HashMap<>();
 
-    private static Log log = LogFactory.getLog(WebWindowManager.class);
-
-    private boolean disableSavingScreenHistory;
+    protected boolean disableSavingScreenHistory;
     protected ScreenHistorySupport screenHistorySupport;
 
-    private ShortcutListener closeShortcut = null;
+    protected ShortcutListener closeShortcut = null;
 
     public WebWindowManager(final App app) {
         this.app = app;
@@ -88,7 +88,7 @@ public class WebWindowManager extends WindowManager {
         screenHistorySupport = new ScreenHistorySupport();
     }
 
-    private WindowData getCurrentWindowData() {
+    protected WindowData getCurrentWindowData() {
         WindowData data = appWindowMap.get(app.getAppWindow());
         if (data == null) {
             data = new WindowData();
@@ -97,15 +97,15 @@ public class WebWindowManager extends WindowManager {
         return data;
     }
 
-    protected Map<Layout, WindowBreadCrumbs> getTabs() {
+    protected Map<ComponentContainer, WindowBreadCrumbs> getTabs() {
         return getCurrentWindowData().tabs;
     }
 
-	protected Map<Layout, WindowBreadCrumbs> getFakeTabs() {
+	protected Map<ComponentContainer, WindowBreadCrumbs> getFakeTabs() {
         return getCurrentWindowData().fakeTabs;
     }
 
-    private Map<Window, WindowOpenMode> getWindowOpenMode() {
+    protected Map<Window, WindowOpenMode> getWindowOpenMode() {
         return getCurrentWindowData().windowOpenMode;
     }
 
@@ -189,15 +189,15 @@ public class WebWindowManager extends WindowManager {
         }
     }
 
-    protected Layout findTab(Integer hashCode) {
-        Set<Map.Entry<Layout, WindowBreadCrumbs>> set = getFakeTabs().entrySet();
-        for (Map.Entry<Layout, WindowBreadCrumbs> entry : set) {
+    protected ComponentContainer findTab(Integer hashCode) {
+        Set<Map.Entry<ComponentContainer, WindowBreadCrumbs>> set = getFakeTabs().entrySet();
+        for (Map.Entry<ComponentContainer, WindowBreadCrumbs> entry : set) {
             Window currentWindow = entry.getValue().getCurrentWindow();
             if (hashCode.equals(getWindowHashCode(currentWindow)))
                 return entry.getKey();
         }
         set = getTabs().entrySet();
-        for (Map.Entry<Layout, WindowBreadCrumbs> entry : set) {
+        for (Map.Entry<ComponentContainer, WindowBreadCrumbs> entry : set) {
             Window currentWindow = entry.getValue().getCurrentWindow();
             if (hashCode.equals(getWindowHashCode(currentWindow)))
                 return entry.getKey();
@@ -250,8 +250,8 @@ public class WebWindowManager extends WindowManager {
                 if (AppWindow.Mode.SINGLE.equals(appWindow.getMode())) {
 
                     VerticalLayout mainLayout = appWindow.getMainLayout();
-                    if (mainLayout.getComponentIterator().hasNext()) {
-                        Layout oldLayout = (Layout) mainLayout.getComponentIterator().next();
+                    if (mainLayout.iterator().hasNext()) {
+                        ComponentContainer oldLayout = (ComponentContainer) mainLayout.iterator().next();
                         WindowBreadCrumbs oldBreadCrumbs = getTabs().get(oldLayout);
                         if (oldBreadCrumbs != null) {
                             Window oldWindow = oldBreadCrumbs.getCurrentWindow();
@@ -266,10 +266,10 @@ public class WebWindowManager extends WindowManager {
                     }
                 } else {
                     final Integer hashCode = getWindowHashCode(window);
-                    Layout tab = null;
+                    ComponentContainer tab = null;
                     if (hashCode != null && !multipleOpen)
                         tab = findTab(hashCode);
-                    Layout oldLayout = tab;
+                    ComponentContainer oldLayout = tab;
                     final WindowBreadCrumbs oldBreadCrumbs = getTabs().get(oldLayout);
 
                     if (oldBreadCrumbs != null &&
@@ -371,7 +371,7 @@ public class WebWindowManager extends WindowManager {
         };
     }
 
-    protected Layout createNewWinLayout(Window window, Component... components) {
+    protected ComponentContainer createNewWinLayout(Window window, Component... components) {
 
         final VerticalLayout layout = new VerticalLayout();
         layout.setSizeFull();
@@ -437,7 +437,7 @@ public class WebWindowManager extends WindowManager {
             layout.setMargin(true);
             TabSheet.Tab newTab;
             Integer hashCode = getWindowHashCode(window);
-            Layout tab = null;
+            ComponentContainer tab = null;
             if (hashCode != null)
                 tab = findTab(hashCode);
             if (tab != null && !multipleOpen) {
@@ -471,8 +471,10 @@ public class WebWindowManager extends WindowManager {
 			getTabs().put(layout, (WindowBreadCrumbs) components[0]);
             layout.addStyleName("cuba-app-work-area-single-window");
             layout.setMargin(true);
-            layout.setWidth("99.9%");
-            layout.setHeight("99.85%");
+
+//            layout.setWidth("99.9%");
+//            layout.setHeight("99.85%");
+
             VerticalLayout mainLayout = appWindow.getMainLayout();
             mainLayout.removeAllComponents();
             mainLayout.addComponent(layout);
@@ -769,14 +771,14 @@ public class WebWindowManager extends WindowManager {
         }
     }
 
-    private void removeCloseListeners(com.vaadin.ui.Window win) {
+    protected void removeCloseListeners(com.vaadin.ui.Window win) {
         Collection listeners = win.getListeners(com.vaadin.ui.Window.CloseEvent.class);
         for (Object listener : listeners) {
             win.removeCloseListener((com.vaadin.ui.Window.CloseListener) listener);
         }
     }
 
-    private void closeWindow(Window window, WindowOpenMode openMode) {
+    protected void closeWindow(Window window, WindowOpenMode openMode) {
         AppWindow appWindow = app.getAppWindow();
 
         if (!disableSavingScreenHistory) {
@@ -900,7 +902,7 @@ public class WebWindowManager extends WindowManager {
 //        }
 //    }
 
-    private void showStartupScreen(AppWindow appWindow) {
+    protected void showStartupScreen(AppWindow appWindow) {
         if (getTabs().size() == 0) {
             appWindow.getMainLayout().removeAllComponents();
             appWindow.setTabSheet(null);
@@ -951,7 +953,8 @@ public class WebWindowManager extends WindowManager {
         layout.setMargin(true);
         window.setContent(layout);
 
-        Label desc = new Label(message, Label.CONTENT_XHTML);
+        Label desc = new Label(message);
+        desc.setContentMode(ContentMode.HTML);
         layout.addComponent(desc);
 
         float width;
@@ -1092,7 +1095,7 @@ public class WebWindowManager extends WindowManager {
         }
     }
 
-    private void removeWindowsWithName(String name) {
+    protected void removeWindowsWithName(String name) {
         for (com.vaadin.ui.Window childWindow : new ArrayList<>(app.getAppUI().getWindows())) {
             if (name.equals(childWindow.getId())) {
                 String msg = new StrBuilder("Another " + name + " window exists, removing it\n")
@@ -1113,16 +1116,16 @@ public class WebWindowManager extends WindowManager {
     }
 
     public void reloadBreadCrumbs() {
-        Layout layout;
+        ComponentContainer layout;
 
         final AppWindow appWindow = App.getInstance().getAppWindow();
         final AppWindow.Mode viewMode = appWindow.getMode();
 
         if (viewMode == AppWindow.Mode.SINGLE) {
-            final Layout mainLayout = appWindow.getMainLayout();
-            layout = (Layout) mainLayout.iterator().next();
+            final ComponentContainer mainLayout = appWindow.getMainLayout();
+            layout = (ComponentContainer) mainLayout.iterator().next();
         } else {
-            layout = (Layout) appWindow.getTabSheet().getSelectedTab();
+            layout = (ComponentContainer) appWindow.getTabSheet().getSelectedTab();
         }
 
         if (layout != null) {
@@ -1165,7 +1168,7 @@ public class WebWindowManager extends WindowManager {
         getCurrentWindowData().windows.remove(window);
     }
 
-    private Integer getWindowHashCode(Window window){
+    protected Integer getWindowHashCode(Window window){
        return getCurrentWindowData().windows.get(window);
     }
 
@@ -1211,7 +1214,7 @@ public class WebWindowManager extends WindowManager {
         }
     }
 
-    private String generateDebugId(String id) {
+    protected String generateDebugId(String id) {
         Integer count = debugIds.get(id);
         if (count == null) {
             count = 0;
