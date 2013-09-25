@@ -4,7 +4,6 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.TextInputField;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
@@ -19,15 +18,6 @@ public abstract class AbstractTextFieldLoader extends AbstractFieldLoader {
 
     public AbstractTextFieldLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
         super(context, config, factory);
-    }
-
-    @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        final TextInputField component = (TextInputField) super.loadComponent(factory, element, parent);
-
-        loadStyleName(component, element);
-
-        return component;
     }
 
     protected void loadTrimming(Element element, TextInputField.TrimSupported component) {
