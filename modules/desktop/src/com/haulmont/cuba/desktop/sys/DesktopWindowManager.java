@@ -385,7 +385,6 @@ public class DesktopWindowManager extends WindowManager {
             component.revalidate();
             component.repaint();
         }
-        window.setCaption(formatTabCaption(currentWindow.getCaption(), currentWindow.getDescription()));
 
         return layout;
     }
@@ -663,7 +662,6 @@ public class DesktopWindowManager extends WindowManager {
                     component.revalidate();
                     component.repaint();
                 }
-                currentWindow.setCaption(formatTabCaption(currentWindow.getCaption(), currentWindow.getDescription()));
 
                 fireListeners(window, tabs.size() != 0);
                 break;
