@@ -560,10 +560,6 @@ public class DesktopWindowManager extends WindowManager {
                 container.remove(c);
             }
             container.add(frame);
-            // expand loaded frame inside container to take its full size
-            if (container instanceof ExpandingLayout) {
-                ((ExpandingLayout) container).expand(frame);
-            }
         } else {
             throw new IllegalStateException(
                     "Parent component must be com.haulmont.cuba.gui.components.Component.Container"
