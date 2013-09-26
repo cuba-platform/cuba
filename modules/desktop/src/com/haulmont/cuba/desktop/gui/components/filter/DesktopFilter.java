@@ -1252,8 +1252,10 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
             if (changingFilter)
                 return;
 
-            filterEntity = ((ItemWrapper<FilterEntity>) select.getValue()).getItem();
-            if (filterEntity.equals(noFilter)) {
+            ItemWrapper<FilterEntity> selected = (ItemWrapper<FilterEntity>) select.getValue();
+
+            filterEntity = selected == null ? null : selected.getItem();
+            if (noFilter.equals(filterEntity)) {
                 filterEntity = null;
             }
             if ((filterEntity != null) && (applyTo != null) && (Table.class.isAssignableFrom(applyTo.getClass()))) {
