@@ -190,6 +190,46 @@ public class CubaMultiUpload extends AbstractComponent implements LegacyComponen
         return getResource(CubaMultiUploadState.BUTTON_IMAGE_KEY);
     }
 
+    public void setButtonStyles(String buttonStyles) {
+        getState().buttonStyles = buttonStyles;
+    }
+
+    public String getButtonStyles() {
+        return getState(false).buttonStyles;
+    }
+
+    public void setButtonDisabledStyles(String buttonDisabledStyles) {
+        getState().buttonDisabledStyles = buttonDisabledStyles;
+    }
+
+    public String getButtonDisabledStyles() {
+        return getState(false).buttonDisabledStyles;
+    }
+
+    public void setButtonEnabled(boolean enabled) {
+        getState().buttonEnabled = enabled;
+    }
+
+    public boolean isButtonEnabled() {
+        return getState(false).buttonEnabled;
+    }
+
+    public void setButtonTextLeft(int buttonTextLeft) {
+        getState().buttonTextLeft = buttonTextLeft;
+    }
+
+    public int getButtonTextLeft() {
+        return getState(false).buttonTextLeft;
+    }
+
+    public void setButtonTextTop(int buttonTextTop) {
+        getState().buttonTextTop = buttonTextTop;
+    }
+
+    public int getButtonTextTop() {
+        return getState(false).buttonTextTop;
+    }
+
     public void setButtonImage(Resource image) {
         setResource(CubaMultiUploadState.BUTTON_IMAGE_KEY, image);
     }

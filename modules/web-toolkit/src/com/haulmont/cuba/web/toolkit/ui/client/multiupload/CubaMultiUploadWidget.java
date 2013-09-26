@@ -27,9 +27,9 @@ public class CubaMultiUploadWidget extends FormPanel {
 
     public static final String CLASSNAME = "cuba-multiupload";
 
-    private static final boolean DEBUG_MODE = true;
+    protected static final boolean DEBUG_MODE = true;
 
-    private static boolean scriptInjected = false;
+    protected static boolean scriptInjected = false;
 
     protected BootstrapFailureHandler bootstrapFailureHandler;
 
@@ -43,9 +43,17 @@ public class CubaMultiUploadWidget extends FormPanel {
     protected double queueUploadLimit = 100.0;
     protected int queueSizeLimit = 50;
 
+    protected boolean buttonEnabled = true;
     protected String buttonCaption = "Upload";
     protected Integer buttonWidth = 90;
     protected Integer buttonHeight = 25;
+
+    protected Integer buttonTextTop = 1;
+    protected Integer buttonTextLeft = 22;
+
+    /** Default styles in {@link CubaMultiUploadState#buttonStyles} */
+    protected String buttonStyles = "";
+    protected String buttonDisabledStyles = "";
 
     protected String buttonImageUri;
     protected String targetUrl;
@@ -56,10 +64,10 @@ public class CubaMultiUploadWidget extends FormPanel {
 
     protected String themeName;
 
-    private String uploadId;
-    private String swfUri;
+    protected String uploadId;
+    protected String swfUri;
 
-    private String jsIncludeUri;
+    protected String jsIncludeUri;
 
     protected Element uploadButton = DOM.createDiv();
     protected Element themeDiv = DOM.createDiv();
@@ -75,7 +83,7 @@ public class CubaMultiUploadWidget extends FormPanel {
         attachProgressWindow();
     }
 
-    private void attachProgressWindow() {
+    protected void attachProgressWindow() {
         Element parentDoc = (Element) getElement().getOwnerDocument().getElementsByTagName("body").getItem(0);
         themeDiv = DOM.createDiv();
 
@@ -83,7 +91,7 @@ public class CubaMultiUploadWidget extends FormPanel {
         DOM.appendChild(parentDoc, themeDiv);
     }
 
-    private void initProgressWindow() {
+    protected void initProgressWindow() {
         progressDiv.getStyle().setVisibility(Style.Visibility.HIDDEN);
         progressDiv.getStyle().setDisplay(Style.Display.NONE);
 
@@ -137,7 +145,7 @@ public class CubaMultiUploadWidget extends FormPanel {
         setStyleName(CLASSNAME + "-disabled");
     }
 
-    private native JavaScriptObject getWindow() /*-{
+    protected native JavaScriptObject getWindow() /*-{
         return $wnd;
     }-*/;
 
@@ -173,14 +181,19 @@ public class CubaMultiUploadWidget extends FormPanel {
         opts.set("button_image_url", buttonImageUri);
         opts.set("button_width", String.valueOf(buttonWidth));
         opts.set("button_height", String.valueOf(buttonHeight));
+        opts.set("button_disabled", String.valueOf(!buttonEnabled));
 
         opts.set("button_placeholder_id", uploadButton.getId());
-        // todo artamonov make configurable paddings, text and style
-        opts.set("button_text_left_padding", "22");
-        opts.set("button_text_top_padding", "1");
+        opts.set("button_text_left_padding", String.valueOf(buttonTextLeft));
+        opts.set("button_text_top_padding", String.valueOf(buttonTextTop));
         opts.set("button_text", "<span class=\"swfupload\">" + buttonCaption + "</span>");
-        opts.set("button_text_style",
-                ".swfupload {font-size: 12px; font-family: Verdana,Tahoma,sans-serif;}");
+
+        if (buttonEnabled) {
+            opts.set("button_text_style", buttonStyles);
+        } else {
+            opts.set("button_text_style", buttonDisabledStyles);
+        }
+
 
         setDefaultOptions(opts);
 
@@ -237,17 +250,40 @@ public class CubaMultiUploadWidget extends FormPanel {
         setDisabled();
     }
 
-    private native void showUploadButton(String varName, Options opts) /*-{
+    protected void setButtonEnabled(boolean buttonEnabled) {
+        this.buttonEnabled = buttonEnabled;
+        setSwfEnabled("upload_" + uploadId, buttonEnabled);
+
+        if (buttonEnabled) {
+            setButtonStyles("upload_" + uploadId, buttonStyles);
+        } else {
+            setButtonStyles("upload_" + uploadId, buttonDisabledStyles);
+        }
+    }
+
+    protected native void setSwfEnabled(String varName, boolean enabled) /*-{
+        if ($wnd[varName]) {
+            $wnd[varName].setButtonDisabled(!enabled);
+        }
+    }-*/;
+
+    protected native void setButtonStyles(String varName, String styles) /*-{
+        if ($wnd[varName]) {
+            $wnd[varName].setButtonTextStyle(styles);
+        }
+    }-*/;
+
+    protected native void showUploadButton(String varName, Options opts) /*-{
         $wnd[varName] = $wnd.swfUploadHelper.create(opts);
     }-*/;
 
-    private native void setDefaultOptions(Options opts) /*-{
+    protected native void setDefaultOptions(Options opts) /*-{
         opts['minimum_flash_version'] = '9.0.28';
         opts['button_cursor'] = $wnd.SWFUpload.CURSOR.HAND;
         opts['button_window_mode'] = $wnd.SWFUpload.WINDOW_MODE.TRANSPARENT;
     }-*/;
 
-    private native void setDefaultHandlers(Options opts) /*-{
+    protected native void setDefaultHandlers(Options opts) /*-{
         var swfu = this;
 
         opts['swfupload_pre_load_handler'] = function() {

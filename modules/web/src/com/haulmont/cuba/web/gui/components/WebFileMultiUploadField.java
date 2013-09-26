@@ -176,6 +176,16 @@ public class WebFileMultiUploadField extends WebAbstractComponent<CubaMultiUploa
         component.setDescription(description);
     }
 
+    @Override
+    public void setEnabled(boolean enabled) {
+        component.setButtonEnabled(enabled);
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return component.isButtonEnabled();
+    }
+
     public int getButtonWidth() {
         return component.getButtonWidth();
     }

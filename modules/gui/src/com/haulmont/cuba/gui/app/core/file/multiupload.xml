@@ -16,16 +16,13 @@
                               view="browse" refreshMode="NEVER"/>
     </dsContext>
 
-    <assign name="width" value="560"/>
-    <assign name="height" value="300"/>
-
     <layout expand="windowActions" spacing="true">
         <hbox spacing="true">
             <multiUpload id="multiUpload" width="90px"/>
             <button action="uploadsTable.remove" icon="icons/remove.png"/>
         </hbox>
 
-        <table id="uploadsTable" editable="true" height="${height}" width="${width}">
+        <table id="uploadsTable" editable="true" height="400px" width="100%">
             <columns>
                 <column id="name" caption="msg://name" editable="true" width="170"
                         required="true" requiredMessage="msg://notNullFileNames"/>

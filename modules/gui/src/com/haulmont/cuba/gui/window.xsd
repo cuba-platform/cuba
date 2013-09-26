@@ -678,17 +678,20 @@
     <xs:complexType name="uploadComponent">
         <xs:attributeGroup ref="hasId"/>
         <xs:attributeGroup ref="hasSize"/>
+        <xs:attributeGroup ref="hasAlign"/>
         <xs:attributeGroup ref="hasCaption"/>
-
         <xs:attributeGroup ref="hasVisibility"/>
+        <xs:attributeGroup ref="hasEnableProp"/>
     </xs:complexType>
 
     <!-- FileMultiUploadField -->
     <xs:complexType name="multiuploadComponent">
         <xs:attributeGroup ref="hasId"/>
         <xs:attributeGroup ref="hasSize"/>
+        <xs:attributeGroup ref="hasAlign"/>
         <xs:attributeGroup ref="hasCaption"/>
         <xs:attributeGroup ref="hasVisibility"/>
+        <xs:attributeGroup ref="hasEnableProp"/>
     </xs:complexType>
 
     <!-- Tree -->

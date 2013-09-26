@@ -17,6 +17,8 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceImpl;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.*;
 
 /**
@@ -25,37 +27,41 @@ import java.util.*;
  */
 public class MultiUploader extends AbstractEditor {
 
-    private FileMultiUploadField uploadField = null;
-    private Button okBtn;
-    private boolean needSave;
-    private CollectionDatasource<FileDescriptor, UUID> filesDs = null;
-    private Table uploadsTable = null;
-    private List<FileDescriptor> files = new ArrayList<>();
+    protected boolean needSave;
+    protected CollectionDatasource<FileDescriptor, UUID> filesDs = null;
+    protected List<FileDescriptor> files = new ArrayList<>();
 
-    private Map<FileDescriptor, UUID> descriptors = new HashMap<>();
+    protected Map<FileDescriptor, UUID> descriptors = new HashMap<>();
+
+    @Inject
+    protected FileMultiUploadField multiUpload;
+
+    @Inject
+    protected Table uploadsTable;
+
+    @Named("windowActions.windowCommit")
+    protected Button okBtn;
 
     @Override
     public void init(Map<String, Object> params) {
-        uploadsTable = getComponent("uploadsTable");
+        super.init(params);
 
         filesDs = uploadsTable.getDatasource();
         filesDs.refresh();
 
-        okBtn = getComponent("windowActions.windowCommit");
         okBtn.setEnabled(false);
 
         uploadsTable.addAction(new RemoveAction(uploadsTable, true));
 
-        uploadField = getComponent("multiUpload");
-        uploadField.setCaption(getMessage("upload"));
-        uploadField.addListener(new FileMultiUploadField.UploadListener() {
+        multiUpload.setCaption(getMessage("upload"));
+        multiUpload.addListener(new FileMultiUploadField.UploadListener() {
 
             @Override
             public void queueUploadComplete() {
                 needSave = true;
                 okBtn.setEnabled(true);
                 FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
-                Map<UUID, String> uploads = uploadField.getUploadsMap();
+                Map<UUID, String> uploads = multiUpload.getUploadsMap();
                 for (Map.Entry<UUID, String> upload : uploads.entrySet()) {
                     FileDescriptor fDesc = fileUploading.getFileDescriptor(upload.getKey(), upload.getValue());
 
@@ -75,7 +81,7 @@ public class MultiUploader extends AbstractEditor {
 
     @Override
     public void setItem(Entity item) {
-        // Do nothing
+        // skip set item
         okBtn.setEnabled(false);
     }
 
@@ -84,7 +90,7 @@ public class MultiUploader extends AbstractEditor {
         ((DatasourceImpl) filesDs).setModified(false);
         if (commit()) {
             if (needSave) {
-                saveFile();
+                saveFiles();
             }
             close(COMMIT_ACTION_ID);
         }
@@ -98,14 +104,14 @@ public class MultiUploader extends AbstractEditor {
                 try {
                     fileUploading.deleteFile(upload.getValue());
                 } catch (FileStorageException e) {
-                    throw new RuntimeException(e);
+                    throw new RuntimeException("Unable to delete file from temp storage", e);
                 }
             }
         }
         return super.close(actionId);
     }
 
-    private void saveFile() {
+    protected void saveFiles() {
         FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
         try {
             // Relocate the file from temporary storage to permanent
@@ -114,7 +120,7 @@ public class MultiUploader extends AbstractEditor {
                 files.add(fDesc);
             }
         } catch (FileStorageException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to put files into storage", e);
         }
     }
 

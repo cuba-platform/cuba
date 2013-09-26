@@ -18,13 +18,16 @@ public class FileUploadFieldLoader extends ComponentLoader {
         super(context);
     }
 
+    @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         Component component = factory.createComponent(element.getName());
         
         loadId(component, element);
+        loadEnable(component, element);
         loadVisible(component, element);
      
         loadStyleName(component, element);
+        loadAlign(component, element);
 
         loadHeight(component, element);
         loadWidth(component, element);

@@ -22,6 +22,27 @@ public class CubaMultiUploadState extends AbstractComponentState {
     public int buttonWidth = 90;
     public int buttonHeight = 25;
 
+    public int buttonTextLeft = 22;
+    public int buttonTextTop = 1;
+
+    public String buttonStyles =
+            ".swfupload {" +
+                    "color: #1e3146;" +
+                    "font-size: 12px; " +
+                    "vertical-align: middle; " +
+                    "font-family: Verdana,tahoma,arial,geneva,helvetica,sans-serif,\"Trebuchet MS\";" +
+            "}";
+
+    public String buttonDisabledStyles =
+            ".swfupload {" +
+                    "color: #c0c5cb;" +
+                    "font-size: 12px; " +
+                    "vertical-align: middle; " +
+                    "font-family: Verdana,tahoma,arial,geneva,helvetica,sans-serif,\"Trebuchet MS\";" +
+                    "}";
+
+    public boolean buttonEnabled = true;
+
     public String fileTypes = "*.*";
     public String fileTypesDescription = "All files";
 

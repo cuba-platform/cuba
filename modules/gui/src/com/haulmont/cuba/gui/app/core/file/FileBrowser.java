@@ -50,7 +50,7 @@ public class FileBrowser extends AbstractWindow {
         uploadBtn.setAction(new AbstractAction("multiupload") {
             @Override
             public void actionPerform(Component component) {
-                Map<String, Object> params = Collections.<String, Object>emptyMap();
+                Map<String, Object> params = Collections.emptyMap();
 
                 final Window window = frame.openEditor("multiuploadDialog", null,
                         WindowManager.OpenType.DIALOG,

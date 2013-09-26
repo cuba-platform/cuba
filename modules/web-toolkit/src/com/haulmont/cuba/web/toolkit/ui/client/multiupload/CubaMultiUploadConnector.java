@@ -10,6 +10,7 @@ import com.haulmont.cuba.web.toolkit.ui.CubaMultiUpload;
 import com.vaadin.client.ApplicationConnection;
 import com.vaadin.client.Paintable;
 import com.vaadin.client.UIDL;
+import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.AbstractComponentConnector;
 import com.vaadin.shared.ui.Connect;
 
@@ -87,6 +88,11 @@ public class CubaMultiUploadConnector extends AbstractComponentConnector impleme
             widget.buttonCaption = state.buttonCaption;
             widget.buttonHeight = state.buttonHeight;
             widget.buttonWidth = state.buttonWidth;
+            widget.buttonStyles = state.buttonStyles;
+            widget.buttonDisabledStyles = state.buttonDisabledStyles;
+
+            widget.buttonTextLeft = state.buttonTextLeft;
+            widget.buttonTextTop = state.buttonTextTop;
 
             widget.queueSizeLimit = state.queueSizeLimit;
             widget.fileSizeLimit = state.fileSizeLimit;
@@ -95,8 +101,18 @@ public class CubaMultiUploadConnector extends AbstractComponentConnector impleme
             widget.fileTypes = state.fileTypes;
             widget.fileTypesDescription = state.fileTypesDescription;
             widget.jsessionId = state.jsessionId;
+            widget.buttonEnabled = state.buttonEnabled;
 
             widget.initComponent(getConnectorId());
+        }
+    }
+
+    @Override
+    public void onStateChanged(StateChangeEvent stateChangeEvent) {
+        super.onStateChanged(stateChangeEvent);
+
+        if (stateChangeEvent.hasPropertyChanged("buttonEnabled")) {
+            getWidget().setButtonEnabled(getState().buttonEnabled);
         }
     }
 }
