@@ -5,22 +5,17 @@
 
 package com.haulmont.cuba.core;
 
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.DbDialect;
 import com.haulmont.cuba.core.sys.EntityManagerContext;
 import com.haulmont.cuba.core.sys.persistence.DbTypeConverter;
 
-import javax.annotation.Nonnull;
 import javax.sql.DataSource;
-import java.util.Set;
-import java.util.UUID;
 
 /**
- * Central interface to provide persistence functionality.
- * <p/>
- * <p>$Id$</p>
+ * Central infrastructure interface to provide persistence functionality.
  *
  * @author krivopustov
+ * @version $Id$
  */
 public interface Persistence {
 

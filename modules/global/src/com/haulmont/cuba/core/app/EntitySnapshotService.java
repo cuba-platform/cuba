@@ -18,9 +18,10 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * <p>$Id$</p>
+ * Provides entity snapshots functionality.
  *
  * @author artamonov
+ * @version $Id$
  */
 public interface EntitySnapshotService {
 

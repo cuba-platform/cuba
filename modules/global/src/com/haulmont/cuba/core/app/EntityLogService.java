@@ -6,6 +6,8 @@
 package com.haulmont.cuba.core.app;
 
 /**
+ * Supports entity log control from the client tier.
+ *
  * @author hasanov
  * @version $Id$
  */

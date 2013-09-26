@@ -8,12 +8,16 @@ import com.haulmont.cuba.core.entity.BaseEntity;
 
 /**
  * Defines the contract for handling of entities before they have been deleted or
- * marked as deleted in DB.<br>
+ * marked as deleted in DB.
+ *
+ * @author krivopustov
+ * @version $Id$
  */
-public interface BeforeDeleteEntityListener<T extends BaseEntity>
-{
+public interface BeforeDeleteEntityListener<T extends BaseEntity> {
+
     /**
-     * Executes before the object has been deleted or marked as deleted in DB.<br>
+     * Executes before the object has been deleted or marked as deleted in DB.
+     *
      * @param entity deleted entity
      */
     void onBeforeDelete(T entity);

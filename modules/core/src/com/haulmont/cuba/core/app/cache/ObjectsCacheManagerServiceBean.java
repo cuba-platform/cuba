@@ -11,9 +11,8 @@ import javax.inject.Inject;
 import java.util.Map;
 
 /**
- * <p>$Id$</p>
- *
  * @author artamonov
+ * @version $Id$
  */
 @Service(ObjectsCacheManagerService.NAME)
 public class ObjectsCacheManagerServiceBean implements ObjectsCacheManagerService {

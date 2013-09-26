@@ -4,6 +4,12 @@
  */
 package com.haulmont.cuba.core.app;
 
+/**
+ * Provides some functionality for history of opened screens.
+ *
+ * @author novikov
+ * @version $Id$
+ */
 public interface ScreenHistory {
 
     String NAME = "cuba_ScreenHistory";

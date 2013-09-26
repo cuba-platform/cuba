@@ -14,9 +14,8 @@ import java.util.List;
  * doesn't contain any logic to provide synchronization of singleton schedulers, delegating this task to the
  * <code>Coordinator</code>.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public interface Coordinator {
 

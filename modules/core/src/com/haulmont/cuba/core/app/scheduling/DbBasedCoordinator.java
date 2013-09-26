@@ -24,9 +24,8 @@ import java.util.List;
  * database.
  * <p>This implementation should not be used if the database is overloaded.</p>
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 @ManagedBean(Coordinator.NAME)
 public class DbBasedCoordinator implements Coordinator {

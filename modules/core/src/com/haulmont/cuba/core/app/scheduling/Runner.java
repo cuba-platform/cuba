@@ -11,9 +11,8 @@ import com.haulmont.cuba.security.global.UserSession;
 /**
  * Interface used by {@link Scheduling} to run scheduled tasks.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public interface Runner {
 

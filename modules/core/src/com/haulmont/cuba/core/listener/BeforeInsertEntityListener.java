@@ -7,12 +7,16 @@ package com.haulmont.cuba.core.listener;
 import com.haulmont.cuba.core.entity.BaseEntity;
 
 /**
- * Defines the contract for handling entities before they have been inserted into DB.<br>
+ * Defines the contract for handling entities before they have been inserted into DB.
+ *
+ * @author krivopustov
+ * @version $Id$
  */
-public interface BeforeInsertEntityListener<T extends BaseEntity>
-{
+public interface BeforeInsertEntityListener<T extends BaseEntity> {
+
     /**
-     * Executes before the object has been inserted into DB.<br>
+     * Executes before the object has been inserted into DB.
+     *
      * @param entity updated entity
      */
     void onBeforeInsert(T entity);

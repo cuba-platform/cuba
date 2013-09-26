@@ -9,9 +9,9 @@ import java.util.Map;
 
 /**
  * Data loader interface for ObjectsCache
- * <p>$Id$</p>
  *
  * @author artamonov
+ * @version $Id$
  */
 public interface CacheLoader {
     CacheSet loadData(ObjectsCache cache) throws CacheException;

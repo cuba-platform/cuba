@@ -10,11 +10,15 @@ import com.haulmont.cuba.core.entity.BaseEntity;
  * Defines the contract for handling of entities after they have been deleted or
  * marked as deleted in DB.<br>
  * Any updates through the EntityManager are impossible!
+ *
+ * @author krivopustov
+ * @version $Id$
  */
-public interface AfterDeleteEntityListener<T extends BaseEntity>
-{
+public interface AfterDeleteEntityListener<T extends BaseEntity> {
+
     /**
-     * Executes after the object has been deleted or marked as deleted in DB.<br>
+     * Executes after the object has been deleted or marked as deleted in DB.
+     *
      * @param entity deleted entity
      */
     void onAfterDelete(T entity);

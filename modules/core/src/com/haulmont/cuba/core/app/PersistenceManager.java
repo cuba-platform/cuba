@@ -27,9 +27,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Class that caches database metadata information and entity statistics. Also delegates some funtionality
- * to {@link DbUpdater}.
- *
  * @author krivopustov
  * @version $Id$
  */

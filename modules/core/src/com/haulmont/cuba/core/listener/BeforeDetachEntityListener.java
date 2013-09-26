@@ -10,11 +10,15 @@ import com.haulmont.cuba.core.entity.BaseEntity;
 /**
  * Defines the contract for handling entities right before they are detached from an EntityManager
  * on transaction commit.
+ *
+ * @author krivopustov
+ * @version $Id$
  */
-public interface BeforeDetachEntityListener<T extends BaseEntity>
-{
+public interface BeforeDetachEntityListener<T extends BaseEntity> {
+
     /**
      * Executes before the object is detached from an EntityManager on transaction commit.
+     *
      * @param entity        detached entity
      * @param entityManager current EntityManager
      */

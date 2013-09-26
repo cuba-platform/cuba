@@ -28,9 +28,8 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 @Service(SchedulingService.NAME)
 public class SchedulingServiceBean implements SchedulingService {

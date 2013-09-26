@@ -18,10 +18,10 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Create and analyze entity snapshots
- * <p>$Id$</p>
+ * Creates and analyzes entity snapshots.
  *
  * @author artamonov
+ * @version $Id$
  */
 @SuppressWarnings({"unused"})
 public interface EntitySnapshotAPI {

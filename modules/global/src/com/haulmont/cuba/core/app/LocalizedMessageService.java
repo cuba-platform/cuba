@@ -8,11 +8,11 @@ package com.haulmont.cuba.core.app;
 import java.util.Locale;
 
 /**
- * <p>$Id$</p>
+ * Service allowing clients to retrieve localized messages from the middleware.
  *
  * @author krivopustov
+ * @version $Id$
  */
-
 public interface LocalizedMessageService {
 
     String NAME = "cuba_LocalizedMessageService";

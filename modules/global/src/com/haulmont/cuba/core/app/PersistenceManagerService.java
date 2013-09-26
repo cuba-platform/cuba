@@ -4,6 +4,12 @@
  */
 package com.haulmont.cuba.core.app;
 
+/**
+ * Exposes some of {@code PersistenceManagerAPI} methods to the client tier.
+ *
+ * @author krivopustov
+ * @version $Id$
+ */
 public interface PersistenceManagerService {
 
     String NAME = "cuba_PersistenceManagerService";

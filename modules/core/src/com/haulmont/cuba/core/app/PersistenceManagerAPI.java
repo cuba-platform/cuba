@@ -10,7 +10,8 @@ import java.util.List;
 import java.util.SortedMap;
 
 /**
- * API to {@link PersistenceManager}.
+ * Caches database metadata information and entity statistics. Also delegates some funtionality
+ * to {@link com.haulmont.cuba.core.sys.DbUpdater}.
  *
  * @author krivopustov
  * @version $Id$

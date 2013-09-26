@@ -8,6 +8,10 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 @Service(PersistenceManagerService.NAME)
 public class PersistenceManagerServiceBean implements PersistenceManagerService {
 

@@ -19,6 +19,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 @Service(DataService.NAME)
 public class DataServiceBean implements DataService {
 

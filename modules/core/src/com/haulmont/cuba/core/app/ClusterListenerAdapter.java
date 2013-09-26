@@ -8,9 +8,8 @@ package com.haulmont.cuba.core.app;
 /**
  * Adapter containing default implementation for simple cluster listeners that don't need state transfer.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public abstract class ClusterListenerAdapter<T> implements ClusterListener<T> {
 

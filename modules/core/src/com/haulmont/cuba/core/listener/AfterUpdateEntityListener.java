@@ -9,11 +9,15 @@ import com.haulmont.cuba.core.entity.BaseEntity;
 /**
  * Defines the contract for handling of entities after they have been updated in DB.<br>
  * Any updates through the EntityManager are impossible!
+ *
+ * @author krivopustov
+ * @version $Id$
  */
-public interface AfterUpdateEntityListener<T extends BaseEntity>
-{
+public interface AfterUpdateEntityListener<T extends BaseEntity> {
+
     /**
-     * Executes after the object has been updated in DB.<br>
+     * Executes after the object has been updated in DB.
+     *
      * @param entity updated entity
      */
     void onAfterUpdate(T entity);

@@ -9,11 +9,15 @@ import com.haulmont.cuba.core.entity.BaseEntity;
 /**
  * Defines the contract for handling entities after they have been inserted into DB.<br>
  * Any updates through the EntityManager are impossible!
+ *
+ * @author krivopustov
+ * @version $Id$
  */
-public interface AfterInsertEntityListener<T extends BaseEntity>
-{
+public interface AfterInsertEntityListener<T extends BaseEntity> {
+
     /**
-     * Executes after the object has been inserted into DB.<br>
+     * Executes after the object has been inserted into DB.
+     *
      * @param entity updated entity
      */
     void onAfterInsert(T entity);

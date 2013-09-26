@@ -15,6 +15,9 @@ import java.util.Collection;
 
 /**
  * Facade to OpenJPA data cache functionality.
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 @ManagedBean(DataCacheAPI.NAME)
 public class DataCache implements DataCacheAPI {

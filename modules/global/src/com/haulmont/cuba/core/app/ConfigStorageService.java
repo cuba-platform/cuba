@@ -8,9 +8,10 @@ package com.haulmont.cuba.core.app;
 import java.util.Map;
 
 /**
- * <p>$Id$</p>
+ * Supports configuration parameters framework functionality.
  *
  * @author krivopustov
+ * @version $Id$
  */
 public interface ConfigStorageService {
 

@@ -9,9 +9,8 @@ import java.util.Map;
 /**
  * Supports configuration parameters framework functionality.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public interface ConfigStorageAPI {
 

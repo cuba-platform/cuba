@@ -10,6 +10,10 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import java.util.List;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 @Service(LockService.NAME)
 public class LockServiceBean implements LockService {
 

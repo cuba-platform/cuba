@@ -8,6 +8,9 @@ import java.util.Collection;
 
 /**
  * Facade to OpenJPA data cache functionality.
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 public interface DataCacheAPI {
 

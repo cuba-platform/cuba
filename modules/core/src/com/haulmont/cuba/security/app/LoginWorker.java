@@ -15,6 +15,9 @@ import java.util.UUID;
 
 /**
  * Interface to {@link com.haulmont.cuba.security.app.LoginWorkerBean}
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 public interface LoginWorker {
 

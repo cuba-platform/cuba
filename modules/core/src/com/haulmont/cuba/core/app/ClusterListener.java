@@ -8,6 +8,9 @@ package com.haulmont.cuba.core.app;
  * Interface to be implemented by middleware cluster listeners. A cluster listener receives messages from other nodes
  * in the cluster.
  * @param <T>   type of message this listener receives
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 public interface ClusterListener<T> {
 

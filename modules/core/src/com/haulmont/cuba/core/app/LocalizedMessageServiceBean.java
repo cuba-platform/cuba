@@ -5,21 +5,24 @@
 
 package com.haulmont.cuba.core.app;
 
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.Messages;
 
 import javax.annotation.ManagedBean;
+import javax.inject.Inject;
 import java.util.Locale;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 @ManagedBean(LocalizedMessageService.NAME)
 public class LocalizedMessageServiceBean implements LocalizedMessageService {
 
+    @Inject
+    protected Messages messages;
+
     @Override
     public String getMessage(String pack, String key, Locale locale) {
-        return MessageProvider.getMessage(pack, key, locale);
+        return messages.getMessage(pack, key, locale);
     }
 }
