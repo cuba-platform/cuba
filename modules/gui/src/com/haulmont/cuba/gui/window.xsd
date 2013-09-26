@@ -544,13 +544,6 @@
         </xs:complexContent>
     </xs:complexType>
 
-    <!-- AutoCompleteTextField -->
-    <xs:complexType name="autoCompleteTextFieldComponent">
-        <xs:complexContent>
-            <xs:extension base="textAreaComponent"/>
-        </xs:complexContent>
-    </xs:complexType>
-
     <!-- RichTextArea -->
     <xs:complexType name="richTextAreaComponent">
         <xs:complexContent>
@@ -1397,7 +1390,6 @@
                 <xs:element name="textField" type="textFieldComponent"/>
                 <xs:element name="passwordField" type="passwordFieldComponent"/>
                 <xs:element name="richTextArea" type="richTextAreaComponent"/>
-                <xs:element name="autoCompleteTextField" type="autoCompleteTextFieldComponent"/>
                 <xs:element name="sourceCodeEditor" type="sourceCodeEditorComponent"/>
                 <xs:element name="maskedField" type="maskedFieldComponent"/>
 

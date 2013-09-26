@@ -15,6 +15,7 @@ import com.haulmont.cuba.core.sys.jpql.pointer.NoPointer;
 import com.haulmont.cuba.core.sys.jpql.pointer.Pointer;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.CommonTree;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -24,10 +25,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * User: Alex Chevelev
- * Date: 13.10.2010
- * Time: 20:44:41
- *
+ * @author chevelev
  * @version $Id$
  */
 public class HintProvider {
@@ -137,7 +135,7 @@ public class HintProvider {
     }
 
     private List<String> prepareErrorMessages(List<ErrorRec> errorRecs) {
-        List<String> errorMessages = new ArrayList<String>();
+        List<String> errorMessages = new ArrayList<>();
         for (ErrorRec errorRec : errorRecs) {
             CommonTree errorNode = errorRec.node;
             StringBuilder b = new StringBuilder();
@@ -154,7 +152,7 @@ public class HintProvider {
     private HintResponse hintEntityName(String lastWord) {
         List<Entity> matchingEntities = model.findEntitiesStartingWith(lastWord);
 
-        List<Option> options = new ArrayList<Option>();
+        List<Option> options = new ArrayList<>();
         for (Entity entity : matchingEntities) {
             options.add(new Option(entity.getName(), entity.getUserFriendlyName()));
         }
@@ -162,9 +160,14 @@ public class HintProvider {
     }
 
     public static Set<InferredType> narrowExpectedTypes(String input, int cursorPos, Set<InferredType> expectedTypes) {
-        if (input.charAt(cursorPos) == ' ') {
+        if (StringUtils.isEmpty(input)) {
             return expectedTypes;
         }
+
+        if (cursorPos >= 0 && cursorPos < input.length() && input.charAt(cursorPos) == ' ') {
+            return expectedTypes;
+        }
+
         String matchingInput = input.substring(0, cursorPos + 1);
         Matcher matcher = COLLECTION_MEMBER_PATTERN.matcher(matchingInput);
         if (matcher.matches()) {

@@ -7,15 +7,14 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.gui.autocomplete.AutoCompleteSupport;
 import com.haulmont.cuba.gui.autocomplete.Suggester;
-import com.haulmont.cuba.gui.components.AutoCompleteTextField;
 import com.haulmont.cuba.gui.components.SourceCodeEditor;
 
 /**
  * @author krivopustov
  * @version $Id$
  */
-public class DesktopAutoCompleteTextField extends DesktopResizableTextArea
-        implements AutoCompleteTextField, SourceCodeEditor {
+public class DesktopSourceCodeEditor extends DesktopResizableTextArea
+        implements SourceCodeEditor {
 
     protected Suggester suggester;
     protected Mode mode;

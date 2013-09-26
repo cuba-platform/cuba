@@ -103,6 +103,9 @@ public class WebSourceCodeEditor extends WebAbstractField<CubaSourceCodeEditor> 
 
         @Override
         public List<Suggestion> getSuggestions(String text, int cursor) {
+            // make sure that component has value same as client
+            component.setValue(text);
+
             if (suggester == null)
                 return Collections.emptyList();
 

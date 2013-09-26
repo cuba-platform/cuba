@@ -37,23 +37,4 @@ public class CubaSourceCodeEditor extends AceEditor implements AutoCompleteSuppo
         setTextChangeEventMode(AbstractTextField.TextChangeEventMode.LAZY);
         setTextChangeTimeout(200);
     }
-
-    @Override
-    protected void setInternalValue(String newValue) {
-        if (newValue == null) {
-            newValue = "";
-        }
-
-        super.setInternalValue(newValue);
-    }
-
-    @Override
-    protected void setValue(String newFieldValue, boolean repaintIsNotNeeded)
-            throws ReadOnlyException, Converter.ConversionException, Validator.InvalidValueException {
-        if (newFieldValue == null) {
-            newFieldValue = "";
-        }
-
-        super.setValue(newFieldValue, repaintIsNotNeeded);
-    }
 }

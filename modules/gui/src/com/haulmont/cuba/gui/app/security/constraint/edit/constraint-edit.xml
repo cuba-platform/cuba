@@ -25,13 +25,13 @@
                 </row>
                 <row>
                     <label value="msg://joinClause"/>
-                    <autoCompleteTextField id="joinClause" datasource="constraint" property="joinClause"
-                                           width="500px" rows="3"/>
+                    <sourceCodeEditor id="joinClause" datasource="constraint" property="joinClause"
+                                           width="500px" height="70px"/>
                 </row>
                 <row>
                     <label value="msg://whereClause"/>
-                    <autoCompleteTextField id="whereClause" datasource="constraint" property="whereClause"
-                                           width="500px" rows="3"/>
+                    <sourceCodeEditor id="whereClause" datasource="constraint" property="whereClause"
+                                           width="500px" height="70px"/>
                 </row>
             </rows>
         </grid>

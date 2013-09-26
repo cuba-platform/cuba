@@ -45,8 +45,8 @@ public abstract class AbstractCustomConditionEditDlg<T> {
     protected Label entityParamViewLab;
     protected LookupField entitySelect;
     protected TextField nameText;
-    protected AutoCompleteTextField whereText;
-    protected AutoCompleteTextField joinText;
+    protected SourceCodeEditor whereText;
+    protected SourceCodeEditor joinText;
     protected LookupField typeSelect;
     protected CheckBox typeCheckBox;
     protected TextArea entityParamWhereText;
@@ -80,11 +80,12 @@ public abstract class AbstractCustomConditionEditDlg<T> {
         joinLab = factory.createComponent(Label.NAME);
         joinLab.setValue(messages.getMessage(MESSAGES_PACK, "CustomConditionEditDlg.joinLabel"));
 
-        joinText = factory.createComponent(AutoCompleteTextField.NAME);
+        joinText = factory.createComponent(SourceCodeEditor.NAME);
         joinText.setWidth(FIELD_WIDTH);
         joinText.setValue(condition.getJoin());
 
         joinText.setSuggester(new Suggester() {
+            @Override
             public List<Suggestion> getSuggestions(AutoCompleteSupport source, String text, int cursorPosition) {
                 return requestHint(joinText, text, cursorPosition);
             }
@@ -93,19 +94,18 @@ public abstract class AbstractCustomConditionEditDlg<T> {
         whereLab = factory.createComponent(Label.NAME);
         whereLab.setValue(messages.getMessage(MESSAGES_PACK, "CustomConditionEditDlg.whereLabel"));
 
-        whereText = factory.createComponent(AutoCompleteTextField.NAME);
+        whereText = factory.createComponent(SourceCodeEditor.NAME);
         whereText.setWidth(FIELD_WIDTH);
         whereText.setHeight("200px");
         String where = replaceParamWithQuestionMark(condition.getWhere());
         whereText.setValue(where);
 
-        whereText.setSuggester(
-                new Suggester() {
-                    public List<Suggestion> getSuggestions(AutoCompleteSupport source, String text, int cursorPosition) {
-                        return requestHint(whereText, text, cursorPosition);
-                    }
-                }
-        );
+        whereText.setSuggester(new Suggester() {
+            @Override
+            public List<Suggestion> getSuggestions(AutoCompleteSupport source, String text, int cursorPosition) {
+                return requestHint(whereText, text, cursorPosition);
+            }
+        });
 
         typeLab = factory.createComponent(Label.NAME);
         typeLab.setValue(messages.getMessage(MESSAGES_PACK, "CustomConditionEditDlg.paramTypeLabel"));
@@ -192,7 +192,7 @@ public abstract class AbstractCustomConditionEditDlg<T> {
         });
     }
 
-    private List<Suggestion> requestHint(AutoCompleteTextField sender, String text, int senderCursorPosition) {
+    private List<Suggestion> requestHint(SourceCodeEditor sender, String text, int senderCursorPosition) {
         String joinStr = joinText.getValue();
         String whereStr = whereText.getValue();
         CollectionDatasource ds = (CollectionDatasource) condition.getDatasource();
@@ -308,7 +308,6 @@ public abstract class AbstractCustomConditionEditDlg<T> {
         }
         return null;
     }
-
 
     protected void fillEntitySelect(AbstractParam param) {
         if (!entitySelect.isEnabled())

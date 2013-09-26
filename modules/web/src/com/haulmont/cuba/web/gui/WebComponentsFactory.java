@@ -39,7 +39,6 @@ public class WebComponentsFactory implements ComponentsFactory {
         classes.put(Label.NAME, WebLabel.class);
         classes.put(CheckBox.NAME, WebCheckBox.class);
         classes.put(GroupBoxLayout.NAME, WebGroupBox.class);
-        classes.put(AutoCompleteTextField.NAME, WebAutoCompleteTextField.class);
         classes.put(SourceCodeEditor.NAME, WebSourceCodeEditor.class);
         classes.put(TextField.NAME, WebTextField.class);
         classes.put(PasswordField.NAME, WebPasswordField.class);

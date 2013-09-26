@@ -43,8 +43,7 @@ public class DesktopComponentsFactory implements ComponentsFactory {
 
         //Use resizable text area instead of text field
         classes.put(ResizableTextArea.NAME, DesktopResizableTextArea.class);
-        classes.put(AutoCompleteTextField.NAME, DesktopAutoCompleteTextField.class);
-        classes.put(SourceCodeEditor.NAME, DesktopAutoCompleteTextField.class);
+        classes.put(SourceCodeEditor.NAME, DesktopSourceCodeEditor.class);
         classes.put(PasswordField.NAME, DesktopPasswordField.class);
         classes.put(TextField.NAME, DesktopTextField.class);
 

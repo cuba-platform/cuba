@@ -6,18 +6,20 @@
 package com.haulmont.cuba.gui.app.security.constraint.edit;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.autocomplete.AutoCompleteSupport;
 import com.haulmont.cuba.gui.autocomplete.JpqlSuggestionFactory;
 import com.haulmont.cuba.gui.autocomplete.Suggester;
 import com.haulmont.cuba.gui.autocomplete.Suggestion;
-import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.components.AbstractEditor;
+import com.haulmont.cuba.gui.components.LookupField;
+import com.haulmont.cuba.gui.components.SourceCodeEditor;
 
 import javax.inject.Inject;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * @author Chevelev
@@ -29,10 +31,10 @@ public class ConstraintEditor extends AbstractEditor {
     protected LookupField entityName;
 
     @Inject
-    protected AutoCompleteTextField joinClause;
+    protected SourceCodeEditor joinClause;
 
     @Inject
-    protected AutoCompleteTextField whereClause;
+    protected SourceCodeEditor whereClause;
 
     @Inject
     protected Metadata metadata;
@@ -56,26 +58,28 @@ public class ConstraintEditor extends AbstractEditor {
         entityName.setOptionsMap(options);
 
         joinClause.setSuggester(new Suggester() {
+            @Override
             public List<Suggestion> getSuggestions(AutoCompleteSupport source, String text, int cursorPosition) {
                 return requestHint(joinClause, text, cursorPosition);
             }
         });
 
         whereClause.setSuggester(new Suggester() {
+            @Override
             public List<Suggestion> getSuggestions(AutoCompleteSupport source, String text, int cursorPosition) {
                 return requestHint(whereClause, text, cursorPosition);
             }
         });
     }
 
-    protected List<Suggestion> requestHint(AutoCompleteTextField sender, String text, int cursorPosition) {
-        String joinStr = (String) joinClause.getValue();
-        String whereStr = (String) whereClause.getValue();
+    protected List<Suggestion> requestHint(SourceCodeEditor sender, String text, int cursorPosition) {
+        String joinStr = joinClause.getValue();
+        String whereStr = whereClause.getValue();
 
         // the magic entity name!  The length is three character to match "{E}" length in query
         String entityNameAlias = "a39";
 
-        int position = -1;
+        int position = 0;
 
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append("select ");
