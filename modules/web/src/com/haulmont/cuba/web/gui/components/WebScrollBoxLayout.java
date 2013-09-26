@@ -11,6 +11,7 @@ import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 
@@ -20,19 +21,27 @@ import java.util.*;
  */
 public class WebScrollBoxLayout extends WebAbstractComponent<Panel> implements ScrollBoxLayout, Component.Wrapper {
 
+    public static final String CUBA_SCROLLBOX_CONTENT_STYLE = "cuba-scrollbox-content";
+
     protected List<Component> components = new ArrayList<>();
     protected Alignment alignment = Alignment.TOP_LEFT;
     protected Orientation orientation = Orientation.VERTICAL;
     protected ScrollBarPolicy scrollBarPolicy = ScrollBarPolicy.VERTICAL;
 
+    protected String styleName;
+
     public WebScrollBoxLayout() {
         component = new Panel();
-        component.setContent(new VerticalLayout());
+        component.setStyleName("cuba-scrollbox");
+
+        VerticalLayout content = new VerticalLayout();
+        content.setStyleName(CUBA_SCROLLBOX_CONTENT_STYLE);
+        component.setContent(content);
 
         getContent().setMargin(false);
     }
 
-    private AbstractOrderedLayout getContent() {
+    protected AbstractOrderedLayout getContent() {
         return (AbstractOrderedLayout) component.getContent();
     }
 
@@ -47,6 +56,7 @@ public class WebScrollBoxLayout extends WebAbstractComponent<Panel> implements S
         if (newContent != null) {
             newContent.setMargin((getContent()).getMargin());
             newContent.setSpacing((getContent()).isSpacing());
+            newContent.setStyleName(CUBA_SCROLLBOX_CONTENT_STYLE);
             component.setContent(newContent);
 
             applyScrollBarsPolicy(scrollBarPolicy);
@@ -54,6 +64,24 @@ public class WebScrollBoxLayout extends WebAbstractComponent<Panel> implements S
 
         getContent().addComponent(WebComponentsHelper.getComposition(childComponent));
         components.add(childComponent);
+    }
+
+    @Override
+    public void setStyleName(String styleName) {
+        if (StringUtils.isNotEmpty(this.styleName)) {
+            getComposition().removeStyleName(this.styleName);
+        }
+
+        this.styleName = styleName;
+
+        if (StringUtils.isNotEmpty(styleName)) {
+            getComposition().addStyleName(styleName);
+        }
+    }
+
+    @Override
+    public String getStyleName() {
+        return styleName;
     }
 
     @Override
@@ -153,7 +181,7 @@ public class WebScrollBoxLayout extends WebAbstractComponent<Panel> implements S
         this.scrollBarPolicy = scrollBarPolicy;
     }
 
-    private void applyScrollBarsPolicy(ScrollBarPolicy scrollBarPolicy) {
+    protected void applyScrollBarsPolicy(ScrollBarPolicy scrollBarPolicy) {
         switch (scrollBarPolicy) {
             case VERTICAL:
                 getContent().setHeight(Sizeable.SIZE_UNDEFINED, Sizeable.Unit.PIXELS);
