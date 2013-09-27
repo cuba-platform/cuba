@@ -420,6 +420,7 @@ public class WebWindowManager extends WindowManager {
     protected Layout createNewTabLayout(final Window window, final boolean multipleOpen, final String caption,
                                         final String description, AppWindow appWindow, Component... components) {
         final VerticalLayout layout = new VerticalLayout();
+        layout.setStyleName("cuba-app-tabbed-window");
         layout.setSizeFull();
         if (components != null) {
             for (final Component c : components) {
@@ -604,6 +605,7 @@ public class WebWindowManager extends WindowManager {
 
         // surrond window layout with outer layout to prevent double painting
         VerticalLayout outerLayout = new VerticalLayout();
+        outerLayout.setStyleName("cuba-app-dialog-window");
         outerLayout.addComponent(layout);
         outerLayout.setExpandRatio(layout, 1);
 
@@ -950,6 +952,7 @@ public class WebWindowManager extends WindowManager {
         });
 
         final VerticalLayout layout = new VerticalLayout();
+        layout.setStyleName("cuba-app-message-dialog");
         layout.setMargin(true);
         window.setContent(layout);
 
