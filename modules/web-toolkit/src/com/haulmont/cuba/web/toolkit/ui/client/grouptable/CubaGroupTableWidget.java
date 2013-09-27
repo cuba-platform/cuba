@@ -427,7 +427,7 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
 
                 Element groupDiv = DOM.createDiv();
                 DOM.setInnerHTML(groupDiv, "&nbsp;");
-                Tools.setStyleName(groupDiv, CLASSNAME + "-group-cell");
+                Tools.setStyleName(groupDiv, CLASSNAME + "-group-cell-expander");
                 DOM.appendChild(container, groupDiv);
 
                 Element contentDiv = DOM.createDiv();

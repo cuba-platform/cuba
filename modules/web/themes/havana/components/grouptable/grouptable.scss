@@ -7,25 +7,26 @@
 
 @mixin havana-cuba-grouptable($primaryStyleName : cuba-grouptable) {
   .#{$primaryStyleName} {
-    .#{$primaryStyleName}-group-cell {
-      width: 9px;
-      height: 9px;
-      margin-top: 4px;
+    .#{$primaryStyleName}-group-cell-expander {
+      width: 12px;
+      height: 12px;
       margin-right: 2px;
+      vertical-align: middle;
       background: transparent;
       background-repeat: no-repeat;
-      background-position: center left;
-      background-image: url(sprites/expand.png); /** sprite-ref: components; */
+      background-position: center;
+      background-image:  url(../tree/images/item-collapsed.png);
       display: inline-block;
       cursor: pointer;
     }
 
-    .v-expanded .#{$primaryStyleName}-group-cell {
-      background-image: url(sprites/collapse.png); /** sprite-ref: components; */
+    .v-expanded .#{$primaryStyleName}-group-cell-expander {
+      background-image:  url(../tree/images/item-expanded.png);
     }
 
     .#{$primaryStyleName}-float {
       display: inline-block;
+      vertical-align: middle;
     }
   }
 }
