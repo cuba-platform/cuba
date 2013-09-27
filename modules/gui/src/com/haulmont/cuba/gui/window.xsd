@@ -219,6 +219,10 @@
         <xs:attribute name="margin" type="xs:string" use="optional"/>
     </xs:attributeGroup>
 
+    <xs:attributeGroup name="hasSpacing">
+        <xs:attribute name="spacing" type="xs:boolean" use="optional"/>
+    </xs:attributeGroup>
+
     <xs:attributeGroup name="hasExpand">
         <xs:attribute name="expand" type="xs:string" use="optional"/>
     </xs:attributeGroup>
@@ -1192,7 +1196,7 @@
         <xs:attributeGroup ref="hasExpand"/>
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasEnableProp"/>
-        <xs:attributeGroup ref="hasSpacingMargin"/>
+        <xs:attributeGroup ref="hasSpacing"/>
 
         <xs:attribute name="collapsable" type="xs:boolean" use="optional"/>
         <xs:attribute name="collapsed" type="xs:boolean" use="optional"/>
