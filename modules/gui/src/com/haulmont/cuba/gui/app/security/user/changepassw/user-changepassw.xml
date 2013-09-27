@@ -18,25 +18,23 @@
         </datasource>
     </dsContext>
 
-    <layout>
-        <vbox spacing="true">
-            <grid spacing="true" width="100%">
-                <columns>
-                    <column flex="1"/>
-                    <column flex="1"/>
-                </columns>
-                <rows>
-                    <row>
-                        <label id="passwLab" value="msg://password"/>
-                        <passwordField id="passwField"/>
-                    </row>
-                    <row>
-                        <label id="confirmPasswLab" value="msg://confirmPassword"/>
-                        <passwordField id="confirmPasswField"/>
-                    </row>
-                </rows>
-            </grid>
-            <iframe id="windowActions" screen="editWindowActions"/>
-        </vbox>
+    <layout spacing="true">
+        <grid spacing="true">
+            <columns>
+                <column flex="1"/>
+                <column flex="1"/>
+            </columns>
+            <rows>
+                <row>
+                    <label id="passwLab" value="msg://password"/>
+                    <passwordField id="passwField" width="200px"/>
+                </row>
+                <row>
+                    <label id="confirmPasswLab" value="msg://confirmPassword"/>
+                    <passwordField id="confirmPasswField" width="200px"/>
+                </row>
+            </rows>
+        </grid>
+        <iframe id="windowActions" screen="editWindowActions"/>
     </layout>
 </window>

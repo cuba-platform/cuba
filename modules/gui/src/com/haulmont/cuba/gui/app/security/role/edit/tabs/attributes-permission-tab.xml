@@ -39,7 +39,7 @@
         </hbox>
 
         <hbox id="contentPane" expand="contentSplit" margin="true" width="100%">
-            <split id="contentSplit" height="100%" orientation="horizontal" pos="75">
+            <split id="contentSplit" height="100%" orientation="horizontal" pos="60">
                 <vbox id="tablePane" expand="propertyPermissionsTable" height="100%">
                     <table id="propertyPermissionsTable" width="100%">
                         <columns>

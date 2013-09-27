@@ -8,6 +8,7 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.PasswordEncryption;
 import com.haulmont.cuba.gui.components.AbstractEditor;
+import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.gui.components.PasswordField;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.security.app.UserManagementService;
@@ -16,6 +17,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.Map;
 
 /**
@@ -32,6 +34,9 @@ public class UserChangePassw extends AbstractEditor {
     @Inject
     protected Datasource<User> userDs;
 
+    @Named("windowActions.windowClose")
+    protected Button closeBtn;
+
     @Inject
     protected Configuration configuration;
 
@@ -45,10 +50,9 @@ public class UserChangePassw extends AbstractEditor {
 
     @Override
     protected void postInit() {
-        super.postInit();
-
-        if (!cancelEnabled)
-            getComponent("windowActions.windowClose").setVisible(false);
+        if (!cancelEnabled) {
+            closeBtn.setVisible(false);
+        }
     }
 
     @Override
