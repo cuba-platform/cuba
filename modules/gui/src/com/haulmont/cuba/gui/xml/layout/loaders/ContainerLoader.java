@@ -71,11 +71,11 @@ public abstract class ContainerLoader extends ComponentLoader {
     protected void loadMargin(Component.Margin layout, Element element) {
         final String margin = element.attributeValue("margin");
         if (!StringUtils.isEmpty(margin)) {
-            if (margin.contains(";")) {
-                final String[] margins = margin.split(";");
+            if (margin.contains(";") || margin.contains(",")) {
+                final String[] margins = margin.split("[;,]");
                 if (margins.length != 4) {
                     throw new GuiDevelopmentException(
-                            "Margin attribute must contain 1 or 4 boolean values separated by ';'", context.getFullFrameId());
+                            "Margin attribute must contain 1 or 4 boolean values separated by ',' or ';", context.getFullFrameId());
                 }
                 layout.setMargin(Boolean.valueOf(margins[0]), Boolean.valueOf(margins[1]),
                         Boolean.valueOf(margins[2]), Boolean.valueOf(margins[3]));
