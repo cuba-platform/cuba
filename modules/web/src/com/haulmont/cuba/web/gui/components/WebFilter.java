@@ -302,6 +302,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
 
         maxResultsCb.setStyleName("cuba-filter-maxresults");
         maxResultsLayout.addComponent(maxResultsCb);
+        maxResultsLayout.setComponentAlignment(maxResultsCb, com.vaadin.ui.Alignment.MIDDLE_LEFT);
 
         maxResultsField = new TextField();
         maxResultsField.setImmediate(true);
@@ -1590,6 +1591,16 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
     @Override
     public String getStyleName() {
         return userStyleName;
+    }
+
+    @Override
+    public void setMargin(boolean enable) {
+        component.setMargin(enable);
+    }
+
+    @Override
+    public void setMargin(boolean topEnable, boolean rightEnable, boolean bottomEnable, boolean leftEnable) {
+        component.setMargin(new MarginInfo(topEnable, rightEnable, bottomEnable, leftEnable));
     }
 
     protected boolean getResultingManualApplyRequired() {

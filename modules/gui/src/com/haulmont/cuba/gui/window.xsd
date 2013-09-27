@@ -899,6 +899,8 @@
         <xs:attributeGroup ref="hasStyle"/>
         <xs:attributeGroup ref="hasVisibility"/>
 
+        <xs:attribute name="margin" type="xs:string" use="optional"/>
+
         <xs:attribute name="applyTo" type="xs:string" use="optional"/>
         <xs:attribute name="useMaxResults" type="xs:boolean" use="optional"/>
         <xs:attribute name="manualApplyRequired" type="xs:boolean" use="optional"/>

@@ -19,7 +19,7 @@
             <button id="refreshButton" icon="icons/refresh.png"/>
         </hbox>
 
-        <filter id="primaryFilter">
+        <filter id="primaryFilter" margin="false,false,true,false">
             <properties include=".*" exclude=""/>
         </filter>
 

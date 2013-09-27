@@ -21,6 +21,7 @@ import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.components.*;
 import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
 import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
+import com.haulmont.cuba.desktop.sys.layout.MigLayoutHelper;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowParams;
@@ -1241,6 +1242,19 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     @Override
     public boolean isFolderActionsEnabled() {
         return folderActionsEnabled;
+    }
+
+    @Override
+    public void setMargin(boolean enable) {
+        setMargin(enable, enable, enable, enable);
+    }
+
+    @Override
+    public void setMargin(boolean topEnable, boolean rightEnable, boolean bottomEnable, boolean leftEnable) {
+        MigLayout layout = (MigLayout) impl.getLayout();
+        LC lc = new LC();
+        lc.setInsets(MigLayoutHelper.makeInsets(new boolean[] {topEnable, rightEnable, bottomEnable, leftEnable}));
+        layout.setLayoutConstraints(lc);
     }
 
     private boolean getResultingManualApplyRequired() {

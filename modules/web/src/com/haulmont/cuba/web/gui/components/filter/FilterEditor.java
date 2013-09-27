@@ -75,12 +75,15 @@ public class FilterEditor extends AbstractFilterEditor {
         layout.setWidth(EDITOR_WIDTH);
 
         GridLayout topGrid = new GridLayout(2, 1);
-        topGrid.setWidth("100%");
+        topGrid.setWidth(TABLE_WIDTH);
         topGrid.setSpacing(true);
 
-        GridLayout bottomGrid = new GridLayout(2, 3);
-        bottomGrid.setWidth("100%");
-        bottomGrid.setSpacing(true);
+        HorizontalLayout bottomLayout = new HorizontalLayout();
+        bottomLayout.setWidth(TABLE_WIDTH);
+        bottomLayout.setSpacing(true);
+
+        HorizontalLayout flagsLayout = new HorizontalLayout();
+        flagsLayout.setSpacing(true);
 
         HorizontalLayout controlLayout = new HorizontalLayout();
         controlLayout.setSpacing(true);
@@ -136,16 +139,17 @@ public class FilterEditor extends AbstractFilterEditor {
         });
         controlLayout.addComponent(cancelBtn);
 
-        bottomGrid.addComponent(controlLayout, 0, 2);
+        bottomLayout.addComponent(flagsLayout);
+
+        bottomLayout.addComponent(controlLayout);
+        bottomLayout.setComponentAlignment(controlLayout, Alignment.MIDDLE_RIGHT);
 
         globalCb = new CheckBox();
         globalCb.setCaption(getMessage("FilterEditor.global"));
         globalCb.setValue(filterEntity.getUser() == null);
         globalCb.setEnabled(AppBeans.get(UserSessionSource.class).getUserSession().isSpecificPermitted("cuba.gui.filter.global"));
-        controlLayout.addComponent(globalCb);
 
-        bottomGrid.addComponent(globalCb, 1, 0);
-        bottomGrid.setComponentAlignment(globalCb, Alignment.MIDDLE_RIGHT);
+        flagsLayout.addComponent(globalCb);
 
         defaultCb = new CheckBox();
         defaultCb.setCaption(getMessage("FilterEditor.isDefault"));
@@ -166,8 +170,8 @@ public class FilterEditor extends AbstractFilterEditor {
                 }
             }
         });
-        bottomGrid.addComponent(defaultCb, 1, 1);
-        bottomGrid.setComponentAlignment(defaultCb, Alignment.MIDDLE_RIGHT);
+
+        flagsLayout.addComponent(defaultCb);
 
         applyDefaultCb = new CheckBox();
         applyDefaultCb.setCaption(getMessage("FilterEditor.applyDefault"));
@@ -182,14 +186,14 @@ public class FilterEditor extends AbstractFilterEditor {
             }
         });
 
-        bottomGrid.addComponent(applyDefaultCb, 1, 2);
-        bottomGrid.setComponentAlignment(applyDefaultCb, Alignment.MIDDLE_RIGHT);
+        flagsLayout.addComponent(applyDefaultCb);
 
         HorizontalLayout nameLayout = new HorizontalLayout();
         nameLayout.setSpacing(true);
 
         Label label = new Label(getMessage("FilterEditor.nameLab"));
         nameLayout.addComponent(label);
+        nameLayout.setComponentAlignment(label, Alignment.MIDDLE_LEFT);
 
         nameField = new TextField();
         nameField.setValue(filterEntity.getName());
@@ -197,7 +201,6 @@ public class FilterEditor extends AbstractFilterEditor {
         nameLayout.addComponent(nameField);
 
         topGrid.addComponent(nameLayout, 0, 0);
-        topGrid.setWidth(TABLE_WIDTH);
 
         HorizontalLayout addLayout = new HorizontalLayout();
         addLayout.setSpacing(true);
@@ -218,6 +221,8 @@ public class FilterEditor extends AbstractFilterEditor {
         controlsAndtable.setSpacing(true);
         initTable(controlsAndtable);
 
+        controlsAndtable.addComponent(bottomLayout);
+
         hlayLayout.addComponent(controlsAndtable);
 
         VerticalLayout upDownLayout = new VerticalLayout();
@@ -227,7 +232,6 @@ public class FilterEditor extends AbstractFilterEditor {
         hlayLayout.addComponent(upDownLayout);
         hlayLayout.setComponentAlignment(upDownLayout, Alignment.MIDDLE_CENTER);
         layout.addComponent(hlayLayout);
-        layout.addComponent(bottomGrid);
 
         updateControls();
     }
@@ -236,15 +240,16 @@ public class FilterEditor extends AbstractFilterEditor {
         return saveBtn;
     }
 
-    private void initAddDialog(HorizontalLayout addLayout) {
+    protected void initAddDialog(HorizontalLayout addLayout) {
         Button addBtn = new Button(getMessage("FilterEditor.addCondition"));
         addBtn.addClickListener(new AddConditionClickListener());
         addLayout.addComponent(addBtn);
     }
 
-    private void initAddSelect(AbstractLayout layout) {
+    protected void initAddSelect(AbstractOrderedLayout layout) {
         Label label = new Label(getMessage("FilterEditor.addCondition"));
         layout.addComponent(label);
+        layout.setComponentAlignment(label, Alignment.MIDDLE_LEFT);
 
         addSelect = new ComboBox();
         addSelect.setImmediate(true);
@@ -292,7 +297,7 @@ public class FilterEditor extends AbstractFilterEditor {
         layout.addComponent(addBtn);
     }
 
-    private void initTable(AbstractLayout layout) {
+    protected void initTable(AbstractLayout layout) {
         table = new CubaTreeTable() {
             @Override
             public void containerItemSetChange(Container.ItemSetChangeEvent event) {
@@ -368,7 +373,7 @@ public class FilterEditor extends AbstractFilterEditor {
         layout.addComponent(table);
     }
 
-    private void addCondition(AbstractConditionDescriptor descriptor) {
+    protected void addCondition(AbstractConditionDescriptor descriptor) {
         AbstractCondition condition = descriptor.createCondition();
         Node<AbstractCondition> node = new Node<>(condition);
 
@@ -397,7 +402,7 @@ public class FilterEditor extends AbstractFilterEditor {
         }
     }
 
-    private void updateControls() {
+    protected void updateControls() {
         if (filterEntity.getFolder() != null || filterEntity.getCode() == null)
             saveBtn.setEnabled(!conditions.getRootNodes().isEmpty());
         else
@@ -462,7 +467,7 @@ public class FilterEditor extends AbstractFilterEditor {
         return filterEntity;
     }
 
-    private class AddConditionClickListener implements Button.ClickListener {
+    protected class AddConditionClickListener implements Button.ClickListener {
         @Override
         public void buttonClick(Button.ClickEvent event) {
             AddConditionDlg dlg = new AddConditionDlg(

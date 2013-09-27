@@ -259,6 +259,23 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         }
     }
 
+    protected void loadMargin(Component.Margin layout, Element element) {
+        final String margin = element.attributeValue("margin");
+        if (!StringUtils.isEmpty(margin)) {
+            if (margin.contains(";") || margin.contains(",")) {
+                final String[] margins = margin.split("[;,]");
+                if (margins.length != 4) {
+                    throw new GuiDevelopmentException(
+                            "Margin attribute must contain 1 or 4 boolean values separated by ',' or ';", context.getFullFrameId());
+                }
+                layout.setMargin(Boolean.valueOf(margins[0]), Boolean.valueOf(margins[1]),
+                        Boolean.valueOf(margins[2]), Boolean.valueOf(margins[3]));
+            } else if (isBoolean(margin)) {
+                layout.setMargin(Boolean.valueOf(margin));
+            }
+        }
+    }
+
     protected void assignFrame(final Component.BelongToFrame component) {
         if (context.getFrame() != null) {
             component.setFrame(context.getFrame());

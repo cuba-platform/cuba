@@ -21,7 +21,7 @@
     </dsContext>
 
     <layout expand="filesTable" spacing="true">
-        <filter id="genericFilter" datasource="filesDs">
+        <filter id="genericFilter" datasource="filesDs" margin="false,false,true,false">
             <properties include=".*"/>
         </filter>
         <table id="filesTable" editable="false" width="100%">

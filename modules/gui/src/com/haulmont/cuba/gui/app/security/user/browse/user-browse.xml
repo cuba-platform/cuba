@@ -24,7 +24,7 @@
     </dsContext>
 
     <layout expand="usersTable" spacing="true">
-        <filter id="genericFilter" datasource="usersDs" applyTo="usersTable">
+        <filter id="genericFilter" datasource="usersDs" applyTo="usersTable" margin="false,false,true,false">
             <properties include=".*"/>
             <custom name="customByGroup" caption="msg://genericFilter.customByGroup"
                     join="left join u.group.hierarchyList h" paramClass="com.haulmont.cuba.security.entity.Group">

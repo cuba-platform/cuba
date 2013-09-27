@@ -12,7 +12,7 @@ import com.haulmont.cuba.security.entity.FilterEntity;
  * @version $Id$
  */
 public interface Filter
-        extends Component.Container, Component.BelongToFrame,
+        extends Component.Container, Component.Margin, Component.BelongToFrame,
         Component.HasXmlDescriptor, Component.HasSettings {
 
     String NAME = "filter";

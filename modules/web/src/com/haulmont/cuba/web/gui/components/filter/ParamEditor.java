@@ -5,10 +5,7 @@
 package com.haulmont.cuba.web.gui.components.filter;
 
 import com.haulmont.cuba.gui.components.filter.AbstractCondition;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Field;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
+import com.vaadin.ui.*;
 
 /**
  * @author krivopustov
@@ -31,10 +28,12 @@ public class ParamEditor extends HorizontalLayout implements AbstractCondition.L
             if (showCaption) {
                 Label parameterNameLabel = new Label(condition.getLocCaption());
                 addComponent(parameterNameLabel);
+                setComponentAlignment(parameterNameLabel, Alignment.MIDDLE_LEFT);
             }
             if (showOperation) {
                 Label opLab = new Label(condition.getOperationCaption());
                 addComponent(opLab);
+                setComponentAlignment(opLab, Alignment.MIDDLE_LEFT);
             }
             field = condition.getParam().createEditComponent();
             if (field instanceof Field) {

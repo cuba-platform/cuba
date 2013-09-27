@@ -8,28 +8,26 @@ package com.haulmont.cuba.desktop.gui.components.filter;
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.CategorizedEntity;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
 import com.haulmont.cuba.desktop.sys.vcl.ExtendedComboBox;
-import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.components.filter.HasAction;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.filter.*;
 import com.haulmont.cuba.gui.components.filter.addcondition.SelectionHandler;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.security.entity.FilterEntity;
+import com.haulmont.cuba.security.global.UserSession;
 import net.miginfocom.layout.CC;
 import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.BooleanUtils;
 import org.dom4j.Element;
 import org.jdesktop.swingx.JXTable;
-
 
 import javax.swing.*;
 import javax.swing.event.CellEditorListener;
@@ -45,49 +43,47 @@ import java.util.List;
 import static org.apache.commons.lang.BooleanUtils.isTrue;
 
 /**
- * <p>$Id$</p>
- *
  * @author devyatkin
+ * @version $Id$
  */
 public class FilterEditor extends AbstractFilterEditor {
 
-    private static final int NAME_COLUMN_WIDTH = 130;
-    private static final int OPERATION_COLUMN_WIDTH = 107;
-    private static final int PARAM_COLUMN_WIDTH = 150;
-    private static final int HIDDEN_COLUMN_WIDTH = 30;
-    private static final int REQUIRED_COLUMN_WIDTH = 30;
-    private static final int DELETE_COLUMN_WIDTH = 38;
+    protected static final int NAME_COLUMN_WIDTH = 130;
+    protected static final int OPERATION_COLUMN_WIDTH = 107;
+    protected static final int PARAM_COLUMN_WIDTH = 150;
+    protected static final int HIDDEN_COLUMN_WIDTH = 30;
+    protected static final int REQUIRED_COLUMN_WIDTH = 30;
+    protected static final int DELETE_COLUMN_WIDTH = 38;
 
-    private JPanel panel;
-    private JPanel topPanel;
-    private JPanel mainPanel;
-    private JPanel bottomPanel;
-    private MigLayout layout;
-    private JButton upBtn;
-    private JButton downBtn;
-    private JButton saveBtn;
-    private JButton cancelBtn;
-    private JComboBox addSelect;
-    private JTable table;
-    private ConditionsTableModel model;
-    private JTextField nameField;
-    private JCheckBox globalCb;
-    private JCheckBox defaultCb;
-    private JCheckBox applyDefaultCb;
+    protected JPanel panel;
+    protected JPanel topPanel;
+    protected JPanel mainPanel;
+    protected JPanel bottomPanel;
+    protected MigLayout layout;
+    protected JButton upBtn;
+    protected JButton downBtn;
+    protected JButton saveBtn;
+    protected JButton cancelBtn;
+    protected JComboBox addSelect;
+    protected JTable table;
+    protected ConditionsTableModel model;
+    protected JTextField nameField;
+    protected JCheckBox globalCb;
+    protected JCheckBox defaultCb;
+    protected JCheckBox applyDefaultCb;
 
-    private JLabel globalCbLabel;
-    private JLabel applyDefaultLabel;
-    private JLabel defaultCbLabel;
+    protected UserSession userSession = AppBeans.get(UserSessionSource.class).getUserSession();
 
     public FilterEditor(final DesktopFilter desktopFilter, FilterEntity filterEntity,
                         Element filterDescriptor, List<String> existingNames) {
         super(desktopFilter, filterEntity, filterDescriptor, existingNames);
+
     }
 
     @Override
     public void init() {
         LC lc = new LC();
-        lc.insetsAll("0");
+        lc.insets("0 0 5 0");
         layout = new MigLayout(lc);
         panel = new JPanel(layout);
         LC topLc = new LC();
@@ -141,11 +137,11 @@ public class FilterEditor extends AbstractFilterEditor {
         });
         upDownPanel.add(downBtn);
 
-        saveBtn = new JButton(MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Ok"));
+        saveBtn = new JButton(messages.getMainMessage("actions.Ok"));
         saveBtn.setIcon(App.getInstance().getResources().getIcon("icons/ok.png"));
         DesktopComponentsHelper.adjustSize(saveBtn);
 
-        JPanel buttonsPanel = new JPanel(new MigLayout());
+        JPanel buttonsPanel = new JPanel(new MigLayout(new LC().insetsAll("0").alignX("right")));
 
         saveBtn.addActionListener(new ActionListener() {
             @Override
@@ -158,7 +154,7 @@ public class FilterEditor extends AbstractFilterEditor {
             saveBtn.setEnabled(false);
         buttonsPanel.add(saveBtn);
 
-        cancelBtn = new JButton(MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Cancel"));
+        cancelBtn = new JButton(messages.getMainMessage("actions.Cancel"));
         cancelBtn.setIcon(App.getInstance().getResources().getIcon("icons/cancel.png"));
         DesktopComponentsHelper.adjustSize(cancelBtn);
         cancelBtn.addActionListener(new ActionListener() {
@@ -168,32 +164,28 @@ public class FilterEditor extends AbstractFilterEditor {
             }
         });
         buttonsPanel.add(cancelBtn);
+
+        JPanel checkBoxes = new JPanel(new MigLayout());
+
+        bottomPanel.add(checkBoxes, new CC().alignX("left"));
         bottomPanel.add(buttonsPanel, new CC().growX().alignY("bottom"));
-        JPanel checkBoxes = new JPanel(new MigLayout(new LC().wrapAfter(2)));
-        bottomPanel.add(checkBoxes, new CC().alignX("right"));
 
-        globalCbLabel = new JLabel(getMessage("FilterEditor.global"));
-        globalCb = new JCheckBox();
+        globalCb = new JCheckBox(getMessage("FilterEditor.global"));
         globalCb.setSelected(filterEntity.getUser() == null);
-        globalCb.setEnabled(UserSessionProvider.getUserSession().isSpecificPermitted("cuba.gui.filter.global"));
+        globalCb.setEnabled(userSession.isSpecificPermitted("cuba.gui.filter.global"));
 
-        checkBoxes.add(globalCbLabel, new CC().alignX("right"));
-        checkBoxes.add(globalCb, new CC().alignX("right"));
+        checkBoxes.add(globalCb);
 
-        defaultCbLabel = new JLabel(getMessage("FilterEditor.isDefault"));
-        defaultCb = new JCheckBox();
+        defaultCb = new JCheckBox(getMessage("FilterEditor.isDefault"));
         defaultCb.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 updateApplyDefaultCb();
             }
         });
-        checkBoxes.add(defaultCbLabel);
         checkBoxes.add(defaultCb);
 
-
-        applyDefaultLabel = new JLabel(getMessage("FilterEditor.applyDefault"));
-        applyDefaultCb = new JCheckBox();
+        applyDefaultCb = new JCheckBox(getMessage("FilterEditor.applyDefault"));
         applyDefaultCb.setEnabled(false);
         applyDefaultCb.addActionListener(new ActionListener() {
             @Override
@@ -203,7 +195,6 @@ public class FilterEditor extends AbstractFilterEditor {
                 }
             }
         });
-        checkBoxes.add(applyDefaultLabel);
         checkBoxes.add(applyDefaultCb);
 
         JLabel label = new JLabel(getMessage("FilterEditor.nameLab"));
@@ -244,7 +235,7 @@ public class FilterEditor extends AbstractFilterEditor {
         return saveBtn;
     }
 
-    private void updateApplyDefaultCb(){
+    protected void updateApplyDefaultCb(){
         if (defaultCb.isSelected()) {
                     applyDefaultCb.setEnabled(true);
                 } else {
@@ -257,14 +248,14 @@ public class FilterEditor extends AbstractFilterEditor {
                 }
     }
 
-    private void initAddDialog(JPanel panel) {
+    protected void initAddDialog(JPanel panel) {
         JButton button = new JButton(getMessage("FilterEditor.addCondition"));
         panel.add(button, new CC().alignX("right"));
 
         button.addActionListener(new AddConditionActionListener());
     }
 
-    private void initAddSelect(JPanel panel) {
+    protected void initAddSelect(JPanel panel) {
         JLabel label = new JLabel(getMessage("FilterEditor.addCondition"));
         panel.add(label, new CC().alignX("right"));
 
@@ -287,7 +278,7 @@ public class FilterEditor extends AbstractFilterEditor {
         GroupCreator orGroupCreator = new GroupCreator(GroupType.OR, filterComponentName, datasource);
         addSelect.addItem(new ItemWrapper<AbstractConditionDescriptor>(orGroupCreator, orGroupCreator.getLocCaption()));
 
-        if (UserSessionProvider.getUserSession().isSpecificPermitted("cuba.gui.filter.customConditions")) {
+        if (userSession.isSpecificPermitted("cuba.gui.filter.customConditions")) {
             ConditionCreator conditionCreator = new ConditionCreator(filterComponentName, datasource);
             addSelect.addItem(new ItemWrapper<AbstractConditionDescriptor>(conditionCreator, conditionCreator.getLocCaption()));
         }
@@ -316,14 +307,14 @@ public class FilterEditor extends AbstractFilterEditor {
         button.addActionListener(new AddConditionActionListener());
     }
 
-    private void setComponentWidth(JComponent component, int width) {
+    protected void setComponentWidth(JComponent component, int width) {
         Dimension size = component.getSize();
         size.width = width;
         component.setSize(size);
         component.setPreferredSize(size);
     }
 
-    private void initTable(JPanel panel) {
+    protected void initTable(JPanel panel) {
         model = new ConditionsTableModel(conditions);
         table = new ConditionsTable();
         table.setModel(model);
@@ -367,7 +358,7 @@ public class FilterEditor extends AbstractFilterEditor {
         //todo add PopupMenu
     }
 
-    private void addCondition(AbstractConditionDescriptor descriptor) {
+    protected void addCondition(AbstractConditionDescriptor descriptor) {
         AbstractCondition condition = descriptor.createCondition();
         Node<AbstractCondition> node = new Node<AbstractCondition>(condition);
 
@@ -410,22 +401,20 @@ public class FilterEditor extends AbstractFilterEditor {
         return panel;
     }
 
-    private void deleteCondition(AbstractCondition condition) {
+    protected void deleteCondition(AbstractCondition condition) {
         model.removeCondition(condition);
         updateControls();
     }
 
-    private void updateControls() {
+    protected void updateControls() {
         if (filterEntity.getFolder() != null || filterEntity.getCode() == null)
             saveBtn.setEnabled(!conditions.getRootNodes().isEmpty());
         else
             saveBtn.setEnabled(false);
         defaultCb.setVisible(filterEntity.getFolder() == null);
-        defaultCbLabel.setVisible(defaultCb.isVisible());
         defaultCb.setSelected(isTrue(filterEntity.getIsDefault()));
         updateApplyDefaultCb();
         applyDefaultCb.setVisible(defaultCb.isVisible() && manualApplyRequired);
-        applyDefaultLabel.setVisible(applyDefaultCb.isVisible());
         applyDefaultCb.setSelected(BooleanUtils.isTrue(filterEntity.getApplyDefault()));
     }
 
@@ -478,12 +467,12 @@ public class FilterEditor extends AbstractFilterEditor {
     protected abstract class AbstractCell implements TableCellEditor, TableCellRenderer {
 
         protected EventListenerList listenerList = new EventListenerList();
-        private ChangeEvent changeEvent;
+        protected ChangeEvent changeEvent;
 
         protected Map<Object, JComponent> components = new HashMap<Object, JComponent>();
         protected Map<Object, JPanel> wrappers = new HashMap<Object, JPanel>();
 
-        private JComponent activeComponent;
+        protected JComponent activeComponent;
 
         @Override
         public boolean isCellEditable(EventObject anEvent) {
@@ -662,13 +651,13 @@ public class FilterEditor extends AbstractFilterEditor {
         }
     }
 
-    private class ConditionsTable extends JXTable {
+    protected class ConditionsTable extends JXTable {
         public boolean isCellSelected(int row, int column) {
             return (row == getSelectedRow());
         }
     }
 
-    private class AddConditionActionListener implements ActionListener {
+    protected class AddConditionActionListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             AddConditionDlg dlg = new AddConditionDlg(metaClass,
