@@ -72,16 +72,4 @@
     width: 5px;
     background: url(images/dockable-split-right.png) center repeat-y;
   }
-
-  // Padding for main tabsheet content
-
-  .cuba-splitpanel-dockable-right > div > div.#{$primaryStyleName}-second-container > div.v-verticallayout
-  > div > div > div.v-tabsheet > div.v-tabsheet-content > .v-tabsheet-tabsheetpanel > div {
-    padding-left: 4px;
-  }
-
-  .cuba-splitpanel-dockable-left > div > div.#{$primaryStyleName}-second-container > div.v-verticallayout
-  > div > div > div.v-tabsheet > div.v-tabsheet-content > .v-tabsheet-tabsheetpanel > div {
-    padding-left: 4px;
-  }
 }
