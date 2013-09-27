@@ -118,7 +118,6 @@ public class CubaFieldGroup extends CubaGroupBox {
         if (newLayout instanceof CubaFieldGroupLayout) {
             super.setContent(newLayout);
 
-            getLayout().setWidth("100%");
             getLayout().setSpacing(true);
         } else {
             throw new IllegalArgumentException("FieldGroup supports only FieldGroupLayout");
