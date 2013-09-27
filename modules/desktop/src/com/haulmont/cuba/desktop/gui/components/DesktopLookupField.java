@@ -387,6 +387,10 @@ public class DesktopLookupField
     public void setValue(Object value) {
         settingValue = true;
         try {
+            if (value == nullOption) {
+                value = null;
+            }
+
             super.setValue(value);
         } finally {
             settingValue = false;
