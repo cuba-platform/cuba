@@ -181,8 +181,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
         <item name="OpenJPA" web="http://openjpa.apache.org/" license="apache-2.0"/>
 
-        <item name="JEST" web="http://openjpa.apache.org/jest.html" license="apache-2.0"/>
-
         <item name="Perf4J" web="http://perf4j.codehaus.org/" license="apache-2.0"/>
 
         <item name="Apache POI" web="http://poi.apache.org/" license="apache-2.0"/>
@@ -190,6 +188,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         <item name="PopupButton Vaadin Addon" web="http://vaadin.com/addon/popupbutton" license="apache-2.0"/>
 
         <item name="MaskedTextField Vaadin Addon" web="http://vaadin.com/addon/maskedtextfield" license="apache-2.0"/>
+
+        <item name="AceEditor Vaadin Addon" web="http://vaadin.com/addon/aceeditor" license="apache-2.0"/>
 
         <item name="Serp" web="http://serp.sourceforge.net/">
             <license><![CDATA[
