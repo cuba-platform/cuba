@@ -30,7 +30,7 @@
 }
 
 .treeview a.selected {
-	background-color: #eee;
+	font-weight: bold;
 }
 
 #treecontrol { margin: 1em 0; display: none; }
