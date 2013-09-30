@@ -11,6 +11,7 @@ import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.gui.NoSuchScreenException;
 import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.gui.config.*;
+import com.haulmont.cuba.gui.config.MenuItem;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
@@ -18,6 +19,7 @@ import org.apache.commons.collections.Predicate;
 import javax.swing.*;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -74,7 +76,11 @@ public class MenuBuilder {
             createSubMenu(jMenu, item);
         } else {
             JMenuItem jMenuItem = new JMenuItem(caption);
+            //todo remove hardcoded border
+            jMenuItem.setBorder(BorderFactory.createEmptyBorder(1, 4, 2, 4));
             assignShortcut(jMenuItem, item);
+            jMenuItem.setMaximumSize(new Dimension(jMenuItem.getPreferredSize().width,
+                    jMenuItem.getMaximumSize().height));
             assignCommand(jMenuItem, item);
             menuBar.add(jMenuItem);
         }
