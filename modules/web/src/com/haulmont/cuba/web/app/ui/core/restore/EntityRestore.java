@@ -9,10 +9,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.annotation.EnableRestore;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.MessageTools;
-import com.haulmont.cuba.core.global.MetadataTools;
-import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.DsBuilder;
@@ -46,6 +43,9 @@ public class EntityRestore extends AbstractWindow {
 
     @Inject
     protected MetadataTools metadataTools;
+
+    @Inject
+    protected ViewRepository viewRepository;
 
     @Inject
     protected MessageTools messageTools;
@@ -110,6 +110,7 @@ public class EntityRestore extends AbstractWindow {
                 //collect properties in order to add non-system columns first
                 LinkedList<Table.Column> nonSystemPropertyColumns = new LinkedList<Table.Column>();
                 LinkedList<Table.Column> systemPropertyColumns = new LinkedList<Table.Column>();
+                List<MetaProperty> metaProperties = new ArrayList<>();
                 for (MetaProperty metaProperty : metaClass.getProperties()) {
                     //don't show embedded & multiple referred entities
                     if (isEmbedded(metaProperty))
@@ -117,7 +118,7 @@ public class EntityRestore extends AbstractWindow {
 
                     if (metaProperty.getRange().getCardinality().isMany())
                         continue;
-
+                    metaProperties.add(metaProperty);
                     Table.Column column = new Table.Column(metaClass.getPropertyPath(metaProperty.getName()));
                     if (!metadataTools.isSystem(metaProperty)) {
                         column.setCaption(getPropertyCaption(metaClass, metaProperty));
@@ -137,7 +138,7 @@ public class EntityRestore extends AbstractWindow {
                 entitiesDs = new DsBuilder(getDsContext())
                         .setId("entitiesDs")
                         .setMetaClass(metaClass)
-                        .setViewName(View.LOCAL)
+                        .setView(buildView(metaClass, metaProperties))
                         .buildGroupDatasource();
 
                 entitiesDs.setQuery("select e from " + metaClass.getName() + " e " +
@@ -195,6 +196,19 @@ public class EntityRestore extends AbstractWindow {
                 filter.loadFiltersAndApplyDefault();
             }
         }
+    }
+
+    private View buildView(MetaClass metaClass, List<MetaProperty> props) {
+        View view = new View(metaClass.getJavaClass());
+        for (MetaProperty property : props) {
+            if (Entity.class.isAssignableFrom(property.getJavaType())) {
+                view.addProperty(property.getName(),
+                        viewRepository.getView((Class) property.getJavaType(), View.MINIMAL));
+            } else {
+                view.addProperty(property.getName());
+            }
+        }
+        return view;
     }
 
     private void showRestoreDialog() {
