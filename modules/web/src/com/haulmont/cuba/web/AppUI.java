@@ -9,6 +9,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.web.sys.LinkHandler;
 import com.haulmont.cuba.web.toolkit.ui.CubaJQueryIntegration;
+import com.haulmont.cuba.web.toolkit.ui.CubaSWFObjectIntegration;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.server.*;
 import com.vaadin.ui.Component;
@@ -41,6 +42,7 @@ public class AppUI extends UI implements ErrorHandler {
             VaadinSession.getCurrent().setAttribute(App.class, app);
 
             new CubaJQueryIntegration().extend(this);
+            new CubaSWFObjectIntegration().extend(this);
 
             applicationInitRequired = true;
         }
