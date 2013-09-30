@@ -22,6 +22,7 @@ import com.vaadin.client.ui.VTextArea;
 public class CubaResizableTextAreaWidget extends VTextArea {
 
     public static final String TEXT_AREA_WRAPPER = "text-area-wrapper";
+    public static final String RESIZE_ELEMENT = "cuba-resizabletextarea-resize-corner";
 
     protected boolean dragDrop = false;
     protected boolean composed = false;

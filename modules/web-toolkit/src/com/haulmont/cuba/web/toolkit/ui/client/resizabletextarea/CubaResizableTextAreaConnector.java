@@ -46,7 +46,6 @@ public class CubaResizableTextAreaConnector extends TextAreaConnector {
     @Override
     protected void updateWidgetStyleNames() {
         super.updateWidgetStyleNames();
-
-        getWidget().resizeElement.setClassName("cuba-resizabletextarea-resize-corner");
+        getWidget().resizeElement.setClassName(CubaResizableTextAreaWidget.RESIZE_ELEMENT);
     }
 }

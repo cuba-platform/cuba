@@ -142,6 +142,10 @@ public class CubaTooltip extends VTooltip {
                     element = DOM.getChild(element, 0);
                 }
             }
+            //special case for ResizableTextArea
+            if (CubaResizableTextAreaWidget.RESIZE_ELEMENT.equals(element.getClassName())) {
+                element = DOM.getChild(element.getParentElement().<Element>cast(), 0);
+            }
 
             ApplicationConnection ac = getApplicationConnection();
             ComponentConnector connector = Util.getConnectorForElement(ac,
