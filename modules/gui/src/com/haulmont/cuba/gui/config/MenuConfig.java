@@ -90,7 +90,7 @@ public class MenuConfig {
     private void loadMenuItems(Element parentElement, MenuItem parentItem) {
         for (Element element : ((List<Element>) parentElement.elements())) {
             MenuItem menuItem = null;
-
+            MenuItem currentParentItem = parentItem;
             MenuItem nextToItem = null;
             boolean before = true;
             String nextTo = element.attributeValue("insertBefore");
@@ -103,7 +103,7 @@ public class MenuConfig {
                     nextToItem = findItem(nextTo, rootItem);
                     if (nextToItem != null) {
                         if (nextToItem.getParent() != null)
-                            parentItem = nextToItem.getParent();
+                            currentParentItem = nextToItem.getParent();
                         break;
                     }
                 }
@@ -116,7 +116,7 @@ public class MenuConfig {
                     log.warn(String.format("Invalid menu-config: 'id' attribute not defined"));
                 }
 
-                menuItem = new MenuItem(parentItem, id);
+                menuItem = new MenuItem(currentParentItem, id);
                 menuItem.setDescriptor(element);
 
                 loadShortcut(menuItem, element);
@@ -129,7 +129,7 @@ public class MenuConfig {
             } else if ("item".equals(element.getName())) {
                 String id = element.attributeValue("id");
                 if (!StringUtils.isBlank(id)) {
-                    menuItem = new MenuItem(parentItem, id);
+                    menuItem = new MenuItem(currentParentItem, id);
                     menuItem.setDescriptor(element);
                     loadShortcut(menuItem, element);
                 }
@@ -137,7 +137,7 @@ public class MenuConfig {
                 String id = element.attributeValue("id");
                 if (StringUtils.isBlank(id))
                     id = "-";
-                menuItem = new MenuItem(parentItem, id);
+                menuItem = new MenuItem(currentParentItem, id);
                 menuItem.setSeparator(true);
                 if (!StringUtils.isBlank(id)) {
                     menuItem.setDescriptor(element);
@@ -146,10 +146,9 @@ public class MenuConfig {
                 log.warn(String.format("Unknown tag '%s' in menu-config", element.getName()));
             }
 
-            if (parentItem != null) {
-                addItem(parentItem.getChildren(), menuItem, nextToItem, before);
-            }
-            else {
+            if (currentParentItem != null) {
+                addItem(currentParentItem.getChildren(), menuItem, nextToItem, before);
+            } else {
                 addItem(rootItems, menuItem, nextToItem, before);
             }
         }
