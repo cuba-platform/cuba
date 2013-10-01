@@ -53,6 +53,7 @@ public class CubaFieldGroupConnector extends CubaGroupBoxConnector {
                         getLayoutManager().forceLayout();
 
                         forcedUpdateSize = true;
+                        return false;
                     }
                     return true;
                 }
