@@ -13,7 +13,6 @@ import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.entity.SendingAttachment;
 import com.haulmont.cuba.core.entity.SendingMessage;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.app.Authentication;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.time.DateUtils;
@@ -79,7 +78,7 @@ public class Emailer implements EmailerAPI {
     }
 
     protected String getEmailerLogin() {
-        return AppContext.getProperty("cuba.emailerUserLogin");
+        return config.getEmailerUserLogin();
     }
 
     @Override

@@ -10914,7 +10914,7 @@ locale: en</programlisting>
       </section>
       <section id="email_sending_properties">
         <title>Настройка параметров отправки email</title>
-        <para>Параметры отправки  email могут быть настроены с помощью перечисленных ниже <link linkend="app_properties">свойств приложения</link>. Все они являются параметрами времени выполнения и хранятся в базе данных, однако могут быть переопределены для конкретного блока Middleware в его файле <filename>app.properties</filename>.</para>
+        <para>Параметры отправки  email могут быть настроены с помощью перечисленных ниже <link linkend="app_properties">свойств приложения</link>. Все они  являются параметрами времени выполнения и хранятся в базе данных, однако могут быть переопределены для конкретного блока Middleware в его файле <filename>app.properties</filename>.</para>
         <para>Все параметры отправки email доступны через конфигурационный интерфейс <code>EmailerConfig</code>.</para>
         <itemizedlist>
           <listitem>
@@ -10966,6 +10966,10 @@ locale: en</programlisting>
           <listitem>
             <para><property>cuba.email.adminAddress</property> - адрес, на который отправляются все сообщения при включенном свойстве <property>cuba.email.sendAllToAdmin</property>.</para>
             <para>Значение по умолчанию: <literal>admin@localhost</literal></para>
+          </listitem>
+          <listitem>
+            <para><property>cuba.emailerUserLogin</property> - логин пользователя системы, под которым регистрируется механизм асинхронной отправки email для того, чтобы иметь возможность сохранить информацию в базе данных. Рекомендуется создать отдельного пользователя (например <literal>emailer</literal>) без пароля, чтобы под его именем нельзя было войти через пользовательский интерфейс приложения. Это полезно для поиска в логе сервера сообщений, касаемых отсылки email.</para>
+            <para>Значение по умолчанию: <literal>admin</literal></para>
           </listitem>
         </itemizedlist>
         <para>Просмотреть текущие значения параметров, а также отправить тестовое сообщение, можно с помощью JMX-бина <code>app-core.cuba:type=Emailer</code>.</para>

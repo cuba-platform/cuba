@@ -148,4 +148,11 @@ public interface EmailerConfig extends Config {
     boolean isFileStorageUsed();
 
     void setFileStorageUsed(boolean fileStorageUsed);
+
+    /**
+     * User login used by asynchronous sending mechanism to be able to store information in the database.
+     */
+    @Property("cuba.emailerUserLogin")
+    @Default("admin")
+    String getEmailerUserLogin();
 }

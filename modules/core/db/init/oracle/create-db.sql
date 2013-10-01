@@ -671,10 +671,6 @@ values ('608859871b61424794c7dff348347f93', current_timestamp, 0, 'admin', 'admi
 'cc2229d1b8a052423d9e1c9ef0113b850086586a',
 'Administrator', '0fa2b1a51d684d699fbddff348347f93', 1)^
 
-insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, LOGIN_LC, PASSWORD, NAME, GROUP_ID, ACTIVE)
-values ('608859871b61424794c7dff348347f94', current_timestamp, 0, 'emailer', 'emailer', null,
-'User for Email sending', '0fa2b1a51d684d699fbddff348347f93', 1)^
-
 insert into SEC_ROLE (ID, CREATE_TS, VERSION, NAME, ROLE_TYPE)
 values ('0c018061b26f4de2a5bedff348347f93', current_timestamp, 0, 'Administrators', 10)^
 
