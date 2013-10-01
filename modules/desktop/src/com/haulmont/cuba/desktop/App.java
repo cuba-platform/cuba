@@ -24,6 +24,7 @@ import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
+import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrSubstitutor;
@@ -254,22 +255,16 @@ public class App implements ConnectionListener {
             } else {
                 forceExit();
             }
-        } catch (RemoteAccessException exception) {
-            String title = messages.getMessage(getClass(), "errorPane.title");
-            String text = messages.getMessage(getClass(), "connectException.message");
-
-            mainFrame.getWindowManager().showOptionDialog(title, text, IFrame.MessageType.WARNING,
-                    new Action[]{new DialogAction(DialogAction.Type.OK) {
-                        @Override
-                        public void actionPerform(Component component) {
-                            forceExit();
-                        }
-                    }});
         } catch (Throwable e) {
-            log.error(e);
-            String title = messages.getMessage(getClass(), "errorPane.title");
-            String text = messages.getMessage(getClass(), "unexpectedCloseException.message");
-            JOptionPane.showMessageDialog(mainFrame, text, title, JOptionPane.ERROR_MESSAGE);
+            log.warn("Error closing application: " + e);
+            String title = messages.getMainMessage("errorPane.title");
+            String text = messages.getMainMessage("unexpectedCloseException.message") + "\n";
+            if (e instanceof RemoteAccessException) {
+                text = text + messages.getMainMessage("connectException.message");
+            } else {
+                text = text + e.getClass().getSimpleName() + ": " + e.getMessage();
+            }
+            JOptionPane.showMessageDialog(mainFrame, text, title, JOptionPane.WARNING_MESSAGE);
             forceExit();
         }
     }
