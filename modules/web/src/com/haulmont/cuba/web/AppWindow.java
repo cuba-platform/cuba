@@ -877,16 +877,12 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
         return new com.vaadin.ui.MenuBar.Command() {
             @Override
             public void menuSelected(com.vaadin.ui.MenuBar.MenuItem selectedItem) {
-                if (command == null) {
-                    if (item.getParent() != null) {
-                        throw new DevelopmentException("Invalid screen ID for menu item: " + item.getId(),
-                                "Parent menu ID", item.getParent().getId());
-                    } else {
-                        throw new DevelopmentException("Invalid screen ID for menu item: " + item.getId());
-                    }
+                if (command != null) {
+                    command.execute();
+                } else if (item.getParent() != null) {
+                    throw new DevelopmentException("Invalid screen ID for menu item: " + item.getId(),
+                            "Parent menu ID", item.getParent().getId());
                 }
-
-                command.execute();
             }
         };
     }
