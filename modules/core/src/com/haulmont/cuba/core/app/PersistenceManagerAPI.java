@@ -10,8 +10,7 @@ import java.util.List;
 import java.util.SortedMap;
 
 /**
- * Caches database metadata information and entity statistics. Also delegates some funtionality
- * to {@link com.haulmont.cuba.core.sys.DbUpdater}.
+ * Caches database metadata information and entity statistics.
  *
  * @author krivopustov
  * @version $Id$

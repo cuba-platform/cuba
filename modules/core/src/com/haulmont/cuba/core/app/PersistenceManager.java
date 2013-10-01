@@ -10,7 +10,6 @@ import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.entity.EntityStatistics;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.sys.DbUpdater;
 import com.haulmont.cuba.core.sys.persistence.DbmsType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -46,9 +45,6 @@ public class PersistenceManager implements PersistenceManagerAPI {
 
     @Inject
     protected Metadata metadata;
-
-    @Inject
-    protected DbUpdater dbUpdater;
 
     @Inject
     protected PersistenceSecurity security;
