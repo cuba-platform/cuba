@@ -738,7 +738,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     }
 
     private String getComponentPath() {
-        StringBuilder sb = new StringBuilder(getId());
+        StringBuilder sb = new StringBuilder(getId() != null ? getId() : "filterWithoutId");
         IFrame frame = getFrame();
         while (frame != null) {
             sb.insert(0, ".");

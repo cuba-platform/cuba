@@ -541,7 +541,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
     }
 
     protected String getComponentPath() {
-        StringBuilder sb = new StringBuilder(getId());
+        StringBuilder sb = new StringBuilder(getId() != null ? getId() : "filterWithoutId");
         IFrame frame = getFrame();
         while (frame != null) {
             sb.insert(0, ".");
