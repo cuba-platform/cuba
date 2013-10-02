@@ -11364,6 +11364,10 @@ locale: en</programlisting>
             <para><property>cuba.email.adminAddress</property> - адрес, на который отправляются все сообщения при включенном свойстве <property>cuba.email.sendAllToAdmin</property>.</para>
             <para>Значение по умолчанию: <literal>admin@localhost</literal></para>
           </listitem>
+          <listitem>
+            <para><property>cuba.emailerUserLogin</property> - логин пользователя системы, под которым регистрируется механизм асинхронной отправки email для того, чтобы иметь возможность сохранить информацию в базе данных. Рекомендуется создать отдельного пользователя (например <literal>emailer</literal>) без пароля, чтобы под его именем нельзя было войти через пользовательский интерфейс приложения. Это полезно для поиска в логе сервера сообщений, касаемых отсылки email.</para>
+            <para>Значение по умолчанию: <literal>admin</literal></para>
+          </listitem>
         </itemizedlist>
         <para>Просмотреть текущие значения параметров, а также отправить тестовое сообщение, можно с помощью JMX-бина <code>app-core.cuba:type=Emailer</code>.</para>
       </section>
