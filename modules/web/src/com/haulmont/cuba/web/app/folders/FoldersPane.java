@@ -71,7 +71,7 @@ public class FoldersPane extends VerticalLayout {
     protected Object searchFoldersRoot;
     private FoldersPaneTimer timer;
 
-    protected static final int DEFAULT_VERT_SPLIT_POS = 400;
+    protected static final int DEFAULT_VERT_SPLIT_POS = 50;
     protected int horizontalSplitPos;
     protected int verticalSplitPos;
 
