@@ -83,6 +83,7 @@ public abstract class AbstractCustomConditionEditDlg<T> {
         joinText = factory.createComponent(SourceCodeEditor.NAME);
         joinText.setWidth(FIELD_WIDTH);
         joinText.setValue(condition.getJoin());
+        joinText.setHeight("80px");
 
         joinText.setSuggester(new Suggester() {
             @Override
@@ -96,7 +97,7 @@ public abstract class AbstractCustomConditionEditDlg<T> {
 
         whereText = factory.createComponent(SourceCodeEditor.NAME);
         whereText.setWidth(FIELD_WIDTH);
-        whereText.setHeight("200px");
+        whereText.setHeight("80px");
         String where = replaceParamWithQuestionMark(condition.getWhere());
         whereText.setValue(where);
 
