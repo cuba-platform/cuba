@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.BoxLayout;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.SplitPanel;
@@ -44,7 +45,10 @@ public class SplitPanelLoader extends ContainerLoader{
         loadStyleName(component, element);
 
         final Collection<Component> components = loadSubComponents(component, element, "visible");
-        if (components.size() == 1) {
+        if (components.size() == 0) {
+            throw new GuiDevelopmentException("Split panel must contain at least one child component",
+                    context.getFullFrameId());
+        } else if (components.size() == 1) {
             component.add(factory.createComponent(BoxLayout.VBOX));
         }
 
