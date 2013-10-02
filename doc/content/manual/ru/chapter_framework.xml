@@ -7179,7 +7179,7 @@ protected boolean postCommit(boolean committed, boolean close) {
                   <imageobject>
                     <imagedata fileref="img/gui_presentation.png"/>
                   </imageobject>
-                </inlinemediaobject>. В настольных приложениях механизм представлений не поддерживается.</para>
+                </inlinemediaobject>. Механизм представлений реализован только для блока <structname>Web Client</structname>.</para>
             </listitem>
             <listitem>
               <para id="gui_attr_table_sortable">Атрибут <sgmltag>sortable</sgmltag> разрешает или запрещает сортировку в таблице. По умолчанию имеет значение <literal>true</literal>. Если сортировка разрешена, то при нажатии на название колонки справа от названия появляется значок <inlinemediaobject>
@@ -7741,7 +7741,7 @@ table.setIconProvider(iconProvider);</programlisting></listitem>
               </imageobject>
             </mediaobject>
           </figure>
-          <para>Компонент реализован для блоков <structname>Web Client</structname> и <structname>Desktop Client</structname>, но в настольных приложениях выглядит как обычная таблица.</para>
+          <para>Компонент реализован для блоков <structname>Web Client</structname> и <structname>Desktop Client</structname>, но в десктоп-приложениях выглядит как обычная таблица.</para>
           <para>Для правильного функционирования <code>GroupTable</code> должна быть соединена с <link linkend="datasources">GroupDatasource</link>.</para>
           <para>Пример использования:</para>
           <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/groupTable/groupTable.txt" encoding="UTF-8" parse="text"/></programlisting>
