@@ -979,10 +979,11 @@ public class DesktopWindowManager extends WindowManager {
         if (modified) {
             showOptionDialog(
                     messages.getMainMessage("closeUnsaved.caption"),
-                    messages.getMainMessage("closeUnsaved"),
+                    messages.getMainMessage("discardChangesOnClose"),
                     IFrame.MessageType.WARNING,
                     new Action[]{
-                            new com.haulmont.cuba.gui.components.AbstractAction(messages.getMainMessage("actions.Yes")) {
+                            new com.haulmont.cuba.gui.components.AbstractAction(
+                                    messages.getMainMessage("closeApplication")) {
                                 @Override
                                 public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
                                     if (runIfOk != null)
@@ -994,7 +995,8 @@ public class DesktopWindowManager extends WindowManager {
                                     return "icons/ok.png";
                                 }
                             },
-                            new com.haulmont.cuba.gui.components.AbstractAction(messages.getMainMessage("actions.No")) {
+                            new com.haulmont.cuba.gui.components.AbstractAction(
+                                    messages.getMainMessage("actions.Cancel")) {
                                 @Override
                                 public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
                                     if (runIfCancel != null)

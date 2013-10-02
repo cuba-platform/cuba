@@ -717,10 +717,10 @@ public class WebWindowManager extends WindowManager {
         if (modified) {
             showOptionDialog(
                     messages.getMessage(WebWindow.class, "closeUnsaved.caption"),
-                    messages.getMessage(WebWindow.class, "closeUnsaved"),
+                    messages.getMessage(WebWindow.class, "discardChangesOnClose"),
                     IFrame.MessageType.WARNING,
                     new Action[]{
-                            new AbstractAction(messages.getMessage(WebWindow.class, "actions.Yes")) {
+                            new AbstractAction(messages.getMessage(WebWindow.class, "closeApplication")) {
                                 @Override
                                 public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
                                     if (runIfOk != null)
@@ -731,7 +731,7 @@ public class WebWindowManager extends WindowManager {
                                     return "icons/ok.png";
                                 }
                             },
-                            new AbstractAction(messages.getMessage(WebWindow.class, "actions.No")) {
+                            new AbstractAction(messages.getMessage(WebWindow.class, "actions.Cancel")) {
                                 @Override
                                 public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
                                     if (runIfCancel != null)
