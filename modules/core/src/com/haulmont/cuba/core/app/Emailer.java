@@ -13,6 +13,7 @@ import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.entity.SendingAttachment;
 import com.haulmont.cuba.core.entity.SendingMessage;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.app.Authentication;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.time.DateUtils;
@@ -231,6 +232,10 @@ public class Emailer implements EmailerAPI {
 
     @Override
     public String processQueuedEmails() {
+        if (applicationNotStartedYet()) {
+            return null;
+        }
+
         int callsToSkip = config.getDelayCallCount();
         if (callCount < callsToSkip) {
             callCount++;
@@ -250,6 +255,10 @@ public class Emailer implements EmailerAPI {
             resultMessage = e.getMessage();
         }
         return resultMessage;
+    }
+
+    protected boolean applicationNotStartedYet() {
+        return !AppContext.isStarted();
     }
 
     protected String sendQueuedEmails() {
