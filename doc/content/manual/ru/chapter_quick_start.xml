@@ -378,7 +378,7 @@ Order.amount=Сумма</programlisting></para>
     </section>
     <section>
       <title>Создание пользовательского интерфейса приложения</title>
-      <para>Для ограничения списка поддерживаемых языков интерфейса откройте файл <filename>web-app.properties</filename> модуля <structname>web</structname> и добавьте в него следующее значение:<programlisting>cuba.availableLocales=English|en;Russian|ru</programlisting></para>
+      <para>Список поддерживаемых языков интерфейса определяется в файлах  <filename>app.properties</filename>,  <filename>web-app.properties</filename> модуля <structname>web</structname> и <filename>desktop-app.properties</filename> модуля <structname>desktop</structname>. Добавьте в них следующее значение:<programlisting>cuba.availableLocales=English|en;Russian|ru</programlisting></para>
       <para>Файлы, относящиеся к экранам, будем создавать в пакете <code>com.sample.sales.gui</code> модуля gui.</para>
       <para>Любой экран  определяется <glossterm linkend="screen_xml_glossentry">XML-дескриптором</glossterm>, описывающим  <link linkend="datasources">источники данных</link> и расположение <link linkend="gui_framework">визуальных компонентов</link> экрана. У экрана также может быть <glossterm linkend="screen_controller_glossentry">контроллер</glossterm> − Java-класс, содержащий логику инициализации и обработки событий экрана.</para>
       <section id="qs_customer_browse">

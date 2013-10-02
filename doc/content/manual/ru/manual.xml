@@ -200,7 +200,7 @@
                   <para><sgmltag>id</sgmltag> - идентификатор элемента, использующийся для формирования локализованного  названия (см. ниже)</para>
                 </listitem>
                 <listitem>
-                  <para><sgmltag>insertBefore</sgmltag>, <sgmltag>insertAfter</sgmltag> - идентификатор элемента меню, перед/после которого нужно вставить данный элемент. Используется в прикладном проекте для вставки элемента в нужное место меню, определенного в аналогичных файлах базовых проектов. Разумеется, использовать для данного элемента нужно какой-нибудь один из этих атрибутов.</para>
+                  <para id="menu_insertBefore_insertAfter"><sgmltag>insertBefore</sgmltag>, <sgmltag>insertAfter</sgmltag> - идентификатор элемента или пункта меню, перед/после которого нужно вставить данный элемент. Используется в прикладном проекте для вставки элемента в нужное место меню, определенного в аналогичных файлах базовых проектов. Эти атрибуты поддерживаются только для меню верхнего уровня. Разумеется, использование одного из этих атрибутов для конкретного элемента исключает возможность использования второго атрибута для данного элемента.</para>
                 </listitem>
               </itemizedlist></para>
             <para>Элементы menu:<itemizedlist>
@@ -209,6 +209,9 @@
                 </listitem>
                 <listitem>
                   <para><sgmltag>item</sgmltag> - пункт меню, см. далее</para>
+                </listitem>
+                <listitem>
+                  <para><sgmltag>separator</sgmltag> - разделитель</para>
                 </listitem>
               </itemizedlist></para>
           </listitem>
@@ -219,7 +222,6 @@
                   <para><sgmltag>id</sgmltag> - идентификатор элемента, использующийся для формирования локализованного названия (см. ниже), и для связи с элементом файла <filename>
                       <link linkend="screens.xml">screens.xml</link>
                     </filename>, в котором зарегистрированы экраны UI. При выборе пункта меню в главном окне приложения будет открыт соответствующий экран.</para>
-                  <para>Если в качестве идентификатора пункта используется символ &quot;<literal>-</literal>&quot;, то вместо пункта в меню отображается разделитель.</para>
                 </listitem>
                 <listitem>
                   <para><sgmltag>shortcut</sgmltag> - горячая клавиша для вызова данного пункта меню. Возможные модификаторы - <literal>ALT</literal>, <literal>CTRL</literal>, <literal>SHIFT</literal> - отделяются символом &quot;<literal>-</literal>&quot;. Например:<programlisting>shortcut=&quot;ALT-C&quot;
@@ -231,6 +233,9 @@ shortcut=&quot;ALT-CTRL-SHIFT-C&quot;</programlisting></para>
                   <para><sgmltag>openType</sgmltag> - тип открытия экрана, возможные значения соответствуют перечислению <code>WindowManager.OpenType</code>: <code>NEW_TAB</code>, <code>THIS_TAB</code>, <code>DIALOG</code>, <code>NEW_WINDOW</code>.</para>
                   <para>По умолчанию - <code>NEW_TAB</code>. </para>
                   <para>Значение <code>NEW_WINDOW</code> поддерживается только в Desktop Client, в Web Client оно эквивалентно <code>NEW_TAB</code>.</para>
+                </listitem>
+                <listitem>
+                  <para><link linkend="menu_insertBefore_insertAfter"><sgmltag>insertBefore</sgmltag>, <sgmltag>insertAfter</sgmltag></link>.</para>
                 </listitem>
                 <listitem>
                   <para><sgmltag>resizable</sgmltag> - актуально для типа открытия экрана <code>DIALOG</code> - задает окну возможность изменения размера. Возможные значения: <code>true</code>, <code>false</code>.</para>
@@ -271,6 +276,7 @@ shortcut=&quot;ALT-CTRL-SHIFT-C&quot;</programlisting></para>
 
     &lt;menu id=&quot;sales&quot; insertBefore=&quot;administration&quot;&gt;
         &lt;item id=&quot;sales$Customer.lookup&quot;/&gt;
+        &lt;separator/&gt;
         &lt;item id=&quot;sales$Order.lookup&quot;/&gt;
     &lt;/menu&gt;
 
