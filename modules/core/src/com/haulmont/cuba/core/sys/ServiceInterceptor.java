@@ -81,9 +81,9 @@ public class ServiceInterceptor {
     private void logException(Throwable e, ProceedingJoinPoint ctx) {
         Logging annotation = e.getClass().getAnnotation(Logging.class);
         if (annotation == null || annotation.value() == Logging.Type.FULL) {
-            log.error("Uncaught exception: ", e);
+            log.error("Exception: ", e);
         } else if (annotation.value() == Logging.Type.BRIEF) {
-            log.error("Uncaught exception in " + ctx.getSignature().toShortString() + ": " + e.toString());
+            log.error("Exception in " + ctx.getSignature().toShortString() + ": " + e.toString());
         }
     }
 }

@@ -9,10 +9,7 @@ import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.EmailerAPI;
 import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.security.entity.Constraint;
-import com.haulmont.cuba.security.entity.Group;
-import com.haulmont.cuba.security.entity.SessionAttribute;
-import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.security.entity.*;
 import groovy.text.SimpleTemplateEngine;
 import groovy.text.Template;
 import org.apache.commons.io.FilenameUtils;
@@ -37,35 +34,44 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @Service(UserManagementService.NAME)
 public class UserManagementServiceBean implements UserManagementService {
 
-    private static final String GROUP_COPY_VIEW = "group.copy";
+    protected static final String GROUP_COPY_VIEW = "group.copy";
 
-    private static final String MOVE_USER_TO_GROUP_VIEW = "user.moveToGroup";
+    protected static final String MOVE_USER_TO_GROUP_VIEW = "user.moveToGroup";
 
-    private static final String RESET_PASSWORD_VIEW = "user.resetPassword";
+    protected static final String RESET_PASSWORD_VIEW = "user.resetPassword";
 
-    private Log log = LogFactory.getLog(getClass());
-
-    @Inject
-    private Persistence persistence;
+    protected Log log = LogFactory.getLog(getClass());
 
     @Inject
-    private Metadata metadata;
+    protected Persistence persistence;
 
     @Inject
-    private PasswordEncryption passwordEncryption;
+    protected Metadata metadata;
 
     @Inject
-    private EmailerAPI emailerAPI;
+    protected PasswordEncryption passwordEncryption;
 
     @Inject
-    private Resources resources;
+    protected EmailerAPI emailerAPI;
 
     @Inject
-    private Configuration configuration;
+    protected Resources resources;
+
+    @Inject
+    protected Configuration configuration;
+
+    @Inject
+    protected UserSessionSource userSessionSource;
+
+    protected void checkUpdatePermission(Class entityClass) {
+        if (!userSessionSource.getUserSession().isEntityOpPermitted(metadata.getClassNN(entityClass), EntityOp.UPDATE))
+            throw new AccessDeniedException(PermissionType.ENTITY_OP, metadata.getClassNN(entityClass).getName());
+    }
 
     @Override
     public Group copyAccessGroup(UUID accessGroupId) {
         checkNotNull(accessGroupId, "Null access group id");
+        checkUpdatePermission(Group.class);
 
         Group clone = null;
 
@@ -90,6 +96,7 @@ public class UserManagementServiceBean implements UserManagementService {
     @Override
     public Integer moveUsersToGroup(List<UUID> userIds, @Nullable UUID targetAccessGroupId) {
         checkNotNull(userIds, "Null users list");
+        checkUpdatePermission(User.class);
 
         if (userIds.isEmpty())
             return 0;
@@ -132,6 +139,7 @@ public class UserManagementServiceBean implements UserManagementService {
     @Override
     public Integer changePasswordsAtLogonAndSendEmails(List<UUID> userIds) {
         checkNotNull(userIds, "Null users list");
+        checkUpdatePermission(User.class);
 
         if (userIds.isEmpty())
             return 0;
@@ -171,6 +179,7 @@ public class UserManagementServiceBean implements UserManagementService {
     @Override
     public Map<UUID, String> changePasswordsAtLogon(List<UUID> userIds, boolean generatePassword) {
         checkNotNull(userIds, "Null users list");
+        checkUpdatePermission(User.class);
 
         if (userIds.isEmpty())
             return Collections.emptyMap();
@@ -210,7 +219,7 @@ public class UserManagementServiceBean implements UserManagementService {
         return StringUtils.equals(passwordEncryption.getHash(newPasswordHash, salt), oldPassword);
     }
 
-    private EmailTemplate getResetPasswordTemplate(User user,
+    protected EmailTemplate getResetPasswordTemplate(User user,
                                                    SimpleTemplateEngine templateEngine,
                                                    String resetPasswordSubjectTemplate,
                                                    String resetPasswordBodyTemplate,
@@ -273,7 +282,7 @@ public class UserManagementServiceBean implements UserManagementService {
         return new EmailTemplate(subjectTemplate, bodyTemplate);
     }
 
-    private Template loadDefaultTemplate(String templatePath, SimpleTemplateEngine templateEngine) {
+    protected Template loadDefaultTemplate(String templatePath, SimpleTemplateEngine templateEngine) {
         Template template;
         String defaultTemplateContent = resources.getResourceAsString(templatePath);
         if (defaultTemplateContent == null)
@@ -287,7 +296,7 @@ public class UserManagementServiceBean implements UserManagementService {
         return template;
     }
 
-    private void sendResetPasswordEmail(User user, String password, Template subjectTemplate, Template bodyTemplate) {
+    protected void sendResetPasswordEmail(User user, String password, Template subjectTemplate, Template bodyTemplate) {
         Transaction tx = persistence.getTransaction();
         String emailBody;
         String emailSubject;
@@ -311,7 +320,7 @@ public class UserManagementServiceBean implements UserManagementService {
         emailerAPI.sendEmailAsync(emailInfo);
     }
 
-    private Map<User, String> updateUserPasswords(List<UUID> userIds, boolean generatePassword) {
+    protected Map<User, String> updateUserPasswords(List<UUID> userIds, boolean generatePassword) {
         Map<User, String> modifiedUsers = new LinkedHashMap<>();
 
         Transaction tx = persistence.getTransaction();
@@ -347,7 +356,7 @@ public class UserManagementServiceBean implements UserManagementService {
         return modifiedUsers;
     }
 
-    private Group cloneGroup(Group group, Group parent, EntityManager em) {
+    protected Group cloneGroup(Group group, Group parent, EntityManager em) {
         Group groupClone = new Group();
 
         groupClone.setName(group.getName());
@@ -385,7 +394,7 @@ public class UserManagementServiceBean implements UserManagementService {
         return groupClone;
     }
 
-    private SessionAttribute cloneSessionAttribute(SessionAttribute attribute, Group group) {
+    protected SessionAttribute cloneSessionAttribute(SessionAttribute attribute, Group group) {
         SessionAttribute resultAttribute = new SessionAttribute();
         resultAttribute.setName(attribute.getName());
         resultAttribute.setDatatype(attribute.getDatatype());
@@ -394,7 +403,7 @@ public class UserManagementServiceBean implements UserManagementService {
         return resultAttribute;
     }
 
-    private Constraint cloneConstraint(Constraint constraint, Group group) {
+    protected Constraint cloneConstraint(Constraint constraint, Group group) {
         Constraint resultConstraint = new Constraint();
         resultConstraint.setEntityName(constraint.getEntityName());
         resultConstraint.setJoinClause(constraint.getJoinClause());
@@ -406,7 +415,7 @@ public class UserManagementServiceBean implements UserManagementService {
     /**
      * Template pair : subject + body
      */
-    private class EmailTemplate {
+    protected class EmailTemplate {
 
         private Template subjectTemplate;
         private Template bodyTemplate;

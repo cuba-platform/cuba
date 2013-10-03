@@ -17,10 +17,7 @@ import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.security.app.UserManagementService;
-import com.haulmont.cuba.security.entity.EntityOp;
-import com.haulmont.cuba.security.entity.Role;
-import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.security.entity.UserRole;
+import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.collections.map.SingletonMap;
 import org.apache.commons.lang.BooleanUtils;
@@ -44,6 +41,15 @@ public class UserBrowser extends AbstractLookup {
     @Named("usersTable.remove")
     protected RemoveAction removeAction;
 
+    @Named("usersTable.copySettings")
+    protected Action copySettingsAction;
+
+    @Named("usersTable.changePassw")
+    protected Action changePasswAction;
+
+    @Named("usersTable.changePasswAtLogon")
+    protected Action changePasswAtLogonAction;
+
     @Inject
     protected Button userTableCopyButton;
 
@@ -65,8 +71,16 @@ public class UserBrowser extends AbstractLookup {
     @Override
     public void init(Map<String, Object> params) {
         final boolean hasPermissionsToCreateUsers =
-                userSession.isEntityOpPermitted(metadata.getSession().getClass(User.class),
-                        EntityOp.CREATE);
+                userSession.isEntityOpPermitted(metadata.getClassNN(User.class), EntityOp.CREATE);
+
+        final boolean hasPermissionsToUpdateUsers =
+                userSession.isEntityOpPermitted(metadata.getClassNN(User.class), EntityOp.CREATE);
+
+        changePasswAction.setEnabled(hasPermissionsToUpdateUsers);
+        changePasswAtLogonAction.setEnabled(hasPermissionsToUpdateUsers);
+
+        copySettingsAction.setEnabled(
+                userSession.isEntityOpPermitted(metadata.getClassNN(UserSetting.class), EntityOp.CREATE));
 
         usersDs.addListener(new DsListenerAdapter<User>() {
             @Override
@@ -76,7 +90,7 @@ public class UserBrowser extends AbstractLookup {
                     changePasswordButton.setEnabled(false);
                 } else {
                     userTableCopyButton.setEnabled(hasPermissionsToCreateUsers && item != null);
-                    changePasswordButton.setEnabled(item != null);
+                    changePasswordButton.setEnabled(hasPermissionsToUpdateUsers && item != null);
                 }
             }
         });

@@ -4,7 +4,6 @@
  */
 package com.haulmont.cuba.web.log;
 
-import com.haulmont.cuba.core.app.ServerInfoService;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.web.App;
@@ -82,25 +81,12 @@ public class LogWindow extends Window {
                 }
         );
 
-        Label versionLabel = new Label();
-        versionLabel.setValue(getVersionString());
-
         topLayout.addComponent(refreshBtn);
-        topLayout.addComponent(versionLabel);
-        topLayout.setComponentAlignment(versionLabel, Alignment.MIDDLE_RIGHT);
 
         layout.addComponent(topLayout);
         layout.addComponent(scrollablePanel);
 
         layout.setExpandRatio(scrollablePanel, 1.0f);
-    }
-
-    private String getVersionString() {
-        ServerInfoService service = AppBeans.get(ServerInfoService.NAME);
-        String releaseNumber = service.getReleaseNumber();
-        String releaseTimestamp = service.getReleaseTimestamp();
-        return AppBeans.get(Messages.class).formatMessage(
-                getClass(), "logWindow.versionString", releaseNumber, releaseTimestamp);
     }
 
     private String writeLog() {

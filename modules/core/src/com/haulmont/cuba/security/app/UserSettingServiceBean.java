@@ -7,6 +7,7 @@ package com.haulmont.cuba.security.app;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.global.AccessDeniedException;
 import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.UserSessionSource;
@@ -33,10 +34,10 @@ public class UserSettingServiceBean implements UserSettingService {
     protected Persistence persistence;
 
     @Inject
-    private UserSessionSource userSessionSource;
+    protected UserSessionSource userSessionSource;
 
     @Inject
-    private Metadata metadata;
+    protected Metadata metadata;
 
     public String loadSetting(String name) {
         return loadSetting(null, name);
@@ -104,6 +105,9 @@ public class UserSettingServiceBean implements UserSettingService {
     }
 
     public void copySettings(User fromUser, User toUser) {
+        if (!userSessionSource.getUserSession().isEntityOpPermitted(metadata.getClassNN(UserSetting.class), EntityOp.CREATE))
+            throw new AccessDeniedException(PermissionType.ENTITY_OP, metadata.getClassNN(UserSetting.class).getName());
+
         Map<UUID, Presentation> presentationsMap = copyPresentations(fromUser, toUser);
         copyUserFolders(fromUser, toUser, presentationsMap);
         Map<UUID, FilterEntity> filtersMap = copyFilters(fromUser, toUser);
@@ -166,7 +170,7 @@ public class UserSettingServiceBean implements UserSettingService {
     }
 
 
-    private Map<UUID, Presentation> copyPresentations(User fromUser, User toUser) {
+    protected Map<UUID, Presentation> copyPresentations(User fromUser, User toUser) {
         Map<UUID, Presentation> presentationMap = new HashMap<UUID, Presentation>();
         Transaction tx = persistence.createTransaction();
         try {
@@ -198,7 +202,7 @@ public class UserSettingServiceBean implements UserSettingService {
     }
 
 
-    private void copyUserFolders(User fromUser, User toUser, Map<UUID, Presentation> presentationsMap) {
+    protected void copyUserFolders(User fromUser, User toUser, Map<UUID, Presentation> presentationsMap) {
         Transaction tx = persistence.createTransaction();
         try {
             MetaClass effectiveMetaClass = metadata.getExtendedEntities().getEffectiveMetaClass(FilterEntity.class);
@@ -219,7 +223,7 @@ public class UserSettingServiceBean implements UserSettingService {
         }
     }
 
-    private SearchFolder copyFolder(SearchFolder searchFolder,
+    protected SearchFolder copyFolder(SearchFolder searchFolder,
                                     User toUser,
                                     Map<SearchFolder, SearchFolder> copiedFolders,
                                     Map<UUID, Presentation> presentationsMap) {
@@ -263,7 +267,7 @@ public class UserSettingServiceBean implements UserSettingService {
         return newFolder;
     }
 
-    private SearchFolder getParent(SearchFolder parentFolder, User toUser, Map<SearchFolder, SearchFolder> copiedFolders, Map<UUID, Presentation> presentationMap) {
+    protected SearchFolder getParent(SearchFolder parentFolder, User toUser, Map<SearchFolder, SearchFolder> copiedFolders, Map<UUID, Presentation> presentationMap) {
         if (parentFolder == null) {
             return null;
         }
@@ -273,7 +277,7 @@ public class UserSettingServiceBean implements UserSettingService {
         return copyFolder(parentFolder, toUser, copiedFolders, presentationMap);
     }
 
-    private Map<UUID, FilterEntity> copyFilters(User fromUser, User toUser) {
+    protected Map<UUID, FilterEntity> copyFilters(User fromUser, User toUser) {
         Map<UUID, FilterEntity> filtersMap = new HashMap<>();
         Transaction tx = persistence.createTransaction();
         try {

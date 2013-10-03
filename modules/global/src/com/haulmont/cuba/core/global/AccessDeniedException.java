@@ -14,6 +14,7 @@ import com.haulmont.cuba.security.entity.PermissionType;
  * @author krivopustov
  */
 @SupportedByClient
+@Logging(Logging.Type.BRIEF)
 public class AccessDeniedException extends RuntimeException
 {
     private static final long serialVersionUID = -3097861878301424338L;

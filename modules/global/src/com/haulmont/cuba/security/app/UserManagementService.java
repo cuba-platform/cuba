@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
+ * Service providing maintenance operations on security entities.
+ *
  * @author artamonov
  * @version $Id$
  */
@@ -21,7 +23,7 @@ public interface UserManagementService {
     String NAME = "cuba_UserManagementService";
 
     /**
-     * Copy access group with all properties and subgroups
+     * Copy access group with all its properties and subgroups.
      *
      * @param accessGroupId Source access group Id
      * @return Cloned group
@@ -29,16 +31,17 @@ public interface UserManagementService {
     Group copyAccessGroup(UUID accessGroupId);
 
     /**
-     * Move specified users to access group
+     * Move specified users to a new access group.
      *
      * @param userIds             Ids for moved users
      * @param targetAccessGroupId Id of target access group, may be null
-     * @return Count of users moved to target group
+     * @return Number of users moved to target group
      */
     Integer moveUsersToGroup(List<UUID> userIds, @Nullable UUID targetAccessGroupId);
 
     /**
-     * Change passwords at logon for specified users and send emails with generated passwords
+     * Update passwords for specified users, send them emails with new generated passwords and make them change
+     * passwords at next logon.
      *
      * @param userIds User ids
      * @return Count of users
@@ -46,7 +49,7 @@ public interface UserManagementService {
     Integer changePasswordsAtLogonAndSendEmails(List<UUID> userIds);
 
     /**
-     * Change passwords at logon for specified users
+     * Make specified users to change passwords at next logon.
      *
      * @param userIds          User ids
      * @param generatePassword Generate new passwords
@@ -57,7 +60,7 @@ public interface UserManagementService {
     /**
      * @param userId          User id
      * @param newPasswordHash Plain hash of new password
-     * @return True if new and old password equals
+     * @return True if the new and old passwords are equal
      */
     boolean checkEqualsOfNewAndOldPassword(UUID userId, String newPasswordHash);
 }
