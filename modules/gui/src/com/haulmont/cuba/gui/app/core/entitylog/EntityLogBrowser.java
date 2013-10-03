@@ -405,6 +405,7 @@ public class EntityLogBrowser extends AbstractWindow {
         entity.setManual(false);
         setSelectAllCheckBox(false);
         loggedEntityDs.addItem(entity);
+        loggedEntityTable.setEditable(true);
         loggedEntityTable.setSelected(entity);
         enableControls();
         entityNameField.setEditable(true);
