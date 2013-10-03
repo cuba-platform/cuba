@@ -677,7 +677,9 @@ public class WebWindowManager extends WindowManager {
     }
 
     protected com.vaadin.ui.Window createDialogWindow(Window window) {
-        return new com.vaadin.ui.Window(window.getCaption());
+        com.vaadin.ui.Window vWindow = new com.vaadin.ui.Window(window.getCaption());
+        vWindow.setErrorHandler(app.getAppUI());
+        return vWindow;
     }
 
     @Override
