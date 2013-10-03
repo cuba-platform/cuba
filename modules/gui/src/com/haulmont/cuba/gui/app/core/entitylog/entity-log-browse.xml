@@ -125,7 +125,7 @@
                             <rows datasource="loggedEntityDs"/>
                         </groupTable>
                     </vbox>
-                    <vbox width="100%"  margin="true" spacing="true">
+                    <vbox expand="expandableLabel"  width="100%"  margin="true" spacing="true">
                         <label value="msg://name"/>
                         <lookupField width="310px" datasource="loggedEntityDs" id="entityNameField" property="name"/>
                         <hbox width="50%">
@@ -142,6 +142,7 @@
                                 <button id="cancelBtn" action="cancel" caption="msg://cancel" icon="icons/cancel.png"/>
                             </hbox>
                         </vbox>
+                        <label id="expandableLabel"/>
                     </vbox>
                 </split>
                 <button invoke="reloadConfiguration" caption="msg://reloadConfiguration"/>
