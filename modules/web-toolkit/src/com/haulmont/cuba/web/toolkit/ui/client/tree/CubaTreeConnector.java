@@ -28,7 +28,7 @@ public class CubaTreeConnector extends TreeConnector {
     @Override
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
         super.updateFromUIDL(uidl, client);
-
+        getWidget().setContextMenuHandling(false);
         // We may have actions attached to this panel
         if (uidl.getChildCount() > 1) {
             final int cnt = uidl.getChildCount();

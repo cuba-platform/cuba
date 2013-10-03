@@ -18,6 +18,8 @@ public class CubaTreeWidget extends VTree implements ShortcutActionHandler.Short
 
     protected ShortcutActionHandler shortcutHandler;
 
+    protected boolean contextMenuHandling = false;
+
     @Override
     public ShortcutActionHandler getShortcutActionHandler() {
         return shortcutHandler;
@@ -48,7 +50,16 @@ public class CubaTreeWidget extends VTree implements ShortcutActionHandler.Short
 
         protected void selectNodeForContextMenu() {
             client.updateVariable(getPaintableId(), "popupSelection", true, false);
+            contextMenuHandling = true;
             handleClickSelection(false, false);
         }
+    }
+
+    public void setContextMenuHandling(boolean contextMenuHandling) {
+        this.contextMenuHandling = contextMenuHandling;
+    }
+
+    public boolean isSelected(TreeNode treeNode) {
+        return selectedIds.contains(treeNode.key) && !contextMenuHandling;
     }
 }
