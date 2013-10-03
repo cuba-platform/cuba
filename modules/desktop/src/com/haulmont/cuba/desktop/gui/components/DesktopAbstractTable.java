@@ -1116,9 +1116,6 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
     @Override
     public void setSelected(Collection<Entity> items) {
-        if (!isEditable())
-            return;
-
         if (items == null)
             items = Collections.emptyList();
         for (Entity item : items) {
