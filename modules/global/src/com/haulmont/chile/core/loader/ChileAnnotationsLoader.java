@@ -192,6 +192,8 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
         if (!metaClass.getOwnProperties().isEmpty())
             return;
 
+        //load collection properties after non-collection on order to have all inverse properties loaded up
+        ArrayList<Field> collectionProps = new ArrayList<>();
         for (Field field : clazz.getDeclaredFields()) {
             if (field.isSynthetic())
                 continue;
@@ -203,16 +205,22 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
                 if (property == null) {
                     MetadataObjectInfo<MetaProperty> info;
                     if (isCollection(field) || isMap(field)) {
-                        info = __loadCollectionProperty(metaClass, field);
-                        tasks.addAll(info.getTasks());
+                        collectionProps.add(field);
                     } else {
                         info = __loadProperty(metaClass, field);
                         tasks.addAll(info.getTasks());
+                        final MetaProperty metaProperty = info.getObject();
+                        onPropertyLoaded(metaProperty, field);
                     }
-                    final MetaProperty metaProperty = info.getObject();
-                    onPropertyLoaded(metaProperty, field);
                 }
             }
+        }
+
+        for (Field f : collectionProps) {
+            MetadataObjectInfo<MetaProperty> info = __loadCollectionProperty(metaClass, f);
+            tasks.addAll(info.getTasks());
+            final MetaProperty metaProperty = info.getObject();
+            onPropertyLoaded(metaProperty, f);
         }
 
         for (Method method : clazz.getDeclaredMethods()) {
