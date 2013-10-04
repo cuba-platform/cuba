@@ -13,6 +13,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AbstractViewRepository;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.AddAction;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
@@ -35,7 +36,7 @@ import java.util.*;
  * @author korotkov
  * @version $Id$
  */
-public class EntityInspectorEditor extends AbstractEditor {
+public class EntityInspectorEditor extends AbstractWindow {
 
     public static final String SCREEN_NAME = "entityInspector.edit";
     public static final String DEFAULT_FIELD_WIDTH = "300";
@@ -69,14 +70,21 @@ public class EntityInspectorEditor extends AbstractEditor {
 
     @Inject
     protected ComponentsFactory componentsFactory;
-    protected MetaClass meta;
-    protected String parentProperty;
 
+    @WindowParam(name = "item")
     protected Entity item;
+
+    @WindowParam(name = "parent")
     protected Entity parent;
 
-    protected DsContextImpl dsContext;
+    @WindowParam(name = "parentProperty")
+    protected String parentProperty;
+
+    @WindowParam(name = "datasource")
     protected Datasource datasource;
+
+    protected MetaClass meta;
+    protected DsContextImpl dsContext;
     protected Map<String, Datasource> datasources;
 
     protected Boolean isNew;
@@ -103,12 +111,9 @@ public class EntityInspectorEditor extends AbstractEditor {
         showSystemFields = false;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void init(Map<String, Object> params) {
-        item = (Entity) params.get("item");
-        parent = (Entity) params.get("parent");
-        parentProperty = (String) params.get("parentProperty");
-        datasource = (Datasource) params.get("datasource");
         isNew = item == null || PersistenceHelper.isNew(item);
         meta = item != null ? item.getMetaClass() : metadata.getSession().getClass((String) params.get("metaClass"));
         autocommit = params.get("autocommit") != null ? (Boolean) params.get("autocommit") : true;
@@ -137,7 +142,7 @@ public class EntityInspectorEditor extends AbstractEditor {
         boolean categorizedEntity = item instanceof CategorizedEntity;
 
         if (datasource == null) {
-            datasource = new DatasourceImpl<Entity>();
+            datasource = new DatasourceImpl<>();
             datasource.setup(dsContext, dataSupplier, meta.getName() + "Ds", item.getMetaClass(), view);
             ((DatasourceImpl) datasource).valid();
         }
@@ -155,10 +160,11 @@ public class EntityInspectorEditor extends AbstractEditor {
             createRuntimeDataComponents();
         }
 
-        datasource.setItem(item);
         if (datasource instanceof CollectionDatasource && createRequest) {
             ((CollectionDatasource) datasource).addItem(item);
         }
+
+        datasource.setItem(item);
 
         if (categorizedEntity) {
             rDS.refresh();
@@ -732,6 +738,16 @@ public class EntityInspectorEditor extends AbstractEditor {
         return result;
     }
 
+    public void commitAndClose() {
+        try {
+            validate();
+            dsContext.commit();
+            close(Window.COMMIT_ACTION_ID, true);
+        } catch (ValidationException e) {
+            showNotification("Validation error", e.getMessage(), NotificationType.TRAY);
+        }
+    }
+
     /**
      * Creates either Remove or Exclude action depending on property type
      */
@@ -818,14 +834,7 @@ public class EntityInspectorEditor extends AbstractEditor {
 
         @Override
         public void actionPerform(Component component) {
-            try {
-                validate();
-                if (autocommit)
-                    dsContext.commit();
-                close(Window.COMMIT_ACTION_ID);
-            } catch (ValidationException e) {
-                showNotification("Validation error", e.getMessage(), NotificationType.TRAY);
-            }
+            commitAndClose();
         }
     }
 
@@ -873,14 +882,14 @@ public class EntityInspectorEditor extends AbstractEditor {
             if (inverseProperty != null)
                 editorParams.put("parentProperty", inverseProperty.getName());
             editorParams.put("parent", item);
-
-            Window window = openWindow("entityInspector.edit", OPEN_TYPE, editorParams);
-            window.addListener(new CloseListener() {
-                @Override
-                public void windowClosed(String actionId) {
-                    entitiesDs.refresh();
-                }
-            });
+            EntityInspectorEditor window = openWindow("entityInspector.edit", OPEN_TYPE, editorParams);
+            if (!(entitiesDs instanceof PropertyDatasource))
+                window.addListener(new CloseListener() {
+                    @Override
+                    public void windowClosed(String actionId) {
+                        entitiesDs.refresh();
+                    }
+                });
         }
     }
 
