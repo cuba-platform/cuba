@@ -167,7 +167,7 @@ public class FilterEditor extends AbstractFilterEditor {
 
         JPanel checkBoxes = new JPanel(new MigLayout());
 
-        bottomPanel.add(checkBoxes, new CC().alignX("left"));
+        bottomPanel.add(checkBoxes, new CC().alignX("left").growX(1f));
         bottomPanel.add(buttonsPanel, new CC().growX().alignY("bottom"));
 
         globalCb = new JCheckBox(getMessage("FilterEditor.global"));

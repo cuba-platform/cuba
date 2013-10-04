@@ -140,7 +140,7 @@ public class FilterEditor extends AbstractFilterEditor {
         controlLayout.addComponent(cancelBtn);
 
         bottomLayout.addComponent(flagsLayout);
-
+        bottomLayout.setExpandRatio(flagsLayout, 1f);
         bottomLayout.addComponent(controlLayout);
         bottomLayout.setComponentAlignment(controlLayout, Alignment.MIDDLE_RIGHT);
 
