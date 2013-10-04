@@ -15,7 +15,7 @@ public class ToolsImplMozilla extends ToolsImpl {
 
     @Override
     protected native void setTextSelectionEnable(Element el) /*-{
-        if (typeof x.style == "undefined")
+        if (typeof el.style == "undefined")
             el.style = {};
         el.style.MozUserSelect = "";
     }-*/;
