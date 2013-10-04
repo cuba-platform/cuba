@@ -9,7 +9,6 @@ import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.bali.db.ResultSetHandler;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.listener.BeforeDetachEntityListener;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.entity.EntityLogAttr;
 import com.haulmont.cuba.security.entity.EntityLogItem;
 import org.apache.commons.lang.StringUtils;
@@ -19,8 +18,6 @@ import org.apache.commons.logging.LogFactory;
 import java.io.StringReader;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -36,58 +33,44 @@ public class EntityLogItemDetachListener implements BeforeDetachEntityListener<E
         if (item.getAttributes() != null)
             return;
 
-        String property = AppContext.getProperty("cuba.security.EntityLog.persistentAttributesUntil");
-        if (!StringUtils.isBlank(property)) {
-            Date persistentAttributesUntil = null;
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            try {
-                persistentAttributesUntil = sdf.parse(property);
-            } catch (ParseException e) {
-                log.warn("Unable to parse date from cuba.security.EntityLog.persistentAttributesUntil: " + e.getMessage());
-            }
-            log.trace("persistentAttributesUntil=" + persistentAttributesUntil);
-            if (persistentAttributesUntil != null && item.getEventTs() != null
-                    && item.getEventTs().before(persistentAttributesUntil)) {
-                fillAttributesFromTable(item, entityManager);
-                return;
-            }
+        if (StringUtils.isBlank(item.getChanges())) {
+            fillAttributesFromTable(item, entityManager);
+        } else {
+            fillAttributesFromChangesField(item);
         }
-        fillAttributesFromChangesField(item);
     }
 
     private void fillAttributesFromChangesField(EntityLogItem item) {
         log.trace("fillAttributesFromChangesField for " + item);
         Set<EntityLogAttr> attributes = new HashSet<>();
 
-        if (!StringUtils.isBlank(item.getChanges())) {
-            StringReader reader = new StringReader(item.getChanges());
-            Properties properties = new Properties();
-            try {
-                properties.load(reader);
-                Enumeration<?> names = properties.propertyNames();
-                while (names.hasMoreElements()) {
-                    String name = (String) names.nextElement();
-                    if (name.endsWith(EntityLogAttr.VALUE_ID_SUFFIX) || name.endsWith(EntityLogAttr.MP_SUFFIX))
-                        continue;
+        StringReader reader = new StringReader(item.getChanges());
+        Properties properties = new Properties();
+        try {
+            properties.load(reader);
+            Enumeration<?> names = properties.propertyNames();
+            while (names.hasMoreElements()) {
+                String name = (String) names.nextElement();
+                if (name.endsWith(EntityLogAttr.VALUE_ID_SUFFIX) || name.endsWith(EntityLogAttr.MP_SUFFIX))
+                    continue;
 
-                    EntityLogAttr attr = new EntityLogAttr();
-                    attr.setLogItem(item);
-                    attr.setName(name);
-                    attr.setValue(properties.getProperty(name));
+                EntityLogAttr attr = new EntityLogAttr();
+                attr.setLogItem(item);
+                attr.setName(name);
+                attr.setValue(properties.getProperty(name));
 
-                    String id = properties.getProperty(name + EntityLogAttr.VALUE_ID_SUFFIX);
-                    if (id != null)
-                        attr.setValueId(UUID.fromString(id));
+                String id = properties.getProperty(name + EntityLogAttr.VALUE_ID_SUFFIX);
+                if (id != null)
+                    attr.setValueId(UUID.fromString(id));
 
-                    String mp = properties.getProperty(name + EntityLogAttr.MP_SUFFIX);
-                    if (mp != null)
-                        attr.setMessagesPack(mp);
+                String mp = properties.getProperty(name + EntityLogAttr.MP_SUFFIX);
+                if (mp != null)
+                    attr.setMessagesPack(mp);
 
-                    attributes.add(attr);
-                }
-            } catch (Exception e) {
-                log.error("Unable to fill EntityLog attributes for " + item, e);
+                attributes.add(attr);
             }
+        } catch (Exception e) {
+            log.error("Unable to fill EntityLog attributes for " + item, e);
         }
 
         item.setAttributes(attributes);
