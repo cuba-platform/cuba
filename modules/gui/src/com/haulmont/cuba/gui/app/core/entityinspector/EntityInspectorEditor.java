@@ -122,6 +122,8 @@ public class EntityInspectorEditor extends AbstractWindow {
         if (meta == null)
             throw new IllegalStateException("Entity or entity's MetaClass must be specified");
 
+        setCaption(meta.getName());
+
         View view = createView(meta);
 
         dsContext = new DsContextImpl(dataSupplier);
