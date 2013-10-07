@@ -7240,21 +7240,26 @@ protected boolean postCommit(boolean committed, boolean close) {
             <listitem>
               <para id="gui_element_table_rows">Элемент <sgmltag>rows</sgmltag> является обязательным. В этом элементе необходимо объявить используемый <link linkend="datasources">источник данных</link>.</para>
             </listitem>
-            <listitem><para id="gui_attr_table_headerMode">Атрибут <sgmltag>headerMode</sgmltag> элемента <sgmltag>rows</sgmltag> задает вариант отображения заголовков рядов:</para><itemizedlist>
+            <listitem>
+              <para id="gui_attr_table_headerMode">Атрибут <sgmltag>headerMode</sgmltag> элемента <sgmltag>rows</sgmltag> задает вариант отображения заголовков рядов:</para>
+              <itemizedlist>
                 <listitem>
                   <para><literal>NONE</literal> − нет заголовков</para>
                 </listitem>
                 <listitem>
                   <para><literal>ICON</literal> − пиктограмма</para>
                 </listitem>
-              </itemizedlist>Для отображения пиктограмм в качестве заголовков рядов, в <glossterm linkend="screen_controller_glossentry">контроллере</glossterm>экрана нужно задать для таблицы <code>IconProvider</code>, реализовав интерфейс <code>com.haulmont.cuba.gui.components.IconProvider.</code><programlisting>Table.IconProvider&lt;SampleEntity&gt; iconProvider = new Table.IconProvider&lt;SampleEntity&gt;() {
+              </itemizedlist>
+              <para>Для отображения пиктограмм в качестве заголовков рядов, в  <link linkend="screen_controller">контроллере</link> экрана нужно задать для таблицы <code>IconProvider</code>, реализовав интерфейс <code>com.haulmont.cuba.gui.components.IconProvider.</code></para>
+              <programlisting>Table.IconProvider&lt;SampleEntity&gt; iconProvider = new Table.IconProvider&lt;SampleEntity&gt;() {
     @Override
     public String getItemIcon(SampleEntity entity) {
         return &quot;theme:icons/tag.png&quot;;
     }
 };
 
-table.setIconProvider(iconProvider);</programlisting></listitem>
+table.setIconProvider(iconProvider);</programlisting>
+            </listitem>
             <listitem>
               <para id="gui_element_table_columns">Следующим обязательным элементом для таблицы является элемент <sgmltag>columns</sgmltag>. Он определяет набор колонок (<sgmltag>column</sgmltag>) таблицы.</para>
             </listitem>
