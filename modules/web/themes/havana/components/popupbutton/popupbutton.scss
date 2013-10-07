@@ -9,6 +9,9 @@
   .#{$primaryStyleName}-popup {
     padding: 3px;
     border: 1px solid $theme_fieldBorderColor;
+    border-radius: 0;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
 
     .v-button {
       height: 20px;
@@ -45,6 +48,7 @@
     vertical-align: middle;
     height: 12px;
     width: 12px;
+    margin-left: 3px;
     background: transparent;
     background-image: url(sprites/popup-button.png);  /** sprite-ref: components; */
     background-repeat: no-repeat;
