@@ -31,10 +31,12 @@ public class MssqlTypeConverter implements DbTypeConverter {
             case Types.VARCHAR:
             case Types.LONGVARCHAR:
             case Types.CLOB:
-                if ("uniqueidentifier".equals(typeName))
-                    value = UUID.fromString(resultSet.getString(columnIndex));
-                else
+                if ("uniqueidentifier".equals(typeName)) {
+                    String stringValue = resultSet.getString(columnIndex);
+                    value = stringValue != null ? UUID.fromString(stringValue) : null;
+                } else {
                     value = resultSet.getObject(columnIndex);
+                }
                 break;
 
             default:

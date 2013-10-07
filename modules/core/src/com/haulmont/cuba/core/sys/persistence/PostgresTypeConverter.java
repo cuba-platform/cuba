@@ -29,12 +29,14 @@ public class PostgresTypeConverter implements DbTypeConverter {
 
         switch (sqlType) {
             case Types.OTHER:
-                if (resultSet.getObject(columnIndex) instanceof UUID)
+                if (resultSet.getObject(columnIndex) instanceof UUID) {
                     value = resultSet.getObject(columnIndex);
-                else if ("uuid".equals(typeName))
-                    value = UUID.fromString(resultSet.getString(columnIndex));
-                else
+                } else if ("uuid".equals(typeName)) {
+                    String stringValue = resultSet.getString(columnIndex);
+                    value = stringValue != null ? UUID.fromString(stringValue) : null;
+                } else {
                     value = resultSet.getObject(columnIndex);
+                }
                 break;
 
             default:
