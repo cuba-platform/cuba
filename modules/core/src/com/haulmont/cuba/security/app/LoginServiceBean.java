@@ -7,6 +7,7 @@ package com.haulmont.cuba.security.app;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -37,9 +38,9 @@ public class LoginServiceBean implements LoginService {
         } catch (LoginException e) {
             log.info("Login failed: " + e.toString());
             throw e;
-        } catch (RuntimeException | Error e) {
+        } catch (Throwable e) {
             log.error("Login error", e);
-            throw e;
+            throw wrapInLoginException(e);
         }
     }
 
@@ -50,9 +51,9 @@ public class LoginServiceBean implements LoginService {
         } catch (LoginException e) {
             log.info("Login failed: " + e.toString());
             throw e;
-        } catch (RuntimeException | Error e) {
+        } catch (Throwable e) {
             log.error("Login error", e);
-            throw e;
+            throw wrapInLoginException(e);
         }
     }
 
@@ -63,9 +64,9 @@ public class LoginServiceBean implements LoginService {
         } catch (LoginException e) {
             log.info("Login failed: " + e.toString());
             throw e;
-        } catch (RuntimeException | Error e) {
+        } catch (Throwable e) {
             log.error("Login error", e);
-            throw e;
+            throw wrapInLoginException(e);
         }
     }
 
@@ -76,9 +77,9 @@ public class LoginServiceBean implements LoginService {
         } catch (LoginException e) {
             log.info("Login failed: " + e.toString());
             throw e;
-        } catch (RuntimeException | Error e) {
+        } catch (Throwable e) {
             log.error("Login error", e);
-            throw e;
+            throw wrapInLoginException(e);
         }
     }
 
@@ -86,9 +87,9 @@ public class LoginServiceBean implements LoginService {
     public void logout() {
         try {
             loginWorker.logout();
-        } catch (RuntimeException | Error e) {
+        } catch (Throwable e) {
             log.error("Logout error", e);
-            throw e;
+            throw new RuntimeException(e.toString());
         }
     }
 
@@ -100,5 +101,14 @@ public class LoginServiceBean implements LoginService {
     @Override
     public UserSession getSession(UUID sessionId) {
         return loginWorker.getSession(sessionId);
+    }
+
+    protected LoginException wrapInLoginException(Throwable throwable) {
+        //noinspection ThrowableResultOfMethodCallIgnored
+        Throwable rootCause = ExceptionUtils.getRootCause(throwable);
+        if (rootCause == null)
+            rootCause = throwable;
+        // send text only to avoid ClassNotFoundException when the client has no dependency to some library
+        return new LoginException(rootCause.toString());
     }
 }

@@ -4,6 +4,8 @@
  */
 package com.haulmont.cuba.web.exception;
 
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.vaadin.server.AbstractErrorMessage;
@@ -11,6 +13,7 @@ import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.server.ErrorEvent;
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Window;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
@@ -24,6 +27,8 @@ import java.net.SocketException;
  */
 public class DefaultExceptionHandler implements ExceptionHandler {
 
+    protected Messages messages = AppBeans.get(Messages.class);
+
     @Override
     public boolean handle(ErrorEvent event, App app) {
         // Copied from com.vaadin.server.DefaultErrorHandler.doDefault()
@@ -36,7 +41,10 @@ public class DefaultExceptionHandler implements ExceptionHandler {
         }
 
         if (t != null) {
-            showDialog(t);
+            if (app.getConnection().getSession() != null)
+                showDialog(t);
+            else
+                showNotification(app, t);
         } else {
             // Finds the original source of the error/exception
             AbstractComponent component = DefaultErrorHandler.findAbstractComponent(event);
@@ -63,5 +71,15 @@ public class DefaultExceptionHandler implements ExceptionHandler {
         }
         AppUI.getCurrent().addWindow(dialog);
         dialog.focus();
+    }
+
+    private void showNotification(App app, Throwable exception) {
+        Throwable rootCause = ExceptionUtils.getRootCause(exception);
+        if (rootCause == null)
+            rootCause = exception;
+        Notification.show(
+                messages.getMessage(DefaultExceptionHandler.class, "exceptionDialog.caption", app.getLocale()),
+                rootCause.getClass().getSimpleName() + (rootCause.getMessage() != null ? "\n" + rootCause.getMessage() : ""),
+                Notification.Type.ERROR_MESSAGE);
     }
 }
