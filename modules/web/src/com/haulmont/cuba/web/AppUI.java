@@ -47,14 +47,18 @@ public class AppUI extends UI implements ErrorHandler {
             app = createApplication();
             VaadinSession.getCurrent().setAttribute(App.class, app);
 
-            new CubaJQueryIntegration().extend(this);
-            new CubaSWFObjectIntegration().extend(this);
-
             applicationInitRequired = true;
 
         } else {
             app = App.getInstance();
         }
+
+        initJsLibraries();
+    }
+
+    protected void initJsLibraries() {
+        new CubaJQueryIntegration().extend(this);
+        new CubaSWFObjectIntegration().extend(this);
     }
 
     protected App createApplication() {
