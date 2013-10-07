@@ -12,11 +12,10 @@ import javax.annotation.Nullable;
 import java.util.Locale;
 
 /**
- * Interface to be implemented by middleware connection objects on web-client.
- *
- * <p>$Id$</p>
+ * Interface to be implemented by objects that connect web-client to the middleware.
  *
  * @author krivopustov
+ * @version $Id$
  */
 public interface Connection {
 

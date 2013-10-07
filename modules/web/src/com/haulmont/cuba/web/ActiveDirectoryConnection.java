@@ -10,6 +10,9 @@ import java.util.Locale;
 
 /**
  * Interface to be implemented by middleware connection objects supporting ActiveDirectory integration.
+ *
+ * @author krokhin
+ * @version $Id$
  */
 public interface ActiveDirectoryConnection {
 

@@ -14,8 +14,6 @@ import java.security.Principal;
  */
 public class CASProtectedApp extends App implements ConnectionListener {
 
-    private static final long serialVersionUID = -6926944868742949956L;
-
     @Override
     protected Connection createConnection() {
         Connection connection = new CASProtectedConnection();

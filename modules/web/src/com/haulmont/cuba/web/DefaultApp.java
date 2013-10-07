@@ -19,12 +19,13 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
+ * Default {@link App} implementation that shows {@link LoginWindow} on start.
+ * Supports SSO through integration with ActiveDirectory.
+ *
  * @author gorodnov
  * @version $Id$
  */
 public class DefaultApp extends App implements ConnectionListener {
-
-    private static final long serialVersionUID = 70273562618123015L;
 
     private static Log log = LogFactory.getLog(DefaultApp.class);
 

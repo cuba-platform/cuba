@@ -27,17 +27,21 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 /**
+ * Central class of the web application. An instance of this class is created for each client's session and is bound
+ * to {@link VaadinSession}.
+ * <p/>
+ * Use {@link #getInstance()} static method to obtain the reference to the current App instance.
+ *
  * @author artamonov
  * @version $Id$
  */
-public abstract class App implements Serializable {
+public abstract class App {
 
     public static final String USER_SESSION_ATTR = "userSessionId";
 
@@ -144,6 +148,9 @@ public abstract class App implements Serializable {
 
     protected abstract Connection createConnection();
 
+    /**
+     * Called when <em>the first</em> UI of the session is initialized.
+     */
     protected void init() {
         log.debug("Initializing application");
 
@@ -155,19 +162,28 @@ public abstract class App implements Serializable {
             principal = RequestContext.get().getRequest().getUserPrincipal();
     }
 
+    /**
+     * Called on each UI initialization.
+     *
+     * @param ui initialized UI
+     */
     protected void initView(AppUI ui) {
     }
 
     /**
      * @return Current App instance. Can be invoked anywhere in application code.
+     * @throws IllegalStateException if no application instance is bound to the current {@link VaadinSession}
      */
     public static App getInstance() {
         App app = VaadinSession.getCurrent().getAttribute(App.class);
         if (app == null)
-            throw new IllegalStateException("No App is bound to the current thread");
+            throw new IllegalStateException("No App is bound to the current VaadinSession");
         return app;
     }
 
+    /**
+     * @return true if an {@link App} instance is currently bound and can be safely obtained by {@link #getInstance()}
+     */
     public static boolean isBound() {
         return VaadinSession.getCurrent().getAttribute(App.class) != null;
     }
