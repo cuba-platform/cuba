@@ -9274,7 +9274,7 @@ table.setIconProvider(iconProvider);</programlisting>
           <para id="gui_attr_split_orientation">При создании панели с разделителем нужно указать ориентацию разделителя с помощью атрибута <sgmltag>orientation</sgmltag>. По умолчанию значение атрибута равно <literal>vertical</literal>.</para>
           <para id="gui_attr_split_pos"><sgmltag>pos</sgmltag> − необязательный атрибут, определяет процентное соотношение областей. Например, <code>pos=&quot;30%&quot;</code> означает соотношение областей 30/70. По умолчанию соотношение областей составляет 50/50.</para>
           <warning>
-            <para>Обязательными вложенными элементами являются два контейнера или компонента.</para>
+            <para>Обязательно наличие одного или двух вложенных элементов -  контейнеров или компонентов.</para>
           </warning>
           <para>Атрибуты <sgmltag>split</sgmltag>:</para>
           <informaltable frame="none" pgwide="0" align="left">
