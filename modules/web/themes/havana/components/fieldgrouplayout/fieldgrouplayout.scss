@@ -19,8 +19,8 @@
   }
 
   .#{$primaryStyleName}-slot > .v-checkbox {
-    line-height: 22px;
-    height: 25px;
+    line-height: 18px;
+    vertical-align: middle;
   }
 
   .#{$primaryStyleName}-slot > .v-caption.caption-indicators {
@@ -28,7 +28,7 @@
   }
 
   .#{$primaryStyleName}-slot > .v-caption .v-captiontext {
-    line-height: 25px;
+    line-height: 18px;
     padding-bottom: 0px;
   }
 }
