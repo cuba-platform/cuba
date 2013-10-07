@@ -90,11 +90,12 @@ public class CustomConditionEditDlg extends AbstractCustomConditionEditDlg<Windo
     protected class Editor extends Window {
         public Editor() {
             super(condition.getLocCaption());
-            setWidth("450px");
+            setWidth(-1, Unit.PIXELS);
             setModal(true);
+            setResizable(false);
 
             VerticalLayout layout = new VerticalLayout();
-            layout.setMargin(true);
+            layout.setWidth(-1, Unit.PIXELS);
             layout.setSpacing(true);
 
             setContent(layout);
@@ -174,7 +175,6 @@ public class CustomConditionEditDlg extends AbstractCustomConditionEditDlg<Windo
 
             HorizontalLayout btnLayout = new HorizontalLayout();
             btnLayout.setSpacing(true);
-            btnLayout.setMargin(new MarginInfo(true, false, false, false));
 
             btnLayout.addComponent(WebComponentsHelper.unwrap(btnOk));
             btnLayout.addComponent(WebComponentsHelper.unwrap(btnCancel));

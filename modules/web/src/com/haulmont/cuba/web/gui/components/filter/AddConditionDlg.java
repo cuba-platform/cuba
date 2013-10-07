@@ -62,7 +62,6 @@ public class AddConditionDlg extends Window {
 
         VerticalLayout layout = new VerticalLayout();
         layout.setSpacing(true);
-        layout.setMargin(true);
         layout.setSizeFull();
 
         Panel treePanel = new Panel();
