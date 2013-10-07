@@ -6,14 +6,13 @@ package com.haulmont.cuba.web;
 
 import com.haulmont.cuba.security.global.LoginException;
 
-import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 
 /**
  * @author gorodnov
  * @version $Id$
  */
-public class CASProtectedApp extends DefaultApp implements ConnectionListener {
+public class CASProtectedApp extends App implements ConnectionListener {
 
     private static final long serialVersionUID = -6926944868742949956L;
 
@@ -37,5 +36,10 @@ public class CASProtectedApp extends DefaultApp implements ConnectionListener {
             //do nothing
         }
         return false;
+    }
+
+    @Override
+    public void connectionStateChanged(Connection connection) throws LoginException {
+        // todo resurrect
     }
 }

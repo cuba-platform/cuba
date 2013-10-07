@@ -5,6 +5,7 @@
 package com.haulmont.cuba.web.exception;
 
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.AppUI;
 import com.vaadin.server.AbstractErrorMessage;
 import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.server.ErrorEvent;
@@ -54,13 +55,13 @@ public class DefaultExceptionHandler implements ExceptionHandler {
         if (rootCause == null)
             rootCause = exception;
         ExceptionDialog dialog = new ExceptionDialog(rootCause);
-        for (Window window : App.getInstance().getAppUI().getWindows()) {
+        for (Window window : AppUI.getCurrent().getWindows()) {
             if (window.isModal()) {
                 dialog.setModal(true);
                 break;
             }
         }
-        App.getInstance().getAppUI().addWindow(dialog);
+        AppUI.getCurrent().addWindow(dialog);
         dialog.focus();
     }
 }

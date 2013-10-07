@@ -12,8 +12,6 @@ import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.AppUI;
-//import com.haulmont.cuba.web.AppUI;
 
 import javax.annotation.ManagedBean;
 
@@ -23,6 +21,7 @@ import javax.annotation.ManagedBean;
  */
 @ManagedBean(UserSessionSource.NAME)
 public class WebUserSessionSource extends AbstractUserSessionSource {
+
     private UserSessionService userSessionService;
 
     public void setUserSessionService(UserSessionService userSessionService) {
@@ -53,18 +52,23 @@ public class WebUserSessionSource extends AbstractUserSessionSource {
 
     @Override
     public UserSession getUserSession() {
-        if (App.isBound())
-            return App.getInstance().getConnection().getSession();
-        else {
+        UserSession session;
+        if (App.isBound()) {
+            session = App.getInstance().getConnection().getSession();
+        } else {
             SecurityContext securityContext = AppContext.getSecurityContext();
             if (securityContext == null)
                 throw new IllegalStateException("No security context bound to the current thread");
 
-            if (securityContext.getSession() != null)
-                return securityContext.getSession();
+            if (securityContext.getSession() != null) {
+                session = securityContext.getSession();
+            }
             else {
-                return userSessionService.getUserSession(securityContext.getSessionId());
+                session = userSessionService.getUserSession(securityContext.getSessionId());
             }
         }
+        if (session == null)
+            throw new IllegalStateException("No user session");
+        return session;
     }
 }

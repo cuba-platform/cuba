@@ -9,6 +9,7 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.web.auth.ActiveDirectoryHelper;
 import com.haulmont.cuba.web.auth.DomainAliasesResolver;
+import com.haulmont.cuba.web.sys.Browser;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.vaadin.data.Property;
 import com.vaadin.event.Action;
@@ -34,10 +35,9 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * Login window.
+ * Standard login window.
  * <p/>
- * Specific application should inherit from this class and create appropriate
- * instance in {@link DefaultApp#createLoginWindow()} method
+ * To use a specific implementation override {@link App#createLoginWindow(AppUI)} method.
  *
  * @author krivopustov
  * @version $Id$
@@ -50,7 +50,10 @@ public class LoginWindow extends UIView implements Action.Handler {
 
     protected Log log = LogFactory.getLog(getClass());
 
-    // must be 8 symbols
+    /**
+     * This key is used to encrypt password in cookie to support "remember me".
+     * Must be of 8 symbols.
+     */
     private static final String PASSWORD_KEY = "25tuThUw";
 
     private static final char[] DOMAIN_SEPARATORS = new char[]{'\\', '@'};
@@ -78,6 +81,8 @@ public class LoginWindow extends UIView implements Action.Handler {
     protected PasswordEncryption passwordEncryption;
 
     public LoginWindow(App app, Connection connection) {
+        log.trace("Creating " + this);
+
         configuration = AppBeans.get(Configuration.NAME);
         messages = AppBeans.get(Messages.NAME);
         passwordEncryption = AppBeans.get(PasswordEncryption.NAME);
@@ -93,6 +98,11 @@ public class LoginWindow extends UIView implements Action.Handler {
         loginField = new TextField();
         passwordField = new PasswordField();
         localesSelect = new NativeSelect();
+        // make fields immediate to resync fast in case of login is already performed from another UI (i.e. browser tab)
+        loginField.setImmediate(true);
+        passwordField.setImmediate(true);
+        localesSelect.setImmediate(true);
+
         okButton = new Button();
 
         rememberMeAllowed = !ActiveDirectoryHelper.useActiveDirectory() ||
@@ -120,14 +130,21 @@ public class LoginWindow extends UIView implements Action.Handler {
     }
 
     protected Locale resolveLocale(App app) {
-        Locale appLocale = messages.getTools().useLocaleLanguageOnly() ?
-                Locale.forLanguageTag(app.getAppUI().getLocale().getLanguage()) : app.getAppUI().getLocale();
-
         for (Locale locale : locales.values()) {
-            if (locale.equals(appLocale)) {
+            if (locale.equals(app.getLocale())) {
                 return locale;
             }
         }
+            // if not found and application locale contains country, try to match by language only
+        if (!StringUtils.isEmpty(app.getLocale().getCountry())) {
+            Locale appLocale = Locale.forLanguageTag(app.getLocale().getLanguage());
+            for (Locale locale : locales.values()) {
+                if (Locale.forLanguageTag(locale.getLanguage()).equals(appLocale)) {
+                    return locale;
+                }
+            }
+        }
+        // return first locale set in the cuba.availableLocales app property
         return locales.values().iterator().next();
     }
 
@@ -461,6 +478,12 @@ public class LoginWindow extends UIView implements Action.Handler {
         }
     }
 
+    /**
+     * Encrypt password to store in cookie for "remember me".
+     *
+     * @param password  plain password
+     * @return          encrypted password
+     */
     protected String encryptPassword(String password) {
         SecretKeySpec key = new SecretKeySpec(PASSWORD_KEY.getBytes(), "DES");
         IvParameterSpec ivSpec = new IvParameterSpec(PASSWORD_KEY.getBytes());
@@ -475,7 +498,12 @@ public class LoginWindow extends UIView implements Action.Handler {
         return result;
     }
 
-    // if decrypt password is impossible returns encrypted password
+    /**
+     * Decrypt the password stored in cookie.
+     *
+     * @param password  encrypted password
+     * @return          plain password, or input string if decryption fails
+     */
     protected String decryptPassword(String password) {
         SecretKeySpec key = new SecretKeySpec(PASSWORD_KEY.getBytes(), "DES");
         IvParameterSpec ivSpec = new IvParameterSpec(PASSWORD_KEY.getBytes());

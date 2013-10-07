@@ -5,15 +5,21 @@
 
 package com.haulmont.cuba.web;
 
-import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.GlobalConfig;
+import com.haulmont.cuba.core.global.Resources;
+import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.web.auth.ActiveDirectoryHelper;
 import com.haulmont.cuba.web.auth.RequestContext;
 import com.haulmont.cuba.web.auth.WebAuthConfig;
 import com.haulmont.cuba.web.exception.ExceptionHandlers;
 import com.haulmont.cuba.web.log.AppLog;
+import com.haulmont.cuba.web.sys.AppCookies;
+import com.haulmont.cuba.web.sys.BackgroundTaskManager;
 import com.haulmont.cuba.web.sys.LinkHandler;
+import com.haulmont.cuba.web.toolkit.ui.CubaTimer;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
 import org.apache.commons.lang.StringUtils;
@@ -23,6 +29,8 @@ import org.apache.commons.logging.LogFactory;
 import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -36,8 +44,6 @@ public abstract class App implements Serializable {
     private static Log log = LogFactory.getLog(App.class);
 
     private AppLog appLog;
-
-    private WebWindowManager windowManager;
 
     protected Connection connection;
 
@@ -65,13 +71,10 @@ public abstract class App implements Serializable {
 
     protected String webResourceTimestamp = "null";
 
-    static {
-        AppContext.setProperty(AppConfig.CLIENT_TYPE_PROP, ClientType.WEB.toString());
-    }
-
     private String clientAddress;
 
     public App() {
+        log.trace("Creating application " + this);
         try {
             Configuration configuration = AppBeans.get(Configuration.class);
 
@@ -82,7 +85,6 @@ public abstract class App implements Serializable {
             appLog = new AppLog();
 
             connection = createConnection();
-            windowManager = createWindowManager();
             exceptionHandlers = new ExceptionHandlers(this);
             cookies = new AppCookies();
             backgroundTaskManager = new BackgroundTaskManager();
@@ -113,12 +115,29 @@ public abstract class App implements Serializable {
         }
     }
 
+    /**
+     * @return AppWindow displayed in the current UI. Can be null if not logged in.
+     */
     public AppWindow getAppWindow() {
         return AppUI.getCurrent().getAppWindow();
     }
 
+    /**
+     * @return current UI
+     */
     public AppUI getAppUI() {
         return AppUI.getCurrent();
+    }
+
+    public List<AppUI> getAppUIs() {
+        List<AppUI> list = new ArrayList<>();
+        for (UI ui : VaadinSession.getCurrent().getUIs()) {
+            if (ui instanceof AppUI)
+                list.add((AppUI) ui);
+            else
+                log.warn("Invalid UI in the session: " + ui);
+        }
+        return list;
     }
 
     protected abstract boolean loginOnStart();
@@ -128,6 +147,7 @@ public abstract class App implements Serializable {
     protected void init() {
         log.debug("Initializing application");
 
+        // todo locale
         // get default locale from config
         locale = globalConfig.getAvailableLocales().entrySet().iterator().next().getValue();
 
@@ -135,32 +155,21 @@ public abstract class App implements Serializable {
             principal = RequestContext.get().getRequest().getUserPrincipal();
     }
 
-    protected void initView() {
-    }
-
-    /**
-     * Can be overridden in descendant to create an application-specific {@link WebWindowManager}
-     */
-    protected WebWindowManager createWindowManager() {
-        return new WebWindowManager(this);
+    protected void initView(AppUI ui) {
     }
 
     /**
      * @return Current App instance. Can be invoked anywhere in application code.
      */
     public static App getInstance() {
-        App app = getSessionApplication();
+        App app = VaadinSession.getCurrent().getAttribute(App.class);
         if (app == null)
-            throw new IllegalStateException("No App bound to the current thread. This may be the result of hot-deployment.");
+            throw new IllegalStateException("No App is bound to the current thread");
         return app;
     }
 
-    private static App getSessionApplication() {
-        return VaadinSession.getCurrent().getAttribute(App.class);
-    }
-
     public static boolean isBound() {
-        return getSessionApplication() != null;
+        return VaadinSession.getCurrent().getAttribute(App.class) != null;
     }
 
     /**
@@ -170,8 +179,12 @@ public abstract class App implements Serializable {
         return connection;
     }
 
+    /**
+     * @return WindowManager instance or null if the current UI has no AppWindow
+     */
     public WebWindowManager getWindowManager() {
-        return windowManager;
+        AppWindow appWindow = getAppUI().getAppWindow();
+        return appWindow != null ? appWindow.getWindowManager() : null;
     }
 
     public AppLog getAppLog() {
@@ -182,9 +195,59 @@ public abstract class App implements Serializable {
         return exceptionHandlers;
     }
 
-    public void showView(UIView view) {
-        getAppUI().setContent(view);
-        getAppUI().getPage().setTitle(view.getTitle());
+    /**
+     * Create the login window instance.
+     *
+     * @param ui    current UI
+     * @return login window
+     */
+    protected UIView createLoginWindow(AppUI ui) {
+        return new LoginWindow(this, connection);
+    }
+
+    /**
+     * Create the main window instance.
+     *
+     * @param ui    current UI
+     * @return main window
+     */
+    protected AppWindow createAppWindow(AppUI ui) {
+        AppWindow window = new AppWindow(ui);
+
+        CubaTimer timer = createSessionPingTimer();
+        if (timer != null) {
+            window.addTimer(timer);
+            timer.start();
+        }
+
+        return window;
+    }
+
+    protected CubaTimer createSessionPingTimer() {
+        int sessionExpirationTimeout = webConfig.getHttpSessionExpirationTimeoutSec();
+        int sessionPingPeriod = sessionExpirationTimeout / 3;
+        if (sessionPingPeriod > 0) {
+            CubaTimer timer = new CubaTimer();
+            timer.setRepeating(true);
+            timer.setDelay(sessionPingPeriod * 1000);
+            timer.addTimerListener(new CubaTimer.TimerListener() {
+                @Override
+                public void onTimer(CubaTimer timer) {
+                    log.debug("Ping session");
+                    UserSessionService service = AppBeans.get(UserSessionService.NAME);
+                    String message = service.getMessages();
+                    if (message != null) {
+                        App.getInstance().getWindowManager().showNotification(message, IFrame.NotificationType.ERROR);
+                    }
+                }
+
+                @Override
+                public void onStopTimer(CubaTimer timer) {
+                }
+            });
+            return timer;
+        }
+        return null;
     }
 
     public String getCookieValue(String name) {
@@ -262,5 +325,23 @@ public abstract class App implements Serializable {
 
     public void cleanupBackgroundTasks() {
         backgroundTaskManager.cleanupTasks();
+    }
+
+    public void closeAllWindows() {
+        log.debug("Closing all windows");
+        try {
+            for (AppUI ui : getAppUIs()) {
+                AppWindow appWindow = ui.getAppWindow();
+                if (appWindow != null)
+                    appWindow.getWindowManager().closeAll();
+
+                for (com.vaadin.ui.Window win : new ArrayList<>(ui.getWindows())) {
+                    WebWindowManager.removeCloseListeners(win);
+                    ui.removeWindow(win);
+                }
+            }
+        } catch (Throwable e) {
+            log.error("Error closing all windows", e);
+        }
     }
 }

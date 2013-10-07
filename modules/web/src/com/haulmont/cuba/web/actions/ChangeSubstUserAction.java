@@ -31,11 +31,11 @@ public class ChangeSubstUserAction extends AbstractAction {
     @Override
     public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
         final App app = App.getInstance();
-        App.getInstance().getWindowManager().checkModificationsAndCloseAll(
+        app.getWindowManager().checkModificationsAndCloseAll(
                 new Runnable() {
                     @Override
                     public void run() {
-                        app.getWindowManager().closeAll();
+                        app.closeAllWindows();
                         try {
                             app.getConnection().substituteUser(user);
                             doAfterChangeUser();

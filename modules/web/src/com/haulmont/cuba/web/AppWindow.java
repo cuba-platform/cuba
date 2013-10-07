@@ -11,13 +11,13 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.NoSuchScreenException;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.ShowInfoAction;
 import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.config.*;
+import com.haulmont.cuba.gui.config.WindowConfig;
+import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserSubstitution;
@@ -26,7 +26,8 @@ import com.haulmont.cuba.web.actions.ChangeSubstUserAction;
 import com.haulmont.cuba.web.actions.DoNotChangeSubstUserAction;
 import com.haulmont.cuba.web.app.UserSettingsTools;
 import com.haulmont.cuba.web.app.folders.FoldersPane;
-import com.haulmont.cuba.web.toolkit.MenuShortcutAction;
+import com.haulmont.cuba.web.sys.MenuBuilder;
+import com.haulmont.cuba.web.sys.WindowBreadCrumbs;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.ui.*;
 import com.vaadin.data.Property;
@@ -47,25 +48,14 @@ import java.net.URL;
 import java.util.*;
 
 /**
- * Main application window.
+ * Standard main application window.
  * <p/>
- * Specific application should inherit from this class and create appropriate
- * instance in {@link DefaultApp#createAppWindow()} method
+ * To use a specific implementation override {@link App#createAppWindow(AppUI)} method.
  *
  * @author krivopustov
  * @version $Id$
  */
 public class AppWindow extends UIView implements UserSubstitutionListener {
-
-    private static final long serialVersionUID = 7269808125566032433L;
-
-    private Log log = LogFactory.getLog(getClass());
-
-    protected CubaClientManager clientManager;
-
-    protected CubaFileDownloader fileDownloader;
-
-    protected CubaTimer workerTimer;
 
     /**
      * Main window mode. See {@link #TABBED}, {@link #SINGLE}
@@ -84,6 +74,22 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
         SINGLE
     }
 
+    private static final long serialVersionUID = 7269808125566032433L;
+
+    private Log log = LogFactory.getLog(AppWindow.class);
+
+    protected CubaClientManager clientManager;
+
+    protected CubaFileDownloader fileDownloader;
+
+    protected CubaTimer workerTimer;
+
+    protected AppUI ui;
+
+    protected final App app;
+
+    protected WebWindowManager windowManager;
+
     protected Connection connection;
 
     protected GlobalConfig globalConfig;
@@ -96,31 +102,35 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
     protected Mode mode;
 
     /**
-     * Very root layout of the window. Contains all other layouts
+     * Very root layout of the window. Contains all other layouts.
      */
     protected VerticalLayout rootLayout;
 
     /**
-     * Title layout. Topmost by default
+     * Title layout. Created only if {@code cuba.web.useLightHeader} is off.
      */
     protected Layout titleLayout;
 
     /**
-     * Layout containing the menu bar. Next to title layout by default
+     * Layout containing the menu bar. Next to {@link #titleLayout} by default.
      */
     protected HorizontalLayout menuBarLayout;
 
     /**
-     * Empty layout, below menu bar layout by default
+     * Empty layout, below {@link #menuBarLayout} by default.
      */
     protected HorizontalLayout emptyLayout;
 
+    /**
+     * Layout that contains FoldersPane (if it is created) and {@link #mainLayout}.
+     * Below {@link #emptyLayout} by default.
+     */
     protected HorizontalLayout middleLayout;
 
     protected FoldersPane foldersPane;
 
     /**
-     * Layout containing application screens
+     * Layout containing main tabsheet in {@link Mode#TABBED} or directly application screens in {@link Mode#SINGLE}.
      */
     protected VerticalLayout mainLayout;
 
@@ -128,17 +138,23 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
 
     protected UserSettingsTools userSettingsTools;
 
-    private AbstractSelect substUserSelect;
+    protected AbstractSelect substUserSelect;
 
-    public AppWindow(Connection connection) {
+    protected ShortcutListener closeShortcut;
+
+    public AppWindow(AppUI ui) {
+        log.trace("Creating " + this);
+        this.ui = ui;
+        app = ui.getApp();
+        connection = app.getConnection();
+        windowManager = createWindowManager();
+
         Configuration configuration = AppBeans.get(Configuration.class);
         globalConfig = configuration.getConfig(GlobalConfig.class);
         webConfig = configuration.getConfig(WebConfig.class);
 
         messages = AppBeans.get(Messages.class);
         userSettingsTools = AppBeans.get(UserSettingsTools.class);
-
-        this.connection = connection;
 
         mode = userSettingsTools.loadAppWindowMode();
 
@@ -148,18 +164,33 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
         rootLayout = new VerticalLayout();
 
         createLayout(rootLayout);
-        initLayout();
-
         setContent(rootLayout);
 
         postInitLayout();
-        initStartupLayout();
+        initStartupScreen();
 
         initStaticComponents();
 
         updateClientSystemMessages();
 
         checkSessions();
+
+        connection.addListener(this);
+    }
+
+    public AppUI getAppUI() {
+        return ui;
+    }
+
+    public WebWindowManager getWindowManager() {
+        return windowManager;
+    }
+
+    /**
+     * @return a new instance of {@link WebWindowManager}
+     */
+    protected WebWindowManager createWindowManager() {
+        return new WebWindowManager(app, this);
     }
 
     private void updateClientSystemMessages() {
@@ -209,15 +240,16 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
     }
 
     /**
-     * @return Current mode
+     * @return current mode
      */
     public Mode getMode() {
         return mode;
     }
 
     /**
-     * Creates root and enclosed layouts.
-     * <br>Can be overridden in descendant to create an app-specific root layout
+     * Create layouts under {@link #rootLayout}.
+     *
+     * @param layout {@link #rootLayout}
      */
     protected void createLayout(VerticalLayout layout) {
         layout.setMargin(false);
@@ -291,7 +323,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
      * Creates folders pane.
      * <br>Can be overridden in descendant to create an app-specific folders pane.
      * <br>If this method returns null, no folders functionality is available for application.
-     * @return FoldersPane container
+     * @return a new FoldersPane instance
      */
     @Nullable
     protected FoldersPane createFoldersPane() {
@@ -304,26 +336,22 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
     }
 
     /**
-     * Can be overridden in descendant to create an app-specific caption
-     * @return Application caption
+     * @return Application caption to be shown in browser page title
      */
     protected String getAppCaption() {
         return messages.getMessage(getMessagesPack(), "application.caption");
     }
 
     /**
-     * Enclosed Tabsheet
-     *
-     * @return the tabsheet in TABBED mode, null in SINGLE mode
+     * @return main tabsheet in TABBED mode, null in SINGLE mode
      */
     public TabSheet getTabSheet() {
         return tabSheet;
     }
 
-    public void setTabSheet(@Nullable TabSheet tabSheet) {
-        this.tabSheet = tabSheet;
-    }
-
+    /**
+     * @return main menu bar
+     */
     public MenuBar getMenuBar() {
         return menuBar;
     }
@@ -369,6 +397,9 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
         return mainLayout;
     }
 
+    /**
+     * @return folders pane or null if it is not created
+     */
     @Nullable
     public FoldersPane getFoldersPane() {
         return foldersPane;
@@ -403,12 +434,9 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
     }
 
     /**
-     * Can be overridden in descendant to init an app-specific layout
+     *  Initialize the startup screen - main window content when no application screens are open.
      */
-    protected void initLayout() {
-    }
-
-    private void genericStartupLayout() {
+    protected void initStartupScreen() {
         if (mainLayout != null) {
             if (foldersPane != null) {
                 foldersSplit.removeComponent(mainLayout);
@@ -427,22 +455,8 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
         }
     }
 
-    /* Draw startup screen layout */
-    protected void initStartupLayout() {
-        genericStartupLayout();
-        mainLayout.setMargin(false);
-        mainLayout.setSpacing(false);
-    }
-
-    /*  */
-    protected void unInitStartupLayout() {
-        genericStartupLayout();
-        mainLayout.setMargin(new MarginInfo(true, false, false, false));
-        mainLayout.setSpacing(true);
-    }
-
     /**
-     * Can be overridden in descendant to init an app-specific layout
+     * Called by constructor when all layouts are created but before {@link #initStartupScreen()}.
      */
     protected void postInitLayout() {
         String themeName = AppContext.getProperty("cuba.web.theme");
@@ -457,9 +471,35 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
     }
 
     /**
-     * Can be overridden in descendant to create an app-specific menu bar layout
-     *
-     * @return MenuBar layout
+     * Remove all applications screens and show startup screen defined by {@link #initStartupScreen()}.
+     */
+    public void showStartupScreen() {
+        getMainLayout().removeAllComponents();
+        tabSheet = null;
+        initStartupScreen();
+        focus();
+    }
+
+    /**
+     * Close startup screen defined by {@link #initStartupScreen()} and prepare main window to show application screens.
+     */
+    public void closeStartupScreen() {
+        if (AppWindow.Mode.TABBED.equals(getMode())) {
+            if (tabSheet == null) {
+                tabSheet = new AppWindow.AppTabSheet();
+                tabSheet.setSizeFull();
+                mainLayout.addComponent(tabSheet);
+                mainLayout.setExpandRatio(tabSheet, 1);
+            }
+        }
+
+        if (closeShortcut == null)
+            closeShortcut = windowManager.createCloseShortcut();
+        addAction(closeShortcut);
+    }
+
+    /**
+     * @return main menu bar layout
      */
     protected HorizontalLayout createMenuBarLayout() {
         HorizontalLayout layout = new HorizontalLayout();
@@ -487,6 +527,25 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
         layout.addComponent(menuBar);
         placeMenuBar(layout);
 
+        createSearchLayout(layout);
+
+        if (webConfig.getUseLightHeader()){
+            addUserIndicator(layout);
+
+            addNewWindowButton(layout);
+
+            addLogoutButton(layout);
+        }
+
+        return layout;
+    }
+
+    /**
+     * Create layout containing search components.
+     *
+     * @param layout parent layout
+     */
+    protected void createSearchLayout(HorizontalLayout layout) {
         if (AppBeans.get(Configuration.class).getConfig(FtsConfig.class).getEnabled()) {
             HorizontalLayout searchLayout = new HorizontalLayout();
             searchLayout.setMargin(new MarginInfo(false, true, false, true));
@@ -520,16 +579,6 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
             layout.addComponent(searchLayout);
             layout.setComponentAlignment(searchLayout, Alignment.MIDDLE_RIGHT);
         }
-
-        if (webConfig.getUseLightHeader()){
-            addUserIndicator(layout);
-
-            addNewWindowButton(layout);
-
-            addLogoutButton(layout);
-        }
-
-        return layout;
     }
 
     protected void openSearchWindow(TextField searchField) {
@@ -554,9 +603,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
     }
 
     /**
-     * Can be overridden in descendant to create an app-specific menu bar
-     *
-     * @return MenuBar
+     * @return a new instance of main menu
      */
     protected CubaMenuBar createMenuBar() {
         menuBar = new CubaMenuBar();
@@ -568,59 +615,21 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
 //            AppUI.getInstance().getWindowManager().setDebugId(menuBar, "appMenu");
         }
 
-        final UserSession session = connection.getSession();
-        final MenuConfig menuConfig = AppBeans.get(MenuConfig.class);
-        List<MenuItem> rootItems = menuConfig.getRootItems();
-        for (MenuItem menuItem : rootItems) {
-            if (menuItem.isPermitted(session)) {
-                createMenuBarItem(menuBar, menuItem);
-            }
-        }
-        removeExtraSeparators(menuBar);
+        MenuBuilder menuBuilder = new MenuBuilder(this, connection.getSession(), menuBar);
+        menuBuilder.build();
 
         return menuBar;
     }
 
-    private void removeExtraSeparators(MenuBar menuBar) {
-        for (MenuBar.MenuItem item : new ArrayList<>(menuBar.getItems())) {
-            removeExtraSeparators(item);
-            if (isMenuItemEmpty(item))
-                menuBar.removeItem(item);
-        }
-    }
-
-    private void removeExtraSeparators(MenuBar.MenuItem item) {
-        if (!item.hasChildren())
-            return;
-
-        boolean done;
-        do {
-            done = true;
-            if (item.hasChildren()) {
-                List<MenuBar.MenuItem> children = new ArrayList<>(item.getChildren());
-                for (int i = 0; i < children.size(); i++) {
-                    MenuBar.MenuItem child = children.get(i);
-                    removeExtraSeparators(child);
-                    if (isMenuItemEmpty(child) && (i == 0 || i == children.size() - 1 || isMenuItemEmpty(children.get(i + 1)))) {
-                        item.removeChild(child);
-                        done = false;
-                    }
-                }
-            }
-        } while (!done);
-    }
-
-    /*
-     * Can be overriding by client application to change title caption
+    /**
+     * @return logo label text to show in {@link #titleLayout}
      */
     protected String getLogoLabelCaption() {
         return messages.getMessage(getMessagesPack(), "application.logoLabel");
     }
 
     /**
-     * Can be overridden in descendant to create an app-specific title layout
-     *
-     * @return Title layout
+     * @return a new instance of {@link #titleLayout}
      */
     protected Layout createTitleLayout() {
         HorizontalLayout titleLayout = new HorizontalLayout();
@@ -689,33 +698,6 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
         return new Image(null, new VersionedThemeResource(logoImagePath));
     }
 
-    private void assignShortcut(MenuBar.MenuItem menuItem, MenuItem item) {
-        if (item.getShortcut() != null) {
-            MenuShortcutAction shortcut = new MenuShortcutAction(menuItem, "shortcut_" + item.getId(), item.getShortcut());
-            this.addAction(shortcut);
-            menuBar.setShortcut(menuItem, item.getShortcut());
-        }
-    }
-
-    private boolean isMenuItemEmpty(MenuBar.MenuItem menuItem) {
-        return !menuItem.hasChildren() && menuItem.getCommand() == null;
-    }
-
-    private void createMenuBarItem(MenuBar menuBar, MenuItem item) {
-        if (!connection.isConnected()) return;
-
-        final UserSession session = connection.getSession();
-        if (item.isPermitted(session)) {
-            MenuBar.MenuItem menuItem = menuBar.addItem(MenuConfig.getMenuItemCaption(item.getId()), createMenuBarCommand(item));
-            assignShortcut(menuItem, item);
-            createSubMenu(menuItem, item, session);
-            assignDebugIds(menuItem, item);
-            if (isMenuItemEmpty(menuItem)) {
-                menuBar.removeItem(menuItem);
-            }
-        }
-    }
-
     protected void addUserIndicator(HorizontalLayout parentLayout) {
         UserSession session = App.getInstance().getConnection().getSession();
         if (session == null)
@@ -772,7 +754,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
         return InstanceUtils.getInstanceName(user);
     }
 
-    private Button createLogoutButton() {
+    protected Button createLogoutButton() {
         String buttonTitle = "";
         if (!webConfig.getUseLightHeader())
             buttonTitle = messages.getMessage(getMessagesPack(), "logoutBtn");
@@ -791,7 +773,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
         return logoutBtn;
     }
 
-    private Button createNewWindowButton() {
+    protected Button createNewWindowButton() {
         String buttonTitle = "";
         if (!webConfig.getUseLightHeader())
             buttonTitle = messages.getMessage(getMessagesPack(), "newWindowBtn");
@@ -824,69 +806,6 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
         return newWindowBtn;
     }
 
-    private void createSubMenu(MenuBar.MenuItem vItem, MenuItem item, UserSession session) {
-        if (item.isPermitted(session) && !item.getChildren().isEmpty()) {
-            for (MenuItem child : item.getChildren()) {
-                if (child.getChildren().isEmpty()) {
-                    if (child.isPermitted(session)) {
-                        MenuBar.MenuItem menuItem = (child.isSeparator()) ? vItem.addSeparator() : vItem.addItem(MenuConfig.getMenuItemCaption(child.getId()), createMenuBarCommand(child));
-                        assignShortcut(menuItem, child);
-                        assignDebugIds(menuItem, child);
-                    }
-                } else {
-                    if (child.isPermitted(session)) {
-                        MenuBar.MenuItem menuItem = vItem.addItem(MenuConfig.getMenuItemCaption(child.getId()), null);
-                        assignShortcut(menuItem, child);
-                        createSubMenu(menuItem, child, session);
-                        assignDebugIds(menuItem, child);
-                        if (isMenuItemEmpty(menuItem)) {
-                            vItem.removeChild(menuItem);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private void assignDebugIds(MenuBar.MenuItem menuItem, MenuItem conf) {
-        if (menuBar.getId() != null && !conf.isSeparator()) {
-//            vaadin7
-//            menuBar.setId(menuItem, menuBar.getDebugId() + ":" + conf.getId());
-        }
-    }
-
-    private MenuBar.Command createMenuBarCommand(final MenuItem item) {
-        if (!item.getChildren().isEmpty())     //check item is menu
-            return null;
-
-        WindowInfo windowInfo = null;
-        final WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
-        try {
-            windowInfo = windowConfig.getWindowInfo(item.getId());
-        } catch (NoSuchScreenException e) {
-            log.warn("Invalid screen ID for menu item: " + item.getId());
-        }
-
-        final MenuCommand command;
-        if (windowInfo != null) {
-            command = new MenuCommand(App.getInstance().getWindowManager(), item, windowInfo);
-        } else {
-            command = null;
-        }
-
-        return new com.vaadin.ui.MenuBar.Command() {
-            @Override
-            public void menuSelected(com.vaadin.ui.MenuBar.MenuItem selectedItem) {
-                if (command != null) {
-                    command.execute();
-                } else if (item.getParent() != null) {
-                    throw new DevelopmentException("Invalid screen ID for menu item: " + item.getId(),
-                            "Parent menu ID", item.getParent().getId());
-                }
-            }
-        };
-    }
-
     @Override
     public void userSubstituted(Connection connection) {
         menuBarLayout.replaceComponent(menuBar, createMenuBar());
@@ -902,6 +821,9 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
             foldersSplit.replaceComponent(oldFoldersPane, foldersPane);
         }
         substUserSelect.select(connection.getSession().getCurrentOrSubstitutedUser());
+
+        closeStartupScreen();
+        showStartupScreen();
     }
 
     protected String getMessagesPack() {
@@ -919,7 +841,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
     }
 
     private void revertToCurrentUser() {
-        UserSession us = App.getInstance().getConnection().getSession();
+        UserSession us = app.getConnection().getSession();
         if (us == null)
             throw new RuntimeException("No user session found");
 
@@ -937,7 +859,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
         @Override
         public void valueChange(Property.ValueChangeEvent event) {
             User newUser = (User) event.getProperty().getValue();
-            UserSession userSession = App.getInstance().getConnection().getSession();
+            UserSession userSession = app.getConnection().getSession();
             if (userSession == null)
                 throw new RuntimeException("No user session found");
 
@@ -945,7 +867,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
 
             if (!oldUser.equals(newUser)) {
                 String name = StringUtils.isBlank(newUser.getName()) ? newUser.getLogin() : newUser.getName();
-                App.getInstance().getWindowManager().showOptionDialog(
+                app.getWindowManager().showOptionDialog(
                         messages.getMessage(getMessagesPack(), "substUserSelectDialog.title"),
                         messages.formatMessage(getMessagesPack(), "substUserSelectDialog.msg", name),
                         IFrame.MessageType.WARNING,
@@ -1101,14 +1023,13 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
             if (foldersPane != null) {
                 foldersPane.savePosition();
             }
-            final App app = App.getInstance();
             app.cleanupBackgroundTasks();
             app.reinitializeAppearanceProperties();
             app.getWindowManager().checkModificationsAndCloseAll(
                     new Runnable() {
                         @Override
                         public void run() {
-                            App.getInstance().getWindowManager().reset();
+                            app.closeAllWindows();
                             String redirectionUrl = connection.logout();
                             // vaadin7 unused redirectionUrl
                         }

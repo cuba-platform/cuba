@@ -9,6 +9,11 @@ import com.vaadin.ui.Panel;
 import org.apache.commons.lang.StringUtils;
 
 /**
+ * Base class for application's UI content.
+ *
+ * @see LoginWindow
+ * @see AppWindow
+ *
  * @author artamonov
  * @version $Id$
  */

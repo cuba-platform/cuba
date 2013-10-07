@@ -17,6 +17,8 @@ import com.vaadin.server.*;
 import com.vaadin.server.communication.PublishedFileHandler;
 import com.vaadin.server.communication.ServletBootstrapHandler;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -30,6 +32,8 @@ import java.util.Locale;
  * @version $Id$
  */
 public class CubaVaadinServletService extends VaadinServletService {
+
+    private Log log = LogFactory.getLog(CubaVaadinServletService.class);
 
     protected WebConfig webConfig;
 
@@ -53,9 +57,19 @@ public class CubaVaadinServletService extends VaadinServletService {
             this.webResourceTimestamp = "DEBUG";
         }
 
+        addSessionInitListener(new SessionInitListener() {
+            @Override
+            public void sessionInit(SessionInitEvent event) throws ServiceException {
+                event.getSession().getSession().setMaxInactiveInterval(webConfig.getHttpSessionExpirationTimeoutSec());
+                log.debug("HTTP session " + event.getSession() + " initialized, timeout="
+                        + event.getSession().getSession().getMaxInactiveInterval() + "sec");
+            }
+        });
+
         addSessionDestroyListener(new SessionDestroyListener() {
             @Override
             public void sessionDestroy(SessionDestroyEvent event) {
+                log.debug("HTTP session destroyed: " + event.getSession());
                 App app = event.getSession().getAttribute(App.class);
                 if (app != null) {
                     app.cleanupBackgroundTasks();

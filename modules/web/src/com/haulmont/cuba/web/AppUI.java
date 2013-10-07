@@ -7,6 +7,7 @@ package com.haulmont.cuba.web;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.web.sys.LinkHandler;
 import com.haulmont.cuba.web.toolkit.ui.CubaJQueryIntegration;
 import com.haulmont.cuba.web.toolkit.ui.CubaSWFObjectIntegration;
@@ -14,9 +15,11 @@ import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.server.*;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.UI;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -34,17 +37,23 @@ public class AppUI extends UI implements ErrorHandler {
 
     private final static Log log = LogFactory.getLog(AppUI.class);
 
+    protected App app;
+
     protected boolean applicationInitRequired = false;
 
     public AppUI() {
+        log.trace("Creating UI " + this);
         if (!App.isBound()) {
-            App app = createApplication();
+            app = createApplication();
             VaadinSession.getCurrent().setAttribute(App.class, app);
 
             new CubaJQueryIntegration().extend(this);
             new CubaSWFObjectIntegration().extend(this);
 
             applicationInitRequired = true;
+
+        } else {
+            app = App.getInstance();
         }
     }
 
@@ -54,12 +63,8 @@ public class AppUI extends UI implements ErrorHandler {
         try {
             Class<?> aClass = getClass().getClassLoader().loadClass(applicationClass);
             application = (App) aClass.newInstance();
-        } catch (ClassNotFoundException e) {
-            throw new Error(String.format("Unable to load class '%s' for Application", applicationClass));
-        } catch (InstantiationException e) {
-            throw new Error(String.format("Unable to instantiate Application '%s'", applicationClass));
-        } catch (IllegalAccessException e) {
-            throw new Error(String.format("Illegal access to Application class '%s'", applicationClass));
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+            throw new Error(String.format("Unable to create application '%s'", applicationClass), e);
         }
 
         return application;
@@ -73,33 +78,51 @@ public class AppUI extends UI implements ErrorHandler {
 
     @Override
     protected void init(VaadinRequest request) {
-        // init error handlers
-        setErrorHandler(this);
-
+        log.debug("Initializing AppUI");
         if (applicationInitRequired) {
-            App.getInstance().init();
+            app.init();
+
+            Locale locale = AppBeans.get(MessageTools.class).useLocaleLanguageOnly() ?
+                    Locale.forLanguageTag(request.getLocale().getLanguage()) : request.getLocale();
+            app.setLocale(locale);
 
             applicationInitRequired = false;
         }
-
-        setLocale(App.getInstance().getLocale());
-
-        // place login/main window
-        App.getInstance().initView();
+        // open login or main window
+        app.initView(this);
+        // init error handlers
+        setErrorHandler(this);
 
         processExternalLink(request);
     }
 
     @Override
     public void handleRequest(VaadinRequest request) {
-
         processExternalLink(request);
     }
 
+    public void showView(UIView view) {
+        setContent(view);
+        getPage().setTitle(view.getTitle());
+    }
+
+    /**
+     * @return current AppUI
+     */
     public static AppUI getCurrent() {
         return (AppUI) UI.getCurrent();
     }
 
+    /**
+     * @return this App instance
+     */
+    public App getApp() {
+        return app;
+    }
+
+    /**
+     * @return AppWindow instance or null if not logged in
+     */
     public AppWindow getAppWindow() {
         Component currentUIView = getContent();
         if (currentUIView instanceof AppWindow) {
@@ -111,11 +134,16 @@ public class AppUI extends UI implements ErrorHandler {
 
     @Override
     public void error(com.vaadin.server.ErrorEvent event) {
-        if (App.isBound()) {
-            App.getInstance().getExceptionHandlers().handle(event);
-            App.getInstance().getAppLog().log(event);
-        } else {
-            log.error(event.getThrowable());
+        try {
+            app.getExceptionHandlers().handle(event);
+            app.getAppLog().log(event);
+        } catch (Throwable e) {
+            //noinspection ThrowableResultOfMethodCallIgnored
+            log.error("Error handling exception\nOriginal exception:\n"
+                    + ExceptionUtils.getStackTrace(event.getThrowable())
+                    + "\nException in handlers:\n"
+                    + ExceptionUtils.getStackTrace(e)
+            );
         }
     }
 
@@ -138,5 +166,11 @@ public class AppUI extends UI implements ErrorHandler {
                 App.getInstance().linkHandler = linkHandler;
             }
         }
+    }
+
+    @Override
+    public void detach() {
+        log.trace("Detaching UI " + this);
+        super.detach();
     }
 }

@@ -27,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.WeakHashMap;
 
 /**
  * Abstract class that encapsulates common connection behaviour for web-client.
@@ -135,7 +136,7 @@ public abstract class AbstractConnection implements Connection {
         loginService.logout();
 
         AppContext.setSecurityContext(null);
-
+        usListeners.clear();
         connected = false;
         setSession(null);
     }
