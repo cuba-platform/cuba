@@ -8,7 +8,10 @@ package com.haulmont.cuba.security.listener;
 import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.bali.db.ResultSetHandler;
 import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.listener.BeforeDetachEntityListener;
+import com.haulmont.cuba.core.sys.persistence.DbTypeConverter;
 import com.haulmont.cuba.security.entity.EntityLogAttr;
 import com.haulmont.cuba.security.entity.EntityLogItem;
 import org.apache.commons.lang.StringUtils;
@@ -27,6 +30,8 @@ import java.util.*;
 public class EntityLogItemDetachListener implements BeforeDetachEntityListener<EntityLogItem> {
 
     private Log log = LogFactory.getLog(getClass());
+
+    protected DbTypeConverter converter = AppBeans.get(Persistence.class).getDbTypeConverter();
 
     @Override
     public void onBeforeDetach(EntityLogItem item, EntityManager entityManager) {
@@ -83,8 +88,8 @@ public class EntityLogItemDetachListener implements BeforeDetachEntityListener<E
             Set<EntityLogAttr> attributes = queryRunner.query(
                     entityManager.getConnection(),
                     "select * from SEC_ENTITY_LOG_ATTR where ITEM_ID = ?",
-                    new Object[]{item.getId()},
-                    new AttributesResultSetHandler(item)
+                    new Object[] {converter.getSqlObject(item.getId())},
+                    new AttributesResultSetHandler(item, converter)
             );
             item.setAttributes(attributes);
         } catch (SQLException e) {
@@ -96,25 +101,28 @@ public class EntityLogItemDetachListener implements BeforeDetachEntityListener<E
 
         private EntityLogItem item;
 
-        public AttributesResultSetHandler(EntityLogItem item) {
+        private DbTypeConverter converter;
+
+        public AttributesResultSetHandler(EntityLogItem item, DbTypeConverter converter) {
             this.item = item;
+            this.converter = converter;
         }
 
         @Override
         public Set<EntityLogAttr> handle(ResultSet rs) throws SQLException {
-            HashSet<EntityLogAttr> attrubutes = new HashSet<>();
+            HashSet<EntityLogAttr> attributes = new HashSet<>();
             while (rs.next()) {
                 EntityLogAttr attr = new EntityLogAttr();
-                attr.setId((UUID) rs.getObject("ID"));
+                attr.setId((UUID) converter.getJavaObject(rs, rs.findColumn("ID")));
                 attr.setLogItem(item);
                 attr.setName(rs.getString("NAME"));
                 attr.setValue(rs.getString("VALUE"));
-                attr.setValueId((UUID) rs.getObject("VALUE_ID"));
+                attr.setValueId((UUID) converter.getJavaObject(rs, rs.findColumn("VALUE_ID")));
                 attr.setMessagesPack(rs.getString("MESSAGES_PACK"));
 
-                attrubutes.add(attr);
+                attributes.add(attr);
             }
-            return attrubutes;
+            return attributes;
         }
     }
 }
