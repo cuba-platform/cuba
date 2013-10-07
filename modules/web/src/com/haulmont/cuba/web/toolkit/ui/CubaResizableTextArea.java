@@ -10,6 +10,7 @@ import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author artamonov
@@ -42,6 +43,19 @@ public class CubaResizableTextArea extends CubaTextArea {
         getState().resizable = resizable;
     }
 
+    @Override
+    public void changeVariables(Object source, Map<String, Object> variables) {
+        super.changeVariables(source, variables);
+
+        if (variables.containsKey("width") && variables.containsKey("height")) {
+            this.setWidth((String) variables.get("width"));
+            this.setHeight((String) variables.get("height"));
+
+            for (ResizeListener listener : listeners) {
+                listener.onResize(null, null, (String) variables.get("width"), (String) variables.get("height"));
+            }
+        }
+    }
 
     @Override
     public void beforeClientResponse(boolean initial) {
