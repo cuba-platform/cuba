@@ -148,6 +148,7 @@ public class FileDownloadController {
         if (directories != null && filePath != null ) {
             filePath = filePath.replace("\\", "/");
             for (String d : directories.split(";")) {
+                d = d.replace("\\", "/");
                 if (!d.endsWith("/"))
                     d = d + "/";
                 if (filePath.startsWith(d)) {
