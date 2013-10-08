@@ -54,6 +54,7 @@
 @import "components/fieldgrouplayout/fieldgrouplayout";
 @import "components/loadingindicator/loadingindicator";
 @import "components/progressindicator/progressindicator";
+@import "components/sourcecodeeditor/sourcecodeeditor";
 @import "components/resizabletextarea/resizabletextarea";
 @import "components/tokenlist/tokenlist";
 @import "components/twincolumn/twincolumn";
@@ -106,6 +107,7 @@
   @include havana-errorindicator;
   @include havana-fieldgrouplayout;
   @include havana-loadingindicator;
+  @include havana-sourcecodeeditor;
   @include havana-progressindicator;
 
   @include havana-cuba-groupbox;
