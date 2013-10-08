@@ -57,6 +57,9 @@ public class ConstraintEditor extends AbstractEditor {
         }
         entityName.setOptionsMap(options);
 
+        joinClause.setHighlightActiveLine(false);
+        joinClause.setShowGutter(false);
+        joinClause.setShowPrintMargin(false);
         joinClause.setSuggester(new Suggester() {
             @Override
             public List<Suggestion> getSuggestions(AutoCompleteSupport source, String text, int cursorPosition) {
@@ -64,6 +67,9 @@ public class ConstraintEditor extends AbstractEditor {
             }
         });
 
+        whereClause.setHighlightActiveLine(false);
+        whereClause.setShowGutter(false);
+        whereClause.setShowPrintMargin(false);
         whereClause.setSuggester(new Suggester() {
             @Override
             public List<Suggestion> getSuggestions(AutoCompleteSupport source, String text, int cursorPosition) {

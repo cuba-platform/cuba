@@ -19,6 +19,10 @@ public class DesktopSourceCodeEditor extends DesktopResizableTextArea
     protected Suggester suggester;
     protected Mode mode;
 
+    protected boolean showGutter = true;
+    protected boolean showPrintMargin = true;
+    protected boolean highlightActiveLine = true;
+
     @Override
     public Mode getMode() {
         return mode;
@@ -52,5 +56,35 @@ public class DesktopSourceCodeEditor extends DesktopResizableTextArea
                 return null;
             }
         };
+    }
+
+    @Override
+    public void setShowGutter(boolean showGutter) {
+        this.showGutter = showGutter;
+    }
+
+    @Override
+    public boolean isShowGutter() {
+        return showGutter;
+    }
+
+    @Override
+    public void setShowPrintMargin(boolean showPrintMargin) {
+        this.showPrintMargin = showPrintMargin;
+    }
+
+    @Override
+    public boolean isShowPrintMargin() {
+        return showPrintMargin;
+    }
+
+    @Override
+    public void setHighlightActiveLine(boolean highlightActiveLine) {
+        this.highlightActiveLine = highlightActiveLine;
+    }
+
+    @Override
+    public boolean isHighlightActiveLine() {
+        return highlightActiveLine;
     }
 }

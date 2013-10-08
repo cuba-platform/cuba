@@ -7,8 +7,6 @@ package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.gui.autocomplete.AutoCompleteSupport;
 import com.haulmont.cuba.web.controllers.ControllerUtils;
-import com.vaadin.data.Validator;
-import com.vaadin.data.util.converter.Converter;
 import com.vaadin.ui.AbstractTextField;
 import org.apache.commons.lang.StringUtils;
 import org.vaadin.aceeditor.AceEditor;

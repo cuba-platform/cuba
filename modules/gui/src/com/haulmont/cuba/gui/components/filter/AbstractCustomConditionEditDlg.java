@@ -81,6 +81,8 @@ public abstract class AbstractCustomConditionEditDlg<T> {
         joinLab.setValue(messages.getMessage(MESSAGES_PACK, "CustomConditionEditDlg.joinLabel"));
 
         joinText = factory.createComponent(SourceCodeEditor.NAME);
+        joinText.setHighlightActiveLine(false);
+        joinText.setShowGutter(false);
         joinText.setWidth(FIELD_WIDTH);
         joinText.setValue(condition.getJoin());
         joinText.setHeight("80px");
@@ -96,6 +98,8 @@ public abstract class AbstractCustomConditionEditDlg<T> {
         whereLab.setValue(messages.getMessage(MESSAGES_PACK, "CustomConditionEditDlg.whereLabel"));
 
         whereText = factory.createComponent(SourceCodeEditor.NAME);
+        whereText.setHighlightActiveLine(false);
+        whereText.setShowGutter(false);
         whereText.setWidth(FIELD_WIDTH);
         whereText.setHeight("80px");
         String where = replaceParamWithQuestionMark(condition.getWhere());

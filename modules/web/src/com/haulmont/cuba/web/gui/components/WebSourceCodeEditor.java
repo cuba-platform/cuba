@@ -99,15 +99,43 @@ public class WebSourceCodeEditor extends WebAbstractField<CubaSourceCodeEditor> 
         return component;
     }
 
+    @Override
+    public void setShowGutter(boolean showGutter) {
+        component.setShowGutter(showGutter);
+    }
+
+    @Override
+    public boolean isShowGutter() {
+        return component.isShowGutter();
+    }
+
+    @Override
+    public void setShowPrintMargin(boolean showPrintMargin) {
+        component.setShowPrintMargin(showPrintMargin);
+    }
+
+    @Override
+    public boolean isShowPrintMargin() {
+        return component.isShowPrintMargin();
+    }
+
+    @Override
+    public void setHighlightActiveLine(boolean highlightActiveLine) {
+        component.setHighlightActiveLine(highlightActiveLine);
+    }
+
+    @Override
+    public boolean isHighlightActiveLine() {
+        return component.isHighlightActiveLine();
+    }
+
     protected class SourceCodeEditorSuggester implements org.vaadin.aceeditor.Suggester {
 
         @Override
         public List<Suggestion> getSuggestions(String text, int cursor) {
-            // make sure that component has value same as client
-            component.setValue(text);
-
-            if (suggester == null)
+            if (suggester == null) {
                 return Collections.emptyList();
+            }
 
             List<com.haulmont.cuba.gui.autocomplete.Suggestion> suggestions =
                     suggester.getSuggestions(getAutoCompleteSupport(), text, cursor);

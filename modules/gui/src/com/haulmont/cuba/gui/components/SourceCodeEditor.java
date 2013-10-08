@@ -48,4 +48,13 @@ public interface SourceCodeEditor extends Field {
     void setSuggester(Suggester suggester);
 
     AutoCompleteSupport getAutoCompleteSupport();
+
+    void setShowGutter(boolean showGutter);
+    boolean isShowGutter();
+
+    void setShowPrintMargin(boolean showPrintMargin);
+    boolean isShowPrintMargin();
+
+    void setHighlightActiveLine(boolean highlightActiveLine);
+    boolean isHighlightActiveLine();
 }
