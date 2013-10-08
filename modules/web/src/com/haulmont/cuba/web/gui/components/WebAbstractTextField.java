@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.google.gwt.thirdparty.guava.common.base.Strings;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -82,6 +83,7 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
         if (isTrimming()) {
             value = StringUtils.trim(value);
         }
+        value = Strings.emptyToNull(value);
 
         Datatype datatype = getActualDatatype();
         if (value != null && datatype != null) {

@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.web.gui.data;
 
+import com.google.common.base.Strings;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.Instance;
@@ -96,6 +97,7 @@ public class PropertyWrapper extends AbstractPropertyWrapper implements Property
                 Datatype<Object> datatype = range.asDatatype();
                 if (newValue instanceof String) {
                     try {
+                        newValue = Strings.emptyToNull((String) newValue);
                         obj = datatype.parse((String) newValue, AppBeans.get(UserSessionSource.class).getLocale());
                     } catch (ParseException e) {
                         throw new Converter.ConversionException(e);
