@@ -55,7 +55,7 @@ import java.util.*;
  * @author krivopustov
  * @version $Id$
  */
-public class AppWindow extends UIView implements UserSubstitutionListener {
+public class AppWindow extends UIView implements UserSubstitutionListener, CubaHistoryControl.HistoryBackHandler {
 
     /**
      * Main window mode. See {@link #TABBED}, {@link #SINGLE}
@@ -81,6 +81,8 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
     protected CubaClientManager clientManager;
 
     protected CubaFileDownloader fileDownloader;
+
+    protected CubaHistoryControl historyControl;
 
     protected CubaTimer workerTimer;
 
@@ -193,7 +195,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
         return new WebWindowManager(app, this);
     }
 
-    private void updateClientSystemMessages() {
+    protected void updateClientSystemMessages() {
         CubaClientManager.SystemMessages msgs = new CubaClientManager.SystemMessages();
         Locale locale = AppBeans.get(UserSessionSource.class).getLocale();
 
@@ -209,12 +211,12 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
         clientManager.updateSystemMessagesLocale(msgs);
     }
 
-    private void initStaticComponents() {
+    protected void initStaticComponents() {
         clientManager = new CubaClientManager();
         clientManager.extend(rootLayout);
 
         workerTimer = new CubaTimer();
-        workerTimer.setId("BackgroundWorkerTimer");
+        workerTimer.setId("backgroundWorkerTimer");
         rootLayout.addComponent(workerTimer);
 
         workerTimer.setRepeating(true);
@@ -223,6 +225,16 @@ public class AppWindow extends UIView implements UserSubstitutionListener {
 
         fileDownloader = new CubaFileDownloader();
         fileDownloader.extend(rootLayout);
+
+        if (webConfig.getAllowHandleBrowserHistoryBack()) {
+            historyControl = new CubaHistoryControl();
+            historyControl.extend(rootLayout, this);
+        }
+    }
+
+    @Override
+    public void onHistoryBackPerformed() {
+        // Go back to the future
     }
 
     private void checkSessions() {
