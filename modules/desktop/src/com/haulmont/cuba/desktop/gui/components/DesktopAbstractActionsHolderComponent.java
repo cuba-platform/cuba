@@ -14,13 +14,12 @@ import java.util.Collections;
 import java.util.LinkedList;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class DesktopAbstractActionsHolderComponent<C extends JComponent> extends DesktopAbstractComponent<C> {
 
-    protected java.util.List<Action> actionList = new LinkedList<com.haulmont.cuba.gui.components.Action>();
+    protected java.util.List<Action> actionList = new LinkedList<>();
 
     public void addAction(Action action) {
         for (int i = 0; i < actionList.size(); i++) {

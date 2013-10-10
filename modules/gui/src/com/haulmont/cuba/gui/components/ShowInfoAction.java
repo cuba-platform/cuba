@@ -6,7 +6,6 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -14,6 +13,10 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class ShowInfoAction extends AbstractAction {
 
     public static final String ACTION_ID = "showSystemInfo";
@@ -35,7 +38,7 @@ public class ShowInfoAction extends AbstractAction {
 
     @Override
     public String getCaption() {
-        return MessageProvider.getMessage(AppConfig.getMessagesPack(), "table.showInfoAction");
+        return messages.getMessage(AppConfig.getMessagesPack(), "table.showInfoAction");
     }
 
     @Override
@@ -49,7 +52,7 @@ public class ShowInfoAction extends AbstractAction {
     }
 
     public void showInfo(Entity entity, MetaClass metaClass, Component.BelongToFrame component) {
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("metaClass", metaClass);
         params.put("item", entity);
         IFrame frame = (component).getFrame();

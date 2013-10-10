@@ -1201,24 +1201,26 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         JPopupMenu popup = new JPopupMenu();
         JMenuItem menuItem;
         for (final Action action : actionList) {
-            menuItem = new JMenuItem(action.getCaption());
-            if (action.getIcon() != null) {
-                menuItem.setIcon(App.getInstance().getResources().getIcon(action.getIcon()));
-            }
-            if(action.getShortcut()!=null){
-                menuItem.setAccelerator(DesktopComponentsHelper.convertKeyCombination(action.getShortcut()));
-            }
-            menuItem.setEnabled(action.isEnabled());
-            menuItem.setVisible(action.isVisible());
-            menuItem.addActionListener(
-                    new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            action.actionPerform(DesktopAbstractTable.this);
+            if (StringUtils.isNotBlank(action.getCaption())) {
+                menuItem = new JMenuItem(action.getCaption());
+                if (action.getIcon() != null) {
+                    menuItem.setIcon(App.getInstance().getResources().getIcon(action.getIcon()));
+                }
+                if (action.getShortcut() != null) {
+                    menuItem.setAccelerator(DesktopComponentsHelper.convertKeyCombination(action.getShortcut()));
+                }
+                menuItem.setEnabled(action.isEnabled());
+                menuItem.setVisible(action.isVisible());
+                menuItem.addActionListener(
+                        new ActionListener() {
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                action.actionPerform(DesktopAbstractTable.this);
+                            }
                         }
-                    }
-            );
-            popup.add(menuItem);
+                );
+                popup.add(menuItem);
+            }
         }
         return popup;
     }

@@ -9,6 +9,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.haulmont.cuba.gui.components.Action;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 
@@ -56,16 +57,18 @@ public class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.Component
 
     protected class ActionsAdapter implements com.vaadin.event.Action.Handler {
 
+        @Override
         public com.vaadin.event.Action[] getActions(Object target, Object sender) {
             final List<com.vaadin.event.Action> res = new ArrayList<>();
             for (Action action : actionList) {
-//                if (action.isEnabled()) {
+                if (StringUtils.isNotBlank(action.getCaption())) {
                     res.add(actions.get(action));
-//                }
+                }
             }
             return res.toArray(new com.vaadin.event.Action[res.size()]);
         }
 
+        @Override
         public void handleAction(com.vaadin.event.Action actionImpl, Object sender, Object target) {
             final Action action = actions.inverse().get(actionImpl);
             if (action != null && action.isEnabled() && action.isVisible()) {

@@ -10,9 +10,8 @@ import com.haulmont.cuba.gui.components.Action;
 /**
  * {@link Action} adapter for web client.
  *
- * <p>$Id$</p>
- *
  * @author abramov
+ * @version $Id$
  */
 class WebActionWrapper extends com.vaadin.event.Action {
 

@@ -16,6 +16,7 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
+import org.apache.commons.lang.StringUtils;
 
 import javax.swing.AbstractAction;
 import javax.swing.*;
@@ -93,8 +94,9 @@ public class DesktopTree
 
     @Override
     public void expandTree() {
-        if (model == null)
+        if (model == null) {
             return;
+        }
 
         if (!model.isLeaf(model.getRoot())) {
             recursiveExpand(model.getRoot());
@@ -114,41 +116,48 @@ public class DesktopTree
 
     @Override
     public void expand(Object itemId) {
-        if (datasource == null)
+        if (datasource == null) {
             return;
+        }
         Entity<Object> item = datasource.getItem(itemId);
-        if (item == null)
+        if (item == null) {
             return;
+        }
 
         impl.expandPath(model.getTreePath(item));
     }
 
     @Override
     public void collapseTree() {
-        if (model == null)
+        if (model == null) {
             return;
+        }
 
         impl.collapsePath(new TreePath(model.getRoot()));
     }
 
     @Override
     public void collapse(Object itemId) {
-        if (datasource == null)
+        if (datasource == null) {
             return;
+        }
         Entity<Object> item = datasource.getItem(itemId);
-        if (item == null)
+        if (item == null) {
             return;
+        }
 
         impl.collapsePath(model.getTreePath(item));
     }
 
     @Override
     public boolean isExpanded(Object itemId) {
-        if (datasource == null)
+        if (datasource == null) {
             return false;
+        }
         Entity<Object> item = datasource.getItem(itemId);
-        if (item == null)
+        if (item == null) {
             return false;
+        }
 
         return impl.isExpanded(model.getTreePath(item));
     }
@@ -167,8 +176,9 @@ public class DesktopTree
             @Override
             public void actionPerformed(ActionEvent e) {
                 Action action = getAction(actionId);
-                if ((action != null) && (action.isEnabled()))
+                if ((action != null) && (action.isEnabled())) {
                     action.actionPerform(DesktopTree.this);
+                }
             }
         });
     }
@@ -181,8 +191,9 @@ public class DesktopTree
     @Override
     public void setCaptionMode(CaptionMode captionMode) {
         this.captionMode = captionMode;
-        if (model != null)
+        if (model != null) {
             model.setCaptionMode(captionMode);
+        }
     }
 
     @Override
@@ -193,8 +204,9 @@ public class DesktopTree
     @Override
     public void setCaptionProperty(String captionProperty) {
         this.captionProperty = captionProperty;
-        if (model != null)
+        if (model != null) {
             model.setCaptionProperty(captionProperty);
+        }
     }
 
     @Override
@@ -252,8 +264,9 @@ public class DesktopTree
         if (selectionPaths != null) {
             for (TreePath selectionPath : selectionPaths) {
                 Entity entity = model.getEntity(selectionPath.getLastPathComponent());
-                if (entity != null)
+                if (entity != null) {
                     selected.add((T) entity);
+                }
             }
         }
         return selected;
@@ -261,8 +274,9 @@ public class DesktopTree
 
     @Override
     public void setSelected(Entity item) {
-        if (!isEditable())
+        if (!isEditable()) {
             return;
+        }
 
         TreePath path = model.getTreePath(item);
         impl.setSelectionPath(path);
@@ -270,8 +284,9 @@ public class DesktopTree
 
     @Override
     public void setSelected(Collection<Entity> items) {
-        if (!isEditable())
+        if (!isEditable()) {
             return;
+        }
 
         TreePath[] paths = new TreePath[items.size()];
         int i = 0;
@@ -323,24 +338,26 @@ public class DesktopTree
         JPopupMenu popup = new JPopupMenu();
         JMenuItem menuItem;
         for (final com.haulmont.cuba.gui.components.Action action : actionList) {
-            menuItem = new JMenuItem(action.getCaption());
-            if (action.getIcon() != null) {
-                menuItem.setIcon(App.getInstance().getResources().getIcon(action.getIcon()));
-            }
-            if (action.getShortcut() != null) {
-                menuItem.setAccelerator(DesktopComponentsHelper.convertKeyCombination(action.getShortcut()));
-            }
-            menuItem.setEnabled(action.isEnabled());
-            menuItem.setVisible(action.isVisible());
-            menuItem.addActionListener(
-                    new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            action.actionPerform(DesktopTree.this);
+            if (StringUtils.isNotBlank(action.getCaption())) {
+                menuItem = new JMenuItem(action.getCaption());
+                if (action.getIcon() != null) {
+                    menuItem.setIcon(App.getInstance().getResources().getIcon(action.getIcon()));
+                }
+                if (action.getShortcut() != null) {
+                    menuItem.setAccelerator(DesktopComponentsHelper.convertKeyCombination(action.getShortcut()));
+                }
+                menuItem.setEnabled(action.isEnabled());
+                menuItem.setVisible(action.isVisible());
+                menuItem.addActionListener(
+                        new ActionListener() {
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                action.actionPerform(DesktopTree.this);
+                            }
                         }
-                    }
-            );
-            popup.add(menuItem);
+                );
+                popup.add(menuItem);
+            }
         }
         return popup;
     }
