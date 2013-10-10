@@ -708,6 +708,10 @@ public class WebFieldGroup
 
     @Override
     public void validate() throws ValidationException {
+        if (!isVisible() || !isEditable() || !isEnabled()) {
+            return;
+        }
+
         final Map<Object, Exception> problems = new HashMap<>();
 
         // todo use cuba fields for validation
