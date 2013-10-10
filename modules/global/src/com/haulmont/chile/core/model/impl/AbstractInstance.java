@@ -30,13 +30,16 @@ public abstract class AbstractInstance implements Instance {
 
     protected void propertyChanged(String s, Object obj, Object obj1) {
         if (__valueListeners != null) {
-            for (Iterator<WeakReference<ValueListener>> it = __valueListeners.iterator(); it.hasNext(); ) {
-                ValueListener listener = it.next().get();
+            Collection<WeakReference<ValueListener>> listenersCopy = new ArrayList<>(__valueListeners);
+            Collection<WeakReference<ValueListener>> listenersToRemove = new ArrayList<>();
+            for (WeakReference<ValueListener> reference : listenersCopy) {
+                ValueListener listener = reference.get();
                 if (listener == null)
-                    it.remove();
+                    listenersToRemove.add(reference);
                 else
                     listener.propertyChanged(this, s, obj, obj1);
             }
+            __valueListeners.removeAll(listenersToRemove);
         }
     }
 
