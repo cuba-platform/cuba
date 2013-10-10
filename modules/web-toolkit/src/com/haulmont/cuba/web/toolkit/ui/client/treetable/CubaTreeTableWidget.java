@@ -54,6 +54,15 @@ public class CubaTreeTableWidget extends VTreeTable {
     }
 
     @Override
+    protected int getDynamicBodyHeight() {
+        if (totalRows <= 0) {
+            return (int) scrollBody.getRowHeight(true);
+        }
+
+        return (int) (totalRows * scrollBody.getRowHeight(true));
+    }
+
+    @Override
     protected TableHead createTableHead() {
         return new CubaTreeTableTableHead();
     }
