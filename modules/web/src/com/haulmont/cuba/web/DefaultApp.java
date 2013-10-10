@@ -12,6 +12,8 @@ import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.web.auth.ActiveDirectoryHelper;
+import com.vaadin.server.Page;
+import com.vaadin.server.VaadinSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -59,14 +61,19 @@ public class DefaultApp extends App implements ConnectionListener {
             }
 
             afterLoggedIn();
-        } else {
-            closeAllWindows();
-            for (AppUI ui : getAppUIs()) {
-                UIView window = createLoginWindow(ui);
-                ui.showView(window);
-            }
 
-            initExceptionHandlers(false);
+        } else {
+            if (webConfig.getInvalidateHttpSessionOnLogout()) {
+                VaadinSession.getCurrent().close();
+                Page.getCurrent().reload();
+            } else {
+                closeAllWindows();
+                for (AppUI ui : getAppUIs()) {
+                    UIView window = createLoginWindow(ui);
+                    ui.showView(window);
+                }
+                initExceptionHandlers(false);
+            }
         }
     }
 

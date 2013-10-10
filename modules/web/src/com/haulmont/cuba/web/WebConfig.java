@@ -273,4 +273,11 @@ public interface WebConfig extends Config {
     @Factory(factory = StringListTypeFactory.class)
     @Default("open|o")
     List<String> getLinkHandlerActions();
+
+    /**
+     * @return whether to kill current HTTP session on user logout
+     */
+    @Property("cuba.web.invalidateHttpSessionOnLogout")
+    @DefaultBoolean(true)
+    boolean getInvalidateHttpSessionOnLogout();
 }
