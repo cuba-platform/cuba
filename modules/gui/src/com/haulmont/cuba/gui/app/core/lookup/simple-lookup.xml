@@ -9,8 +9,7 @@
 
     <dsContext/>
 
-    <layout>
-        <label id="lookupCaption"/>
+    <layout expand="lookupPanel">
         <vbox id="lookupPanel"/>
     </layout>
 </window>

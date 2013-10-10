@@ -94,7 +94,6 @@ public class SimpleLookup extends AbstractLookup {
             setCaption(lookupTitle);
 
 //        MessageProvider.formatMessage(getClass(), "lookup.select", entityNameLoc)
-        ((Label)getComponent("lookupCaption")).setValue(entityNameLoc);
     }
 
     private Table createTable(List<String> columnNames, MetaClass metaClass) {
