@@ -134,10 +134,10 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
     @Override
     protected int getDynamicBodyHeight() {
         if (totalRows <= 0) {
-            return (int) scrollBody.getRowHeight(true);
+            return (int) Math.round(scrollBody.getRowHeight(true));
         }
 
-        return (int) (totalRows * scrollBody.getRowHeight(true));
+        return (int) Math.round(totalRows * scrollBody.getRowHeight(true));
     }
 
     @Override
