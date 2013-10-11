@@ -31,7 +31,7 @@ public class SecurityImpl implements Security {
     protected Metadata metadata;
 
     @Override
-    public boolean isScreenPermitted(ClientType clientType, String windowAlias) {
+    public boolean isScreenPermitted(String windowAlias) {
         return userSessionSource.getUserSession().isScreenPermitted(windowAlias);
     }
 

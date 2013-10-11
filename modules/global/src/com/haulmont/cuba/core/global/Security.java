@@ -11,6 +11,8 @@ import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 
 /**
+ * Intfrastructure interface providing methods to check permissions of the current user.
+ *
  * @author krivopustov
  * @version $Id$
  */
@@ -21,10 +23,9 @@ public interface Security {
     /**
      * Check if current user has permission to open a screen.
      *
-     * @param clientType    current client type
      * @param windowAlias   screen id as registered in <code>screens.xml</code>
      */
-    boolean isScreenPermitted(ClientType clientType, String windowAlias);
+    boolean isScreenPermitted(String windowAlias);
 
     /**
      * Check if current user has permission to execute an entity operation.
