@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.cuba.desktop.sys.vcl.Flushable;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.TextArea;
 
@@ -22,7 +23,7 @@ public class DesktopTextArea extends DesktopAbstractTextField<JTextArea> impleme
 
     @Override
     protected JTextArea createTextComponentImpl() {
-        JTextArea impl = new JTextArea();
+        JTextArea impl = new TextAreaFlushableField();
 
         impl.setLineWrap(true);
         impl.setWrapStyleWord(true);
@@ -119,5 +120,13 @@ public class DesktopTextArea extends DesktopAbstractTextField<JTextArea> impleme
     @Override
     public void setTrimming(boolean trimming) {
         this.trimming = trimming;
+    }
+
+    private class TextAreaFlushableField extends JTextArea implements Flushable {
+
+        @Override
+        public void flushValue() {
+            flush();
+        }
     }
 }

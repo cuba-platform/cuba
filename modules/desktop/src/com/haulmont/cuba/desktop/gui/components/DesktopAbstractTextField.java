@@ -301,6 +301,19 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
         }
     }
 
+    protected void flush() {
+        if (isEditable() && isEnabled()) {
+            Object newValue = validateRawValue(getImpl().getText());
+            if ("".equals(newValue))
+                newValue = null;
+
+            if (!ObjectUtils.equals(prevValue, newValue))
+                setValue(newValue);
+            else
+                updateComponent(newValue);
+        }
+    }
+
     protected class TextFieldListener implements FocusListener, KeyListener {
         private static final int ENTER_CODE = 10;
 
@@ -310,7 +323,7 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
 
         @Override
         public void focusLost(FocusEvent e) {
-            fireEvent();
+            flush();
         }
 
         @Override
@@ -320,24 +333,11 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
         @Override
         public void keyPressed(KeyEvent e) {
             if (ENTER_CODE == e.getKeyCode())
-                fireEvent();
+                flush();
         }
 
         @Override
         public void keyReleased(KeyEvent e) {
-        }
-
-        private void fireEvent() {
-            if (isEditable() && isEnabled()) {
-                Object newValue = validateRawValue(getImpl().getText());
-                if ("".equals(newValue))
-                    newValue = null;
-
-                if (!ObjectUtils.equals(prevValue, newValue))
-                    setValue(newValue);
-                else
-                    updateComponent(newValue);
-            }
         }
     }
 }

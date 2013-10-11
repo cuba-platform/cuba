@@ -8,6 +8,7 @@ package com.haulmont.cuba.desktop.gui.components;
 import com.haulmont.cuba.desktop.gui.data.TableModelAdapter;
 import com.haulmont.cuba.desktop.sys.vcl.JXTableExt;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import org.apache.commons.lang.ObjectUtils;
 import org.jdesktop.swingx.JXTable;
 
 import javax.swing.event.ChangeEvent;
@@ -32,7 +33,7 @@ public class DesktopTable extends DesktopAbstractTable<JXTable> {
             @Override
             public void editingStopped(ChangeEvent e) {
                 TableCellEditor editor = getCellEditor();
-                if (editor != null) {
+                if (editor != null && editingColumn >= 0) {
                     Object value = editor.getCellEditorValue();
                     DesktopTable tableComponent = DesktopTable.this;
                     Column editColumn = tableComponent.getColumns().get(editingColumn);

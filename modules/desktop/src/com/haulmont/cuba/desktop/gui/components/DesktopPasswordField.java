@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.cuba.desktop.sys.vcl.Flushable;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component;
 
@@ -21,7 +22,7 @@ public class DesktopPasswordField
 
     @Override
     protected JPasswordField createTextComponentImpl() {
-        JPasswordField field = new JPasswordField();
+        JPasswordField field = new PasswordFlushableField();
         int height = (int) field.getPreferredSize().getHeight();
         field.setPreferredSize(new Dimension(150, height));
         return field;
@@ -36,5 +37,13 @@ public class DesktopPasswordField
     public void setMaxLength(int value) {
         maxLength = value;
         doc.setMaxLength(value);
+    }
+
+    private class PasswordFlushableField extends JPasswordField implements Flushable {
+
+        @Override
+        public void flushValue() {
+            flush();
+        }
     }
 }

@@ -7,6 +7,7 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.desktop.sys.vcl.DatePicker.DatePicker;
+import com.haulmont.cuba.desktop.sys.vcl.Flushable;
 import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.components.Table;
 import org.jdesktop.swingx.JXHyperlink;
@@ -134,12 +135,20 @@ public class DesktopTableCellEditor extends AbstractCellEditor implements TableC
     @Override
     public Object getCellEditorValue() {
         if (activeComponent != null) {
-            // post specific event for handle focus lost
-            // todo fix it for normal change focus with mouse
-            FocusEvent focusEvent = new FocusEvent(activeComponent, FocusEvent.FOCUS_LOST, false, desktopAbstractTable.impl);
-            activeComponent.dispatchEvent(focusEvent);
+            flush(activeComponent);
+            desktopAbstractTable.impl.requestFocus();
         }
         return "";
+    }
+
+    private void flush(Component component) {
+        if (component instanceof Flushable) {
+            ((Flushable) component).flushValue();
+        } else if (component instanceof Container) {
+            for(Component child : ((Container) component).getComponents()){
+                flush(child);
+            }
+        }
     }
 
     @Override

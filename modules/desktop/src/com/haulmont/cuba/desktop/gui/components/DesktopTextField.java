@@ -7,6 +7,7 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
+import com.haulmont.cuba.desktop.sys.vcl.Flushable;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.TextField;
@@ -26,7 +27,7 @@ public class DesktopTextField extends DesktopAbstractTextField<JTextComponent> i
 
     @Override
     protected JTextField createTextComponentImpl() {
-        JTextField field = new JTextField();
+        JTextField field = new FlushableTextField();
         int height = (int) field.getPreferredSize().getHeight();
         field.setPreferredSize(new Dimension(150, height));
         return field;
@@ -107,5 +108,13 @@ public class DesktopTextField extends DesktopAbstractTextField<JTextComponent> i
     @Override
     public void setFormatter(Formatter formatter) {
         valueFormatter.setFormatter(formatter);
+    }
+
+    private class FlushableTextField extends JTextField implements Flushable {
+
+        @Override
+        public void flushValue() {
+            flush();
+        }
     }
 }
