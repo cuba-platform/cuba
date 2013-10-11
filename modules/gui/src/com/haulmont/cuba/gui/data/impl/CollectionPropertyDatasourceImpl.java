@@ -320,8 +320,9 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
         Collection<T> collection = __getCollection();
         if (collection != null) {
-            if (item == this.item)
+            if (this.item != null && this.item.equals(item)) {
                 setItem(null);
+            }
 
             collection.remove(item);
             detachListener(item);
@@ -346,6 +347,10 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     public void excludeItem(T item) throws UnsupportedOperationException {
         checkState();
         checkPermission();
+
+        if (this.item != null && this.item.equals(item)) {
+            setItem(null);
+        }
 
         __getCollection().remove(item);
 

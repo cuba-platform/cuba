@@ -338,12 +338,12 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     public void excludeItem(T item) {
         checkState();
 
+        if (this.item != null && this.item.equals(item)) {
+            setItem(null);
+        }
+
         data.remove(item.getId());
         detachListener(item);
-
-        if (this.item != null && this.item.equals(item)) {
-            this.item = null;
-        }
 
         fireCollectionChanged(CollectionDatasourceListener.Operation.REMOVE, Collections.<Entity>singletonList(item));
     }
