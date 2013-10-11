@@ -12,6 +12,12 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 
 import javax.persistence.*;
 
+/**
+ * Search folder settings.
+ *
+ * @author krivopustov
+ * @version $Id$
+ */
 @Entity(name = "sec$SearchFolder")
 @Table(name = "SEC_SEARCH_FOLDER")
 @PrimaryKeyJoinColumn(name = "FOLDER_ID", referencedColumnName = "ID")

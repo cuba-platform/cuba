@@ -8,11 +8,15 @@ import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import org.apache.commons.lang.ObjectUtils;
 
 /**
- * Type of permission<br>
- * {@link #id} - corresponding database value
+ * Type of permission.
+ * <p/>
+ * {@link #id} - corresponding value stored in the database
+ *
+ * @author krivopustov
+ * @version $Id$
  */
-public enum PermissionType implements EnumClass<Integer>
-{
+public enum PermissionType implements EnumClass<Integer> {
+
     /** Permission to screen */
     SCREEN(10),
 

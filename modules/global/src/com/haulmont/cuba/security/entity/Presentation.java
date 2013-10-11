@@ -12,6 +12,12 @@ import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import javax.persistence.*;
 import java.util.Date;
 
+/**
+ * A screen presentation settings.
+ *
+ * @author gorodnov
+ * @version $Id$
+ */
 @Entity(name = "sec$Presentation")
 @Table(name = "SEC_PRESENTATION")
 @NamePattern("%s|name")

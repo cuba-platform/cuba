@@ -12,6 +12,12 @@ import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import javax.persistence.*;
 import javax.persistence.Entity;
 
+/**
+ * A filter component settings.
+ *
+ * @author krivopustov
+ * @version $Id$
+ */
 @Entity(name = "sec$Filter")
 @Table(name = "SEC_FILTER")
 @NamePattern("%s|name")

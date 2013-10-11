@@ -12,13 +12,16 @@ import com.haulmont.cuba.core.global.DeletePolicy;
 import javax.persistence.*;
 
 /**
- * Link between users and roles
+ * Link between users and roles.
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 @Entity(name = "sec$UserRole")
 @Table(name = "SEC_USER_ROLE")
 @SystemLevel
-public class UserRole extends StandardEntity
-{
+public class UserRole extends StandardEntity {
+
     private static final long serialVersionUID = 8543853035155300992L;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

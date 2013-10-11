@@ -11,13 +11,16 @@ import javax.persistence.*;
 import javax.persistence.Entity;
 
 /**
- * Configuration element of <code>EntityLog</code> MBean.
+ * Configuration element of <code>EntityLog</code> bean.
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 @Entity(name = "sec$LoggedAttribute")
 @Table(name = "SEC_LOGGED_ATTR")
 @SystemLevel
-public class LoggedAttribute extends BaseUuidEntity
-{
+public class LoggedAttribute extends BaseUuidEntity {
+
     private static final long serialVersionUID = -615000337312303671L;
                                      
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)

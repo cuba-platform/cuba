@@ -14,12 +14,15 @@ import javax.persistence.*;
 /**
  * Record for user setting.
  * Used by <code>UserSettingServiceBean</code>.
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 @Entity(name = "sec$UserSetting")
 @Table(name = "SEC_USER_SETTING")
 @SystemLevel
-public class UserSetting extends BaseUuidEntity
-{
+public class UserSetting extends BaseUuidEntity {
+
     private static final long serialVersionUID = -4324101071593066529L;
 
     @ManyToOne(fetch = FetchType.LAZY)

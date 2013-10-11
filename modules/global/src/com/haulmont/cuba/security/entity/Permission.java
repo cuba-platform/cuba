@@ -11,13 +11,16 @@ import javax.persistence.*;
 
 /**
  * Security permission record.
- * <br>The {@link #value} may be 0,1,2 for {@link PermissionType#ENTITY_ATTR} and 0,1 for others
+ * <br>The {@link #value} may be 0,1,2 for {@link PermissionType#ENTITY_ATTR} and 0,1 for others.
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 @Entity(name = "sec$Permission")
 @Table(name = "SEC_PERMISSION")
 @SystemLevel
-public class Permission extends StandardEntity
-{
+public class Permission extends StandardEntity {
+
     private static final long serialVersionUID = 4188184934170706381L;
 
     public static final String TARGET_PATH_DELIMETER = ":";

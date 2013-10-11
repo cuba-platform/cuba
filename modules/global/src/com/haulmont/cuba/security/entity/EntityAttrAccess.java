@@ -4,6 +4,12 @@
  */
 package com.haulmont.cuba.security.entity;
 
+/**
+ * Type of access to an entity attribute.
+ *
+ * @author krivopustov
+ * @version $Id$
+ */
 public enum EntityAttrAccess {
     DENY(0),
     VIEW(1),

@@ -11,7 +11,13 @@ import org.apache.openjpa.persistence.Persistent;
 import javax.persistence.*;
 import java.util.UUID;
 
-@javax.persistence.Entity(name = "sec$ScreenHistory")
+/**
+ * Screen history item.
+ *
+ * @author novikov
+ * @version $Id$
+ */
+@Entity(name = "sec$ScreenHistory")
 @Table(name = "SEC_SCREEN_HISTORY")
 @SystemLevel
 public class ScreenHistoryEntity extends BaseUuidEntity {

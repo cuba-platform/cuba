@@ -4,6 +4,12 @@
  */
 package com.haulmont.cuba.security.entity;
 
+/**
+ * Type of operation on entity.
+ *
+ * @author krivopustov
+ * @version $Id$
+ */
 public enum EntityOp {
     READ("read"),
     CREATE("create"),

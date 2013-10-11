@@ -12,6 +12,12 @@ import com.haulmont.cuba.core.global.DeletePolicy;
 import javax.persistence.*;
 import java.util.Date;
 
+/**
+ * User substitution definition.
+ *
+ * @author krivopustov
+ * @version $Id$
+ */
 @Entity(name = "sec$UserSubstitution")
 @Table(name = "SEC_USER_SUBSTITUTION")
 @SystemLevel

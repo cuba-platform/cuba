@@ -10,13 +10,16 @@ import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import javax.persistence.*;
 
 /**
- * Security constraint definition entity
+ * Security constraint definition entity.
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 @Entity(name = "sec$Constraint")
 @Table(name = "SEC_CONSTRAINT")
 @SystemLevel
-public class Constraint extends StandardEntity
-{
+public class Constraint extends StandardEntity {
+
     private static final long serialVersionUID = -8598548105315052474L;
 
     @Column(name = "ENTITY_NAME", length = 50)

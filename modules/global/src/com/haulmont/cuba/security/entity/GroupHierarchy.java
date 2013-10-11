@@ -10,13 +10,16 @@ import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import javax.persistence.*;
 
 /**
- * User group hierarchy
+ * User access groups hierarchy.
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 @Entity(name = "sec$GroupHierarchy")
 @Table(name = "SEC_GROUP_HIERARCHY")
 @SystemLevel
-public class GroupHierarchy extends BaseUuidEntity
-{
+public class GroupHierarchy extends BaseUuidEntity {
+
     private static final long serialVersionUID = 8106113488822530560L;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)

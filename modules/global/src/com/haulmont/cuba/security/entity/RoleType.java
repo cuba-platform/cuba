@@ -9,9 +9,10 @@ import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import org.apache.commons.lang.ObjectUtils;
 
 /**
- * <p>$Id$</p>
+ * Role type.
  *
  * @author krivopustov
+ * @version $Id$
  */
 public enum RoleType implements EnumClass<Integer> {
 

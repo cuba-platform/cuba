@@ -17,15 +17,18 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * User group
+ * User access group.
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 @Entity(name = "sec$Group")
 @Table(name = "SEC_GROUP")
 @Listeners({"com.haulmont.cuba.security.listener.GroupEntityListener"})
 @NamePattern("%s|name")
 @TrackEditScreenHistory
-public class Group extends StandardEntity
-{
+public class Group extends StandardEntity {
+
     private static final long serialVersionUID = -4581386806900761785L;
 
     @Column(name = "NAME")
