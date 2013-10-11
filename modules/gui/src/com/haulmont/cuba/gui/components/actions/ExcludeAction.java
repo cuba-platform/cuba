@@ -27,7 +27,6 @@ public class ExcludeAction extends RemoveAction {
     public static final String ACTION_ID = ListActionType.EXCLUDE.getId();
 
     protected boolean confirm;
-    protected boolean permissionFlag = false;
 
     /**
      * The simplest constructor. Autocommit and Confirm properties are set to false, the action has default name.
@@ -63,16 +62,6 @@ public class ExcludeAction extends RemoveAction {
     }
 
     @Override
-    public void setEnabled(boolean enabled) {
-        super.setEnabled(permissionFlag && enabled);
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return permissionFlag && super.isEnabled();
-    }
-
-    @Override
     public void refreshState() {
         permissionFlag = true;
 
@@ -82,7 +71,7 @@ public class ExcludeAction extends RemoveAction {
                     metaProperty.getDomain(), metaProperty.getName(), EntityAttrAccess.MODIFY);
         }
 
-        super.setEnabled(permissionFlag);
+        setEnabledInternal(permissionFlag);
     }
 
     @Override

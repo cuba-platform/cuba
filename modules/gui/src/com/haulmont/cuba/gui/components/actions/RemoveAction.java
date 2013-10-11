@@ -85,6 +85,10 @@ public class RemoveAction extends ItemTrackingAction {
         return permissionFlag && super.isEnabled();
     }
 
+    protected void setEnabledInternal(boolean enabled) {
+        super.setEnabled(enabled);
+    }
+
     @Override
     public void refreshState() {
         if (owner.getDatasource() == null) {
