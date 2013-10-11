@@ -184,8 +184,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public T getItem() {
-        if (State.VALID.equals(getState())) return item;
-        throw new UnsupportedOperationException();
+        return State.VALID.equals(getState()) ? item : null;
     }
 
     @Override
