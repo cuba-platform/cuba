@@ -14,6 +14,7 @@ import org.apache.commons.lang.text.StrTokenizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.annotation.Nullable;
 import javax.swing.*;
 import java.util.*;
 
@@ -34,7 +35,7 @@ public class DesktopThemeImpl implements DesktopTheme {
 
     private DesktopResources resources;
 
-    protected Log log = LogFactory.getLog(getClass());
+    private Log log = LogFactory.getLog(DesktopThemeImpl.class);
 
     /**
      * we can control margin & spacing sizes with help of {@link net.miginfocom.layout.PlatformDefaults} class.
@@ -44,8 +45,8 @@ public class DesktopThemeImpl implements DesktopTheme {
     private Integer spacingSize;
 
     public DesktopThemeImpl() {
-        this.uiDefaults = new HashMap<String, Object>();
-        this.styles = new HashMap<String, List<DesktopStyle>>();
+        this.uiDefaults = new HashMap<>();
+        this.styles = new HashMap<>();
     }
 
     public void setName(String name) {
@@ -89,13 +90,8 @@ public class DesktopThemeImpl implements DesktopTheme {
         try {
             UIManager.setLookAndFeel(lookAndFeel);
             initUIDefaults();
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (InstantiationException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        } catch (UnsupportedLookAndFeelException e) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+                | UnsupportedLookAndFeelException e) {
             throw new RuntimeException(e);
         }
 
@@ -134,7 +130,9 @@ public class DesktopThemeImpl implements DesktopTheme {
     private void applyStyleName(Object component, Set<String> state, String styleName) {
         DesktopStyle style = findStyle(component.getClass(), styleName);
         if (style == null) {
-            log.warn("Can not find style " + styleName + " for component " + component);
+            if (log.isDebugEnabled()) {
+                log.debug("Can not find style " + styleName + " for component " + component);
+            }
             return;
         }
 
@@ -147,6 +145,7 @@ public class DesktopThemeImpl implements DesktopTheme {
         }
     }
 
+    @Nullable
     private DesktopStyle findStyle(Class componentClass, String styleName) {
         List<DesktopStyle> stylesByName = styles.get(styleName);
         if (stylesByName == null) {
@@ -174,7 +173,7 @@ public class DesktopThemeImpl implements DesktopTheme {
         if (list != null) {
             list.add(0, style);
         } else {
-            list = new ArrayList<DesktopStyle>();
+            list = new ArrayList<>();
             list.add(style);
             styles.put(style.getName(), list);
         }
