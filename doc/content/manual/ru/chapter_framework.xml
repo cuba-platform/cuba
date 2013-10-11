@@ -1936,7 +1936,7 @@ Class calculatorClass = scripting.loadClass(&quot;com.abc.sales.PriceCalculator&
               <para><code>getClassLoader()</code> - возвращает <code>ClassLoader</code>, способный работать по правилам, описанным выше для метода <code>loadClass()</code>.</para>
             </listitem>
           </itemizedlist></para>
-        <para>Кэш скомпилированных классов можно очистить во время выполнения с помощью JMX-бинов <link linkend="cachingMBean">CachingMBean</link> и <link linkend="cachingFacadeMBean">CachingFacadeMBean</link>.</para>
+        <para>Кэш скомпилированных классов можно очистить во время выполнения с помощью JMX-бина  <link linkend="cachingFacadeMBean">CachingFacadeMBean</link>.</para>
         <para>См. также <xref linkend="scriptingManagerMBean"/></para>
       </section>
       <section>
@@ -6229,17 +6229,11 @@ protected boolean postCommit(boolean committed, boolean close) {
           <warning>
             <para>Для правильной работы компонента <code>PickerField</code> необходима установка атрибута <link linkend="gui_attr_pickerField_metaclass">metaClass</link> либо одновременная установка атрибутов <link linkend="gui_attr_basic_datasource">datasource</link> и <link linkend="gui_attr_basic_property">property</link>.</para>
           </warning>
-          <tip>
-            <title>Подсказка</title>
-            <para>Если при объявлении компонента никаких <link linkend="gui_Action">действий</link> не задано, загрузчик XML определит для него действия <literal>lookup</literal> и <literal>clear</literal>. </para>
-          </tip>
           <itemizedlist>
             <listitem>
-              <para id="gui_element_pickerField_actions">Для компонента существуют стандартные действия, определенные  перечислением <code>PickerField.ActionType</code>: <code>lookup</code>, <code>clear</code>, <code>open</code>. Для стандартных действий не нужно определять никаких атрибутов, кроме идентификатора. Например, для того чтобы добавить к действиям по умолчанию действие <literal>open</literal>, нужно определить элемент <sgmltag>action</sgmltag> следующим образом:</para>
+              <para id="gui_element_pickerField_actions">Для компонента существуют стандартные <link linkend="gui_Action">действия</link>, определенные  перечислением <code>PickerField.ActionType</code>: <code>lookup</code>, <code>clear</code>, <code>open</code>. Для стандартных действий не нужно определять никаких атрибутов, кроме идентификатора. Если при объявлении компонента никаких действий в элементе <sgmltag>actions</sgmltag> не задано, загрузчик XML определит для него действия <literal>lookup</literal> и <literal>clear</literal>. Чтобы  добавить к действиям по умолчанию например действие <literal>open</literal>, нужно определить элемент <sgmltag>actions</sgmltag> следующим образом:</para>
               <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/pickerField/pickerFieldStandartActions.txt" encoding="UTF-8" parse="text"/></programlisting>
-              <warning>
-                <para>Элемент <sgmltag>action</sgmltag> не дополняет, а переопределяет набор стандартных действий, поэтому необходимо указывать идентификаторы всех требуемых действий.</para>
-              </warning>
+              <para>Элемент <sgmltag>action</sgmltag> не дополняет, а переопределяет набор стандартных действий, поэтому необходимо указывать идентификаторы всех требуемых действий.</para>
               <figure>
                 <title/>
                 <mediaobject>
@@ -6249,17 +6243,24 @@ protected boolean postCommit(boolean committed, boolean close) {
                 </mediaobject>
               </figure>
               <para>Ниже показано описание <code>PickerField</code>, имеющего произвольные действия.</para>
-              <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/pickerField/pickerFieldUserActions.txt" encoding="UTF-8" parse="text"/></programlisting>
-              <para>Действия необходимо определить в <glossterm linkend="screen_controller_glossentry">контроллере</glossterm> экрана:</para>
-              <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/pickerField/pickerFieldUserActionsContr.txt" encoding="UTF-8" parse="text"/></programlisting>
-              <figure>
-                <title/>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata contentwidth="286" align="center" fileref="img/gui_pickerField_custom.png"/>
-                  </imageobject>
-                </mediaobject>
-              </figure>
+              <programlisting>&lt;pickerField id=&quot;pickerField1&quot; datasource=&quot;orderDs&quot; property=&quot;customer&quot;&gt;
+    &lt;actions&gt;
+        &lt;action id=&quot;pickerAction1&quot; icon=&quot;icons/up.png&quot;
+                invoke=&quot;someMethod1&quot; caption=&quot;&quot;/&gt;
+        &lt;action id=&quot;pickerAction2&quot;
+                invoke=&quot;someMethod2&quot; icon=&quot;icons/down.png&quot;
+                caption=&quot;&quot;/&gt;
+    &lt;/actions&gt;
+&lt;/pickerField&gt;</programlisting>
+              <para>Методы, вызываемые действиями, необходимо определить в контроллере экрана:</para>
+              <programlisting>@Inject
+protected PickerField pickerField1;
+
+public void someMethod1() {
+}
+
+public void someMethod2() {
+}</programlisting>
             </listitem>
             <listitem>
               <para>Для компонента определены горячие клавиши. Для стандартных действий:</para>
@@ -6287,11 +6288,35 @@ protected boolean postCommit(boolean committed, boolean close) {
                 </listitem>
               </itemizedlist>
               <para>Чтобы добавить пользовательскую горячую клавишу, необходимо чтобы класс <link linkend="gui_Action">действия</link> реализовывал интерфейс <code>com.haulmont.cuba.gui.components.ShortcutAction</code></para>
-              <para>Пример действия, которое записывает в поле компонента <code>PickerField</code> некоторое строковое значение, находится ниже. Действие может вызываться при нажатии сочетания клавиш <keycombo>
+              <para>Пример действия, вызываемого при нажатии сочетания клавиш <keycombo>
                   <keycap>CTRL</keycap>
                   <keycap>СТРЕЛКА ВВЕРХ</keycap>
-                </keycombo></para>
-              <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/section_gui/pickerField/pickerFieldAction.txt" encoding="UTF-8" parse="text"/></programlisting>
+                </keycombo>:</para>
+              <programlisting>protected class SomeAction extends AbstractAction implements ShortcutAction{
+
+    protected SomeAction(String id) {
+        super(id);
+    }
+
+    @Override
+    public KeyCombination getKeyCombination() {
+        return new KeyCombination(Key.ARROW_UP, Modifier.CTRL);
+    }
+
+    @Override
+    public void actionPerform(Component component) {
+    }
+
+    @Override
+    public String getCaption() {
+        return &quot;&quot;;
+    }
+
+    @Override
+    public String getIcon() {
+        return &quot;icons/up.png&quot;;
+    }
+}</programlisting>
               <para>Также поддерживается вызов действий сочетанием <keycombo>
                   <keycap>CTRL</keycap>
                   <keycap>ALT</keycap>
@@ -6309,19 +6334,19 @@ protected boolean postCommit(boolean committed, boolean close) {
                   <keycap>ALT</keycap>
                   <keycap>2</keycap>
                 </keycombo> − вызов второго действия и так далее.</para>
-              <para>Сочетания клавиш можно переназначить в ClientConfig</para>
+              <para>Сочетания клавиш можно переназначить с помощью следующих <link linkend="app_properties">свойств приложения</link>, задаваемых в блоках <structname>Web</structname> и <structname>Desktop</structname> клиентов (см. интерфейс <code>ClientConfig</code>):</para>
               <itemizedlist>
                 <listitem>
-                  <para><property>cuba.gui.pickerShortcut.modifiers</property> − модификаторы для вызова <link linkend="gui_Action">действий</link> по порядковому номеру</para>
+                  <para><property>cuba.gui.pickerShortcut.modifiers</property> − модификаторы для вызова <link linkend="gui_Action">действий</link> по порядковому номеру, по умолчанию <literal>CTRL-ALT</literal></para>
                 </listitem>
                 <listitem>
-                  <para><property>cuba.gui.pickerShortcut.lookup</property> − Lookup Action</para>
+                  <para><property>cuba.gui.pickerShortcut.lookup</property> − вызов Lookup Action, по умолчанию <literal>CTRL-ALT-L</literal></para>
                 </listitem>
                 <listitem>
-                  <para><property>cuba.gui.pickerShortcut.open</property> − Open Action</para>
+                  <para><property>cuba.gui.pickerShortcut.open</property> − вызов Open Action, по умолчанию <literal>CTRL-ALT-O</literal></para>
                 </listitem>
                 <listitem>
-                  <para><property>cuba.gui.pickerShortcut.clear</property> − Clear Action</para>
+                  <para><property>cuba.gui.pickerShortcut.clear</property> − вызов Clear Action, по умолчанию <literal>CTRL-ALT-C</literal></para>
                 </listitem>
               </itemizedlist>
             </listitem>

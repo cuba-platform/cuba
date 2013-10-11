@@ -9,10 +9,7 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowManagerProvider;
 import com.haulmont.cuba.gui.config.WindowConfig;
@@ -170,7 +167,8 @@ public interface PickerField extends Field, Component.ActionsHolder {
                 if (windowAlias == null) {
                     final MetaClass metaClass = pickerField.getMetaClass();
                     if (metaClass == null)
-                        throw new IllegalStateException("Please specify metaclass or property for PickerField");
+                        throw new DevelopmentException("Neither metaClass nor datasource/property is specified for the PickerField",
+                                "action ID", getId());
                     windowAlias = metaClass.getName() + ".lookup";
                 }
                 WindowManager wm = AppBeans.get(WindowManagerProvider.class).get();
