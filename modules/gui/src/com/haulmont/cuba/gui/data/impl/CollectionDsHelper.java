@@ -15,6 +15,7 @@ import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.data.PropertyDatasource;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,6 +56,9 @@ public class CollectionDsHelper {
     }
 
     public static void autoRefreshInvalid(CollectionDatasource datasource, boolean autoRefresh) {
+        if (datasource instanceof PropertyDatasource) {
+            return;
+        }
         if (autoRefresh && Datasource.State.INVALID.equals(datasource.getState())) {
             DsContext dsContext = datasource.getDsContext();
             if (dsContext == null || !WindowParams.DISABLE_AUTO_REFRESH.getBool(dsContext.getWindowContext())) {
