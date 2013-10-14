@@ -287,7 +287,7 @@
         <para>В данном разделе описаны все поддерживаемые платформой аннотации классов и атрибутов сущностей. </para>
         <para>Аннотации пакета <code>javax.persistence</code> обеспечивают работу <glossterm linkend="jpa">JPA</glossterm>, аннотации пакетов <code>com.haulmont.*</code> предназначены для управления <link linkend="metadata_framework">метаданными</link> и другими механизмами платформы. </para>
         <para>Если для аннотации указано только простое имя класса, подразумевается что это класс платформы, расположенный в одном  из пакетов <code>com.haulmont.*</code></para>
-        <section>
+        <section id="entity_class_annotations">
           <title>Аннотации класса</title>
           <variablelist>
             <varlistentry id="entity_annotation">
@@ -6287,36 +6287,6 @@ public void someMethod2() {
                     </keycombo></para>
                 </listitem>
               </itemizedlist>
-              <para>Чтобы добавить пользовательскую горячую клавишу, необходимо чтобы класс <link linkend="gui_Action">действия</link> реализовывал интерфейс <code>com.haulmont.cuba.gui.components.ShortcutAction</code></para>
-              <para>Пример действия, вызываемого при нажатии сочетания клавиш <keycombo>
-                  <keycap>CTRL</keycap>
-                  <keycap>СТРЕЛКА ВВЕРХ</keycap>
-                </keycombo>:</para>
-              <programlisting>protected class SomeAction extends AbstractAction implements ShortcutAction{
-
-    protected SomeAction(String id) {
-        super(id);
-    }
-
-    @Override
-    public KeyCombination getKeyCombination() {
-        return new KeyCombination(Key.ARROW_UP, Modifier.CTRL);
-    }
-
-    @Override
-    public void actionPerform(Component component) {
-    }
-
-    @Override
-    public String getCaption() {
-        return &quot;&quot;;
-    }
-
-    @Override
-    public String getIcon() {
-        return &quot;icons/up.png&quot;;
-    }
-}</programlisting>
               <para>Также поддерживается вызов действий сочетанием <keycombo>
                   <keycap>CTRL</keycap>
                   <keycap>ALT</keycap>

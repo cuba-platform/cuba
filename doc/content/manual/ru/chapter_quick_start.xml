@@ -312,7 +312,7 @@
     <section>
       <title>Создание сущностей</title>
       <para>Создайте пакет <code>com.sample.sales.entity</code> в модуле <structname>global</structname>.</para>
-      <para>В данном пакете создайте класс <glossterm linkend="entity">сущности</glossterm> <code>Покупатель (Customer)</code>,  представленный в листинге:</para>
+      <para>В данном пакете создайте класс <link linkend="data_model">сущности</link> <code>Покупатель (Customer)</code>,  представленный в листинге:</para>
       <programlisting><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="source/qs/Customer.java" parse="text" encoding="UTF-8"/></programlisting>
       <tip>
         <title>Совет</title>
