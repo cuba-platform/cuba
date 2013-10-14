@@ -3030,9 +3030,6 @@ if (persistence.getDbDialect() instanceof PostgresDbDialect)
               <para>Предположим, в <glossterm linkend="persistence_context">персистентный контекст</glossterm> загружен экземпляр <code>Order</code>, и нужно получить значение идентификатора экземпляра <code>Customer</code>, связанного с данным Заказом. Стандартное решение <code>order.getCustomer().getId()</code> приведет к выполнению SQL запроса к БД для загрузки экземпляра <code>Customer</code>, что в данном случае избыточно, так как значение идентификатора Покупателя физически находится также и в таблице Заказов. Выполнение же <programlisting>persistence.getTools().getReferenceId(order, &quot;customer&quot;)</programlisting>не вызовет никаких дополнительных запросов к базе данных. </para>
               <para>Данный метод работает только для экземпляров в  состоянии <link linkend="entity_states">Managed</link>.</para>
             </listitem>
-            <listitem>
-              <para><code>reloadEntity()</code> - перезагрузить экземпляр сущности с указанным <link linkend="views">представлением</link>. Данный метод должен вызываться внутри активной <link linkend="transactions">транзакции</link>.</para>
-            </listitem>
           </itemizedlist></para>
         <para>Для расширения набора вспомогательных методов в конкретном приложении бин <code>PersistenceTools</code> можно <link linkend="bean_extension">переопределить</link>. Примеры работы с  расширенным интерфейсом:<programlisting>MyPersistenceTools tools = persistence.getTools();
 tools.foo();</programlisting><programlisting>((MyPersistenceTools) persistence.getTools()).foo();</programlisting></para>
@@ -9986,7 +9983,7 @@ table.setIconProvider(iconProvider);</programlisting>
             <term>expand</term>
             <listitem>
               <para>Атрибут контейнера для управления его внутренней компоновкой.</para>
-              <para>Задает компонент внутри контейнера, который необходимо &quot;развернуть&quot;, то есть установить ему максимально возможную высоту и ширину.</para>
+              <para>Задает компонент внутри контейнера, который необходимо расширить на все доступное пространство в направлении размещения компонентов. Для контейнера с вертикальным размещением устанавливает компоненту 100% высоту, для контейнера с горизонтальным размещением - 100% ширину. Кроме того, при изменении размера контейнера изменять размер будет именно этот компонент.</para>
             </listitem>
           </varlistentry>
           <varlistentry id="gui_attr_basic_height">
