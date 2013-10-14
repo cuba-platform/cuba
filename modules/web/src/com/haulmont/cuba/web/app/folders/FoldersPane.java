@@ -895,6 +895,8 @@ public class FoldersPane extends VerticalLayout {
                             byte[] data = FileUtils.readFileToByteArray(fileUploading.getFile(dialog.getFileId()));
                             fileUploading.deleteFile(dialog.getFileId());
                             foldersService.importFolder(folder, data);
+                        } catch (AccessDeniedException ex) {
+                            throw ex;
                         } catch (Exception ex) {
                             dialog.showNotification(
                                     messages.getMainMessage("folders.importFailedNotification"),

@@ -12,6 +12,8 @@ import com.haulmont.cuba.core.TypedQuery;
 import com.haulmont.cuba.core.entity.AppFolder;
 import com.haulmont.cuba.core.entity.Folder;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.security.entity.EntityOp;
+import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.SearchFolder;
 import com.haulmont.cuba.security.entity.User;
 import com.thoughtworks.xstream.XStream;
@@ -63,6 +65,9 @@ public class FoldersServiceBean implements FoldersService {
 
     @Inject
     protected Resources resources;
+
+    @Inject
+    protected Security security;
 
     @Override
     public List<AppFolder> loadAppFolders() {
@@ -225,6 +230,10 @@ public class FoldersServiceBean implements FoldersService {
 
     @Override
     public Folder importFolder(Folder parentFolder, byte[] bytes) throws IOException {
+        if (!security.isEntityOpPermitted(Folder.class, EntityOp.CREATE)) {
+            throw new AccessDeniedException(PermissionType.ENTITY_OP, Folder.class.getSimpleName());
+        }
+
         Folder folder = null;
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
         ZipArchiveInputStream archiveReader;
