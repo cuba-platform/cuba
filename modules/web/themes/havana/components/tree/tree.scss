@@ -67,7 +67,7 @@
     }
   }
 
-  .#{$primaryStyleName} > div {
+  .#{$primaryStyleName} > div [role = "tree"] {
     padding: 5px;
   }
 
