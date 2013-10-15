@@ -2,11 +2,12 @@
 <!-- This document was created with Syntext Serna Free. --><!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" []>
 <book id="reporting" lang="ru">
   <bookinfo>
-    <copyright>
-      <year>2012</year>
-      <holder>Haulmont (<ulink url="http://www.haulmont.ru/">www.haulmont.ru</ulink>)</holder>
-    </copyright>
+      <copyright>
+        <year>2013</year>
+        <holder>Haulmont (<ulink url="http://www.haulmont.ru/">www.haulmont.ru</ulink>)</holder>
+      </copyright>
     <title>Платформа <trademark>CUBA</trademark>. Подсистема безопасности </title>
+      <author><othername>Версия 5.0</othername>sreV</author>
   </bookinfo>
   <preface lang="ru">
     <title>Предисловие</title>

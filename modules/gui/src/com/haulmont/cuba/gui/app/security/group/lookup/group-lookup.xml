@@ -4,7 +4,7 @@
   -->
 
 <window
-    xmlns="http://schemas.haulmont.com/cuba/4.1/window.xsd"
+    xmlns="http://schemas.haulmont.com/cuba/5.0/window.xsd"
     messagesPack="com.haulmont.cuba.gui.app.security.group"
     class="com.haulmont.cuba.gui.app.security.group.lookup.GroupLookup"
     lookupComponent="groups"

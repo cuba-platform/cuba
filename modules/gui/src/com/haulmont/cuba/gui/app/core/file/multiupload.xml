@@ -4,7 +4,7 @@
   -->
 
 <window
-        xmlns="http://schemas.haulmont.com/cuba/4.1/window.xsd"
+        xmlns="http://schemas.haulmont.com/cuba/5.0/window.xsd"
         class="com.haulmont.cuba.gui.app.core.file.MultiUploader"
         datasource="filesDs"
         messagesPack="com.haulmont.cuba.gui.app.core.file"

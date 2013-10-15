@@ -4,12 +4,18 @@
  */
 package com.haulmont.cuba.gui.config;
 
-import com.haulmont.cuba.core.global.ScriptingProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Scripting;
 import org.apache.commons.lang.BooleanUtils;
 import org.dom4j.Element;
 
 /**
- * Screen information object
+ * Screen's registration information.
+ *
+ * @see WindowConfig
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 public class WindowInfo {
 
@@ -23,27 +29,27 @@ public class WindowInfo {
     }
 
     /**
-     * Screen ID as set up in <code>screen-config.xml</code>
+     * Screen ID as set in <code>screens.xml</code>
      */
     public String getId() {
         return id;
     }
 
     /**
-     * Screen template path as set up in <code>screen-config.xml</code>
+     * Screen template path as set in <code>screens.xml</code>
      */
     public String getTemplate() {
         return descriptor.attributeValue("template");
     }
 
     /**
-     * Screen class as set up in <code>screen-config.xml</code>
+     * Screen class as set in <code>screens.xml</code>
      */
     public Class getScreenClass() {
         if (screenClass == null) {
             String className = descriptor.attributeValue("class");
             if (className != null)
-                screenClass = ScriptingProvider.loadClass(className);
+                screenClass = AppBeans.get(Scripting.class).loadClass(className);
         }
 
         return screenClass;
@@ -54,7 +60,7 @@ public class WindowInfo {
     }
 
     /**
-     * The whole XML element of the screen as set up in <code>screen-config.xml</code>
+     * The whole XML element of the screen as set in <code>screens.xml</code>
      */
     public Element getDescriptor() {
         return descriptor;

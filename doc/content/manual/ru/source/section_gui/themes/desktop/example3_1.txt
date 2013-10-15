@@ -1,4 +1,4 @@
-<theme xmlns="http://schemas.haulmont.com/cuba/4.1/desktop-theme.xsd">
+<theme xmlns="http://schemas.haulmont.com/cuba/5.0/desktop-theme.xsd">
     <style name="boldlabel">
         <font style="bold"/>
     </style>

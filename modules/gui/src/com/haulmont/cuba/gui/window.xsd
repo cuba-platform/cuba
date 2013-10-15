@@ -5,14 +5,14 @@
   -->
 
 <xs:schema
-        targetNamespace="http://schemas.haulmont.com/cuba/4.1/window.xsd"
+        targetNamespace="http://schemas.haulmont.com/cuba/5.0/window.xsd"
         xmlns:xs="http://www.w3.org/2001/XMLSchema"
-        xmlns="http://schemas.haulmont.com/cuba/4.1/window.xsd"
+        xmlns="http://schemas.haulmont.com/cuba/5.0/window.xsd"
         elementFormDefault="qualified"
         attributeFormDefault="unqualified"
         >
 
-    <xs:include schemaLocation="http://schemas.haulmont.com/cuba/4.1/view.xsd"/>
+    <xs:include schemaLocation="http://schemas.haulmont.com/cuba/5.0/view.xsd"/>
 
     <!-- Enums -->
 

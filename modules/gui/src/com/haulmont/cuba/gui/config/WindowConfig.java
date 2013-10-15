@@ -104,7 +104,7 @@ public class WindowConfig
     /**
      * Get screen information by screen ID.
      * Can be overridden for specific client type.
-     * @param id screen ID as set up in <code>screen-config.xml</code>
+     * @param id screen ID as set up in <code>screens.xml</code>
      * @throws NoSuchScreenException if the screen with specified ID is not registered
      */
     public WindowInfo getWindowInfo(String id) {

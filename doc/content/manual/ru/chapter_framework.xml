@@ -3979,7 +3979,7 @@ create index IDX_SALES_DOC_CARD on SALES_DOC (CARD_ID)^</programlisting></para>
       <section id="screen_xml">
         <title>XML-дескриптор</title>
         <para>XML-дескриптор - это файл формата XML, описывающий <link linkend="datasources">источники данных</link> и расположение визуальных компонентов экрана.</para>
-        <para><para>Схема XML доступна по адресу <ulink url="http://schemas.haulmont.com/cuba/4.1/window.xsd">http://schemas.haulmont.com/cuba/4.1/window.xsd</ulink></para></para>
+        <para><para>Схема XML доступна по адресу <ulink url="http://schemas.haulmont.com/cuba/5.0/window.xsd">http://schemas.haulmont.com/cuba/5.0/window.xsd</ulink></para></para>
         <para>Рассмотрим структуру дескриптора.</para>
         <para><sgmltag>window</sgmltag> − корневой элемент.</para>
         <para>Атрибуты <sgmltag>window</sgmltag>:<itemizedlist>
@@ -11068,7 +11068,7 @@ locale: en</programlisting>
     &lt;/removeInstances&gt;
     &lt;softDeletion&gt;true&lt;/softDeletion&gt;
 &lt;/CommitRequest&gt;</programlisting>
-                <para>Семантика полей XML-документа определяется в схеме <ulink url="http://schemas.haulmont.com/cuba/4.1/restapi-commit.xsd">http://schemas.haulmont.com/cuba/4.1/restapi-commit.xsd</ulink>.</para>
+                <para>Семантика полей XML-документа определяется в схеме <ulink url="http://schemas.haulmont.com/cuba/5.0/restapi-commit.xsd">http://schemas.haulmont.com/cuba/5.0/restapi-commit.xsd</ulink>.</para>
                 <para>Функция вызывается посредством POST обращения к <code>{host:port}/app-portal/api/commit?s=&lt;sessionId&gt;</code>. XML  передается в теле запроса. Функция возвращает массив пар объектов  XML вида</para>
                 <programlisting>&lt;mapping&gt;
     &lt;pair&gt;
@@ -11076,7 +11076,7 @@ locale: en</programlisting>
         &lt;instance ...&gt;
     &lt;/pair&gt;
 &lt;/mapping&gt;</programlisting>
-                <para>Схема, содержащая  описание результата вызова функции, находится  по адресу <ulink url="http://schemas.haulmont.com/cuba/4.1/restapi-instances.xsd">http://schemas.haulmont.com/cuba/4.1/restapi-instances.xsd</ulink></para>
+                <para>Схема, содержащая  описание результата вызова функции, находится  по адресу <ulink url="http://schemas.haulmont.com/cuba/5.0/restapi-instance.xsd">http://schemas.haulmont.com/cuba/5.0/restapi-instance.xsd</ulink></para>
               </listitem>
             </varlistentry>
           </variablelist>
@@ -12218,7 +12218,7 @@ public class ExtUser extends User {
           <listitem>
             <para>Добавление нового элемента по умолчанию производится в конец списка соседних элементов. Чтобы добавить новый элемент в начало или с произвольным индексом, необходимо выполнить следующее: <itemizedlist>
                 <listitem>
-                  <para>определить в расширяющем дескрипторе дополнительный namespace: <code>xmlns:ext=&quot;http://schemas.haulmont.com/cuba/4.1/window-ext.xsd&quot;</code></para>
+                  <para>определить в расширяющем дескрипторе дополнительный namespace: <code>xmlns:ext=&quot;http://schemas.haulmont.com/cuba/5.0/window-ext.xsd&quot;</code></para>
                 </listitem>
                 <listitem>
                   <para>добавить в расширяющий элемент атрибут <sgmltag>ext:index</sgmltag> с желаемым индексом, например: <code>ext:index=&quot;0&quot;.</code></para>
@@ -12232,8 +12232,8 @@ public class ExtUser extends User {
 &lt;category name=&quot;com.haulmont.cuba.gui.xml.XmlInheritanceProcessor&quot;&gt;
     &lt;priority value=&quot;TRACE&quot;/&gt;
 &lt;/category&gt;</programlisting></para>
-      <para>Пример XML-дескриптора экрана браузера сущностей <code>ExtUser</code>:<programlisting>&lt;window xmlns=&quot;http://schemas.haulmont.com/cuba/4.1/window.xsd&quot;
-        xmlns:ext=&quot;http://schemas.haulmont.com/cuba/4.1/window-ext.xsd&quot;
+      <para>Пример XML-дескриптора экрана браузера сущностей <code>ExtUser</code>:<programlisting>&lt;window xmlns=&quot;http://schemas.haulmont.com/cuba/5.0/window.xsd&quot;
+        xmlns:ext=&quot;http://schemas.haulmont.com/cuba/5.0/window-ext.xsd&quot;
         extends=&quot;/com/haulmont/cuba/gui/app/security/user/browse/user-browse.xml&quot;&gt;
     &lt;layout&gt;
         &lt;groupTable id=&quot;usersTable&quot;&gt;
@@ -12250,8 +12250,8 @@ public class ExtUser extends User {
         template=&quot;com/sample/sales/gui/extuser/extuser-browse.xml&quot;/&gt;
 &lt;screen id=&quot;sec$User.lookup&quot;
         template=&quot;com/sample/sales/gui/extuser/extuser-browse.xml&quot;/&gt;</programlisting></para>
-      <para>Аналогично создаем экран редактирования:<programlisting>&lt;window xmlns=&quot;http://schemas.haulmont.com/cuba/4.1/window.xsd&quot;
-        xmlns:ext=&quot;http://schemas.haulmont.com/cuba/4.1/window-ext.xsd&quot;
+      <para>Аналогично создаем экран редактирования:<programlisting>&lt;window xmlns=&quot;http://schemas.haulmont.com/cuba/5.0/window.xsd&quot;
+        xmlns:ext=&quot;http://schemas.haulmont.com/cuba/5.0/window-ext.xsd&quot;
         extends=&quot;/com/haulmont/cuba/gui/app/security/user/edit/user-edit.xml&quot;&gt;
     &lt;layout&gt;
         &lt;fieldGroup id=&quot;fieldGroup&quot;&gt;

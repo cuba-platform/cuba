@@ -7,7 +7,7 @@
       <holder>Haulmont (<ulink url="http://www.haulmont.ru/">www.haulmont.ru</ulink>)</holder>
     </copyright>
     <title>Платформа CUBA. Руководство по разработке приложений</title>
-    <author><othername>Версия 4.1</othername>sreV</author>
+    <author><othername>Версия 5.0</othername>sreV</author>
   </bookinfo>
   <preface lang="ru">
     <title>Предисловие</title>
@@ -186,7 +186,7 @@
     <section id="menu.xml">
       <title>menu.xml</title>
       <para>Файлы данного типа используются в <link linkend="app_tiers">блоках</link> Web Client и Desktop Client, реализующих <link linkend="gui_framework">универсальный пользовательский интерфейс</link>, для описания структуры главного меню приложения.</para>
-      <para>Схема XML доступна по адресу <ulink url="http://schemas.haulmont.com/cuba/4.1/menu.xsd">http://schemas.haulmont.com/cuba/4.1/menu.xsd</ulink></para>
+      <para>Схема XML доступна по адресу <ulink url="http://schemas.haulmont.com/cuba/5.0/menu.xsd">http://schemas.haulmont.com/cuba/5.0/menu.xsd</ulink></para>
       <para>Набор файлов <filename>menu.xml</filename>, включая определенные в <link linkend="base_projects">базовых проектах</link>, задается в свойстве приложения <property>
           <link linkend="cuba.menuConfig">cuba.menuConfig</link>
         </property>. </para>
@@ -272,7 +272,7 @@ shortcut=&quot;ALT-CTRL-SHIFT-C&quot;</programlisting></para>
               </itemizedlist></para>
           </listitem>
         </itemizedlist></para>
-      <para>Пример файла меню:<programlisting>&lt;menu-config xmlns=&quot;http://schemas.haulmont.com/cuba/4.1/menu.xsd&quot;&gt;
+      <para>Пример файла меню:<programlisting>&lt;menu-config xmlns=&quot;http://schemas.haulmont.com/cuba/5.0/menu.xsd&quot;&gt;
 
     &lt;menu id=&quot;sales&quot; insertBefore=&quot;administration&quot;&gt;
         &lt;item id=&quot;sales$Customer.lookup&quot;/&gt;
@@ -287,7 +287,7 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
     <section id="metadata.xml">
       <title>metadata.xml</title>
       <para>Файлы данного типа используются для регистрации неперсистентных сущностей и присвоения <link linkend="meta_annotations">мета-аннотаций</link>, см. <xref linkend="metadata_framework"/></para>
-      <para>Схема XML доступна по адресу <ulink url="http://schemas.haulmont.com/cuba/4.1/metadata.xsd">http://schemas.haulmont.com/cuba/4.1/metadata.xsd</ulink></para>
+      <para>Схема XML доступна по адресу <ulink url="http://schemas.haulmont.com/cuba/5.0/metadata.xsd">http://schemas.haulmont.com/cuba/5.0/metadata.xsd</ulink></para>
       <para>Набор файлов <filename>metadata.xml</filename>, включая определенные в <link linkend="base_projects">базовых проектах</link>, задается в свойстве приложения <property>
           <link linkend="cuba.metadataConfig">cuba.metadataConfig</link>
         </property>. </para>
@@ -331,7 +331,7 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
               </itemizedlist></para>
           </listitem>
         </itemizedlist></para>
-      <para>Пример:<programlisting>&lt;metadata xmlns=&quot;http://schemas.haulmont.com/cuba/4.1/metadata.xsd&quot;&gt;
+      <para>Пример:<programlisting>&lt;metadata xmlns=&quot;http://schemas.haulmont.com/cuba/5.0/metadata.xsd&quot;&gt;
 
     &lt;metadata-model root-package=&quot;com.sample.sales&quot;/&gt;
 
@@ -395,7 +395,7 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
     <section id="screens.xml">
       <title>screens.xml</title>
       <para>Файлы данного типа используются в <link linkend="app_tiers">блоках</link> Web Client и Desktop Client, реализующих <link linkend="gui_framework">универсальный пользовательский интерфейс</link>, для регистрации <link linkend="screen_xml">XML-дескрипторов</link> экранов.</para>
-      <para>Схема XML доступна по адресу <ulink url="http://schemas.haulmont.com/cuba/4.1/screens.xsd">http://schemas.haulmont.com/cuba/4.1/screens.xsd</ulink></para>
+      <para>Схема XML доступна по адресу <ulink url="http://schemas.haulmont.com/cuba/5.0/screens.xsd">http://schemas.haulmont.com/cuba/5.0/screens.xsd</ulink></para>
       <para>Набор файлов <filename>screens.xml</filename>, включая определенные в <link linkend="base_projects">базовых проектах</link>, задается в свойстве приложения <property>
           <link linkend="cuba.windowConfig">cuba.windowConfig</link>
         </property>. </para>
@@ -448,7 +448,7 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
                 </itemizedlist></para></para>
           </listitem>
         </itemizedlist></para>
-      <para>Пример файла <filename>screens.xml</filename>:<programlisting>&lt;screen-config xmlns=&quot;http://schemas.haulmont.com/cuba/4.1/screens.xsd&quot;&gt;
+      <para>Пример файла <filename>screens.xml</filename>:<programlisting>&lt;screen-config xmlns=&quot;http://schemas.haulmont.com/cuba/5.0/screens.xsd&quot;&gt;
 
     &lt;screen id=&quot;sales$Customer.lookup&quot; template=&quot;/com/sample/sales/gui/customer/customer-browse.xml&quot;/&gt;
     &lt;screen id=&quot;sales$Customer.edit&quot; template=&quot;/com/sample/sales/gui/customer/customer-edit.xml&quot;/&gt;
@@ -470,7 +470,7 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
     <section id="views.xml">
       <title>views.xml</title>
       <para>Файлы данного типа используются для описания представлений, см. <xref linkend="views"/></para>
-      <para>Схема XML доступна по адресу <ulink url="http://schemas.haulmont.com/cuba/4.1/view.xsd">http://schemas.haulmont.com/cuba/4.1/view.xsd</ulink></para>
+      <para>Схема XML доступна по адресу <ulink url="http://schemas.haulmont.com/cuba/5.0/view.xsd">http://schemas.haulmont.com/cuba/5.0/view.xsd</ulink></para>
       <para><sgmltag>views</sgmltag> - корневой элемент</para>
       <para>Элементы <sgmltag>views</sgmltag>:<itemizedlist>
           <listitem>
@@ -526,7 +526,7 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
               </itemizedlist></para>
           </listitem>
         </itemizedlist></para>
-      <para>Пример:<programlisting>&lt;views xmlns=&quot;http://schemas.haulmont.com/cuba/4.1/view.xsd&quot;&gt;
+      <para>Пример:<programlisting>&lt;views xmlns=&quot;http://schemas.haulmont.com/cuba/5.0/view.xsd&quot;&gt;
 
     &lt;view class=&quot;com.sample.sales.entity.Order&quot;
           name=&quot;orderWithCustomer&quot;
