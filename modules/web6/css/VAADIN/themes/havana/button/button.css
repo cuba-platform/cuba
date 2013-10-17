@@ -1,0 +1,290 @@
+/*
+ * Default button (more customizable)
+ * -------------------------------------- */
+.v-button {
+    display: inline-block;
+    zoom: 1;
+    text-align: center;
+    text-decoration: none;
+    border: #9BB3D3 1px solid;
+    background: transparent url(img/bg-button.gif) repeat-x;
+    cursor: pointer;
+    white-space: nowrap;
+    margin: 0;
+    height: 25px;
+    padding: 0 5px;
+    color: inherit;
+    line-height: normal;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ie-user-select: none;
+    user-select: none;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    box-sizing: border-box;
+    outline: 0;
+}
+
+.v-ie6 .v-button {
+    display: inline;
+}
+
+.v-ie7 .v-button {
+    display: inline;
+}
+
+.v-button-icon .v-button-wrap {
+   padding: 0;
+}
+
+.v-button-wrap,
+.v-popupbutton .v-button-wrap {
+    height: 100%;
+    /*background: transparent url(../peyto/button/img/button.png) no-repeat right top;*/
+    padding: 4px 0 0 0;
+    display: block;
+}
+
+.v-button:focus {
+    outline: none;
+    border-color: #4d7ab2;
+}
+
+.v-button-link:focus {
+    outline: none;
+    border: 1px dashed #4d7ab2;
+}
+
+.breadcrumbs .v-button-link:focus {
+    border-style: none;
+}
+
+.v-button:hover {
+    background: transparent url(img/bg-button-hover.gif) repeat-x;
+}
+
+.v-button-wrap:hover,
+.v-button:hover .v-button-wrap {
+    /*background: transparent url(img/button-active.png) no-repeat right top;*/
+}
+
+.v-disabled .v-button-wrap:hover {
+    /*background: transparent url(img/button.png) no-repeat right top;*/
+}
+
+
+.v-disabled.v-button:hover  {
+    background: transparent url(img/bg-button.gif) repeat-x;
+    /*background: transparent url(img/button-left.png) no-repeat left center;*/
+}
+
+.v-ie .v-disabled .v-button-wrap,
+.v-ie .v-disabled .v-button-wrap:hover {
+    /*background: transparent url(img/button.gif) no-repeat right top;*/
+}
+
+.v-ie .v-disabled.v-button,
+.v-ie .v-disabled.v-button:hover  {
+    /*background: transparent url(img/button-left.gif) no-repeat left center;*/
+}
+
+
+.v-button-Window-actionButton .v-button-wrap,
+.v-button-icon .v-button-wrap {
+    padding-top: 0;
+    padding-bottom: 0;
+    height: 25px;
+}
+
+.v-button .v-button-caption {
+    font-size: 12px;
+    font-family: verdana, Tahoma, sans-serif;
+}
+
+
+.v-button-wrap,
+.v-button-caption {
+    vertical-align: middle;
+    white-space: nowrap;
+    font: inherit;
+    color: #1E3146;
+    line-height: normal;
+}
+
+.v-button-icon .v-button-caption {
+    padding-left: 3px;
+}
+
+.v-button .v-button-caption:empty,
+.v-popupbutton .v-button-caption:empty {
+    padding: 0;
+}
+
+.v-button .v-icon,
+.v-nativebutton .v-icon {
+    vertical-align: middle;
+    border: none;
+    margin-top: -1px;
+}
+
+.v-button-link .v-icon,
+.v-nativebutton-link .v-icon {
+    margin-top: 0px;
+}
+
+.v-button .v-errorindicator,
+.v-nativebutton .v-errorindicator {
+    display: inline-block;
+    zoom: 1;
+    vertical-align: middle;
+    float: none;
+}
+
+/* Link style (we really should deprecate this) */
+.v-button-link,
+.v-nativebutton-link {
+    border: 1px solid transparent;
+    text-align: left;
+    background: transparent;
+    padding: 0;
+}
+
+.breadcrumbs .v-button-link,
+.breadcrumbs .v-nativebutton-link {
+    border: none;
+}
+
+.v-button-link:hover,
+.v-nativebutton-link:hover {
+    background: transparent;
+}
+
+.v-button-link .v-button-wrap:hover,
+.v-button-link:hover .v-button-wrap {
+    background: transparent;
+}
+
+.v-button-link .v-button-wrap {
+padding: 0;
+}
+
+/* Inset Safari focus outline a bit */
+.v-sa .v-button-link:focus{
+outline-offset: -3px;
+}
+
+.v-button-link .v-button-caption,
+.v-nativebutton-link .v-nativebutton-caption {
+    text-decoration: underline;
+    color: #0066FF;
+    text-align: left;
+}
+
+.v-button-link .v-button-wrap {
+    background: transparent;
+    height: inherit;
+}
+
+/*
+* NativeButton styles (html button element)
+* -------------------------------------- */
+.v-nativebutton {
+text-align: center;
+cursor: pointer;
+white-space: nowrap;
+margin: 0;
+color: inherit;
+font: inherit;
+line-height: normal;
+}
+.v-nativebutton .v-nativebutton-caption {
+vertical-align: middle;
+white-space: nowrap;
+font: inherit;
+color: inherit;
+}
+
+.v-nativebutton .v-errorindicator {
+display: inline-block;
+zoom: 1;
+float: none;
+}
+/* Fixes streched buttons in IE6 and IE7*/
+.v-ie6 .v-nativebutton {
+width: 1px;
+}
+.v-ie7 .v-nativebutton, .v-ie8 .v-nativebutton {
+overflow: visible;
+padding-left: 1em;
+padding-right: 1em;
+}
+
+.v-ie7 .v-nativebutton-link, .v-ie8 .v-nativebutton-link {
+padding: 0;
+}
+
+/*
+* Checkbox styles
+* -------------------------------------- */
+
+.v-checkbox,
+.v-checkbox label,
+.v-checkbox input,
+.v-checkbox .v-icon {
+vertical-align: middle;
+white-space: nowrap;
+}
+.v-checkbox .v-icon {
+margin: 0 2px;
+}
+.v-checkbox .v-errorindicator {
+float: none;
+display: inline;
+display: inline-block;
+zoom: 1;
+}
+
+.v-checkbox .v-disabled {
+	opacity: 0.8;
+	filter: Alpha(opacity = 80);
+}
+
+.v-checkbox {
+    padding-bottom: 3px;
+    border: transparent 1px solid;
+}
+
+.v-checkbox-focus {
+    border: 1px dotted #4d7ab2;
+}
+
+.v-checkbox input {
+    outline: none;
+}
+
+/* Disabled by default
+.v-checkbox-error {
+background: #ffe0e0;
+}
+*/
+/* Disabled by default
+.v-checkbox-required {
+background: #ffe0e0;
+}
+*/ 
+
+/* Disabled by default
+.v-checkbox-error {
+	background: #ffe0e0;
+}
+*/
+/* Disabled by default
+.v-checkbox-required {
+	background: #ffe0e0;
+}
+*/
+
+.v-button-grey {
+    border: none;
+}

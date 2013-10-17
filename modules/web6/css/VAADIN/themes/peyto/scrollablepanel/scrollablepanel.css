@@ -1,0 +1,23 @@
+.v-scrollable-panel,
+.v-scrollable-panel-content {
+	outline: none;
+	text-align: left;
+}
+
+.v-scrollable-panel {
+	background: transparent;
+}
+
+/*
+.v-scrollable-panel .v-errorindicator {
+	float: none;
+	padding-right: 20px;
+	display: inline;
+	background: transparent url(../icons/16/error.png) no-repeat bottom center;
+}
+*/
+
+.v-scrollable-panel-content {
+    border: 0;
+	overflow: auto;
+}

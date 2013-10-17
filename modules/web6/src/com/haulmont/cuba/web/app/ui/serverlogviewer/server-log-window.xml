@@ -1,0 +1,90 @@
+<!--
+  ~ Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+
+<window
+        xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+        class="com.haulmont.cuba.web.app.ui.serverlogviewer.ServerLogWindow"
+        messagesPack="com.haulmont.cuba.web.app.ui.serverlogviewer"
+        caption="msg://serverLog.caption"
+        focusComponent="logFileNameField">
+
+    <dsContext>
+        <collectionDatasource id="jmxInstancesDs"
+                              class="com.haulmont.cuba.core.entity.JmxInstance"
+                              view="_local"
+                              datasourceClass="com.haulmont.cuba.web.app.ui.jmxcontrol.ds.JmxInstancesDatasource"/>
+    </dsContext>
+
+    <timers>
+        <timer id="updateLogTailTimer" delay="5000" repeating="true" onTimer="invoke:updateLogTail"/>
+    </timers>
+
+    <layout expand="logFieldBox" spacing="true">
+        <groupBox>
+            <grid spacing="true">
+                <columns>
+                    <column/>
+                    <column/>
+                </columns>
+                <rows>
+                    <row>
+                        <label value="msg://jmx.localJmxNode"/>
+                        <label id="localJmxField" stylename="h2" width="400px"/>
+                    </row>
+                    <row>
+                        <label value="msg://jmx.targetJmxNode"/>
+                        <lookupPickerField id="jmxConnectionField" optionsDatasource="jmxInstancesDs" width="400px"/>
+                    </row>
+                </rows>
+            </grid>
+        </groupBox>
+
+        <tabSheet width="100%">
+            <tab id="viewTab" caption="msg://tab.view" margin="true">
+                <hbox id="logSelectBox" spacing="true" expandable="false">
+                    <label id="labelLogFile" value="msg://log.file"/>
+                    <lookupField id="logFileNameField" width="300px"/>
+                    <button id="downloadButton" caption="msg://actions.Download" invoke="downloadLog"/>
+                    <button id="showTailButton" caption="msg://actions.ShowTail" invoke="showLogTail"/>
+                    <checkBox id="autoRefreshCheck" caption="msg://actions.autoRefresh"/>
+                </hbox>
+            </tab>
+            <tab id="optionsTab" caption="msg://tab.options" margin="true">
+                <hbox id="logLevelBox" spacing="true" expandable="false">
+                    <grid spacing="true">
+                        <columns count="5"/>
+                        <rows>
+                            <row>
+                                <label value="msg://logger.name"/>
+                                <lookupField id="loggerNameField" width="300px"/>
+                                <label value="msg://logger.level"/>
+                                <lookupField id="loggerLevelField" width="80px"/>
+                                <hbox spacing="true">
+                                    <button caption="msg://actions.Get" invoke="getLoggerLevel"/>
+                                    <button caption="msg://actions.Set" invoke="setLoggerLevel"/>
+                                    <button caption="msg://actions.Control" invoke="openLoggerControlDialog"/>
+                                </hbox>
+                            </row>
+                            <row>
+                                <label value="msg://appender.name"/>
+                                <lookupField id="appenderNameField" width="300px"/>
+                                <label value="msg://appender.level"/>
+                                <lookupField id="appenderLevelField" width="80px"/>
+                                <hbox spacing="true">
+                                    <button caption="msg://actions.Get" invoke="getAppenderLevel"/>
+                                    <button caption="msg://actions.Set" invoke="setAppenderLevel"/>
+                                </hbox>
+                            </row>
+                        </rows>
+                    </grid>
+                </hbox>
+            </tab>
+        </tabSheet>
+
+        <groupBox id="logFieldBox" width="100%" caption="msg://log.content">
+        </groupBox>
+    </layout>
+</window>

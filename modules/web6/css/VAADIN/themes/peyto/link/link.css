@@ -1,0 +1,28 @@
+/**
+ * Link component styles
+ * (useless to move into a separate file)
+ */
+.v-link {
+	white-space: nowrap;
+	text-decoration: none;
+}
+
+.v-link a {
+    color:#039;
+	vertical-align: middle;
+	text-decoration: none;
+}
+
+.v-link span {
+	text-decoration: none;
+	vertical-align: middle;
+}
+
+.v-disabled a {
+	cursor: default;
+}
+
+.v-link img {
+	vertical-align: middle;
+	border:none;
+}

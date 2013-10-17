@@ -1,0 +1,18 @@
+.v-multiupload {
+    z-index: auto;
+}
+
+.v-multiupload-progress {
+    position: fixed;
+    padding: 10px;
+    left: 50%;
+    top: 50%;
+    height: 50px;
+    width: 250px;
+    margin-left: -125px;
+    margin-top: -25px;
+    background-color: #eaeef2;
+    border: 2px solid #4e7bb3;
+    overflow: visible;
+    z-index: 15000;
+}

@@ -1,0 +1,486 @@
+.v-tabsheet,
+.v-tabsheet-content,
+.v-tabsheet-deco {
+	outline: none; /* Prevent selection outline which might break layouts or cause scrollbars */
+	text-align: left; /* Force default alignment */
+}
+
+/*
+.v-tabsheet-tabsheetpanel
+{
+    margin: 5px;
+}*/
+
+.v-tabsheet-tabs {
+	empty-cells: hide;
+	border-collapse: collapse;
+	margin:0;
+    margin-top: 0;
+	padding:0;
+	border:0;
+	height: 29px;
+	width: 100%;
+	overflow:hidden;
+}
+
+.v-tabsheet-tabs td {
+	margin: 0;
+	padding: 0;
+	vertical-align: bottom;
+}
+
+
+
+.v-tabsheet-spacertd {
+	width: 100%;
+}
+.v-tabsheet-spacertd div {
+	height: 28px;
+    border-top: 0;
+	border-bottom: 1px solid #5280b7 ;
+	background: transparent;
+}
+
+
+.v-tabsheet-hidetabs .v-tabsheet-tabcontainer {
+	display: none;
+}
+
+.v-tabsheet-scroller {
+	white-space: nowrap;
+	text-align: right;
+	margin-top: -29px;
+}
+
+.v-tabsheet-scrollerPrev,
+.v-tabsheet-scrollerNext {
+	border: none;
+	width: 12px;
+	height: 29px;
+	opacity: 0.9999;
+	margin-top: -1px;
+}
+.v-tabsheet-scrollerPrev-disabled,
+.v-tabsheet-scrollerNext-disabled {
+	border: none;
+	width: 12px;
+	height: 29px;
+	margin-top: -1px;
+	opacity: 0.9999;
+    color:#FFF;
+}
+
+.v-tabsheet-scrollerNext,
+.v-tabsheet-scrollerNext:hover,
+.v-tabsheet-scrollerNext-disabled {
+	background: transparent url(img/next-a.png) no-repeat;
+}
+.v-tabsheet-scrollerPrev,
+.v-tabsheet-scrollerPrev:hover,
+.v-tabsheet-scrollerPrev-disabled {
+	background: transparent url(img/prev-a.png) no-repeat;
+}
+.v-tabsheet-scrollerPrev:hover,
+.v-tabsheet-scrollerNext:hover {
+	/*background-position: -24px 0px;*/
+}
+.v-tabsheet-scrollerPrev-disabled,
+.v-tabsheet-scrollerNext-disabled {
+	background-position: -12px 0px;
+}
+.v-tabsheet-scrollerPrev-disabled:hover,
+.v-tabsheet-scrollerNext-disabled:hover {
+	background-position: -12px 0px;
+
+}
+
+.v-tabsheet-tabs .v-caption {
+	white-space: nowrap;
+}
+
+/* for IE (does not inherit) */
+.v-tabsheet-tabs .v-caption span {
+	white-space: nowrap;
+}
+
+.v-tabsheet-content .v-verticallayout-margin
+{
+    /*margin-left: 8px;*/
+}
+
+.v-verticallayout-tabsheet-tabsheetpanel .v-verticallayout-margin-left
+{
+    /*padding-left: 8px;*/
+}
+
+.v-tabsheet-content .v-tabsheet-tabsheetpanel {      background: #fff;
+
+    /*padding: 8px;*/
+}
+
+.v-tabsheet-tabs .v-tabsheet-tabitemcell {
+    padding-left: 4px;
+    background: transparent url(img/unsel-left-bg.png) top left no-repeat;
+    border-bottom: 0;
+    margin: 10px;
+}
+
+.v-tabsheet-tabs .v-tabsheet-tabitemcell-first {
+    padding-left: 9px;
+    background: transparent url(img/first-unsel-left-bg.png) top left no-repeat;
+}
+
+.v-tabsheet-tabs .v-tabsheet-tabitemcell-first.v-tabsheet-tabitemcell-selected-first {
+    background: transparent url(img/first-sel-left-bg.png) top left no-repeat;
+    padding-left: 9px;
+}
+
+.v-tabsheet-tabitem {
+    border: 0;
+    /*border-bottom: 1px solid #37383a;*/
+	height: 26px;
+	padding-top: 3px;
+	margin-top: 0;
+	line-height: 18px;
+	background: url(img/tab-unsel-bg.png) top right no-repeat;
+	cursor: pointer;
+}
+
+.v-tabsheet-tabitem-selected-first,
+.v-tabsheet-tabitem-selected {
+    background: transparent url(img/right.png) no-repeat right top;
+    border-bottom: 0;
+    height: 26px;
+	cursor: default;
+    padding-top: 3px;
+}
+
+.v-tabsheet-tabs .v-tabsheet-tabitemcell-first .v-tabsheet-tabitem {
+    padding-right: 4px;
+}
+
+.v-tabsheet-tabitem .v-caption {
+	height: 20px;
+	padding: 3px 6px 5px 4px;
+}
+
+.v-tabsheet-tabitem .v-caption .v-captiontext,
+.v-tabsheet-tabitem-selected .v-caption .v-captiontext {
+    font-family: verdana, arial, sans-serif;
+    font-size: 12px;
+    font-weight: normal;
+}
+
+.v-tabsheet-tabitem-selected .v-caption {
+	background: none;
+	margin: 0px;
+	padding: 3px 6px 5px 4px;
+	overflow: visible;
+}
+
+.v-tabsheet-tabitem .v-caption .v-captiontext {
+    color: #FFF;
+}
+
+.v-tabsheet-tabitem-selected .v-caption .v-captiontext {
+    color: #1E3146;
+}
+
+.v-tabsheet-tabs .v-tabsheet-tabitemcell-selected-first,
+.v-tabsheet-tabs .v-tabsheet-tabitemcell-selected {
+    background: transparent url(img/left.png) no-repeat left top;
+    padding-left: 4px;
+}
+
+.v-tabsheet-tabitem .v-disabled {
+/*    font-weight: bold;*/
+    color: #fff;
+    background: #ccc url(img/tab-bg.gif);
+}
+
+/*
+.v-tabsheet-tabitem:hover {
+	color: #4b5257;
+}
+
+.v-tabsheet-tabitem-selected:hover {
+	color: #ee5311;
+}
+*/
+
+.v-tabsheet-content {
+	border: 1px solid #5280b7;
+	background-color: #fff;
+	border-top: none;
+	position: relative;
+}
+
+.v-tabsheet-hidetabs .v-tabsheet-content {
+	border-top: 1px solid #b5babb;
+}
+
+.v-tabsheet-deco {
+	height: 1px;
+	background: none; /*transparent url(img/tab-sep.gif) repeat-x right top;*/
+	margin-left: 0px;
+}
+
+.v-tabsheet-deco:before {
+	display: block;
+	content: "";
+	width: 9px;
+	height: 9px;
+	margin-left: -9px;
+	background: none; /*transparent url(img/tab-sep-a.gif) no-repeat;*/
+}
+
+
+/* Progress indication */
+
+.v-tabsheet-loading .v-tabsheet-tabitem-selected .v-captiontext {
+	background: transparent;
+	margin-left: -5px;
+	padding-left: 5px;
+	margin-right: -20px;
+	padding-right: 20px;
+	margin-top: -2px;
+	padding-top: 2px;
+    /* todo fix progress indicator */
+}
+
+
+/* IE specific styles */
+
+/** html .v-tabsheet-tabs {*/
+	/*height: 29px;*/
+/*}*/
+/**+html .v-tabsheet-tabs {*/
+	/*height: 29px;*/
+/*}*/
+
+/** html .v-tabsheet-tabitem-selected {*/
+	/*border: 1px solid #babfc0;*/
+	/*border-bottom: none;*/
+	/*background: #fff;*/
+	/*margin-top: 0;*/
+	/*height: 24px;*/
+	/*padding: 2px 18px 6px 19px;*/
+	/*cursor: default;*/
+	/*color: #ee5311;*/
+/*}*/
+/**+html .v-tabsheet-tabitem-selected {*/
+	/*border: 1px solid #babfc0;*/
+	/*border-bottom: none;*/
+	/*background: #fff;*/
+	/*margin-top: 0;*/
+	/*height: 24px;*/
+	/*padding: 2px 18px 6px 19px;*/
+	/*cursor: default;*/
+	/*color: #ee5311;*/
+/*}*/
+
+/** html .v-tabsheet-tabitem-selected .v-caption {*/
+	/*background: transparent;*/
+	/*padding: 0;*/
+	/*margin: 0;*/
+/*}*/
+/**+html .v-tabsheet-tabitem-selected .v-caption {*/
+	/*background: transparent;*/
+	/*padding: 0;*/
+	/*margin: 0;*/
+/*}*/
+
+/** html .v-tabsheet-content {*/
+	/*border-bottom: none;*/
+/*}*/
+/**+html .v-tabsheet-content {*/
+	/*border-bottom: none;*/
+/*}*/
+
+/** html .v-tabsheet-deco {*/
+	/*height: 1px;*/
+	/*background: #babfc0;*/
+	/*overflow: hidden;*/
+	/*margin: 0;*/
+/*}*/
+/**+html .v-tabsheet-deco {*/
+	/*height: 1px;*/
+	/*background: #babfc0;*/
+	/*overflow: hidden;*/
+	/*margin: 0;*/
+	/*width: 100%;*/
+/*}*/
+
+
+
+/* Inline style */
+
+.v-tabsheet-light .v-tabsheet-tabcontainer {
+	height: 29px;
+}
+
+.v-tabsheet-tabs-light {
+	height: 29px;
+	width: 100%;
+	overflow:hidden;
+	background: transparent url(img/inline-tab-bg.png) repeat-x;
+}
+
+.v-tabsheet-light .v-tabsheet-spacertd div {
+	height: 29px;
+	border: none;
+	border-bottom: 1px solid #b6bbbc;
+	background: transparent;
+}
+
+.v-tabsheet-light .v-tabsheet-tabitem {
+	border: none;
+	/*border-bottom: 1px solid #b6bbbc;*/
+	height: 29px;
+	padding: 0;
+	margin-top: 0;
+	line-height: normal;
+	background: transparent;
+	cursor: pointer;
+	text-shadow: #fff 0 1px 0;
+}
+
+.v-tabsheet-light .v-tabsheet-tabitemcell-first .v-caption {
+	margin-left: 6px;
+}
+
+.v-tabsheet-light .v-tabsheet-tabitem .v-caption {
+	height: 24px;
+	padding: 8px 9px 0 9px;
+}
+
+.v-tabsheet-light .v-tabsheet-tabitem-selected {
+	border: none;
+	background: #fff url(img/inline-tab-right.png) no-repeat right top;
+	/*margin: 0;*/
+	/*padding: 0;*/
+	height: 29px;
+	cursor: default;
+	color: #ee5311;
+	text-shadow: none;
+}
+
+.v-tabsheet-light .v-tabsheet-tabitem:hover {
+	color: #4b5257;
+}
+
+.v-tabsheet-light .v-tabsheet-tabitem-selected:hover {
+	color: #ee5311;
+}
+
+.v-tabsheet-light .v-tabsheet-tabitem-selected .v-caption {
+	background: transparent url(img/inline-tab-left.png) no-repeat -7px 0;
+	margin: 0;
+	height: 29px;
+	padding: 9px 11px 0 11px;
+	overflow: visible;
+}
+
+.v-tabsheet-light .v-tabsheet-tabitemcell-first .v-tabsheet-tabitem-selected .v-caption {
+	background: transparent url(img/inline-tab-left.png) no-repeat -3px 0;
+	padding-left: 15px;
+}
+
+.v-tabsheet-light .v-tabsheet-content {
+	border: none;
+	background: transparent;
+}
+
+.v-tabsheet-light .v-tabsheet-hidetabs .v-tabsheet-content {
+	border: none;
+}
+
+.v-tabsheet-deco-light {
+	height: 0;
+	overflow: hidden;
+}
+
+.v-tabsheet-deco-light:before {
+	display: none;
+}
+
+
+/* Scroller */
+
+.v-tabsheet-light .v-tabsheet-scrollerPrev,
+.v-tabsheet-light .v-tabsheet-scrollerNext {
+	margin-top: 2px;
+	height: 29px;
+}
+.v-tabsheet-light .v-tabsheet-scrollerPrev-disabled,
+.v-tabsheet-light .v-tabsheet-scrollerNext-disabled {
+	margin-top: 2px;
+	height: 29px;
+    background: #eee url(img/tab-bg-disabled.gif) no-repeat right top;
+}
+
+.v-tabsheet-light .v-tabsheet-disabled {
+	margin-top: 2px;
+	height: 29px;
+    background: #eee url(img/tab-bg-disabled.gif) no-repeat right top;
+}
+
+
+/* Progress indication */
+
+.v-tabsheet-loading .v-tabsheet-tabs-light .v-tabsheet-tabitem-selected .v-captiontext {
+	margin-left: -3px;
+	padding-left: 3px;
+}
+
+
+
+/* IE specific styles */
+
+* html .v-tabsheet-tabs-light {
+	height: 29px;
+}
+*+html .v-tabsheet-tabs-light {
+	height: 29px;
+}
+
+* html .v-tabsheet-light .v-tabsheet-tabitem-selected {
+	border: none;
+	background: #fff url(img/inline-tab-right.png) no-repeat right top;
+	padding: 0;
+	height: 29px;
+}
+*+html .v-tabsheet-light .v-tabsheet-tabitem-selected {
+	border: none;
+	background: #fff url(img/inline-tab-right.png) no-repeat right top;
+	padding: 0;
+	height: 29px;
+}
+
+* html .v-tabsheet-light .v-tabsheet-tabitem-selected .v-caption {
+	background: transparent url(img/inline-tab-left.png) no-repeat -7px 0;
+	padding: 9px 11px 0 11px;
+}
+*+html .v-tabsheet-light .v-tabsheet-tabitem-selected .v-caption {
+	background: transparent url(img/inline-tab-left.png) no-repeat -7px 0;
+	padding: 9px 11px 0 11px;
+}
+
+* html .v-tabsheet-deco-light {
+	height: 0;
+}
+*+html .v-tabsheet-deco-light {
+	height: 0;
+}
+
+.v-tabsheet-caption-close {
+    cursor: pointer;
+    width: 19px;
+    height: 24px;
+    background: transparent url(../icons/tab-remove.png) no-repeat center left;
+    text-indent: 100px;
+    overflow: hidden;
+    font-size: 20px;
+    float: right;
+    margin: -4px -4px 0 0;
+}

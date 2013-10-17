@@ -1,0 +1,38 @@
+<window
+        xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+        class="com.haulmont.cuba.web.app.ui.export.excel.ExcelExportBrowser"
+        messagesPack="com.haulmont.cuba.web.app.ui.export.excel"
+        caption="msg://caption"
+        >
+
+
+    <metadataContext>
+    </metadataContext>
+
+    <dsContext>
+    </dsContext>
+
+    <layout expand="table-panel">
+        <!--<vbox id="1">-->
+            <vbox id="table-panel" expand="optionsGroup" spacing="true" stylename="edit-area" margin="true">
+                <label id="label1" value="msg://availableColumns" stylename="large"/>
+                <optionsGroup id="optionsGroup" multiselect="true" captionProperty="caption"/>
+                <hbox spacing="true">
+                    <button id="up" stylename="link"/>
+                    <button id="down" stylename="link"/>
+                </hbox>
+                <label />
+                <checkBox id="exportExpanded" caption="msg://exportExpanded" />
+            </vbox>
+            <!--<vbox>-->
+
+            <!--</vbox>-->
+        <!--</vbox>-->
+        <hbox id="hbox3" align="MIDDLE_LEFT" margin="true;false;false;false" spacing="true" width="100%"
+              expand="hbox">
+            <button id="commit" />
+            <button id="close" />
+            <hbox id="hbox"/>
+        </hbox>
+    </layout>
+</window>

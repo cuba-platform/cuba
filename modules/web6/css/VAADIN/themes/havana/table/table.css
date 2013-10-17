@@ -1,0 +1,538 @@
+.v-table {
+	text-align: left;
+}
+
+.v-table.table-inline .v-table-header-wrap {
+	border-left: none;
+	border-right: none;
+}
+
+.v-table-header-wrap {
+	height: 23px;
+	background: #E6EAEF;
+	border: 1px solid #A5C4E0;
+	border-bottom: none;
+	overflow: hidden;
+    position: relative;
+}
+
+.v-table-header .v-table-caption-container {
+    font-weight: normal;
+}
+
+.v-table-header,
+.v-table-header-container {
+	height: 23px;
+}
+
+.v-table-header table,
+.v-table-table {
+	border-collapse: collapse;
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+.v-table > div:focus {
+    outline: none;
+}
+
+.v-table > div:focus {
+    border-color: #4d7ab2;
+}
+
+/*
+.v-table-table {
+    border-bottom: 2px solid #829fd6;
+}
+*/
+
+.v-table-header td,
+.v-table-table td {
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+.v-table-table td {
+    border-right: #EDF3F9 1px solid;
+}
+
+.v-table-header td {
+    height: 23px;
+    cursor: pointer;
+}
+
+.v-table-resizer {
+	display: block;
+	height: 23px;
+	float: right;
+    border-right: #CBDAE9 1px solid;
+	cursor: col-resize;
+}
+
+.v-table-caption-container {
+	float: right;
+	overflow: hidden;
+	white-space: nowrap;
+
+    font-weight: bold;
+	padding-top: 2px;
+}
+
+.v-table-header-cell-asc .v-table-caption-container {
+	background: transparent url(img/sort-asc.png) no-repeat center right;
+}
+.v-table-header-cell-desc .v-table-caption-container {
+	background: transparent url(img/sort-desc.png) no-repeat center right;
+}
+
+.v-table-header-cell:hover,
+.v-table-header-cell-asc:hover,
+.v-table-header-cell-desc:hover {
+	background: #F2F5F7;
+}
+
+
+.v-table-body {
+	background: #fff;
+	border: 1px solid #A5C4E0;
+}
+
+.v-table-row-spacer {
+	height: 10px;
+	overflow: hidden; /* IE hack to allow < one line height divs */
+}
+
+.v-table-row,
+.v-table-row-odd {
+	border: 0;
+	margin: 0;
+	padding: 0;
+	background-color: #fff;
+    border-bottom:1px solid #94aed0;
+	cursor: default;
+}
+.v-table-row-odd {
+	background-color: #F6F8FA;
+}
+.v-table-row:hover,
+.v-table-row-odd:hover {
+	background-color: #f5f4b9;
+}
+.v-table-row .v-table-cell,
+.v-table-row-odd .v-table-cell,
+.v-table-caption-row .v-table-cell,
+.v-table-group-row .v-table-cell{
+	padding: 0;
+    border-bottom: 1px solid #EDF3F9;
+}
+
+/*.v-table .v-table-group-row {*/
+    /*border-bottom:1px solid #83888c;*/
+/*} */
+
+.v-table .v-table-caption-row {
+    background-color: #c6cbcd;
+    cursor: default;
+}
+
+.v-table .v-table-caption-row-content {
+    white-space: nowrap;
+    overflow: hidden;
+    padding: 3px 0 3px 3px;
+    margin-right: 5px;
+    line-height: 15px;
+}
+
+.v-table-cell-content {
+    padding: 4px 3px 5px 5px;
+	line-height: 15px;
+}
+
+.v-table-row.v-selected,
+.v-table-row-odd.v-selected,
+.v-table-caption-row.v-selected {
+    background-color: #C3E1FF;
+}
+
+.v-selected .v-table-cell-content {
+    /*color: #000;*/
+}
+
+.v-table-cell-content .v-icon {
+    height: 15px;
+    margin-right: 5px;
+}
+
+.v-table-cell .v-table-cell-content {
+    white-space: nowrap;
+    overflow: hidden;
+    font-size: 11px;
+}
+
+.v-table-cell-wrap .v-table-cell-content {
+    white-space: normal;
+}
+
+/* Fix textfield size to correspond label size inside table */
+.v-table-cell-content .v-textfield,
+.v-table-cell-content .v-button {
+	margin: 0;
+}
+
+.v-table-cell-content .v-button {
+    height: 17px;
+	background: transparent url(img/table-button-left.png) no-repeat left center;
+    padding: 0 0 0 3px;
+    color: inherit;
+    font: inherit;
+}
+
+.v-table-cell-content .v-button:hover {
+	background: transparent url(img/table-button-left-active.png) no-repeat left center;
+}
+
+.v-table-cell-content .v-button-link {
+    margin: 0;
+    height: auto;
+    background: transparent;
+}
+
+.v-table-cell-content .v-button-link:hover {
+    background: transparent;
+}
+
+.v-table-cell-content .v-button-link .v-button-wrap:hover {
+    background: transparent;
+}
+
+.v-table-cell-content .v-button-link .v-button-wrap {
+    background: transparent;
+}
+
+.v-table-cell-content .v-button-wrap {
+	background: transparent url(img/table-button.png) no-repeat right top;
+    padding: 1px 0 0 1px;
+    height: 16px;
+}
+
+.v-table-cell-content .v-button-wrap:hover {
+	background: transparent url(img/table-button-active.png) no-repeat right top;
+}
+
+.v-table-cell-content .v-button-caption {
+    font: inherit;
+    margin: 0;
+    padding: 0;
+    color: inherit;
+}
+
+.v-table-cell-content .v-textfield {
+	width: 97%; /* approximate */
+}
+
+.v-table-cell-content .v-datefield .v-textfield {
+	width: auto;
+}
+
+/* datefield button is too high for table cell */
+.v-table-cell-content .v-datefield-button {
+	height: 25px;
+	/*margin: -2px 0;*/
+}
+
+.v-table-column-selector {
+	/*background: transparent url(img/table-header-bg.png) repeat-x;*/
+	height: 23px;
+	width: 16px;
+	position: absolute;
+    top: 0;
+    right: 0;
+}
+
+/*
+ * Buttons in table
+ */
+
+.v-table-cell-content .v-button {
+    height: 25px;
+    width: 24px;
+    background: #FFF none;
+}
+
+.v-table-cell-content .v-button-link,
+.v-table-cell-content .v-button-link:hover {
+    height: auto;
+    width: auto;
+    background: transparent none;
+}
+
+.v-table-cell-content .v-button:hover {
+    height: 24px;
+    width: 24px;
+    background: #FFF none;
+}
+
+.v-table-cell-content .v-button .v-icon {
+    height: 20px;
+}
+
+.v-table-cell-content .v-button {
+    height: 24px;
+    width: 24px;
+    background: #FFF none;
+}
+
+.v-table-cell-content .v-button.v-button-link {
+    background: transparent none;
+}
+
+.v-table-cell-content .v-button-icon-autosize .v-icon {
+    height: auto;
+    width: auto;
+}
+
+.v-table-cell-content .v-button-icon-autosize {
+    background: transparent none;
+    height: auto;
+    width: auto;
+}
+
+.v-table-cell-content .v-button-icon-autosize:hover {
+    background: transparent none;
+    height: auto;
+    width: auto;
+}
+
+.v-table-cell-content .v-button-wrap {
+    background: none;
+}
+
+.v-table-cell-content .v-button-wrap:hover {
+    background: none;
+}
+
+.v-table-column-selector div {
+    background: transparent url(img/round_right_arrow.png) no-repeat center left;
+    height: 23px;
+    width: 16px;
+    cursor: pointer;
+}
+
+.v-table-pres-selector {
+    /*background: transparent url(img/table-header-bg.png) repeat-x;*/
+	height: 23px;
+	width: 18px;
+    position: absolute;
+    top: 0;
+    right: 16px;
+}
+
+.v-tableColumnSelector .gwt-MenuItem div {
+    padding-left: 20px !important;
+}
+
+.v-table-pres-selector div {
+    background: transparent url(img/table.png) no-repeat center center;
+    height: 23px;
+    width: 16px;
+    margin-right: 2px;
+    cursor: pointer;
+}
+
+.v-table-focus-slot-left {
+	border-left: 2px solid #b6bbbc;
+	margin-right: -2px;
+}
+.v-table-focus-slot-right {
+	border-right: 2px solid #b6bbbc;
+	margin-left: -2px;
+}
+
+.v-table-header-drag {
+	position: absolute;
+	background: #e7edf3 url(img/table-header-bg.png) repeat-x;
+	border: 1px solid #b6bbbc;
+	padding: 4px;
+	opacity: 0.5;
+	filter: alpha(opacity=50);
+	margin-top: 20px;
+	z-index: 20000;
+}
+
+.v-table-scrollposition {
+	width: 160px;
+	height: 39px;
+	background: transparent url(img/table-scroll-position-bg.png);
+}
+
+.v-table-scrollposition span {
+	display: block;
+	margin-top: 8px;
+	text-align: center;
+    font-weight:bold;
+}
+
+
+/* row in column selector */
+.v-contextmenu .gwt-MenuItem .v-on div {
+	background: transparent url(img/check.png) no-repeat 5px 50%;
+}
+
+.v-contextmenu .gwt-MenuItem-selected .v-on div {
+	background: url(img/check-hover.png) no-repeat 5px 50%;
+    background-color: #5280b7;
+    color: #fff;
+}
+
+.v-contextmenu .gwt-MenuItem div {
+    /*padding-left: 20px;*/
+}
+
+.v-off div {
+}
+
+.v-table .v-link {
+	display: inline;
+}
+
+.v-table .v-table-float {
+    float: left;
+}
+
+.v-table .v-table-group-cell {
+    float: left;
+    background: transparent url(img/nav-plus.png) center right no-repeat;
+    width: 19px;
+    line-height: 15px;
+    cursor: pointer;
+}
+
+.v-table .v-table-hidden-row {
+    font-size: 0;
+    height: 0;
+    line-height: 0;
+    margin: 0;
+    padding: 0;
+}
+
+.v-expanded .v-table-group-cell {
+    background: transparent url(img/nav-minus.png) center right no-repeat;
+}
+
+.v-table-group-row {
+}
+
+.v-table-arow {
+    border-top: 1px solid #71a4d5;
+    border-left: 1px solid #71a4d5;
+    border-right: 1px solid #71a4d5;
+    background: #ccc;
+}
+
+.v-table-arow-row {
+}
+
+/* IE6 hack */
+/** html .v-table-scrollposition {*/
+	/*background: transparent;*/
+	/*
+	AlphaImageLoader uses src attribute relative to host page, not CSS
+	We need multiple different filters because we cannot be sure how host page is served compared to theme resources
+	TODO: This actually does not work as expected, since only the last filter is applied.
+	 */
+	/*filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../../ITMILL/themes/saneco/table/img/scroll-position-bg.png", sizingMethod="scale");*/
+	/*filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../ITMILL/themes/saneco/table/img/scroll-position-bg.png", sizingMethod="scale");*/
+	/*filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="ITMILL/themes/saneco/table/img/scroll-position-bg.png", sizingMethod="scale");*/
+	/*filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="/ITMILL/themes/saneco/table/img/scroll-position-bg.png", sizingMethod="scale");*/
+/*}*/
+
+.v-pager {
+    height: 20px;
+    padding-right: 5px;
+}
+
+.v-pager .v-pager-link,
+.v-pager .v-pager-page,
+.v-pager .v-pager-spacer {
+    margin: 0 5px;
+    float: left;
+    height: 20px;
+}
+
+.v-pager .v-pager-link {
+    cursor: pointer;
+    text-decoration: underline;
+    color: #464f52;
+}
+
+.v-pager .v-pager-editor {
+    float: right;
+    line-height: 18px;
+}
+
+/*marked table rows*/
+.v-table-row-marked1  .v-table-cell-content {
+    color: #F00
+}
+
+.v-table-row-marked2  .v-table-cell-content {
+    color: #00F
+}
+
+.v-table-row-marked1  .v-table-cell-content .v-button-link {
+    color: #F00;
+}
+
+.v-table-row-marked2  .v-table-cell-content .v-button-link {
+    color: #00F;
+}
+
+.v-table-cell-content .v-button-grey,
+.v-table-cell-content .v-button-grey:hover {
+    height: 17px;
+	background: transparent url(img/table-button-grey-left.png) no-repeat left center;
+    padding: 0 0 0 3px;
+}
+
+.v-table-cell-content .v-button-grey .v-button-wrap,
+.v-table-cell-content .v-button-grey .v-button-wrap:hover {
+    background: transparent url(img/table-button-grey-right.png) no-repeat right top;
+    padding: 1px 0 0 1px;
+    height: 16px;
+}
+
+.v-table div,
+.v-table .v-button-caption,
+.v-table .v-button-link .v-button-caption{
+    font-size: 11px;
+    color: #1E3146;
+}
+
+.table-rows-count .v-label {
+    padding-top: 8px;
+}
+
+.table-rows-count .v-button-wrap {
+    padding-top: 10px;
+}
+
+.table-rows-count .v-button-change-page {
+    height: 17px;
+    margin-top: 8px;
+}
+
+.table-rows-count .v-button-change-page .v-button-wrap {
+    padding-top: 0;
+    padding-bottom: 0;
+    height: 17px;
+    line-height: 17px;
+}
+
+.v-table-row-grey .v-table-cell-content,
+.v-table-row-grey .v-table-cell-content .v-button-caption,
+.v-table-row-grey .v-table-cell-content .v-label,
+.v-table-row-grey .v-table-cell-content div {
+    color: #858585
+}

@@ -1,0 +1,61 @@
+.twincolumn {
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.twincolumn-listBox {
+    border: 1px solid #c3c3c3;
+    background: #fff none;
+    float: left;
+    overflow-x: auto;
+    overflow-y: auto;
+}
+
+.twincolumn-listBox:focus {
+    outline-style: none;
+}
+
+.twincolumn-listBox-deco {
+    padding: 1px 1px 0 1px;
+    float: left;
+}
+
+.twincolumn-listBox .twincolumn-listBox-opt {
+    padding: 1px 0 1px 2px;
+    border-bottom: 1px solid #fff;
+    line-height: 18px;
+    cursor: default;
+}
+
+.twincolumn-listBox .twincolumn-listBox-opt.hasIcon .v-icon {
+    margin-right: 2px;
+}
+
+.twincolumn-listBox .twincolumn-listBox-opt.hasIcon .v-icon,
+.twincolumn-listBox .twincolumn-listBox-opt.hasIcon .twincolumn-label {
+    float: left;
+}
+
+.twincolumn-listBox .twincolumn-listBox-opt.selected {
+    background-color: #98B4D4;
+}
+
+.twincolumn-listBox .twincolumn-listBox-opt.selected .twincolumn-label {
+    color: #fff;
+}
+
+.twincolumn-buttons {
+    float: left;
+    padding: 2px;
+    text-align: center;
+}
+
+.twincolumn-buttons .twincolumn-deco {
+    clear: both;
+    padding: 3px;
+}
+
+.twincolumn .v-button {
+    display: block;
+    float: left;
+}

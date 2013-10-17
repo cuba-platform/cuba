@@ -1,0 +1,65 @@
+.v-app .pickerfield .v-textfield {
+    height: 23px;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.pickerfield .v-button {
+    height: 25px;
+    line-height: 18px;
+    background: url(img/lookup-picker-btn.png) right white;
+}
+
+.pickerfield.v-readonly .v-button {
+    background: url(img/lookup-picker-btn-readonly.png) right;
+}
+
+.pickerfield .v-horizontallayout-childfocus .v-button {
+    background: url(img/lookup-picker-btn-focus.png) right white;
+}
+
+.v-table-cell-content .pickerfield .v-button.v-button-link {
+    background: url(img/lookup-picker-btn.png) right white;
+}
+
+.v-table-cell-content .pickerfield.v-readonly .v-button.v-button-link {
+    background: url(img/lookup-picker-btn-readonly.png) right;
+}
+
+.v-table-cell-content .pickerfield .v-horizontallayout-childfocus .v-button.v-button-link {
+    background: url(img/lookup-picker-btn-focus.png) right white;
+}
+
+.pickerfield .v-button-caption {
+    margin: 0;
+}
+
+.pickerfield .v-button-link {
+    border: none;
+}
+
+.pickerfield .v-icon {
+    margin: 0;
+}
+
+.pickerfield .v-readonly.v-textfield.v-textfield-focus,
+.pickerfield .v-textfield-readonly.v-textfield-focus,
+.pickerfield .v-textfield-focus {
+    border-color: #4d7ab2;
+}
+
+.pickerfield .v-readonly.v-textfield,
+.pickerfield .v-textfield-readonly {
+    border: 1px solid #A5C4E0;
+    overflow: hidden;
+}
+
+.pickerfield.v-readonly {
+    background-color: transparent;
+}
+
+.pickerfield .v-filterselect,
+.pickerfield .v-button,
+.pickerfield .v-textfield.v-readonly {
+    background-color: #fff;
+}

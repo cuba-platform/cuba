@@ -1,0 +1,89 @@
+
+.v-Notification {
+	font-family: verdana, tahoma, arial, geneva, helvetica, sans-serif, "Trebuchet MS";
+	background-color: #818e92;
+	color: #ffffff;
+	padding: 9px 12px;
+	cursor: pointer;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+	overflow: hidden;
+    max-width: 80%;
+}
+
+.v-Notification h1,
+.v-Notification p,
+.v-Notification.error h1,
+.v-Notification.error p,
+.v-Notification.warning h1,
+.v-Notification.warning p {
+    margin: 0 10px 0 0;
+}
+
+.v-Notification h1 {
+    display: block;
+    text-align: center;
+}
+
+.v-Notification p {
+    white-space: normal;
+}
+
+.v-Notification.warning {
+	background: #fff1e4;
+	color: #dd3400;
+	border: 2px solid #ffaa90;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	opacity: 1;
+}
+
+.v-Notification.error {
+	background: #f23d00 url(img/close-error.png) no-repeat right 5px;
+	padding-right: 30px;
+	border: 3px solid #c30000;
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	border-radius: 6px;
+}
+
+.v-Notification.tray {
+    max-width: 50%;
+	background: #575e60;
+	padding: 0.5em;
+	margin: 0 5px 5px 0;
+}
+.v-Notification.tray h1 {
+	display: block;
+	font-weight: bold;
+	font-size: 0.9em;
+	line-height: 1.1;
+	background: #3b4245;
+	padding: 4px 10px;
+	margin: 0;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+}
+.v-Notification.tray p {
+	display: block;
+	font-size: 0.9em;
+	line-height: 1.1;
+	margin: 8px 10px 5px 10px;
+	color: #e4e7ea;
+}
+
+.v-Notification.system {
+	background-color: #ff0a0a;
+	opacity: 0.7;
+	filter: alpha(opacity=70);
+}
+.v-Notification.system h1 {
+	display: block;
+	margin: 0;
+}
+.v-Notification.system p {
+	white-space: nowrap;
+}

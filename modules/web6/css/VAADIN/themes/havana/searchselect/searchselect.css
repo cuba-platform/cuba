@@ -1,0 +1,231 @@
+/*
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+/** Filterselect aka ComboBox styles */
+
+.cuba-searchselect {
+    height: 25px;
+    white-space: nowrap;
+    text-align: left; /* Force default alignment */
+    background: #fff url(img/bg-left-filter.png) no-repeat;
+    overflow: hidden;
+}
+
+.cuba-searchselect-focus {
+    background: #fff url(img/bg-left-filter-focus.png) no-repeat;
+}
+
+.v-app .cuba-searchselect-edit-filter.cuba-searchselect-focus {
+    background: #ffbac2 url(img/bg-left-filter-focus.png) no-repeat;
+}
+
+.v-app .cuba-searchselect-edit-filter.cuba-searchselect-focus .cuba-searchselect-input:focus,
+.v-window .cuba-searchselect-edit-filter.cuba-searchselect-focus .cuba-searchselect-input:focus {
+    background: #ffbac2 url(img/bg-center-filter-focus.png) no-repeat right top;
+}
+
+.cuba-searchselect.v-readonly {
+    height: 25px;
+    white-space: nowrap;
+    text-align: left; /* Force default alignment */
+    background: transparent url(img/bg-left-filter-readonly.png) no-repeat;
+    overflow: hidden;
+}
+
+.cuba-searchselect .v-icon {
+    float: left;
+}
+
+.v-app .cuba-searchselect .cuba-searchselect-input,
+.v-window .cuba-searchselect .cuba-searchselect-input,
+.v-popupview-popup .cuba-searchselect .cuba-searchselect-input {
+    background: #fff url(img/bg-center-filter.png) no-repeat right top;
+    border: none;
+    height: 25px;
+    margin: 0;
+    padding: 0;
+    font-size: 8pt;
+}
+
+.v-app .cuba-searchselect-focus .cuba-searchselect-input:focus,
+.v-window .cuba-searchselect-focus .cuba-searchselect-input:focus,
+.v-popupview-popup .cuba-searchselect-focus .cuba-searchselect-input:focus {
+    background: #fff url(img/bg-center-filter-focus.png) no-repeat right top;
+}
+
+.v-app .cuba-searchselect .cuba-searchselect-input-readonly,
+.v-window .cuba-searchselect .cuba-searchselect-input-readonly,
+.v-popupview-popup .cuba-searchselect .cuba-searchselect-input-readonly {
+    background: #fff url(img/bg-center-filter-readonly.png) no-repeat right top;
+}
+
+.v-ie7 .v-app .cuba-searchselect .cuba-searchselect-input,
+.v-ie7 .v-window .cuba-searchselect .cuba-searchselect-input,
+.v-ie7 .v-popupview-popup .cuba-searchselect .cuba-searchselect-input {
+    padding-top: 4px;
+    margin-top: -1px;
+}
+
+.v-ie8 .v-app .cuba-searchselect .cuba-searchselect-input,
+.v-ie8 .v-window .cuba-searchselect .cuba-searchselect-input,
+.v-ie8 .v-popupview-popup .cuba-searchselect .cuba-searchselect-input {
+    padding-top: 4px;
+    margin-top: 0;
+}
+
+.cuba-searchselect-input:focus {
+/* remove safari/mac outline from this element */
+    outline: 0;
+}
+
+.cuba-searchselect-focus {
+    outline: 0;
+}
+
+.v-sa .cuba-searchselect-focus {
+    outline: 0;
+}
+
+/*
+ We use .cuba-searchselect-wrap instead of .cuba-searchselect-button
+*/
+.cuba-searchselect-wrap {
+    height: 25px;
+    border: none;
+    padding: 0 0 0 4px ;
+    margin: 0;
+}
+
+.cuba-searchselect-focus .cuba-searchselect-wrap {
+}
+
+.cuba-searchselect-wrap:hover {
+}
+
+.v-disabled .cuba-searchselect-wrap:hover {
+    cursor: default;
+}
+
+.cuba-searchselect.v-readonly,
+.cuba-searchselect.v-readonly .cuba-searchselect-wrap,
+.cuba-searchselect.v-readonly .cuba-searchselect-input {
+    cursor: default;
+}
+
+.cuba-searchselect.v-readonly,
+.cuba-searchselect.v-readonly .cuba-searchselect-wrap,
+.cuba-searchselect.v-readonly .cuba-searchselect-input {
+    background-color: transparent;
+}
+
+.cuba-searchselect.v-readonly .cuba-searchselect-wrap {
+    background: none;
+    padding: 0 0 0 4px;
+}
+
+.cuba-searchselect-suggestpopup {
+    border: 1px solid #8aa9d1;
+    font-family: verdana, tahoma, arial, geneva, helvetica, sans-serif, "Trebuchet MS", serif;
+    color: #000;
+    font-size: 12px;
+    line-height: 18px;
+    margin-top: -1px;
+    background: #f5f5f5 repeat-x;
+}
+
+.cuba-searchselect-suggestmenu {
+}
+
+.cuba-searchselect-suggestmenu table {
+    border-collapse: collapse;
+    border: none;
+}
+
+.cuba-searchselect-suggestmenu .gwt-MenuItem {
+    padding: 1px 6px;
+    cursor: pointer;
+    height: 18px;
+    white-space: nowrap;
+}
+
+.cuba-searchselect-suggestmenu .gwt-MenuItem .v-icon {
+    margin-right: 3px;
+    vertical-align: middle;
+}
+
+.cuba-searchselect-suggestmenu .gwt-MenuItem span {
+    vertical-align: middle;
+}
+
+.cuba-searchselect-suggestmenu .gwt-MenuItem-selected {
+    background: #4d7ab2;
+    color: #fff;
+}
+
+.cuba-searchselect-nextpage,
+.cuba-searchselect-nextpage-off,
+.cuba-searchselect-prevpage-off,
+.cuba-searchselect-prevpage {
+    height: 12px;
+    width: 100%;
+    background: transparent no-repeat 50% 0;
+    text-align: center;
+    margin: 2px 0 0 0;
+    overflow: hidden;
+}
+
+.cuba-searchselect-nextpage {
+    background-image: url(img/sel-popup-down-on.png);
+}
+
+.cuba-searchselect-nextpage-off {
+    background-image: url(img/sel-popup-down-off.png);
+}
+
+.cuba-searchselect-prevpage-off {
+    background-image: url(img/sel-popup-up-off.png);
+}
+
+.cuba-searchselect-prevpage {
+    background-image: url(img/sel-popup-up-on.png);
+}
+
+.cuba-searchselect-nextpage span,
+.cuba-searchselect-nextpage-off span,
+.cuba-searchselect-prevpage-off span,
+.cuba-searchselect-prevpage span {
+    display: block;
+    height: 12px;
+    width: 100%;
+    text-indent: -90000px;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.cuba-searchselect-nextpage span,
+    .cuba-searchselect-nextpage-off span {
+}
+
+.cuba-searchselect-nextpage-off,
+.cuba-searchselect-prevpage-off {
+    color: #666;
+}
+
+.cuba-searchselect-nextpage-off span,
+.cuba-searchselect-prevpage-off span {
+    cursor: default;
+}
+
+.cuba-searchselect-status {
+    font-size: 11px;
+    line-height: 11px;
+    width: 100%;
+    padding: 4px 0;
+    height: 11px;
+    white-space: nowrap;
+    text-align: center;
+    border-top: 1px solid #b6bbbc;
+}

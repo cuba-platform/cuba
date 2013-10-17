@@ -1,0 +1,11 @@
+.v-popupview-popup {
+	border: 1px solid #babfc0;
+	border-bottom: 1px solid #dee2e3;
+	background: #fff;
+	overflow: auto;
+	padding: 3px;
+}
+
+.v-popupview {
+	cursor: pointer;
+}

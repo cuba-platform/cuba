@@ -1,0 +1,30 @@
+<!--
+  ~ Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+
+<window xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+        caption="msg://saveSetWindow.caption"
+        class="com.haulmont.cuba.web.app.folders.SaveSetWindow"
+        messagesPack="com.haulmont.cuba.web.app.folders"
+        focusComponent="folderSelect">
+    <dsContext>
+        <collectionDatasource id="setFoldersDs" class="com.haulmont.cuba.security.entity.SearchFolder" view="_local" >
+            <query>
+                select s from sec$SearchFolder s where s.user.id=:session$userId and
+                    s.isSet=true and
+                    s.entityType = :param$entityType
+                order by s.name
+            </query>
+        </collectionDatasource>
+    </dsContext>
+    <layout expandLayout="true" spacing="true">
+        <lookupField id="folderSelect" optionsDatasource="setFoldersDs" width="250px"
+                     caption="msg://saveSetWindow.set"/>
+        <hbox spacing="true" id="add">
+            <button id="insertBtn" caption="msg://saveSetWindow.insert"/>
+            <button id="createNew" caption="msg://saveSetWindow.createNew"/>
+        </hbox>
+    </layout>
+</window>

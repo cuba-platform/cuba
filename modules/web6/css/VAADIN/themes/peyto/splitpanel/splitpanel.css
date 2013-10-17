@@ -1,0 +1,102 @@
+.v-splitpanel-horizontal, .v-splitpanel-vertical {
+	overflow: hidden;
+}
+
+.v-splitpanel-horizontal .v-splitpanel-hsplitter {
+	width: 4px;
+	font-size: 1px; /* for IE6 */
+}
+
+.v-splitpanel-hookButton {
+    cursor: pointer;
+    width: 11px;
+    height: 40px;
+    background: #EBF0F5;
+}
+
+.v-splitpanel-with-hookButton-left > div > .v-splitpanel-hsplitter {
+	width: 5px;
+    background: url(img/hook-split-left.png) center repeat-y;
+}
+
+.v-splitpanel-with-hookButton-right > div > .v-splitpanel-hsplitter {
+	width: 5px;
+    background: url(img/hook-split-right.png) center repeat-y;
+}
+
+.v-splitpanel-hookButton-left {
+    background: url(img/hook-btn-left.png);
+}
+
+.v-splitpanel-hookButton-right {
+    background: url(img/hook-btn-right.png);
+}
+
+
+.v-splitpanel-horizontal .v-splitpanel-hsplitter div {
+	width: 4px;
+	font-size: 1px; /* for IE6 */
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	background: #EEF3F9 url(img/bg-ruler-vert.png) center no-repeat;
+	/*border: 0 solid #d7dddb;*/
+	cursor: e-resize;
+	margin: 0 1px;
+}
+
+.v-splitpanel-with-hookButton-left > div > .v-splitpanel-hsplitter > div {
+    background: transparent none;
+}
+
+.v-splitpanel-with-hookButton-right > div > .v-splitpanel-hsplitter > div {
+    background: transparent none;
+}
+
+.v-splitpanel-vertical .v-splitpanel-vsplitter {
+	height: 10px;
+	font-size: 1px; /* for IE6 */
+}
+
+.v-splitpanel-vertical .v-splitpanel-vsplitter div {
+	height: 6px;
+	font-size: 1px; /* for IE6 */
+	background: #EEF3F9 url(img/bg-ruler-horiz.png) center no-repeat;
+	border: 0;
+	cursor: n-resize;
+	margin: 0;
+}
+
+
+
+
+
+/* IE specific styles */
+
+* html .v-splitpanel-horizontal .v-splitpanel-hsplitter div {
+	height: 99%;
+}
+
+* html .v-splitpanel-vertical .v-splitpanel-vsplitter {
+	height: 10px;
+}
+
+* html .v-splitpanel-vertical .v-splitpanel-vsplitter div {
+	margin: 0;
+}
+
+/* Webkit fix */
+
+.v-webkit .v-splitpanel-horizontal .v-splitpanel-first-container,
+.v-webkit .v-splitpanel-horizontal .v-splitpanel-second-container {
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.v-webkit .v-splitpanel-vertical .v-splitpanel-first-container,
+.v-webkit .v-splitpanel-vertical .v-splitpanel-second-container {
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+

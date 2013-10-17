@@ -1,0 +1,6 @@
+@import "styles-include.css";
+@import "peyto.css";
+
+#v-dashlayout-details {
+    letter-spacing: 5px;
+}
