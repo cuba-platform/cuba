@@ -4,10 +4,8 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<permission-config>
-
+<permission-config xmlns="http://schemas.haulmont.com/cuba/5.0/permissions.xsd">
     <specific>
-
         <category id="cuba">
             <category id="cuba.gui">
                 <permission id="cuba.gui.showInfo"/>
@@ -25,7 +23,5 @@
                 </category>
             </category>
         </category>
-        
     </specific>
-
 </permission-config>

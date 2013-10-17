@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2008-2013 Haulmont. All rights reserved.
+  ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+  -->
+
+<xs:schema
+        targetNamespace="http://schemas.haulmont.com/cuba/5.0/permissions.xsd"
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        xmlns="http://schemas.haulmont.com/cuba/5.0/permissions.xsd"
+        elementFormDefault="qualified"
+        attributeFormDefault="unqualified"
+        >
+
+    <xs:element name="permission-config" type="permissionConfigType"/>
+
+    <xs:complexType name="permissionConfigType">
+        <xs:sequence>
+            <xs:choice>
+                <xs:element name="specific" type="categoryOrPermission" minOccurs="1" maxOccurs="1"/>
+
+                <xs:element name="include" type="includeType" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:choice>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="categoryOrPermission">
+        <xs:sequence>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element name="category" type="categoryType"/>
+                <xs:element name="permission" type="permissionType"/>
+            </xs:choice>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="categoryType">
+        <xs:complexContent>
+            <xs:extension base="categoryOrPermission">
+                <xs:attribute name="id" type="xs:string"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="permissionType">
+        <xs:attribute name="id" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:complexType name="includeType">
+        <xs:attribute name="file" type="xs:string"/>
+    </xs:complexType>
+</xs:schema>
