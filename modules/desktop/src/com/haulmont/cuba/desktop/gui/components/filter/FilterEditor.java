@@ -10,6 +10,7 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.CategorizedEntity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
@@ -20,6 +21,7 @@ import com.haulmont.cuba.gui.components.filter.*;
 import com.haulmont.cuba.gui.components.filter.addcondition.SelectionHandler;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.security.global.UserSession;
 import net.miginfocom.layout.CC;
@@ -73,6 +75,8 @@ public class FilterEditor extends AbstractFilterEditor {
     protected JCheckBox applyDefaultCb;
 
     protected UserSession userSession = AppBeans.get(UserSessionSource.class).getUserSession();
+
+    protected Security security = AppBeans.get(Security.class);
 
     public FilterEditor(final DesktopFilter desktopFilter, FilterEntity filterEntity,
                         Element filterDescriptor, List<String> existingNames) {
@@ -150,8 +154,7 @@ public class FilterEditor extends AbstractFilterEditor {
                     ((DesktopFilter) filter).editorCommitted();
             }
         });
-        if (filterEntity.getFolder() == null && filterEntity.getCode() != null)
-            saveBtn.setEnabled(false);
+        saveBtn.setEnabled(!isSaveDisabled());
         buttonsPanel.add(saveBtn);
 
         cancelBtn = new JButton(messages.getMainMessage("actions.Cancel"));
@@ -229,6 +232,11 @@ public class FilterEditor extends AbstractFilterEditor {
                 nameField.requestFocus();
             }
         });
+    }
+
+    protected boolean isSaveDisabled() {
+        return (filterEntity.getFolder() == null && filterEntity.getCode() != null)
+                || !security.isEntityOpPermitted(FilterEntity.class, EntityOp.UPDATE);
     }
 
     public JButton getSaveButton() {
@@ -407,10 +415,10 @@ public class FilterEditor extends AbstractFilterEditor {
     }
 
     protected void updateControls() {
-        if (filterEntity.getFolder() != null || filterEntity.getCode() == null)
-            saveBtn.setEnabled(!conditions.getRootNodes().isEmpty());
-        else
+        if (isSaveDisabled())
             saveBtn.setEnabled(false);
+        else
+            saveBtn.setEnabled(!conditions.getRootNodes().isEmpty());
         defaultCb.setVisible(filterEntity.getFolder() == null);
         defaultCb.setSelected(isTrue(filterEntity.getIsDefault()));
         updateApplyDefaultCb();
