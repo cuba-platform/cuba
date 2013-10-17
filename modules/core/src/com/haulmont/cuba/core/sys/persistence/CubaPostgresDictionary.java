@@ -11,16 +11,22 @@ import org.apache.openjpa.meta.JavaTypes;
 
 import java.sql.*;
 
-public class CubaPostgresDictionary extends PostgresDictionary
-{
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
+public class CubaPostgresDictionary extends PostgresDictionary {
+    @Override
     public SQLBuffer toTraditionalJoin(Join join) {
         return DBDictionaryUtils.toTraditionalJoin(this, join);
     }
 
+    @Override
     protected SQLBuffer getWhere(Select sel, boolean forUpdate) {
         return DBDictionaryUtils.getWhere(this, sel, forUpdate, true);
     }
 
+    @Override
     public void setUnknown(PreparedStatement stmnt, int idx, Object val, Column col) throws SQLException {
         if (val instanceof PostgresUUID) {
             stmnt.setObject(idx, val);
@@ -29,6 +35,7 @@ public class CubaPostgresDictionary extends PostgresDictionary
         }
     }
 
+    @Override
     public void setTyped(PreparedStatement stmnt, int idx, Object val, Column col, int type, JDBCStore store) throws SQLException {
         if ((type == JavaTypes.STRING) && (val instanceof PostgresUUID)) {
             stmnt.setObject(idx, val);

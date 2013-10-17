@@ -6,8 +6,12 @@ package com.haulmont.cuba.core.sys.listener;
 
 import com.haulmont.cuba.core.listener.*;
 
-public enum EntityListenerType
-{
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
+public enum EntityListenerType {
+
     BEFORE_DETACH(BeforeDetachEntityListener.class),
     BEFORE_INSERT(BeforeInsertEntityListener.class),
     AFTER_INSERT(AfterInsertEntityListener.class),
@@ -25,5 +29,4 @@ public enum EntityListenerType
     public Class getListenerInterface() {
         return listenerInterface;
     }
-    
 }

@@ -12,7 +12,6 @@ import com.haulmont.cuba.security.entity.User;
  * @author krivopustov
  * @version $Id$
  */
-@SuppressWarnings({"UnusedDeclaration"})
 public class UserEntityListener implements
         BeforeInsertEntityListener<User>,
         BeforeUpdateEntityListener<User> {

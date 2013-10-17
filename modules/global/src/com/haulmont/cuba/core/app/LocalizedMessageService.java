@@ -18,5 +18,4 @@ public interface LocalizedMessageService {
     String NAME = "cuba_LocalizedMessageService";
 
     String getMessage(String pack, String key, Locale locale);
-
 }

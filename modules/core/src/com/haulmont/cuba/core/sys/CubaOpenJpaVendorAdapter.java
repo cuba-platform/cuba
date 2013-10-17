@@ -10,6 +10,10 @@ import org.springframework.orm.jpa.vendor.OpenJpaVendorAdapter;
 
 import java.util.Map;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class CubaOpenJpaVendorAdapter extends OpenJpaVendorAdapter {
 
     private final OpenJpaDialect jpaDialect = new CubaOpenJpaDialect();

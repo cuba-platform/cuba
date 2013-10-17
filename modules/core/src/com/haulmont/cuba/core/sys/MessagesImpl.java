@@ -13,9 +13,8 @@ import javax.inject.Inject;
 import java.util.Locale;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 @ManagedBean(Messages.NAME)
 public class MessagesImpl extends AbstractMessages {

@@ -20,22 +20,27 @@ public class LockServiceBean implements LockService {
     @Inject
     private LockManagerAPI lockManager;
 
+    @Override
     public LockInfo lock(String name, String id) {
         return lockManager.lock(name, id);
     }
 
+    @Override
     public void unlock(String name, String id) {
         lockManager.unlock(name, id);
     }
 
+    @Override
     public LockInfo getLockInfo(String name, String id) {
         return lockManager.getLockInfo(name, id);
     }
 
+    @Override
     public List<LockInfo> getCurrentLocks() {
         return lockManager.getCurrentLocks();
     }
 
+    @Override
     public void reloadConfiguration(){
         lockManager.reloadConfiguration();
     }

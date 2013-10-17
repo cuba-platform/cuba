@@ -23,7 +23,6 @@ import java.util.UUID;
  * @author artamonov
  * @version $Id$
  */
-@SuppressWarnings({"unused"})
 public interface EntitySnapshotAPI {
 
     String NAME = "cuba_EntitySnapshotManager";

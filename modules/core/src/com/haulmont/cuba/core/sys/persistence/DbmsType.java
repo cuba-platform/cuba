@@ -26,7 +26,7 @@ public enum DbmsType {
     HSQL() {
         @Override
         public Map<String, String> getJpaParameters() {
-            Map<String, String> params = new HashMap<String, String>();
+            Map<String, String> params = new HashMap<>();
             params.put("openjpa.jdbc.DBDictionary",
                     "com.haulmont.cuba.core.sys.persistence.CubaHSQLDictionary(RequiresCastForComparisons=true)");
             params.put("openjpa.jdbc.MappingDefaults",
@@ -38,7 +38,7 @@ public enum DbmsType {
     POSTGRES() {
         @Override
         public Map<String, String> getJpaParameters() {
-            Map<String, String> params = new HashMap<String, String>();
+            Map<String, String> params = new HashMap<>();
             params.put("openjpa.jdbc.DBDictionary",
                     "com.haulmont.cuba.core.sys.persistence.CubaPostgresDictionary(RequiresCastForComparisons=true)");
             params.put("openjpa.jdbc.MappingDefaults",
@@ -50,7 +50,7 @@ public enum DbmsType {
     MSSQL() {
         @Override
         public Map<String, String> getJpaParameters() {
-            Map<String, String> params = new HashMap<String, String>();
+            Map<String, String> params = new HashMap<>();
             params.put("openjpa.jdbc.DBDictionary",
                     "com.haulmont.cuba.core.sys.persistence.CubaMssqlDictionary(RequiresCastForComparisons=true)");
             params.put("openjpa.jdbc.MappingDefaults",
@@ -62,7 +62,7 @@ public enum DbmsType {
     ORACLE() {
         @Override
         public Map<String, String> getJpaParameters() {
-            Map<String, String> params = new HashMap<String, String>();
+            Map<String, String> params = new HashMap<>();
             params.put("openjpa.jdbc.DBDictionary",
                     "com.haulmont.cuba.core.sys.persistence.CubaOracleDictionary(RequiresCastForComparisons=true)");
             params.put("openjpa.jdbc.MappingDefaults",

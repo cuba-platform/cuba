@@ -21,9 +21,8 @@ import java.util.UUID;
 /**
  * Service for integration testing. Don't use it in application code!
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 @Service(TestingService.NAME)
 public class TestingServiceBean implements TestingService {

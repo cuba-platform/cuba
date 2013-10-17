@@ -4,6 +4,10 @@
  */
 package com.haulmont.cuba.core.sys;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class EntityManagerContext {
 
     private boolean softDeletion = true;

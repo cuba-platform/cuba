@@ -13,9 +13,8 @@ import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 @ManagedBean(UserSessionSource.NAME)
 public class UserSessionSourceImpl extends AbstractUserSessionSource {

@@ -14,9 +14,8 @@ import java.util.UUID;
 /**
  * User sessions distributed cache API.
  *
- * @version $Id$
- *
  * @author krivopustov
+ * @version $Id$
  */
 public interface UserSessionsAPI {
 

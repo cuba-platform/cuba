@@ -37,40 +37,47 @@ public class DataCache implements DataCacheAPI {
         return jpaEmf.getQueryResultCache();
     }
 
+    @Override
     public boolean isStoreCacheEnabled() {
         String s = jpaEmf.getConfiguration().getDataCache();
         return s != null && !s.startsWith("false");
     }
 
+    @Override
     public boolean isQueryCacheEnabled() {
         String s = jpaEmf.getConfiguration().getQueryCache();
         return s != null && !s.startsWith("false");
     }
 
+    @Override
     public void dataCacheEvict(Class cls, Object id) {
         StoreCache cache = getStoreCache();
         if (cache != null)
             cache.evict(cls, id);
     }
 
+    @Override
     public void dataCacheEvictAll(Class cls, Collection ids) {
         StoreCache cache = getStoreCache();
         if (cache != null)
             cache.evictAll(cls, ids);
     }
 
+    @Override
     public void dataCacheEvictAll() {
         StoreCache cache = getStoreCache();
         if (cache != null)
             cache.evictAll();
     }
 
+    @Override
     public void queryCacheEvictAll(Class cls) {
         QueryResultCache cache = getQueryCache();
         if (cache != null)
             cache.evictAll(cls);
     }
 
+    @Override
     public void queryCacheEvictAll() {
         QueryResultCache cache = getQueryCache();
         if (cache != null)

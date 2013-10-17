@@ -24,12 +24,11 @@ import java.util.Map;
 
 /**
  * JPQL cache loader <br/>
- * Load objects tree with jpql query and view
- * <p>$Id$</p>
+ * Loads objects tree with jpql query and view
  *
  * @author artamonov
+ * @version $Id$
  */
-@SuppressWarnings({"unused"})
 public class StandardCacheLoader implements CacheLoader {
 
     @Inject

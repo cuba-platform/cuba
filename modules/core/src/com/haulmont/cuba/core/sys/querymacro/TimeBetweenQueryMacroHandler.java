@@ -18,6 +18,10 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 @ManagedBean("cuba_TimeBetweenQueryMacroHandler")
 @Scope("prototype")
 public class TimeBetweenQueryMacroHandler implements QueryMacroHandler {
@@ -25,7 +29,7 @@ public class TimeBetweenQueryMacroHandler implements QueryMacroHandler {
     protected static final Pattern MACRO_PATTERN = Pattern.compile("@between\\s*\\(([^\\)]+)\\)");
     protected static final Pattern PARAM_PATTERN = Pattern.compile("(now)\\s*([+-]*)\\s*(\\d*)");
     
-    protected static Map<String, Object> units = new HashMap<String, Object>();
+    protected static Map<String, Object> units = new HashMap<>();
 
     static {
         units.put("year", Calendar.YEAR);
@@ -37,8 +41,9 @@ public class TimeBetweenQueryMacroHandler implements QueryMacroHandler {
     }
 
     protected int count;
-    protected Map<String, Object> params = new HashMap<String, Object>();
+    protected Map<String, Object> params = new HashMap<>();
 
+    @Override
     public String expandMacro(String queryString) {
         count = 0;
         Matcher matcher = MACRO_PATTERN.matcher(queryString);
@@ -50,9 +55,11 @@ public class TimeBetweenQueryMacroHandler implements QueryMacroHandler {
         return sb.toString();
     }
 
+    @Override
     public void setQueryParams(Map<String, Object> namedParameters) {
     }
 
+    @Override
     public Map<String, Object> getParams() {
         return params;
     }

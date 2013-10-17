@@ -6,6 +6,10 @@ package com.haulmont.cuba.core.sys;
 
 import java.util.Map;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public interface QueryMacroHandler {
 
     String expandMacro(String queryString);

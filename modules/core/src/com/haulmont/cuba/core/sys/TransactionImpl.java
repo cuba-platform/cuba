@@ -14,9 +14,8 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class TransactionImpl implements Transaction {
 
@@ -58,6 +57,7 @@ public class TransactionImpl implements Transaction {
         }
     }
 
+    @Override
     public void commit() {
         if (committed)
             return;
@@ -70,6 +70,7 @@ public class TransactionImpl implements Transaction {
         }
     }
 
+    @Override
     public void commitRetaining() {
         if (committed)
             return;
@@ -85,6 +86,7 @@ public class TransactionImpl implements Transaction {
         }
     }
 
+    @Override
     public void end() {
         if (committed)
             return;

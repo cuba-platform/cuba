@@ -56,6 +56,7 @@ public class EntityLifecycleListener extends AbstractLifecycleListener {
         ftsConfig = configuration.getConfig(FtsConfig.class);
     }
 
+    @Override
     public void beforePersist(LifecycleEvent event) {
         if (!(event.getSource() instanceof BaseEntity))
             return;
@@ -64,6 +65,7 @@ public class EntityLifecycleListener extends AbstractLifecycleListener {
         __beforePersist(entity);
     }
 
+    @Override
     public void beforeStore(LifecycleEvent event) {
         if (!(event.getSource() instanceof BaseEntity))
             return;
@@ -118,6 +120,7 @@ public class EntityLifecycleListener extends AbstractLifecycleListener {
         }
     }
 
+    @Override
     public void beforeDelete(LifecycleEvent event) {
         if (!(event.getSource() instanceof BaseEntity))
             return;

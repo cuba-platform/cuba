@@ -34,7 +34,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @version $Id$
  */
 @ManagedBean(EntitySnapshotAPI.NAME)
-@SuppressWarnings({"unchecked", "unused"})
 public class EntitySnapshotManager implements EntitySnapshotAPI {
 
     @Inject

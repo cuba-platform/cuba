@@ -17,6 +17,10 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 @ManagedBean("cuba_TimeTodayQueryMacroHandler")
 @Scope("prototype")
 public class TimeTodayQueryMacroHandler implements QueryMacroHandler {
@@ -24,8 +28,9 @@ public class TimeTodayQueryMacroHandler implements QueryMacroHandler {
     private static final Pattern MACRO_PATTERN = Pattern.compile("@today\\s*\\(([^\\)]+)\\)");
 
     private int count;
-    private Map<String, Object> params = new HashMap<String, Object>();
+    private Map<String, Object> params = new HashMap<>();
 
+    @Override
     public String expandMacro(String queryString) {
         count = 0;
         Matcher matcher = MACRO_PATTERN.matcher(queryString);
@@ -37,9 +42,11 @@ public class TimeTodayQueryMacroHandler implements QueryMacroHandler {
         return sb.toString();
     }
 
+    @Override
     public void setQueryParams(Map<String, Object> namedParameters) {
     }
 
+    @Override
     public Map<String, Object> getParams() {
         return params;
     }

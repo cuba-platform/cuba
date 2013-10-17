@@ -13,6 +13,10 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 @ManagedBean("cuba_DateBeforeQueryMacroHandler")
 @Scope("prototype")
 public class DateBeforeMacroHandler implements QueryMacroHandler {
@@ -21,8 +25,9 @@ public class DateBeforeMacroHandler implements QueryMacroHandler {
 
     protected int count;
     protected Map<String, Object> namedParameters;
-    protected List<String> paramNames = new ArrayList<String>();
+    protected List<String> paramNames = new ArrayList<>();
 
+    @Override
     public String expandMacro(String queryString) {
         count = 0;
         Matcher matcher = MACRO_PATTERN.matcher(queryString);
@@ -47,12 +52,14 @@ public class DateBeforeMacroHandler implements QueryMacroHandler {
         return String.format("(%s < :%s)", field, param);
     }
 
+    @Override
     public void setQueryParams(Map<String, Object> namedParameters) {
         this.namedParameters = namedParameters;
     }
 
+    @Override
     public Map<String, Object> getParams() {
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         for (String paramName : paramNames) {
             Date date = (Date) namedParameters.get(paramName);
             if (date == null)

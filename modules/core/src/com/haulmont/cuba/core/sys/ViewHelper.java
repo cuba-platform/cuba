@@ -13,6 +13,10 @@ import com.haulmont.cuba.core.global.ViewProperty;
 
 import java.util.Collection;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class ViewHelper {
 
     public static View intersectViews(View first, View second) {

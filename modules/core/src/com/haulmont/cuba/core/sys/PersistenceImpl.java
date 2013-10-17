@@ -29,9 +29,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 @ManagedBean(Persistence.NAME)
 public class PersistenceImpl implements Persistence {
@@ -42,7 +41,7 @@ public class PersistenceImpl implements Persistence {
 
     private volatile boolean softDeletion = true;
 
-    private ThreadLocal<EntityManagerContext> contextHolder = new ThreadLocal<EntityManagerContext>();
+    private ThreadLocal<EntityManagerContext> contextHolder = new ThreadLocal<>();
 
     @Inject
     private PersistenceTools tools;
@@ -202,27 +201,34 @@ public class PersistenceImpl implements Persistence {
 
         private EntityManagerContext context;
 
+        @Override
         public void suspend() {
             context = contextHolder.get();
             contextHolder.remove();
         }
 
+        @Override
         public void resume() {
             contextHolder.set(context);
         }
 
+        @Override
         public void flush() {
         }
 
+        @Override
         public void beforeCommit(boolean readOnly) {
         }
 
+        @Override
         public void beforeCompletion() {
         }
 
+        @Override
         public void afterCommit() {
         }
 
+        @Override
         public void afterCompletion(int status) {
             contextHolder.remove();
         }
@@ -236,6 +242,7 @@ public class PersistenceImpl implements Persistence {
             this.impl = impl;
         }
 
+        @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             if (method.getName().equals("setSoftDeletion")) {
                 EntityManagerContext ctx = contextHolder.get();

@@ -29,6 +29,7 @@ public class ScreenHistoryBean implements ScreenHistory {
     @Inject
     protected Persistence persistence;
 
+    @Override
     public void cleanup() {
         if (!AppContext.isStarted())
             return;

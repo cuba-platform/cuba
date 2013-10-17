@@ -9,9 +9,9 @@ import java.util.Map;
 
 /**
  * Service for manage application caches
- * <p>$Id$</p>
  *
  * @author artamonov
+ * @version $Id$
  */
 public interface ObjectsCacheManagerService {
     String NAME = "cuba_ObjectsCacheManagerService";

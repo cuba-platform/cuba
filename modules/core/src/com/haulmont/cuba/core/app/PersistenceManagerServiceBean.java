@@ -18,18 +18,22 @@ public class PersistenceManagerServiceBean implements PersistenceManagerService 
     @Inject
     private PersistenceManagerAPI pm;
 
+    @Override
     public boolean useLazyCollection(String entityName) {
         return pm.useLazyCollection(entityName);
     }
 
+    @Override
     public boolean useLookupScreen(String entityName) {
         return pm.useLookupScreen(entityName);
     }
 
+    @Override
     public int getFetchUI(String entityName) {
         return pm.getFetchUI(entityName);
     }
 
+    @Override
     public int getMaxFetchUI(String entityName) {
         return pm.getMaxFetchUI(entityName);
     }

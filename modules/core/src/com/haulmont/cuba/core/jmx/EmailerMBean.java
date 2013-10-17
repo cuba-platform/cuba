@@ -9,7 +9,10 @@ import org.springframework.jmx.export.annotation.ManagedOperationParameter;
 import org.springframework.jmx.export.annotation.ManagedOperationParameters;
 
 /**
- * Management interface of the {@link com.haulmont.cuba.core.app.Emailer} MBean.<br>
+ * Management interface of the {@link com.haulmont.cuba.core.app.Emailer} MBean.
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 public interface EmailerMBean {
 

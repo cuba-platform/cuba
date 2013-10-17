@@ -4,6 +4,10 @@
  */
 package com.haulmont.cuba.core.jmx;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public interface DataCacheMBean {
 
     boolean isStoreCacheEnabled();

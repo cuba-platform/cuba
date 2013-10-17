@@ -66,16 +66,19 @@ public class EntityLog implements EntityLogAPI {
         config = configuration.getConfig(EntityLogConfig.class);
     }
 
+    @Override
     public synchronized boolean isEnabled() {
         return config.getEnabled();
     }
 
+    @Override
     public synchronized void setEnabled(boolean enabled) {
         if (enabled != config.getEnabled()) {
             config.setEnabled(enabled);
         }
     }
 
+    @Override
     public void invalidateCache() {
         lock.writeLock().lock();
         try {
@@ -158,12 +161,14 @@ public class EntityLog implements EntityLogAPI {
         return originalMetaClass != null ? originalMetaClass.getName() : metaClass.getName();
     }
 
+    @Override
     public void registerCreate(BaseEntity entity) {
         if (entity == null)
             return;
         registerCreate(entity, false);
     }
 
+    @Override
     public void registerCreate(BaseEntity entity, boolean auto) {
         if (entity == null || !isEnabled())
             return;
@@ -201,10 +206,12 @@ public class EntityLog implements EntityLogAPI {
         }
     }
 
+    @Override
     public void registerModify(BaseEntity entity) {
         registerModify(entity, false);
     }
 
+    @Override
     public void registerModify(BaseEntity entity, boolean auto) {
         if (!isEnabled())
             return;
@@ -267,10 +274,12 @@ public class EntityLog implements EntityLogAPI {
             properties.setProperty(attr + EntityLogAttr.MP_SUFFIX, mp);
     }
 
+    @Override
     public void registerDelete(BaseEntity entity) {
         registerDelete(entity, false);
     }
 
+    @Override
     public void registerDelete(BaseEntity entity, boolean auto) {
         if (!isEnabled())
             return;

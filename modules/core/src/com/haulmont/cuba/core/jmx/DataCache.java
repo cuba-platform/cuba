@@ -16,6 +16,9 @@ import java.util.Collection;
 
 /**
  * JMX interface for {@link DataCacheAPI}.
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 @ManagedBean("cuba_DataCacheMBean")
 public class DataCache implements DataCacheMBean {
@@ -38,14 +41,17 @@ public class DataCache implements DataCacheMBean {
         return jpaEmf.getQueryResultCache();
     }
 
+    @Override
     public boolean isStoreCacheEnabled() {
         return dataCache.isStoreCacheEnabled();
     }
 
+    @Override
     public boolean isQueryCacheEnabled() {
         return dataCache.isQueryCacheEnabled();
     }
 
+    @Override
     public int getStoreCacheSize() {
         if (!isStoreCacheEnabled())
             return 0;
@@ -58,6 +64,7 @@ public class DataCache implements DataCacheMBean {
         }
     }
 
+    @Override
     public int getStoreCacheMaxSize() {
         if (!isStoreCacheEnabled())
             return 0;
@@ -70,6 +77,7 @@ public class DataCache implements DataCacheMBean {
         }
     }
 
+    @Override
     public int getQueryCacheSize() {
         if (!isQueryCacheEnabled())
             return 0;
@@ -82,6 +90,7 @@ public class DataCache implements DataCacheMBean {
         }
     }
 
+    @Override
     public int getQueryCacheMaxSize() {
         if (!isQueryCacheEnabled())
             return 0;
@@ -94,10 +103,12 @@ public class DataCache implements DataCacheMBean {
         }
     }
 
+    @Override
     public void dataCacheEvictAll() {
         dataCache.dataCacheEvictAll();
     }
 
+    @Override
     public void queryCacheEvictAll() {
         dataCache.queryCacheEvictAll();
     }
