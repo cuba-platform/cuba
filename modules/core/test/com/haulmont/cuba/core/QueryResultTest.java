@@ -27,7 +27,7 @@ import java.util.*;
  */
 public class QueryResultTest extends CubaTestCase {
 
-    private List<UUID> userIds = new ArrayList<UUID>();
+    private List<UUID> userIds = new ArrayList<>();
 
     @Override
     protected void setUp() throws Exception {
