@@ -163,12 +163,28 @@ public class WebLookupField
         component.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
+                if (settingValue)
+                    return;
+
+                settingValue = true;
+
                 final Object value = getValue();
-                fireValueChanged(prevValue, value);
-                prevValue = value;
+
+                Object newValue = fireValueChanging(prevValue, value);
+
+                final Object oldValue = prevValue;
+                prevValue = newValue;
+
+                if (!ObjectUtils.equals(value, newValue)) {
+                    WebLookupField.this.component.setValue(newValue);
+                }
+                fireValueChanged(oldValue, newValue);
+
                 if (optionsDatasource != null) {
                     optionsDatasource.setItem((Entity) value);
                 }
+
+                settingValue = false;
             }
         });
     }
