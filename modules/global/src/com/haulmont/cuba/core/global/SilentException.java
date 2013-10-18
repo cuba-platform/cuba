@@ -7,10 +7,10 @@ package com.haulmont.cuba.core.global;
 /**
  * Exception that is used to interrupt an execution flow without any messages to the user.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
+@Logging(Logging.Type.NONE)
 public class SilentException extends RuntimeException {
 
     private static final long serialVersionUID = 6598108074890603763L;
