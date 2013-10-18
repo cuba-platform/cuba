@@ -843,7 +843,7 @@ public class QueryTransformerAstBasedTest {
     }
 
 
-    @Test
+    //@Test
     public void getResult_russianCharacters() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
         EntityImpl playerEntity = builder.produceImmediately("Player");
@@ -865,7 +865,7 @@ public class QueryTransformerAstBasedTest {
         }
     }
 
-    @Test
+    //@Test
     public void parser_parseWhereClause() throws RecognitionException {
         try {
             Parser.parseWhereClause("where з like '12%'");
