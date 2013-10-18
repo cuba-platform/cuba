@@ -50,10 +50,8 @@
 			<xsd:element name="basic"        type="basic-attr-type"      minOccurs="0" maxOccurs="unbounded"/>
 			<xsd:element name="enum"         type="basic-attr-type"      minOccurs="0" maxOccurs="unbounded"/>
 			<xsd:element name="embedded"     type="instance-type"        minOccurs="0" maxOccurs="unbounded"/>
-			<xsd:element name="lob"          type="lob-attr-type"        minOccurs="0" maxOccurs="unbounded"/>
 			<xsd:element name="one-to-one"   type="singular-attr-type"   minOccurs="0" maxOccurs="unbounded"/>
 			<xsd:element name="many-to-one"  type="singular-attr-type"	 minOccurs="0" maxOccurs="unbounded"/>
-			<xsd:element name="element-collection" type="collection-attr-type" minOccurs="0" maxOccurs="unbounded"/>
 			<xsd:element name="one-to-many"  type="collection-attr-type" minOccurs="0" maxOccurs="unbounded"/>
 			<xsd:element name="many-to-many" type="map-attr-type"        minOccurs="0" maxOccurs="unbounded"/>
 		</xsd:sequence>
@@ -88,16 +86,7 @@
 			</xsd:extension>
 		</xsd:simpleContent>
 	</xsd:complexType>
-	
-	<!-- Large Binary Objects (LOB) represented as hex array -->
-	<xsd:complexType name="lob-attr-type">
-		<xsd:simpleContent>
-			<xsd:extension base="xsd:hexBinary">
-				<xsd:attribute name="name" type="xsd:string" use="required" />
-				<xsd:attribute name="null" type="xsd:boolean" />
-			</xsd:extension>
-		</xsd:simpleContent>
-	</xsd:complexType>
+
 
 	<!-- Singular attribute is a reference to another instance or a null reference. -->
 	<xsd:complexType name="singular-attr-type">

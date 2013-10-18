@@ -45,22 +45,17 @@
                         </xsd:sequence>
                     </xsd:complexType>
                 </xsd:element>
-                <xsd:element name="newInstanceIds" minOccurs="0" maxOccurs="1">
-                    <xsd:complexType>
-                        <xsd:sequence>
-                            <xsd:element name="newId" minOccurs="0" maxOccurs="unbounded"/>
-                        </xsd:sequence>
-                    </xsd:complexType>
-                </xsd:element>
-                <xsd:element name="deleteInstances" minOccurs="0" maxOccurs="1">
+                <xsd:element name="removeInstances" minOccurs="0" maxOccurs="1">
                     <xsd:complexType>
                         <xsd:sequence>
                             <xsd:element name="instance" minOccurs="0" maxOccurs="unbounded" type="instance-type"/>
                         </xsd:sequence>
                     </xsd:complexType>
                 </xsd:element>
+                <xsd:element name="softDeletion" type="xsd:boolean" maxOccurs="1" minOccurs="0"/>
             </xsd:sequence>
             <xsd:attribute name="version" type="xsd:string"/>
+
         </xsd:complexType>
     </xsd:element>
 
@@ -70,19 +65,23 @@
     <!-- javax.persistence.metamodel and then further refined by id, version, lob and enum.        -->
     <xsd:complexType name="instance-type">
         <xsd:sequence>
-            <xsd:element name="id" type="basic-attr-type" minOccurs="0" maxOccurs="unbounded"/>
-            <xsd:element name="version" type="basic-attr-type" minOccurs="0" maxOccurs="unbounded"/>
             <xsd:element name="basic" type="basic-attr-type" minOccurs="0" maxOccurs="unbounded"/>
             <xsd:element name="enum" type="basic-attr-type" minOccurs="0" maxOccurs="unbounded"/>
             <xsd:element name="embedded" type="instance-type" minOccurs="0" maxOccurs="unbounded"/>
-            <xsd:element name="lob" type="lob-attr-type" minOccurs="0" maxOccurs="unbounded"/>
             <xsd:element name="one-to-one" type="singular-attr-type" minOccurs="0" maxOccurs="unbounded"/>
             <xsd:element name="many-to-one" type="singular-attr-type" minOccurs="0" maxOccurs="unbounded"/>
-            <xsd:element name="element-collection" type="collection-attr-type" minOccurs="0" maxOccurs="unbounded"/>
             <xsd:element name="one-to-many" type="collection-attr-type" minOccurs="0" maxOccurs="unbounded"/>
             <xsd:element name="many-to-many" type="map-attr-type" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
         <xsd:attribute name="id" type="xsd:ID" use="required"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="embedded-type">
+        <xsd:complexContent>
+            <xsd:extension base="instance-type">
+                <xsd:attribute name="name" type="xsd:string" use="required"/>
+            </xsd:extension>
+        </xsd:complexContent>
     </xsd:complexType>
 
     <!-- A reference to another instance within the same(?) document -->
@@ -108,16 +107,6 @@
     <xsd:complexType name="basic-attr-type">
         <xsd:simpleContent>
             <xsd:extension base="xsd:string">
-                <xsd:attribute name="name" type="xsd:string" use="required"/>
-                <xsd:attribute name="null" type="xsd:boolean"/>
-            </xsd:extension>
-        </xsd:simpleContent>
-    </xsd:complexType>
-
-    <!-- Large Binary Objects (LOB) represented as hex array -->
-    <xsd:complexType name="lob-attr-type">
-        <xsd:simpleContent>
-            <xsd:extension base="xsd:hexBinary">
                 <xsd:attribute name="name" type="xsd:string" use="required"/>
                 <xsd:attribute name="null" type="xsd:boolean"/>
             </xsd:extension>
