@@ -1155,6 +1155,8 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         select.setEnabled(!editing);
         applyBtn.setVisible(!editing);
         actionsButton.setVisible(editable && isEditFiltersPermitted());
+        if (pinAppliedFilterBtn != null)
+            pinAppliedFilterBtn.setEnabled(!editing && filterEntity != null && filterEntity.getXml() != null);
     }
 
     protected boolean checkGlobalAppFolderPermission() {
