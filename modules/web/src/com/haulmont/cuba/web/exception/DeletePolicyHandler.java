@@ -61,7 +61,7 @@ public class DeletePolicyHandler implements ExceptionHandler {
         String msg = messages.getMessage(getClass(), "deletePolicy.message");
         String references = messages.getMessage(getClass(), "deletePolicy.references.message");
 
-        msg += "<br>" + references + " \"" + localizedEntityName + "\"";
+        msg += "\n" + references + " \"" + localizedEntityName + "\"";
         app.getWindowManager().showNotification(msg, IFrame.NotificationType.ERROR);
     }
 
