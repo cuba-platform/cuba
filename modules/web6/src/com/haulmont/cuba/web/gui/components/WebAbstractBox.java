@@ -1,122 +1,114 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 23.12.2008 11:46:42
- * $Id$
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.components.BoxLayout;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.IFrame;
 import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Layout;
 
 import java.util.*;
 
-class WebAbstractBox extends AbstractOrderedLayout
-        implements com.haulmont.cuba.gui.components.BoxLayout
-{
-    private static final long serialVersionUID = 2221267347055089920L;
+/**
+ * @author abramov
+ * @version $Id$
+ */
+class WebAbstractBox extends WebAbstractComponent<AbstractOrderedLayout> implements BoxLayout, Component.Wrapper {
 
-    protected String id;
+    protected Collection<Component> ownComponents = new HashSet<>();
+    protected Map<String, Component> componentByIds = new HashMap<>();
 
-    protected Collection<Component> ownComponents = new HashSet<Component>();
-    protected Map<String, Component> componentByIds = new HashMap<String, Component>();
+    protected Alignment alignment = Alignment.TOP_LEFT;
 
-    private Alignment alignment = Alignment.TOP_LEFT;
+    @Override
+    public void add(Component childComponent) {
+        final com.vaadin.ui.Component vaadinComponent = WebComponentsHelper.getComposition(childComponent);
 
-    private IFrame frame;
+        component.addComponent(vaadinComponent);
+        component.setComponentAlignment(vaadinComponent, WebComponentsHelper.convertAlignment(childComponent.getAlignment()));
 
-    public void add(Component component) {
-        final com.vaadin.ui.Component itmillComponent = WebComponentsHelper.getComposition(component);
-
-        addComponent(itmillComponent);
-        setComponentAlignment(itmillComponent, WebComponentsHelper.convertAlignment(component.getAlignment()));
-
-        if (component.getId() != null) {
-            componentByIds.put(component.getId(), component);
+        if (childComponent.getId() != null) {
+            componentByIds.put(childComponent.getId(), childComponent);
             if (frame != null) {
-                frame.registerComponent(component);
+                frame.registerComponent(childComponent);
             }
         }
-        ownComponents.add(component);
+        ownComponents.add(childComponent);
     }
 
-    public void remove(Component component) {
-        removeComponent(WebComponentsHelper.getComposition(component));
-        if (component.getId() != null) {
-            componentByIds.remove(component.getId());
+    @Override
+    public void remove(Component childComponent) {
+        component.removeComponent(WebComponentsHelper.getComposition(childComponent));
+        if (childComponent.getId() != null) {
+            componentByIds.remove(childComponent.getId());
         }
-        ownComponents.remove(component);
+        ownComponents.remove(childComponent);
     }
 
+    @Override
     public <T extends Component> T getOwnComponent(String id) {
         return (T) componentByIds.get(id);
     }
 
+    @Override
     public <T extends Component> T getComponent(String id) {
-        return WebComponentsHelper.<T>getComponent(this, id);
+        return WebComponentsHelper.getComponent(this, id);
     }
 
+    @Override
     public Collection<Component> getOwnComponents() {
         return Collections.unmodifiableCollection(ownComponents);
     }
 
+    @Override
     public Collection<Component> getComponents() {
         return ComponentsHelper.getComponents(this);
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-//        setDebugId(id);
-    }
-
-    public float getWidth() {
-        return super.getWidth();
-    }
-
-    public float getHeight() {
-        return super.getHeight();
-    }
-
+    @Override
     public void requestFocus() {
     }
 
+    @Override
     public Alignment getAlignment() {
         return alignment;
     }
 
+    @Override
     public void setAlignment(Alignment alignment) {
         this.alignment = alignment;
-        final com.vaadin.ui.Component component = this.getParent();
-        if (component instanceof Layout.AlignmentHandler) {
-            ((Layout.AlignmentHandler) component).setComponentAlignment(this, WebComponentsHelper.convertAlignment(alignment));
+        final com.vaadin.ui.Component parentComponent = component.getParent();
+        if (parentComponent instanceof Layout.AlignmentHandler) {
+            ((Layout.AlignmentHandler) parentComponent).setComponentAlignment(component, WebComponentsHelper.convertAlignment(alignment));
         }
     }
 
-    public <A extends IFrame> A getFrame() {
-        return (A) frame;
+    @Override
+    public void expand(Component childComponent, String height, String width) {
+        final com.vaadin.ui.Component expandedComponent = WebComponentsHelper.getComposition(childComponent);
+        WebComponentsHelper.expand(component, expandedComponent, height, width);
     }
 
-    public void setFrame(IFrame frame) {
-        this.frame = frame;
-        frame.registerComponent(this);
-    }
-
-    public void expand(Component component, String height, String width) {
-        final com.vaadin.ui.Component expandedComponent = WebComponentsHelper.getComposition(component);
-        WebComponentsHelper.expand(this, expandedComponent, height, width);
-    }
-
+    @Override
     public void expand(Component component) {
         expand(component, "", "");
+    }
+
+    @Override
+    public void setMargin(boolean enable) {
+        component.setMargin(enable);
+    }
+
+    @Override
+    public void setMargin(boolean topEnable, boolean rightEnable, boolean bottomEnable, boolean leftEnable) {
+        component.setMargin(new Layout.MarginInfo(topEnable, rightEnable, bottomEnable, leftEnable));
+    }
+
+    @Override
+    public void setSpacing(boolean enabled) {
+        component.setSpacing(enabled);
     }
 }

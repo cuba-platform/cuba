@@ -1,69 +1,69 @@
 /*
- * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
-
- * Author: Yuryi Artamonov
- * Created: 17.11.2010 18:05:20
- *
- * $Id$
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.FileMultiUploadField;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.ValueProvider;
+import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.toolkit.ui.MultiUpload;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 
-public class WebFileMultiUploadField extends
-        WebAbstractComponent<MultiUpload>
-        implements
-        FileMultiUploadField {
+/**
+ * @author artamonov
+ * @version $Id$
+ */
+public class WebFileMultiUploadField extends WebAbstractComponent<MultiUpload> implements FileMultiUploadField {
 
-    private List<UploadListener> listeners = new ArrayList<UploadListener>();
+    private static final Log log = LogFactory.getLog(WebFileMultiUploadField.class);
 
-    private Map<UUID, String> files = new HashMap<UUID, String>();
+    protected Messages messages;
+
+    private List<UploadListener> listeners = new ArrayList<>();
+
+    private Map<UUID, String> files = new HashMap<>();
 
     private String description = "";
 
     // Client control parameters
     private ValueProvider componentParams = new ValueProvider() {
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
 
+        @Override
         public Map<String, Object> getValues() {
             return params;
         }
 
+        @Override
         public Map<String, Object> getParameters() {
             return params;
         }
     };
 
     public WebFileMultiUploadField() {
-        String caption = MessageProvider.getMessage(AppConfig.getMessagesPack(), "Upload");
+        messages = AppBeans.get(Messages.class);
+
+        String caption = messages.getMessage(AppConfig.getMessagesPack(), "Upload");
         MultiUpload uploader = new MultiUpload(caption);
 
         componentParams.getParameters().put("caption", "");
         componentParams.getParameters().put("fileSizeLimit",
-                ConfigProvider.getConfig(ClientConfig.class).getMaxUploadSizeMb().toString() + " MB");
+                AppBeans.get(Configuration.class).getConfig(ClientConfig.class).getMaxUploadSizeMb().toString() + " MB");
 
         uploader.setValueProvider(componentParams);
         uploader.setWidth("90px");
         uploader.setHeight("25px");
         setExpandable(false);
         //Add listeners
-        uploader.addListener(new MultiUpload.FileProgressListener() {
-            // On file uploading
-            public void progressChanged(String fileName, int receivedBytes, int contentLength) {
-                for (UploadListener listener : listeners)
-                    listener.progressChanged(fileName, receivedBytes, contentLength);
-            }
-        });
         uploader.addListener(new MultiUpload.FileUploadStartListener() {
             // On file upload start 
             public void fileUploadStart(String fileName) {
@@ -89,8 +89,43 @@ public class WebFileMultiUploadField extends
         uploader.addListener(new MultiUpload.FileErrorHandler(){
             // On upload error
             public void errorNotify(String fileName, String message, int errorCode) {
-                for (UploadListener listener : listeners)
-                    listener.errorNotify(fileName, message, errorCode);
+                log.warn(String.format("Error while uploading file '%s' with code '%s': %s", fileName, errorCode, message));
+
+                WebWindowManager wm = App.getInstance().getWindowManager();
+                switch (MultiUpload.UploadErrorType.fromId(errorCode)) {
+                    case QUEUE_LIMIT_EXCEEDED:
+                        wm.showNotification(messages.getMessage(WebFileMultiUploadField.class,
+                                "multiupload.queueLimitExceed"),
+                                IFrame.NotificationType.WARNING);
+                        break;
+                    case FILE_EXCEEDS_SIZE_LIMIT:
+
+                        ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+                        final Integer maxUploadSizeMb = clientConfig.getMaxUploadSizeMb();
+
+                        wm.showNotification(messages.formatMessage(WebFileMultiUploadField.class,
+                                "multiupload.filesizeLimitExceed", fileName, maxUploadSizeMb),
+                                IFrame.NotificationType.WARNING);
+                        break;
+                    case SECURITY_ERROR:
+                        wm.showNotification(messages.getMessage(WebFileMultiUploadField.class, "multiupload.securityError"),
+                                IFrame.NotificationType.WARNING);
+                        break;
+                    case ZERO_BYTE_FILE:
+                        wm.showNotification(messages.formatMessage(WebFileMultiUploadField.class, "multiupload.zerobyteFile", fileName),
+                                IFrame.NotificationType.WARNING);
+                        break;
+                    default:
+                        boolean handled = false;
+                        for (UploadListener listener : listeners)
+                            handled = handled | listener.uploadError(fileName);
+                        if (!handled) {
+                            String uploadError = messages.formatMessage(WebFileMultiUploadField.class,
+                                    "multiupload.uploadError", fileName);
+                            wm.showNotification(uploadError, IFrame.NotificationType.ERROR);
+                        }
+                        break;
+                }
             }
         });
 
@@ -136,8 +171,14 @@ public class WebFileMultiUploadField extends
      *
      * @return Map (UUID - Id of file in FileUploadService, String - FileName )
      */
+    @Override
     public Map<UUID, String> getUploadsMap() {
-        return files;
+        return Collections.unmodifiableMap(files);
+    }
+
+    @Override
+    public void clearUploads() {
+        files.clear();
     }
 
     public ValueProvider getComponentParameters() {

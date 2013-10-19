@@ -33,10 +33,11 @@ public interface MaskedField extends TextField {
 
         private String id;
 
-        ValueMode(String id) {
+        private ValueMode(String id) {
             this.id = id;
         }
 
+        @Override
         public String getId() {
             return id;
         }

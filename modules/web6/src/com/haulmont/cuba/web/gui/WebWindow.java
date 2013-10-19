@@ -1,7 +1,6 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.cuba.web.gui;
 
@@ -38,6 +37,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -193,6 +193,29 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
     }
 
     @Override
+    public boolean validate(List<Validatable> fields) {
+        ValidationErrors errors = new ValidationErrors();
+
+        for (Validatable field : fields) {
+            try {
+                field.validate();
+            } catch (ValidationException e) {
+                if (log.isTraceEnabled())
+                    log.trace("Validation failed", e);
+                else if (log.isDebugEnabled())
+                    log.debug("Validation failed: " + e);
+                if (e instanceof RequiredValueMissingException) {
+                    errors.add(((RequiredValueMissingException) e).getComponent(), e.getMessage());
+                } else {
+                    errors.add((Component)field, e.getMessage());
+                }
+            }
+        }
+
+        return handleValidationErrors(errors);
+    }
+
+    @Override
     public void validate() throws ValidationException {
         delegate.validate();
     }
@@ -234,7 +257,10 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
 //
 //                }
 //            });
+        return handleValidationErrors(errors);
+    }
 
+    protected boolean handleValidationErrors(ValidationErrors errors) {
         delegate.postValidate(errors);
 
         if (errors.isEmpty())
@@ -385,6 +411,11 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
             App.getInstance().getAppWindow().showNotification(notification);
     }
 
+    @Override
+    public void showWebPage(String url, @Nullable Map<String, Object> params) {
+        //todo artamonov rewrite generated body
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
@@ -441,7 +472,7 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
 
     @Override
     public void addTimer(Timer timer) {
-        App.getInstance().addTimer((WebTimer) timer, this);
+        App.getInstance().addTimer(WebComponentsHelper.unwrap(timer), this);
     }
 
     @Override
@@ -908,9 +939,7 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
         private SelectAction selectAction;
 
         public Lookup() {
-            super();
-            addAction(new AbstractShortcutAction(WindowDelegate.LOOKUP_SELECTED_ACTION_ID,
-                    new ShortcutAction.KeyCombination(ShortcutAction.Key.ENTER, ShortcutAction.Modifier.CTRL)) {
+            addAction(new AbstractAction(WindowDelegate.LOOKUP_SELECTED_ACTION_ID, "CTRL-ENTER") {
                 @Override
                 public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
                     fireSelectAction();

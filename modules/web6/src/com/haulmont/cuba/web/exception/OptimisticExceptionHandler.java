@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.cuba.web.exception;
 
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.web.App;
 import com.vaadin.ui.Window;
 
@@ -16,9 +16,8 @@ import java.util.regex.Pattern;
 /**
  * Handles a JPA optimistic lock exception.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class OptimisticExceptionHandler extends AbstractExceptionHandler {
 
@@ -35,12 +34,14 @@ public class OptimisticExceptionHandler extends AbstractExceptionHandler {
             entityClassName = matcher.group(1);
         }
 
-        String localizedEntityName = "";
+        Messages messages = AppBeans.get(Messages.class);
+
         String entityName = entityClassName.substring(entityClassName.lastIndexOf(".") + 1);
         String packageName = entityClassName.substring(0, entityClassName.lastIndexOf("."));
-        localizedEntityName = MessageProvider.getMessage(packageName, entityName);
+        String localizedEntityName = messages.getMessage(packageName, entityName);
 
-        String msg = MessageProvider.formatMessage(getClass(), "optimisticException.message", "\"" + localizedEntityName + "\"");
+        String msg = messages.formatMessage(getClass(),
+                "optimisticException.message", "\"" + localizedEntityName + "\"");
         app.getAppWindow().showNotification(msg, Window.Notification.TYPE_ERROR_MESSAGE);
     }
 }

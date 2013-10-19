@@ -1,7 +1,6 @@
 /*
- * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.cuba.web.gui.components;
 
@@ -25,8 +24,8 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
     extends
         WebAbstractField<T>
     implements
-        com.haulmont.cuba.gui.components.Field, Component.Wrapper
-{
+        com.haulmont.cuba.gui.components.Field, Component.Wrapper {
+
     protected List optionsList;
     protected Map<String, Object> optionsMap;
     protected CollectionDatasource optionsDatasource;
@@ -40,6 +39,7 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
      */
     protected boolean optionsInitialization = false;
 
+    @Override
     public void setDatasource(Datasource datasource, String property) {
         this.datasource = datasource;
 

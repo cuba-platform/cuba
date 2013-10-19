@@ -1,7 +1,6 @@
 /*
- * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
 package com.haulmont.cuba.web.gui.components;
@@ -10,13 +9,19 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.haulmont.cuba.gui.components.Action;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 
+/**
+ * @param <T>
+ * @author abramov
+ * @version $Id$
+ */
 public class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.Component>
-        extends WebAbstractComponent<T>
-{
-    protected List<Action> actionList = new LinkedList<Action>();
+        extends WebAbstractComponent<T> {
+
+    protected List<Action> actionList = new LinkedList<>();
     protected BiMap<Action, com.vaadin.event.Action> actions = HashBiMap.create();
 
     public void addAction(final Action action) {
@@ -52,16 +57,18 @@ public class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.Component
 
     protected class ActionsAdapter implements com.vaadin.event.Action.Handler {
 
+        @Override
         public com.vaadin.event.Action[] getActions(Object target, Object sender) {
-            final List<com.vaadin.event.Action> res = new ArrayList<com.vaadin.event.Action>();
+            final List<com.vaadin.event.Action> res = new ArrayList<>();
             for (Action action : actionList) {
-//                if (action.isEnabled()) {
+                if (StringUtils.isNotBlank(action.getCaption())) {
                     res.add(actions.get(action));
-//                }
+                }
             }
             return res.toArray(new com.vaadin.event.Action[res.size()]);
         }
 
+        @Override
         public void handleAction(com.vaadin.event.Action actionImpl, Object sender, Object target) {
             final Action action = actions.inverse().get(actionImpl);
             if (action != null && action.isEnabled() && action.isVisible()) {

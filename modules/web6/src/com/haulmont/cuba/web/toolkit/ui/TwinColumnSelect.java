@@ -1,12 +1,6 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
-
- * Author: Nikolay Gorodnov
- * Created: 10.08.2010 15:49:29
- *
- * $Id$
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.cuba.web.toolkit.ui;
 

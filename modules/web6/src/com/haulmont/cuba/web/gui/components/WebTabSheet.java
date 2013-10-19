@@ -1,11 +1,6 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 02.02.2009 17:05:00
- * $Id$
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.cuba.web.gui.components;
 
@@ -23,29 +18,33 @@ import org.dom4j.Element;
 
 import java.util.*;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class WebTabSheet
-    extends
-        WebAbstractComponent<com.vaadin.ui.TabSheet>
-    implements
-        TabSheet, Component.Wrapper, Component.Container
-{
-    private boolean postInitTaskAdded;
-    private boolean componentTabChangeListenerInitialized;
+        extends
+            WebAbstractComponent<com.vaadin.ui.TabSheet>
+        implements
+            TabSheet, Component.Wrapper, Component.Container {
 
-    private ComponentLoader.Context context;
+    protected boolean postInitTaskAdded;
+    protected boolean componentTabChangeListenerInitialized;
+
+    protected ComponentLoader.Context context;
 
     public WebTabSheet() {
         component = new TabSheetEx(this);
         component.setCloseHandler(new MyCloseHandler());
     }
 
-    protected Map<String, Tab> tabs = new HashMap<String, Tab>();
+    protected Map<String, Tab> tabs = new HashMap<>();
 
-    protected Map<Component, String> components = new HashMap<Component, String>();
+    protected Map<Component, String> components = new HashMap<>();
 
-    protected Set<com.vaadin.ui.Component> lazyTabs = new HashSet<com.vaadin.ui.Component>();
+    protected Set<com.vaadin.ui.Component> lazyTabs = new HashSet<>();
 
-    protected Set<TabChangeListener> listeners = new HashSet<TabChangeListener>();
+    protected Set<TabChangeListener> listeners = new HashSet<>();
 
     @Override
     public void add(Component component) {
@@ -62,7 +61,9 @@ public class WebTabSheet
         for (Tab tab : tabs.values()) {
             if (tab.getComponent() instanceof Container) {
                 final Component component = WebComponentsHelper.getComponent((Container) tab.getComponent(), id);
-                if (component != null) return (T) component;
+                if (component != null) {
+                    return (T) component;
+                }
             }
         }
 
@@ -185,7 +186,7 @@ public class WebTabSheet
 
         final com.vaadin.ui.Component tabComponent = WebComponentsHelper.unwrap(component);
         tabComponent.setSizeFull();
-        
+
         this.component.addTab(tabComponent);
 
         return tab;
@@ -193,12 +194,11 @@ public class WebTabSheet
 
     @Override
     public TabSheet.Tab addLazyTab(String name,
-                                                                    Element descriptor,
-                                                                    ComponentLoader loader)
-    {
+                                   Element descriptor,
+                                   ComponentLoader loader) {
         WebVBoxLayout tabContent = new WebVBoxLayout();
-        tabContent.setSizeFull();
-        
+        tabContent.getComposition().setSizeFull();
+
         final Tab tab = new Tab(name, tabContent);
 
         tabs.put(name, tab);
@@ -229,7 +229,9 @@ public class WebTabSheet
     @Override
     public void removeTab(String name) {
         final Tab tab = tabs.get(name);
-        if (tab == null) throw new IllegalStateException(String.format("Can't find tab '%s'", name));
+        if (tab == null) {
+            throw new IllegalStateException(String.format("Can't find tab '%s'", name));
+        }
 
         tabs.remove(name);
         this.components.remove(tab.getComponent());
@@ -251,7 +253,9 @@ public class WebTabSheet
     @Override
     public void setTab(String name) {
         Tab tab = tabs.get(name);
-        if (tab == null) throw new IllegalStateException(String.format("Can't find tab '%s'", name));
+        if (tab == null) {
+            throw new IllegalStateException(String.format("Can't find tab '%s'", name));
+        }
 
         this.component.setSelectedTab(WebComponentsHelper.unwrap(tab.getComponent()));
     }
@@ -263,7 +267,7 @@ public class WebTabSheet
 
     @Override
     public Collection<TabSheet.Tab> getTabs() {
-        return (Collection)tabs.values();
+        return (Collection) tabs.values();
     }
 
     @Override
@@ -283,8 +287,9 @@ public class WebTabSheet
                     fireTabChanged();
                     // Execute outstanding post init tasks after GUI listener.
                     // We suppose that context.executePostInitTasks() executes a task once and then remove it from task list.
-                    if (context != null)
+                    if (context != null) {
                         context.executePostInitTasks();
+                    }
                 }
             });
             componentTabChangeListenerInitialized = true;
@@ -331,14 +336,7 @@ public class WebTabSheet
         public void selectedTabChange(com.vaadin.ui.TabSheet.SelectedTabChangeEvent event) {
             com.vaadin.ui.Component selectedTab = WebTabSheet.this.component.getSelectedTab();
             if (selectedTab == tabContent && lazyTabs.remove(tabContent)) {
-                Component comp;
-                try {
-                    comp = loader.loadComponent(AppConfig.getFactory(), descriptor, null);
-                } catch (InstantiationException e) {
-                    throw new RuntimeException(e);
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
+                Component comp = loader.loadComponent(AppConfig.getFactory(), descriptor, null);
 
                 tabContent.add(comp);
                 com.vaadin.ui.Component impl = WebComponentsHelper.getComposition(comp);
@@ -374,7 +372,7 @@ public class WebTabSheet
         @Override
         public void onTabClose(com.vaadin.ui.TabSheet tabsheet, com.vaadin.ui.Component tabContent) {
             // have no other way to get tab from tab content
-            for (Tab tab: tabs.values()) {
+            for (Tab tab : tabs.values()) {
                 com.vaadin.ui.Component tabComponent = WebComponentsHelper.unwrap(tab.getComponent());
                 if (tabComponent == tabContent) {
                     if (tab.isClosable()) {
@@ -388,8 +386,7 @@ public class WebTabSheet
         private void doHandleCloseTab(Tab tab) {
             if (tab.getCloseHandler() != null) {
                 tab.getCloseHandler().onTabClose(tab);
-            }
-            else {
+            } else {
                 removeTab(tab.getName());
             }
         }

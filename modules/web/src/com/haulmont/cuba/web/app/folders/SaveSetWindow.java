@@ -40,10 +40,10 @@ public class SaveSetWindow extends AbstractWindow {
         foldersPane = (FoldersPane) params.get("foldersPane");
         entityClass = (String) params.get("entityClass");
         query = (String) params.get("query");
+        foldersSelect = getComponent("folderSelect");
 
         Button createBtn = getComponent("createNew");
         Button insertBtn = getComponent("insertBtn");
-        foldersSelect = getComponent("folderSelect");
 
         insertBtn.setAction(new InsertAction());
         createBtn.setAction(new CreateSetAction());

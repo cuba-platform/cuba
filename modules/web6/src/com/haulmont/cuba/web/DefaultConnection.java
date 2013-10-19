@@ -1,16 +1,15 @@
 /*
- * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
 package com.haulmont.cuba.web;
 
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.security.global.LoginException;
-import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
+import com.haulmont.cuba.web.auth.ActiveDirectoryHelper;
+import com.haulmont.cuba.web.auth.WebAuthConfig;
 
 import java.util.Locale;
 
@@ -37,7 +36,7 @@ public class DefaultConnection extends AbstractConnection implements ActiveDirec
         if (locale == null)
             throw new IllegalArgumentException("Locale is null");
 
-        String password = configuration.getConfig(WebConfig.class).getTrustedClientPassword();
+        String password = configuration.getConfig(WebAuthConfig.class).getTrustedClientPassword();
         update(loginService.loginTrusted(login, password, locale));
     }
 

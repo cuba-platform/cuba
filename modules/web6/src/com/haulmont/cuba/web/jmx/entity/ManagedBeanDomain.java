@@ -1,11 +1,6 @@
 /*
- * Copyright (c) 2008-2010 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
- *
- * Author: Alexander Budarov
- * Created: 17.08.2010 11:12:08
- * $Id$
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
 package com.haulmont.cuba.web.jmx.entity;

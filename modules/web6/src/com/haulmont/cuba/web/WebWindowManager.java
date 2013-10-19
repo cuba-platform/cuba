@@ -1,7 +1,6 @@
 /*
- * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.cuba.web;
 
@@ -10,13 +9,8 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.SilentException;
 import com.haulmont.cuba.gui.*;
-import com.haulmont.cuba.gui.components.AbstractAction;
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.DialogAction;
-import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.components.ShortcutAction;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.components.WrappedWindow;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.WebButton;
@@ -110,7 +104,7 @@ public class WebWindowManager extends WindowManager {
         return getCurrentWindowData().windowOpenMode;
     }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public Collection<Window> getOpenWindows() {
@@ -155,7 +149,9 @@ public class WebWindowManager extends WindowManager {
     }
 
     public void addShowStartupLayoutListener(ShowStartupLayoutListener showStartupLayoutListener) {
-        if (!showStartupLayoutListeners.contains(showStartupLayoutListener)) showStartupLayoutListeners.add(showStartupLayoutListener);
+        if (!showStartupLayoutListeners.contains(showStartupLayoutListener)) {
+            showStartupLayoutListeners.add(showStartupLayoutListener);
+        }
     }
 
     public void removeShowStartupLayoutListener(ShowStartupLayoutListener showStartupLayoutListener) {
@@ -173,7 +169,9 @@ public class WebWindowManager extends WindowManager {
     }
 
     public void addCloseStartupLayoutListener(CloseStartupLayoutListener closeStartupLayoutListener) {
-        if (!closeStartupLayoutListeners.contains(closeStartupLayoutListener)) closeStartupLayoutListeners.add(closeStartupLayoutListener);
+        if (!closeStartupLayoutListeners.contains(closeStartupLayoutListener)) {
+            closeStartupLayoutListeners.add(closeStartupLayoutListener);
+        }
     }
 
     public void removeCloseStartupLayoutListener(CloseStartupLayoutListener closeStartupLayoutListener) {
@@ -242,7 +240,6 @@ public class WebWindowManager extends WindowManager {
 
         window.setCaption(caption);
         window.setDescription(description);
-
 
         switch (type) {
             case NEW_TAB:
@@ -1010,12 +1007,12 @@ public class WebWindowManager extends WindowManager {
                 switch (((DialogAction) action).getType()) {
                     case OK:
                     case YES:
-                        button.setClickShortcut(ShortcutAction.Key.ENTER.getCode(), ShortcutAction.Modifier.CTRL.getCode());
+                        button.setClickShortcut(KeyCombination.Key.ENTER.getCode(), KeyCombination.Modifier.CTRL.getCode());
                         break;
                     case NO:
                     case CANCEL:
                     case CLOSE:
-                        button.setClickShortcut(ShortcutAction.Key.ESCAPE.getCode());
+                        button.setClickShortcut(KeyCombination.Key.ESCAPE.getCode());
                         break;
                 }
             }
@@ -1041,6 +1038,11 @@ public class WebWindowManager extends WindowManager {
 
         App.getInstance().getAppWindow().addWindow(window);
         window.center();
+    }
+
+    @Override
+    public void showWebPage(String url, @Nullable Map<String, Object> params) {
+        //todo artamonov rewrite generated body
     }
 
     private void removeWindowsWithName(String name) {

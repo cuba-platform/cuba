@@ -1,7 +1,6 @@
 /*
- * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
 package com.haulmont.cuba.web.gui.components;
@@ -29,7 +28,8 @@ import java.util.Collection;
 public class WebLookupPickerField
         extends WebLookupField
         implements LookupPickerField {
-    private WebPickerField pickerField;
+
+    protected WebPickerField pickerField;
 
     public WebLookupPickerField() {
         super();

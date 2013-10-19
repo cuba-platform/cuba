@@ -1,7 +1,6 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.cuba.web.sys;
 
@@ -13,6 +12,7 @@ import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.Browser;
 import com.haulmont.cuba.web.WebConfig;
+import com.haulmont.cuba.web.auth.RequestContext;
 import com.vaadin.Application;
 import com.vaadin.terminal.gwt.server.*;
 import com.vaadin.ui.Window;
@@ -106,7 +106,13 @@ public class CubaApplicationServlet extends ApplicationServlet {
         if (needRedirect) {
             redirectToApp(request, response, contextName, uriParts, action);
         } else {
-            doService(request, response);
+            RequestContext.create(request, response);
+
+            try {
+                doService(request, response);
+            } finally {
+                RequestContext.destroy();
+            }
         }
     }
 

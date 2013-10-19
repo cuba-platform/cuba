@@ -1,7 +1,6 @@
 /*
- * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
 package com.haulmont.cuba.web.gui.components;
@@ -11,9 +10,8 @@ import com.haulmont.cuba.gui.components.Action;
 /**
  * {@link Action} adapter for web client.
  *
- * <p>$Id$</p>
- *
  * @author abramov
+ * @version $Id$
  */
 class WebActionWrapper extends com.vaadin.event.Action {
 

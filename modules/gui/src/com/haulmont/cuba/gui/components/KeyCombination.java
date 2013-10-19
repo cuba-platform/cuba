@@ -203,5 +203,14 @@ public class KeyCombination {
         }
     }
 
+    public static int[] getShortcutModifiers(KeyCombination.Modifier[] modifiers) {
+        if (modifiers == null) {
+            return null;
+        }
+        int[] res = new int[modifiers.length];
+        for (int i = 0; i < modifiers.length; i++) {
+            res[i] = modifiers[i].getCode();
+        }
+        return res;
+    }
 }
-

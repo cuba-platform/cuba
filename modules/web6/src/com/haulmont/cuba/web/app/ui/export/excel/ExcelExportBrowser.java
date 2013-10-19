@@ -1,95 +1,97 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
-
- * Author: Maksim Tulupov
- * Created: 21.08.2009 13:18:20
- *
- * $Id$
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.cuba.web.app.ui.export.excel;
 
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Button;
-import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.CheckBox;
 import com.haulmont.cuba.gui.export.ExcelExporter;
 import com.haulmont.cuba.gui.export.ExportDisplay;
-import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
-import com.vaadin.terminal.ThemeResource;
 
+import javax.inject.Inject;
 import java.util.*;
-import java.util.List;
 
+/**
+ * @author tulupov
+ * @version $Id$
+ */
 public class ExcelExportBrowser extends AbstractWindow {
 
     protected Table table;
 
     protected ExportDisplay exportDisplay;
 
-    protected OptionsGroup optionsGroup;
+    @Inject
+    protected CheckBox exportExpandedCheckBox;
 
-    public ExcelExportBrowser(IFrame frame) {
-        super(frame);
-    }
+    @Inject
+    protected OptionsGroup exportOptions;
+
+    @Inject
+    protected Button commitBtn;
+
+    @Inject
+    protected Button closeBtn;
+
+    @Inject
+    protected Button upBtn;
+
+    @Inject
+    protected Button downBtn;
 
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
+
         table = (Table) params.get("param$table");
         exportDisplay = (ExportDisplay) params.get("param$exportDisplay");
-        optionsGroup = ((OptionsGroup) getComponent("optionsGroup"));
+
         initValues();
         initCheckBox();
 
-        Button commitButton = getComponent("commit");
-        commitButton.setAction(new ExcelExportAction("actions.Ok"));
+        commitBtn.setAction(new ExcelExportAction("actions.Ok"));
 
-        Button closeButton = getComponent("close");
-        closeButton.setAction(new AbstractAction("actions.Cancel") {
-
+        closeBtn.setAction(new AbstractAction("actions.Cancel") {
+            @Override
             public void actionPerform(Component component) {
                 ExcelExportBrowser.this.close(null);
             }
         });
 
-        Button upButton = getComponent("up");
-        upButton.setAction(new AbstractAction("") {
+        upBtn.setAction(new AbstractAction("") {
+            {
+                setIcon("icons/up.png");
+            }
 
+            @Override
             public void actionPerform(Component component) {
                 moveColumns(true);
             }
         });
 
-        Button downButton = getComponent("down");
-        downButton.setAction(new AbstractAction("") {
+        downBtn.setAction(new AbstractAction("") {
+            {
+                setIcon("icons/down.png");
+            }
 
+            @Override
             public void actionPerform(Component component) {
                 moveColumns(false);
             }
         });
-        final com.vaadin.ui.Component upButtonIT = WebComponentsHelper.unwrap(upButton);
-        upButtonIT.setIcon(new ThemeResource("icons/32/arrow-up.png"));
-
-        final com.vaadin.ui.Component downButtonIT = WebComponentsHelper.unwrap(downButton);
-        downButtonIT.setIcon(new ThemeResource("icons/32/arrow-down.png"));
     }
 
     protected void initValues() {
-        optionsGroup.setOptionsList(new ArrayList(table.getColumns()));
+        exportOptions.setOptionsList(new ArrayList(table.getColumns()));
     }
 
     protected void initCheckBox() {
-        final CheckBox cb = getComponent("exportExpanded");
         if (table instanceof TreeTable) {
-                        cb.setEnabled(true);
-            cb.setValue(Boolean.TRUE);
-
+            exportExpandedCheckBox.setEnabled(true);
+            exportExpandedCheckBox.setValue(Boolean.TRUE);
         } else {
-                cb.setEnabled(false);
-            cb.setValue(Boolean.FALSE);
+            exportExpandedCheckBox.setEnabled(false);
+            exportExpandedCheckBox.setValue(Boolean.FALSE);
         }
     }
 
@@ -101,14 +103,13 @@ public class ExcelExportBrowser extends AbstractWindow {
                 moveColumn(up, c);
             }
         }
-
     }
 
     protected List<Table.Column> getSelectedColumns(boolean asc) {
-        final Set<Set> optionsList = optionsGroup.getValue();
+        final Set<Set> optionsList = exportOptions.getValue();
 
-        java.util.List<Table.Column> columns = new ArrayList<Table.Column>();
-        final List list = new ArrayList(optionsGroup.getOptionsList());
+        java.util.List<Table.Column> columns = new ArrayList<>();
+        final List list = new ArrayList(exportOptions.getOptionsList());
         if (optionsList != null) {
             for (Set s : optionsList) {
                 for (Object o : s) {
@@ -123,7 +124,7 @@ public class ExcelExportBrowser extends AbstractWindow {
                                 }
                             }
                         } else {
-                            for (ListIterator it = list.listIterator(list.size()); it.hasPrevious();) {
+                            for (ListIterator it = list.listIterator(list.size()); it.hasPrevious(); ) {
                                 final Object o1 = it.previous();
                                 final Object obj = findElement(s, o1);
                                 if (obj != null && s.contains(obj)) {
@@ -141,7 +142,7 @@ public class ExcelExportBrowser extends AbstractWindow {
     }
 
     protected void moveColumn(boolean up, Table.Column column) {
-        final List<Table.Column> optionsList = optionsGroup.getOptionsList();
+        final List<Table.Column> optionsList = exportOptions.getOptionsList();
 
         if (optionsList != null) {
             final int oldPosition = optionsList.indexOf(column);
@@ -156,7 +157,7 @@ public class ExcelExportBrowser extends AbstractWindow {
                 moveElement(optionsList, oldPosition, newPosition);
             }
         }
-        optionsGroup.setOptionsList(optionsList);
+        exportOptions.setOptionsList(optionsList);
     }
 
     protected void moveElement(List list, int sourceIndex, int destIndex) {
@@ -176,17 +177,15 @@ public class ExcelExportBrowser extends AbstractWindow {
         return null;
     }
 
-
     private class ExcelExportAction extends AbstractAction {
         protected ExcelExportAction(String id) {
             super(id);
         }
 
+        @Override
         public void actionPerform(Component component) {
-
             ExcelExporter ee = new ExcelExporter();
-            ee.exportTable(table, getSelectedColumns(true),
-                    (Boolean) ((CheckBox)getComponent("exportExpanded")).getValue(), exportDisplay);
+            ee.exportTable(table, getSelectedColumns(true), (Boolean) exportExpandedCheckBox.getValue(), exportDisplay);
             ExcelExportBrowser.this.close(null);
         }
     }

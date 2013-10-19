@@ -1,52 +1,51 @@
 /*
- * Copyright (c) 2008-2010 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
- *
- * Author: Alexander Budarov
- * Created: 09.06.2010 14:46:51
- * $Id$
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.gui.components.ShortcutAction;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.gui.components.KeyCombination;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.terminal.Resource;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Stack;
 
-@SuppressWarnings("serial")
+/**
+ * @author budarov
+ * @version $Id$
+ */
 public class MenuBar extends com.vaadin.ui.MenuBar {
 
-    private Map<MenuItem, String> shortcuts;
-    private boolean vertical;
+    protected Map<MenuItem, String> shortcuts;
+    protected boolean vertical;
 
-    private BiMap<MenuItem, String> debugIds;
+    protected BiMap<MenuItem, String> debugIds;
 
     public MenuBar() {
-        shortcuts = new HashMap<MenuItem, String>();
+        shortcuts = new HashMap<>();
     }
 
-    public void setShortcut(MenuItem item, ShortcutAction.KeyCombination shortcut) {
+    public void setShortcut(MenuItem item, KeyCombination shortcut) {
         setShortcut(item, makeCaption(shortcut));
     }
 
-    private String makeCaption(ShortcutAction.KeyCombination shortcut) {
+    protected String makeCaption(KeyCombination shortcut) {
+        Messages messages = AppBeans.get(Messages.class);
+
         StringBuilder sb = new StringBuilder();
         if (shortcut.getModifiers() != null) {
-            for (ShortcutAction.Modifier mod: shortcut.getModifiers()) {
-                sb.append(MessageProvider.getMessage(getClass(), "shortcut." + mod.name()))
+            for (KeyCombination.Modifier mod: shortcut.getModifiers()) {
+                sb.append(messages.getMessage(getClass(), "shortcut." + mod.name()))
                   .append("+");
             }
         }
-        sb.append(MessageProvider.getMessage(getClass(), "shortcut." + shortcut.getKey().name()));
+        sb.append(messages.getMessage(getClass(), "shortcut." + shortcut.getKey().name()));
         return sb.toString();
     }
 
@@ -90,9 +89,8 @@ public class MenuBar extends com.vaadin.ui.MenuBar {
 
     @Override
     public void paintContent(PaintTarget target) throws PaintException {
-
         // Stack for list iterators
-        Stack<Iterator<MenuItem>> iteratorStack = new Stack<Iterator<MenuItem>>();
+        // Stack<Iterator<MenuItem>> iteratorStack = new Stack<>();
 
         if (isVertical()) {
             target.addAttribute("vertical", true);

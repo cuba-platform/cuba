@@ -1,12 +1,6 @@
 /*
- * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 03.12.2009 17:14:45
- *
- * $Id$
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.cuba.web.gui.components;
 
@@ -15,14 +9,20 @@ import com.haulmont.cuba.gui.components.Component;
 
 import java.util.Collection;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class WebAccessControl extends WebAbstractQuasiComponent implements AccessControl {
 
     private Collection<Component> realComponents;
 
+    @Override
     public Collection<Component> getRealComponents() {
         return realComponents;
     }
 
+    @Override
     public void setRealComponents(Collection<Component> realComponents) {
         this.realComponents = realComponents;
     }

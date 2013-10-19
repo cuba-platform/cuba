@@ -1,7 +1,6 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.cuba.web.gui.components;
 
@@ -27,6 +26,7 @@ import com.haulmont.cuba.gui.components.actions.ListActionType;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
+import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.presentations.PresentationsImpl;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
@@ -48,6 +48,7 @@ import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
+import com.vaadin.terminal.Resource;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
@@ -81,6 +82,9 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     protected Action enterPressAction;
 
     protected Table.StyleProvider styleProvider;
+    protected Table.IconProvider iconProvider;
+
+    protected Map<Entity, Datasource> fieldDatasources = new WeakHashMap<>();
 
     protected Map<Table.Column, String> requiredColumns = new HashMap<>();
 
@@ -140,6 +144,26 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         //noinspection RedundantCast
         columns.remove((MetaPropertyPath) column.getId());
         columnsOrder.remove(column);
+    }
+
+    @Override
+    public Datasource getItemDatasource(Entity item) {
+        Datasource fieldDatasource = fieldDatasources.get(item);
+
+        if (fieldDatasource == null) {
+            fieldDatasource = new DsBuilder()
+                    .setAllowCommit(false)
+                    .setMetaClass(datasource.getMetaClass())
+                    .setRefreshMode(CollectionDatasource.RefreshMode.NEVER)
+                    .setViewName("_local")
+                    .buildDatasource();
+
+            ((DatasourceImplementation)fieldDatasource).valid();
+
+            fieldDatasource.setItem(item);
+        }
+
+        return fieldDatasource;
     }
 
     protected void addGeneratedColumn(Object id, Object generator) {
@@ -469,9 +493,9 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     protected void addShortcutActionBridge(String shortcutActionId, String keyCombination,
                                            final ListActionType defaultAction) {
 
-        ShortcutAction.KeyCombination actionKeyCombination = ShortcutAction.KeyCombination.create(keyCombination);
+        KeyCombination actionKeyCombination = KeyCombination.create(keyCombination);
         component.addShortcutListener(new ShortcutListener(shortcutActionId, actionKeyCombination.getKey().getCode(),
-                ShortcutAction.Modifier.codes(actionKeyCombination.getModifiers())) {
+                KeyCombination.Modifier.codes(actionKeyCombination.getModifiers())) {
             @Override
             public void handleAction(Object sender, Object target) {
                 if (target == component) {
@@ -780,6 +804,50 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     }
 
     @Override
+    public void setIconProvider(IconProvider iconProvider) {
+        this.iconProvider = iconProvider;
+        if (iconProvider != null) {
+            setRowHeaderMode(RowHeaderMode.ICON);
+        } else {
+            setRowHeaderMode(RowHeaderMode.NONE);
+        }
+    }
+
+    // For vaadin component extensions.
+    protected Resource getItemIcon(Object itemId) {
+        if (iconProvider == null) {
+            return null;
+        }
+        // noinspection unchecked
+        Entity item = datasource.getItem(itemId);
+        if (item == null) {
+            return null;
+        }
+        // noinspection unchecked
+        String resourceUrl = iconProvider.getItemIcon(item);
+        if (StringUtils.isBlank(resourceUrl)) {
+            return null;
+        }
+        // noinspection ConstantConditions
+        if (!resourceUrl.contains(":")) {
+            resourceUrl = "theme:" + resourceUrl;
+        }
+        return WebComponentsHelper.getResource(resourceUrl);
+    }
+
+    @Override
+    public int getRowHeaderWidth() {
+        // CAUTION: vaadin considers null as row header property id;
+        return component.getColumnWidth(null);
+    }
+
+    @Override
+    public void setRowHeaderWidth(int width) {
+        // CAUTION: vaadin considers null as row header property id;
+        component.setColumnWidth(null, width);
+    }
+
+    @Override
     public void applySettings(Element element) {
         final Element columnsElem = element.element("columns");
         if (columnsElem != null) {
@@ -837,6 +905,17 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                 }
             }
         }
+    }
+
+    @Override
+    public boolean isAllowPopupMenu() {
+        // todo not yet implemented
+        return false;
+    }
+
+    @Override
+    public void setAllowPopupMenu(boolean value) {
+        // todo not yet implemented
     }
 
     @Override

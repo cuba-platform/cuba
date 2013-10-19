@@ -1,7 +1,6 @@
 /*
- * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
 package com.haulmont.cuba.web.app.ui.jmxinstance.edit;
@@ -28,7 +27,7 @@ public class JmxInstanceEditor extends AbstractEditor<JmxInstance> {
     @Inject
     protected FieldGroup jmxFieldGroup;
 
-    protected TextField passwordField;
+    protected PasswordField passwordField;
 
     @Inject
     protected JmxControlAPI jmxControlAPI;
@@ -42,29 +41,20 @@ public class JmxInstanceEditor extends AbstractEditor<JmxInstance> {
         jmxFieldGroup.addCustomField("password", new FieldGroup.CustomFieldGenerator() {
             @Override
             public Component generateField(Datasource datasource, String propertyId) {
-                passwordField = factory.createComponent(TextField.NAME);
+                passwordField = factory.createComponent(PasswordField.NAME);
+                passwordField.setDatasource(datasource, propertyId);
                 passwordField.setRequired(true);
                 passwordField.setRequiredMessage(getMessage("passwordRequiredMsg"));
-                passwordField.setSecret(true);
                 return passwordField;
             }
         });
     }
-
-    @Override
-    protected void postInit() {
-        super.postInit();
-
-        passwordField.setValue(getItem().getPassword());
-    }
-
     @Override
     protected boolean preCommit() {
         return validateConnection() && super.preCommit();
     }
 
     private boolean validateConnection() {
-        getItem().setPassword(passwordField.<String>getValue());
         // try to connect to instance and assign cluster node name
         try {
             String remoteNodeName = jmxControlAPI.getRemoteNodeName(getItem());

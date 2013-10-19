@@ -51,7 +51,7 @@ public class DefaultWidgetSet extends WidgetSet {
             } else if (uidl.hasAttribute("secret")) {
                 return VPasswordField.class;
             }
-        } else if (widgetClass == VResizableTextField.class) {
+        } else if (widgetClass == VResizableTextArea.class) {
             if (!uidl.hasAttribute("multiline")) {
                 if (uidl.hasAttribute("secret"))
                     return VPasswordField.class;

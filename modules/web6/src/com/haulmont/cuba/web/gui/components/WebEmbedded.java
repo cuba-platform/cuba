@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+ */
+
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.global.ConfigProvider;
@@ -22,13 +27,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * User: Nikolay Gorodnov
- * Date: 22.06.2009
+ * @author gorodnov
+ * @version $Id$
  */
 public class WebEmbedded
         extends WebAbstractComponent<com.vaadin.ui.Embedded>
-        implements Embedded, Component.Disposable
-{
+        implements Embedded, Component.Disposable {
+
     private Map<String, String> parameters = null;
     private Type type = Type.OBJECT;
     private ApplicationResource resource;
@@ -39,11 +44,13 @@ public class WebEmbedded
         provideType();
     }
 
+    @Override
     public void setSource(URL src) {
         component.setSource(new ExternalResource(src));
         setType(Type.BROWSER);
     }
 
+    @Override
     public void setSource(String src) {
         if (src.startsWith("http") || src.startsWith("https")) {
             try {
@@ -68,9 +75,10 @@ public class WebEmbedded
         }
     }
 
+    @Override
     public void setSource(String fileName, final InputStream src) {
-
         final StreamResource.StreamSource source = new StreamResource.StreamSource() {
+            @Override
             public InputStream getStream() {
                 return src;
             }
@@ -87,6 +95,7 @@ public class WebEmbedded
         }
     }
 
+    @Override
     public void setSource(String fileName, ExportDataProvider dataProvider) {
         try {
             resource = new WebEmbeddedApplicationResource(
@@ -99,18 +108,21 @@ public class WebEmbedded
         }
     }
 
+    @Override
     public void setMIMEType(String mt) {
         component.setMimeType(mt);
     }
 
+    @Override
     public void addParameter(String name, String value) {
         if (parameters == null) {
-            parameters = new HashMap<String, String>();
+            parameters = new HashMap<>();
         }
         component.setParameter(name, value);
         parameters.put(name, value);
     }
 
+    @Override
     public void removeParameter(String name) {
         component.removeParameter(name);
         if (parameters != null) {
@@ -118,15 +130,18 @@ public class WebEmbedded
         }
     }
 
+    @Override
     public Map<String, String> getParameters() {
         return Collections.unmodifiableMap(parameters);
     }
 
+    @Override
     public void setType(Type t) {
         type = t;
         provideType();
     }
 
+    @Override
     public Type getType() {
         return type;
     }
@@ -145,6 +160,7 @@ public class WebEmbedded
         }
     }
 
+    @Override
     public void dispose() {
         if (resource != null) {
             App.getInstance().removeResource(resource);
@@ -152,6 +168,7 @@ public class WebEmbedded
         disposed = true;
     }
 
+    @Override
     public boolean isDisposed() {
         return disposed;
     }

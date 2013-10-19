@@ -1,24 +1,22 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
-
- * Author: Nikolay Gorodnov
- * Created: 18.09.2009 12:08:22
- *
- * $Id$
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.cuba.web.toolkit;
 
-import com.vaadin.terminal.PaintTarget;
 import com.vaadin.terminal.PaintException;
+import com.vaadin.terminal.PaintTarget;
+import com.vaadin.ui.AbstractComponent;
 
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Timer {
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
+public class Timer extends AbstractComponent {
 
     private int delay;
     private boolean repeating;
@@ -65,13 +63,14 @@ public class Timer {
         }
     }
 
+    @Override
     public void requestRepaint() {
         dirty = true;
     }
 
     public void addListener(Listener listener) {
         if (listeners == null) {
-            listeners = new LinkedList<Listener>();
+            listeners = new LinkedList<>();
         }
         listeners.add(listener);
     }

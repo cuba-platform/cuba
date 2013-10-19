@@ -1,7 +1,6 @@
 /*
- * Copyright (c) 2013 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.cuba.web;
 
@@ -11,10 +10,11 @@ import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.web.auth.ActiveDirectoryHelper;
+import com.haulmont.cuba.web.auth.WebAuthConfig;
 import com.haulmont.cuba.web.exception.ExceptionHandlers;
 import com.haulmont.cuba.web.gui.WebTimer;
 import com.haulmont.cuba.web.log.AppLog;
-import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 import com.haulmont.cuba.web.sys.LinkHandler;
 import com.haulmont.cuba.web.toolkit.Timer;
 import com.vaadin.Application;
@@ -70,21 +70,21 @@ public abstract class App extends Application
     public static final String APP_THEME_COOKIE_PREFIX = "APP_THEME_NAME_";
 
     protected Connection connection;
-    private WebWindowManager windowManager;
+    protected WebWindowManager windowManager;
 
-    private AppLog appLog;
+    protected AppLog appLog;
 
     protected ExceptionHandlers exceptionHandlers;
 
-    private static ThreadLocal<App> currentApp = new ThreadLocal<App>();
+    private static ThreadLocal<App> currentApp = new ThreadLocal<>();
 
-    protected transient ThreadLocal<String> currentWindowName = new ThreadLocal<String>();
+    protected transient ThreadLocal<String> currentWindowName = new ThreadLocal<>();
 
     protected LinkHandler linkHandler;
 
     protected AppTimers timers;
 
-    protected transient Map<Object, Long> requestStartTimes = new WeakHashMap<Object, Long>();
+    protected transient Map<Object, Long> requestStartTimes = new WeakHashMap<>();
 
     private volatile String contextName;
 
@@ -102,8 +102,11 @@ public abstract class App extends Application
 
     protected String clientAddress;
 
-    protected GlobalConfig globalConfig;
-    protected WebConfig webConfig;
+    protected final GlobalConfig globalConfig;
+
+    protected final WebConfig webConfig;
+
+    protected final WebAuthConfig webAuthConfig;
 
     protected WebTimer workerTimer;
 
@@ -116,6 +119,7 @@ public abstract class App extends Application
             Configuration configuration = AppBeans.get(Configuration.class);
             webConfig = configuration.getConfig(WebConfig.class);
             globalConfig = configuration.getConfig(GlobalConfig.class);
+            webAuthConfig = configuration.getConfig(WebAuthConfig.class);
 
             appLog = new AppLog();
             connection = createConnection();
@@ -138,15 +142,12 @@ public abstract class App extends Application
 
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
-        currentWindowName = new ThreadLocal<String>();
-        requestStartTimes = new WeakHashMap<Object, Long>();
+        currentWindowName = new ThreadLocal<>();
+        requestStartTimes = new WeakHashMap<>();
     }
 
     @Override
     public void onRequestStart(HttpServletRequest request, HttpServletResponse response) {
-
-        ActiveDirectoryHelper.startCurrentSession(request.getSession());
-
         this.response = response;
         cookies.updateCookies(request);
 
@@ -173,8 +174,6 @@ public abstract class App extends Application
     @Override
     public void onRequestEnd(HttpServletRequest request, HttpServletResponse response) {
         testModeRequest = false;
-
-        ActiveDirectoryHelper.endCurrentSession();
     }
 
     public static Application.SystemMessages getSystemMessages() {
@@ -532,7 +531,7 @@ public abstract class App extends Application
     public void cleanupBackgroundTasks() {
         backgroundTaskManager.cleanupTasks();
         workerTimer.removeAllListeners();
-        workerTimer.stopTimer();
+        workerTimer.stop();
     }
 
     Window getCurrentWindow() {
@@ -572,7 +571,7 @@ public abstract class App extends Application
             return workerTimer;
 
         workerTimer = new WebTimer(webConfig.getUiCheckInterval(), true);
-        workerTimer.stopTimer();
+        workerTimer.stop();
         return workerTimer;
     }
 
@@ -591,6 +590,7 @@ public abstract class App extends Application
         if (sessionPingPeriod > 0) {
             Timer timer = new Timer(sessionPingPeriod * 1000, true);
             timer.addListener(new Timer.Listener() {
+                @Override
                 public void onTimer(Timer timer) {
                     if (connected) {
                         log.debug("Ping session");
@@ -603,6 +603,7 @@ public abstract class App extends Application
                     }
                 }
 
+                @Override
                 public void onStopTimer(Timer timer) {
                 }
             });

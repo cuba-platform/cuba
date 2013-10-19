@@ -1,12 +1,6 @@
 /*
- * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
-
- * Author: Gennady Pavlov
- * Created: 08.04.2010 16:09:20
- *
- * $Id$
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.cuba.web.gui.components;
 
@@ -31,11 +25,12 @@ import java.util.Map;
 public class WebActionsField
         extends WebAbstractField<ActionsField>
         implements com.haulmont.cuba.gui.components.ActionsField {
-    private WebLookupField lookupField;
-    private WebButton lookupButton;
-    private WebButton openButton;
 
-    private List<Action> actionsOrder = new LinkedList<Action>();
+    protected WebLookupField lookupField;
+    protected WebButton lookupButton;
+    protected WebButton openButton;
+
+    protected List<Action> actionsOrder = new LinkedList<>();
 
     public WebActionsField() {
         lookupField = new WebLookupField();
@@ -61,90 +56,112 @@ public class WebActionsField
         return lookupField.getDatasource();
     }
 
+    @Override
     public Object getNullOption() {
         return lookupField.getNullOption();
     }
 
+    @Override
     public void setNullOption(Object nullOption) {
         lookupField.setNullOption(nullOption);
     }
 
+    @Override
     public FilterMode getFilterMode() {
         return lookupField.getFilterMode();
     }
 
+    @Override
     public void setFilterMode(FilterMode mode) {
         lookupField.setFilterMode(mode);
     }
 
+    @Override
     public boolean isNewOptionAllowed() {
         return lookupField.isNewOptionAllowed();
     }
 
+    @Override
     public void setNewOptionAllowed(boolean newOptionAllowed) {
         lookupField.setNewOptionAllowed(newOptionAllowed);
     }
 
+    @Override
     public NewOptionHandler getNewOptionHandler() {
         return lookupField.getNewOptionHandler();
     }
 
+    @Override
     public void setNewOptionHandler(NewOptionHandler newOptionHandler) {
         lookupField.setNewOptionHandler(newOptionHandler);
     }
 
+    @Override
     public boolean isMultiSelect() {
         return lookupField.isMultiSelect();
     }
 
+    @Override
     public void setMultiSelect(boolean multiselect) {
         lookupField.setMultiSelect(multiselect);
     }
 
+    @Override
     public CaptionMode getCaptionMode() {
         return lookupField.getCaptionMode();
     }
 
+    @Override
     public void setCaptionMode(CaptionMode captionMode) {
         lookupField.setCaptionMode(captionMode);
     }
 
+    @Override
     public String getCaptionProperty() {
         return lookupField.getCaptionProperty();
     }
 
+    @Override
     public void setCaptionProperty(String captionProperty) {
         lookupField.setCaptionProperty(captionProperty);
     }
 
+    @Override
     public CollectionDatasource getOptionsDatasource() {
         return lookupField.getOptionsDatasource();
     }
 
+    @Override
     public void setOptionsDatasource(CollectionDatasource datasource) {
         lookupField.setOptionsDatasource(datasource);
     }
 
+    @Override
     public List getOptionsList() {
         return lookupField.getOptionsList();
     }
 
+    @Override
     public void setOptionsList(List optionsList) {
         lookupField.setOptionsList(optionsList);
     }
 
+    @Override
     public Map<String, Object> getOptionsMap() {
         return lookupField.getOptionsMap();
     }
 
+    @Override
     public void setOptionsMap(Map<String, Object> map) {
         lookupField.setOptionsMap(map);
     }
 
+    @Override
     public String getDescriptionProperty() {
         return lookupField.getDescriptionProperty();
     }
 
+    @Override
     public void setDescriptionProperty(String descProperty) {
         lookupField.setDescriptionProperty(descProperty);
     }
@@ -314,7 +331,7 @@ public class WebActionsField
         return lookupField;
     }
 
-
+    @Override
     public void disablePaging() {
     }
 }

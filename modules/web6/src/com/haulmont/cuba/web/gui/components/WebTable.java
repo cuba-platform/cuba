@@ -1,17 +1,11 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 29.12.2008 14:34:57
- * $Id$
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -26,25 +20,13 @@ import com.vaadin.terminal.Resource;
 
 import java.util.*;
 
-public class WebTable
-    extends
-        WebAbstractTable<com.haulmont.cuba.web.toolkit.ui.Table>
-    implements
-        Component.Wrapper
-{
+public class WebTable extends WebAbstractTable<com.haulmont.cuba.web.toolkit.ui.Table> implements Component.Wrapper {
+
     public WebTable() {
         component = new com.haulmont.cuba.web.toolkit.ui.Table() {
             @Override
             public Resource getItemIcon(Object itemId) {
-                if (styleProvider != null) {
-                    @SuppressWarnings({"unchecked"})
-                    final Entity item = datasource.getItem(itemId);
-                    final String resURL = styleProvider.getItemIcon(item);
-
-                    return resURL == null ? null : WebComponentsHelper.getResource(resURL);
-                } else {
-                    return null;
-                }
+                return WebTable.this.getItemIcon(itemId);
             }
 
             @Override
@@ -203,7 +185,7 @@ public class WebTable
         @Override
         public void addContainerPropertyAggregation(Object propertyId, Type type) {
             if (aggregationProperties == null) {
-                aggregationProperties = new LinkedList<Object>();
+                aggregationProperties = new LinkedList<>();
             } else if (aggregationProperties.contains(propertyId)) {
                 throw new IllegalStateException("Such aggregation property is already exists");
             }

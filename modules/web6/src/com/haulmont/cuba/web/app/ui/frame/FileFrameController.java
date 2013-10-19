@@ -1,12 +1,6 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
-
- * Author: Maksim Tulupov
- * Created: 20.11.2009 14:10:02
- *
- * $Id$
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.cuba.web.app.ui.frame;
 
@@ -25,6 +19,10 @@ import com.haulmont.cuba.web.app.FileDownloadHelper;
 import java.io.File;
 import java.util.Map;
 
+/**
+ * @author tulupov
+ * @version $Id$
+ */
 public class FileFrameController extends AbstractWindow {
 
     private CollectionDatasource ds;
@@ -34,10 +32,6 @@ public class FileFrameController extends AbstractWindow {
     private FileDescriptor fd;
 
     private Table filesTable;
-
-    public FileFrameController(IFrame frame) {
-        super(frame);
-    }
 
     @Override
     public void init(Map<String, Object> params) {

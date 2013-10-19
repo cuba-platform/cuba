@@ -1,7 +1,6 @@
 /*
- * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
 package com.haulmont.cuba.toolkit.gwt.client.ui;
@@ -15,12 +14,11 @@ import com.vaadin.terminal.gwt.client.UIDL;
 import com.vaadin.terminal.gwt.client.Util;
 import com.vaadin.terminal.gwt.client.ui.VTextArea;
 
-
 /**
  * @author subbotin
  * @version $Id$
  */
-public class VResizableTextField extends VTextArea {
+public class VResizableTextArea extends VTextArea {
 
     public static final String DIV_CLASS_NAME = "v-resizable-textarea-div";
 
@@ -36,6 +34,7 @@ public class VResizableTextField extends VTextArea {
     private static final int MINIMAL_HEIGHT = 17;
 
     private class ResizeEventListener implements EventListener {
+        @Override
         public void onBrowserEvent(Event event) {
             switch (DOM.eventGetType(event)) {
                 case Event.ONMOUSEOVER:
@@ -54,7 +53,7 @@ public class VResizableTextField extends VTextArea {
         }
     }
 
-    public VResizableTextField() {
+    public VResizableTextArea() {
         super();
         DOM.setStyleAttribute(getElement(), "resize", "none");
         resizeElement.setClassName(DIV_CLASS_NAME);

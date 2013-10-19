@@ -16,7 +16,7 @@ public class MenuShortcutAction extends ShortcutListener {
 
     private static final long serialVersionUID = -5416777300893219886L;
 
-    private MenuBar.MenuItem menuItem;
+    protected MenuBar.MenuItem menuItem;
 
     public MenuShortcutAction(MenuBar.MenuItem menuItem, String caption, int kc, int... m) {
         super(caption, kc, m);
@@ -24,22 +24,11 @@ public class MenuShortcutAction extends ShortcutListener {
     }
 
     public MenuShortcutAction(MenuBar.MenuItem menuItem, String caption, KeyCombination key) {
-        this(menuItem, caption, key.getKey().getCode(), getShortcutModifiers(key.getModifiers()));
+        this(menuItem, caption, key.getKey().getCode(), KeyCombination.getShortcutModifiers(key.getModifiers()));
     }
 
     @Override
     public void handleAction(Object sender, Object target) {
         menuItem.getCommand().menuSelected(menuItem);
-    }
-
-    public static int[] getShortcutModifiers(KeyCombination.Modifier[] modifiers) {
-        if (modifiers == null) {
-            return null;
-        }
-        int[] res = new int[modifiers.length];
-        for (int i = 0; i < modifiers.length; i++) {
-            res[i] = modifiers[i].getCode();
-        }
-        return res;
     }
 }

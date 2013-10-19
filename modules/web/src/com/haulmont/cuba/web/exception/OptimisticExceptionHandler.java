@@ -36,12 +36,12 @@ public class OptimisticExceptionHandler extends AbstractExceptionHandler {
 
         Messages messages = AppBeans.get(Messages.class);
 
-        String localizedEntityName = "";
         String entityName = entityClassName.substring(entityClassName.lastIndexOf(".") + 1);
         String packageName = entityClassName.substring(0, entityClassName.lastIndexOf("."));
-        localizedEntityName = messages.getMessage(packageName, entityName);
+        String localizedEntityName = messages.getMessage(packageName, entityName);
 
-        String msg = messages.formatMessage(messages.getMainMessagePack(), "optimisticException.message", "\"" + localizedEntityName + "\"");
+        String msg = messages.formatMessage(messages.getMainMessagePack(),
+                "optimisticException.message", "\"" + localizedEntityName + "\"");
         app.getWindowManager().showNotification(msg, IFrame.NotificationType.ERROR);
     }
 }

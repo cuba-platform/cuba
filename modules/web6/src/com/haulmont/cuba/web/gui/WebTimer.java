@@ -1,59 +1,80 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
-
- * Author: Nikolay Gorodnov
- * Created: 21.09.2009 15:42:23
- *
- * $Id$
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.cuba.web.gui;
 
-import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.toolkit.Timer;
-import org.dom4j.Element;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
-public class WebTimer extends Timer implements com.haulmont.cuba.gui.components.Timer {
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
+public class WebTimer extends WebAbstractComponent<Timer> implements com.haulmont.cuba.gui.components.Timer {
 
-    private String id;
-    private Element xmlDescriptor;
-
-    private com.haulmont.cuba.gui.components.Window frame;
-
-    private final List<TimerListener> timerListeners = new LinkedList<TimerListener>();
-
-    protected Listener listener;
+    protected final Map<TimerListener, Timer.Listener> listeners = new HashMap<>();
 
     public WebTimer() {
-        this(500, false);
+        component = new WebTimerImpl(500, false);
     }
 
     public WebTimer(int delay, boolean repeat) {
-        super(delay, repeat);
-        listener = new Listener() {
-            @Override
-            public void onTimer(Timer timer) {
-                fireOnTimer();
-            }
-
-            @Override
-            public void onStopTimer(Timer timer) {
-                fireOnStopTimer();
-            }
-        };
-        addListener(listener);
+        component = new WebTimerImpl(delay, repeat);
     }
 
     @Override
-    public void startTimer() {
-        if (!getListeners().contains(listener))
-            addListener(listener);
-        super.startTimer();
+    public void start() {
+        component.startTimer();
+    }
+
+    @Override
+    public void stop() {
+        component.stopTimer();
+    }
+
+    @Override
+    public boolean isRepeating() {
+        return component.isRepeating();
+    }
+
+    @Override
+    public void setRepeating(boolean repeating) {
+        component.setRepeating(repeating);
+    }
+
+    @Override
+    public int getDelay() {
+        return component.getDelay();
+    }
+
+    @Override
+    public void setDelay(int delay) {
+        component.setDelay(delay);
+    }
+
+    @Override
+    public void addTimerListener(TimerListener listener) {
+        TimerListenerWrapper componentListener = new TimerListenerWrapper(listener);
+        listeners.put(listener, componentListener);
+        component.addListener(componentListener);
+    }
+
+    @Override
+    public void removeTimerListener(TimerListener listener) {
+        Timer.Listener componentListener = listeners.remove(listener);
+        component.removeListener(componentListener);
+    }
+
+    @Override
+    public void setId(String id) {
+        super.setId(id);
+
+        component.setDebugId(id);
     }
 
     @Override
@@ -61,77 +82,43 @@ public class WebTimer extends Timer implements com.haulmont.cuba.gui.components.
         return id;
     }
 
-    @Override
-    public void setId(String id) {
-        this.id = id;
+    public Timer getTimerImpl() {
+        return component;
     }
 
-    @Override
-    public Window getFrame() {
-        return frame;
-    }
-
-    @Override
-    public void setFrame(Window frame) {
-        if (this.frame != null) {
-            throw new IllegalStateException("The timer is already has an owner");
-        }
-        this.frame = frame;
-    }
-
-    @Override
-    public Element getXmlDescriptor() {
-        return xmlDescriptor;
-    }
-
-    @Override
-    public void setXmlDescriptor(Element element) {
-        xmlDescriptor = element;
-    }
-
-    public List<TimerListener> getTimerListeners() {
-        return Collections.unmodifiableList(timerListeners);
-    }
-
-    @Override
-    public void addTimerListener(TimerListener listener) {
-        synchronized (timerListeners) {
-            if (!timerListeners.contains(listener)) timerListeners.add(listener);
-        }
-    }
-
-    @Override
-    public void removeTimerListener(TimerListener listener) {
-        synchronized (timerListeners) {
-            timerListeners.remove(listener);
-        }
+    public Set<TimerListener> getTimerListeners() {
+        return listeners.keySet();
     }
 
     public void removeAllListeners() {
-        synchronized (timerListeners) {
-            timerListeners.clear();
+        synchronized (listeners) {
+            listeners.clear();
         }
     }
 
-    private void fireOnTimer() {
-        List<TimerListener> executionList;
-        synchronized (timerListeners) {
-            executionList = new LinkedList<TimerListener>(timerListeners);
+    protected class TimerListenerWrapper implements Timer.Listener {
+
+        protected TimerListener timerListener;
+
+        public TimerListenerWrapper(TimerListener timerListener) {
+            this.timerListener = timerListener;
         }
-        // Process
-        for (final TimerListener listener : executionList) {
-            listener.onTimer(this);
+
+        @Override
+        public void onTimer(Timer timer) {
+            timerListener.onTimer(WebTimer.this);
+        }
+
+        @Override
+        public void onStopTimer(Timer timer) {
+            timerListener.onStopTimer(WebTimer.this);
         }
     }
 
-    private void fireOnStopTimer() {
-        List<TimerListener> executionList;
-        synchronized (timerListeners) {
-            executionList = new LinkedList<TimerListener>(timerListeners);
-        }
-        // Process
-        for (final TimerListener listener : executionList) {
-            listener.onStopTimer(this);
+    public static class WebTimerImpl extends Timer {
+
+        public WebTimerImpl(int delay, boolean repeating) {
+            super(delay, repeating);
         }
     }
 }

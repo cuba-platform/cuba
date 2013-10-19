@@ -1,7 +1,6 @@
 /*
- * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
 package com.haulmont.cuba.web;
@@ -13,16 +12,15 @@ import com.vaadin.ui.Window;
 import java.util.*;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class AppTimers {
 
     private App app;
 
-    protected Map<Window, WindowTimers> windowTimers = new HashMap<Window, WindowTimers>();
-    protected Map<Timer, Window> timerWindow = new HashMap<Timer, Window>();
+    protected Map<Window, WindowTimers> windowTimers = new HashMap<>();
+    protected Map<Timer, Window> timerWindow = new HashMap<>();
 
     private boolean stopTimers = false;
 
@@ -67,8 +65,7 @@ public class AppTimers {
             windowTimers.put(mainWindow, wt);
         }
 
-        if (wt.timers.add(timer))
-        {
+        if (wt.timers.add(timer)) {
             timerWindow.put(timer, mainWindow);
 
             timer.addListener(new Timer.Listener() {
@@ -77,20 +74,18 @@ public class AppTimers {
 
                 public void onStopTimer(Timer timer) {
                     Window window = timerWindow.remove(timer);
-                    if (window != null)
-                    {
+                    if (window != null) {
                         WindowTimers wt = windowTimers.get(window);
                         if (wt != null) {
                             wt.timers.remove(timer);
-                            if (timer instanceof WebTimer) {
-                                wt.idTimers.remove(((WebTimer) timer).getId());
+                            if (timer instanceof WebTimer.WebTimerImpl) {
+                                wt.idTimers.remove(timer.getDebugId());
                             }
                         }
                     }
                 }
             });
-            if (timer instanceof WebTimer) {
-                final WebTimer webTimer = (WebTimer) timer;
+            if (timer instanceof WebTimer.WebTimerImpl) {
                 if (owner != null) {
                     owner.addListener(new com.haulmont.cuba.gui.components.Window.CloseListener() {
                         public void windowClosed(String actionId) {
@@ -98,8 +93,8 @@ public class AppTimers {
                         }
                     });
                 }
-                if (webTimer.getId() != null) {
-                    wt.idTimers.put(webTimer.getId(), webTimer);
+                if (timer.getDebugId() != null) {
+                    wt.idTimers.put(timer.getDebugId(), timer);
                 }
             }
         }
@@ -153,8 +148,7 @@ public class AppTimers {
     }
 
     protected static class WindowTimers {
-        protected Map<String, Timer> idTimers = new HashMap<String, Timer>();
-        protected Set<Timer> timers = new HashSet<Timer>();
+        protected Map<String, Timer> idTimers = new HashMap<>();
+        protected Set<Timer> timers = new HashSet<>();
     }
-
 }

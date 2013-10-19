@@ -1,12 +1,6 @@
 /*
- * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
-
- * Author: Yuryi Artamonov
- * Created: 19.11.2010 16:07:17
- *
- * $Id$
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
@@ -20,6 +14,7 @@ import com.vaadin.terminal.PaintTarget;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.ClientWidget;
 import org.apache.commons.fileupload.FileItemStream;
+import org.apache.commons.lang.ObjectUtils;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -28,6 +23,41 @@ import java.util.*;
 @SuppressWarnings("serial")
 @ClientWidget(VSwfUpload.class)
 public class MultiUpload extends AbstractComponent {
+
+    public enum UploadErrorType {
+        QUEUE_LIMIT_EXCEEDED(-100),
+        FILE_EXCEEDS_SIZE_LIMIT(-110),
+        ZERO_BYTE_FILE(-120),
+        INVALID_FILETYPE(-130),
+        HTTP_ERROR(-200),
+        MISSING_UPLOAD_URL(-210),
+        IO_ERROR(-220),
+        SECURITY_ERROR(-230),
+        UPLOAD_LIMIT_EXCEEDED(-240),
+        UPLOAD_FAILED(-250),
+        SPECIFIED_FILE_ID_NOT_FOUND(-260),
+        FILE_VALIDATION_FAILED(-270),
+        FILE_CANCELLED(-280),
+        UPLOAD_STOPPED(-290);
+
+        private int id;
+
+        private UploadErrorType(int id) {
+            this.id = id;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public static UploadErrorType fromId(Integer id) {
+            for (UploadErrorType type : UploadErrorType.values()) {
+                if (ObjectUtils.equals(id, type.getId()))
+                    return type;
+            }
+            return UPLOAD_FAILED; // unknown id
+        }
+    }
 
     public interface FileUploadStartListener extends Serializable {
         void fileUploadStart(String fileName);
@@ -172,8 +202,6 @@ public class MultiUpload extends AbstractComponent {
     public void removeListener(FileErrorHandler errorListener) {
         fileErrorListeners.remove(errorListener);
     }
-
-    // Get|Set value provider
 
     public ValueProvider getValueProvider() {
         return valueProvider;

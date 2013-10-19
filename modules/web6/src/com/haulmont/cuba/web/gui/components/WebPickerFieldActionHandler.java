@@ -1,7 +1,6 @@
 /*
- * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
 package com.haulmont.cuba.web.gui.components;
@@ -9,6 +8,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.gui.components.PickerField;
 import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
@@ -22,15 +22,15 @@ import java.util.*;
  */
 public class WebPickerFieldActionHandler implements Action.Handler {
 
-    private final int[] modifiers;
+    protected final int[] modifiers;
 
-    private Map<ShortcutAction, com.haulmont.cuba.gui.components.Action> actionsMap = new HashMap<>();
+    protected Map<ShortcutAction, com.haulmont.cuba.gui.components.Action> actionsMap = new HashMap<>();
 
-    private List<Action> shortcuts = new LinkedList<>();
+    protected List<Action> shortcuts = new LinkedList<>();
 
-    private PickerField component;
+    protected PickerField component;
 
-    private int actionsCount = 0;
+    protected int actionsCount = 0;
 
     public WebPickerFieldActionHandler(PickerField component) {
         this.component = component;
@@ -38,7 +38,7 @@ public class WebPickerFieldActionHandler implements Action.Handler {
         String[] strModifiers = StringUtils.split(config.getPickerShortcutModifiers().toUpperCase(), "-");
         modifiers = new int[strModifiers.length];
         for (int i = 0; i < modifiers.length; i++) {
-            modifiers[i] = com.haulmont.cuba.gui.components.ShortcutAction.Modifier.valueOf(strModifiers[i]).getCode();
+            modifiers[i] = KeyCombination.Modifier.valueOf(strModifiers[i]).getCode();
         }
     }
 
@@ -50,11 +50,10 @@ public class WebPickerFieldActionHandler implements Action.Handler {
     public void addAction(com.haulmont.cuba.gui.components.Action action) {
         int keyCode = ShortcutAction.KeyCode.NUM1 + actionsCount;
         ShortcutAction shortcut = new ShortcutAction(action.getCaption(), keyCode, modifiers);
-        if (action instanceof com.haulmont.cuba.gui.components.ShortcutAction) {
-            com.haulmont.cuba.gui.components.ShortcutAction.KeyCombination combination;
-            combination = ((com.haulmont.cuba.gui.components.ShortcutAction) action).getKeyCombination();
+        KeyCombination combination = action.getShortcut();
+        if (combination != null) {
             int key = combination.getKey().getCode();
-            int[] modifiers = com.haulmont.cuba.gui.components.ShortcutAction.Modifier.codes(combination.getModifiers());
+            int[] modifiers = KeyCombination.Modifier.codes(combination.getModifiers());
             ShortcutAction providedShortcut = new ShortcutAction(action.getCaption(), key, modifiers);
             shortcuts.add(providedShortcut);
             actionsMap.put(providedShortcut, action);
@@ -88,5 +87,4 @@ public class WebPickerFieldActionHandler implements Action.Handler {
             pickerAction.actionPerform(component);
         }
     }
-
 }

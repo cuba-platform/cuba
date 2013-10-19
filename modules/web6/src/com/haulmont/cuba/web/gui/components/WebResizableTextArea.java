@@ -1,14 +1,13 @@
 /*
- * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.ResizableTextField;
-import com.haulmont.cuba.gui.data.ResizeListener;
+import com.haulmont.cuba.gui.components.ResizableTextArea;
+import com.haulmont.cuba.gui.components.ResizeListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,17 +16,17 @@ import java.util.List;
  * @author subbotin
  * @version $Id$
  */
-public class WebResizableTextField
+public class WebResizableTextArea
         extends
-        WebAbstractTextField<com.haulmont.cuba.web.toolkit.ui.ResizableTextField>
+            WebAbstractTextArea<com.haulmont.cuba.web.toolkit.ui.ResizableTextArea>
         implements
-        ResizableTextField, Component.Wrapper {
+            ResizableTextArea, Component.Wrapper {
 
-    protected final List<ResizeListener> resizeListeners = new ArrayList<ResizeListener>();
+    protected final List<ResizeListener> resizeListeners = new ArrayList<>();
 
     @Override
-    protected com.haulmont.cuba.web.toolkit.ui.ResizableTextField createTextFieldImpl() {
-        return new com.haulmont.cuba.web.toolkit.ui.ResizableTextField();
+    protected com.haulmont.cuba.web.toolkit.ui.ResizableTextArea createTextFieldImpl() {
+        return new com.haulmont.cuba.web.toolkit.ui.ResizableTextArea();
     }
 
     @Override
@@ -51,16 +50,16 @@ public class WebResizableTextField
         resizeListeners.remove(resizeListener);
     }
 
-    protected void attachListener(com.haulmont.cuba.web.toolkit.ui.ResizableTextField component) {
+    @Override
+    protected void attachListener(com.haulmont.cuba.web.toolkit.ui.ResizableTextArea component) {
         super.attachListener(component);
-        final ResizableTextField textField = this;
-        component.addResizeListener(new com.haulmont.cuba.web.toolkit.ui.ResizableTextField.ResizeListener() {
+        final ResizableTextArea textArea = this;
+        component.addResizeListener(new com.haulmont.cuba.web.toolkit.ui.ResizableTextArea.ResizeListener() {
             @Override
             public void onResize(String oldWidth, String oldHeight, String width, String height) {
                 for (ResizeListener listener : resizeListeners)
-                    listener.onResize(textField, oldWidth, oldHeight, width, height);
+                    listener.onResize(textArea, oldWidth, oldHeight, width, height);
             }
         });
     }
 }
-

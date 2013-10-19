@@ -1,7 +1,6 @@
 /*
- * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.cuba.web.gui;
 
@@ -41,11 +40,15 @@ public class WebComponentsFactory implements ComponentsFactory {
         classes.put(Label.NAME, WebLabel.class);
         classes.put(CheckBox.NAME, WebCheckBox.class);
         classes.put(GroupBoxLayout.NAME, WebGroupBox.class);
-        classes.put(AutoCompleteTextField.NAME, WebAutoCompleteTextField.class);
-        //Use resizable text area instead of text field
-        classes.put(ResizableTextField.NAME, WebResizableTextField.class);
+        classes.put(SourceCodeEditor.NAME, WebSourceCodeEditor.class);
+
+        //Use resizable text area instead of text area
+        classes.put(ResizableTextArea.NAME, WebResizableTextArea.class);
         classes.put(MaskedField.NAME, WebMaskedField.class);
-        classes.put(TextArea.NAME, WebTextArea.class);
+        classes.put(PasswordField.NAME, WebPasswordField.class);
+        classes.put(TextArea.NAME, WebRichTextArea.class);
+        classes.put(TextField.NAME, WebTextField.class);
+
         classes.put(IFrame.NAME, WebFrame.class);
         classes.put(Table.NAME, WebTable.class);
         classes.put(TreeTable.NAME, WebTreeTable.class);
@@ -107,7 +110,7 @@ public class WebComponentsFactory implements ComponentsFactory {
     }
 
     @Override
-    public <T extends Timer> T createTimer() {
-        return (T) new WebTimer();
+    public Timer createTimer() {
+        return new WebTimer();
     }
 }

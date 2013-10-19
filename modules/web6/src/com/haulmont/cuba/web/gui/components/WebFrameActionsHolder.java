@@ -1,7 +1,6 @@
 /*
- * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
 package com.haulmont.cuba.web.gui.components;
@@ -9,7 +8,6 @@ package com.haulmont.cuba.web.gui.components;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.ShortcutAction;
 import org.apache.commons.lang.ObjectUtils;
 
 import java.util.*;
@@ -18,18 +16,17 @@ import java.util.*;
  * Encapsulates {@link com.haulmont.cuba.gui.components.Component.ActionsHolder} functionality for web frames and
  * windows.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class WebFrameActionsHolder {
 
-    protected List<Action> actionList = new LinkedList<Action>();
+    protected List<Action> actionList = new LinkedList<>();
     protected BiMap<com.vaadin.event.Action, Action> actions = HashBiMap.create();
 
     public void addAction(Action action) {
-        if (action instanceof ShortcutAction) {
-            actions.put(WebComponentsHelper.createShortcutAction((ShortcutAction) action), action);
+        if (action.getShortcut() != null) {
+            actions.put(WebComponentsHelper.createShortcutAction(action), action);
         }
 
         for (int i = 0; i < actionList.size(); i++) {

@@ -455,6 +455,9 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         componentComposition.setSpacing(true);
         componentComposition.setMargin(false);
         componentComposition.setWidth("-1px");
+
+        // todo artamonov adjust component size relative to composition size
+
         component.setSizeFull();
         componentComposition.setExpandRatio(component, 1);
     }

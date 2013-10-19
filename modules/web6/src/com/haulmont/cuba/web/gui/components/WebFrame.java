@@ -1,7 +1,6 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.cuba.web.gui.components;
 
@@ -16,15 +15,11 @@ import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
-import com.haulmont.cuba.toolkit.gwt.client.ui.VVerticalActionsLayout;
 import com.haulmont.cuba.web.App;
-import com.vaadin.event.ActionManager;
-import com.vaadin.terminal.PaintException;
-import com.vaadin.terminal.PaintTarget;
-import com.vaadin.ui.ClientWidget;
-import com.vaadin.ui.Layout;
+import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
 import org.dom4j.Element;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.util.*;
 
@@ -32,34 +27,26 @@ import java.util.*;
  * @author abramov
  * @version $Id$
  */
-@SuppressWarnings("serial")
-@ClientWidget(VVerticalActionsLayout.class)
-public class WebFrame extends WebVBoxLayout
-        implements
-            IFrame,
-            WrappedFrame,
-            com.haulmont.cuba.gui.components.Component.HasXmlDescriptor,
-            Layout.AlignmentHandler,
-            com.vaadin.event.Action.Container
-{
-    private String messagePack;
-    private WindowContext context;
-    private DsContext dsContext;
-    private Element element;
+public class WebFrame extends WebAbstractBox implements IFrame, WrappedFrame {
 
-    private IFrame wrapper;
+    protected String messagePack;
+    protected WindowContext context;
+    protected DsContext dsContext;
+    protected Element element;
 
-    protected Map<String, com.haulmont.cuba.gui.components.Component> allComponents = new HashMap<String, Component>();
+    protected IFrame wrapper;
 
-    private ActionManager actionManager;
+    protected Map<String, com.haulmont.cuba.gui.components.Component> allComponents = new HashMap<>();
 
-    private WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
+    protected WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
 
     protected WebFrameActionsHolder actionsHolder = new WebFrameActionsHolder();
 
     public WebFrame() {
-        super();
-        addActionHandler(new com.vaadin.event.Action.Handler() {
+        VerticalActionsLayout vComponent = new VerticalActionsLayout();
+        vComponent.setWidth(100, UNITS_PERCENTAGE);
+
+        vComponent.addActionHandler(new com.vaadin.event.Action.Handler() {
             @Override
             public com.vaadin.event.Action[] getActions(Object target, Object sender) {
                 return actionsHolder.getActionImplementations();
@@ -73,6 +60,8 @@ public class WebFrame extends WebVBoxLayout
                 }
             }
         });
+
+        component = vComponent;
     }
 
     @Override
@@ -115,7 +104,7 @@ public class WebFrame extends WebVBoxLayout
         if (elements.length == 1) {
             T result = (T) allComponents.get(id);
             if (result == null && getFrame() != null) {
-                result = getFrame().<T>getComponent(id);
+                result = getFrame().getComponent(id);
             }
             return result;
         } else {
@@ -124,8 +113,9 @@ public class WebFrame extends WebVBoxLayout
                 final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
                 String subPath = ValuePathHelper.format(subList.toArray(new String[]{}));
                 return (T) ((Container) frame).getComponent(subPath);
-            } else
+            } else {
                 return null;
+            }
         }
     }
 
@@ -161,8 +151,9 @@ public class WebFrame extends WebVBoxLayout
 
     @Override
     public void registerComponent(com.haulmont.cuba.gui.components.Component component) {
-        if (component.getId() != null)
+        if (component.getId() != null) {
             allComponents.put(component.getId(), component);
+        }
     }
 
     @Override
@@ -175,8 +166,9 @@ public class WebFrame extends WebVBoxLayout
         Collection<Component> components = ComponentsHelper.getComponents(this);
         for (Component component : components) {
             if (component instanceof Validatable) {
-                if (!((Validatable) component).isValid())
+                if (!((Validatable) component).isValid()) {
                     return false;
+                }
             }
         }
         return true;
@@ -269,12 +261,16 @@ public class WebFrame extends WebVBoxLayout
 
     @Override
     public void showNotification(String caption, String description, NotificationType type) {
-        getWindow().showNotification(caption, description, WebComponentsHelper.convertNotificationType(type));
+        App.getInstance().getWindowManager().showNotification(caption, description, type);
+    }
+    @Override
+    public void showNotification(String caption, NotificationType type) {
+        App.getInstance().getWindowManager().showNotification(caption, type);
     }
 
     @Override
-    public void showNotification(String caption, NotificationType type) {
-        getWindow().showNotification(caption, WebComponentsHelper.convertNotificationType(type));
+    public void showWebPage(String url, @Nullable Map<String, Object> params) {
+        //todo artamonov rewrite generated body
     }
 
     @Override
@@ -285,41 +281,6 @@ public class WebFrame extends WebVBoxLayout
     @Override
     public void setXmlDescriptor(Element element) {
         this.element = element;
-    }
-
-    @Override
-    public void addActionHandler(com.vaadin.event.Action.Handler actionHandler) {
-        getActionManager().addActionHandler(actionHandler);
-    }
-
-    @Override
-    public void removeActionHandler(com.vaadin.event.Action.Handler actionHandler) {
-        if (actionManager != null) {
-            actionManager.removeActionHandler(actionHandler);
-        }
-    }
-
-    protected ActionManager getActionManager() {
-        if (actionManager == null) {
-            actionManager = new ActionManager(this);
-        }
-        return actionManager;
-    }
-
-    @Override
-    public void paintContent(PaintTarget target) throws PaintException {
-        super.paintContent(target);
-        if (actionManager != null) {
-            actionManager.paintActions(null, target);
-        }
-    }
-
-    @Override
-    public void changeVariables(Object source, Map<String, Object> variables) {
-        super.changeVariables(source, variables);
-        if (actionManager != null) {
-            actionManager.handleActions(variables, this);
-        }
     }
 
     @Override

@@ -1,12 +1,6 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
-
- * Author: Nikolay Gorodnov
- * Created: 28.09.2009 12:25:29
- *
- * $Id$
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.cuba.web.sys;
 
@@ -37,6 +31,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 import java.util.*;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 @SuppressWarnings("serial")
 public class CubaCommunicationManager extends CommunicationManager {
 
@@ -45,11 +43,11 @@ public class CubaCommunicationManager extends CommunicationManager {
 
     private long timerIdSequence = 0;
 
-    private Map<String, Timer> id2Timer = new HashMap<String, Timer>();
+    private Map<String, Timer> id2Timer = new HashMap<>();
 
-    private Map<Timer, String> timer2Id = new HashMap<Timer, String>();
+    private Map<Timer, String> timer2Id = new HashMap<>();
 
-    private List<String> deadTimers = new ArrayList<String>();
+    private List<String> deadTimers = new ArrayList<>();
 
     private Log log = LogFactory.getLog(CubaCommunicationManager.class);
 
@@ -81,18 +79,18 @@ public class CubaCommunicationManager extends CommunicationManager {
         // WebBackgroundWorker special timer
         WebTimer workerTimer = application.getWorkerTimer();
         int workerListenersCount = workerTimer.getTimerListeners().size();
-        if (workerTimer.isStopped()) {
+        if (workerTimer.getTimerImpl().isStopped()) {
             if (workerListenersCount > 0)  {
-                workerTimer.startTimer();
-                application.addTimer(workerTimer);
+                workerTimer.start();
+                application.addTimer(workerTimer.getTimerImpl());
             }
         } else {
             if (workerListenersCount == 0)
-                workerTimer.stopTimer();
+                workerTimer.stop();
         }
 
         // paint timers
-        final Set<Timer> timers = new HashSet<Timer>(application.getTimers().getAll(window));
+        final Set<Timer> timers = new HashSet<>(application.getTimers().getAll(window));
         for (final Timer timer : timers) {
             if (repaintAll || timer != null && timer.isDirty()) {
                 String timerId;

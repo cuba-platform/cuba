@@ -1,14 +1,12 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.TreeTable;
@@ -47,6 +45,11 @@ public class WebTreeTable
 
     protected com.haulmont.cuba.web.toolkit.ui.TreeTable createTreeTableComponent() {
         return new MyTreeTable();
+    }
+
+    @Override
+    public void setRowHeaderMode(RowHeaderMode rowHeaderMode) {
+        // Row Header mode for TreeTable ignored
     }
 
     @Override
@@ -275,15 +278,7 @@ public class WebTreeTable
     protected class MyTreeTable extends com.haulmont.cuba.web.toolkit.ui.TreeTable {
         @Override
         public Resource getItemIcon(Object itemId) {
-            if (styleProvider != null) {
-                @SuppressWarnings({"unchecked"})
-                final Entity item = datasource.getItem(itemId);
-                final String resURL = styleProvider.getItemIcon(item);
-
-                return resURL == null ? null : WebComponentsHelper.getResource(resURL);
-            } else {
-                return null;
-            }
+            return WebTreeTable.this.getItemIcon(itemId);
         }
 
         @Override

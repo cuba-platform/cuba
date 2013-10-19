@@ -1,18 +1,14 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 22.12.2008 18:12:13
- * $Id$
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.TextField;
@@ -22,6 +18,7 @@ import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.PropertyFormatter;
+import com.vaadin.ui.AbstractTextField;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,17 +27,22 @@ import java.text.ParseException;
 import java.util.Collection;
 import java.util.Locale;
 
-public abstract class WebAbstractTextField<T extends com.haulmont.cuba.web.toolkit.ui.TextField>
+/**
+ * @param <T>
+ * @author abramov
+ * @version $Id$
+ */
+public abstract class WebAbstractTextField<T extends AbstractTextField>
     extends
         WebAbstractField<T>
     implements
         TextField, Component.Wrapper {
 
-    private static Log log = LogFactory.getLog(WebAbstractTextField.class);
+    protected static Log log = LogFactory.getLog(WebAbstractTextField.class);
 
-    private Datatype datatype;
+    protected Datatype datatype;
 
-    private Locale locale = UserSessionProvider.getLocale();
+    protected Locale locale = AppBeans.get(UserSessionSource.class).getLocale();
 
     protected Formatter formatter;
 
@@ -115,42 +117,22 @@ public abstract class WebAbstractTextField<T extends com.haulmont.cuba.web.toolk
 
     protected abstract T createTextFieldImpl();
 
-    public int getRows() {
-        return component.getRows();
-    }
-
-    public void setRows(int rows) {
-        component.setRows(rows);
-    }
-
-    public int getColumns() {
-        return component.getColumns();
-    }
-
-    public void setColumns(int columns) {
-        component.setColumns(columns);
-    }
-
-    public boolean isSecret() {
-        return component.isSecret();
-    }
-
-    public void setSecret(boolean secret) {
-        component.setSecret(secret);
-    }
-
+    @Override
     public int getMaxLength() {
         return component.getMaxLength();
     }
 
+    @Override
     public void setMaxLength(int value) {
         component.setMaxLength(value);
     }
 
+    @Override
     public Datatype getDatatype() {
         return datatype;
     }
 
+    @Override
     public void setDatatype(Datatype datatype) {
         this.datatype = datatype;
     }
@@ -232,10 +214,12 @@ public abstract class WebAbstractTextField<T extends com.haulmont.cuba.web.toolk
         };
     }
 
+    @Override
     public Formatter getFormatter() {
         return formatter;
     }
 
+    @Override
     public void setFormatter(Formatter formatter) {
         this.formatter = formatter;
     }

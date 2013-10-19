@@ -1,15 +1,14 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.cuba.web;
 
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.security.global.LoginException;
-import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
-import com.haulmont.cuba.web.sys.auth.DomainAliasesResolver;
+import com.haulmont.cuba.web.auth.ActiveDirectoryHelper;
+import com.haulmont.cuba.web.auth.DomainAliasesResolver;
 import com.vaadin.data.Property;
 import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;

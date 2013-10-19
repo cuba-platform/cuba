@@ -1,11 +1,6 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 22.12.2008 18:12:13
- * $Id$
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.cuba.web.gui.components;
 
@@ -35,6 +30,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class WebDateField
         extends
             WebAbstractComponent<DateFieldWrapper>
@@ -51,8 +50,8 @@ public class WebDateField
     private com.haulmont.cuba.web.toolkit.ui.DateField dateField;
     private WebTimeField timeField;
 
-    protected List<ValueListener> listeners = new ArrayList<ValueListener>();
-    protected List<Field.Validator> validators = new ArrayList<Field.Validator>();
+    protected List<ValueListener> listeners = new ArrayList<>();
+    protected List<Field.Validator> validators = new ArrayList<>();
 
     protected HorizontalLayout composition;
 

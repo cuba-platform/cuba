@@ -1,12 +1,6 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 29.01.2009 13:01:17
- *
- * $Id$
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.cuba.web.gui.components;
 
@@ -25,16 +19,20 @@ import com.vaadin.ui.AbstractSelect;
 
 import java.util.Set;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class WebTree
-    extends
-        WebAbstractList<com.haulmont.cuba.web.toolkit.ui.Tree>
-    implements
-        Tree, Component.Wrapper
-{
-    private String hierarchyProperty;
-    private CaptionMode captionMode = CaptionMode.ITEM;
-    private String captionProperty;
-    
+        extends
+            WebAbstractList<com.haulmont.cuba.web.toolkit.ui.Tree>
+        implements
+            Tree, Component.Wrapper {
+
+    protected String hierarchyProperty;
+    protected CaptionMode captionMode = CaptionMode.ITEM;
+    protected String captionProperty;
+
     public WebTree() {
         component = new com.haulmont.cuba.web.toolkit.ui.Tree();
         component.setMultiSelect(false);
@@ -42,8 +40,7 @@ public class WebTree
 
         component.addActionHandler(new ActionsAdapter());
         component.addListener(
-                new Property.ValueChangeListener()
-                {
+                new Property.ValueChangeListener() {
                     public void valueChange(Property.ValueChangeEvent event) {
                         Set items = getSelected();
                         if (items.isEmpty()) {
@@ -60,14 +57,17 @@ public class WebTree
         );
     }
 
+    @Override
     public void setMultiSelect(boolean multiselect) {
         component.setMultiSelect(multiselect);
     }
 
+    @Override
     public CaptionMode getCaptionMode() {
         return captionMode;
     }
 
+    @Override
     public void setCaptionMode(CaptionMode captionMode) {
         this.captionMode = captionMode;
         switch (captionMode) {
@@ -79,16 +79,18 @@ public class WebTree
                 component.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_PROPERTY);
                 break;
             }
-            default :{
+            default: {
                 throw new UnsupportedOperationException();
             }
         }
     }
 
+    @Override
     public String getCaptionProperty() {
         return captionProperty;
     }
 
+    @Override
     public void setCaptionProperty(String captionProperty) {
         this.captionProperty = captionProperty;
         if (datasource != null) {
@@ -96,6 +98,7 @@ public class WebTree
         }
     }
 
+    @Override
     public void expandTree() {
         com.vaadin.data.Container.Hierarchical container =
                 (com.vaadin.data.Container.Hierarchical) component.getContainerDataSource();
@@ -106,14 +109,17 @@ public class WebTree
         }
     }
 
+    @Override
     public void collapse(Object itemId) {
         component.collapseItem(itemId);
     }
 
+    @Override
     public void expand(Object itemId) {
         component.expandItem(itemId);
     }
 
+    @Override
     public void collapseTree() {
         com.vaadin.data.Container.Hierarchical container =
                 (com.vaadin.data.Container.Hierarchical) component.getContainerDataSource();
@@ -124,16 +130,18 @@ public class WebTree
         }
     }
 
+    @Override
     public boolean isExpanded(Object itemId) {
         return component.isExpanded(itemId);
     }
 
+    @Override
     public String getHierarchyProperty() {
         return hierarchyProperty;
     }
 
-    public void setDatasource(HierarchicalDatasource datasource)
-    {
+    @Override
+    public void setDatasource(HierarchicalDatasource datasource) {
         this.datasource = datasource;
         this.hierarchyProperty = datasource.getHierarchyPropertyName();
 
@@ -154,5 +162,15 @@ public class WebTree
         }
 
         datasource.addListener(new CollectionDsActionsNotifier(this));
+    }
+
+    @Override
+    public boolean isEditable() {
+        return !component.isReadOnly();
+    }
+
+    @Override
+    public void setEditable(boolean editable) {
+        component.setReadOnly(!editable);
     }
 }

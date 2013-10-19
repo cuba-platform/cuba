@@ -1,15 +1,15 @@
 /*
- * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.haulmont.cuba.toolkit.gwt.client.ui.VResizableTextField;
+import com.haulmont.cuba.toolkit.gwt.client.ui.VResizableTextArea;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.ui.ClientWidget;
+import com.vaadin.ui.TextArea;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,16 +19,15 @@ import java.util.Map;
  * @author subbotin
  * @version $Id$
  */
-@ClientWidget(VResizableTextField.class)
-public class ResizableTextField extends TextField {
+@ClientWidget(VResizableTextArea.class)
+public class ResizableTextArea extends TextArea {
 
-    private boolean resizable = false;
-    private List<ResizeListener> listeners = new ArrayList<ResizeListener>();
+    protected boolean resizable = false;
+    protected List<ResizeListener> listeners = new ArrayList<>();
 
     public static interface ResizeListener {
         public void onResize(String oldWidth, String oldHeight, String width, String height);
     }
-
 
     public boolean isResizable() {
         return resizable;
@@ -37,7 +36,6 @@ public class ResizableTextField extends TextField {
     public void setResizable(boolean resizable) {
         this.resizable = resizable;
     }
-
 
     public void addResizeListener(ResizeListener resizeListener) {
         if (!listeners.contains(resizeListener))
@@ -55,7 +53,6 @@ public class ResizableTextField extends TextField {
             target.addAttribute("resizable", true);
         }
     }
-
 
     @Override
     public void changeVariables(Object source, Map variables) {

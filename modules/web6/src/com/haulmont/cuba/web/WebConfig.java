@@ -1,7 +1,6 @@
 /*
- * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.cuba.web;
 
@@ -33,16 +32,6 @@ public interface WebConfig extends Config {
     boolean getUseLocalServiceInvocation();
 
     /**
-     * @return Password used by LoginService.loginTrusted() method.
-     * Trusted client may login without providing a user password. This is used by ActiveDirectory integration.
-     *
-     * <p>Must be equal to password set for the same property on the CORE.</p>
-     */
-    @Property("cuba.trustedClientPassword")
-    @DefaultString("")
-    String getTrustedClientPassword();
-
-    /**
      * @return Default user login to set in the login dialog.
      */
     @Property("cuba.web.loginDialogDefaultUser")
@@ -61,60 +50,6 @@ public interface WebConfig extends Config {
     @Property("cuba.httpSessionExpirationTimeoutSec")
     @DefaultInt(1800)
     int getHttpSessionExpirationTimeoutSec();
-
-    /**
-     * @return Whether to use the ActiveDirectory authentication
-     */
-    @Property("cuba.web.useActiveDirectory")
-    @DefaultBoolean(false)
-    boolean getUseActiveDirectory();
-
-    @Property("cuba.web.activeDirectoryDebug")
-    @DefaultBoolean(false)
-    boolean getActiveDirectoryDebug();
-
-    /**
-     * @return ActiveDirectory domains configuration info
-     */
-    @Property("cuba.web.activeDirectoryDomains")
-    String getActiveDirectoryDomains();
-
-    /**
-     * @return Short/User-friendly domain aliases for login window form
-     */
-    @Property("cuba.web.activeDirectoryAliases")
-    String getActiveDirectoryAliases();
-
-    /**
-     * @return ActiveDirectory authentification provider
-     */
-    @Property("cuba.web.activeDirectoryAuthClass")
-    @DefaultString("com.haulmont.cuba.web.sys.auth.KerberosAuthProvider")
-    String getActiveDirectoryAuthClass();
-
-    /**
-     * @return Kerberos domain and realms config (krb5.ini)
-     */
-    @Property("cuba.web.kerberosConf")
-    String getKerberosConf();
-
-    /**
-     * @return Kerberos login module config (jaas.conf)
-     */
-    @Property("cuba.web.kerberosJaasConf")
-    String getKerberosJaasConf();
-
-    /**
-     * @return Kerberos single-sign-on module in JaasConf
-     */
-    @Property("cuba.web.kerberosLoginModule")
-    String getKerberosLoginModule();
-
-    /**
-     * @return Kerberos auth module in JaasConf
-     */
-    @Property("cuba.web.kerberosAuthModule")
-    String getKerberosAuthModule();
 
     /**
      *  @return Comma-separated list of URLs for CubaHttpFilter to bypass.

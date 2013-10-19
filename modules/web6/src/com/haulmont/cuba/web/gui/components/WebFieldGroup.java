@@ -1,7 +1,6 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.cuba.web.gui.components;
 
@@ -30,7 +29,6 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.TextField;
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -47,27 +45,24 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
     private static final String BORDER_STYLE_NAME = "edit-area";
 
-    private Map<String, Field> fields = new LinkedHashMap<>();
-    private Map<Field, Integer> fieldsColumn = new HashMap<>();
-    private Map<Integer, List<Field>> columnFields = new HashMap<>();
+    protected Map<String, FieldConfig> fields = new LinkedHashMap<>();
+    protected Map<FieldConfig, Integer> fieldsColumn = new HashMap<>();
+    protected Map<Integer, List<FieldConfig>> columnFields = new HashMap<>();
 
-    private Set<Field> readOnlyFields = new HashSet<>();
+    protected Set<FieldConfig> readOnlyFields = new HashSet<>();
 
-    private Map<Field, List<com.haulmont.cuba.gui.components.Field.Validator>> fieldValidators = new HashMap<>();
+    protected Map<FieldConfig, List<com.haulmont.cuba.gui.components.Field.Validator>> fieldValidators = new HashMap<>();
 
-    private Datasource<Entity> datasource;
+    protected Datasource<Entity> datasource;
 
-    private String caption;
-    private String description;
+    protected String caption;
+    protected String description;
 
-    private int cols = 1;
+    protected int cols = 1;
 
-    private List<ExpandListener> expandListeners = null;
-    private List<CollapseListener> collapseListeners = null;
+    protected final FieldFactory fieldFactory = new FieldFactory();
 
-    private final FieldFactory fieldFactory = new FieldFactory();
-
-    private Item itemWrapper;
+    protected Item itemWrapper;
 
     protected Security security = AppBeans.get(Security.class);
 
@@ -78,10 +73,10 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         component = new FieldGroup(fieldFactory) {
             @Override
             public void addField(Object propertyId, com.vaadin.ui.Field field) {
-                Field fieldConf = WebFieldGroup.this.getField(propertyId.toString());
+                FieldConfig fieldConf = WebFieldGroup.this.getField(propertyId.toString());
                 if (fieldConf != null) {
                     int col = fieldsColumn.get(fieldConf);
-                    List<Field> colFields = columnFields.get(col);
+                    List<FieldConfig> colFields = columnFields.get(col);
                     super.addField(propertyId.toString(), field, col, colFields.indexOf(fieldConf));
                 } else {
                     super.addField(propertyId.toString(), field, 0);
@@ -90,21 +85,20 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
             @Override
             public void addCustomField(Object propertyId, CustomFieldGenerator fieldGenerator) {
-                Field fieldConf = WebFieldGroup.this.getField(propertyId.toString());
+                FieldConfig fieldConf = WebFieldGroup.this.getField(propertyId.toString());
                 int col = fieldsColumn.get(fieldConf);
-                List<Field> colFields = columnFields.get(col);
+                List<FieldConfig> colFields = columnFields.get(col);
                 super.addCustomField(propertyId, fieldGenerator, col, colFields.indexOf(fieldConf));
             }
         };
         component.setLayout(new FieldGroupLayout());
-        component.addListener(new ExpandCollapseListener());
     }
 
     @Override
     public void setDebugId(String id) {
         super.setDebugId(id);
-        final List<Field> fieldConfs = getFields();
-        for (final Field fieldConf : fieldConfs) {
+        final List<FieldConfig> fieldConfs = getFields();
+        for (final FieldConfig fieldConf : fieldConfs) {
             com.vaadin.ui.Field field = component.getField(fieldConf.getId());
             if (field != null) {
                 field.setDebugId(id + ":" + fieldConf.getId());
@@ -113,13 +107,13 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
     }
 
     @Override
-    public List<Field> getFields() {
+    public List<FieldConfig> getFields() {
         return new ArrayList<>(fields.values());
     }
 
     @Override
-    public Field getField(String id) {
-        for (final Map.Entry<String, Field> entry : fields.entrySet()) {
+    public FieldConfig getField(String id) {
+        for (final Map.Entry<String, FieldConfig> entry : fields.entrySet()) {
             if (entry.getKey().equals(id)) {
                 return entry.getValue();
             }
@@ -128,14 +122,14 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
     }
 
     @Override
-    public void addField(Field field) {
+    public void addField(FieldConfig field) {
         fields.put(field.getId(), field);
         fieldsColumn.put(field, 0);
         fillColumnFields(0, field);
     }
 
     @Override
-    public void addField(Field field, int col) {
+    public void addField(FieldConfig field, int col) {
         if (col < 0 || col >= cols) {
             throw new IllegalStateException(String.format("Illegal column number %s, available amount of columns is %s",
                     col, cols));
@@ -145,8 +139,8 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         fillColumnFields(col, field);
     }
 
-    private void fillColumnFields(int col, Field field) {
-        List<Field> fields = columnFields.get(col);
+    private void fillColumnFields(int col, FieldConfig field) {
+        List<FieldConfig> fields = columnFields.get(col);
         if (fields == null) {
             fields = new ArrayList<>();
 
@@ -156,11 +150,11 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
     }
 
     @Override
-    public void removeField(Field field) {
+    public void removeField(FieldConfig field) {
         if (fields.remove(field.getId()) != null) {
             Integer col = fieldsColumn.get(field);
 
-            final List<Field> fields = columnFields.get(col);
+            final List<FieldConfig> fields = columnFields.get(col);
             fields.remove(field);
             fieldsColumn.remove(field);
         }
@@ -184,23 +178,23 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
     @Override
     public void addCustomField(String fieldId, CustomFieldGenerator fieldGenerator) {
-        Field field = getField(fieldId);
-        if (field == null)
+        FieldConfig fieldConf = getField(fieldId);
+        if (fieldConf == null)
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
-        addCustomField(field, fieldGenerator);
+        addCustomField(fieldConf, fieldGenerator);
     }
 
     @Override
-    public void addCustomField(final Field field, final CustomFieldGenerator fieldGenerator) {
-        if (!field.isCustom()) {
-            throw new IllegalStateException(String.format("Field '%s' must be defined as custom", field.getId()));
+    public void addCustomField(final FieldConfig fieldConfig, final CustomFieldGenerator fieldGenerator) {
+        if (!fieldConfig.isCustom()) {
+            throw new IllegalStateException(String.format("Field '%s' must be defined as custom", fieldConfig.getId()));
         }
-        component.addCustomField(field.getId(), new FieldGroup.CustomFieldGenerator() {
+        component.addCustomField(fieldConfig.getId(), new FieldGroup.CustomFieldGenerator() {
             @Override
             public com.vaadin.ui.Field generateField(Item item, Object propertyId, FieldGroup component) {
                 Datasource ds;
-                if (field.getDatasource() != null) {
-                    ds = field.getDatasource();
+                if (fieldConfig.getDatasource() != null) {
+                    ds = fieldConfig.getDatasource();
                 } else {
                     ds = datasource;
                 }
@@ -217,7 +211,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                 MetaPropertyPath propertyPath = ds.getMetaClass().getPropertyPath(id);
                 if (propertyPath != null) {
                     if (f.getPropertyDataSource() == null) {
-                        if (field.getDatasource() != null) {
+                        if (fieldConfig.getDatasource() != null) {
                             final ItemWrapper dsWrapper = createDatasourceWrapper(ds,
                                     Collections.<MetaPropertyPath>singleton(propertyPath));
                             f.setPropertyDataSource(dsWrapper.getItemProperty(propertyPath));
@@ -228,29 +222,29 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                 }
 
                 if (f.getCaption() == null) {
-                    if (field.getCaption() != null) {
-                        f.setCaption(field.getCaption());
+                    if (fieldConfig.getCaption() != null) {
+                        f.setCaption(fieldConfig.getCaption());
                     } else if (propertyPath != null) {
                         f.setCaption(messageTools.getPropertyCaption(propertyPath.getMetaClass(), id));
                     }
                 }
 
-                if (f.getDescription() == null && field.getDescription() != null) {
-                    f.setDescription(field.getDescription());
+                if (f.getDescription() == null && fieldConfig.getDescription() != null) {
+                    f.setDescription(fieldConfig.getDescription());
                 }
 
                 // some components (e.g. LookupPickerField) have width from the creation, so I commented out this check
-                if (/*f.getWidth() == -1f &&*/ field.getWidth() != null) {
-                    f.setWidth(field.getWidth());
+                if (/*f.getWidth() == -1f &&*/ fieldConfig.getWidth() != null) {
+                    f.setWidth(fieldConfig.getWidth());
                 }
 
                 if (!f.isRequired()) {
-                    f.setRequired(field.isRequired());
+                    f.setRequired(fieldConfig.isRequired());
                 }
 
                 if ((f.getRequiredError() == null || f.getRequiredError().isEmpty())
-                        && field.getRequiredError() != null)
-                    f.setRequiredError(field.getRequiredError());
+                        && fieldConfig.getRequiredError() != null)
+                    f.setRequiredError(fieldConfig.getRequiredError());
 
                 applyPermissions(c);
 
@@ -309,11 +303,11 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                 final List<String> fieldIds = new ArrayList<>(this.fields.keySet());
                 fieldsMetaProps = new ArrayList<>();
                 for (final String id : fieldIds) {
-                    final Field field = getField(id);
-                    final MetaPropertyPath propertyPath = datasource.getMetaClass().getPropertyPath(field.getId());
-                    final Element descriptor = field.getXmlDescriptor();
+                    final FieldConfig fieldConfig = getField(id);
+                    final MetaPropertyPath propertyPath = datasource.getMetaClass().getPropertyPath(fieldConfig.getId());
+                    final Element descriptor = fieldConfig.getXmlDescriptor();
                     final String clickAction = (descriptor == null) ? (null) : (descriptor.attributeValue("clickAction"));
-                    if (field.getDatasource() == null && propertyPath != null
+                    if (fieldConfig.getDatasource() == null && propertyPath != null
                             && StringUtils.isEmpty(clickAction)) {
                         //fieldsMetaProps with attribute "clickAction" will be created manually
                         fieldsMetaProps.add(propertyPath);
@@ -330,8 +324,8 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
             if (!this.fields.isEmpty()) {
                 //Removes custom fieldsMetaProps from the list. We shouldn't to create components for custom fieldsMetaProps
                 for (MetaPropertyPath propertyPath : new ArrayList<>(fieldsMetaProps)) {
-                    final Field field = getField(propertyPath.toString());
-                    if (field.isCustom()) {
+                    final FieldConfig fieldConfig = getField(propertyPath.toString());
+                    if (fieldConfig.isCustom()) {
                         fieldsMetaProps.remove(propertyPath);
                     }
                 }
@@ -347,7 +341,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
     private void createFields(Datasource datasource) {
         for (final String id : this.fields.keySet()) {
-            final Field fieldConf = getField(id);
+            final FieldConfig fieldConf = getField(id);
             if (!fieldConf.isCustom()) {
                 com.vaadin.ui.Field field;
                 Element descriptor = fieldConf.getXmlDescriptor();
@@ -414,7 +408,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         }
     }
 
-    private void applyPermissions(Field fieldConf, Datasource datasource) {
+    private void applyPermissions(FieldConfig fieldConf, Datasource datasource) {
         MetaPropertyPath propertyPath = datasource.getMetaClass().getPropertyPath(fieldConf.getId());
         if (propertyPath != null) {
             MetaProperty metaProperty = propertyPath.getMetaProperty();
@@ -426,7 +420,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
     private int rowsCount() {
         int rowsCount = 0;
-        for (final List<Field> fields : columnFields.values()) {
+        for (final List<FieldConfig> fields : columnFields.values()) {
             rowsCount = Math.max(rowsCount, fields.size());
         }
         return rowsCount;
@@ -442,7 +436,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         this.cols = cols;
     }
 
-    protected Object convertRawValue(Field field, Object value) throws ValidationException {
+    protected Object convertRawValue(FieldConfig field, Object value) throws ValidationException {
         if (value instanceof String) {
             Datatype datatype = null;
             MetaPropertyPath propertyPath = null;
@@ -473,7 +467,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
     }
 
     @Override
-    public void addValidator(final Field field, final com.haulmont.cuba.gui.components.Field.Validator validator) {
+    public void addValidator(final FieldConfig field, final com.haulmont.cuba.gui.components.Field.Validator validator) {
         List<com.haulmont.cuba.gui.components.Field.Validator> validators = fieldValidators.get(field);
         if (validators == null) {
             validators = new ArrayList<>();
@@ -485,30 +479,10 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
     @Override
     public void addValidator(String fieldId, com.haulmont.cuba.gui.components.Field.Validator validator) {
-        Field field = getField(fieldId);
+        FieldConfig field = getField(fieldId);
         if (field == null)
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
         addValidator(field, validator);
-    }
-
-    @Override
-    public boolean isExpanded() {
-        return component.isExpanded();
-    }
-
-    @Override
-    public void setExpanded(boolean expanded) {
-        component.setExpanded(expanded);
-    }
-
-    @Override
-    public boolean isCollapsable() {
-        return component.isCollapsable();
-    }
-
-    @Override
-    public void setCollapsable(boolean collapsable) {
-        component.setCollapsable(collapsable);
     }
 
     @Override
@@ -543,7 +517,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         component.setReadOnly(!editable);
         // if we have editable field group with some read-only fields then we keep them read-only
         if (editable) {
-            for (Field field : readOnlyFields) {
+            for (FieldConfig field : readOnlyFields) {
                 com.vaadin.ui.Field f = component.getField(field.getId());
                 f.setReadOnly(true);
             }
@@ -551,13 +525,13 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
     }
 
     @Override
-    public boolean isRequired(Field field) {
+    public boolean isRequired(FieldConfig field) {
         com.vaadin.ui.Field f = component.getField(field.getId());
         return f.isRequired();
     }
 
     @Override
-    public void setRequired(Field field, boolean required, String message) {
+    public void setRequired(FieldConfig field, boolean required, String message) {
         com.vaadin.ui.Field f = component.getField(field.getId());
         f.setRequired(required);
         if (required) {
@@ -567,7 +541,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
     @Override
     public boolean isRequired(String fieldId) {
-        Field field = getField(fieldId);
+        FieldConfig field = getField(fieldId);
         if (field == null)
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
         return isRequired(field);
@@ -575,19 +549,19 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
     @Override
     public void setRequired(String fieldId, boolean required, String message) {
-        Field field = getField(fieldId);
+        FieldConfig field = getField(fieldId);
         if (field == null)
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
         setRequired(field, required, message);
     }
 
     @Override
-    public boolean isEditable(Field field) {
+    public boolean isEditable(FieldConfig field) {
         return !readOnlyFields.contains(field);
     }
 
     @Override
-    public void setEditable(Field field, boolean editable) {
+    public void setEditable(FieldConfig field, boolean editable) {
         com.vaadin.ui.Field f = component.getField(field.getId());
         f.setReadOnly(!editable);
         if (editable) {
@@ -599,7 +573,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
     @Override
     public void setEditable(String fieldId, boolean editable) {
-        Field field = getField(fieldId);
+        FieldConfig field = getField(fieldId);
         if (field == null)
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
         setEditable(field, editable);
@@ -607,27 +581,27 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
     @Override
     public boolean isEditable(String fieldId) {
-        Field field = getField(fieldId);
+        FieldConfig field = getField(fieldId);
         if (field == null)
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
         return isEditable(field);
     }
 
     @Override
-    public boolean isEnabled(Field field) {
+    public boolean isEnabled(FieldConfig field) {
         com.vaadin.ui.Field f = component.getField(field.getId());
         return f.isEnabled();
     }
 
     @Override
-    public void setEnabled(Field field, boolean enabled) {
+    public void setEnabled(FieldConfig field, boolean enabled) {
         com.vaadin.ui.Field f = component.getField(field.getId());
         f.setEnabled(enabled);
     }
 
     @Override
     public boolean isEnabled(String fieldId) {
-        Field field = getField(fieldId);
+        FieldConfig field = getField(fieldId);
         if (field == null)
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
         return isEnabled(field);
@@ -635,27 +609,27 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
     @Override
     public void setEnabled(String fieldId, boolean enabled) {
-        Field field = getField(fieldId);
+        FieldConfig field = getField(fieldId);
         if (field == null)
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
         setEnabled(field, enabled);
     }
 
     @Override
-    public boolean isVisible(Field field) {
+    public boolean isVisible(FieldConfig field) {
         com.vaadin.ui.Field f = component.getField(field.getId());
         return f.isVisible();
     }
 
     @Override
-    public void setVisible(Field field, boolean visible) {
+    public void setVisible(FieldConfig field, boolean visible) {
         com.vaadin.ui.Field f = component.getField(field.getId());
         f.setVisible(visible);
     }
 
     @Override
     public boolean isVisible(String fieldId) {
-        Field field = getField(fieldId);
+        FieldConfig field = getField(fieldId);
         if (field == null)
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
         return isVisible(field);
@@ -663,7 +637,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
     @Override
     public void setVisible(String fieldId, boolean visible) {
-        Field field = getField(fieldId);
+        FieldConfig field = getField(fieldId);
         if (field == null)
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
         setVisible(field, visible);
@@ -694,20 +668,20 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
     }
 
     @Override
-    public Object getFieldValue(Field field) {
+    public Object getFieldValue(FieldConfig field) {
         com.vaadin.ui.Field f = component.getField(field.getId());
         return f.getValue();
     }
 
     @Override
-    public void setFieldValue(Field field, Object value) {
+    public void setFieldValue(FieldConfig field, Object value) {
         com.vaadin.ui.Field f = component.getField(field.getId());
         f.setValue(value);
     }
 
     @Override
     public Object getFieldValue(String fieldId) {
-        Field field = getField(fieldId);
+        FieldConfig field = getField(fieldId);
         if (field == null)
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
         return getFieldValue(field);
@@ -715,7 +689,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
     @Override
     public void setFieldValue(String fieldId, Object value) {
-        Field field = getField(fieldId);
+        FieldConfig field = getField(fieldId);
         if (field == null)
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
         setFieldValue(field, value);
@@ -723,7 +697,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
     @Override
     public void requestFocus(String fieldId) {
-        Field field = getField(fieldId);
+        FieldConfig field = getField(fieldId);
         if (field == null)
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
         com.vaadin.ui.Field componentField = component.getField(field.getId());
@@ -733,7 +707,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
     @Override
     public void setFieldCaption(String fieldId, String caption) {
-        Field field = getField(fieldId);
+        FieldConfig field = getField(fieldId);
         if (field == null)
             throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
 
@@ -746,81 +720,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
     }
 
     @Override
-    public void addListener(ExpandListener listener) {
-        if (expandListeners == null) {
-            expandListeners = new ArrayList<>();
-        }
-        expandListeners.add(listener);
-    }
-
-    @Override
-    public void removeListener(ExpandListener listener) {
-        if (expandListeners != null) {
-            expandListeners.remove(listener);
-            if (expandListeners.isEmpty()) {
-                expandListeners = null;
-            }
-        }
-    }
-
-    protected void fireExpandListeners() {
-        if (expandListeners != null) {
-            for (final ExpandListener listener : expandListeners) {
-                listener.onExpand(this);
-            }
-        }
-    }
-
-    @Override
-    public void addListener(CollapseListener listener) {
-        if (collapseListeners == null) {
-            collapseListeners = new ArrayList<>();
-        }
-        collapseListeners.add(listener);
-    }
-
-    @Override
-    public void removeListener(CollapseListener listener) {
-        if (collapseListeners != null) {
-            collapseListeners.remove(listener);
-            if (collapseListeners.isEmpty()) {
-                collapseListeners = null;
-            }
-        }
-    }
-
-    @Override
     public void postInit() {
-    }
-
-    protected void fireCollapseListeners() {
-        if (collapseListeners != null) {
-            for (final CollapseListener listener : collapseListeners) {
-                listener.onCollapse(this);
-            }
-        }
-    }
-
-    @Override
-    public void applySettings(Element element) {
-        Element fieldGroupElement = element.element("fieldGroup");
-        if (fieldGroupElement != null) {
-            String expanded = fieldGroupElement.attributeValue("expanded");
-            if (expanded != null) {
-                setExpanded(BooleanUtils.toBoolean(expanded));
-            }
-        }
-    }
-
-    @Override
-    public boolean saveSettings(Element element) {
-        Element fieldGroupElement = element.element("fieldGroup");
-        if (fieldGroupElement != null) {
-            element.remove(fieldGroupElement);
-        }
-        fieldGroupElement = element.addElement("fieldGroup");
-        fieldGroupElement.addAttribute("expanded", BooleanUtils.toStringTrueFalse(isExpanded()));
-        return true;
     }
 
     @Override
@@ -837,7 +737,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
     public void validate() throws ValidationException {
         final Map<Object, Exception> problems = new HashMap<>();
 
-        for (Field field : getFields()) {
+        for (FieldConfig field : getFields()) {
             com.vaadin.ui.Field f = component.getField(field.getId());
             if (f != null && f.isVisible() && f.isEnabled() && !f.isReadOnly()) {
                 Object value = convertRawValue(field, getFieldValue(field));
@@ -860,14 +760,14 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         }
 
         if (!problems.isEmpty()) {
-            Map<Field, Exception> problemFields = new HashMap<>();
+            Map<FieldConfig, Exception> problemFields = new HashMap<>();
             for (Map.Entry<Object, Exception> entry : problems.entrySet()) {
                 problemFields.put(getField(entry.getKey().toString()), entry.getValue());
             }
 
             StringBuilder msgBuilder = new StringBuilder();
-            for (Iterator<Field> iterator = problemFields.keySet().iterator(); iterator.hasNext(); ) {
-                Field field = iterator.next();
+            for (Iterator<FieldConfig> iterator = problemFields.keySet().iterator(); iterator.hasNext(); ) {
+                FieldConfig field = iterator.next();
                 Exception ex = problemFields.get(field);
                 msgBuilder.append(ex.getMessage());
                 if (iterator.hasNext())
@@ -881,25 +781,11 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         }
     }
 
-    private boolean isEmpty(Object value) {
+    protected boolean isEmpty(Object value) {
         if (value instanceof String)
             return StringUtils.isBlank((String) value);
         else
             return value == null;
-    }
-
-    protected class ExpandCollapseListener implements FieldGroup.ExpandCollapseListener {
-        private static final long serialVersionUID = 4917475472402160597L;
-
-        @Override
-        public void onExpand(FieldGroup component) {
-            fireExpandListeners();
-        }
-
-        @Override
-        public void onCollapse(FieldGroup component) {
-            fireCollapseListeners();
-        }
     }
 
     protected class FieldFactory extends AbstractFieldFactory {
@@ -910,7 +796,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
         @Override
         protected void initCommon(com.vaadin.ui.Field field, com.haulmont.cuba.gui.components.Field cubaField, MetaPropertyPath propertyPath) {
-            final Field fieldConf = getField(propertyPath.toString());
+            final FieldConfig fieldConf = getField(propertyPath.toString());
             if ("timeField".equals(fieldType(propertyPath)) || (cubaField instanceof WebTimeField)) {
                 String s = fieldConf.getXmlDescriptor().attributeValue("showSeconds");
                 if (Boolean.valueOf(s)) {
@@ -948,7 +834,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
         @Override
         protected CollectionDatasource getOptionsDatasource(MetaClass metaClass, MetaPropertyPath propertyPath) {
-            final Field field = fields.get(propertyPath.toString());
+            final FieldConfig field = fields.get(propertyPath.toString());
 
             Datasource ds = datasource;
 
@@ -998,7 +884,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
         @Override
         protected Formatter getFormatter(MetaPropertyPath propertyPath) {
-            Field field = fields.get(propertyPath.toString());
+            FieldConfig field = fields.get(propertyPath.toString());
             if (field != null) {
                 return field.getFormatter();
             } else {
@@ -1008,7 +894,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
         @Override
         protected String getFormat(MetaPropertyPath propertyPath) {
-            Field field = fields.get(propertyPath.toString());
+            FieldConfig field = fields.get(propertyPath.toString());
             if (field != null) {
                 Element formatterElement = field.getXmlDescriptor().element("formatter");
                 return formatterElement.attributeValue("format");
@@ -1018,7 +904,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
         @Override
         protected String fieldType(MetaPropertyPath propertyPath) {
-            Field field = fields.get(propertyPath.toString());
+            FieldConfig field = fields.get(propertyPath.toString());
             if (field != null) {
                 if (field.getXmlDescriptor() != null) {
                     String fieldType = field.getXmlDescriptor().attributeValue("field");
@@ -1032,20 +918,20 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
         @Override
         protected Element getXmlDescriptor(MetaPropertyPath propertyPath) {
-            Field field = fields.get(propertyPath.toString());
+            FieldConfig field = fields.get(propertyPath.toString());
             return field != null ? field.getXmlDescriptor() : null;
         }
 
         @Override
         protected void setCaption(com.vaadin.ui.Field field, MetaPropertyPath propertyPath) {
             // if caption not already loaded from attributes then load default caption
-            Field fieldConf = WebFieldGroup.this.fields.get(propertyPath.toString());
+            FieldConfig fieldConf = WebFieldGroup.this.fields.get(propertyPath.toString());
             if ((fieldConf == null) || (StringUtils.isEmpty(fieldConf.getCaption())))
                 super.setCaption(field, propertyPath);
         }
     }
 
-    private com.vaadin.ui.Field createField(final Datasource datasource, final Field fieldConf) {
+    protected com.vaadin.ui.Field createField(final Datasource datasource, final FieldConfig fieldConf) {
         MetaPropertyPath propertyPath = datasource.getMetaClass().getPropertyPath(fieldConf.getId());
         final ItemWrapper dsWrapper = createDatasourceWrapper(
                 datasource,
@@ -1059,12 +945,12 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         return field;
     }
 
-    private class LinkField extends CustomField {
+    protected class LinkField extends CustomField {
         private static final long serialVersionUID = 5555318337278242796L;
 
         private Button component;
 
-        private LinkField(final Datasource datasource, final Field fieldConf) {
+        private LinkField(final Datasource datasource, final FieldConfig fieldConf) {
             component = new Button();
             component.setStyleName("link");
             component.addListener(new Button.ClickListener() {
@@ -1146,7 +1032,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
             return new PropertyWrapper(item, propertyPath) {
                 @Override
                 public boolean isReadOnly() {
-                    Field field = fields.get(propertyPath.toString());
+                    FieldConfig field = fields.get(propertyPath.toString());
                     return !isEditable(field);
                 }
 
@@ -1161,7 +1047,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                 public String toString() {
                     Object value = getValue();
                     if (value == null) return null;
-                    Field field = fields.get(propertyPath.toString());
+                    FieldConfig field = fields.get(propertyPath.toString());
                     if (field.getFormatter() != null) {
                         if (value instanceof Instance) {
                             value = ((Instance) value).getInstanceName();

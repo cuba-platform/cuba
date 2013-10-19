@@ -1,22 +1,15 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 23.12.2008 9:54:57
- * $Id$
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Formatter;
-import com.haulmont.cuba.gui.components.ShortcutAction;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.ui.FieldGroupLayout;
 import com.haulmont.cuba.web.toolkit.ui.HorizontalActionsLayout;
-import com.haulmont.cuba.web.toolkit.ui.Table;
 import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
 import com.vaadin.event.Action;
 import com.vaadin.terminal.ClassResource;
@@ -31,6 +24,10 @@ import org.apache.commons.lang.StringUtils;
 import java.io.File;
 import java.util.*;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class WebComponentsHelper {
 
     public static Resource getResource(String resURL) {
@@ -47,26 +44,8 @@ public class WebComponentsHelper {
         }
     }
 
-    public static class ComponentPath {
-        String[] elements;
-        com.haulmont.cuba.gui.components.Component[] components;
-
-        public ComponentPath(String[] elements, com.haulmont.cuba.gui.components.Component[] components) {
-            this.elements = elements;
-            this.components = components;
-        }
-
-        public String[] getElements() {
-            return elements;
-        }
-
-        public com.haulmont.cuba.gui.components.Component[] getComponents() {
-            return components;
-        }
-    }
-
     public static <T extends Component> Collection<T> getComponents(ComponentContainer container, Class<T> aClass) {
-        List<T> res = new ArrayList<T>();
+        List<T> res = new ArrayList<>();
         final Iterator iterator = container.getComponentIterator();
         while (iterator.hasNext()) {
             Component component = (Component) iterator.next();
@@ -125,7 +104,7 @@ public class WebComponentsHelper {
     public static Collection<com.haulmont.cuba.gui.components.Component> getComponents(
             com.haulmont.cuba.gui.components.Component.Container container) {
         final Collection<com.haulmont.cuba.gui.components.Component> ownComponents = container.getOwnComponents();
-        Set<com.haulmont.cuba.gui.components.Component> res = new HashSet<com.haulmont.cuba.gui.components.Component>(ownComponents);
+        Set<com.haulmont.cuba.gui.components.Component> res = new HashSet<>(ownComponents);
 
         for (com.haulmont.cuba.gui.components.Component component : ownComponents) {
             if (component instanceof com.haulmont.cuba.gui.components.Component.Container) {
@@ -149,14 +128,14 @@ public class WebComponentsHelper {
             final com.haulmont.cuba.gui.components.Component component = comp.getOwnComponent(id);
 
             if (component == null) {
-                return (T) getComponentByIterate(container, id);
+                return getComponentByIterate(container, id);
             } else {
                 return (T) component;
             }
         } else {
             com.haulmont.cuba.gui.components.Component component = comp.getOwnComponent(elements[0]);
             if (component == null) {
-                return (T) getComponentByIterate(container, id);
+                return getComponentByIterate(container, id);
             } else {
                 final List<String> subpath = Arrays.asList(elements).subList(1, elements.length);
                 if (component instanceof com.haulmont.cuba.gui.components.Component.Container) {
@@ -212,14 +191,12 @@ public class WebComponentsHelper {
 
     public static boolean isVerticalLayout(AbstractOrderedLayout layout) {
         return (layout instanceof VerticalLayout)
-                || (layout instanceof VerticalActionsLayout)
-                || (layout instanceof WebVBoxLayout);
+                || (layout instanceof VerticalActionsLayout);
     }
 
     public static boolean isHorizontalLayout(AbstractOrderedLayout layout) {
         return (layout instanceof HorizontalLayout)
-                || (layout instanceof HorizontalActionsLayout)
-                || (layout instanceof WebHBoxLayout);
+                || (layout instanceof HorizontalActionsLayout);
     }
 
     public static Alignment convertAlignment(com.haulmont.cuba.gui.components.Component.Alignment alignment) {
@@ -236,8 +213,8 @@ public class WebComponentsHelper {
             case BOTTOM_CENTER: {return Alignment.BOTTOM_CENTER;}
             case BOTTOM_RIGHT: {return Alignment.BOTTOM_RIGHT;}
             default: {throw new UnsupportedOperationException();}
-            }
-            }
+        }
+    }
 
     public static int convertNotificationType(IFrame.NotificationType type) {
         switch (type) {
@@ -267,9 +244,7 @@ public class WebComponentsHelper {
         }
     }
 
-    public static AggregationContainer.Type convertAggregationType(
-            AggregationInfo.Type function
-    ) {
+    public static AggregationContainer.Type convertAggregationType(AggregationInfo.Type function) {
         switch (function) {
             case COUNT:
                 return AggregationContainer.Type.COUNT;
@@ -321,13 +296,17 @@ public class WebComponentsHelper {
         );
     }
 
-    public static com.vaadin.event.ShortcutAction createShortcutAction(ShortcutAction action) {
-        ShortcutAction.KeyCombination keyCombination = action.getKeyCombination();
-        return new com.vaadin.event.ShortcutAction(
-                action.getCaption(),
-                keyCombination.getKey().getCode(),
-                ShortcutAction.Modifier.codes(keyCombination.getModifiers())
-        );
+    public static com.vaadin.event.ShortcutAction createShortcutAction(com.haulmont.cuba.gui.components.Action action) {
+        KeyCombination keyCombination = action.getShortcut();
+        if (keyCombination != null) {
+            return new com.vaadin.event.ShortcutAction(
+                    action.getCaption(),
+                    keyCombination.getKey().getCode(),
+                    KeyCombination.Modifier.codes(keyCombination.getModifiers())
+            );
+        } else {
+            return null;
+        }
     }
 
     /**

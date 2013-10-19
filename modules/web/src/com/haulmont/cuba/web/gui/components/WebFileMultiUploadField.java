@@ -259,7 +259,7 @@ public class WebFileMultiUploadField extends WebAbstractComponent<CubaMultiUploa
      */
     @Override
     public Map<UUID, String> getUploadsMap() {
-        return files;
+        return Collections.unmodifiableMap(files);
     }
 
     @Override

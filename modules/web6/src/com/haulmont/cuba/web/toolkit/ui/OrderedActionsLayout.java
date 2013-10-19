@@ -1,7 +1,6 @@
 /*
- * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
@@ -13,15 +12,20 @@ import com.vaadin.ui.AbstractOrderedLayout;
 
 import java.util.Map;
 
-@SuppressWarnings("serial")
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 public class OrderedActionsLayout extends AbstractOrderedLayout implements Action.Container {
 
     private ActionManager actionManager;
 
+    @Override
     public void addActionHandler(Action.Handler actionHandler) {
         getActionManager().addActionHandler(actionHandler);
     }
 
+    @Override
     public void removeActionHandler(Action.Handler actionHandler) {
         if (actionManager != null) {
             actionManager.removeActionHandler(actionHandler);

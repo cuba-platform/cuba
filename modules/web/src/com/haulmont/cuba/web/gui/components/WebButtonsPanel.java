@@ -18,7 +18,6 @@ import java.util.Collection;
 public class WebButtonsPanel extends WebHBoxLayout implements ButtonsPanel {
 
     public WebButtonsPanel() {
-        super();
         setSpacing(true);
         setMargin(false);
     }

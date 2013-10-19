@@ -145,7 +145,7 @@ public class DesktopFileMultiUploadField extends DesktopAbstractComponent<JButto
 
     @Override
     public Map<UUID, String> getUploadsMap() {
-        return filesMap;
+        return Collections.unmodifiableMap(filesMap);
     }
 
     @Override

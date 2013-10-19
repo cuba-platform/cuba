@@ -1,11 +1,6 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 30.12.2008 16:27:03
- * $Id$
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.cuba.web.gui.components;
 
@@ -24,32 +19,40 @@ import org.apache.commons.lang.ObjectUtils;
 import java.util.*;
 import java.util.List;
 
+/**
+ * @param <T>
+ * @author abramov
+ * @version $Id$
+ */
 public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
     extends
         WebAbstractComponent<T>
     implements
-        Component.HasValue, Component.Validatable
-{
+        Field {
+
     protected Datasource<Entity> datasource;
     protected MetaProperty metaProperty;
     protected MetaPropertyPath metaPropertyPath;
 
-    protected List<ValueListener> listeners = new ArrayList<ValueListener>();
+    protected List<ValueListener> listeners = new ArrayList<>();
     protected ValueChangingListener valueChangingListener;
-    protected List<Field.Validator> validators = new ArrayList<Field.Validator>();
+    protected List<Field.Validator> validators = new ArrayList<>();
 
     protected boolean settingValue = false;
 
     protected String requiredMessage;
 
+    @Override
     public Datasource getDatasource() {
         return datasource;
     }
 
+    @Override
     public MetaProperty getMetaProperty() {
         return metaProperty;
     }
 
+    @Override
     public void setDatasource(Datasource datasource, String property) {
         this.datasource = datasource;
 
@@ -72,17 +75,25 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
         return new ItemWrapper(datasource, propertyPaths);
     }
 
+    @Override
     public boolean isRequired() {
         return component.isRequired();
     }
 
+    @Override
     public void setRequired(boolean required) {
         component.setRequired(required);
     }
 
+    @Override
     public void setRequiredMessage(String msg) {
         requiredMessage = msg;
         component.setRequiredError(msg);
+    }
+
+    @Override
+    public String getRequiredMessage() {
+        return component.getRequiredError();
     }
 
     @Override
@@ -97,18 +108,22 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
         component.setValue(value);
     }
 
+    @Override
     public String getCaption() {
         return component.getCaption();
     }
 
+    @Override
     public void setCaption(String caption) {
         component.setCaption(caption);
     }
 
+    @Override
     public String getDescription() {
         return component.getDescription();
     }
 
+    @Override
     public void setDescription(String description) {
         component.setDescription(description);
     }
@@ -180,11 +195,13 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
         }
     }
 
+    @Override
     public void addValidator(Field.Validator validator) {
         if (!validators.contains(validator))
             validators.add(validator);
     }
 
+    @Override
     public void removeValidator(Field.Validator validator) {
         validators.remove(validator);
     }

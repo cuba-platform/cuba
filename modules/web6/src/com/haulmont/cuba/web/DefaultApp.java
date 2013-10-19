@@ -1,7 +1,6 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.cuba.web;
 
@@ -13,7 +12,7 @@ import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
-import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
+import com.haulmont.cuba.web.auth.ActiveDirectoryHelper;
 import com.haulmont.cuba.web.toolkit.Timer;
 import com.vaadin.service.ApplicationContext;
 import com.vaadin.ui.Window;
@@ -180,7 +179,7 @@ public class DefaultApp extends App implements ConnectionListener {
      * Perform actions after success login
      */
     protected void afterLoggedIn() {
-        if (!webConfig.getUseActiveDirectory()) {
+        if (!webAuthConfig.getUseActiveDirectory()) {
             final User user = AppBeans.get(UserSessionSource.class).getUserSession().getUser();
             // Change password on logon
             if (Boolean.TRUE.equals(user.getChangePasswordAtNextLogon())) {

@@ -1,7 +1,6 @@
 /*
- * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.cuba.web.gui.components;
 
@@ -1554,6 +1553,16 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
     @Override
     public boolean isFolderActionsEnabled() {
         return folderActionsEnabled;
+    }
+
+    @Override
+    public void setMargin(boolean enable) {
+        component.setMargin(enable);
+    }
+
+    @Override
+    public void setMargin(boolean topEnable, boolean rightEnable, boolean bottomEnable, boolean leftEnable) {
+        component.setMargin(new Layout.MarginInfo(topEnable, rightEnable, bottomEnable, leftEnable));
     }
 
     private boolean getResultingManualApplyRequired() {

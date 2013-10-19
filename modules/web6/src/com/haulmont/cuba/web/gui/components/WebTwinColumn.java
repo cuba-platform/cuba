@@ -1,12 +1,6 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
-
- * Author: Nikolay Gorodnov
- * Created: 05.08.2010 17:08:49
- *
- * $Id$
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.cuba.web.gui.components;
 
@@ -24,12 +18,15 @@ import com.vaadin.ui.AbstractSelect;
 
 import java.util.*;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 public class WebTwinColumn
         extends
             WebAbstractOptionsField<TwinColumnSelect>
         implements
-            TwinColumn, Component.Wrapper
-{
+            TwinColumn, Component.Wrapper {
 
     private Object nullOption;
 
@@ -185,9 +182,19 @@ public class WebTwinColumn
     }
 
     @Override
+    public void setAddAllBtnEnabled(boolean enabled) {
+        // todo not yet implemented
+    }
+
+    @Override
+    public boolean isAddAllBtnEnabled() {
+        return false;  //todo not yet implemented
+    }
+
+    @Override
     protected <T> T getValueFromKey(Object key) {
         if (key instanceof Collection) {
-            final Set<Object> set = new LinkedHashSet<Object>();
+            final Set<Object> set = new LinkedHashSet<>();
             for (Object o : (Collection) key) {
                 Object t = getValue(o);
                 set.add(t);
@@ -216,7 +223,7 @@ public class WebTwinColumn
         Object v;
         if (isMultiSelect()) {
             if (value instanceof Collection) {
-                final Set<Object> set = new HashSet<Object>();
+                final Set<Object> set = new HashSet<>();
                 for (Object o : (Collection) value) {
                     Object t = getKey(o);
                     set.add(t);

@@ -1,12 +1,6 @@
 /*
- * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
-
- * Author: Gennady Pavlov
- * Created: 08.06.2010 13:54:46
- *
- * $Id$
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.cuba.web.gui.components;
 
@@ -23,15 +17,19 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * @author pavlov
+ * @version $Id$
+ */
 public class WebPopupButton
         extends WebAbstractComponent<PopupButton>
         implements com.haulmont.cuba.gui.components.PopupButton{
 
-    private Component popupComponent;
-    private com.vaadin.ui.Component vPopupComponent;
-    private String icon;
+    protected Component popupComponent;
+    protected com.vaadin.ui.Component vPopupComponent;
+    protected String icon;
 
-    private List<Action> actionOrder = new LinkedList<Action>();
+    protected List<Action> actionOrder = new LinkedList<>();
 
     public WebPopupButton() {
         component = new PopupButton("");
@@ -44,26 +42,32 @@ public class WebPopupButton
         component.setComponent(vPopupComponent);
     }
 
+    @Override
     public String getCaption() {
         return component.getCaption();
     }
 
+    @Override
     public void setCaption(String caption) {
         component.setCaption(caption);
     }
 
+    @Override
     public String getDescription() {
         return component.getDescription();
     }
 
+    @Override
     public void setDescription(String description) {
         component.setDescription(description);
     }
 
+    @Override
     public String getIcon() {
         return icon;
     }
 
+    @Override
     public void setIcon(String icon) {
         this.icon = icon;
         if (!StringUtils.isEmpty(icon)) {
@@ -91,28 +95,34 @@ public class WebPopupButton
         return popupComponent;
     }
 
+    @Override
     public boolean isPopupVisible() {
         return component.isPopupVisible();
     }
 
+    @Override
     public void setPopupVisible(boolean popupVisible) {
         component.setPopupVisible(popupVisible);
     }
 
+    @Override
     public void setMenuWidth(String width) {
         if (vPopupComponent != null && width != null) {
             vPopupComponent.setWidth(width);    
         }
     }
 
+    @Override
     public boolean isAutoClose() {
         return component.isAutoClose();
     }
 
+    @Override
     public void setAutoClose(boolean autoClose) {
         component.setAutoClose(autoClose);
     }
 
+    @Override
     public void addAction(final Action action) {
         if (action != null && vPopupComponent instanceof com.vaadin.ui.Layout) {
             WebButton button = new WebButton();
@@ -131,6 +141,7 @@ public class WebPopupButton
         }
     }
 
+    @Override
     public void removeAction(Action action) {
         if (vPopupComponent instanceof com.vaadin.ui.Layout && actionOrder.remove(action)) {
             vPopupComponent.setVisible(false); // do not requestRepaint
@@ -138,6 +149,7 @@ public class WebPopupButton
         }
     }
 
+    @Override
     public Action getAction(String id) {
         if (vPopupComponent instanceof com.vaadin.ui.Layout && id != null) {
             for (Action action : actionOrder) {
@@ -150,6 +162,7 @@ public class WebPopupButton
         return null;
     }
 
+    @Override
     public Collection<Action> getActions() {
         return Collections.unmodifiableCollection(actionOrder);
     }

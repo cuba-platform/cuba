@@ -1,50 +1,52 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 22.12.2008 17:52:31
- * $Id$
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.cuba.web.gui.components;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.ShortcutAction;
+import com.haulmont.cuba.gui.components.GroupBoxLayout;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.toolkit.gwt.client.ui.VGroupBox;
 import com.haulmont.cuba.web.toolkit.ui.HorizontalActionsLayout;
 import com.haulmont.cuba.web.toolkit.ui.OrderedActionsLayout;
 import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
-import com.vaadin.ui.*;
+import com.vaadin.ui.AbstractOrderedLayout;
+import com.vaadin.ui.ClientWidget;
+import com.vaadin.ui.Layout;
+import com.vaadin.ui.Panel;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.dom4j.Element;
 
 import java.util.*;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 @ClientWidget(VGroupBox.class)
 public class WebGroupBox extends Panel implements GroupBoxLayout {
 
     private static final long serialVersionUID = 603031841274663159L;
 
-    private String id;
-    private IFrame frame;
+    protected String id;
+    protected IFrame frame;
     protected List<Component> components = new ArrayList<>();
-    private Alignment alignment = Alignment.TOP_LEFT;
-    private Orientation orientation = Orientation.VERTICAL;
+    protected Alignment alignment = Alignment.TOP_LEFT;
+    protected Orientation orientation = Orientation.VERTICAL;
 
-    private boolean expanded = true;
-    private boolean collapsable;
+    protected boolean expanded = true;
+    protected boolean collapsable;
 
-    private List<ExpandListener> expandListeners = null;
-    private List<CollapseListener> collapseListeners = null;
+    protected List<ExpandListener> expandListeners = null;
+    protected List<CollapseListener> collapseListeners = null;
 
     protected List<com.haulmont.cuba.gui.components.Action> actionsOrder = new LinkedList<Action>();
     protected BiMap<com.vaadin.event.Action, Action> actions = HashBiMap.create();
@@ -58,11 +60,13 @@ public class WebGroupBox extends Panel implements GroupBoxLayout {
         container.setSizeFull();
         setContent(container);
         container.addActionHandler(new com.vaadin.event.Action.Handler() {
+            @Override
             public com.vaadin.event.Action[] getActions(Object target, Object sender) {
                 final Set<com.vaadin.event.Action> keys = actions.keySet();
                 return keys.toArray(new com.vaadin.event.Action[keys.size()]);
             }
 
+            @Override
             public void handleAction(com.vaadin.event.Action action, Object sender, Object target) {
                 Action act = actions.get(action);
                 if (act != null && act.isEnabled()) {
@@ -136,10 +140,12 @@ public class WebGroupBox extends Panel implements GroupBoxLayout {
         WebComponentsHelper.expand((AbstractOrderedLayout) getContent(), expandedComponent, height, width);
     }
 
+    @Override
     public boolean isExpanded() {
         return !collapsable || expanded;
     }
 
+    @Override
     public void setExpanded(boolean expanded) {
         if (collapsable) {
             this.expanded = expanded;
@@ -148,10 +154,12 @@ public class WebGroupBox extends Panel implements GroupBoxLayout {
         }
     }
 
+    @Override
     public boolean isCollapsable() {
         return collapsable;
     }
 
+    @Override
     public void setCollapsable(boolean collapsable) {
         this.collapsable = collapsable;
         if (collapsable) {
@@ -159,13 +167,15 @@ public class WebGroupBox extends Panel implements GroupBoxLayout {
         }
     }
 
+    @Override
     public void addListener(ExpandListener listener) {
         if (expandListeners == null) {
-            expandListeners = new ArrayList<ExpandListener>();
+            expandListeners = new ArrayList<>();
         }
         expandListeners.add(listener);
     }
 
+    @Override
     public void removeListener(ExpandListener listener) {
         if (expandListeners != null) {
             expandListeners.remove(listener);
@@ -183,13 +193,15 @@ public class WebGroupBox extends Panel implements GroupBoxLayout {
         }
     }
 
+    @Override
     public void addListener(CollapseListener listener) {
         if (collapseListeners == null) {
-            collapseListeners = new ArrayList<CollapseListener>();
+            collapseListeners = new ArrayList<>();
         }
         collapseListeners.add(listener);
     }
 
+    @Override
     public void removeListener(CollapseListener listener) {
         if (collapseListeners != null) {
             collapseListeners.remove(listener);
@@ -207,22 +219,26 @@ public class WebGroupBox extends Panel implements GroupBoxLayout {
         }
     }
 
+    @Override
     public void addAction(final com.haulmont.cuba.gui.components.Action action) {
-        if (action instanceof ShortcutAction) {
-            actions.put(WebComponentsHelper.createShortcutAction((ShortcutAction) action), action);
+        if (action.getShortcut() != null) {
+            actions.put(WebComponentsHelper.createShortcutAction(action), action);
         }
         actionsOrder.add(action);
     }
 
+    @Override
     public void removeAction(com.haulmont.cuba.gui.components.Action action) {
         actionsOrder.remove(action);
         actions.inverse().remove(action);
     }
 
+    @Override
     public Collection<Action> getActions() {
         return Collections.unmodifiableCollection(actionsOrder);
     }
 
+    @Override
     public com.haulmont.cuba.gui.components.Action getAction(String id) {
         for (com.haulmont.cuba.gui.components.Action action : getActions()) {
             if (ObjectUtils.equals(action.getId(), id)) {
@@ -259,6 +275,7 @@ public class WebGroupBox extends Panel implements GroupBoxLayout {
         }
     }
 
+    @Override
     public void applySettings(Element element) {
         Element groupBoxElement = element.element("groupBox");
         if (groupBoxElement != null) {
@@ -269,6 +286,7 @@ public class WebGroupBox extends Panel implements GroupBoxLayout {
         }
     }
 
+    @Override
     public boolean saveSettings(Element element) {
         Element groupBoxElement = element.element("groupBox");
         if (groupBoxElement != null) {

@@ -1,7 +1,6 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.cuba.web.gui.components;
 
@@ -37,8 +36,7 @@ import java.util.*;
  * @version $Id$
  */
 public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolkit.ui.GroupTable>
-        implements GroupTable, Component.Wrapper
-{
+        implements GroupTable, Component.Wrapper {
 
     protected Map<Table.Column, GroupAggregationCells> groupAggregationCells = null;
 
@@ -48,15 +46,7 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
         component = new com.haulmont.cuba.web.toolkit.ui.GroupTable() {
             @Override
             public Resource getItemIcon(Object itemId) {
-                if (styleProvider != null) {
-                    @SuppressWarnings({"unchecked"})
-                    final Entity item = datasource.getItem(itemId);
-                    final String resURL = styleProvider.getItemIcon(item);
-
-                    return resURL == null ? null : WebComponentsHelper.getResource(resURL);
-                } else {
-                    return null;
-                }
+                return WebGroupTable.this.getItemIcon(itemId);
             }
 
             @Override

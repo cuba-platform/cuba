@@ -1,7 +1,6 @@
 /*
- * Copyright (c) 2008-2010 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
 package com.haulmont.cuba.web.app.ui.jmxcontrol.browse;
@@ -14,11 +13,11 @@ import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.RefreshAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
-import com.haulmont.cuba.web.jmx.JmxControlException;
-import com.haulmont.cuba.web.jmx.entity.ManagedBeanInfo;
 import com.haulmont.cuba.web.app.ui.jmxcontrol.ds.ManagedBeanInfoDatasource;
 import com.haulmont.cuba.web.app.ui.jmxinstance.edit.JmxInstanceEditor;
 import com.haulmont.cuba.web.jmx.JmxControlAPI;
+import com.haulmont.cuba.web.jmx.JmxControlException;
+import com.haulmont.cuba.web.jmx.entity.ManagedBeanInfo;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
@@ -70,7 +69,7 @@ public class MbeansDisplayWindow extends AbstractWindow {
                 if (!selected.isEmpty()) {
                     ManagedBeanInfo mbi = selected.iterator().next();
                     if (mbi.getObjectName() != null) { // otherwise it's a fake root node
-                        openEditor("jmxcontrol$InspectMbean", mbi, WindowManager.OpenType.THIS_TAB);
+                        openEditor("jmxConsoleInspectMbean", mbi, WindowManager.OpenType.THIS_TAB);
                     } else { // expand / collapse fake root node
                         TreeTable treeTable = mbeansTable;
                         UUID itemId = mbi.getId();
@@ -152,18 +151,10 @@ public class MbeansDisplayWindow extends AbstractWindow {
         mbeansTable.setStyleProvider(new Table.StyleProvider() {
             @Nullable
             @Override
-            public String getStyleName(@Nullable Entity entity, @Nullable String property) {
-                if (entity != null) {
-                    if (entity instanceof ManagedBeanInfo &&
-                            ((ManagedBeanInfo) entity).getObjectName() == null)
-                        return "cuba-jmx-tree-table-domain";
+            public String getStyleName(Entity entity, @Nullable String property) {
+                if (entity instanceof ManagedBeanInfo && ((ManagedBeanInfo) entity).getObjectName() == null) {
+                    return "cuba-jmx-tree-table-domain";
                 }
-                return null;
-            }
-
-            @Nullable
-            @Override
-            public String getItemIcon(@Nullable Entity entity) {
                 return null;
             }
         });

@@ -1,11 +1,6 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 19.12.2008 17:21:57
- * $Id$
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.cuba.web.gui.components;
 
@@ -21,11 +16,15 @@ import org.apache.commons.lang.StringUtils;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class WebButton
         extends
-        WebAbstractComponent<com.vaadin.ui.Button>
+            WebAbstractComponent<com.vaadin.ui.Button>
         implements
-        Button, Component.Wrapper {
+            Button, Component.Wrapper {
 
     protected Action action;
     protected String icon;
@@ -38,6 +37,7 @@ public class WebButton
         } else {
             component = new com.vaadin.ui.Button();
         }
+
         component.addListener(new com.vaadin.ui.Button.ClickListener() {
             @Override
             public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {

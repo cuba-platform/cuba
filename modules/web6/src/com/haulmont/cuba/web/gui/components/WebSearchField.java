@@ -1,14 +1,17 @@
 /*
- * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.SearchField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.toolkit.ui.SearchSelect;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -24,15 +27,34 @@ import java.util.HashSet;
  * @author artamonov
  * @version $Id$
  */
-public class WebSearchField
-        extends WebLookupField
-        implements SearchField {
+public class WebSearchField extends WebLookupField implements SearchField {
 
     protected int minSearchStringLength = 0;
 
+    protected Messages messages;
+
     protected Entity newSettingValue = null;
 
-    protected SearchNotifications searchNotifications;
+    protected SearchNotifications searchNotifications = new SearchNotifications() {
+        @Override
+        public void notFoundSuggestions(String filterString) {
+            String message = messages.formatMessage("com.haulmont.cuba.web", "searchSelect.notFound", filterString);
+            App.getInstance().getWindowManager().showNotification(message, defaultNotificationType);
+        }
+
+        @Override
+        public void needMinSearchStringLength(String filterString, int minSearchStringLength) {
+            String message = messages.formatMessage(
+                    "com.haulmont.cuba.web", "searchSelect.minimumLengthOfFilter", minSearchStringLength);
+            App.getInstance().getWindowManager().showNotification(message, defaultNotificationType);
+        }
+    };
+
+    protected IFrame.NotificationType defaultNotificationType = IFrame.NotificationType.TRAY;
+
+    public WebSearchField() {
+        messages = AppBeans.get(Messages.class);
+    }
 
     @Override
     protected void createComponent() {
@@ -169,6 +191,16 @@ public class WebSearchField
     @Override
     public SearchNotifications getSearchNotifications() {
         return searchNotifications;
+    }
+
+    @Override
+    public IFrame.NotificationType getDefaultNotificationType() {
+        return defaultNotificationType;
+    }
+
+    @Override
+    public void setDefaultNotificationType(IFrame.NotificationType defaultNotificationType) {
+        this.defaultNotificationType = defaultNotificationType;
     }
 
     /**

@@ -1,12 +1,6 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
-
- * Author: Nikolay Gorodnov
- * Created: 13.11.2009 11:10:14
- *
- * $Id$
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
@@ -29,7 +23,10 @@ import org.apache.commons.lang.ObjectUtils;
 
 import java.util.*;
 
-@SuppressWarnings("serial")
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 @ClientWidget(IScrollGroupTable.class)
 public class GroupTable extends Table implements GroupTableContainer {
 
