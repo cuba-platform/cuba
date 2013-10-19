@@ -17,7 +17,6 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.toolkit.ui.CubaOrderedActionsLayout;
-import org.dom4j.Element;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
@@ -27,22 +26,17 @@ import java.util.*;
  * @author abramov
  * @version $Id$
  */
-public class WebFrame extends WebVBoxLayout
-        implements
-            IFrame,
-            WrappedFrame,
-            com.haulmont.cuba.gui.components.Component.HasXmlDescriptor
-{
-    private String messagePack;
-    private WindowContext context;
-    private DsContext dsContext;
-    private Element element;
+public class WebFrame extends WebVBoxLayout implements IFrame, WrappedFrame {
 
-    private IFrame wrapper;
+    protected String messagePack;
+    protected WindowContext context;
+    protected DsContext dsContext;
+
+    protected IFrame wrapper;
 
     protected Map<String, com.haulmont.cuba.gui.components.Component> allComponents = new HashMap<>();
 
-    private WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
+    protected WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
 
     protected WebFrameActionsHolder actionsHolder = new WebFrameActionsHolder();
 
@@ -268,16 +262,6 @@ public class WebFrame extends WebVBoxLayout
     @Override
     public void showNotification(String caption, NotificationType type) {
         App.getInstance().getWindowManager().showNotification(caption, type);
-    }
-
-    @Override
-    public Element getXmlDescriptor() {
-        return element;
-    }
-
-    @Override
-    public void setXmlDescriptor(Element element) {
-        this.element = element;
     }
 
     @Override
