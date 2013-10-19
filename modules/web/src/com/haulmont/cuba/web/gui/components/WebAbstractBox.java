@@ -19,8 +19,6 @@ import java.util.*;
  */
 class WebAbstractBox extends WebAbstractComponent<AbstractOrderedLayout> implements BoxLayout, Component.Wrapper {
 
-    protected String id;
-
     protected Collection<Component> ownComponents = new HashSet<>();
     protected Map<String, Component> componentByIds = new HashMap<>();
 
@@ -45,7 +43,7 @@ class WebAbstractBox extends WebAbstractComponent<AbstractOrderedLayout> impleme
     @Override
     public void remove(Component childComponent) {
         component.removeComponent(WebComponentsHelper.getComposition(childComponent));
-        if (component.getId() != null) {
+        if (childComponent.getId() != null) {
             componentByIds.remove(childComponent.getId());
         }
         ownComponents.remove(childComponent);
@@ -69,18 +67,6 @@ class WebAbstractBox extends WebAbstractComponent<AbstractOrderedLayout> impleme
     @Override
     public Collection<Component> getComponents() {
         return ComponentsHelper.getComponents(this);
-    }
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public void setId(String id) {
-        this.id = id;
-//        vaadin7 Test ids
-//        setDebugId(id);
     }
 
     @Override
