@@ -810,7 +810,7 @@
     cursor: pointer;
     width: 14px;
     height: 24px;
-    background: transparent url(../icons/tab-remove-inactive.png) no-repeat center left;
+    background: transparent url(img/tab-remove-inactive.png) no-repeat center left;
     text-indent: 100px;
     overflow: hidden;
     font-size: 20px;
@@ -819,9 +819,9 @@
 }
 
 .v-tabsheet-tabitem-selected .v-tabsheet-caption-close{
-    background: transparent url(../icons/tab-remove-active.png) no-repeat center left;
+    background: transparent url(img/tab-remove-active.png) no-repeat center left;
 }
 
 .v-tabsheet-caption-close:hover {
-    background: transparent url(../icons/tab-remove-hover.png) no-repeat center left;
+    background: transparent url(img/tab-remove-hover.png) no-repeat center left;
 }
