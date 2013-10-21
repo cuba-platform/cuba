@@ -22,13 +22,17 @@ import com.vaadin.ui.Field;
 import java.io.Serializable;
 import java.util.*;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 @SuppressWarnings("serial")
 @ClientWidget(IScrollTable.class)
 public class Table extends com.vaadin.ui.Table implements AggregationContainer {
 
     protected LinkedList<Object> editableColumns = null;
     protected boolean storeColWidth = false;
-    protected LinkedList<ShortcutListener> shortcutListeners = new LinkedList<ShortcutListener>();
+    protected LinkedList<ShortcutListener> shortcutListeners = new LinkedList<>();
 
     protected PagingMode pagingMode = PagingMode.SCROLLING;
 
@@ -39,7 +43,7 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
 
     protected boolean aggregatable = false;
 
-    protected boolean enableCancelSorting = false;
+    protected boolean enableCancelSorting = true;
 
     private boolean textSelectionEnabled;
 
@@ -47,7 +51,7 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
 
     protected ActionManager shortcutsManager = new ActionManager();
 
-    private List<CollapseListener> columnCollapseListeners = new ArrayList<CollapseListener>();
+    private List<CollapseListener> columnCollapseListeners = new ArrayList<>();
 
     public interface CollapseListener {
         void columnCollapsed(Object columnId, boolean collapsed);
@@ -120,7 +124,7 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
         if (!isSelectable() && variables.containsKey("selected")) {
             // Not-selectable is a special case, AbstractSelect does not support
             // TODO could be optimized.
-            variables = new HashMap<String, Object>(variables);
+            variables = new HashMap<>(variables);
             variables.remove("selected");
         }
 
@@ -132,7 +136,7 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
                 && variables.containsKey("selected")
                 /*&& multiSelectMode == MultiSelectMode.DEFAULT*/) {
             handleSelectedItems(variables);
-            variables = new HashMap<String, Object>(variables);
+            variables = new HashMap<>(variables);
             variables.remove("selected");
         }
         super.changeVariables(source, variables);
@@ -156,7 +160,7 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
      * Gets items ids from a range of key values
      */
     protected Set<Object> getItemIdsInRange(Object itemId, final int length) {
-        HashSet<Object> ids = new HashSet<Object>();
+        HashSet<Object> ids = new HashSet<>();
         for (int i = 0; i < length; i++) {
             assert itemId != null; // should not be null unless client-server
                                    // are out of sync
@@ -178,7 +182,7 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
 
         Set<Object> renderedItemIds = getCurrentlyRenderedItemIds();
 
-        HashSet<Object> newValue = new LinkedHashSet<Object>(
+        HashSet<Object> newValue = new LinkedHashSet<>(
                 (Collection<Object>) getValue());
 
         if (variables.containsKey("clearSelections")) {
@@ -230,7 +234,7 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
     }
 
     private Set<Object> getCurrentlyRenderedItemIds() {
-        HashSet<Object> ids = new HashSet<Object>();
+        HashSet<Object> ids = new HashSet<>();
         if (pageBuffer != null) {
             for (int i = 0; i < pageBuffer[CELL_ITEMID].length; i++) {
                 ids.add(pageBuffer[CELL_ITEMID][i]);
@@ -374,7 +378,7 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
         }
 
         // selection support
-        LinkedList<String> selectedKeys = new LinkedList<String>();
+        LinkedList<String> selectedKeys = new LinkedList<>();
         if (isMultiSelect()) {
             // only paint selections that are currently visible in the client
             HashSet sel = new HashSet((Set) getValue());
@@ -462,7 +466,7 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
         }
 
         // Rows
-        final Set<Action> actionSet = new LinkedHashSet<Action>();
+        final Set<Action> actionSet = new LinkedHashSet<>();
         final boolean selectable = isSelectable();
         final boolean[] iscomponent = new boolean[visibleColumns.size()];
         int iscomponentIndex = 0;

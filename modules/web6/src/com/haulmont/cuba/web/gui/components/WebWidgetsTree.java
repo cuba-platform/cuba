@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.WidgetsTree;
@@ -20,7 +21,7 @@ public class WebWidgetsTree
         implements
             WidgetsTree, Component.Wrapper {
 
-    private String hierarchyProperty;
+    protected String hierarchyProperty;
 
     public WebWidgetsTree() {
         component = new com.haulmont.cuba.web.toolkit.ui.WidgetsTree();
@@ -40,6 +41,10 @@ public class WebWidgetsTree
 
         HierarchicalDsWrapper wrapper = new HierarchicalDsWrapper(datasource);
         component.setContainerDataSource(wrapper);
+
+        for (Action action : getActions()) {
+            action.refreshState();
+        }
     }
 
     @Override

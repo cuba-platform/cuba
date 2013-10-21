@@ -88,15 +88,6 @@ public interface WebConfig extends Config {
     boolean getUseChromeFramePlugin();
 
     /**
-     * @return Whether to close DateField calendar popup right after date is selected.
-     * Default behaviour is the following: if the DateField contains time, the calendar popup allows to select time and
-     * closes only when user clicks somewhere outside the popup.
-     */
-    @Property("cuba.web.closeCalendarWhenDateSelected")
-    @DefaultBoolean(false)
-    boolean getCloseCalendarWhenDateSelected();
-
-    /**
      * @return Request execution time in seconds, after which a message log will be logged.
      */
     @Property("cuba.web.logLongRequestsThresholdSec")
@@ -156,7 +147,7 @@ public interface WebConfig extends Config {
      * @return Whether to handle back button click in browser on server-side.
      */
     @Property("cuba.web.allowHandleBrowserHistoryBack")
-    @DefaultBoolean(true)
+    @DefaultBoolean(false)
     boolean getAllowHandleBrowserHistoryBack();
 
     /**
@@ -207,14 +198,6 @@ public interface WebConfig extends Config {
     boolean getAllowIdSuffix();
 
     /**
-     * @return Whether to enable cancel sorting of table columns. If true, each third click on the column will cancel
-     * sorting instead of reversing it.
-     */
-    @Property("cuba.web.enableCancelTableSorting")
-    @DefaultBoolean(true)
-    boolean getEnableCancelTableSorting();
-
-    /**
      * Supports automatic testing.
      * @return a name of request parameter that marks a request from an automatic testing tool, for example jMeter.
      */
@@ -233,10 +216,10 @@ public interface WebConfig extends Config {
     String getRestoreEntityId();
 
     /**
-     * Support e-mail. All feedback mails will be sent on this address.
+     * Support e-mail. Exception reports and feedback emails are sent to this address.
      */
     @Property("cuba.supportEmail")
-    @DefaultString("cubasupport@haulmont.com")
+    @DefaultString("support@localhost")
     String getSupportEmail();
 
     /**
@@ -268,6 +251,13 @@ public interface WebConfig extends Config {
     String getSystemID();
 
     /**
+     * @return Path to resource containing the release timestamp
+     */
+    @Property("cuba.web.resourcesTimestampPath")
+    @DefaultString("/com/haulmont/cuba/web/resources.timestamp")
+    String getResourcesTimestampPath();
+
+    /**
      * @return an action to force login.
      * <p/> An action is represented by the last part of URL.
      */
@@ -283,4 +273,11 @@ public interface WebConfig extends Config {
     @Factory(factory = StringListTypeFactory.class)
     @Default("open|o")
     List<String> getLinkHandlerActions();
+
+    /**
+     * @return whether to kill current HTTP session on user logout
+     */
+    @Property("cuba.web.invalidateHttpSessionOnLogout")
+    @DefaultBoolean(true)
+    boolean getInvalidateHttpSessionOnLogout();
 }

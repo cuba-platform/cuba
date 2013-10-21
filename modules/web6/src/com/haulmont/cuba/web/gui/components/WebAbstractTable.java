@@ -33,7 +33,6 @@ import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Presentation;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.AbstractFieldFactory;
 import com.haulmont.cuba.web.gui.CompositionLayout;
 import com.haulmont.cuba.web.gui.components.presentations.TablePresentations;
@@ -63,6 +62,9 @@ import javax.annotation.Nullable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+
+import com.haulmont.cuba.web.toolkit.ui.CheckBox;
+import com.haulmont.cuba.web.gui.components.WebAbstractTable.FieldFactory;
 
 /**
  * @param <T>
@@ -476,9 +478,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         component.setSizeFull();
         componentComposition.setExpandRatio(component, 1);
 
-        component.setEnableCancelSorting(ConfigProvider.getConfig(WebConfig.class).getEnableCancelTableSorting());
-
-        ClientConfig clientConfig = ConfigProvider.getConfig(ClientConfig.class);
+        ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
 
         addShortcutActionBridge(INSERT_SHORTCUT_ID, clientConfig.getTableInsertShortcut(), ListActionType.CREATE);
         addShortcutActionBridge(REMOVE_SHORTCUT_ID, clientConfig.getTableRemoveShortcut(), ListActionType.REMOVE);
@@ -703,6 +703,10 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             rowsCount.setDatasource(datasource);
 
         datasource.addListener(new CollectionDsActionsNotifier(this));
+
+        for (Action action : getActions()) {
+            action.refreshState();
+        }
     }
 
     private String getColumnCaption(Object columnId) {
