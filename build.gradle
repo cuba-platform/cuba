@@ -578,17 +578,17 @@ configure(webLegacyModule) {
 
     task deploy(dependsOn: assemble, type: CubaDeployment) {
         appName = 'cuba6'
-        appJars('cuba-global', 'cuba-client', 'cuba-gui', 'cuba-web6',
+        appJars('cuba-global', 'cuba-client', 'cuba-gui', 'cuba-web-auth', 'cuba-web6',
                 'vaadin', 'popupbutton')
     }
 
     deploy << {
         delete {
-            "$tomcatDir/webapps/cuba/VAADIN/widgetsets"
+            "$tomcatDir/webapps/cuba6/VAADIN/widgetsets"
         }
         copy {
             from "$buildDir/web"
-            into "$tomcatDir/webapps/cuba"
+            into "$tomcatDir/webapps/cuba6"
         }
     }
 
