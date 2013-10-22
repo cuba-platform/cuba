@@ -4,7 +4,6 @@
  */
 package com.haulmont.cuba.web.log;
 
-import com.haulmont.cuba.core.app.ServerInfoService;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.web.App;
@@ -30,6 +29,7 @@ public class LogWindow extends Window {
         super(AppBeans.get(Messages.class).getMessage(LogWindow.class, "logWindow.caption"));
         setHeight("80%");
         setWidth("80%");
+        center();
         initUI();
     }
 
@@ -62,6 +62,7 @@ public class LogWindow extends Window {
         label.setContentMode(Label.CONTENT_XHTML);
         label.setValue(writeLog());
         label.setSizeUndefined();
+        label.setStyleName("cuba-log-content");
 
         scrollablePanel.addComponent(label);
 
@@ -78,12 +79,7 @@ public class LogWindow extends Window {
                 }
         );
 
-        Label versionLabel = new Label();
-        versionLabel.setValue(getVersionString());
-
         topLayout.addComponent(refreshBtn);
-        topLayout.addComponent(versionLabel);
-        topLayout.setComponentAlignment(versionLabel, Alignment.MIDDLE_RIGHT);
 
         addComponent(topLayout);
         addComponent(scrollablePanel);
@@ -91,27 +87,25 @@ public class LogWindow extends Window {
         layout.setExpandRatio(scrollablePanel, 1.0f);
     }
 
-    private String getVersionString() {
-        ServerInfoService service = AppBeans.get(ServerInfoService.NAME);
-        String releaseNumber = service.getReleaseNumber();
-        String releaseTimestamp = service.getReleaseTimestamp();
-        return AppBeans.get(Messages.class).formatMessage(
-                getClass(), "logWindow.versionString", releaseNumber, releaseTimestamp);
-    }
-
     private String writeLog() {
-        List<LogItem> items = App.getInstance().getAppLog().getItems();
         StringBuilder sb = new StringBuilder();
+        List<LogItem> items = App.getInstance().getAppLog().getItems();
         for (LogItem item : items) {
             sb.append("<b>");
             sb.append(DateFormatUtils.format(item.getTimestamp(), DATE_FORMAT));
             sb.append(" ");
             sb.append(item.getLevel().name());
-            sb.append("</b>");
+            sb.append("</b>&nbsp;");
             sb.append(StringEscapeUtils.escapeHtml(item.getMessage()));
             if (item.getStacktrace() != null) {
                 sb.append(" ");
-                sb.append(StringUtils.replace(StringEscapeUtils.escapeHtml(item.getStacktrace()), "\n", "<br/>"));
+
+                String htmlMessage = StringEscapeUtils.escapeHtml(item.getStacktrace());
+                htmlMessage = StringUtils.replace(htmlMessage, "\n", "<br/>");
+                htmlMessage = StringUtils.replace(htmlMessage, " ", "&nbsp;");
+                htmlMessage = StringUtils.replace(htmlMessage, "\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
+
+                sb.append(htmlMessage);
             }
             sb.append("<br/>");
         }
