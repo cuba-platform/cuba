@@ -12,7 +12,8 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.OptionsField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -27,14 +28,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public abstract class DesktopAbstractOptionsField<C extends JComponent>
-        extends DesktopAbstractField<C>
-        implements OptionsField
-{
+        extends
+            DesktopAbstractField<C>
+        implements
+            OptionsField {
 
     protected CaptionMode captionMode = CaptionMode.ITEM;
     protected String captionProperty;
@@ -51,6 +52,8 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
     protected boolean updatingInstance;
 
     protected Object prevValue;
+
+    protected Messages messages = AppBeans.get(Messages.NAME);
 
     @Override
     public CollectionDatasource getOptionsDatasource() {
@@ -125,8 +128,7 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
         metaPropertyPath = metaClass.getPropertyPath(property);
         try {
             metaProperty = metaPropertyPath.getMetaProperty();
-        }
-        catch (ArrayIndexOutOfBoundsException e) {
+        } catch (ArrayIndexOutOfBoundsException e) {
             throw new RuntimeException("Metaproperty name is possibly wrong: " + property, e);
         }
 
@@ -323,7 +325,7 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
                 return InstanceUtils.getInstanceName((Instance) obj);
 
             if (obj instanceof Enum)
-                return MessageProvider.getMessage((Enum) obj);
+                return messages.getMessage((Enum) obj);
 
             return obj.toString();
         }

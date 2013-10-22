@@ -7,7 +7,6 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.datatypes.Enumeration;
 import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -21,8 +20,6 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import javax.persistence.TemporalType;
-import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * @author krivopustov
@@ -52,7 +49,7 @@ public abstract class AbstractFieldFactory implements FieldFactory {
             } else if (mpp.getRange().isClass()) {
                 return createEntityField(datasource, property, xmlDescriptor);
             } else if (mpp.getRange().isEnum()) {
-                return createEnumField(datasource, property, mpp.getMetaProperty());
+                return createEnumField(datasource, property);
             }
         }
         return createUnsupportedField(mpp);
@@ -193,16 +190,8 @@ public abstract class AbstractFieldFactory implements FieldFactory {
         return pickerField;
     }
 
-    protected Component createEnumField(Datasource datasource, String property, MetaProperty metaProperty) {
-        Map<String, Object> options = new TreeMap<>();
-        Enumeration<Enum> enumeration = metaProperty.getRange().asEnumeration();
-        for (Enum value : enumeration.getValues()) {
-            String caption = AppBeans.get(Messages.class).getMessage(value);
-            options.put(caption, value);
-        }
-
+    protected Component createEnumField(Datasource datasource, String property) {
         DesktopLookupField lookupField = new DesktopLookupField();
-        lookupField.setOptionsMap(options);
         lookupField.setDatasource(datasource, property);
         return lookupField;
     }
