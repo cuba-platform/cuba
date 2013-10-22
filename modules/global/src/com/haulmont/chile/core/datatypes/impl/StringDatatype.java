@@ -26,13 +26,13 @@ public class StringDatatype implements Datatype<String> {
     @Nonnull
     @Override
 	public String format(String value) {
-		return value;
+		return value == null ? "" : value;
 	}
 
     @Nonnull
     @Override
     public String format(String value, Locale locale) {
-        return value == null ? "" : value;
+        return format(value);
     }
 
     @Override
