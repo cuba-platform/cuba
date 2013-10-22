@@ -770,6 +770,9 @@ public class AppWindow extends Window implements UserSubstitutionListener,
     }
 
     private MenuBar.Command createMenuBarCommand(final MenuItem item) {
+        if (!item.getChildren().isEmpty())     //check item is menu
+            return null;
+
         WindowInfo windowInfo = null;
         final WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
         try {
