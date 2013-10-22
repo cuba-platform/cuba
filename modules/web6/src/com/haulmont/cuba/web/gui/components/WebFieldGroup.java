@@ -735,7 +735,13 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
     @Override
     public void validate() throws ValidationException {
+        if (!isVisible() || !isEditable() || !isEnabled()) {
+            return;
+        }
+
         final Map<Object, Exception> problems = new HashMap<>();
+
+        // todo use cuba fields for validation
 
         for (FieldConfig field : getFields()) {
             com.vaadin.ui.Field f = component.getField(field.getId());
