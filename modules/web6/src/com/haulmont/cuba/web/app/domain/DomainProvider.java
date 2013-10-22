@@ -5,14 +5,17 @@
 
 package com.haulmont.cuba.web.app.domain;
 
+import com.haulmont.cuba.core.app.DomainDescriptionService;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.export.ExportFormat;
 import com.haulmont.cuba.gui.export.RestApiDataProvider;
 import com.haulmont.cuba.web.filestorage.WebExportDisplay;
 
+import java.io.UnsupportedEncodingException;
+
 /**
- *
- * Class providing system data model
+ * Class providing domain model description. It can be called from the main menu.
  *
  * @author korotkov
  * @version $Id$
@@ -20,9 +23,14 @@ import com.haulmont.cuba.web.filestorage.WebExportDisplay;
 public class DomainProvider implements Runnable {
     @Override
     public void run() {
-        WebExportDisplay exportDisplay = new WebExportDisplay(false, true);
-        String query = "printDomain?s=" + UserSessionProvider.getUserSession().getId();
-        RestApiDataProvider dataProvider = new RestApiDataProvider(query);
-        exportDisplay.show(dataProvider, "Data model", ExportFormat.HTML);
+        DomainDescriptionService service = AppBeans.get(DomainDescriptionService.class);
+        String description = service.getDomainDescription();
+
+        WebExportDisplay exportDisplay = new WebExportDisplay(true);
+        try {
+            exportDisplay.show(description.getBytes("UTF-8"), "DomainDescription", ExportFormat.HTML);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

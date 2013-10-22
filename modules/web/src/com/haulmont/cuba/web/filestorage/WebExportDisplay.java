@@ -34,10 +34,10 @@ public class WebExportDisplay implements ExportDisplay {
 
     private static final Log log = LogFactory.getLog(WebExportDisplay.class);
 
-    private boolean newWindow;
+    protected boolean newWindow;
 
     // Use flags from app.properties for show/download files
-    private boolean useViewList = false;
+    protected boolean useViewList = false;
 
     /**
      * Constructor with newWindow=false
@@ -48,8 +48,8 @@ public class WebExportDisplay implements ExportDisplay {
     }
 
     /**
-     * @param newWindow  if true, show data in the same browser window;
-     *                   if false, open new browser window
+     * @param newWindow if true, show data in the same browser window;
+     *                  if false, open new browser window
      */
     public WebExportDisplay(boolean newWindow) {
         this.newWindow = newWindow;
@@ -69,15 +69,15 @@ public class WebExportDisplay implements ExportDisplay {
         if (useViewList) {
             String fileExt;
 
-            if (exportFormat != null)
+            if (exportFormat != null) {
                 fileExt = exportFormat.getFileExt();
-            else
+            } else {
                 fileExt = FilenameUtils.getExtension(resourceName);
+            }
 
             Configuration configuration = AppBeans.get(Configuration.NAME);
             WebConfig webConfig = configuration.getConfig(WebConfig.class);
-            boolean viewFlag = webConfig.getViewFileExtensions().contains(fileExt);
-            newWindow = viewFlag;
+            newWindow = webConfig.getViewFileExtensions().contains(fileExt);
         }
 
         // Try to get stream
@@ -90,8 +90,9 @@ public class WebExportDisplay implements ExportDisplay {
         }
 
         if (exportFormat != null) {
-            if (StringUtils.isEmpty(FilenameUtils.getExtension(resourceName)))
+            if (StringUtils.isEmpty(FilenameUtils.getExtension(resourceName))) {
                 resourceName += "." + exportFormat.getFileExt();
+            }
         }
 
         CubaFileDownloader fileDownloader = App.getInstance().getAppWindow().getFileDownloader();
@@ -110,10 +111,11 @@ public class WebExportDisplay implements ExportDisplay {
         };
         StreamResource resource = new StreamResource(streamSource, resourceName);
 
-        if (newWindow)
+        if (newWindow) {
             fileDownloader.viewDocument(resource);
-        else
+        } else {
             fileDownloader.downloadFile(resource);
+        }
     }
 
     /**
