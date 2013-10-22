@@ -6,17 +6,19 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Component;
-import com.vaadin.ui.TextArea;
+import com.haulmont.cuba.web.toolkit.ui.TextField;
 
 /**
  * @author artamonov
  * @version $Id$
  */
-public abstract class WebAbstractTextArea<T extends TextArea>
+public abstract class WebAbstractTextArea<T extends TextField>
         extends
             WebAbstractTextField<T>
         implements
             com.haulmont.cuba.gui.components.TextArea, Component.Wrapper {
+
+    protected boolean trimming = true;
 
     @Override
     public int getMaxLength() {
@@ -46,5 +48,15 @@ public abstract class WebAbstractTextArea<T extends TextArea>
     @Override
     public void setColumns(int columns) {
         component.setColumns(columns);
+    }
+
+    @Override
+    public boolean isTrimming() {
+        return trimming;
+    }
+
+    @Override
+    public void setTrimming(boolean trimming) {
+        this.trimming = trimming;
     }
 }

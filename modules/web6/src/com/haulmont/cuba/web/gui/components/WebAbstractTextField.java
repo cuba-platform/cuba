@@ -4,14 +4,16 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.google.common.base.Strings;
 import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Formatter;
-import com.haulmont.cuba.gui.components.TextField;
+import com.haulmont.cuba.gui.components.TextInputField;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.gui.data.AbstractPropertyWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
@@ -23,6 +25,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.annotation.Nullable;
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.Locale;
@@ -36,11 +39,9 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
     extends
         WebAbstractField<T>
     implements
-        TextField, Component.Wrapper {
+        TextInputField, Component.Wrapper {
 
     protected static Log log = LogFactory.getLog(WebAbstractTextField.class);
-
-    protected Datatype datatype;
 
     protected Locale locale = AppBeans.get(UserSessionSource.class).getLocale();
 
@@ -61,8 +62,9 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
         component.setPropertyDataSource(new PropertyFormatter(p) {
             @Override
             public String format(Object value) {
-                if (datatype != null && value != null) {
-                    return datatype.format(value,locale);
+                Datatype datatype = getActualDatatype();
+                if (datatype != null) {
+                    return datatype.format(value, locale);
                 } else if (value != null) {
                     return value.toString();
                 } else {
@@ -72,6 +74,7 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
 
             @Override
             public Object parse(String formattedValue) throws Exception {
+                Datatype datatype = getActualDatatype();
                 if (datatype != null) {
                     try {
                         return datatype.parse(formattedValue,locale);
@@ -118,34 +121,15 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
     protected abstract T createTextFieldImpl();
 
     @Override
-    public int getMaxLength() {
-        return component.getMaxLength();
-    }
-
-    @Override
-    public void setMaxLength(int value) {
-        component.setMaxLength(value);
-    }
-
-    @Override
-    public Datatype getDatatype() {
-        return datatype;
-    }
-
-    @Override
-    public void setDatatype(Datatype datatype) {
-        this.datatype = datatype;
-    }
-
-    @Override
     public <T> T getValue() {
         Object value = super.getValue();
         Datatype datatype = getActualDatatype();
         if (value instanceof String && datatype != null) {
+            value = Strings.emptyToNull((String) value);
             try {
                 return (T) datatype.parse((String) value, locale);
             } catch (ParseException e) {
-                log.warn("Unable to parse value of component " + getId() + "\n" + e.getMessage());
+                log.debug("Unable to parse value of component " + getId() + "\n" + e.getMessage());
                 return null;
             }
         } else {
@@ -155,6 +139,9 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
 
     @Override
     public void setValue(Object value) {
+        if (!isEditable())
+            return;
+
         Datatype datatype = getActualDatatype();
         if (!(value instanceof String) && datatype != null) {
             String str = datatype.format(value, locale);
@@ -164,11 +151,12 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
         }
     }
 
+    @Nullable
     protected Datatype getActualDatatype() {
         if (metaProperty != null) {
             return metaProperty.getRange().isDatatype() ? metaProperty.getRange().asDatatype() : null;
         } else {
-            return datatype;
+            return Datatypes.getNN(String.class);
         }
     }
 
@@ -195,6 +183,10 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
                     public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
                         if (newValue instanceof String && trimming)
                             newValue = ((String) newValue).trim();
+                        if (newValue instanceof String) {
+                            newValue = Strings.emptyToNull((String) newValue);
+                        }
+
                         super.setValue(newValue);
                     }
 
@@ -215,30 +207,10 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
     }
 
     @Override
-    public Formatter getFormatter() {
-        return formatter;
-    }
-
-    @Override
-    public void setFormatter(Formatter formatter) {
-        this.formatter = formatter;
-    }
-
-    @Override
     protected boolean isEmpty(Object value) {
         if (value instanceof String)
             return StringUtils.isBlank((String) value);
         else
             return value == null;
-    }
-
-    @Override
-    public boolean isTrimming() {
-        return trimming;
-    }
-
-    @Override
-    public void setTrimming(boolean trimming) {
-        this.trimming = trimming;
     }
 }

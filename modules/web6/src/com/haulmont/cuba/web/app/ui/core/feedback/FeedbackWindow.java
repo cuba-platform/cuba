@@ -38,13 +38,19 @@ public class FeedbackWindow extends AbstractWindow {
     protected EmailService emailService;
 
     @Inject
-    protected TextField mainBody;
+    protected TextArea mainBody;
 
     @Named("reason")
     protected LookupField reason;
 
     @Inject
     protected TextField reasonFreeText;
+
+    @Inject
+    protected Button okBtn;
+
+    @Inject
+    protected Button cancelBtn;
 
     protected String otherReason;
 
@@ -72,7 +78,7 @@ public class FeedbackWindow extends AbstractWindow {
                 sb.append(ve.getMessage()).append("<br>");
             }
         }
-        if(sb.length() > 0){
+        if (sb.length() > 0) {
             showNotification(messages.getMessage(WebWindow.class, "validationFail.caption"),
                     sb.toString(), NotificationType.TRAY);
             result = false;
@@ -92,20 +98,20 @@ public class FeedbackWindow extends AbstractWindow {
                 infoHeader += (getMessage("timestamp") + ": " + (Datatypes.getNN(Date.class).format(timeSource.currentTimestamp())) + "\n");
                 infoHeader += (getMessage("reason") + ": "
                         + (otherReason.equals(reason.getValue())
-                                ? (String) reasonFreeText.getValue()
-                                : (String) reason.getValue()) + "\n");
+                        ? reasonFreeText.getValue()
+                        : reason.getValue()) + "\n");
                 infoHeader += (getMessage("mailBody") + ": \n");
-                infoHeader += ((String) mainBody.getValue());
+                infoHeader += mainBody.getValue();
                 EmailInfo emailInfo = new EmailInfo(
                         webConfig.getSupportEmail(),
                         "[Feedback Form][" + webConfig.getSystemID() + "]["
                                 + user.getLogin() + "]["
                                 + Datatypes.getNN(Date.class).format(timeSource.currentTimestamp()) + "] "
                                 + (otherReason.equals(reason.getValue())
-                                    ? (String) reasonFreeText.getValue()
-                                    : (String) reason.getValue()),
+                                ? reasonFreeText.getValue()
+                                : reason.getValue()),
                         infoHeader
-                        );
+                );
                 emailService.sendEmail(emailInfo);
                 showNotification(getMessage("emailSent"), NotificationType.HUMANIZED);
             } catch (Exception e) {
@@ -116,6 +122,7 @@ public class FeedbackWindow extends AbstractWindow {
         return result;
     }
 
+    @Override
     public void init(Map<String, Object> params) {
         otherReason = getMessage("other");
         reason.setOptionsList(Arrays.asList(getMessage("bugReport"), getMessage("featureRequest"), otherReason));
@@ -130,7 +137,6 @@ public class FeedbackWindow extends AbstractWindow {
             }
         });
 
-        Button okBtn = getComponent("ok");
         okBtn.setAction(
                 new AbstractAction("ok") {
                     public void actionPerform(Component component) {
@@ -141,7 +147,6 @@ public class FeedbackWindow extends AbstractWindow {
                 }
         );
 
-        Button cancelBtn = getComponent("cancel");
         cancelBtn.setAction(
                 new AbstractAction("cancel") {
                     public void actionPerform(Component component) {

@@ -107,6 +107,8 @@ public class VTextField extends TextBoxBase implements Paintable, Field,
         this.client = client;
         id = uidl.getId();
 
+        VConsole.log(">> TEXT FIELD");
+
         if (client.updateComponent(this, uidl, true)) {
             return;
         }

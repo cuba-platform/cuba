@@ -9,7 +9,6 @@ import com.haulmont.cuba.toolkit.gwt.client.ui.VResizableTextArea;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.ui.ClientWidget;
-import com.vaadin.ui.TextArea;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +19,7 @@ import java.util.Map;
  * @version $Id$
  */
 @ClientWidget(VResizableTextArea.class)
-public class ResizableTextArea extends TextArea {
+public class ResizableTextArea extends TextField {
 
     protected boolean resizable = false;
     protected List<ResizeListener> listeners = new ArrayList<>();
@@ -35,11 +34,13 @@ public class ResizableTextArea extends TextArea {
 
     public void setResizable(boolean resizable) {
         this.resizable = resizable;
+        requestRepaint();
     }
 
     public void addResizeListener(ResizeListener resizeListener) {
-        if (!listeners.contains(resizeListener))
+        if (!listeners.contains(resizeListener)) {
             listeners.add(resizeListener);
+        }
     }
 
     public void removeResizeListener(ResizeListener resizeListener) {
@@ -57,8 +58,10 @@ public class ResizableTextArea extends TextArea {
     @Override
     public void changeVariables(Object source, Map variables) {
         super.changeVariables(source, variables);
-        if (variables.containsKey("width") && variables.containsKey("height"))
-            for (ResizeListener listener : listeners)
+        if (variables.containsKey("width") && variables.containsKey("height")) {
+            for (ResizeListener listener : listeners) {
                 listener.onResize(null, null, (String) variables.get("width"), (String) variables.get("height"));
+            }
+        }
     }
 }

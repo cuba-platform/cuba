@@ -76,10 +76,6 @@ public class WebComponentsHelper {
         return (com.vaadin.ui.Component) comp;
     }
 
-    public static com.haulmont.cuba.web.toolkit.Timer unwrap(com.haulmont.cuba.gui.components.Timer timer) {
-        return (com.haulmont.cuba.web.toolkit.Timer) timer;
-    }
-
     /**
      * Returns underlying Vaadin component, which serves as the outermost container for the supplied GUI component.
      * For simple components like {@link com.haulmont.cuba.gui.components.Button} this method returns the same

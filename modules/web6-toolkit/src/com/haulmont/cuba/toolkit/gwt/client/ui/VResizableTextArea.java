@@ -12,6 +12,7 @@ import com.google.gwt.user.client.EventListener;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.UIDL;
 import com.vaadin.terminal.gwt.client.Util;
+import com.vaadin.terminal.gwt.client.VConsole;
 import com.vaadin.terminal.gwt.client.ui.VTextArea;
 
 /**
@@ -54,10 +55,8 @@ public class VResizableTextArea extends VTextArea {
     }
 
     public VResizableTextArea() {
-        super();
         DOM.setStyleAttribute(getElement(), "resize", "none");
         resizeElement.setClassName(DIV_CLASS_NAME);
-
     }
 
     private void handleMouseStyle(Event event) {
@@ -84,14 +83,15 @@ public class VResizableTextArea extends VTextArea {
             DOM.releaseCapture(resizeElement);
             client.updateVariable(id, "width", getOffsetWidth() + "px", false);
             client.updateVariable(id, "height", getOffsetHeight() + "px", false);
-			client.updateVariable(id, "text", getText(), false);
+            client.updateVariable(id, "text", getText(), false);
             client.sendPendingVariableChanges();
         }
     }
 
     private void handleResize(Event event) {
-        if (!isResizeRegion(event))
+        if (!isResizeRegion(event)) {
             DOM.setStyleAttribute(resizeElement, "cursor", "default");
+        }
 
         //calculate and set the new size
         if (dragDrop) {
@@ -125,8 +125,18 @@ public class VResizableTextArea extends VTextArea {
 
     @Override
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
-        if (uidl.hasAttribute("resizable"))
+        VConsole.log(">> TEXT AREA");
+
+        if (uidl.hasAttribute("resizable")) {
             resizable = uidl.getBooleanAttribute("resizable");
+        }
+
+        if (uidl.hasAttribute("rows")) {
+            VConsole.log(">> ROWS " + uidl.getIntAttribute("rows"));
+
+            setRows(uidl.getIntAttribute("rows"));
+        }
+
         if (!composed) {
             if (resizable) {
                 Element parentDiv = DOM.createDiv();

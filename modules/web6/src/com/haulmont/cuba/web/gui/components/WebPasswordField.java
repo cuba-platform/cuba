@@ -19,4 +19,14 @@ public class WebPasswordField extends WebAbstractTextField<com.vaadin.ui.Passwor
     protected com.vaadin.ui.PasswordField createTextFieldImpl() {
         return new com.vaadin.ui.PasswordField();
     }
+
+    @Override
+    public int getMaxLength() {
+        return component.getMaxLength();
+    }
+
+    @Override
+    public void setMaxLength(int value) {
+        component.setMaxLength(value);
+    }
 }

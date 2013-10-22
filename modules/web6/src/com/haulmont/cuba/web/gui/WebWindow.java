@@ -69,7 +69,7 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
     protected String caption;
     protected String description;
 
-    protected List<CloseListener> listeners = new ArrayList<CloseListener>();
+    protected List<CloseListener> listeners = new ArrayList<>();
 
     protected boolean forceClose;
     protected boolean closing = false;
@@ -441,12 +441,45 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
     @Override
     public void setFocusComponent(String componentId) {
         this.focusComponentId = componentId;
-        Component component = getComponent(componentId);
-        if (component != null) {
-            component.requestFocus();
+        if (componentId != null) {
+            Component focusComponent = getComponent(componentId);
+            if (focusComponent != null) {
+                focusComponent.requestFocus();
+            } else {
+                log.error("Can't find focus component: " + componentId);
+            }
         } else {
-            log.error("Can't find focus component: " + componentId);
+            com.vaadin.ui.Component.Focusable focusComponent = getComponentToFocus(getContainer());
+            if (focusComponent != null) {
+                focusComponent.focus();
+            }
         }
+    }
+
+    protected com.vaadin.ui.Component.Focusable getComponentToFocus(ComponentContainer container) {
+        Iterator<com.vaadin.ui.Component> componentIterator = container.getComponentIterator();
+        while (componentIterator.hasNext()) {
+            com.vaadin.ui.Component child = componentIterator.next();
+            if (child instanceof Panel) {
+                child = ((Panel) child).getContent();
+            }
+            if (child instanceof ComponentContainer) {
+                com.vaadin.ui.Component.Focusable result = getComponentToFocus((ComponentContainer) child);
+                if (result != null) {
+                    return result;
+                }
+            } else {
+                if (child instanceof com.vaadin.ui.Component.Focusable
+                        && !child.isReadOnly()
+                        && child.isVisible()
+                        && child.isEnabled()
+                        && !(child instanceof Button)) {
+
+                    return (com.vaadin.ui.Component.Focusable) child;
+                }
+            }
+        }
+        return null;
     }
 
     @Override
@@ -472,7 +505,9 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
 
     @Override
     public void addTimer(Timer timer) {
-        App.getInstance().addTimer(WebComponentsHelper.unwrap(timer), this);
+        com.haulmont.cuba.web.toolkit.Timer vTimer =
+                (com.haulmont.cuba.web.toolkit.Timer) WebComponentsHelper.unwrap(timer);
+        App.getInstance().addTimer(vTimer, this);
     }
 
     @Override

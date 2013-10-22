@@ -16,6 +16,7 @@
 package com.vaadin.terminal.gwt.client;
 
 import com.haulmont.cuba.toolkit.gwt.client.swfupload.VSwfUpload;
+import com.haulmont.cuba.toolkit.gwt.client.ui.VResizableTextArea;
 import com.haulmont.cuba.toolkit.gwt.client.ui.VerticalMenuBar;
 import com.haulmont.cuba.toolkit.gwt.client.utils.VScriptHost;
 import com.vaadin.terminal.gwt.client.ui.*;
@@ -35,7 +36,9 @@ public abstract class WidgetMap {
 
         if (VSplitPanelVertical.class == classType) {
             return new VSplitPanelVertical();
-        } else if (VTextArea.class == classType) {
+        } else if (VResizableTextArea.class == classType) {
+            return new VResizableTextArea();
+        } if (VTextArea.class == classType) {
             return new VTextArea();
         } else if (VSwfUpload.class == classType) {
             return new VSwfUpload();

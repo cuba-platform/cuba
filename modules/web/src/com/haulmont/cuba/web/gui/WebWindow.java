@@ -458,7 +458,7 @@ public class WebWindow implements Window, Component.Wrapper,
         }
     }
 
-    private com.vaadin.ui.Component.Focusable getComponentToFocus(ComponentContainer container) {
+    protected com.vaadin.ui.Component.Focusable getComponentToFocus(ComponentContainer container) {
         for (com.vaadin.ui.Component child : container) {
             if (child instanceof Panel) {
                 child = ((Panel) child).getContent();

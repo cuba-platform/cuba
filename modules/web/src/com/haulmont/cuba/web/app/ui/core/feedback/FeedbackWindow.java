@@ -122,6 +122,7 @@ public class FeedbackWindow extends AbstractWindow {
         return result;
     }
 
+    @Override
     public void init(Map<String, Object> params) {
         otherReason = getMessage("other");
         reason.setOptionsList(Arrays.asList(getMessage("bugReport"), getMessage("featureRequest"), otherReason));

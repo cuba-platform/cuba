@@ -3,28 +3,22 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<window
-        xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/5.0/window.xsd"
         class="com.haulmont.cuba.web.app.ui.core.feedback.FeedbackWindow"
         messagesPack="com.haulmont.cuba.web.app.ui.core.feedback"
-        focusComponent="reason"
-        >
+        focusComponent="reason">
 
-    <dsContext/>
-
-    <layout expand="buttons">
-        <groupBox stylename="edit-area">
+    <layout expand="buttons" spacing="true">
+        <groupBox spacing="true">
             <label value="msg://theme"/>
             <lookupField id="reason" required="true" width="200px" requiredMessage="msg://themeMsg"/>
             <textField id="reasonFreeText" required="true" width="400px" requiredMessage="msg://themeMsg"/>
             <label value="msg://body"/>
-            <textField id="mainBody" required="true" rows="15" width="600px" requiredMessage="msg://bodyMsg"/>
+            <textArea id="mainBody" required="true" rows="15" width="600px" requiredMessage="msg://bodyMsg"/>
         </groupBox>
-        <vbox id="buttons" margin="true;false;false;false">
-            <buttonsPanel>
-                <button id="ok" icon="icons/ok.png"/>
-                <button id="cancel" icon="icons/cancel.png"/>
-            </buttonsPanel>
-        </vbox>
+        <buttonsPanel id="buttons">
+            <button id="okBtn" icon="icons/ok.png"/>
+            <button id="cancelBtn" icon="icons/cancel.png"/>
+        </buttonsPanel>
     </layout>
 </window> 

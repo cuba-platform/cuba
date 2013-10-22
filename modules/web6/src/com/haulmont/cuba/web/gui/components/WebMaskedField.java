@@ -6,6 +6,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.MaskedField;
 import com.haulmont.cuba.web.toolkit.ui.MaskedTextField;
 
@@ -46,7 +47,41 @@ public class WebMaskedField extends WebAbstractTextField<MaskedTextField> implem
     }
 
     @Override
-    protected Datatype getActualDatatype(){
+    public Datatype getDatatype() {
         return null;
+    }
+
+    @Override
+    public Formatter getFormatter() {
+        return null;
+    }
+
+    @Override
+    public void setFormatter(Formatter formatter) {
+    }
+
+    @Override
+    protected Datatype getActualDatatype() {
+        return null;
+    }
+
+    @Override
+    public int getMaxLength() {
+        return 0;
+    }
+
+    @Override
+    public void setMaxLength(int value) {
+        //do nothing
+    }
+
+    @Override
+    public boolean isTrimming() {
+        return false;
+    }
+
+    @Override
+    public void setTrimming(boolean trimming) {
+        //do nothing
     }
 }

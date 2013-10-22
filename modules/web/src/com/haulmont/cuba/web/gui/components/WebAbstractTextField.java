@@ -21,6 +21,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.annotation.Nullable;
 import java.text.ParseException;
 import java.util.Locale;
 
@@ -112,6 +113,7 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
         }
     }
 
+    @Nullable
     protected Datatype getActualDatatype() {
         if (metaProperty != null) {
             return metaProperty.getRange().isDatatype() ? metaProperty.getRange().asDatatype() : null;

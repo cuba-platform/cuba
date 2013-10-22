@@ -34,7 +34,7 @@ public class ValuePathHelper {
         if (!path.contains(".") && !path.contains("["))
             return new String[] {path};
 
-        List<String> elements = new ArrayList<String>();
+        List<String> elements = new ArrayList<>();
 
         int bracketCount = 0;
 
