@@ -770,19 +770,31 @@ public class AppWindow extends Window implements UserSubstitutionListener,
     }
 
     private MenuBar.Command createMenuBarCommand(final MenuItem item) {
-        final WindowInfo windowInfo;
+        WindowInfo windowInfo = null;
         final WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
         try {
             windowInfo = windowConfig.getWindowInfo(item.getId());
         } catch (NoSuchScreenException e) {
-            return null;
+            log.warn("Invalid screen ID for menu item: " + item.getId());
         }
-        final MenuCommand command = new MenuCommand(App.getInstance().getWindowManager(), item, windowInfo);
-        return new com.vaadin.ui.MenuBar.Command() {
 
+        final MenuCommand command;
+
+        if (windowInfo != null) {
+            command = new MenuCommand(App.getInstance().getWindowManager(), item, windowInfo);
+        } else {
+            command = null;
+        }
+
+        return new com.vaadin.ui.MenuBar.Command() {
             @Override
             public void menuSelected(com.vaadin.ui.MenuBar.MenuItem selectedItem) {
-                command.execute();
+                if (command != null) {
+                    command.execute();
+                } else if (item.getParent() != null) {
+                    throw new DevelopmentException("Invalid screen ID for menu item: " + item.getId(),
+                            "Parent menu ID", item.getParent().getId());
+                }
             }
         };
     }
