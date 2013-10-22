@@ -23,13 +23,11 @@ import java.util.Collection;
  * @author artamonov
  * @version $Id$
  */
-public class WebSearchPickerField
-        extends WebSearchField
-        implements SearchPickerField {
-    private WebPickerField pickerField;
+public class WebSearchPickerField extends WebSearchField implements SearchPickerField {
+
+    protected WebPickerField pickerField;
 
     public WebSearchPickerField() {
-        super();
         final Component selectComponent = component;
         Picker picker = new Picker(this, component) {
             @Override
@@ -163,26 +161,6 @@ public class WebSearchPickerField
     @Override
     public boolean isRequired() {
         return pickerField.isRequired();
-    }
-
-    @Override
-    public void setWidth(String width) {
-        pickerField.setWidth(width);
-    }
-
-    @Override
-    public void setHeight(String height) {
-        pickerField.setHeight(height);
-    }
-
-    @Override
-    public float getHeight() {
-        return pickerField.getHeight();
-    }
-
-    @Override
-    public float getWidth() {
-        return pickerField.getWidth();
     }
 
     public static class Picker extends WebPickerField.Picker {
