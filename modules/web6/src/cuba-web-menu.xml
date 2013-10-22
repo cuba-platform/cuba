@@ -3,34 +3,37 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<menu-config xmlns="http://schemas.haulmont.com/cuba/4.0/menu.xsd">
+<menu-config xmlns="http://schemas.haulmont.com/cuba/5.0/menu.xsd">
 
     <menu id="administration">
         <item id="sec$User.browse"/>
         <item id="sec$Group.browse"/>
         <item id="sec$Role.browse"/>
-        <item id="-"/>
-        <item id="sys$Categories.browse"/>
-        <item id="-"/>
+        <separator/>
+        <item id="sys$Category.browse"/>
+        <separator/>
         <item id="sec$UserSessionEntity.browse"/>
         <item id="sys$LockInfo.browse"/>
         <item id="sys$FileDescriptor.browse"/>
         <item id="sys$SendingMessage.browse"/>
         <item id="sys$ScheduledTask.browse"/>
-        <item id="sys$Entity.restore"/>
-        <item id="entityInspector.browse"/>
-        <item id="-"/>
-        <item id="jmxcontrol$DisplayMbeans"/>
-        <item id="logcontrol$ServerLog"/>
+        <item id="entityRestore"/>
         <item id="entityLog"/>
+        <item id="entityInspector.browse"/>
+        <separator/>
+        <item id="jmxConsole"/>
+        <item id="serverLog"/>
     </menu>
 
     <menu id="help">
+        <item id="aboutWindow" openType="DIALOG"/>
+        <item id="printDomain"/>
+        <separator/>
         <item id="settings"/>
         <item id="feedback"/>
-        <item id="sec$ScreenHistory.browse"/>
         <item id="logWindow"/>
-        <item id="printDomain"/>
+        <separator/>
+        <item id="sec$ScreenHistory.browse"/>
     </menu>
 
 </menu-config>
