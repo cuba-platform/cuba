@@ -15,9 +15,8 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.haulmont.cuba.web.toolkit.ui.client.Properties;
-import com.vaadin.client.VConsole;
-
-import java.util.logging.Logger;
+import com.haulmont.cuba.web.toolkit.ui.client.logging.ClientLogger;
+import com.haulmont.cuba.web.toolkit.ui.client.logging.ClientLoggerFactory;
 
 /**
  * @author artamonov
@@ -27,8 +26,8 @@ public class CubaMultiUploadWidget extends FormPanel {
 
     public static final String CLASSNAME = "cuba-multiupload";
 
-    protected static final boolean DEBUG_MODE = true;
-
+    protected ClientLogger logger = ClientLoggerFactory.getLogger("CubaMultiUploadWidget");
+    
     protected static boolean scriptInjected = false;
 
     protected BootstrapFailureHandler bootstrapFailureHandler;
@@ -114,12 +113,12 @@ public class CubaMultiUploadWidget extends FormPanel {
 
         this.themeDiv.setClassName(themeName);
 
-        Logger.getLogger("CubaMultiUpload").info("Required js: " + jsIncludeUri);
+        logger.log("Required js: " + jsIncludeUri);
         if (!scriptInjected) {
             ScriptInjector.fromUrl(jsIncludeUri).setCallback(new Callback<Void, Exception>() {
                 @Override
                 public void onFailure(Exception reason) {
-                    Logger.getLogger("CubaMultiUpload").warning("Unable to inject js: " + jsIncludeUri);
+                    logger.log("[ERROR] Unable to inject js: " + jsIncludeUri);
 
                     if (bootstrapFailureHandler != null)
                         bootstrapFailureHandler.resourceLoadFailed();
@@ -129,7 +128,7 @@ public class CubaMultiUploadWidget extends FormPanel {
 
                 @Override
                 public void onSuccess(Void result) {
-                    Logger.getLogger("CubaMultiUpload").info("Successfully injected js: " + jsIncludeUri);
+                    logger.log("Successfully injected js: " + jsIncludeUri);
 
                     checkAndInitialize();
                 }
@@ -176,7 +175,7 @@ public class CubaMultiUploadWidget extends FormPanel {
         opts.set("custom_settings", customOpts);
 
         // Set debug mode
-        opts.set("debug", DEBUG_MODE);
+        opts.set("debug", logger.enabled);
 
         opts.set("button_image_url", buttonImageUri);
         opts.set("button_width", String.valueOf(buttonWidth));
@@ -221,8 +220,8 @@ public class CubaMultiUploadWidget extends FormPanel {
 
         showUploadButton("upload_" + uploadId, opts);
 
-        VConsole.log("Inject swf resource: " + swfUri);
-        VConsole.log("Upload target: " + targetUrl);
+        logger.log("Inject swf resource: " + swfUri);
+        logger.log("Upload target: " + targetUrl);
     }
 
     public void queueUploadComplete() {
@@ -238,11 +237,11 @@ public class CubaMultiUploadWidget extends FormPanel {
     }
 
     public void swfLoaded() {
-        VConsole.log("Found required flash player");
+        logger.log("Found required flash player");
     }
 
     public void swfLoadFailed() {
-        VConsole.log("Unable to initialize flash player");
+        logger.log("Unable to initialize flash player");
 
         if (bootstrapFailureHandler != null)
             bootstrapFailureHandler.flashNotInstalled();
