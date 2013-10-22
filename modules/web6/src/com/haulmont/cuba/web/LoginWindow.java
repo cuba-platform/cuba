@@ -42,7 +42,6 @@ import java.util.Map;
  * @author krivopustov
  * @version $Id$
  */
-@SuppressWarnings("serial")
 public class LoginWindow extends Window implements Action.Handler {
 
     public static final String COOKIE_LOGIN = "rememberMe.Login";
@@ -375,8 +374,6 @@ public class LoginWindow extends Window implements Action.Handler {
                 passwordField.removeListener(loginChangeListener);
                 loginChangeListener = null;
             }
-        } catch (Exception e) {
-            handleException(e);
         }
     }
 
@@ -407,13 +404,6 @@ public class LoginWindow extends Window implements Action.Handler {
 
     protected void login(String login, String passwd, Locale locale) throws LoginException {
         connection.login(login, passwd, locale);
-    }
-
-    protected void handleException(Exception e) {
-        if (e instanceof RuntimeException)
-            throw (RuntimeException) e;
-        else
-            throw new RuntimeException(e);
     }
 
     protected void doLogin() {
