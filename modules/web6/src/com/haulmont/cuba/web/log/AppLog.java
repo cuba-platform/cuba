@@ -12,6 +12,7 @@ import com.vaadin.terminal.Terminal;
 import com.vaadin.terminal.URIHandler;
 import com.vaadin.terminal.VariableOwner;
 import com.vaadin.terminal.gwt.server.ChangeVariablesErrorEvent;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -81,7 +82,10 @@ public class AppLog {
             return;
         }
 
-        Logging annotation = t.getClass().getAnnotation(Logging.class);
+        Throwable rootCause = ExceptionUtils.getRootCause(t);
+        if (rootCause == null)
+            rootCause = t;
+        Logging annotation = rootCause.getClass().getAnnotation(Logging.class);
         Logging.Type loggingType = annotation == null ? Logging.Type.FULL : annotation.value();
         if (loggingType == Logging.Type.NONE)
             return;
@@ -99,13 +103,13 @@ public class AppLog {
         }
 
         StringBuilder msg = new StringBuilder();
-        msg.append("Uncaught exception");
+        msg.append("Exception");
         if (owner != null)
             msg.append(" in ").append(owner.getClass().getName());
         msg.append(": ");
 
         if (loggingType == Logging.Type.BRIEF) {
-            error(msg + t.toString());
+            error(msg + rootCause.toString());
         } else {
             LogItem item = new LogItem(LogLevel.ERROR, msg.toString(), t);
             log(item);
