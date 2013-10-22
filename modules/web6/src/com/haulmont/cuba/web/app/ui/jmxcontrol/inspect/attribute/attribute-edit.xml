@@ -3,8 +3,7 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<window
-        xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/5.0/window.xsd"
         class="com.haulmont.cuba.web.app.ui.jmxcontrol.inspect.attribute.AttributeEditWindow"
         messagesPack="com.haulmont.cuba.web.app.ui.jmxcontrol.inspect.attribute"
         datasource="attrDs"

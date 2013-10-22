@@ -3,7 +3,7 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<window xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/5.0/window.xsd"
         caption="msg://saveSetWindow.caption"
         class="com.haulmont.cuba.web.app.folders.SaveSetWindow"
         messagesPack="com.haulmont.cuba.web.app.folders"
@@ -18,9 +18,8 @@
             </query>
         </collectionDatasource>
     </dsContext>
-    <layout expandLayout="true" spacing="true">
-        <lookupField id="folderSelect" optionsDatasource="setFoldersDs" width="250px"
-                     caption="msg://saveSetWindow.set"/>
+    <layout spacing="true">
+        <lookupField id="folderSelect" optionsDatasource="setFoldersDs" width="250px" caption="msg://saveSetWindow.set"/>
         <hbox spacing="true" id="add">
             <button id="insertBtn" caption="msg://saveSetWindow.insert"/>
             <button id="createNew" caption="msg://saveSetWindow.createNew"/>
