@@ -290,7 +290,18 @@ public class FilterEditor extends AbstractFilterEditor {
     }
 
     private void initTable(AbstractLayout layout) {
-        table = new TreeTable();
+        table = new TreeTable() {
+            @Override
+            public void containerItemSetChange(Container.ItemSetChangeEvent event) {
+                super.containerItemSetChange(event);
+                if (table.getValue() != null) {
+                    if (!event.getContainer().containsId(table.getValue())) {
+                        table.setValue(null); // If selected item is removed it should not be used as a parent item.
+                    }
+                }
+            }
+        };
+
         table.setImmediate(true);
         table.setSelectable(true);
         table.setPageLength(0);
