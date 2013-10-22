@@ -41,10 +41,11 @@ public class DefaultExceptionHandler implements ExceptionHandler {
         }
 
         if (t != null) {
-            if (app.getConnection().getSession() != null)
+            if (app.getConnection().getSession() != null) {
                 showDialog(t);
-            else
+            } else {
                 showNotification(app, t);
+            }
         } else {
             // Finds the original source of the error/exception
             AbstractComponent component = DefaultErrorHandler.findAbstractComponent(event);
@@ -60,8 +61,9 @@ public class DefaultExceptionHandler implements ExceptionHandler {
 
     protected void showDialog(Throwable exception) {
         Throwable rootCause = ExceptionUtils.getRootCause(exception);
-        if (rootCause == null)
+        if (rootCause == null) {
             rootCause = exception;
+        }
         ExceptionDialog dialog = new ExceptionDialog(rootCause);
         for (Window window : AppUI.getCurrent().getWindows()) {
             if (window.isModal()) {
@@ -73,10 +75,11 @@ public class DefaultExceptionHandler implements ExceptionHandler {
         dialog.focus();
     }
 
-    private void showNotification(App app, Throwable exception) {
+    protected void showNotification(App app, Throwable exception) {
         Throwable rootCause = ExceptionUtils.getRootCause(exception);
-        if (rootCause == null)
+        if (rootCause == null) {
             rootCause = exception;
+        }
         Notification.show(
                 messages.getMessage(DefaultExceptionHandler.class, "exceptionDialog.caption", app.getLocale()),
                 rootCause.getClass().getSimpleName() + (rootCause.getMessage() != null ? "\n" + rootCause.getMessage() : ""),

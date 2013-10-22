@@ -50,7 +50,6 @@ public class ExceptionDialog extends Window {
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.class);
 
     public ExceptionDialog(Throwable throwable) {
-        super();
         setCaption(messages.getMessage(getClass(), "exceptionDialog.caption"));
         setWidth(600, Unit.PIXELS);
         center();
@@ -130,7 +129,7 @@ public class ExceptionDialog extends Window {
         setResizable(false);
     }
 
-    private String getStackTrace(Throwable throwable) {
+    protected String getStackTrace(Throwable throwable) {
         if (throwable instanceof RemoteException) {
             RemoteException re = (RemoteException) throwable;
             for (int i = re.getCauses().size() - 1; i >= 0; i--) {
@@ -149,7 +148,7 @@ public class ExceptionDialog extends Window {
         return html;
     }
 
-    private String getText(Throwable rootCause) {
+    protected String getText(Throwable rootCause) {
         StringBuilder msg = new StringBuilder();
         if (rootCause instanceof RemoteException) {
             RemoteException re = (RemoteException) rootCause;
