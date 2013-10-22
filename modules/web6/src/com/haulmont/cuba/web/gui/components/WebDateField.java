@@ -4,12 +4,16 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.FormatStrings;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueChangingListener;
@@ -23,10 +27,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.sql.Time;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author abramov
@@ -38,40 +39,47 @@ public class WebDateField
         implements
             DateField, Component.Wrapper {
 
-    private Resolution resolution;
+    protected Resolution resolution;
 
-    private Object prevValue = null;
-    private boolean editable = true;
-    private boolean updatingInstance;
-    private boolean valid;
+    protected Object prevValue = null;
+    protected boolean editable = true;
+    protected boolean updatingInstance;
+    protected boolean valid;
 
-    private com.haulmont.cuba.web.toolkit.ui.DateField dateField;
-    private WebTimeField timeField;
+    protected com.haulmont.cuba.web.toolkit.ui.DateField dateField;
+    protected WebTimeField timeField;
 
     protected List<ValueListener> listeners = new ArrayList<>();
     protected List<Field.Validator> validators = new ArrayList<>();
 
     protected HorizontalLayout composition;
 
-    private Datasource datasource;
-    private MetaPropertyPath metaPropertyPath;
-    private MetaProperty metaProperty;
+    protected Datasource datasource;
+    protected MetaPropertyPath metaPropertyPath;
+    protected MetaProperty metaProperty;
 
-    private boolean closeWhenDateSelected = false;
+    protected boolean closeWhenDateSelected = false;
 
-    private boolean required;
+    protected boolean required;
 
-    private String requiredMessage;
+    protected String requiredMessage;
 
-    private String dateTimeFormat;
-    private String dateFormat;
-    private String timeFormat;
+    protected String dateTimeFormat;
+    protected String dateFormat;
+    protected String timeFormat;
 
     public WebDateField() {
         composition = new HorizontalLayout();
 
         composition.setSpacing(true);
         dateField = new com.haulmont.cuba.web.toolkit.ui.DateField();
+
+        Locale userLocale = AppBeans.get(UserSessionSource.class).getLocale();
+        FormatStrings formats = Datatypes.getFormatStrings(userLocale);
+        if (formats != null) {
+            dateField.setDateFormat(formats.getDateFormat());
+        }
+
         dateField.setResolution(com.haulmont.cuba.web.toolkit.ui.DateField.RESOLUTION_DAY);
         dateField.setWidth("100%");
 
