@@ -496,6 +496,9 @@ public class WebWindowManager extends WindowManager {
         if (tabSheet == null)
             return; // for SINGLE tabbing mode
 
+        if (window instanceof Window.Wrapper) {
+            window = ((Window.Wrapper) window).getWrappedWindow();
+        }
         WindowOpenMode openMode = getWindowOpenMode().get(window);
         if (openMode == null || OpenType.DIALOG.equals(openMode.getOpenType()))
             return;
