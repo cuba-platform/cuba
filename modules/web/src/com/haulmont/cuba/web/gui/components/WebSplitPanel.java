@@ -13,6 +13,7 @@ import com.vaadin.ui.AbstractSplitPanel;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.VerticalSplitPanel;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.dom4j.Element;
 
 import java.util.*;
@@ -23,9 +24,9 @@ import java.util.*;
  */
 public class WebSplitPanel
         extends
-            WebAbstractComponent<AbstractSplitPanel>
+        WebAbstractComponent<AbstractSplitPanel>
         implements
-            SplitPanel, Component.HasSettings, Component.Wrapper {
+        SplitPanel, Component.HasSettings, Component.Wrapper {
 
     protected String id;
 
@@ -80,7 +81,7 @@ public class WebSplitPanel
 
     protected void firePositionUpdateListener(float previousPosition, float newPosition) {
         if (positionListener != null) {
-            positionListener.updatePosition(previousPosition ,newPosition);
+            positionListener.updatePosition(previousPosition, newPosition);
         }
     }
 
@@ -148,7 +149,13 @@ public class WebSplitPanel
             String value = e.attributeValue("value");
             String unit = e.attributeValue("unit");
             if (!StringUtils.isBlank(value) && !StringUtils.isBlank(unit)) {
-                component.setSplitPosition(Float.valueOf(value), Sizeable.Unit.getUnitFromSymbol(unit));
+                Sizeable.Unit convertedUnit;
+                if (NumberUtils.isNumber(unit)) {
+                    convertedUnit = convertLegacyUnit(Integer.valueOf(unit));
+                } else {
+                    convertedUnit = Sizeable.Unit.getUnitFromSymbol(unit);
+                }
+                component.setSplitPosition(Float.valueOf(value), convertedUnit);
             }
         }
     }
@@ -197,5 +204,16 @@ public class WebSplitPanel
     @Override
     public PositionUpdateListener getPositionUpdateListener() {
         return positionListener;
+    }
+
+    protected Sizeable.Unit convertLegacyUnit(int unit) {
+        switch (unit) {
+            case 0:
+                return Sizeable.Unit.PIXELS;
+            case 8:
+                return Sizeable.Unit.PERCENTAGE;
+            default:
+                return Sizeable.Unit.PIXELS;
+        }
     }
 }
