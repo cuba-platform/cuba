@@ -11,12 +11,9 @@ import com.haulmont.cuba.web.toolkit.ui.JavaScriptHost;
 import com.vaadin.ui.ClientWidget;
 
 /**
- * <p>$Id$</p>
- *
  * @author artamonov
+ * @version $Id$
  */
-@ClientWidget(VScriptHost.class)
-@SuppressWarnings({"unused"})
 public class WebScriptHost extends WebAbstractComponent<JavaScriptHost> {
 
     public WebScriptHost() {

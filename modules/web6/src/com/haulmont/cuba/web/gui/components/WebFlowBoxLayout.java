@@ -5,15 +5,12 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.FlowBoxLayout;
-import com.haulmont.cuba.toolkit.gwt.client.ui.VFlowLayout;
 import com.haulmont.cuba.web.toolkit.ui.FlowLayout;
-import com.vaadin.ui.ClientWidget;
 
 /**
  * @author gorodnov
  * @version $Id$
  */
-@ClientWidget(VFlowLayout.class)
 public class WebFlowBoxLayout extends WebVBoxLayout implements FlowBoxLayout {
 
     public WebFlowBoxLayout() {

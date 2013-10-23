@@ -30,7 +30,7 @@
 }
 
 .group-box.group-box-nocaption > fieldset {
-    border: none;
+    border-color: #a5c4e0;
 }
 
 .group-box legend {

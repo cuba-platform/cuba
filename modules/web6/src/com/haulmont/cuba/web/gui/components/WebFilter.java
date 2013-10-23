@@ -39,6 +39,7 @@ import com.haulmont.cuba.web.app.folders.FolderEditWindow;
 import com.haulmont.cuba.web.app.folders.FoldersPane;
 import com.haulmont.cuba.web.gui.components.filter.*;
 import com.haulmont.cuba.web.toolkit.ui.FilterSelect;
+import com.haulmont.cuba.web.toolkit.ui.GroupBox;
 import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
 import com.vaadin.data.Property;
 import com.vaadin.data.validator.IntegerValidator;
@@ -522,7 +523,6 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
     }
 
     private void copyFilterEntity() {
-
         FilterEntity newFilterEntity = metadata.create(FilterEntity.class);
         newFilterEntity.setComponentId(filterEntity.getComponentId());
         newFilterEntity.setName(messages.getMessage(MESSAGES_PACK, "newFilterName"));
@@ -560,8 +560,9 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
             WebGroupBox groupBox = new WebGroupBox();
             groupBox.setWidth("-1");
             groupBox.setCaption(messages.getMessage(AbstractCondition.MESSAGES_PACK, "GroupType.AND"));
-            paramsLayout = groupBox;
-            recursivelyCreateParamsLayout(focusOnConditions, conditions.getRootNodes(), groupBox, 0);
+            ComponentContainer container = groupBox.getComponent();
+            paramsLayout = container;
+            recursivelyCreateParamsLayout(focusOnConditions, conditions.getRootNodes(), container, 0);
         } else {
             paramsLayout = recursivelyCreateParamsLayout(focusOnConditions, conditions.getRootNodes(), null, 0);
         }
@@ -603,7 +604,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
             AbstractCondition condition = node.getData();
             com.vaadin.ui.Component cellContent;
             if (condition.isGroup()) {
-                WebGroupBox groupBox = new WebGroupBox();
+                GroupBox groupBox = new GroupBox();
                 groupBox.setWidth("-1");
                 groupBox.setCaption(condition.getLocCaption());
 
