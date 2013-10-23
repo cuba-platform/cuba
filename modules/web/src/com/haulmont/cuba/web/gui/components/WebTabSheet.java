@@ -14,7 +14,7 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
-import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
+import com.vaadin.ui.Layout;
 import org.dom4j.Element;
 
 import java.util.*;
@@ -24,15 +24,15 @@ import java.util.*;
  * @version $Id$
  */
 public class WebTabSheet
-    extends
-        WebAbstractComponent<com.vaadin.ui.TabSheet>
-    implements
-        TabSheet, Component.Wrapper, Component.Container {
+        extends
+            WebAbstractComponent<com.vaadin.ui.TabSheet>
+        implements
+            TabSheet, Component.Wrapper, Component.Container {
 
-    private boolean postInitTaskAdded;
-    private boolean componentTabChangeListenerInitialized;
+    protected boolean postInitTaskAdded;
+    protected boolean componentTabChangeListenerInitialized;
 
-    private ComponentLoader.Context context;
+    protected ComponentLoader.Context context;
 
     public WebTabSheet() {
         component = new TabSheetEx(this);
@@ -62,7 +62,9 @@ public class WebTabSheet
         for (Tab tab : tabs.values()) {
             if (tab.getComponent() instanceof Container) {
                 final Component component = WebComponentsHelper.getComponent((Container) tab.getComponent(), id);
-                if (component != null) return (T) component;
+                if (component != null) {
+                    return (T) component;
+                }
             }
         }
 
@@ -77,8 +79,9 @@ public class WebTabSheet
     @Override
     public Collection<Component> getOwnComponents() {
         List<Component> componentList = new ArrayList<>();
-        for (ComponentDescriptor cd : components.values())
+        for (ComponentDescriptor cd : components.values()) {
             componentList.add(cd.component);
+        }
         return componentList;
     }
 
@@ -201,9 +204,9 @@ public class WebTabSheet
                                    ComponentLoader loader) {
 
         WebVBoxLayout tabContent = new WebVBoxLayout();
-        CubaVerticalActionsLayout vbox = tabContent.getComponent();
-        vbox.setSizeFull();
-        
+        Layout layout = tabContent.getComponent();
+        layout.setSizeFull();
+
         final Tab tab = new Tab(name, tabContent);
 
         tabs.put(name, tab);
@@ -234,7 +237,9 @@ public class WebTabSheet
     @Override
     public void removeTab(String name) {
         final Tab tab = tabs.get(name);
-        if (tab == null) throw new IllegalStateException(String.format("Can't find tab '%s'", name));
+        if (tab == null) {
+            throw new IllegalStateException(String.format("Can't find tab '%s'", name));
+        }
 
         tabs.remove(name);
 
@@ -246,8 +251,9 @@ public class WebTabSheet
     @Override
     public Tab getTab() {
         final com.vaadin.ui.Component component = this.component.getSelectedTab();
-        if (component == null)
+        if (component == null) {
             return null;
+        }
 
         final String name = components.get(component).getName();
         return tabs.get(name);
@@ -261,7 +267,9 @@ public class WebTabSheet
     @Override
     public void setTab(String name) {
         Tab tab = tabs.get(name);
-        if (tab == null) throw new IllegalStateException(String.format("Can't find tab '%s'", name));
+        if (tab == null) {
+            throw new IllegalStateException(String.format("Can't find tab '%s'", name));
+        }
 
         this.component.setSelectedTab(WebComponentsHelper.unwrap(tab.getComponent()));
     }
@@ -273,7 +281,7 @@ public class WebTabSheet
 
     @Override
     public Collection<TabSheet.Tab> getTabs() {
-        return (Collection)tabs.values();
+        return (Collection) tabs.values();
     }
 
     @Override
@@ -293,8 +301,9 @@ public class WebTabSheet
                     fireTabChanged();
                     // Execute outstanding post init tasks after GUI listener.
                     // We suppose that context.executePostInitTasks() executes a task once and then remove it from task list.
-                    if (context != null)
+                    if (context != null) {
                         context.executePostInitTasks();
+                    }
                 }
             });
             componentTabChangeListenerInitialized = true;
@@ -397,7 +406,7 @@ public class WebTabSheet
         @Override
         public void onTabClose(com.vaadin.ui.TabSheet tabsheet, com.vaadin.ui.Component tabContent) {
             // have no other way to get tab from tab content
-            for (Tab tab: tabs.values()) {
+            for (Tab tab : tabs.values()) {
                 com.vaadin.ui.Component tabComponent = WebComponentsHelper.unwrap(tab.getComponent());
                 if (tabComponent == tabContent) {
                     if (tab.isClosable()) {
@@ -411,8 +420,7 @@ public class WebTabSheet
         private void doHandleCloseTab(Tab tab) {
             if (tab.getCloseHandler() != null) {
                 tab.getCloseHandler().onTabClose(tab);
-            }
-            else {
+            } else {
                 removeTab(tab.getName());
             }
         }
