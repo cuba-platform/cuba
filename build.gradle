@@ -547,6 +547,23 @@ configure(webLegacyModule) {
         gwtBuilding(validationApi + [classifier: 'sources'])
     }
 
+    def resourceBuildTimeStamp = new java.text.SimpleDateFormat('yyyy_MM_dd_HH_mm').format(new Date())
+
+    task resourceTimeStampInject() << {
+        new File("${project.buildDir}/classes/main/com/haulmont/cuba/web/resources.timestamp").write(resourceBuildTimeStamp)
+    }
+
+    classes.dependsOn resourceTimeStampInject
+
+    task buildScssThemes(type: CubaWebScssThemeCreation) {
+        buildTimeStamp = resourceBuildTimeStamp
+        themes = ['havana']
+        destDir = "${project.buildDir}/web/VAADIN/themes"
+//        compress = true
+//        sprites = true
+//        cleanup = true
+    }
+
     task buildThemes(type: CubaWebThemeCreation) {
         themes = [
 //                [themeName: 'peyto', destFile: 'styles-include.css'],
@@ -565,15 +582,24 @@ configure(webLegacyModule) {
         //        compilerArgs = ['-style' : 'PRETTY', '-localWorkers' : '2']
     }
 
-    task webArchive(dependsOn: [buildWidgetSet, buildThemes], type: Zip) {
+    task webArchive(dependsOn: [buildWidgetSet, buildScssThemes], type: Zip) {
         from file('web')
         from webOutDir
         exclude '**/web.xml', '**/app.properties'
         classifier = 'web'
     }
 
+    task scssThemesZip(type: Zip) {
+        from webModule.file('themes')
+        exclude '**/.*'
+
+        version = artifactVersion + (isSnapshot ? '-SNAPSHOT' : '')
+        classifier = 'web-themes'
+    }
+
     artifacts {
         archives webArchive
+        themes scssThemesZip
     }
 
     task deploy(dependsOn: assemble, type: CubaDeployment) {

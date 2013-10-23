@@ -211,7 +211,7 @@ public class LoginWindow extends Window implements Action.Handler {
         okButton.setCaption(messages.getMessage(getMessagesPack(), "loginWindow.okButton", loc));
         okButton.addListener(new SubmitListener());
         okButton.setStyleName("submit-login-btn");
-        okButton.setIcon(new ThemeResource("images/tick.png"));
+        okButton.setIcon(new ThemeResource("app/images/login-button.png"));
         form.addField("button", okButton);
         formLayout.setComponentAlignment(okButton, Alignment.MIDDLE_CENTER);
 

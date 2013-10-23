@@ -515,7 +515,7 @@ public class AppWindow extends Window implements UserSubstitutionListener,
         menuBar = new com.haulmont.cuba.web.toolkit.ui.MenuBar();
         menuBar.setWidth("100%");
         menuBar.setMoreMenuItem(null);
-        menuBar.getMoreMenuItem().setIcon(new ThemeResource("icons/more-item.png"));
+        menuBar.getMoreMenuItem().setIcon(new ThemeResource("app/images/more-item.png"));
 
         if (globalConfig.getTestMode()) {
             App.getInstance().getWindowManager().setDebugId(menuBar, "appMenu");
@@ -712,7 +712,7 @@ public class AppWindow extends Window implements UserSubstitutionListener,
         );
         logoutBtn.setDescription(messages.getMessage(getMessagesPack(), "logoutBtnDescription"));
         logoutBtn.setStyleName("white-border");
-        logoutBtn.setIcon(new ThemeResource("images/exit.png"));
+        logoutBtn.setIcon(new ThemeResource("app/images/exit.png"));
         App.getInstance().getWindowManager().setDebugId(logoutBtn, "logoutBtn");
         return logoutBtn;
     }
@@ -735,7 +735,7 @@ public class AppWindow extends Window implements UserSubstitutionListener,
         );
         newWindowBtn.setDescription(messages.getMessage(getMessagesPack(), "newWindowBtnDescription"));
         newWindowBtn.setStyleName("white-border");
-        newWindowBtn.setIcon(new ThemeResource("images/new-window.png"));
+        newWindowBtn.setIcon(new ThemeResource("app/images/new-window.png"));
         return newWindowBtn;
     }
 

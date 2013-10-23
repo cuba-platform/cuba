@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author Novikov
+ * @author novikov
  * @version $Id$
  */
 public class ScreenHistoryBrowse extends AbstractWindow {
@@ -58,7 +58,7 @@ public class ScreenHistoryBrowse extends AbstractWindow {
 
     private void openUrl(Entity entity) {
         ScreenHistoryEntity screenHistoryEntity = (ScreenHistoryEntity) entity;
-        Map<String, String> paramsScreen = new HashMap<String, String>();
+        Map<String, String> paramsScreen = new HashMap<>();
         String url = screenHistoryEntity.getUrl();
         url = url.substring(url.indexOf("\u003f") + 1);
         paramsScreen.put("local", "true");

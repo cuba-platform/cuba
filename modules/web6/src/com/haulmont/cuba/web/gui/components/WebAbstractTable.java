@@ -1317,10 +1317,9 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
             com.vaadin.ui.Embedded checkBoxImage;
             if (BooleanUtils.isTrue((Boolean) value)){
-                checkBoxImage = new com.vaadin.ui.Embedded("", new ThemeResource("table/img/checkbox-checked.png"));
-            }
-            else {
-                checkBoxImage = new com.vaadin.ui.Embedded("", new ThemeResource("table/img/checkbox-unchecked.png"));
+                checkBoxImage = new com.vaadin.ui.Embedded("", new ThemeResource("components/table/images/checkbox-checked.png"));
+            } else {
+                checkBoxImage = new com.vaadin.ui.Embedded("", new ThemeResource("components/table/images/checkbox-unchecked.png"));
             }
             return checkBoxImage;
         }

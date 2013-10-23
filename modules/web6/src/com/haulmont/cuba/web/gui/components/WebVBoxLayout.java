@@ -4,7 +4,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.vaadin.ui.VerticalLayout;
+import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
 
 /**
  * @author abramov
@@ -13,7 +13,7 @@ import com.vaadin.ui.VerticalLayout;
 public class WebVBoxLayout extends WebAbstractBox {
 
     public WebVBoxLayout() {
-        component = new VerticalLayout();
+        component = new VerticalActionsLayout();
         component.setWidth(100, UNITS_PERCENTAGE);
     }
 }

@@ -1,0 +1,71 @@
+/*
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+ */
+
+/* Provide some extra whitespace for wrapped elements
+   (these elements usually need the extra space, since
+   they aren't even handling their own caption) */
+.v-captionwrapper {
+	margin: 0;
+	text-align: left; /* Force default alignment */
+    clear: both;
+}
+
+.v-caption {
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+.v-errorindicator {
+	width: 12px;
+	height: 16px;
+	float: left;
+	background: transparent url(../../app/images/error.png) no-repeat top right;
+}
+
+* html .v-errorindicator {
+	background: transparent none;
+	/* gif for transparency */
+	background: transparent url(../../app/images/error.gif) no-repeat top right;
+}
+*+html .v-errorindicator {
+	margin-left:-3px;
+}
+.v-caption .v-icon {
+	padding-right: 2px;
+	vertical-align: middle;
+	float: left;
+}
+.v-caption .v-captiontext {
+	float: left;
+	overflow: hidden;
+	vertical-align: middle;
+}
+
+
+.v-panel-caption-group-box
+{
+    font-weight: bold;
+    font-size: 14pt;
+}
+
+.v-caption .v-required-field-indicator {
+    color: #f00;
+}
+
+.v-caption .v-required-field-indicator:hover {
+    cursor: pointer;
+}
+
+.v-caption .v-tooltip-button {
+    background: transparent none;
+    background: transparent url(images/question.png) no-repeat top right;
+    float:left;
+    width: 16px;
+    height: 16px;
+}
+
+.v-caption .v-tooltip-button:hover {
+    cursor: pointer;
+}

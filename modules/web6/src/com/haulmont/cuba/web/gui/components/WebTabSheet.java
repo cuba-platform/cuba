@@ -14,6 +14,7 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
+import com.vaadin.ui.Layout;
 import org.dom4j.Element;
 
 import java.util.*;
@@ -35,12 +36,12 @@ public class WebTabSheet
 
     public WebTabSheet() {
         component = new TabSheetEx(this);
-        component.setCloseHandler(new MyCloseHandler());
+        component.setCloseHandler(new DefaultCloseHandler());
     }
 
     protected Map<String, Tab> tabs = new HashMap<>();
 
-    protected Map<Component, String> components = new HashMap<>();
+    protected Map<com.vaadin.ui.Component, ComponentDescriptor> components = new HashMap<>();
 
     protected Set<com.vaadin.ui.Component> lazyTabs = new HashSet<>();
 
@@ -72,12 +73,16 @@ public class WebTabSheet
 
     @Override
     public <T extends Component> T getComponent(String id) {
-        return WebComponentsHelper.<T>getComponent(this, id);
+        return WebComponentsHelper.getComponent(this, id);
     }
 
     @Override
     public Collection<Component> getOwnComponents() {
-        return components.keySet();
+        List<Component> componentList = new ArrayList<>();
+        for (ComponentDescriptor cd : components.values()) {
+            componentList.add(cd.component);
+        }
+        return componentList;
     }
 
     @Override
@@ -182,7 +187,6 @@ public class WebTabSheet
         final Tab tab = new Tab(name, component);
 
         this.tabs.put(name, tab);
-        this.components.put(component, name);
 
         final com.vaadin.ui.Component tabComponent = WebComponentsHelper.unwrap(component);
         tabComponent.setSizeFull();
@@ -196,17 +200,19 @@ public class WebTabSheet
     public TabSheet.Tab addLazyTab(String name,
                                    Element descriptor,
                                    ComponentLoader loader) {
+
         WebVBoxLayout tabContent = new WebVBoxLayout();
-        tabContent.getComposition().setSizeFull();
+        Layout layout = tabContent.getComponent();
+        layout.setSizeFull();
 
         final Tab tab = new Tab(name, tabContent);
 
         tabs.put(name, tab);
-        components.put(tabContent, name);
 
         final com.vaadin.ui.Component tabComponent = WebComponentsHelper.unwrap(tabContent);
         tabComponent.setSizeFull();
 
+        this.components.put(tabComponent, new ComponentDescriptor(name, tabContent));
         this.component.addTab(tabComponent);
         lazyTabs.add(tabComponent);
 
@@ -234,14 +240,20 @@ public class WebTabSheet
         }
 
         tabs.remove(name);
-        this.components.remove(tab.getComponent());
-        this.component.removeComponent(WebComponentsHelper.unwrap(tab.getComponent()));
+
+        com.vaadin.ui.Component vComponent = WebComponentsHelper.unwrap(tab.getComponent());
+        this.components.remove(vComponent);
+        this.component.removeComponent(vComponent);
     }
 
     @Override
     public Tab getTab() {
         final com.vaadin.ui.Component component = this.component.getSelectedTab();
-        final String name = components.get(component);
+        if (component == null) {
+            return null;
+        }
+
+        final String name = components.get(component).getName();
         return tabs.get(name);
     }
 
@@ -307,7 +319,7 @@ public class WebTabSheet
         }
     }
 
-    private static class TabSheetEx extends com.vaadin.ui.TabSheet implements WebComponentEx {
+    protected static class TabSheetEx extends com.vaadin.ui.TabSheet implements WebComponentEx {
         private Component component;
 
         private TabSheetEx(Component component) {
@@ -320,7 +332,7 @@ public class WebTabSheet
         }
     }
 
-    private class LazyTabChangeListener implements com.vaadin.ui.TabSheet.SelectedTabChangeListener {
+    protected class LazyTabChangeListener implements com.vaadin.ui.TabSheet.SelectedTabChangeListener {
 
         private WebAbstractBox tabContent;
         private Element descriptor;
@@ -335,7 +347,8 @@ public class WebTabSheet
         @Override
         public void selectedTabChange(com.vaadin.ui.TabSheet.SelectedTabChangeEvent event) {
             com.vaadin.ui.Component selectedTab = WebTabSheet.this.component.getSelectedTab();
-            if (selectedTab == tabContent && lazyTabs.remove(tabContent)) {
+            com.vaadin.ui.Component tabComponent = tabContent.getComponent();
+            if (selectedTab == tabComponent && lazyTabs.remove(tabComponent)) {
                 Component comp = loader.loadComponent(AppConfig.getFactory(), descriptor, null);
 
                 tabContent.add(comp);
@@ -366,7 +379,26 @@ public class WebTabSheet
         }
     }
 
-    private class MyCloseHandler implements com.vaadin.ui.TabSheet.CloseHandler {
+    protected static class ComponentDescriptor {
+        private Component component;
+
+        private String name;
+
+        public ComponentDescriptor(String name, Component component) {
+            this.name = name;
+            this.component = component;
+        }
+
+        public Component getComponent() {
+            return component;
+        }
+
+        public String getName() {
+            return name;
+        }
+    }
+
+    protected class DefaultCloseHandler implements com.vaadin.ui.TabSheet.CloseHandler {
         private static final long serialVersionUID = -6766617382191585632L;
 
         @Override

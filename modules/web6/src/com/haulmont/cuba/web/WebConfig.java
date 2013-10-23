@@ -140,7 +140,7 @@ public interface WebConfig extends Config {
      * @return Whether to use disabling and dimming of browser window on long requests.
      */
     @Property("cuba.web.useUiBlocking")
-    @DefaultBoolean(true)
+    @DefaultBoolean(false)
     boolean getUseUiBlocking();
 
     /**
