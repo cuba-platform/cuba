@@ -27,9 +27,9 @@
         </collectionDatasource>
     </dsContext>
 
-    <layout>
+    <layout margin="true">
         <split id="contentSplit" height="100%" orientation="horizontal" pos="80" width="100%">
-            <vbox height="100%" width="100%" margin="true;false;true;true" expand="specificPermissionsTree">
+            <vbox height="100%" width="100%" expand="specificPermissionsTree">
                 <treeTable id="specificPermissionsTree" width="100%">
                     <columns>
                         <column id="caption" caption="msg://target"/>
