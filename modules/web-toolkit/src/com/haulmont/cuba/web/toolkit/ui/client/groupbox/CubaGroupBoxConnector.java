@@ -10,6 +10,8 @@ import com.google.gwt.dom.client.Style;
 import com.haulmont.cuba.web.toolkit.ui.CubaGroupBox;
 import com.haulmont.cuba.web.toolkit.ui.client.Tools;
 import com.vaadin.client.ApplicationConnection;
+import com.vaadin.client.LayoutManager;
+import com.vaadin.client.Profiler;
 import com.vaadin.client.UIDL;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.VPanel;
@@ -46,6 +48,28 @@ public class CubaGroupBoxConnector extends PanelConnector {
     }
 
     @Override
+    public void init() {
+        super.init();
+
+        LayoutManager layoutManager = getLayoutManager();
+        CubaGroupBoxWidget widget = getWidget();
+
+        layoutManager.registerDependency(this, widget.captionStartDeco);
+        layoutManager.registerDependency(this, widget.captionEndDeco);
+    }
+
+    @Override
+    public void onUnregister() {
+        super.onUnregister();
+
+        LayoutManager layoutManager = getLayoutManager();
+        CubaGroupBoxWidget widget = getWidget();
+
+        layoutManager.unregisterDependency(this, widget.captionStartDeco);
+        layoutManager.unregisterDependency(this, widget.captionEndDeco);
+    }
+
+    @Override
     public CubaGroupBoxState getState() {
         return (CubaGroupBoxState) super.getState();
     }
@@ -55,33 +79,67 @@ public class CubaGroupBoxConnector extends PanelConnector {
         super.updateFromUIDL(uidl, client);
 
         // replace VPanel classnames
-        Tools.replaceClassNames(getWidget().captionNode, VPanel.CLASSNAME, getWidget().getStylePrimaryName());
-        Tools.replaceClassNames(getWidget().captionWrap, VPanel.CLASSNAME, getWidget().getStylePrimaryName());
-        Tools.replaceClassNames(getWidget().contentNode, VPanel.CLASSNAME, getWidget().getStylePrimaryName());
-        Tools.replaceClassNames(getWidget().bottomDecoration, VPanel.CLASSNAME, getWidget().getStylePrimaryName());
-        Tools.replaceClassNames(getWidget().getElement(), VPanel.CLASSNAME, getWidget().getStylePrimaryName());
+        CubaGroupBoxWidget widget = getWidget();
+
+        Tools.replaceClassNames(widget.captionNode, VPanel.CLASSNAME, widget.getStylePrimaryName());
+        Tools.replaceClassNames(widget.captionWrap, VPanel.CLASSNAME, widget.getStylePrimaryName());
+        Tools.replaceClassNames(widget.contentNode, VPanel.CLASSNAME, widget.getStylePrimaryName());
+        Tools.replaceClassNames(widget.bottomDecoration, VPanel.CLASSNAME, widget.getStylePrimaryName());
+        Tools.replaceClassNames(widget.getElement(), VPanel.CLASSNAME, widget.getStylePrimaryName());
     }
 
     @Override
     public void layout() {
-        super.layout();
+        CubaGroupBoxWidget panel = getWidget();
 
         if (isUndefinedWidth()) {
             // do not set width: 100% for captionEndDeco in CSS
             // it brokes layout with width: AUTO
-            getWidget().captionWrap.getStyle().setWidth(getWidget().contentNode.getOffsetWidth(), Style.Unit.PX);
+            panel.captionWrap.getStyle().setWidth(getWidget().contentNode.getOffsetWidth(), Style.Unit.PX);
         } else {
-            getWidget().captionWrap.getStyle().setWidth(100, Style.Unit.PCT);
+            panel.captionWrap.getStyle().setWidth(100, Style.Unit.PCT);
         }
 
-        getWidget().captionEndDeco.getStyle().setWidth(100, Style.Unit.PCT);
+        panel.captionEndDeco.getStyle().setWidth(100, Style.Unit.PCT);
+
+        LayoutManager layoutManager = getLayoutManager();
+        Profiler.enter("PanelConnector.layout getHeights");
+        // Haulmont API get max height of caption components
+        int top = layoutManager.getOuterHeight(getWidget().captionNode);
+        top = Math.max(layoutManager.getOuterHeight(getWidget().captionStartDeco), top);
+        top = Math.max(layoutManager.getOuterHeight(getWidget().captionEndDeco), top);
+
+        int bottom = layoutManager.getInnerHeight(getWidget().bottomDecoration);
+        Profiler.leave("PanelConnector.layout getHeights");
+
+        Profiler.enter("PanelConnector.layout modify style");
+        Style style = panel.getElement().getStyle();
+        panel.captionWrap.getStyle().setMarginTop(-top, Style.Unit.PX);
+        panel.bottomDecoration.getStyle().setMarginBottom(-bottom, Style.Unit.PX);
+        style.setPaddingTop(top, Style.Unit.PX);
+        style.setPaddingBottom(bottom, Style.Unit.PX);
+        Profiler.leave("PanelConnector.layout modify style");
+
+        // Update scroll positions
+        Profiler.enter("PanelConnector.layout update scroll positions");
+        panel.contentNode.setScrollTop(panel.scrollTop);
+        panel.contentNode.setScrollLeft(panel.scrollLeft);
+        Profiler.leave("PanelConnector.layout update scroll positions");
+
+        // Read actual value back to ensure update logic is correct
+        Profiler.enter("PanelConnector.layout read scroll positions");
+        panel.scrollTop = panel.contentNode.getScrollTop();
+        panel.scrollLeft = panel.contentNode.getScrollLeft();
+        Profiler.leave("PanelConnector.layout read scroll positions");
     }
 
     @Override
     public void onStateChanged(StateChangeEvent stateChangeEvent) {
         super.onStateChanged(stateChangeEvent);
 
-        getWidget().setCollapsable(getState().collapsable);
-        getWidget().setExpanded(getState().expanded);
+        CubaGroupBoxWidget widget = getWidget();
+
+        widget.setCollapsable(getState().collapsable);
+        widget.setExpanded(getState().expanded);
     }
 }
