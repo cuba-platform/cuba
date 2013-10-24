@@ -22,7 +22,6 @@ import com.vaadin.terminal.gwt.client.ui.dd.VDragEvent;
 import com.vaadin.terminal.gwt.client.ui.dd.VTransferable;
 import org.vaadin.hene.popupbutton.widgetset.client.ui.VPopupButton;
 
-import javax.annotation.Nullable;
 import java.util.*;
 
 public abstract class Table
@@ -3574,10 +3573,10 @@ public abstract class Table
     /**
      * Moves the selection head to a specific row
      *
-     * @param row The row to where the selection head should move
+     * @param row The row to where the selection head should move, may be null
      * @return Returns true if focus was moved successfully, else false
      */
-    protected boolean setRowFocus(@Nullable ITableBody.ITableRow row) {
+    protected boolean setRowFocus(ITableBody.ITableRow row) {
 
         if (selectMode == SELECT_MODE_NONE) {
             return false;

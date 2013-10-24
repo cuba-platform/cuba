@@ -80,8 +80,8 @@ def validationApi = [group: 'javax.validation', name: 'validation-api', version:
 def commonsUpload = [group: 'commons-fileupload', name: 'commons-fileupload', version: '1.2.2']
 def casClient = [group: 'org.jasig.cas', name: 'cas-client-core', version: '3.1.10']
 
-configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule, webToolkitModule,
-        webModule, desktopModule, portalModule, webAuthModule, webLegacyModule, webToolkitLegacyModule]) {
+configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
+        webModule, desktopModule, portalModule, webAuthModule, webLegacyModule]) {
     apply(plugin: 'java')
     apply(plugin: 'idea')
     apply(plugin: 'maven')
@@ -137,6 +137,24 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule, w
     checkstyleMain << {
         def checkstyleDir = "${project.buildDir}/checkstyle".toString()
         ant.xslt('in': "$checkstyleDir/main.xml", out: "$checkstyleDir/$project.name-checkstyle.html", style: "$checkstyleConfigDir/checkstyle.xsl")
+    }
+}
+
+// configure web toolkit modules
+configure([webToolkitModule, webToolkitLegacyModule]) {
+    apply(plugin: 'java')
+    apply(plugin: 'idea')
+    apply(plugin: 'maven')
+    apply(plugin: 'cuba')
+
+    task sourceJar(type: Jar) {
+        from file('src')
+        exclude "com/haulmont/cuba/security/app/UserSessions.java"
+        classifier = 'sources'
+    }
+
+    artifacts {
+        archives sourceJar
     }
 }
 
