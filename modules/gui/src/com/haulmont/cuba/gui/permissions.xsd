@@ -16,10 +16,11 @@
 
     <xs:complexType name="permissionConfigType">
         <xs:sequence>
-            <xs:choice>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element name="include" type="includeType"/>
+            </xs:choice>
+            <xs:choice minOccurs="0" maxOccurs="1">
                 <xs:element name="specific" type="categoryOrPermission" minOccurs="1" maxOccurs="1"/>
-
-                <xs:element name="include" type="includeType" minOccurs="0" maxOccurs="unbounded"/>
             </xs:choice>
         </xs:sequence>
     </xs:complexType>
