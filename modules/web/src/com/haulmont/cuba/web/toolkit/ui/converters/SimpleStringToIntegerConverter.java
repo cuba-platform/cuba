@@ -22,8 +22,11 @@ public class SimpleStringToIntegerConverter implements Converter<String, Integer
         if (StringUtils.isEmpty(value)) {
             return null;
         }
-
-        return Integer.parseInt(value);
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            throw new ConversionException(e);
+        }
     }
 
     @Override
