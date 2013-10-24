@@ -382,7 +382,7 @@ configure(webModule) {
     }
 
     task scssThemesZip(type: Zip) {
-        from webModule.file('themes')
+        from file('themes')
         exclude '**/.*'
 
         version = artifactVersion + (isSnapshot ? '-SNAPSHOT' : '')
@@ -608,7 +608,7 @@ configure(webLegacyModule) {
     }
 
     task scssThemesZip(type: Zip) {
-        from webModule.file('themes')
+        from file('themes')
         exclude '**/.*'
 
         version = artifactVersion + (isSnapshot ? '-SNAPSHOT' : '')
