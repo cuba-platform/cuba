@@ -19,6 +19,7 @@ import org.dom4j.Element;
 import org.springframework.core.io.Resource;
 
 import javax.annotation.ManagedBean;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,13 +37,13 @@ import java.util.regex.Pattern;
  * @version $Id$
  */
 @ManagedBean(WindowConfig.NAME)
-public class WindowConfig
-{
+public class WindowConfig {
+
     public static final String NAME = "cuba_WindowConfig";
 
     public static final String WINDOW_CONFIG_XML_PROP = "cuba.windowConfig";
 
-    protected Map<String, WindowInfo> screens = new HashMap<String, WindowInfo>();
+    protected Map<String, WindowInfo> screens = new HashMap<>();
 
     private static Log log = LogFactory.getLog(WindowConfig.class);
 
@@ -103,11 +104,12 @@ public class WindowConfig
 
     /**
      * Get screen information by screen ID.
-     * Can be overridden for specific client type.
+     *
      * @param id screen ID as set up in <code>screens.xml</code>
-     * @throws NoSuchScreenException if the screen with specified ID is not registered
+     * @return screen's registration information or null if not found
      */
-    public WindowInfo getWindowInfo(String id) {
+    @Nullable
+    public WindowInfo findWindowInfo(String id) {
         WindowInfo windowInfo = screens.get(id);
         if (windowInfo == null) {
             Matcher matcher = ENTITY_SCREEN_PATTERN.matcher(id);
@@ -120,9 +122,28 @@ public class WindowConfig
                 }
             }
         }
+        return windowInfo;
+    }
+
+    /**
+     * Get screen information by screen ID.
+     *
+     * @param id screen ID as set up in <code>screens.xml</code>
+     * @return screen's registration information
+     * @throws NoSuchScreenException if the screen with specified ID is not registered
+     */
+    public WindowInfo getWindowInfo(String id) {
+        WindowInfo windowInfo = findWindowInfo(id);
         if (windowInfo == null)
             throw new NoSuchScreenException(id);
         return windowInfo;
+    }
+
+    /**
+     * @return true if the configuration contains a screen with provided ID
+     */
+    public boolean hasWindow(String id) {
+        return findWindowInfo(id) != null;
     }
 
     /**
