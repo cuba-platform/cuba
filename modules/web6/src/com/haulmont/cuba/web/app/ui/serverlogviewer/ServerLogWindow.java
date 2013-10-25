@@ -180,7 +180,7 @@ public class ServerLogWindow extends AbstractWindow {
     }
 
     protected void openAddLoggerDialog() {
-        final AdditionLoggerWindow additionLogger = openWindow("logcontrol$AddLoggerDialog", WindowManager.OpenType.DIALOG);
+        final AdditionLoggerWindow additionLogger = openWindow("serverLogAddLoggerDialog", WindowManager.OpenType.DIALOG);
         additionLogger.addListener(new CloseListener() {
             @Override
             public void windowClosed(String actionId) {
@@ -385,7 +385,7 @@ public class ServerLogWindow extends AbstractWindow {
         }
         params.put("loggersMap", loggersMap);
 
-        final ControlLoggerWindow controlLogger = openWindow("logcontrol$LoggerControlDialog", WindowManager.OpenType.DIALOG, params);
+        final ControlLoggerWindow controlLogger = openWindow("serverLogLoggerControlDialog", WindowManager.OpenType.DIALOG, params);
         controlLogger.addListener(new CloseListener() {
             @Override
             public void windowClosed(String actionId) {

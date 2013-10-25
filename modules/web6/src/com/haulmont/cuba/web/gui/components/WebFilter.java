@@ -1942,9 +1942,8 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
                 params.put("foldersPane", foldersPane);
                 params.put("entityClass", datasource.getMetaClass().getJavaClass().getName());
                 params.put("query", datasource.getQuery());
-                WebFilter.this.getFrame().openWindow("sec$SaveSetWindow",
-                        WindowManager.OpenType.DIALOG,
-                        params);
+
+                WebFilter.this.getFrame().openWindow("saveSetInFolder", WindowManager.OpenType.DIALOG, params);
             }
         }
     }

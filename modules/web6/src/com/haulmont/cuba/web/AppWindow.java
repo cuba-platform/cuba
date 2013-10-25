@@ -493,7 +493,7 @@ public class AppWindow extends Window implements UserSubstitutionListener,
         Map<String, Object> params = new HashMap<>();
         params.put("searchTerm", searchTerm);
 
-        WindowInfo windowInfo = AppBeans.get(WindowConfig.class).getWindowInfo("fts$Search");
+        WindowInfo windowInfo = AppBeans.get(WindowConfig.class).getWindowInfo("ftsSearch");
         App.getInstance().getWindowManager().openWindow(
                 windowInfo,
                 WindowManager.OpenType.NEW_TAB,

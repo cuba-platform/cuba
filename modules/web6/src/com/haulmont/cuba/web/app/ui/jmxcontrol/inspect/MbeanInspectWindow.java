@@ -32,6 +32,8 @@ import java.util.*;
  */
 public class MbeanInspectWindow extends AbstractEditor {
 
+    private Log log = LogFactory.getLog(getClass());
+
     @Named("attributes")
     protected Table attrTable;
 
@@ -46,8 +48,6 @@ public class MbeanInspectWindow extends AbstractEditor {
 
     @Inject
     protected CollectionDatasource<ManagedBeanAttribute, UUID> attrDs;
-
-    private Log log = LogFactory.getLog(getClass());
 
     @Override
     public void init(Map<String, Object> params) {
@@ -79,7 +79,7 @@ public class MbeanInspectWindow extends AbstractEditor {
             return;
         }
 
-        final Window.Editor w = openEditor("jmxcontrol$EditAttribute", mba, WindowManager.OpenType.DIALOG);
+        final Window.Editor w = openEditor("jmxConsoleEditAttribute", mba, WindowManager.OpenType.DIALOG);
         w.addListener(new CloseListener() {
             @Override
             public void windowClosed(String actionId) {
@@ -206,7 +206,7 @@ public class MbeanInspectWindow extends AbstractEditor {
         } catch (Exception e) {
             params.put("exception", e);
         }
-        Window w = openWindow("jmxcontrol$OperationResult", WindowManager.OpenType.DIALOG, params);
+        Window w = openWindow("jmxConsoleOperationResult", WindowManager.OpenType.DIALOG, params);
         w.addListener(new CloseListener() {
             @Override
             public void windowClosed(String actionId) {
