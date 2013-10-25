@@ -12,7 +12,10 @@ import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.core.global.MessageTools;
+import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.validators.DateValidator;
@@ -62,6 +65,9 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     protected WindowConfig windowConfig;
 
     @Inject
+    protected Metadata metadata;
+
+    @Inject
     protected MetadataTools metadataTools;
 
     @Inject
@@ -101,6 +107,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
                 attribute.setCode((String) value);
             }
         });
+        codeField.setMaxLength(CategoryAttribute.CODE_FIELD_LENGTH);
         fieldsContainer.add(codeField);
 
         requiredField = factory.createComponent(CheckBox.NAME);
@@ -237,7 +244,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
                     }
                 }
             });
-            dateField.addValidator(new DateValidator(MessageProvider.getMessage(AppConfig.getMessagesPack(), "validation.invalidDate")));
+            dateField.addValidator(new DateValidator(messages.getMessage(AppConfig.getMessagesPack(), "validation.invalidDate")));
             dateField.addListener(new ValueListener() {
                 @Override
                 public void valueChanged(Object source, String property, Object prevValue, Object value) {
@@ -254,7 +261,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             TextField textField = factory.createComponent(TextField.NAME);
             textField.setId("defaultValue");
             textField.setCaption(getMessage("defaultValue"));
-            textField.addValidator(new IntegerValidator(MessageProvider.getMessage(AppConfig.getMessagesPack(),
+            textField.addValidator(new IntegerValidator(messages.getMessage(AppConfig.getMessagesPack(),
                     "validation.invalidNumber")));
             textField.setDatatype(Datatypes.get(Integer.class));
             textField.setWidth(FIELD_WIDTH);
@@ -274,7 +281,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             textField.setDatatype(Datatypes.get(Double.class));
             textField.setWidth(FIELD_WIDTH);
             textField.addValidator(new DoubleValidator(
-                    MessageProvider.getMessage(AppConfig.getMessagesPack(),
+                    messages.getMessage(AppConfig.getMessagesPack(),
                             "validation.invalidNumber")));
             textField.addListener(new ValueListener() {
                 @Override
@@ -417,7 +424,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
 
     protected void fillEntities(LookupField entityField, Class clazz) {
         Map<String, Object> entitiesMap = new HashMap<String, Object>();
-        String entityClassName = MetadataProvider.getSession().getClass(clazz).getName();
+        String entityClassName = metadata.getClass(clazz).getName();
         LoadContext entitiesContext = new LoadContext(clazz);
         LoadContext.Query query = entitiesContext.setQueryString("select a from " + entityClassName + " a");
         entitiesContext.setView("_minimal");
@@ -455,6 +462,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     protected void postInit() {
         attribute = getItem();
         nameField.setValue(attribute.getName());
+        codeField.setValue(attribute.getCode());
         requiredField.setValue(attribute.getRequired());
         lookupField.setValue(attribute.getLookup());
         if (BooleanUtils.isTrue(attribute.getIsEntity())) {

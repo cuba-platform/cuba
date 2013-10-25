@@ -14,7 +14,7 @@ import javax.persistence.Entity;
 import java.util.Date;
 import java.util.UUID;
 
-@Entity(name="sys$CategoryAttribute")
+@Entity(name = "sys$CategoryAttribute")
 @Table(name = "SYS_CATEGORY_ATTR")
 @NamePattern("%s|name")
 @SystemLevel
@@ -22,41 +22,43 @@ public class CategoryAttribute extends StandardEntity {
 
     private static final long serialVersionUID = -6959392628534815752L;
 
+    public static final int CODE_FIELD_LENGTH = 50;
+
     @ManyToOne
     @JoinColumn(name = "CATEGORY_ID")
     private Category category;
 
-    @Column(name="NAME")
+    @Column(name = "NAME")
     private String name;
 
-    @Column(name="CODE", length = 50)
+    @Column(name = "CODE", length = CODE_FIELD_LENGTH)
     private String code;
 
-    @Column(name="DEFAULT_STRING")
+    @Column(name = "DEFAULT_STRING")
     private String defaultString;
 
-    @Column(name="DEFAULT_INT")
+    @Column(name = "DEFAULT_INT")
     private Integer defaultInt;
 
-    @Column(name="DEFAULT_DOUBLE")
+    @Column(name = "DEFAULT_DOUBLE")
     private Double defaultDouble;
 
-    @Column(name="DEFAULT_BOOLEAN")
+    @Column(name = "DEFAULT_BOOLEAN")
     private Boolean defaultBoolean;
 
     @Column(name = "DEFAULT_DATE")
     private Date defaultDate;
 
-    @Column(name="ENUMERATION")
+    @Column(name = "ENUMERATION")
     private String enumeration;
 
-    @Column(name="DATA_TYPE")
+    @Column(name = "DATA_TYPE")
     private String dataType;
 
-    @Column(name="IS_ENTITY")
+    @Column(name = "IS_ENTITY")
     private Boolean isEntity;
 
-    @Column(name="DEFAULT_ENTITY_VALUE")
+    @Column(name = "DEFAULT_ENTITY_VALUE")
     @Persistent
     private UUID defaultEntityId;
 
@@ -91,12 +93,12 @@ public class CategoryAttribute extends StandardEntity {
         this.name = name;
     }
 
-    public String getEnumeration(){
+    public String getEnumeration() {
         return enumeration;
     }
 
-    public void setEnumeration(String e){
-        this.enumeration=e;
+    public void setEnumeration(String e) {
+        this.enumeration = e;
     }
 
     public String getDataType() {
