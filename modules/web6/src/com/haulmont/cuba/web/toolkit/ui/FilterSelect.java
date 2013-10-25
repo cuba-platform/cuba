@@ -33,6 +33,8 @@ public class FilterSelect extends Select implements Action.Container {
     protected static Log log = LogFactory.getLog(FilterSelect.class);
     protected boolean isFirstChange = true;
 
+    protected boolean textInputAllowed = true;
+
     @Override
     public void paintContent(PaintTarget target) throws PaintException {
         super.paintContent(target);
@@ -44,6 +46,9 @@ public class FilterSelect extends Select implements Action.Container {
         }
         if (showOptionsDescriptions) {
             target.addAttribute("optionsDesc", true);
+        }
+        if (!textInputAllowed) {
+            target.addAttribute("textInputAllowed", false);
         }
     }
 
@@ -108,6 +113,15 @@ public class FilterSelect extends Select implements Action.Container {
 
     public void disablePaging() {
         setPageLength(0);
+    }
+
+    public void setTextInputAllowed(boolean textInputAllowed) {
+        this.textInputAllowed = textInputAllowed;
+        requestRepaint();
+    }
+
+    public boolean isTextInputAllowed() {
+        return textInputAllowed;
     }
 
     @Override

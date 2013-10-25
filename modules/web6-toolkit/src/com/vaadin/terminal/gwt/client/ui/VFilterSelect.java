@@ -625,6 +625,8 @@ public class VFilterSelect extends Composite implements Paintable, Field,
 
     private boolean showOptionsDesc = false;
 
+    private boolean textInputAllowed = true;
+
     public VFilterSelect() {
         selectedItemIcon.setStyleName("v-icon");
         selectedItemIcon.addLoadHandler(new LoadHandler() {
@@ -640,7 +642,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
         setStyleName(getBaseStyleName());
         tb.addKeyDownHandler(this);
         tb.addKeyUpHandler(this);
-        tb.addKeyPressHandler(new KeyPressHandler(){
+        tb.addKeyPressHandler(new KeyPressHandler() {
 
             @Override
             public void onKeyPress(KeyPressEvent event) {
@@ -718,6 +720,8 @@ public class VFilterSelect extends Composite implements Paintable, Field,
 
         readonly = uidl.hasAttribute("readonly");
         enabled = !uidl.hasAttribute("disabled");
+
+        textInputAllowed = !uidl.hasAttribute("textInputAllowed") || uidl.getBooleanAttribute("textInputAllowed");
 
         tb.setEnabled(enabled);
         tb.setReadOnly(readonly);
@@ -869,6 +873,12 @@ public class VFilterSelect extends Composite implements Paintable, Field,
                 }
                 shortcutHandler.updateActionMap(data);
             }
+        }
+
+        if (!readonly && enabled && textInputAllowed) {
+            tb.getElement().removeAttribute("readonly");
+        } else if (!textInputAllowed) {
+            tb.getElement().setAttribute("readonly", "");
         }
 
         // Focus dependent style names are lost during the update, so we add
@@ -1111,6 +1121,17 @@ public class VFilterSelect extends Composite implements Paintable, Field,
             DOM.eventPreventDefault(DOM.eventGetCurrentEvent());
             tb.setFocus(true);
             tb.selectAll();
+        } else if (event.getNativeEvent().getEventTarget().cast() == tb.getElement()
+                && !textInputAllowed && !readonly && enabled) {
+            // ask suggestionPopup if it was just closed, we are using GWT
+            // Popup's auto close feature
+            if (!suggestionPopup.isJustClosed()) {
+                filterOptions(-1, "");
+                popupOpenerClicked = true;
+                lastFilter = "";
+            }
+            DOM.eventPreventDefault(DOM.eventGetCurrentEvent());
+            tb.setFocus(true);
         }
     }
 

@@ -179,6 +179,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         select.setImmediate(true);
         select.setPageLength(20);
         select.addListener(new SelectListener());
+        select.setTextInputAllowed(false);
         App.getInstance().getWindowManager().setDebugId(select, "genericFilterSelect");
         topLayout.addComponent(select);
 
