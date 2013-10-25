@@ -2005,7 +2005,13 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
             IFrame frame = WebFilter.this.getFrame();
             String[] strings = ValuePathHelper.parse(getComponentPath());
             String windowAlias = strings[0];
-            frame.openLookup(windowAlias, new Window.Lookup.Handler() {
+            StringBuilder lookupAlias = new StringBuilder(windowAlias);
+            if (windowAlias.endsWith(".browse")) {
+                int index = lookupAlias.lastIndexOf(".browse");
+                lookupAlias.delete(index, lookupAlias.length());
+                lookupAlias.append(".lookup");
+            }
+            frame.openLookup(lookupAlias.toString(), new Window.Lookup.Handler() {
                 @Override
                 public void handleLookup(Collection items) {
                     String filterXml = filterEntity.getXml();
