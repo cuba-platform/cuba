@@ -23,6 +23,7 @@ import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.BorderStyle;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -511,6 +512,7 @@ public class WebWindowManager extends WindowManager {
         outerLayout.setStyleName("cuba-app-dialog-window");
         outerLayout.addComponent(layout);
         outerLayout.setExpandRatio(layout, 1);
+        outerLayout.setMargin(new MarginInfo(true, false, false, false));
 
         win.setContent(outerLayout);
 

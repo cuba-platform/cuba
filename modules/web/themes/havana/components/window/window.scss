@@ -83,10 +83,6 @@
         border: 1px solid $theme_windowBorderColor;
       }
 
-      .#{$primaryStyleName}-contents > .v-scrollable {
-        margin-top: 5px;
-      }
-
       .#{$primaryStyleName}-footer {
         height: 10px;
         background: transparent;
