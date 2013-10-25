@@ -17,19 +17,19 @@ import java.util.*;
  * @author gorodnov
  * @version $Id$
  */
-@SuppressWarnings("serial")
 public class TreeTableContainerWrapper
         extends ContainerHierarchicalWrapper
         implements TreeTableContainer, AggregationContainer, Container.Ordered, Container.Sortable {
+
     protected Set<Object> expanded = null; // Contains expanded items ids
 
     protected LinkedList<Object> inline = null; // Contains visible (including children of expanded items) items ids inline
 
     protected Hashtable<Object, String> captions = null;
 
-    private Object first;
+    protected Object first;
 
-    private boolean treeTableContainer;
+    protected boolean treeTableContainer;
 
     public TreeTableContainerWrapper(Container toBeWrapped) {
         super(toBeWrapped);
