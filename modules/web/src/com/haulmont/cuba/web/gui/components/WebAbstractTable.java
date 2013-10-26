@@ -163,6 +163,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             ((DatasourceImplementation)fieldDatasource).valid();
 
             fieldDatasource.setItem(item);
+            fieldDatasources.put(item, fieldDatasource);
         }
 
         return fieldDatasource;
@@ -612,6 +613,26 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         columns = this.columns.keySet();
 
         this.datasource = datasource;
+
+        // drop cached datasources for components before update table cells on client
+        datasource.addListener(new CollectionDsListenerAdapter<Entity>() {
+            @Override
+            public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
+                switch (operation) {
+                    case CLEAR:
+                    case REFRESH:
+                        fieldDatasources.clear();
+                        break;
+
+                    case UPDATE:
+                    case REMOVE:
+                        for (Entity entity : items) {
+                            fieldDatasources.remove(entity);
+                        }
+                        break;
+                }
+            }
+        });
 
         final CollectionDsWrapper containerDatasource = createContainerDatasource(datasource, getPropertyColumns());
 

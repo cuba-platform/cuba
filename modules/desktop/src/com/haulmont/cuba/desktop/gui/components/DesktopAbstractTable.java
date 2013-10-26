@@ -417,6 +417,25 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
         this.datasource = datasource;
 
+        datasource.addListener(new CollectionDsListenerAdapter<Entity>() {
+            @Override
+            public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
+                switch (operation) {
+                    case CLEAR:
+                    case REFRESH:
+                        fieldDatasources.clear();
+                        break;
+
+                    case UPDATE:
+                    case REMOVE:
+                        for (Entity entity : items) {
+                            fieldDatasources.remove(entity);
+                        }
+                        break;
+                }
+            }
+        });
+
         initTableModel(datasource);
 
         initChangeListener();
@@ -688,7 +707,6 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         this.allowPopupMenu = allowPopupMenu;
     }
 
-
     protected void setEditableColumns(List<MetaPropertyPath> editableColumns) {
     }
 
@@ -898,6 +916,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
             ((DatasourceImplementation)fieldDatasource).valid();
 
             fieldDatasource.setItem(item);
+            fieldDatasources.put(item, fieldDatasource);
         }
 
         return fieldDatasource;

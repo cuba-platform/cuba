@@ -149,7 +149,9 @@ public interface Table
 
     /**
      * This method returns the datasource which contains the provided item. It can be used in data-aware components,
-     * created in generated columns.
+     * created in generated columns. <br/>
+     *
+     * <b>Do not save to final variables, just get it from table when you need.</b>
      *
      * <pre>
      * modelsTable.addGeneratedColumn(
