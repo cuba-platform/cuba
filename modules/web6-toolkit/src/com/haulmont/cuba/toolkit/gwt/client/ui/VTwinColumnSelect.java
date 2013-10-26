@@ -18,6 +18,10 @@ import com.vaadin.terminal.gwt.client.ui.VOptionGroupBase;
 
 import java.util.*;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 public class VTwinColumnSelect extends VOptionGroupBase implements DoubleClickHandler {
     private static final String CLASSNAME = "twincolumn";
 

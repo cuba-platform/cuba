@@ -13,6 +13,10 @@ import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.Paintable;
 import com.vaadin.terminal.gwt.client.UIDL;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 public class VTokenListLabel extends SimplePanel implements Paintable {
 
     public static final String CLASSNAME = "token-list-label";
@@ -45,6 +49,7 @@ public class VTokenListLabel extends SimplePanel implements Paintable {
     public void setWidth(String width) {
     }
 
+    @Override
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
         this.client = client;
         this.paintableId = uidl.getId();

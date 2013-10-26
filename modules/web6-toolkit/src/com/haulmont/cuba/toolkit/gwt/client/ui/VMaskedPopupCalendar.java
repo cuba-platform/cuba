@@ -15,9 +15,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * <p>$Id$</p>
- *
  * @author devyatkin
+ * @version $Id$
  */
 public class VMaskedPopupCalendar extends VPopupCalendar {
 

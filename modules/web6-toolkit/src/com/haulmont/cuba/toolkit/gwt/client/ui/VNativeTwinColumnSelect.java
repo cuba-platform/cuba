@@ -26,6 +26,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 public class VNativeTwinColumnSelect extends VOptionGroupBase implements DoubleClickHandler {
 
     private static final String CLASSNAME = "v-select-twincol";

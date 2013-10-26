@@ -19,6 +19,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 public class VWidgetsTree extends VTree implements Container {
 
     private static final String CLASSNAME = "widgets-tree";

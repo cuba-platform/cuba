@@ -15,9 +15,8 @@ import com.vaadin.terminal.gwt.client.ui.VOrderedLayout;
 import com.vaadin.terminal.gwt.client.ui.VVerticalLayout;
 
 /**
+ * @author gorodnov
  * @version $Id$
- *
- * @author Nikolay Gorodnov
  */
 public class VOrderedActionsLayout extends VOrderedLayout {
 

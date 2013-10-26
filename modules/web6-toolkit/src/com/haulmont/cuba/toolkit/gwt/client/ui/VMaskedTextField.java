@@ -15,6 +15,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class VMaskedTextField extends VTextField {
 
     public static final String CLASSNAME = "v-maskedfield";

@@ -5,6 +5,10 @@
 
 package com.haulmont.cuba.toolkit.gwt.client.ui;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 public class VHorizontalActionsLayout extends VOrderedActionsLayout {
 
     public static final String CLASSNAME = "v-horizontallayout";

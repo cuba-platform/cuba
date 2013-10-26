@@ -17,6 +17,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * @author
+ * @version $Id$
+ */
 public class VFlowLayout extends FlowPanel implements Container {
 
     public static final String CLASSNAME = "flow-layout";
@@ -368,6 +372,7 @@ public class VFlowLayout extends FlowPanel implements Container {
 
     }
 
+    @Override
     public void replaceChildComponent(Widget oldComponent, Widget newComponent) {
         ChildContainer componentContainer = widgetContainers
                 .remove(oldComponent);
@@ -380,18 +385,22 @@ public class VFlowLayout extends FlowPanel implements Container {
         widgetContainers.put(newComponent, componentContainer);
     }
 
+    @Override
     public boolean hasChildComponent(Widget component) {
         return widgetContainers.containsKey(component);
     }
 
+    @Override
     public void updateCaption(Paintable component, UIDL uidl) {
         //do nothing
     }
 
+    @Override
     public boolean requestLayout(Set<Paintable> children) {
         return true;
     }
 
+    @Override
     public RenderSpace getAllocatedSpace(Widget child) {
         int width;
         int height;
