@@ -7,15 +7,11 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.FormatStrings;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.DateField;
-import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
@@ -24,7 +20,7 @@ import com.haulmont.cuba.web.toolkit.ui.CubaDateField;
 import com.haulmont.cuba.web.toolkit.ui.CubaDateFieldWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaMaskedTextField;
 import com.vaadin.data.Property;
-import com.vaadin.ui.*;
+import com.vaadin.ui.HorizontalLayout;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -52,8 +48,6 @@ public class WebDateField
     protected WebTimeField timeField;
 
     protected HorizontalLayout composition;
-
-    protected MetaPropertyPath metaPropertyPath;
 
     protected String dateTimeFormat;
     protected String dateFormat;
@@ -235,9 +229,6 @@ public class WebDateField
                 if (datasource.getItem() != null) {
                     InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), value);
                 }
-            } else if (component.getPropertyDataSource() != null) {
-                // support dateField in editable table
-                component.getPropertyDataSource().setValue(value);
             }
         } finally {
             updatingInstance = false;
