@@ -154,7 +154,6 @@ public class WebSearchPickerField extends WebSearchField implements SearchPicker
 
     @Override
     public void setRequiredMessage(String msg) {
-        requiredMessage = msg;
         pickerField.setRequiredMessage(msg);
     }
 

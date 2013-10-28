@@ -172,7 +172,6 @@ public class WebLookupPickerField
 
     @Override
     public void setRequiredMessage(String msg) {
-        requiredMessage = msg;
         pickerField.setRequiredMessage(msg);
     }
 
