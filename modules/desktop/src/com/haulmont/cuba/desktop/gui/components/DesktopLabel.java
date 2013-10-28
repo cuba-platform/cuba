@@ -1,6 +1,7 @@
 /*
- * Copyright (c) 2008-2013 Haulmont. All rights reserved.
- * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
  */
 
 package com.haulmont.cuba.desktop.gui.components;
@@ -19,9 +20,8 @@ import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
-import org.jdesktop.swingx.JXLabel;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -30,7 +30,7 @@ import java.util.Locale;
  * @author krivopustov
  * @version $Id$
  */
-public class DesktopLabel extends DesktopAbstractComponent<JXLabel> implements Label {
+public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements Label {
 
     protected Datasource<Entity> datasource;
     protected MetaProperty metaProperty;
@@ -45,7 +45,7 @@ public class DesktopLabel extends DesktopAbstractComponent<JXLabel> implements L
     protected boolean updatingInstance = false;
 
     public DesktopLabel() {
-        impl = new JXLabel();
+        impl = new JLabel();
         impl.setFocusable(false);
         setAlignment(Alignment.MIDDLE_LEFT);
 
@@ -82,8 +82,9 @@ public class DesktopLabel extends DesktopAbstractComponent<JXLabel> implements L
                 new DsListenerAdapter() {
                     @Override
                     public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
-                        if (updatingInstance)
+                        if (updatingInstance) {
                             return;
+                        }
 
                         Object value = InstanceUtils.getValueEx(item, metaPropertyPath.getPath());
                         updateComponent(value);
@@ -92,8 +93,9 @@ public class DesktopLabel extends DesktopAbstractComponent<JXLabel> implements L
 
                     @Override
                     public void valueChanged(Entity source, String property, Object prevValue, Object value) {
-                        if (updatingInstance)
+                        if (updatingInstance) {
                             return;
+                        }
 
                         if (property.equals(metaPropertyPath.toString())) {
                             updateComponent(value);
@@ -136,19 +138,21 @@ public class DesktopLabel extends DesktopAbstractComponent<JXLabel> implements L
 
     @Override
     public void setValue(Object value) {
-       if (!ObjectUtils.equals(prevValue, value)) {
-           updateInstance(value);
-           updateComponent(value);
-           fireChangeListeners(value);
-       }
+        if (!ObjectUtils.equals(prevValue, value)) {
+            updateInstance(value);
+            updateComponent(value);
+            fireChangeListeners(value);
+        }
     }
 
-    protected void updateInstance(Object value) {
-        if (updatingInstance)
+    private void updateInstance(Object value) {
+        if (updatingInstance) {
             return;
+        }
 
-        if (ObjectUtils.equals(prevValue, value))
+        if (ObjectUtils.equals(prevValue, value)) {
             return;
+        }
 
         updatingInstance = true;
         try {
@@ -163,9 +167,7 @@ public class DesktopLabel extends DesktopAbstractComponent<JXLabel> implements L
     }
 
     protected void updateComponent(Object value) {
-        String stringRepresentation = valueFormatter.formatValue(value);
-        impl.setLineWrap(StringUtils.contains(stringRepresentation, "\n"));
-        impl.setText(stringRepresentation);
+        impl.setText(valueFormatter.formatValue(value));
     }
 
     protected void fireChangeListeners(Object newValue) {
@@ -177,8 +179,9 @@ public class DesktopLabel extends DesktopAbstractComponent<JXLabel> implements L
 
     @Override
     public void addListener(ValueListener listener) {
-        if (!listeners.contains(listener))
+        if (!listeners.contains(listener)) {
             listeners.add(listener);
+        }
     }
 
     @Override
