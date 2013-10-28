@@ -433,16 +433,19 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         applyDatasourceFilter();
 
         if (useMaxResults) {
-            int maxResults;
-            if (BooleanUtils.isTrue(maxResultsCb.getValue()))
-                try {
-                    //noinspection ConstantConditions
-                    maxResults = Datatypes.get(Integer.class).parse(maxResultsField.getValue(), userSessionSource.getLocale());
-                } catch (ParseException e) {
-                    throw new Validator.InvalidValueException("");
-                }
-            else
-                maxResults = persistenceManager.getMaxFetchUI(datasource.getMetaClass().getName());
+            int maxResults = 0;
+            if (BooleanUtils.isTrue(maxResultsCb.getValue())) {
+                String maxResultsFieldValue = maxResultsField.getValue();
+                if (StringUtils.isNotBlank(maxResultsFieldValue)) {
+                    try {
+                        //noinspection ConstantConditions
+                        maxResults = Datatypes.get(Integer.class).parse(maxResultsFieldValue, userSessionSource.getLocale());
+                    } catch (ParseException e) {
+                        throw new Validator.InvalidValueException("");
+                    }
+                } else
+                    maxResults = persistenceManager.getMaxFetchUI(datasource.getMetaClass().getName());
+            }
             datasource.setMaxResults(maxResults);
         }
         if (datasource instanceof CollectionDatasource.SupportsPaging)
