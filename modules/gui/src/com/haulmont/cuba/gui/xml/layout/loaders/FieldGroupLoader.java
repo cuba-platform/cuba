@@ -97,7 +97,6 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         context.addPostInitTask(new PostInitTask() {
             @Override
             public void execute(Context context, IFrame window) {
-                component.postInit();
                 final List<FieldGroup.FieldConfig> fields = component.getFields();
                 for (final FieldGroup.FieldConfig field : fields) {
                     loadValidators(component, field);

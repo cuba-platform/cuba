@@ -10,6 +10,10 @@ import com.haulmont.cuba.toolkit.gwt.client.ui.VFieldGroupLayout;
 import com.vaadin.ui.ClientWidget;
 import com.vaadin.ui.GridLayout;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 @SuppressWarnings("serial")
 @ClientWidget(VFieldGroupLayout.class)
 public class FieldGroupLayout extends GridLayout {

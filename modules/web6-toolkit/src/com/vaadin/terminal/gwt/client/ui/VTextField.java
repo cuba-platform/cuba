@@ -30,8 +30,8 @@ import java.util.Iterator;
 /**
  * This class represents a basic text input field with one row.
  *
- * @author IT Mill Ltd.
- *
+ * @author gorodnov
+ * @version $Id$
  */
 public class VTextField extends TextBoxBase implements Paintable, Field,
         ChangeHandler, FocusHandler, BlurHandler, com.vaadin.terminal.gwt.client.Focusable {
@@ -86,6 +86,7 @@ public class VTextField extends TextBoxBase implements Paintable, Field,
         sinkEvents(VTooltip.TOOLTIP_EVENTS);
     }
 
+    @Override
     public void focus() {
         setFocus(true);
     }
@@ -96,18 +97,17 @@ public class VTextField extends TextBoxBase implements Paintable, Field,
         final int type = DOM.eventGetType(event);
         if (type == Event.ONKEYDOWN && shortcutHandler != null) {
             shortcutHandler.handleKeyboardEvent(event);
-            return;
+//            return;
         }
-        if (client != null) {
+//        if (client != null) {
             //client.handleTooltipEvent(event, this);
-        }
+//        }
     }
 
+    @Override
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
         this.client = client;
         id = uidl.getId();
-
-        VConsole.log(">> TEXT FIELD");
 
         if (client.updateComponent(this, uidl, true)) {
             return;
@@ -194,12 +194,16 @@ public class VTextField extends TextBoxBase implements Paintable, Field,
             maxLength = newMaxLength;
             if (getElement().getTagName().toLowerCase().equals("textarea")) {
                 // NOP no maxlength property for textarea
+                // todo support max text length for textarea
+                // todo use VTextArea as example
             } else {
                 getElement().setPropertyInt("maxLength", maxLength);
             }
         } else if (maxLength != -1) {
             if (getElement().getTagName().toLowerCase().equals("textarea")) {
                 // NOP no maxlength property for textarea
+                // todo support max text length for textarea
+                // todo use VTextArea as example
             } else {
                 getElement().setAttribute("maxlength", "");
             }

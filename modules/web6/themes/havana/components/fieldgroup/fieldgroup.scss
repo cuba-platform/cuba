@@ -3,44 +3,124 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-.v-fieldgroup fieldset {
-    border-top: 1px solid #babfc0;
-    margin: 0;
-    padding: 0;
+.fieldgroup,
+.fieldgroup-caption,
+.fieldgroup-content,
+.fieldgroup-deco {
+  outline: none; /* Prevent selection outline which might break layouts or cause scrollbars */
+  text-align: left; /* Force default alignment */
+  border: 0;
 }
 
-.v-fieldgroup legend {
-	margin: 0;
-	padding: 0;
-	font-weight: bold;
+.fieldgroup {
 }
 
-.v-fieldgroup.v-fieldgroup-nodescription .v-form-description {
-    height: 0;
+.fieldgroup.fieldgroup-nocollapsable.fieldgroup-nocaption {
+  padding-top: 0;
 }
 
-.v-fieldgroup .v-form-caption {
-    clear: both;
-    overflow: hidden;
-    padding: 0 4px;
+.fieldgroup.fieldgroup-nocollapsable.fieldgroup-nocaption fieldset {
+  padding-top: 5px;
 }
 
-.v-fieldgroup.v-fieldgroup-nocollapsable.v-fieldgroup-nocaption .v-form-caption {
-    display: none;
+.fieldgroup.fieldgroup-border > fieldset {
+  border: 1px solid #a5c4e0;
+  margin: 0;
+  padding: 5px 5px 5px;
 }
 
-.v-fieldgroup.v-fieldgroup-nocollapsable.v-fieldgroup-nocaption fieldset {
-    border-top: none;
+.fieldgroup legend {
+  margin: 0;
+  padding: 0;
+  white-space: nowrap;
 }
 
-.v-fieldgroup .v-form-caption div {
-    float: left;
-    width: 17px;
-    height: 15px;
-    background: transparent url(images/expand.png) no-repeat center left;
-    cursor: pointer;
+.fieldgroup-caption {
+  padding: 0 4px;
 }
 
-.v-fieldgroup .expanded div {
-    background: transparent url(images/collapse.png) no-repeat center left;
+.fieldgroup .fieldgroup-caption div {
+  float: left;
+  width: 12px;
+  height: 18px;
+  background: transparent url(images/expand.png) no-repeat center left;
+  cursor: pointer;
+}
+
+.fieldgroup .expanded div {
+  background: transparent url(images/collapse.png) no-repeat center left;
+}
+
+.fieldgroup-nocollapsable .fieldgroup-caption div {
+  background: transparent none;
+}
+
+.fieldgroup-caption .v-errorindicator {
+  float: none;
+  padding-right: 10px;
+  display: inline;
+  background: transparent;
+}
+
+.fieldgroup-caption .v-icon {
+  display: inline;
+  vertical-align: middle;
+}
+
+.fieldgroup-nocollapsable.fieldgroup-nocaption > fieldset > legend > .fieldgroup-caption {
+  display: none;
+}
+
+.fieldgroup-content {
+  overflow: auto;
+}
+
+.fieldgroup-deco {
+  height: 0;
+  background: transparent;
+  margin: 0;
+}
+
+.fieldgroup-deco:before {
+  display: block;
+  content: "";
+  width: 0;
+  height: 0;
+  margin-left: 0;
+  background: transparent;
+}
+
+/* IE specific rules (different selectors for IE6 and IE7.
+ * These selectors must be separate because IE6 won't
+ * apply them if they are grouped together
+ * (it doesn't recognize the '+' selector).
+*/
+
+.v-ie7 .fieldgroup fieldset, .v-ie8 .fieldgroup fieldset {
+  position: relative;
+  line-height: normal;
+  padding-top: 10px;
+}
+
+.v-ie7 .fieldgroup fieldgroup-description, .v-ie8 .fieldgroup fieldgroup-description,
+.v-ie7 .fieldgroup fieldgroup-content, .v-ie8 .fieldgroup fieldgroup-content {
+  line-height: 18px;
+}
+
+.v-ie7 .fieldgroup legend, .v-ie8 .fieldgroup legend {
+  position: absolute;
+  top: -.3em;
+}
+
+.v-ie7 .fieldgroup .fieldgroup-content, .v-ie8 .fieldgroup .fieldgroup-content {
+  padding-top: .3em;
+}
+
+.v-ie7 .fieldgroup.fieldgroup-nocollapsable.fieldgroup-nocaption .fieldgroup-content, .v-ie8 .fieldgroup.fieldgroup-nocollapsable.fieldgroup-nocaption .fieldgroup-content {
+  padding-top: 0;
+}
+
+.v-sa .fieldgroup.fieldgroup-nocaption .fieldgroup-caption div,
+.v-ch .fieldgroup.fieldgroup-nocaption .fieldgroup-caption div {
+  float: none;
 }

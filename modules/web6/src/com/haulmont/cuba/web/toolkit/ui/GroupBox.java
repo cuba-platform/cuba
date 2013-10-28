@@ -36,6 +36,10 @@ public class GroupBox extends Panel implements ComponentContainer {
         setWidth(100, UNITS_PERCENTAGE);
     }
 
+    public GroupBox(ComponentContainer content) {
+        setContent(content);
+    }
+
     @Override
     public void setWidth(float width, int unit) {
         super.setWidth(width, unit);

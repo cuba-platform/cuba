@@ -11,7 +11,7 @@ fieldset {
 	width: 10px;
 	height: 16px;
 	display: block;
-	background: transparent url(../icons/16/error.png) no-repeat top right;
+	background: transparent url(../../app/images/error.png) no-repeat top right;
 }
 .v-formlayout-captioncell {
 	text-align:right;
@@ -61,7 +61,7 @@ fieldset {
 /* form */
 
 .v-form-errormessage {
-	background: transparent url(../icons/16/error.png) no-repeat top left;
+	background: transparent url(../../app/images/error.png) no-repeat top left;
 	padding-left: 20px;
 	margin-bottom: 5px;
 	margin-top: 5px;

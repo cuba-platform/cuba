@@ -11,12 +11,16 @@ import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.terminal.gwt.client.*;
 import com.vaadin.terminal.gwt.client.ui.VPanel;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 public class VGroupBox extends VPanel {
 
     public static final String CLASSNAME = "group-box";
 
-    private int contentNodeBorderPaddingsHor = -1;
-    private int contentNodeBorderPaddingsVer = -1;
+    protected int contentNodeBorderPaddingsHor = -1;
+    protected int contentNodeBorderPaddingsVer = -1;
 
     protected Element expander;
 
@@ -30,17 +34,25 @@ public class VGroupBox extends VPanel {
 
     protected boolean captionVisible = false;
 
+    protected String mainStyleName = CLASSNAME;
+
+    @SuppressWarnings("unused")
+    public VGroupBox() {
+    }
+
     @Override
     protected void constructDOM() {
+        VConsole.log(">> Style: " + mainStyleName);
+
         fieldset = DOM.createFieldSet();
         legend = DOM.createLegend();
         expander = DOM.createDiv();
         descriptionNode = DOM.createDiv();
 
-        captionNode.setClassName(CLASSNAME + "-caption");
-        descriptionNode.setClassName(CLASSNAME + "-description");
-        contentNode.setClassName(CLASSNAME + "-content");
-        bottomDecoration.setClassName(CLASSNAME + "-deco");
+        captionNode.setClassName(mainStyleName + "-caption");
+        descriptionNode.setClassName(mainStyleName + "-description");
+        contentNode.setClassName(mainStyleName + "-content");
+        bottomDecoration.setClassName(mainStyleName + "-deco");
 
         captionNode.appendChild(expander);
         captionNode.appendChild(captionText);
@@ -53,7 +65,7 @@ public class VGroupBox extends VPanel {
         fieldset.appendChild(bottomDecoration);
         getElement().appendChild(fieldset);
 
-        setStyleName(CLASSNAME);
+        setStyleName(mainStyleName);
 
         DOM.sinkEvents(getElement(), Event.ONKEYDOWN);
         DOM.sinkEvents(contentNode, Event.ONSCROLL);

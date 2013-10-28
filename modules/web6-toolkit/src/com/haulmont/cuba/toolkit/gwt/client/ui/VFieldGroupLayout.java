@@ -14,20 +14,26 @@ import com.vaadin.terminal.gwt.client.ui.layout.CellBasedLayout;
 import com.vaadin.terminal.gwt.client.ui.layout.ChildComponentContainer;
 
 /**
- * VFieldGroupLayout
+ * @author gorodnov
+ * @version $Id$
  */
 public class VFieldGroupLayout extends VGridLayout {
 
-    private boolean verticalCaption = false;
+    protected boolean verticalCaption = false;
     protected int[] columnAdditionalWidths;
 
     public static final int MAX_ADDITIONAL_WIDTH = 26;
     public static final int REQUIRED_INDICATOR_WIDTH = 10;
     public static final int TOOLTIP_INDICATOR_WIDTH = 16;
 
+    @Override
     protected ChildComponentContainer createComponentContainer(Paintable paintable) {
-        return new FieldGroupComponentContainer((Widget) paintable,
-                CellBasedLayout.ORIENTATION_VERTICAL);
+        return new FieldGroupComponentContainer((Widget) paintable, CellBasedLayout.ORIENTATION_VERTICAL);
+    }
+
+    @Override
+    protected Cell createCell(UIDL c) {
+        return new FieldGroupComponentCell(c);
     }
 
     @Override
@@ -68,11 +74,10 @@ public class VFieldGroupLayout extends VGridLayout {
             int cellAdditionalWidth = ((FieldGroupComponentContainer) cell.cc).getAdditionalWidth();
             int columnAdditionalWidth = columnAdditionalWidths[cell.getCol()];
 
-            return new RenderSpace(
-                    cellSpace.getWidth() - captionWidths[cell.getCol()] - spacingPixelsHorizontal
-                            + columnAdditionalWidth - cellAdditionalWidth,
-                    cellSpace.getHeight()
-            );
+            int widthSpace = cellSpace.getWidth() - captionWidths[cell.getCol()] - spacingPixelsHorizontal
+                    + columnAdditionalWidth - cellAdditionalWidth;
+
+            return new RenderSpace(widthSpace,cellSpace.getHeight());
         }
     }
 
@@ -122,7 +127,9 @@ public class VFieldGroupLayout extends VGridLayout {
             for (int j = 0; j < cells[i].length; j++) {
                 Cell cell = cells[i][j];
                 if (!(cell == null || cell.cc == null || !cell.cc.isAttached())) {
-                    if (!cell.cc.isVisible()) continue;
+                    if (!cell.cc.isVisible()) {
+                        continue;
+                    }
                     cell.layout(x, y);
                     y += rowHeights[j] + spacingPixelsVertical;
                 }
@@ -151,7 +158,7 @@ public class VFieldGroupLayout extends VGridLayout {
         canvas.setHeight(canvasHeight + "px");
     }
 
-    private class FieldGroupComponentContainer extends ChildComponentContainer {
+    protected class FieldGroupComponentContainer extends ChildComponentContainer {
 
         protected Element rightCaption;
         protected Element requiredElement;
@@ -162,6 +169,7 @@ public class VFieldGroupLayout extends VGridLayout {
             super(widget, orientation);
         }
 
+        @Override
         public int getCaptionWidthAfterComponent() {
             return rightCaption == null ? 0 : Util.getRequiredWidth(rightCaption);
         }
@@ -175,6 +183,7 @@ public class VFieldGroupLayout extends VGridLayout {
             }
         }
 
+        @Override
         public void updateCaption(UIDL uidl, ApplicationConnection client) {
             if (VCaption.isNeeded(uidl)) {
                 // We need a caption
@@ -266,11 +275,13 @@ public class VFieldGroupLayout extends VGridLayout {
             if (tooltipElement != null) {
                 fakeCaptionWidth += TOOLTIP_INDICATOR_WIDTH;
             }
-            if (rightCaption != null && widthChanged)
+            if (rightCaption != null && widthChanged) {
                 DOM.setStyleAttribute(rightCaption, "width", fakeCaptionWidth + "px");
+            }
             additionalWidth = MAX_ADDITIONAL_WIDTH - fakeCaptionWidth;
         }
 
+        @Override
         protected void setCaption(VCaption newCaption) {
             if (newCaption != null) {
                 newCaption.removeFromParent();
@@ -333,6 +344,7 @@ public class VFieldGroupLayout extends VGridLayout {
             }
         }
 
+        @Override
         public void updateContainerDOMSize() {
             int width = contSize.getWidth();
             int height = contSize.getHeight() - alignmentTopOffset;
@@ -364,6 +376,58 @@ public class VFieldGroupLayout extends VGridLayout {
 
                 // Remove initial height
                 caption.setHeight("");
+            }
+        }
+    }
+
+    protected class FieldGroupComponentCell extends Cell {
+
+        public FieldGroupComponentCell(UIDL c) {
+            super(c);
+        }
+
+        @Override
+        public int getWidth() {
+            if (cc != null) {
+                int w = cc.getWidgetSize().getWidth();
+
+                if (verticalCaption) {
+                    w += cc.getCaptionWidthAfterComponent();
+                } else {
+                    FieldGroupComponentContainer fc = (FieldGroupComponentContainer) cc;
+
+                    w += fc.getCaptionWidth() + MAX_ADDITIONAL_WIDTH;
+                }
+
+                return w;
+            } else {
+                return 0;
+            }
+        }
+
+        @Override
+        public int getHeight() {
+            if (cc != null) {
+                int h = cc.getWidgetSize().getHeight();
+                if (verticalCaption) {
+                    h += cc.getCaptionHeightAboveComponent();
+                } else {
+                    h = Math.max(h, cc.getCaptionHeight());
+                }
+                return h;
+            } else {
+                return 0;
+            }
+        }
+
+        @Override
+        public RenderSpace getAllocatedSpace() {
+            if (verticalCaption) {
+                return new RenderSpace(getAvailableWidth() - cc.getCaptionWidthAfterComponent(),
+                        getAvailableHeight() - cc.getCaptionHeightAboveComponent());
+            } else {
+                return new RenderSpace(getAvailableWidth() - cc.getCaptionWidth(),
+                        getAvailableHeight() - cc.getCaptionHeight());
             }
         }
     }

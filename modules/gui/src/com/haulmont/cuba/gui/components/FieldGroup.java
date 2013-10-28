@@ -77,8 +77,6 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
     void addCustomField(String fieldId, CustomFieldGenerator fieldGenerator);
     void addCustomField(FieldConfig field, CustomFieldGenerator fieldGenerator);
 
-    void postInit();
-
     enum FieldCaptionAlignment {
         LEFT,
         TOP

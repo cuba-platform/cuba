@@ -473,10 +473,6 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         createFieldComponent(field);
     }
 
-    @Override
-    public void postInit() {
-    }
-
     protected void createFields() {
         impl.removeAll();
         for (FieldConfig field : fields.values()) {

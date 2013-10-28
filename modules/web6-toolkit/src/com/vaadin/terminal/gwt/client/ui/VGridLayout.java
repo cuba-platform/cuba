@@ -748,6 +748,7 @@ public class VGridLayout extends SimplePanel implements Paintable, Container {
         }
     }
 
+    @Override
     public boolean requestLayout(final Set<Paintable> changedChildren) {
         boolean needsLayout = false;
         boolean reDistributeColSpanWidths = false;
@@ -1151,7 +1152,7 @@ public class VGridLayout extends SimplePanel implements Paintable, Container {
         int col = c.getIntAttribute("x");
         Cell cell = cells[col][row];
         if (cell == null) {
-            cell = new Cell(c);
+            cell = createCell(c);
             cells[col][row] = cell;
         } else {
             cell.setUidl(c);

@@ -1531,7 +1531,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                 MetaClass metaClass = propertyPath.getRange().asClass();
 
                 CollectionDatasource ds = optionsDatasources.get(metaClass);
-                if (ds != null) return ds;
+                if (ds != null)
+                    return ds;
 
                 final DataSupplier dataSupplier = fieldDatasource.getDataSupplier();
 
@@ -1539,11 +1540,11 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                 final String viewName = null; //metaClass.getName() + ".lookup";
 
                 ds = new DsBuilder(dsContext)
-                        .setDataSupplier(dataSupplier)
-                        .setId(id)
-                        .setMetaClass(metaClass)
-                        .setViewName(viewName)
-                        .buildCollectionDatasource();
+                            .setDataSupplier(dataSupplier)
+                            .setId(id)
+                            .setMetaClass(metaClass)
+                            .setViewName(viewName)
+                            .buildCollectionDatasource();
 
                 ds.refresh();
 

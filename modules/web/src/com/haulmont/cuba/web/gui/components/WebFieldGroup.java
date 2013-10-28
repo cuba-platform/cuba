@@ -185,7 +185,7 @@ public class WebFieldGroup
                 Component fieldComponent = fieldGenerator.generateField(fieldDatasource, id);
                 com.vaadin.ui.Field fieldImpl = getFieldImplementation(fieldComponent);
                 if (fieldComponent instanceof WebCheckBox) {
-                    ((CubaCheckBox)fieldImpl).setCaptionManagedByLayout(true);
+                    ((CubaCheckBox) fieldImpl).setCaptionManagedByLayout(true);
                 }
 
                 assignTypicalAttributes(fieldComponent);
@@ -236,7 +236,7 @@ public class WebFieldGroup
     protected com.vaadin.ui.Field getFieldImplementation(Component c) {
         com.vaadin.ui.Component composition = WebComponentsHelper.getComposition(c);
         if (composition instanceof com.vaadin.ui.Field) {
-            return  (com.vaadin.ui.Field) composition;
+            return (com.vaadin.ui.Field) composition;
         } else {
             return new CubaFieldWrapper(c);
         }
@@ -690,10 +690,6 @@ public class WebFieldGroup
 
         com.vaadin.ui.Field f = component.getField(field.getId());
         f.setCaption(caption);
-    }
-
-    @Override
-    public void postInit() {
     }
 
     @Override
