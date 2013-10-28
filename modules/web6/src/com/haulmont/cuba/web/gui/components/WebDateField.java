@@ -422,6 +422,8 @@ public class WebDateField
         this.editable = editable;
         timeField.setEditable(editable);
         dateField.setReadOnly(!editable);
+
+        component.setCompositionReadonly(!editable);
     }
 
     @Override

@@ -79,6 +79,10 @@ public class DateFieldWrapper extends CustomField {
         }
     }
 
+    public void setCompositionReadonly(boolean readonly) {
+        super.setReadOnly(readonly);
+    }
+
     @Override
     public Object getValue() {
         return dateField.getValue();
