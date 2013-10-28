@@ -101,4 +101,8 @@ public class CubaDateFieldWrapper extends com.vaadin.ui.CustomField {
     public boolean isReadOnly() {
         return !dateField.isEditable();
     }
+
+    public void setCompositionReadOnly(boolean readOnly) {
+        super.setReadOnly(readOnly);
+    }
 }
