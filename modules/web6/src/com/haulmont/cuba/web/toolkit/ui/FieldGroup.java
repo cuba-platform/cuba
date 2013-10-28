@@ -5,7 +5,7 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.haulmont.cuba.toolkit.gwt.client.ui.VFieldGroupComposition;
+import com.haulmont.cuba.toolkit.gwt.client.ui.VFieldGroup;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.ui.*;
@@ -18,8 +18,8 @@ import java.util.Map;
  * @author artamonov
  * @version $Id$
  */
-@ClientWidget(VFieldGroupComposition.class)
-public class FieldGroupComposition extends GroupBox {
+@ClientWidget(VFieldGroup.class)
+public class FieldGroup extends GroupBox {
 
     protected int currentX = 0;
     protected int currentY = 0;
@@ -28,7 +28,7 @@ public class FieldGroupComposition extends GroupBox {
 
     protected Map<Object, Field> fields = new HashMap<>();
 
-    public FieldGroupComposition() {
+    public FieldGroup() {
         super(new FieldGroupLayout());
 
         setSizeUndefined();
@@ -164,6 +164,6 @@ public class FieldGroupComposition extends GroupBox {
     }
 
     public interface CustomFieldGenerator extends Serializable {
-        com.vaadin.ui.Field generateField(Object propertyId, FieldGroupComposition component);
+        com.vaadin.ui.Field generateField(Object propertyId, FieldGroup component);
     }
 }

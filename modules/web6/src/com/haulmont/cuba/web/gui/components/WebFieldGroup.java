@@ -14,9 +14,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.web.gui.WebWindow;
-import com.haulmont.cuba.web.toolkit.ui.FieldGroupComposition;
-import com.haulmont.cuba.web.toolkit.ui.FieldGroupLayout;
-import com.haulmont.cuba.web.toolkit.ui.FieldWrapper;
+import com.haulmont.cuba.web.toolkit.ui.*;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -29,7 +27,7 @@ import java.util.*;
  */
 public class WebFieldGroup
         extends
-            WebAbstractComponent<FieldGroupComposition>
+            WebAbstractComponent<com.haulmont.cuba.web.toolkit.ui.FieldGroup>
         implements
             com.haulmont.cuba.gui.components.FieldGroup {
 
@@ -53,7 +51,7 @@ public class WebFieldGroup
     protected Messages messages = AppBeans.get(Messages.class);
 
     public WebFieldGroup() {
-        component = new FieldGroupComposition() {
+        component = new com.haulmont.cuba.web.toolkit.ui.FieldGroup() {
             @Override
             public void addField(Object propertyId, com.vaadin.ui.Field field) {
                 FieldConfig fieldConf = WebFieldGroup.this.getField(propertyId.toString());
@@ -172,9 +170,9 @@ public class WebFieldGroup
         if (!fieldConfig.isCustom()) {
             throw new IllegalStateException(String.format("Field '%s' must be defined as custom", fieldConfig.getId()));
         }
-        component.addCustomField(fieldConfig.getId(), new FieldGroupComposition.CustomFieldGenerator() {
+        component.addCustomField(fieldConfig.getId(), new com.haulmont.cuba.web.toolkit.ui.FieldGroup.CustomFieldGenerator() {
             @Override
-            public com.vaadin.ui.Field generateField(Object propertyId, FieldGroupComposition component) {
+            public com.vaadin.ui.Field generateField(Object propertyId, com.haulmont.cuba.web.toolkit.ui.FieldGroup component) {
                 Datasource fieldDatasource;
                 if (fieldConfig.getDatasource() != null) {
                     fieldDatasource = fieldConfig.getDatasource();

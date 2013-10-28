@@ -11,7 +11,7 @@ import com.vaadin.terminal.gwt.client.UIDL;
  * @author artamonov
  * @version $Id$
  */
-public class VFieldGroupComposition extends VGroupBox {
+public class VFieldGroup extends VGroupBox {
 
     public static final String FIELDGROUP_CLASSNAME = "fieldgroup";
 
