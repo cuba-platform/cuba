@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.cuba.gui.components.BoxLayout;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.TabSheet;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
@@ -43,13 +44,17 @@ public class TabSheetLoader extends ContainerLoader {
 
             boolean lazy = Boolean.valueOf(tabElement.attributeValue("lazy"));
 
-            final ComponentLoader loader = getLoader("vbox");
+            final ComponentLoader tabComponentLoader = getLoader(BoxLayout.VBOX);
             final TabSheet.Tab tab;
 
             if (lazy) {
-                tab = component.addLazyTab(name, tabElement, loader);
+                tab = component.addLazyTab(name, tabElement, tabComponentLoader);
             } else {
-                tab = component.addTab(name, loader.loadComponent(factory, tabElement, null));
+                Component tabComponent = tabComponentLoader.loadComponent(factory, tabElement, null);
+                tabComponent.setEnabled(true);
+                tabComponent.setVisible(true);
+
+                tab = component.addTab(name, tabComponent);
             }
 
             final String detachable = tabElement.attributeValue("detachable");
