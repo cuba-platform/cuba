@@ -22,6 +22,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+@Deprecated
 public class WebActionsField
         extends WebAbstractField<ActionsField>
         implements com.haulmont.cuba.gui.components.ActionsField {
@@ -317,7 +318,7 @@ public class WebActionsField
         Object value = getValue();
         if (isEmpty(value)) {
             if (isRequired())
-                throw new RequiredValueMissingException(requiredMessage, this);
+                throw new RequiredValueMissingException(component.getRequiredError(), this);
             else
                 return;
         }
