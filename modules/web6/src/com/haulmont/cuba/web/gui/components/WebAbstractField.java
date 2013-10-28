@@ -25,10 +25,10 @@ import java.util.List;
  * @version $Id$
  */
 public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
-    extends
-        WebAbstractComponent<T>
-    implements
-        Field {
+        extends
+            WebAbstractComponent<T>
+        implements
+            Field {
 
     protected Datasource<Entity> datasource;
     protected MetaProperty metaProperty;
@@ -40,7 +40,7 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
 
     protected boolean settingValue = false;
 
-    protected String requiredMessage;
+    protected Object prevValue;
 
     @Override
     public Datasource getDatasource() {
@@ -57,11 +57,10 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
         this.datasource = datasource;
 
         final MetaClass metaClass = datasource.getMetaClass();
-        metaPropertyPath = metaClass.getPropertyEx(property);
+        metaPropertyPath = metaClass.getPropertyPath(property);
         try {
             metaProperty = metaPropertyPath.getMetaProperty();
-        }
-        catch (ArrayIndexOutOfBoundsException e) {
+        } catch (ArrayIndexOutOfBoundsException e) {
             throw new RuntimeException("Metaproperty name is possibly wrong: " + property, e);
         }
 
@@ -87,7 +86,6 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
 
     @Override
     public void setRequiredMessage(String msg) {
-        requiredMessage = msg;
         component.setRequiredError(msg);
     }
 
@@ -140,15 +138,15 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
 
     @Override
     public void addListener(ValueListener listener) {
-        if (!listeners.contains(listener)) listeners.add(listener);
+        if (!listeners.contains(listener)) {
+            listeners.add(listener);
+        }
     }
 
     @Override
     public void removeListener(ValueListener listener) {
         listeners.remove(listener);
     }
-
-    protected Object prevValue;
 
     protected void attachListener(T component) {
         component.addListener(new Property.ValueChangeListener() {
@@ -161,11 +159,15 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
 
                 final Object value = getValue();
                 Object newValue = fireValueChanging(prevValue, value);
-                fireValueChanged(prevValue, newValue);
+
+                final Object oldValue = prevValue;
                 prevValue = newValue;
 
-                if (!ObjectUtils.equals(value, newValue))
+                if (!ObjectUtils.equals(value, newValue)) {
                     WebAbstractField.this.component.setValue(newValue);
+                }
+
+                fireValueChanged(oldValue, newValue);
 
                 settingValue = false;
             }
@@ -190,8 +192,10 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
     }
 
     protected void fireValueChanged(Object prevValue, Object value) {
-        for (ValueListener listener : listeners) {
-            listener.valueChanged(this, "value", prevValue, value);
+        if (!ObjectUtils.equals(prevValue, value)) {
+            for (ValueListener listener : listeners) {
+                listener.valueChanged(this, "value", prevValue, value);
+            }
         }
     }
 
@@ -224,7 +228,7 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
         Object value = getValue();
         if (isEmpty(value)) {
             if (isRequired())
-                throw new RequiredValueMissingException(requiredMessage, this);
+                throw new RequiredValueMissingException(getRequiredMessage(), this);
             else
                 return;
         }

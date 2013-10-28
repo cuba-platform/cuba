@@ -8,7 +8,6 @@ import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.FormatStrings;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -27,7 +26,9 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.sql.Time;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * @author abramov
@@ -35,34 +36,21 @@ import java.util.*;
  */
 public class WebDateField
         extends
-            WebAbstractComponent<DateFieldWrapper>
+            WebAbstractField<DateFieldWrapper>
         implements
             DateField, Component.Wrapper {
 
     protected Resolution resolution;
 
-    protected Object prevValue = null;
     protected boolean editable = true;
     protected boolean updatingInstance;
-    protected boolean valid;
 
     protected com.haulmont.cuba.web.toolkit.ui.DateField dateField;
     protected WebTimeField timeField;
 
-    protected List<ValueListener> listeners = new ArrayList<>();
-    protected List<Field.Validator> validators = new ArrayList<>();
-
     protected HorizontalLayout composition;
 
-    protected Datasource datasource;
-    protected MetaPropertyPath metaPropertyPath;
-    protected MetaProperty metaProperty;
-
     protected boolean closeWhenDateSelected = false;
-
-    protected boolean required;
-
-    protected String requiredMessage;
 
     protected String dateTimeFormat;
     protected String dateFormat;
@@ -125,6 +113,7 @@ public class WebDateField
         });
         setResolution(Resolution.MIN);
         setCloseWhenDateSelected(true);
+
         component = new DateFieldWrapper(this, composition);
     }
 
@@ -210,34 +199,17 @@ public class WebDateField
     }
 
     @Override
-    public boolean isRequired() {
-        return required;
-    }
-
-    @Override
-    public void setRequired(boolean required) {
-        this.required = required;
-    }
-
-    @Override
-    public void setRequiredMessage(String msg) {
-        requiredMessage = msg;
-    }
-
-    public String getRequiredMessage() {
-        return requiredMessage;
-    }
-
-    @Override
     public <T> T getValue() {
         return (T) constructDate();
     }
 
     @Override
     public void setValue(Object value) {
-        prevValue = getValue();
-        if (!editable)
+        if (!editable) {
             return;
+        }
+
+        prevValue = getValue();
 
         updatingInstance = true;
         try {
@@ -272,9 +244,10 @@ public class WebDateField
         return resolution != null && resolution.ordinal() <= Resolution.MIN.ordinal();
     }
 
-    private void updateInstance() {
-        if (updatingInstance)
+    protected void updateInstance() {
+        if (updatingInstance) {
             return;
+        }
 
         updatingInstance = true;
         try {
@@ -283,20 +256,13 @@ public class WebDateField
                 if (datasource.getItem() != null) {
                     InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), value);
                 }
-            } else if (component.getPropertyDataSource() != null) {
-                // support dateField in editable table
-                component.getPropertyDataSource().setValue(value);
             }
-            valid = true;
-        } catch (RuntimeException e) {
-            valid = false;
         } finally {
             updatingInstance = false;
         }
-        if (valid) {
-            Object newValue = getValue();
-            fireValueChanged(newValue);
-        }
+
+        Object newValue = getValue();
+        fireValueChanged(newValue);
     }
 
     @Override
@@ -459,25 +425,23 @@ public class WebDateField
     }
 
     @Override
-    public boolean isValid() {
-        return valid;
-    }
-
-    @Override
     public void validate() throws ValidationException {
         if (!isVisible() || !isEditable() || !isEnabled())
             return;
 
-        Object value = getValue();
-        if (value == null) {
-            if (isRequired())
-                throw new RequiredValueMissingException(requiredMessage, this);
-            else
-                return;
+        if (isRequired() && dateField.getValue() == null) {
+            throw new RequiredValueMissingException(component.getRequiredError(), this);
+        }
+
+        com.vaadin.ui.Component timeComponent = timeField.getComponent();
+        if ((timeComponent.getParent() != null) && timeField.isVisible()) {
+            if (isRequired() && timeField.getValue() == null) {
+                throw new RequiredValueMissingException(getRequiredMessage(), timeField);
+            }
         }
 
         for (Field.Validator validator : validators) {
-            validator.validate(value);
+            validator.validate(getValue());
         }
     }
 }

@@ -5,9 +5,11 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.vaadin.data.Property;
 import com.vaadin.event.FieldEvents;
-import com.vaadin.ui.*;
+import com.vaadin.ui.AbstractField;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -104,10 +106,6 @@ public class PickerField extends CustomField {
 
     @Override
     public Object getValue() {
-        Property property = getPropertyDataSource();
-        if (property != null) {
-            return property.getValue();
-        }
         return field.getValue();
     }
 
@@ -120,33 +118,8 @@ public class PickerField extends CustomField {
     }
 
     @Override
-    public void addListener(ValueChangeListener listener) {
-        field.addListener(listener);
-    }
-
-    @Override
-    public void removeListener(ValueChangeListener listener) {
-        field.removeListener(listener);
-    }
-
-    @Override
-    public void valueChange(Property.ValueChangeEvent event) {
-        field.valueChange(event);
-    }
-
-    @Override
     public Class getType() {
         return field.getType();
-    }
-
-    @Override
-    public Property getPropertyDataSource() {
-        return field.getPropertyDataSource();
-    }
-
-    @Override
-    public void setPropertyDataSource(Property newDataSource) {
-        field.setPropertyDataSource(newDataSource);
     }
 
     @Override
