@@ -126,14 +126,17 @@ public class ControllerDependencyInjector {
 
         Object instance = getInjectedInstance(type, name, annotationClass);
         if (required && instance == null)
-            log.warn("Unable to find an instance of type " + type + " named " + name);
+            log.warn("CDI - Unable to find an instance of type " + type + " named " + name);
         else
             assignValue(element, instance);
     }
 
     private Object getInjectedInstance(Class<?> type, String name, Class annotationClass) {
+        if (annotationClass == WindowParam.class) {
+            //Injecting a parameter
+            return params.get(name);
 
-        if (Component.class.isAssignableFrom(type)) {
+        } else if (Component.class.isAssignableFrom(type)) {
             // Injecting a UI component
             return frame.getComponent(name);
 
@@ -160,10 +163,6 @@ public class ControllerDependencyInjector {
         } else if (ExportDisplay.class.isAssignableFrom(type)) {
             // Injecting an ExportDisplay
             return AppConfig.createExportDisplay(frame);
-
-        } else if (annotationClass == WindowParam.class) {
-            //Injecting a parameter
-            return params.get(name);
 
         } else {
             Object instance;
@@ -193,7 +192,7 @@ public class ControllerDependencyInjector {
             try {
                 ((Field) element).set(frame, value);
             } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException("CDI - Unable to assign value to field " + ((Field) element).getName(), e);
             }
         } else {
             Object[] params = new Object[1];
@@ -202,7 +201,7 @@ public class ControllerDependencyInjector {
             try {
                 ((Method) element).invoke(frame, params);
             } catch (IllegalAccessException | InvocationTargetException e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException("CDI - Unable to assign value through setter " + ((Field) element).getName(),e);
             }
         }
     }
