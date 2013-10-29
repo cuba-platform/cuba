@@ -127,12 +127,12 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
 
         return component;
     }
+
     protected void loadAllowPopupMenu(T table,Element element){
         final String allowPopupMenu = element.attributeValue("allowPopupMenu");
         if (!StringUtils.isBlank(allowPopupMenu))
             table.setAllowPopupMenu(BooleanUtils.toBoolean(allowPopupMenu));
     }
-
 
     protected void loadRowsCount(T table, Element element) {
         Element rowsCountEl = element.element("rowsCount");
@@ -155,7 +155,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         return columns;
     }
 
-    private void loadAggregatable(Table component, Element element) {
+    protected void loadAggregatable(Table component, Element element) {
         String aggregatable = element.attributeValue("aggregatable");
         if (!StringUtils.isEmpty(aggregatable)) {
             component.setAggregatable(BooleanUtils.toBoolean(aggregatable));
@@ -166,22 +166,22 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         }
     }
 
-    private void loadButtonsPanel(Component.HasButtonsPanel component, Element element) {
+    protected void loadButtonsPanel(Component.HasButtonsPanel component, Element element) {
         Element panelElement = element.element("buttonsPanel");
         if (panelElement != null) {
             Window window = ComponentsHelper.getWindowImplementation((Component.BelongToFrame) component);
+
+            ButtonsPanelLoader loader = (ButtonsPanelLoader) getLoader("buttonsPanel");
+            ButtonsPanel panel = (ButtonsPanel) loader.loadComponent(factory, panelElement, null);
+
+            component.setButtonsPanel(panel);
+
             String alwaysVisible = panelElement.attributeValue("alwaysVisible");
-
-            if (!(window instanceof Window.Lookup) || "true".equals(alwaysVisible)) {
-                ButtonsPanelLoader loader = (ButtonsPanelLoader) getLoader("buttonsPanel");
-                ButtonsPanel panel = (ButtonsPanel) loader.loadComponent(factory, panelElement, null);
-
-                component.setButtonsPanel(panel);
-            }
+            panel.setVisible(!(window instanceof Window.Lookup) || "true".equals(alwaysVisible));
         }
     }
 
-    private void loadRequired(T component, Table.Column column) {
+    protected void loadRequired(T component, Table.Column column) {
         Element element = column.getXmlDescriptor();
         final String required = element.attributeValue("required");
         if (!StringUtils.isEmpty(required)) {
@@ -190,7 +190,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         }
     }
 
-    private void loadValidators(T component, Table.Column column) {
+    protected void loadValidators(T component, Table.Column column) {
         final List<Element> validatorElements = column.getXmlDescriptor().elements("validator");
 
         if (!validatorElements.isEmpty()) {
@@ -211,7 +211,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
 
     protected abstract T createComponent(ComponentsFactory factory);
 
-    private Table.Column loadColumn(Element element, Datasource ds) {
+    protected Table.Column loadColumn(Element element, Datasource ds) {
         final String id = element.attributeValue("id");
 
         final MetaClass metaClass = ds.getMetaClass();
@@ -285,7 +285,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         return column;
     }
 
-    private void loadAggregation(Table.Column column, Element columnElement) {
+    protected void loadAggregation(Table.Column column, Element columnElement) {
         Element aggregationElement = columnElement.element("aggregation");
         if (aggregationElement != null) {
             final AggregationInfo aggregation = new AggregationInfo();
@@ -297,7 +297,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         }
     }
 
-    private void loadCalculatable(Table.Column column, Element columnElement) {
+    protected void loadCalculatable(Table.Column column, Element columnElement) {
         String calc = columnElement.attributeValue("calculatable");
         if (!StringUtils.isEmpty(calc)) {
             column.setCalculatable(Boolean.valueOf(calc));
