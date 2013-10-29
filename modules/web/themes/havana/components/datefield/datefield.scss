@@ -20,6 +20,10 @@
     }
   }
 
+  .#{$primaryStyleName}-calendarpanel-header {
+    height: 25px;
+  }
+
   .#{$primaryStyleName}-popupcalendar {
     padding-right: 25px;
   }
@@ -66,138 +70,139 @@
     background: #fff;
     border: $theme_fieldPopupBorderColor solid 1px;
     padding: 6px;
+  }
 
-    .#{$primaryStyleName}-calendarpanel-header td {
-      text-align: center;
-    }
+  .#{$primaryStyleName}-calendarpanel-header td {
+    text-align: center;
+  }
 
-    .#{$primaryStyleName}-calendarpanel {
-      outline: none;
-      width: 19em;
-      font-size: 12px;
-      width: 16em;
+  .#{$primaryStyleName}-calendarpanel {
+    outline: none;
+    width: 19em;
+    font-size: 12px;
+    width: 16em;
 
-      table {
-        width: 100%;
+    table {
+      width: 100%;
 
-        td {
-          text-align: right;
-          width: 14.2%;
-          padding: 0;
-          margin: 0;
+      td {
+        text-align: right;
+        width: 14.2%;
+        padding: 0;
+        margin: 0;
 
-          button {
-            outline: none;
-          }
+        button {
+          outline: none;
+        }
 
-          span {
-            display: block;
-          }
+        span {
+          display: block;
         }
       }
-
-      .v-button-prevyear,
-      .v-button-nextyear,
-      .v-button-nextmonth,
-      .v-button-prevmonth {
-        display: block;
-        width: 15px;
-        height: 15px;
-        border: none;
-        padding: 0;
-        text-indent: -90000px;
-        margin: 0 auto;
-        background: transparent;
-        background-position: middle center;
-        background-repeat: no-repeat;
-      }
-
-      .v-button-prevmonth {
-        background-image: url(sprites/prevmonth.png); /** sprite-ref: components; */
-      }
-
-      .v-button-prevmonth:hover {
-        background-image: url(sprites/prevmonth-hover.png); /** sprite-ref: components; */
-      }
-
-      .v-button-nextmonth {
-        background-image: url(sprites/nextmonth.png); /** sprite-ref: components; */
-      }
-
-      .v-button-nextmonth:hover {
-        background-image: url(sprites/nextmonth-hover.png); /** sprite-ref: components; */
-      }
-
-      .v-button-nextyear {
-        background-image: url(sprites/nextyear.png); /** sprite-ref: components; */
-      }
-
-      .v-button-nextyear:hover {
-        background-image: url(sprites/nextyear-hover.png); /** sprite-ref: components; */
-      }
-
-      .v-button-prevyear {
-        background-image: url(sprites/prevyear.png); /** sprite-ref: components; */
-      }
-
-      .v-button-prevyear:hover {
-        background-image: url(sprites/prevyear-hover.png); /** sprite-ref: components; */
-      }
-    }
-
-    .#{$primaryStyleName}-calendarpanel-month {
-      font-weight: bold;
-      text-align: center;
-      white-space: nowrap;
     }
 
     strong {
       color: #cd3331;
       display: block;
-      width: 20px;
+      padding-right: 3px;
+      padding-left: 3px;
       font-size: 12px;
     }
 
-    .#{$primaryStyleName}calendarpanel-day-today {
-      border: 1px solid $theme_fieldSelectionColor;
-      height: 14px
+    .v-button-prevyear,
+    .v-button-nextyear,
+    .v-button-nextmonth,
+    .v-button-prevmonth {
+      display: block;
+      width: 15px;
+      height: 15px;
+      border: none;
+      padding: 0;
+      text-indent: -90000px;
+      margin: 0 auto;
+      background: transparent;
+      background-position: middle center;
+      background-repeat: no-repeat;
     }
 
-    .v-disabled .#{$primaryStyleName}-calendarpanel-day,
-    .v-disabled .#{$primaryStyleName}-calendarpanel-day-today {
-      cursor: default;
+    .v-button-prevmonth {
+      background-image: url(sprites/prevmonth.png); /** sprite-ref: components; */
     }
 
-    .#{$primaryStyleName}-calendarpanel-day-entry {
-      color: #6a98b5;
+    .v-button-prevmonth:hover {
+      background-image: url(sprites/prevmonth-hover.png); /** sprite-ref: components; */
     }
 
-    .#{$primaryStyleName}-calendarpanel-day-disabled {
-      font-weight: normal;
-      color: #dddddd;
-      cursor: default;
-      opacity: 0.5;
+    .v-button-nextmonth {
+      background-image: url(sprites/nextmonth.png); /** sprite-ref: components; */
     }
 
-    .#{$primaryStyleName}-calendarpanel-day-entry.#{$primaryStyleName}-calendarpanel-day-disabled {
-      color: #afd6f8;
+    .v-button-nextmonth:hover {
+      background-image: url(sprites/nextmonth-hover.png); /** sprite-ref: components; */
     }
 
-    .#{$primaryStyleName}-calendarpanel-day {
-      height: 16px;
-      width: 14px;
-      padding: 1px 3px;
-      outline: 0;
+    .v-button-nextyear {
+      background-image: url(sprites/nextyear.png); /** sprite-ref: components; */
     }
 
-    .#{$primaryStyleName}-calendarpanel-day-selected {
-      font-weight: bold;
-      color: #fff;
-      background: $theme_fieldSelectionColor;
-      cursor: default;
-      border: 0;
-      border-right: 2px solid $theme_fieldSelectionColor;
+    .v-button-nextyear:hover {
+      background-image: url(sprites/nextyear-hover.png); /** sprite-ref: components; */
     }
+
+    .v-button-prevyear {
+      background-image: url(sprites/prevyear.png); /** sprite-ref: components; */
+    }
+
+    .v-button-prevyear:hover {
+      background-image: url(sprites/prevyear-hover.png); /** sprite-ref: components; */
+    }
+  }
+
+  .#{$primaryStyleName}-calendarpanel-month {
+    font-weight: bold;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .#{$primaryStyleName}-calendarpanel-day-today {
+    border: 1px solid $theme_dateFieldTodayColor;
+    height: 14px
+  }
+
+  .v-disabled .#{$primaryStyleName}-calendarpanel-day,
+  .v-disabled .#{$primaryStyleName}-calendarpanel-day-today {
+    cursor: default;
+  }
+
+  .#{$primaryStyleName}-calendarpanel-day-entry {
+    color: #6a98b5;
+  }
+
+  .#{$primaryStyleName}-calendarpanel-day-disabled {
+    font-weight: normal;
+    color: #dddddd;
+    cursor: default;
+    opacity: 0.5;
+  }
+
+  .#{$primaryStyleName}-calendarpanel-day-entry.#{$primaryStyleName}-calendarpanel-day-disabled {
+    color: #afd6f8;
+  }
+
+  .#{$primaryStyleName}-calendarpanel-day {
+    height: 16px;
+    width: 14px;
+    padding: 1px 3px;
+    outline: 0;
+  }
+
+  .#{$primaryStyleName}-calendarpanel-day-selected {
+    font-weight: bold;
+    color: #fff;
+    background: $theme_dateFieldSelectionColor;
+    cursor: default;
+    border: 1px solid $theme_dateFieldSelectionBorderColor;
+    padding-right: 5px;
   }
 
   .#{$primaryStyleName}-time {
