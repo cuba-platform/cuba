@@ -10,7 +10,6 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.Filter;
 import com.haulmont.cuba.gui.components.ValuePathHelper;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -25,9 +24,8 @@ import java.util.regex.Pattern;
 import static org.apache.commons.lang.BooleanUtils.isTrue;
 
 /**
- * <p>$Id$</p>
- *
  * @author devyatkin
+ * @version $Id$
  */
 public abstract class AbstractFilterEditor {
 
@@ -38,7 +36,7 @@ public abstract class AbstractFilterEditor {
     protected Element filterDescriptor;
     protected MetaClass metaClass;
     protected CollectionDatasource datasource;
-    protected List<AbstractConditionDescriptor> descriptors = new ArrayList<AbstractConditionDescriptor>();
+    protected List<AbstractConditionDescriptor> descriptors = new ArrayList<>();
     protected List<String> existingNames;
 
     protected ConditionsTree conditions = new ConditionsTree();

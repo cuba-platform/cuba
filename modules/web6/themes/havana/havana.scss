@@ -511,14 +511,6 @@
   padding-left: 20px;
 }
 
-/*
- * Fix alignment for max-results in filter
- */
-
-.v-horizontallayout-filter-maxresults > div > div:first-child {
-  margin-top: 2px;
-}
-
 /* EntityDiff : Markers for TreeTable component */
 
 .v-table-cell-content-categoryItem,

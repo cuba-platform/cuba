@@ -72,55 +72,57 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
 
     private static final String MESSAGES_PACK = "com.haulmont.cuba.gui.components.filter";
 
+    protected static final String GLOBAL_FILTER_PERMISSION = "cuba.gui.filter.global";
+    protected static final String GLOBAL_APP_FOLDERS_PERMISSION = "cuba.gui.appFolder.global";
+
+    public static final Pattern LIKE_PATTERN = Pattern.compile("\\slike\\s+" + ParametersHelper.QUERY_PARAMETERS_RE);
+
     protected Messages messages;
     protected UserSessionSource userSessionSource;
 
     protected PersistenceManagerService persistenceManager;
 
-    private CollectionDatasource datasource;
-    private QueryFilter dsQueryFilter;
-    private FilterEntity filterEntity;
-    private ConditionsTree conditions = new ConditionsTree();
+    protected CollectionDatasource datasource;
+    protected QueryFilter dsQueryFilter;
+    protected FilterEntity filterEntity;
+    protected ConditionsTree conditions = new ConditionsTree();
 
-    private com.vaadin.ui.Component paramsLayout;
-    private AbstractOrderedLayout editLayout;
-    private FilterSelect select;
-    private WebPopupButton actionsButton;
+    protected com.vaadin.ui.Component paramsLayout;
+    protected AbstractOrderedLayout editLayout;
+    protected FilterSelect select;
+    protected WebPopupButton actionsButton;
 
-    private Button pinAppliedFilterBtn;
-    private Button applyBtn;
+    protected Button pinAppliedFilterBtn;
+    protected Button applyBtn;
 
-    private boolean defaultFilterEmpty = true;
-    private boolean changingFilter;
-    private boolean applyingDefault;
-    private boolean editing;
-    private FilterEditor editor;
-    private FoldersPane foldersPane;
+    protected boolean defaultFilterEmpty = true;
+    protected boolean changingFilter;
+    protected boolean applyingDefault;
+    protected boolean editing;
+    protected FilterEditor editor;
+    protected FoldersPane foldersPane;
 
-    private boolean useMaxResults;
-    private CheckBox maxResultsCb;
+    protected boolean useMaxResults;
+    protected CheckBox maxResultsCb;
     protected TextField maxResultsField;
-    private AbstractOrderedLayout maxResultsLayout;
-    private Boolean manualApplyRequired;
+    protected AbstractOrderedLayout maxResultsLayout;
+    protected Boolean manualApplyRequired;
 
-    private boolean editable = true;
-    private boolean required = false;
-    private boolean folderActionsEnabled = true;
+    protected boolean editable = true;
+    protected boolean required = false;
+    protected boolean folderActionsEnabled = true;
 
-    private Component applyTo;
+    protected Component applyTo;
 
-    private static final String GLOBAL_FILTER_PERMISSION = "cuba.gui.filter.global";
-    private static final String GLOBAL_APP_FOLDERS_PERMISSION = "cuba.gui.appFolder.global";
+    protected FilterEntity noFilter;
 
-    private FilterEntity noFilter;
+    protected AppliedFilter lastAppliedFilter;
+    protected LinkedList<AppliedFilterHolder> appliedFilters = new LinkedList<>();
+    protected VerticalLayout appliedFiltersLayout;
 
-    private AppliedFilter lastAppliedFilter;
-    private LinkedList<AppliedFilterHolder> appliedFilters = new LinkedList<>();
-    private VerticalLayout appliedFiltersLayout;
-
-    private GlobalConfig globalConfig = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class);
-    private ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
-    private String defaultFilterCaption;
+    protected GlobalConfig globalConfig = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class);
+    protected ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+    protected String defaultFilterCaption;
 
     protected HorizontalLayout topLayout = null;
 
@@ -305,6 +307,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         );
         maxResultsCb.setStyleName("filter-maxresults");
         maxResultsLayout.addComponent(maxResultsCb);
+        maxResultsLayout.setComponentAlignment(maxResultsCb, com.vaadin.ui.Alignment.MIDDLE_LEFT);
 
         maxResultsField = new TextField();
         maxResultsField.setImmediate(true);
@@ -622,7 +625,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
                     Label label = new Label(condition.getLocCaption());
                     paramLayout.addComponent(label);
 
-                    ParamEditor paramEditor = new ParamEditor(condition, true);
+                    ParamEditor paramEditor = new ParamEditor(condition, true, true);
                     if (focusOnConditions && !focusSet) {
                         paramEditor.setFocused();
                         focusSet = true;
@@ -1567,11 +1570,11 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         component.setMargin(new Layout.MarginInfo(topEnable, rightEnable, bottomEnable, leftEnable));
     }
 
-    private boolean getResultingManualApplyRequired() {
+    protected boolean getResultingManualApplyRequired() {
         return manualApplyRequired != null ? manualApplyRequired : clientConfig.getGenericFilterManualApplyRequired();
     }
 
-    private class SelectListener implements Property.ValueChangeListener {
+    protected class SelectListener implements Property.ValueChangeListener {
         @Override
         public void valueChange(Property.ValueChangeEvent event) {
             if (changingFilter)
@@ -1611,7 +1614,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         }
     }
 
-    private class CreateAction extends AbstractAction {
+    protected class CreateAction extends AbstractAction {
 
         protected CreateAction() {
             super("createAction");
@@ -1630,7 +1633,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         }
     }
 
-    private class CopyAction extends AbstractAction {
+    protected class CopyAction extends AbstractAction {
         protected CopyAction() {
             super("copyAction");
         }
@@ -1649,7 +1652,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
 
     }
 
-    private class EditAction extends AbstractAction {
+    protected class EditAction extends AbstractAction {
 
         protected EditAction() {
             super("editAction");
@@ -1666,7 +1669,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         }
     }
 
-    private class DeleteAction extends AbstractAction {
+    protected class DeleteAction extends AbstractAction {
 
         protected DeleteAction() {
             super("deleteAction");
@@ -1683,7 +1686,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         }
     }
 
-    private class MakeDefaultAction extends AbstractAction {
+    protected class MakeDefaultAction extends AbstractAction {
         public MakeDefaultAction() {
             super("makeDefault");
         }
@@ -1700,7 +1703,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         }
     }
 
-    private class SaveAsFolderAction extends AbstractAction {
+    protected class SaveAsFolderAction extends AbstractAction {
 
         public static final String SAVE_AS_APP_FOLDER = "saveAsAppFolderAction";
         public static final String SAVE_AS_FOLDER = "saveAsFolderAction";
@@ -1723,9 +1726,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         }
     }
 
-    public static final Pattern LIKE_PATTERN = Pattern.compile("\\slike\\s+" + ParametersHelper.QUERY_PARAMETERS_RE);
-
-    private static class ParamWrapper implements HasValue {
+    protected static class ParamWrapper implements HasValue {
 
         private final AbstractCondition condition;
         private final AbstractParam param;
@@ -1916,7 +1917,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         }
     }
 
-    private class AddToSetAction extends AbstractAction {
+    protected class AddToSetAction extends AbstractAction {
         private Table table;
 
         private AddToSetAction(Table table) {
@@ -1949,7 +1950,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         }
     }
 
-    private class RemoveFromSetAction extends AbstractAction {
+    protected class RemoveFromSetAction extends AbstractAction {
         private Table table;
 
         protected RemoveFromSetAction(Table table) {
@@ -1989,7 +1990,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         }
     }
 
-    private class AddToCurrSetAction extends AbstractAction {
+    protected class AddToCurrSetAction extends AbstractAction {
 
         protected AddToCurrSetAction() {
             super("addToCurSet");
@@ -2136,7 +2137,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         }
     }
 
-    private static class AppliedFilterHolder {
+    protected static class AppliedFilterHolder {
         public final AppliedFilter filter;
         public final HorizontalLayout layout;
         public final Button button;

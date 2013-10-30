@@ -7,42 +7,59 @@ package com.haulmont.cuba.web.gui.components.filter;
 import com.haulmont.cuba.gui.components.filter.AbstractCondition;
 import com.vaadin.ui.*;
 
-public class ParamEditor extends CustomComponent implements AbstractCondition.Listener {
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
+public class ParamEditor extends HorizontalLayout implements AbstractCondition.Listener {
 
-    private AbstractCondition<Param> condition;
-    private HorizontalLayout layout;
-    private Component field;
+    protected AbstractCondition<Param> condition;
+    protected Component field;
+    protected String fieldWidth = null;
 
-    public ParamEditor(final AbstractCondition<Param> condition, boolean showOperation) {
+    public ParamEditor(final AbstractCondition<Param> condition, boolean showOperation, boolean showCaption) {
         this.condition = condition;
 
-        layout = new HorizontalLayout();
-        layout.setSpacing(true);
-        layout.setSizeFull();
-        setCompositionRoot(layout);
+        setSpacing(true);
+        setSizeUndefined();
+        setStyleName("cuba-generic-filter-parameditor");
 
         if (condition.getParam() != null) {
+            if (showCaption) {
+                Label parameterNameLabel = new Label(condition.getLocCaption());
+                addComponent(parameterNameLabel);
+                setComponentAlignment(parameterNameLabel, Alignment.MIDDLE_LEFT);
+            }
             if (showOperation) {
                 Label opLab = new Label(condition.getOperationCaption());
-                layout.addComponent(opLab);
+                addComponent(opLab);
+                setComponentAlignment(opLab, Alignment.MIDDLE_LEFT);
             }
             field = condition.getParam().createEditComponent();
             if (field instanceof Field) {
                 ((Field) field).setRequired(condition.isRequired());
             }
-            layout.addComponent(field);
+            addComponent(field);
         }
 
         condition.addListener(this);
     }
 
+    public void setFieldWidth(String fieldWidth) {
+        this.fieldWidth = fieldWidth;
+        if (field != null) {
+            field.setWidth(fieldWidth);
+        }
+    }
+
     @Override
     public void paramChanged() {
         if (field != null) {
-            layout.removeComponent(field);
+            removeComponent(field);
         }
         field = condition.getParam().createEditComponent();
-        layout.addComponent(field);
+        field.setWidth(fieldWidth);
+        addComponent(field);
     }
 
     @Override

@@ -37,15 +37,15 @@ import java.util.List;
  */
 public class FilterEditor extends AbstractFilterEditor {
 
+    protected static final String EDITOR_WIDTH = "700px";
+    protected static final String TABLE_WIDTH = "660px";
+
     protected AbstractOrderedLayout layout;
     protected TextField nameField;
     protected CubaTreeTable table;
     protected ComboBox addSelect;
     protected CheckBox defaultCb;
     protected CheckBox applyDefaultCb;
-
-    protected static final String EDITOR_WIDTH = "700px";
-    protected static final String TABLE_WIDTH = "660px";
     protected CheckBox globalCb;
     protected Button saveBtn;
 

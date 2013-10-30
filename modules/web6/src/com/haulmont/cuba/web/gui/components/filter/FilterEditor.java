@@ -7,9 +7,7 @@ package com.haulmont.cuba.web.gui.components.filter;
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.CategorizedEntity;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.filter.*;
@@ -32,22 +30,24 @@ import java.util.List;
 
 import static org.apache.commons.lang.BooleanUtils.isTrue;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class FilterEditor extends AbstractFilterEditor {
 
-    private AbstractOrderedLayout layout;
-    private TextField nameField;
-    private TreeTable table;
-    private Select addSelect;
-    private CheckBox defaultCb;
-    private CheckBox applyDefaultCb;
+    protected static final String EDITOR_WIDTH = "640px";
+    protected static final String TABLE_WIDTH = "600px";
 
-    private static final String EDITOR_WIDTH = "640px";
-    private static final String TABLE_WIDTH = "600px";
-    private CheckBox globalCb;
-    private Button saveBtn;
+    protected AbstractOrderedLayout layout;
+    protected TextField nameField;
+    protected TreeTable table;
+    protected Select addSelect;
+    protected CheckBox defaultCb;
+    protected CheckBox applyDefaultCb;
 
-    private Button upBtn;
-    private Button downBtn;
+    protected CheckBox globalCb;
+    protected Button saveBtn;
 
     protected ConditionsContainer container;
 
@@ -72,18 +72,21 @@ public class FilterEditor extends AbstractFilterEditor {
         layout.setWidth(EDITOR_WIDTH);
 
         GridLayout topGrid = new GridLayout(2, 1);
-        topGrid.setWidth("100%");
+        topGrid.setWidth(TABLE_WIDTH);
         topGrid.setSpacing(true);
 
-        GridLayout bottomGrid = new GridLayout(2, 3);
-        bottomGrid.setWidth("100%");
-        bottomGrid.setSpacing(true);
+        HorizontalLayout bottomLayout = new HorizontalLayout();
+        bottomLayout.setWidth(TABLE_WIDTH);
+        bottomLayout.setSpacing(true);
+
+        HorizontalLayout flagsLayout = new HorizontalLayout();
+        flagsLayout.setSpacing(true);
 
         HorizontalLayout controlLayout = new HorizontalLayout();
         controlLayout.setSpacing(true);
 
         // Move up button
-        upBtn = WebComponentsHelper.createButton("icons/up.png");
+        Button upBtn = WebComponentsHelper.createButton("icons/up.png");
         upBtn.addListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
@@ -96,7 +99,7 @@ public class FilterEditor extends AbstractFilterEditor {
         upBtn.setEnabled(true);
 
         // Move down button
-        downBtn = WebComponentsHelper.createButton("icons/down.png");
+        Button downBtn = WebComponentsHelper.createButton("icons/down.png");
         downBtn.addListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
@@ -110,7 +113,7 @@ public class FilterEditor extends AbstractFilterEditor {
 
         // Save button
         saveBtn = WebComponentsHelper.createButton("icons/ok.png");
-        saveBtn.setCaption(MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Ok"));
+        saveBtn.setCaption(messages.getMessage(AppConfig.getMessagesPack(), "actions.Ok"));
         saveBtn.addListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
@@ -124,7 +127,7 @@ public class FilterEditor extends AbstractFilterEditor {
 
         // Cancel button
         Button cancelBtn = WebComponentsHelper.createButton("icons/cancel.png");
-        cancelBtn.setCaption(MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Cancel"));
+        cancelBtn.setCaption(messages.getMessage(AppConfig.getMessagesPack(), "actions.Cancel"));
         cancelBtn.addListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
@@ -133,16 +136,20 @@ public class FilterEditor extends AbstractFilterEditor {
         });
         controlLayout.addComponent(cancelBtn);
 
-        bottomGrid.addComponent(controlLayout, 0, 2);
+        bottomLayout.addComponent(flagsLayout);
+
+        bottomLayout.setExpandRatio(flagsLayout, 1f);
+        bottomLayout.addComponent(controlLayout);
+        bottomLayout.setComponentAlignment(controlLayout, Alignment.MIDDLE_RIGHT);
 
         globalCb = new CheckBox();
         globalCb.setCaption(getMessage("FilterEditor.global"));
         globalCb.setValue(filterEntity.getUser() == null);
-        globalCb.setEnabled(UserSessionProvider.getUserSession().isSpecificPermitted("cuba.gui.filter.global"));
+        globalCb.setEnabled(AppBeans.get(UserSessionSource.class).getUserSession()
+                .isSpecificPermitted("cuba.gui.filter.global"));
         controlLayout.addComponent(globalCb);
 
-        bottomGrid.addComponent(globalCb, 1, 0);
-        bottomGrid.setComponentAlignment(globalCb, Alignment.MIDDLE_RIGHT);
+        flagsLayout.addComponent(globalCb);
 
         defaultCb = new CheckBox();
         defaultCb.setCaption(getMessage("FilterEditor.isDefault"));
@@ -163,8 +170,8 @@ public class FilterEditor extends AbstractFilterEditor {
                 }
             }
         });
-        bottomGrid.addComponent(defaultCb, 1, 1);
-        bottomGrid.setComponentAlignment(defaultCb, Alignment.MIDDLE_RIGHT);
+
+        flagsLayout.addComponent(defaultCb);
 
         applyDefaultCb = new CheckBox();
         applyDefaultCb.setCaption(getMessage("FilterEditor.applyDefault"));
@@ -179,8 +186,7 @@ public class FilterEditor extends AbstractFilterEditor {
             }
         });
 
-        bottomGrid.addComponent(applyDefaultCb, 1, 2);
-        bottomGrid.setComponentAlignment(applyDefaultCb, Alignment.MIDDLE_RIGHT);
+        flagsLayout.addComponent(applyDefaultCb);
 
         HorizontalLayout nameLayout = new HorizontalLayout();
         nameLayout.setSpacing(true);
@@ -199,7 +205,7 @@ public class FilterEditor extends AbstractFilterEditor {
         HorizontalLayout addLayout = new HorizontalLayout();
         addLayout.setSpacing(true);
 
-        if (ConfigProvider.getConfig(ClientConfig.class).getGenericFilterTreeConditionSelect()) {
+        if (AppBeans.get(Configuration.class).getConfig(ClientConfig.class).getGenericFilterTreeConditionSelect()) {
             initAddDialog(addLayout);
         } else {
             initAddSelect(addLayout);
@@ -215,6 +221,8 @@ public class FilterEditor extends AbstractFilterEditor {
         controlsAndtable.setSpacing(true);
         initTable(controlsAndtable);
 
+        controlsAndtable.addComponent(bottomLayout);
+
         hlayLayout.addComponent(controlsAndtable);
 
         VerticalLayout upDownLayout = new VerticalLayout();
@@ -224,7 +232,6 @@ public class FilterEditor extends AbstractFilterEditor {
         hlayLayout.addComponent(upDownLayout);
         hlayLayout.setComponentAlignment(upDownLayout, Alignment.MIDDLE_CENTER);
         layout.addComponent(hlayLayout);
-        layout.addComponent(bottomGrid);
 
         updateControls();
     }
@@ -233,15 +240,16 @@ public class FilterEditor extends AbstractFilterEditor {
         return saveBtn;
     }
 
-    private void initAddDialog(HorizontalLayout addLayout) {
+    protected void initAddDialog(HorizontalLayout addLayout) {
         Button addBtn = new Button(getMessage("FilterEditor.addCondition"));
         addBtn.addListener(new AddConditionClickListener());
         addLayout.addComponent(addBtn);
     }
 
-    private void initAddSelect(AbstractLayout layout) {
+    protected void initAddSelect(AbstractOrderedLayout layout) {
         Label label = new Label(getMessage("FilterEditor.addCondition"));
         layout.addComponent(label);
+        layout.setComponentAlignment(label, Alignment.MIDDLE_LEFT);
 
         addSelect = new Select();
         addSelect.setImmediate(true);
@@ -289,7 +297,7 @@ public class FilterEditor extends AbstractFilterEditor {
         layout.addComponent(addBtn);
     }
 
-    private void initTable(AbstractLayout layout) {
+    protected void initTable(AbstractLayout layout) {
         table = new TreeTable() {
             @Override
             public void containerItemSetChange(Container.ItemSetChangeEvent event) {
@@ -340,7 +348,7 @@ public class FilterEditor extends AbstractFilterEditor {
 
         table.expandAll();
 
-        final Action showNameAction = new Action(MessageProvider.getMessage(MESSAGES_PACK, "FilterEditor.showNameAction"));
+        final Action showNameAction = new Action(messages.getMessage(MESSAGES_PACK, "FilterEditor.showNameAction"));
         table.addActionHandler(
                 new Action.Handler() {
                     @Override
@@ -352,7 +360,7 @@ public class FilterEditor extends AbstractFilterEditor {
                     public void handleAction(Action action, Object sender, Object target) {
                         if (action.equals(showNameAction)) {
                             App.getInstance().getWindowManager().showMessageDialog(
-                                    MessageProvider.getMessage(MESSAGES_PACK, "FilterEditor.showNameTitle"),
+                                    messages.getMessage(MESSAGES_PACK, "FilterEditor.showNameTitle"),
                                     ((Node<AbstractCondition>) target).getData().getParam().getName(),
                                     IFrame.MessageType.CONFIRMATION
                             );
@@ -364,9 +372,9 @@ public class FilterEditor extends AbstractFilterEditor {
         layout.addComponent(table);
     }
 
-    private void addCondition(AbstractConditionDescriptor descriptor) {
+    protected void addCondition(AbstractConditionDescriptor descriptor) {
         AbstractCondition condition = descriptor.createCondition();
-        Node<AbstractCondition> node = new Node<AbstractCondition>(condition);
+        Node<AbstractCondition> node = new Node<>(condition);
 
         Node<AbstractCondition> parentNode = null;
         Object selected = table.getValue();
@@ -393,7 +401,7 @@ public class FilterEditor extends AbstractFilterEditor {
         }
     }
 
-    private void updateControls() {
+    protected void updateControls() {
         if (filterEntity.getFolder() != null || filterEntity.getCode() == null)
             saveBtn.setEnabled(!conditions.getRootNodes().isEmpty());
         else
@@ -458,7 +466,7 @@ public class FilterEditor extends AbstractFilterEditor {
         return filterEntity;
     }
 
-    private class AddConditionClickListener implements Button.ClickListener {
+    protected class AddConditionClickListener implements Button.ClickListener {
         @Override
         public void buttonClick(Button.ClickEvent event) {
             AddConditionDlg dlg = new AddConditionDlg(

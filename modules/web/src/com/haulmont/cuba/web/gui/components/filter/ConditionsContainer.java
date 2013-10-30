@@ -51,11 +51,11 @@ class ConditionsContainer implements Container.Hierarchical, Container.Sortable,
             CONTROL_PROP_ID
     ));
 
-    private ConditionsTree conditions;
+    protected ConditionsTree conditions;
 
-    private List<Container.ItemSetChangeListener> listeners = new ArrayList<>();
+    protected List<Container.ItemSetChangeListener> listeners = new ArrayList<>();
 
-    private ItemSetChangeEvent itemSetChangeEvent = new ItemSetChangeEvent() {
+    protected ItemSetChangeEvent itemSetChangeEvent = new ItemSetChangeEvent() {
         @Override
         public Container getContainer() {
             return ConditionsContainer.this;
@@ -365,7 +365,7 @@ class ConditionsContainer implements Container.Hierarchical, Container.Sortable,
         }
     }
 
-    private class ConditionItem implements Item {
+    protected class ConditionItem implements Item {
 
         private AbstractCondition condition;
 

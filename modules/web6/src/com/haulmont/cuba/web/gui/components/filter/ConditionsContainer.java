@@ -13,6 +13,7 @@ import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.ObjectProperty;
+import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.themes.BaseTheme;
@@ -23,9 +24,8 @@ import java.util.*;
 /**
  * {@link ConditionsTree} container for web-client tree table component.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 class ConditionsContainer implements Container.Hierarchical, Container.Sortable, Container.ItemSetChangeNotifier {
 
@@ -45,11 +45,11 @@ class ConditionsContainer implements Container.Hierarchical, Container.Sortable,
             CONTROL_PROP_ID
     ));
 
-    private ConditionsTree conditions;
+    protected ConditionsTree conditions;
 
-    private List<Container.ItemSetChangeListener> listeners = new ArrayList<ItemSetChangeListener>();
+    protected List<Container.ItemSetChangeListener> listeners = new ArrayList<>();
 
-    private ItemSetChangeEvent itemSetChangeEvent = new ItemSetChangeEvent() {
+    protected ItemSetChangeEvent itemSetChangeEvent = new ItemSetChangeEvent() {
         @Override
         public Container getContainer() {
             return ConditionsContainer.this;
@@ -174,7 +174,7 @@ class ConditionsContainer implements Container.Hierarchical, Container.Sortable,
         return getItem(itemId).getItemProperty(propertyId);
     }
 
-    private CheckBox createHiddenCheckbox(final AbstractCondition condition) {
+    protected CheckBox createHiddenCheckbox(final AbstractCondition condition) {
         final CheckBox checkBox = new CheckBox();
         checkBox.setImmediate(true);
         checkBox.setValue(condition.isHidden());
@@ -188,7 +188,7 @@ class ConditionsContainer implements Container.Hierarchical, Container.Sortable,
         return checkBox;
     }
 
-    private CheckBox createRequiredCheckbox(final AbstractCondition condition) {
+    protected CheckBox createRequiredCheckbox(final AbstractCondition condition) {
         final CheckBox checkBox = new CheckBox();
         checkBox.setImmediate(true);
         checkBox.setValue(condition.isRequired());
@@ -202,7 +202,7 @@ class ConditionsContainer implements Container.Hierarchical, Container.Sortable,
         return checkBox;
     }
 
-    private Button createDeleteConditionBtn(final AbstractCondition condition) {
+    protected Button createDeleteConditionBtn(final AbstractCondition condition) {
         Button delBtn = WebComponentsHelper.createButton("icons/close.png");
         delBtn.setStyleName(BaseTheme.BUTTON_LINK);
         delBtn.addStyleName("icon-autosize");
@@ -214,7 +214,7 @@ class ConditionsContainer implements Container.Hierarchical, Container.Sortable,
         return delBtn;
     }
 
-    private void deleteCondition(AbstractCondition condition) {
+    protected void deleteCondition(AbstractCondition condition) {
         Node<AbstractCondition> node = conditions.getNode(condition);
         removeItem(node);
 
@@ -342,7 +342,7 @@ class ConditionsContainer implements Container.Hierarchical, Container.Sortable,
         }
     }
 
-    private class ConditionItem implements Item {
+    protected class ConditionItem implements Item {
 
         private AbstractCondition condition;
 
@@ -353,22 +353,26 @@ class ConditionsContainer implements Container.Hierarchical, Container.Sortable,
         @Override
         public Property getItemProperty(Object id) {
             if (id.equals(NAME_PROP_ID)) {
-                return new ObjectProperty<NameEditor>(new NameEditor(condition));
+                return new ObjectProperty<>(new NameEditor(condition));
 
             } else if (id.equals(OP_PROP_ID)) {
-                return new ObjectProperty<OperationEditor.Editor>((OperationEditor.Editor) condition.createOperationEditor().getImpl());
+                return new ObjectProperty<>((OperationEditor.Editor) condition.createOperationEditor().getImpl());
 
             } else if (id.equals(PARAM_PROP_ID)) {
-                return new ObjectProperty<ParamEditor>(new ParamEditor(condition, false));
+                ParamEditor paramEditor = new ParamEditor(condition, false, false);
+                // pack editor component to table cell
+                paramEditor.setWidth(100, Sizeable.UNITS_PERCENTAGE);
+                paramEditor.setFieldWidth("100%");
+                return new ObjectProperty<>(paramEditor);
 
             } else if (id.equals(HIDDEN_PROP_ID)) {
-                return new ObjectProperty<CheckBox>(createHiddenCheckbox(condition));
+                return new ObjectProperty<>(createHiddenCheckbox(condition));
 
             } else if (id.equals(REQUIRED_PROP_ID)) {
-                return new ObjectProperty<CheckBox>(createRequiredCheckbox(condition));
+                return new ObjectProperty<>(createRequiredCheckbox(condition));
 
             } else if (id.equals(CONTROL_PROP_ID)) {
-                return new ObjectProperty<Button>(createDeleteConditionBtn(condition));
+                return new ObjectProperty<>(createDeleteConditionBtn(condition));
             }
             return null;
         }
