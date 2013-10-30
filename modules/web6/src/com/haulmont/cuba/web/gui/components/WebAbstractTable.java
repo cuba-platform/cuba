@@ -109,7 +109,10 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     // Map column id to Printable representation
     protected Map<String, Printable> printables = new HashMap<>();
 
-    private String customStyle;
+    // Disable listener that points component value to follow the ds item.
+    protected boolean disableItemListener = false;
+
+    protected String customStyle;
 
     protected Security security = AppBeans.get(Security.class);
 
@@ -384,6 +387,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                 if (datasource == null) return;
 
                 final Set<Entity> selected = getSelected();
+                disableItemListener = true;
                 if (selected.isEmpty()) {
                     datasource.setItem(null);
                 } else {
@@ -392,6 +396,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                         datasource.setItem(null);
                     datasource.setItem(selected.iterator().next());
                 }
+                disableItemListener = false;
             }
         });
 
@@ -563,7 +568,9 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
     @Override
     public void setDatasource(CollectionDatasource datasource) {
-        UserSession userSession = UserSessionProvider.getUserSession();
+        UserSessionSource uss = AppBeans.get(UserSessionSource.NAME);
+
+        UserSession userSession = uss.getUserSession();
         MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
 
         final Collection<Object> columns;
@@ -673,7 +680,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
         setVisibleColumns(getPropertyColumns());
 
-        if (UserSessionProvider.getUserSession().isSpecificPermitted(ShowInfoAction.ACTION_PERMISSION)) {
+        if (userSession.isSpecificPermitted(ShowInfoAction.ACTION_PERMISSION)) {
             ShowInfoAction action = (ShowInfoAction) getAction(ShowInfoAction.ACTION_ID);
             if (action == null) {
                 action = new ShowInfoAction();
@@ -682,8 +689,21 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             action.setDatasource(datasource);
         }
 
-        if (rowsCount != null)
+        if (rowsCount != null) {
             rowsCount.setDatasource(datasource);
+        }
+
+        // noinspection unchecked
+        datasource.addListener(new CollectionDsActionsNotifier(this) {
+            @Override
+            public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
+                super.itemChanged(ds, prevItem, item);
+
+                if (!disableItemListener && !getSelected().contains(item)) {
+                    setSelected(item);
+                }
+            }
+        });
 
         datasource.addListener(new CollectionDsActionsNotifier(this));
 
