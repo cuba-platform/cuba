@@ -34,8 +34,8 @@ public abstract class AbstractConnection implements Connection {
 
     protected Log log = LogFactory.getLog(getClass());
 
-    private Map<ConnectionListener, Object> connListeners = new HashMap<ConnectionListener, Object>();
-    private Map<UserSubstitutionListener, Object> usListeners = new HashMap<UserSubstitutionListener, Object>();
+    protected Map<ConnectionListener, Object> connListeners = new HashMap<>();
+    protected Map<UserSubstitutionListener, Object> usListeners = new HashMap<>();
 
     protected boolean connected;
     protected UserSession session;
@@ -61,10 +61,7 @@ public abstract class AbstractConnection implements Connection {
 
         try {
             internalLogin();
-        } catch (LoginException e) {
-            internalLogout();
-            throw e;
-        } catch (RuntimeException e) {
+        } catch (LoginException | RuntimeException e) {
             internalLogout();
             throw e;
         } catch (Exception e) {
@@ -127,6 +124,7 @@ public abstract class AbstractConnection implements Connection {
 
         AppContext.setSecurityContext(null);
 
+        usListeners.clear();
         connected = false;
         session = null;
     }

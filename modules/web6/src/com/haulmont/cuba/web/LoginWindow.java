@@ -78,7 +78,8 @@ public class LoginWindow extends Window implements Action.Handler {
     protected PasswordEncryption passwordEncryption;
 
     public LoginWindow(App app, Connection connection) {
-        super();
+        log.trace("Creating " + this);
+
         configuration = AppBeans.get(Configuration.NAME);
         messages = AppBeans.get(Messages.NAME);
         passwordEncryption = AppBeans.get(PasswordEncryption.NAME);
@@ -96,6 +97,11 @@ public class LoginWindow extends Window implements Action.Handler {
         passwordField = new PasswordField();
         localesSelect = new NativeSelect();
         okButton = new Button();
+
+        // make fields immediate to resync fast in case of login is already performed from another UI (i.e. browser tab)
+        loginField.setImmediate(true);
+        passwordField.setImmediate(true);
+        localesSelect.setImmediate(true);
 
         if (app.isCookiesEnabled()) {
             if (!ActiveDirectoryHelper.useActiveDirectory() ||
@@ -122,14 +128,21 @@ public class LoginWindow extends Window implements Action.Handler {
     }
 
     protected Locale resolveLocale(App app) {
-        Locale appLocale = messages.getTools().useLocaleLanguageOnly() ?
-                Locale.forLanguageTag(app.getLocale().getLanguage()) : app.getLocale();
-
         for (Locale locale : locales.values()) {
-            if (locale.equals(appLocale)) {
+            if (locale.equals(app.getLocale())) {
                 return locale;
             }
         }
+        // if not found and application locale contains country, try to match by language only
+        if (!StringUtils.isEmpty(app.getLocale().getCountry())) {
+            Locale appLocale = Locale.forLanguageTag(app.getLocale().getLanguage());
+            for (Locale locale : locales.values()) {
+                if (Locale.forLanguageTag(locale.getLanguage()).equals(appLocale)) {
+                    return locale;
+                }
+            }
+        }
+        // return first locale set in the cuba.availableLocales app property
         return locales.values().iterator().next();
     }
 
