@@ -54,6 +54,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
@@ -812,12 +813,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
     @Override
     public void setIconProvider(IconProvider iconProvider) {
-        this.iconProvider = iconProvider;
-        if (iconProvider != null) {
-            setRowHeaderMode(RowHeaderMode.ICON);
-        } else {
-            setRowHeaderMode(RowHeaderMode.NONE);
-        }
+        LogFactory.getLog(WebAbstractTable.class).warn("Legacy web module does not support icons for tables");
     }
 
     // For vaadin component extensions.
