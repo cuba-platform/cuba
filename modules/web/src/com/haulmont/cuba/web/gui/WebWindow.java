@@ -285,16 +285,31 @@ public class WebWindow implements Window, Component.Wrapper,
         if (errors.isEmpty())
             return true;
 
-        Component component = null;
+        showValidationErrors(errors);
+
+        focusProblemComponent(errors);
+
+        return false;
+    }
+
+    protected void showValidationErrors(ValidationErrors errors) {
         StringBuilder buffer = new StringBuilder();
         for (ValidationErrors.Item error : errors.getAll()) {
-            if (component == null)
-                component = error.component;
             buffer.append(error.description).append("\n");
         }
 
         showNotification(AppBeans.get(Messages.class).getMessage(WebWindow.class, "validationFail.caption"),
                 buffer.toString(), NotificationType.TRAY);
+    }
+
+    protected void focusProblemComponent(ValidationErrors errors) {
+        Component component = null;
+        for (ValidationErrors.Item error : errors.getAll()) {
+            if (component == null) {
+                component = error.component;
+            }
+        }
+
         if (component != null) {
             try {
                 com.vaadin.ui.Component vComponent = WebComponentsHelper.unwrap(component);
@@ -317,8 +332,6 @@ public class WebWindow implements Window, Component.Wrapper,
                 log.warn("Error while validation handling ", e);
             }
         }
-
-        return false;
     }
 
     @Override

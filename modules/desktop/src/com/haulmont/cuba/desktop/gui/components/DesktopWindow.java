@@ -892,6 +892,12 @@ public class DesktopWindow implements Window, Component.Disposable,
         if (errors.isEmpty())
             return true;
 
+        showValidationErrors(errors);
+
+        return false;
+    }
+
+    protected void showValidationErrors(ValidationErrors errors) {
         StringBuilder buffer = new StringBuilder();
         for (ValidationErrors.Item error : errors.getAll()) {
             buffer.append(error.description).append("<br/>");
@@ -901,8 +907,6 @@ public class DesktopWindow implements Window, Component.Disposable,
                 buffer.toString(),
                 NotificationType.HUMANIZED
         );
-
-        return false;
     }
 
     public static class Editor extends DesktopWindow implements Window.Editor {
