@@ -3,8 +3,9 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-package com.haulmont.cuba.web;
+package com.haulmont.cuba.web.sys;
 
+import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.WebTimer;
 import com.haulmont.cuba.web.toolkit.Timer;
 import com.vaadin.ui.Window;
@@ -17,12 +18,12 @@ import java.util.*;
  */
 public class AppTimers {
 
-    private App app;
+    protected App app;
 
     protected Map<Window, WindowTimers> windowTimers = new HashMap<>();
     protected Map<Timer, Window> timerWindow = new HashMap<>();
 
-    private boolean stopTimers = false;
+    protected boolean stopTimers = false;
 
     public AppTimers(App app) {
         this.app = app;
@@ -100,8 +101,8 @@ public class AppTimers {
         }
     }
 
-    protected void stopAll() {
-        Set<Timer> timers = new HashSet<Timer>(timerWindow.keySet());
+    public void stopAll() {
+        Set<Timer> timers = new HashSet<>(timerWindow.keySet());
         for (final Timer timer : timers) {
             if (timer != null && !timer.isStopped()) {
                 timer.stopTimer();

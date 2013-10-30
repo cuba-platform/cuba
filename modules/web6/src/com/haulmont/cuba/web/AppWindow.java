@@ -11,12 +11,13 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.NoSuchScreenException;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.ShowInfoAction;
-import com.haulmont.cuba.gui.config.*;
+import com.haulmont.cuba.gui.config.WindowConfig;
+import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserSubstitution;
 import com.haulmont.cuba.security.global.UserSession;
@@ -25,9 +26,9 @@ import com.haulmont.cuba.web.actions.DoNotChangeSubstUserAction;
 import com.haulmont.cuba.web.app.UserSettingsTools;
 import com.haulmont.cuba.web.app.folders.FoldersPane;
 import com.haulmont.cuba.web.gui.components.WebSplitPanel;
-import com.haulmont.cuba.web.toolkit.MenuShortcutAction;
+import com.haulmont.cuba.web.sys.MenuBuilder;
+import com.haulmont.cuba.web.sys.WindowBreadCrumbs;
 import com.haulmont.cuba.web.toolkit.ui.ActionsTabSheet;
-import com.haulmont.cuba.web.toolkit.ui.FilterSelect;
 import com.haulmont.cuba.web.toolkit.ui.JavaScriptHost;
 import com.haulmont.cuba.web.toolkit.ui.RichNotification;
 import com.vaadin.data.Property;
@@ -51,13 +52,8 @@ import java.util.*;
  * @author krivopustov
  * @version $Id$
  */
-@SuppressWarnings("unused")
 public class AppWindow extends Window implements UserSubstitutionListener,
         JavaScriptHost.HistoryBackHandler, JavaScriptHost.ServerCallHandler {
-
-    private static final long serialVersionUID = 7269808125566032433L;
-
-    private static final Log log = LogFactory.getLog(AppWindow.class);
 
     /**
      * Main window mode. See {@link #TABBED}, {@link #SINGLE}
@@ -75,6 +71,10 @@ public class AppWindow extends Window implements UserSubstitutionListener,
          */
         SINGLE
     }
+
+    private static final long serialVersionUID = 7269808125566032433L;
+
+    private static final Log log = LogFactory.getLog(AppWindow.class);
 
     protected Connection connection;
 
@@ -122,12 +122,17 @@ public class AppWindow extends Window implements UserSubstitutionListener,
 
     protected UserSettingsTools userSettingsTools;
 
-    private AbstractSelect substUserSelect;
+    protected AbstractSelect substUserSelect;
 
-    private JavaScriptHost scriptHost;
+    protected JavaScriptHost scriptHost;
 
-    public AppWindow(Connection connection) {
-        super();
+    protected final App app;
+
+    protected WebWindowManager windowManager;
+
+    public AppWindow(App app) {
+        log.trace("Creating " + this);
+        this.app = app;
 
         Configuration configuration = AppBeans.get(Configuration.class);
         globalConfig = configuration.getConfig(GlobalConfig.class);
@@ -136,20 +141,40 @@ public class AppWindow extends Window implements UserSubstitutionListener,
         messages = AppBeans.get(Messages.class);
         userSettingsTools = AppBeans.get(UserSettingsTools.class);
 
-        this.connection = connection;
+        this.connection = app.getConnection();
+        windowManager = createWindowManager();
         setCaption(getAppCaption());
 
         mode = userSettingsTools.loadAppWindowMode();
 
-        rootLayout = createLayout();
-        initLayout();
+        setSizeFull();
+
+        rootLayout = new VerticalLayout();
+
+        createLayout(rootLayout);
         setContent(rootLayout);
+
         postInitLayout();
-        initStartupLayout();
+        initStartupScreen();
 
         initStaticComponents();
 
         updateClientSystemMessages();
+
+        checkSessions();
+
+        connection.addListener(this);
+    }
+
+    public WebWindowManager getWindowManager() {
+        return windowManager;
+    }
+
+    /**
+     * @return a new instance of {@link WebWindowManager}
+     */
+    protected WebWindowManager createWindowManager() {
+        return new WebWindowManager(app, this);
     }
 
     private void updateClientSystemMessages() {
@@ -181,6 +206,20 @@ public class AppWindow extends Window implements UserSubstitutionListener,
         // Go back to the Future!
     }
 
+    private void checkSessions() {
+        Map<String, Object> info = AppBeans.get(UserSessionService.class).getLicenseInfo();
+        Integer licensed = (Integer) info.get("licensedSessions");
+        if (licensed < 0) {
+            showNotification("Invalid CUBA platform license", Notification.TYPE_WARNING_MESSAGE);
+        } else {
+            Integer active = (Integer) info.get("activeSessions");
+            if (licensed != 0 && active > licensed) {
+                showNotification("Number of licensed sessions exceeded", "active: " + active + ", licensed: " + licensed,
+                        Notification.TYPE_WARNING_MESSAGE);
+            }
+        }
+    }
+
     @Override
     public void onJsServerCall(String[] params) {
         // handle js api call
@@ -201,9 +240,7 @@ public class AppWindow extends Window implements UserSubstitutionListener,
      *
      * @return App layout
      */
-    protected VerticalLayout createLayout() {
-        final VerticalLayout layout = new VerticalLayout();
-
+    protected void createLayout(VerticalLayout layout) {
         layout.setMargin(false);
         layout.setSpacing(false);
         layout.setSizeFull();
@@ -263,8 +300,6 @@ public class AppWindow extends Window implements UserSubstitutionListener,
 
         layout.addComponent(middleLayout);
         layout.setExpandRatio(middleLayout, 1);
-
-        return layout;
     }
 
     /**
@@ -358,12 +393,9 @@ public class AppWindow extends Window implements UserSubstitutionListener,
     }
 
     /**
-     * Can be overridden in descendant to init an app-specific layout
+     *  Initialize the startup screen - main window content when no application screens are open.
      */
-    protected void initLayout() {
-    }
-
-    private void genericStartupLayout() {
+    protected void initStartupScreen() {
         if (mainLayout != null) {
             if (foldersPane != null) {
                 foldersSplit.removeComponent(mainLayout);
@@ -380,26 +412,40 @@ public class AppWindow extends Window implements UserSubstitutionListener,
             middleLayout.addComponent(mainLayout);
             middleLayout.setExpandRatio(mainLayout, 1);
         }
-    }
-
-    /* Draw startup screen layout */
-
-    protected void initStartupLayout() {
-        genericStartupLayout();
-        mainLayout.setMargin(false);
+        mainLayout.setMargin(new Layout.MarginInfo(true, false, false, false));
         mainLayout.setSpacing(false);
     }
 
-    /*  */
-
-    protected void unInitStartupLayout() {
-        genericStartupLayout();
-        mainLayout.setMargin(new Layout.MarginInfo(true,false,false,false));
-        mainLayout.setSpacing(true);
+    /**
+     * Remove all applications screens and show startup screen defined by {@link #initStartupScreen()}.
+     */
+    public void showStartupScreen() {
+        getMainLayout().removeAllComponents();
+        tabSheet = null;
+        initStartupScreen();
+        focus();
     }
 
     /**
-     * Can be overridden in descendant to init an app-specific layout
+     * Close startup screen defined by {@link #initStartupScreen()} and prepare main window to show application screens.
+     */
+    public void closeStartupScreen() {
+        if (AppWindow.Mode.TABBED.equals(getMode())) {
+            if (tabSheet == null) {
+                tabSheet = new AppWindow.AppTabSheet();
+                tabSheet.setSizeFull();
+                mainLayout.addComponent(tabSheet);
+                mainLayout.setExpandRatio(tabSheet, 1);
+            }
+        }
+
+        if (closeShortcut == null)
+            closeShortcut = getWindowManager().createCloseShortcut();
+        addAction(closeShortcut);
+    }
+
+    /**
+     * Called by constructor when all layouts are created but before {@link #initStartupScreen()}.
      */
     protected void postInitLayout() {
         String themeName = AppContext.getProperty("cuba.web.theme");
@@ -441,6 +487,25 @@ public class AppWindow extends Window implements UserSubstitutionListener,
         layout.addComponent(menuBar);
         placeMenuBar(layout);
 
+        createSearchLayout(layout);
+
+        if (webConfig.getUseLightHeader()){
+            addUserIndicator(layout);
+
+            addNewWindowButton(layout);
+
+            addLogoutButton(layout);
+        }
+
+        return layout;
+    }
+
+    /**
+     * Create layout containing search components.
+     *
+     * @param layout parent layout
+     */
+    protected void createSearchLayout(HorizontalLayout layout) {
         if (AppBeans.get(Configuration.class).getConfig(FtsConfig.class).getEnabled()) {
             HorizontalLayout searchLayout = new HorizontalLayout();
             searchLayout.setMargin(false, true, false, true);
@@ -473,16 +538,6 @@ public class AppWindow extends Window implements UserSubstitutionListener,
             layout.addComponent(searchLayout);
             layout.setComponentAlignment(searchLayout, Alignment.MIDDLE_RIGHT);
         }
-
-        if (webConfig.getUseLightHeader()){
-            addUserSelect(layout);
-
-            addNewWindowButton(layout);
-
-            addLogoutButton(layout);
-        }
-
-        return layout;
     }
 
     protected void openSearchWindow(TextField searchField) {
@@ -494,7 +549,7 @@ public class AppWindow extends Window implements UserSubstitutionListener,
         params.put("searchTerm", searchTerm);
 
         WindowInfo windowInfo = AppBeans.get(WindowConfig.class).getWindowInfo("ftsSearch");
-        App.getInstance().getWindowManager().openWindow(
+        getWindowManager().openWindow(
                 windowInfo,
                 WindowManager.OpenType.NEW_TAB,
                 params
@@ -518,49 +573,13 @@ public class AppWindow extends Window implements UserSubstitutionListener,
         menuBar.getMoreMenuItem().setIcon(new ThemeResource("app/images/more-item.png"));
 
         if (globalConfig.getTestMode()) {
-            App.getInstance().getWindowManager().setDebugId(menuBar, "appMenu");
+            getWindowManager().setDebugId(menuBar, "appMenu");
         }
 
-        final UserSession session = connection.getSession();
-        final MenuConfig menuConfig = AppBeans.get(MenuConfig.class);
-        List<MenuItem> rootItems = menuConfig.getRootItems();
-        for (MenuItem menuItem : rootItems) {
-            if (menuItem.isPermitted(session)) {
-                createMenuBarItem(menuBar, menuItem);
-            }
-        }
-        removeExtraSeparators(menuBar);
+        MenuBuilder menuBuilder = new MenuBuilder(this, connection.getSession(), menuBar);
+        menuBuilder.build();
 
         return menuBar;
-    }
-
-    private void removeExtraSeparators(MenuBar menuBar) {
-        for (MenuBar.MenuItem item : new ArrayList<>(menuBar.getItems())) {
-            removeExtraSeparators(item);
-            if (isMenuItemEmpty(item))
-                menuBar.removeItem(item);
-        }
-    }
-
-    private void removeExtraSeparators(MenuBar.MenuItem item) {
-        if (!item.hasChildren())
-            return;
-
-        boolean done;
-        do {
-            done = true;
-            if (item.hasChildren()) {
-                List<MenuBar.MenuItem> children = new ArrayList<>(item.getChildren());
-                for (int i = 0; i < children.size(); i++) {
-                    MenuBar.MenuItem child = children.get(i);
-                    removeExtraSeparators(child);
-                    if (isMenuItemEmpty(child) && (i == 0 || i == children.size() - 1 || isMenuItemEmpty(children.get(i + 1)))) {
-                        item.removeChild(child);
-                        done = false;
-                    }
-                }
-            }
-        } while (!done);
     }
 
     /*
@@ -601,7 +620,7 @@ public class AppWindow extends Window implements UserSubstitutionListener,
 
         addUserLabel(titleLayout);
 
-        addUserSelect(titleLayout);
+        addUserIndicator(titleLayout);
 
         addLogoutButton(titleLayout);
 
@@ -642,66 +661,59 @@ public class AppWindow extends Window implements UserSubstitutionListener,
         return new Embedded(null, new ThemeResource(logoImagePath));
     }
 
-    private void assignShortcut(MenuBar.MenuItem menuItem, MenuItem item) {
-        if (item.getShortcut() != null) {
-            MenuShortcutAction shortcut = new MenuShortcutAction(menuItem, "shortcut_" + item.getId(), item.getShortcut());
-            this.addAction(shortcut);
-            menuBar.setShortcut(menuItem, item.getShortcut());
-        }
-    }
+    protected void addUserIndicator(HorizontalLayout parentLayout) {
+        UserSession session = App.getInstance().getConnection().getSession();
+        if (session == null)
+            throw new RuntimeException("No user session found");
 
-    private boolean isMenuItemEmpty(MenuBar.MenuItem menuItem) {
-        return !menuItem.hasChildren() && menuItem.getCommand() == null;
-    }
+        List<UserSubstitution> substitutions = getUserSubstitutions(session);
 
-    private void createMenuBarItem(MenuBar menuBar, MenuItem item) {
-        if (!connection.isConnected()) return;
-
-        final UserSession session = connection.getSession();
-        if (item.isPermitted(session)) {
-            MenuBar.MenuItem menuItem = menuBar.addItem(MenuConfig.getMenuItemCaption(item.getId()), createMenuBarCommand(item));
-            assignShortcut(menuItem, item);
-            createSubMenu(menuItem, item, session);
-            assignDebugIds(menuItem, item);
-            if (isMenuItemEmpty(menuItem)) {
-                menuBar.removeItem(menuItem);
-            }
-        }
-    }
-
-    protected void addUserSelect(HorizontalLayout parentLayout) {
-
-        if (webConfig.getUseLightHeader()) {
-            substUserSelect = new FilterSelect();
-            substUserSelect.setWidth("200px");
-        } else
-            substUserSelect = new NativeSelect();
-
-        substUserSelect.setNullSelectionAllowed(false);
-        substUserSelect.setImmediate(true);
-        substUserSelect.setStyleName("select-label");
-
-        fillSubstitutedUsers(substUserSelect);
-        if (substUserSelect.getItemIds().size() > 1) {
-            UserSession us = App.getInstance().getConnection().getSession();
-            if (us == null)
-                throw new RuntimeException("No user session found");
-
-            substUserSelect.select(us.getSubstitutedUser() == null ? us.getUser() : us.getSubstitutedUser());
-            substUserSelect.addListener(new SubstitutedUserChangeListener(substUserSelect));
-
-            parentLayout.addComponent(substUserSelect);
-            parentLayout.setComponentAlignment(substUserSelect, Alignment.MIDDLE_RIGHT);
-        } else {
-            Label userNameLabel = new Label(getSubstitutedUserCaption((User) substUserSelect.getItemIds().iterator().next()));
+        if (substitutions.isEmpty()) {
+            Label userNameLabel = new Label(getSubstitutedUserCaption(session.getUser()));
             userNameLabel.setStyleName("select-label");
             userNameLabel.setSizeUndefined();
             parentLayout.addComponent(userNameLabel);
             parentLayout.setComponentAlignment(userNameLabel, Alignment.MIDDLE_RIGHT);
+        } else {
+            if (webConfig.getUseLightHeader()) {
+                substUserSelect = new ComboBox();
+                substUserSelect.setWidth("200px");
+            } else
+                substUserSelect = new NativeSelect();
+
+            substUserSelect.setNullSelectionAllowed(false);
+            substUserSelect.setImmediate(true);
+            substUserSelect.setStyleName("user-select-combobox");
+            substUserSelect.addItem(session.getUser());
+            substUserSelect.setItemCaption(session.getUser(), getSubstitutedUserCaption(session.getUser()));
+
+            for (UserSubstitution substitution : substitutions) {
+                User substitutedUser = substitution.getSubstitutedUser();
+                substUserSelect.addItem(substitutedUser);
+                substUserSelect.setItemCaption(substitutedUser, getSubstitutedUserCaption(substitutedUser));
+            }
+
+            substUserSelect.select(session.getSubstitutedUser() == null ? session.getUser() : session.getSubstitutedUser());
+            substUserSelect.addListener(new SubstitutedUserChangeListener(substUserSelect));
+
+            parentLayout.addComponent(substUserSelect);
+            parentLayout.setComponentAlignment(substUserSelect, Alignment.MIDDLE_RIGHT);
         }
     }
 
-    private Button createLogoutButton() {
+    protected List<UserSubstitution> getUserSubstitutions(UserSession userSession) {
+        LoadContext ctx = new LoadContext(UserSubstitution.class);
+        LoadContext.Query query = ctx.setQueryString("select us from sec$UserSubstitution us " +
+                "where us.user.id = :userId and (us.endDate is null or us.endDate >= :currentDate) " +
+                "and (us.startDate is null or us.startDate <= :currentDate) " +
+                "and (us.substitutedUser.active = true or us.substitutedUser.active is null) order by us.substitutedUser.name");
+        query.setParameter("userId", userSession.getUser().getId());
+        query.setParameter("currentDate", AppBeans.get(TimeSource.class).currentTimestamp());
+        ctx.setView("app");
+        return AppBeans.get(DataService.class).loadList(ctx);
+    }
+
+    protected Button createLogoutButton() {
         String buttonTitle = "";
         if (!webConfig.getUseLightHeader())
             buttonTitle = messages.getMessage(getMessagesPack(), "logoutBtn");
@@ -713,11 +725,11 @@ public class AppWindow extends Window implements UserSubstitutionListener,
         logoutBtn.setDescription(messages.getMessage(getMessagesPack(), "logoutBtnDescription"));
         logoutBtn.setStyleName("white-border");
         logoutBtn.setIcon(new ThemeResource("app/images/exit.png"));
-        App.getInstance().getWindowManager().setDebugId(logoutBtn, "logoutBtn");
+        getWindowManager().setDebugId(logoutBtn, "logoutBtn");
         return logoutBtn;
     }
 
-    private Button createNewWindowButton() {
+    protected Button createNewWindowButton() {
         String buttonTitle = "";
         if (!webConfig.getUseLightHeader())
             buttonTitle = messages.getMessage(getMessagesPack(), "newWindowBtn");
@@ -737,94 +749,6 @@ public class AppWindow extends Window implements UserSubstitutionListener,
         newWindowBtn.setStyleName("white-border");
         newWindowBtn.setIcon(new ThemeResource("app/images/new-window.png"));
         return newWindowBtn;
-    }
-
-    private void createSubMenu(MenuBar.MenuItem vItem, MenuItem item, UserSession session) {
-        if (item.isPermitted(session) && !item.getChildren().isEmpty()) {
-            for (MenuItem child : item.getChildren()) {
-                if (child.getChildren().isEmpty()) {
-                    if (child.isPermitted(session)) {
-                        MenuBar.MenuItem menuItem = (child.isSeparator()) ? vItem.addSeparator() : vItem.addItem(MenuConfig.getMenuItemCaption(child.getId()), createMenuBarCommand(child));
-                        assignShortcut(menuItem, child);
-                        assignDebugIds(menuItem, child);
-                    }
-                } else {
-                    if (child.isPermitted(session)) {
-                        MenuBar.MenuItem menuItem = vItem.addItem(MenuConfig.getMenuItemCaption(child.getId()), null);
-                        assignShortcut(menuItem, child);
-                        createSubMenu(menuItem, child, session);
-                        assignDebugIds(menuItem, child);
-                        if (isMenuItemEmpty(menuItem)) {
-                            vItem.removeChild(menuItem);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private void assignDebugIds(MenuBar.MenuItem menuItem, MenuItem conf) {
-        if (menuBar.getDebugId() != null && !conf.isSeparator()) {
-            menuBar.setDebugId(menuItem, menuBar.getDebugId() + ":" + conf.getId());
-        }
-    }
-
-    private MenuBar.Command createMenuBarCommand(final MenuItem item) {
-        if (!item.getChildren().isEmpty())     //check item is menu
-            return null;
-
-        WindowInfo windowInfo = null;
-        final WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
-        try {
-            windowInfo = windowConfig.getWindowInfo(item.getId());
-        } catch (NoSuchScreenException e) {
-            log.warn("Invalid screen ID for menu item: " + item.getId());
-        }
-
-        final MenuCommand command;
-
-        if (windowInfo != null) {
-            command = new MenuCommand(App.getInstance().getWindowManager(), item, windowInfo);
-        } else {
-            command = null;
-        }
-
-        return new com.vaadin.ui.MenuBar.Command() {
-            @Override
-            public void menuSelected(com.vaadin.ui.MenuBar.MenuItem selectedItem) {
-                if (command != null) {
-                    command.execute();
-                } else if (item.getParent() != null) {
-                    throw new DevelopmentException("Invalid screen ID for menu item: " + item.getId(),
-                            "Parent menu ID", item.getParent().getId());
-                }
-            }
-        };
-    }
-
-    protected void fillSubstitutedUsers(AbstractSelect select) {
-        UserSession userSession = App.getInstance().getConnection().getSession();
-
-        if (userSession == null)
-            throw new RuntimeException("No user session found");
-
-        select.addItem(userSession.getUser());
-        select.setItemCaption(userSession.getUser(), getSubstitutedUserCaption(userSession.getUser()));
-
-        LoadContext ctx = new LoadContext(UserSubstitution.class);
-        LoadContext.Query query = ctx.setQueryString("select us from sec$UserSubstitution us " +
-                "where us.user.id = :userId and (us.endDate is null or us.endDate >= :currentDate) " +
-                "and (us.startDate is null or us.startDate <= :currentDate) " +
-                "and (us.substitutedUser.active = true or us.substitutedUser.active is null) order by us.substitutedUser.name");
-        query.addParameter("userId", userSession.getUser().getId());
-        query.addParameter("currentDate", AppBeans.get(TimeSource.class).currentTimestamp());
-        ctx.setView("app");
-        List<UserSubstitution> usList = AppBeans.get(DataService.class).loadList(ctx);
-        for (UserSubstitution substitution : usList) {
-            User substitutedUser = substitution.getSubstitutedUser();
-            select.addItem(substitutedUser);
-            select.setItemCaption(substitutedUser, getSubstitutedUserCaption(substitutedUser));
-        }
     }
 
     protected String getSubstitutedUserCaption(User user) {
@@ -910,7 +834,7 @@ public class AppWindow extends Window implements UserSubstitutionListener,
         }
     }
 
-    private void revertToCurrentUser() {
+    protected void revertToCurrentUser() {
         UserSession us = App.getInstance().getConnection().getSession();
         if (us == null)
             throw new RuntimeException("No user session found");
@@ -937,7 +861,7 @@ public class AppWindow extends Window implements UserSubstitutionListener,
 
             if (!oldUser.equals(newUser)) {
                 String name = StringUtils.isBlank(newUser.getName()) ? newUser.getLogin() : newUser.getName();
-                App.getInstance().getWindowManager().showOptionDialog(
+                getWindowManager().showOptionDialog(
                         messages.getMessage(getMessagesPack(), "substUserSelectDialog.title"),
                         messages.formatMessage(getMessagesPack(), "substUserSelectDialog.msg", name),
                         IFrame.MessageType.WARNING,
@@ -1086,7 +1010,7 @@ public class AppWindow extends Window implements UserSubstitutionListener,
         }
     }
 
-    private class LogoutBtnClickListener implements Button.ClickListener {
+    protected class LogoutBtnClickListener implements Button.ClickListener {
 
         private static final long serialVersionUID = 4885156177472913997L;
 
@@ -1096,14 +1020,11 @@ public class AppWindow extends Window implements UserSubstitutionListener,
                 foldersPane.savePosition();
             }
             final App app = App.getInstance();
-            app.cleanupBackgroundTasks();
-            app.getTimers().stopAll();
             app.reinitializeAppearanceProperties();
-            app.getWindowManager().checkModificationsAndCloseAll(
+            getWindowManager().checkModificationsAndCloseAll(
                     new Runnable() {
                         @Override
                         public void run() {
-                            App.getInstance().getWindowManager().reset();
                             String redirectionUrl = connection.logout();
                             open(new ExternalResource(App.getInstance().getURL() + redirectionUrl));
                         }

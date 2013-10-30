@@ -5,6 +5,9 @@
 
 package com.haulmont.cuba.web.sys;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -14,6 +17,8 @@ import java.util.Set;
  * @version $Id$
  */
 public class BackgroundTaskManager {
+
+    private static Log log = LogFactory.getLog(BackgroundTaskManager.class);
 
     private transient Set<Thread> taskSet;
 
@@ -41,12 +46,20 @@ public class BackgroundTaskManager {
      * Interrupt all tasks
      */
     public void cleanupTasks() {
+        int count = 0;
         // Stop threads
         for (Thread taskThread : taskSet) {
-            if (taskThread.isAlive())
+            if (taskThread.isAlive())   {
                 taskThread.interrupt();
+                count++;
+            }
         }
         // Clean task set
         taskSet.clear();
+        // Clean task set
+        taskSet.clear();
+        if (count > 0) {
+            log.debug(String.format("Interrupted %s background tasks", count));
+        }
     }
 }

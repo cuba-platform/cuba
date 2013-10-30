@@ -852,7 +852,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
         }
     }
 
-    private void revertToCurrentUser() {
+    protected void revertToCurrentUser() {
         UserSession us = app.getConnection().getSession();
         if (us == null)
             throw new RuntimeException("No user session found");
@@ -1026,7 +1026,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
         }
     }
 
-    private class LogoutBtnClickListener implements Button.ClickListener {
+    protected class LogoutBtnClickListener implements Button.ClickListener {
 
         private static final long serialVersionUID = 4885156177472913997L;
 
@@ -1035,13 +1035,11 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
             if (foldersPane != null) {
                 foldersPane.savePosition();
             }
-            app.cleanupBackgroundTasks();
             app.reinitializeAppearanceProperties();
             app.getWindowManager().checkModificationsAndCloseAll(
                     new Runnable() {
                         @Override
                         public void run() {
-                            app.closeAllWindows();
                             String redirectionUrl = connection.logout();
                             // vaadin7 unused redirectionUrl
                         }

@@ -4,10 +4,12 @@
  */
 package com.haulmont.cuba.web;
 
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.GlobalConfig;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.auth.ActiveDirectoryHelper;
@@ -15,6 +17,9 @@ import com.haulmont.cuba.web.auth.WebAuthConfig;
 import com.haulmont.cuba.web.exception.ExceptionHandlers;
 import com.haulmont.cuba.web.gui.WebTimer;
 import com.haulmont.cuba.web.log.AppLog;
+import com.haulmont.cuba.web.sys.AppCookies;
+import com.haulmont.cuba.web.sys.AppTimers;
+import com.haulmont.cuba.web.sys.BackgroundTaskManager;
 import com.haulmont.cuba.web.sys.LinkHandler;
 import com.haulmont.cuba.web.toolkit.Timer;
 import com.vaadin.Application;
@@ -70,7 +75,6 @@ public abstract class App extends Application
     public static final String APP_THEME_COOKIE_PREFIX = "APP_THEME_NAME_";
 
     protected Connection connection;
-    protected WebWindowManager windowManager;
 
     protected AppLog appLog;
 
@@ -86,15 +90,15 @@ public abstract class App extends Application
 
     protected transient Map<Object, Long> requestStartTimes = new WeakHashMap<>();
 
-    private volatile String contextName;
+    protected volatile String contextName;
 
-    private transient HttpServletResponse response;
+    protected transient HttpServletResponse response;
 
-    private transient HttpSession httpSession;
+    protected transient HttpSession httpSession;
 
-    private AppCookies cookies;
+    protected AppCookies cookies;
 
-    private BackgroundTaskManager backgroundTaskManager;
+    protected BackgroundTaskManager backgroundTaskManager;
 
     protected boolean testModeRequest = false;
 
@@ -110,11 +114,8 @@ public abstract class App extends Application
 
     protected WebTimer workerTimer;
 
-    static {
-        AppContext.setProperty(AppConfig.CLIENT_TYPE_PROP, ClientType.WEB.toString());
-    }
-
     protected App() {
+        log.trace("Creating application " + this);
         try {
             Configuration configuration = AppBeans.get(Configuration.class);
             webConfig = configuration.getConfig(WebConfig.class);
@@ -123,7 +124,6 @@ public abstract class App extends Application
 
             appLog = new AppLog();
             connection = createConnection();
-            windowManager = createWindowManager();
             exceptionHandlers = new ExceptionHandlers(this);
             cookies = new AppCookies() {
                 @Override
@@ -176,11 +176,17 @@ public abstract class App extends Application
         testModeRequest = false;
     }
 
+    /**
+     * Used from CubaApplicationServlet throw reflection
+     *
+     * @return
+     */
+    @SuppressWarnings("unused")
     public static Application.SystemMessages getSystemMessages() {
         Locale defaultLocale;
-        if (!AppContext.isStarted())
+        if (!AppContext.isStarted()) {
             defaultLocale = Locale.getDefault();
-        else {
+        } else {
             GlobalConfig globalConfig = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class);
             Set<Map.Entry<String, Locale>> localeSet = globalConfig.getAvailableLocales().entrySet();
             Map.Entry<String, Locale> localeEntry = localeSet.iterator().next();
@@ -233,19 +239,13 @@ public abstract class App extends Application
     protected abstract Connection createConnection();
 
     /**
-     * Can be overridden in descendant to create an application-specific {@link WebWindowManager}
-     */
-    protected WebWindowManager createWindowManager() {
-        return new WebWindowManager(this);
-    }
-
-    /**
      * @return Current App instance. Can be invoked anywhere in application code.
      */
     public static App getInstance() {
         App app = currentApp.get();
-        if (app == null)
+        if (app == null) {
             throw new IllegalStateException("No App bound to the current thread. This may be the result of hot-deployment.");
+        }
         return app;
     }
 
@@ -276,11 +276,12 @@ public abstract class App extends Application
      * Should be overridden in descendant to create an application-specific main window
      */
     protected AppWindow createAppWindow() {
-        AppWindow appWindow = new AppWindow(connection);
+        AppWindow appWindow = new AppWindow(this);
 
         Timer timer = createSessionPingTimer(true);
-        if (timer != null)
+        if (timer != null) {
             timers.add(timer, appWindow);
+        }
 
         return appWindow;
     }
@@ -289,10 +290,11 @@ public abstract class App extends Application
         String name = currentWindowName.get();
         //noinspection deprecation
         Window window = name == null ? getMainWindow() : getWindow(name);
-        if (window instanceof AppWindow)
+        if (window instanceof AppWindow) {
             return (AppWindow) window;
-        else
+        } else {
             return null;
+        }
     }
 
     /**
@@ -320,8 +322,12 @@ public abstract class App extends Application
         return connection;
     }
 
+    /**
+     * @return WindowManager instance or null if the current UI has no AppWindow
+     */
     public WebWindowManager getWindowManager() {
-        return windowManager;
+        AppWindow appWindow = getAppWindow();
+        return appWindow != null ? appWindow.getWindowManager() : null;
     }
 
     public AppLog getAppLog() {
@@ -330,12 +336,10 @@ public abstract class App extends Application
 
     protected String createWindowName(boolean main) {
         String name = main ? AppContext.getProperty("cuba.web.mainWindowName") : AppContext.getProperty("cuba.web.loginWindowName");
-        if (StringUtils.isBlank(name))
+        if (StringUtils.isBlank(name)) {
             name = generateWebWindowName();
+        }
         return name;
-    }
-
-    public void userSubstituted(Connection connection) {
     }
 
     @Override
@@ -386,8 +390,9 @@ public abstract class App extends Application
         }
         application.setLocale(request.getLocale());
 
-        if (ActiveDirectoryHelper.useActiveDirectory())
+        if (ActiveDirectoryHelper.useActiveDirectory()) {
             setUser(request.getUserPrincipal());
+        }
 
         if (contextName == null) {
             contextName = request.getContextPath().substring(1);
@@ -402,8 +407,9 @@ public abstract class App extends Application
 
         if (!connection.isConnected() &&
                 !((webConfig.getLoginAction().equals(action)) || auxillaryUrl(requestURI))) {
-            if (loginOnStart(request))
+            if (loginOnStart(request)) {
                 setupCurrentWindowName(requestURI, windowName);
+            }
         }
 
         if (connection.isConnected()) {
@@ -434,10 +440,11 @@ public abstract class App extends Application
 
     private void setupCurrentWindowName(String requestURI, String windowName) {
         //noinspection deprecation
-        if (StringUtils.isEmpty(windowName))
+        if (StringUtils.isEmpty(windowName)) {
             currentWindowName.set(getMainWindow() == null ? null : getMainWindow().getName());
-        else
+        } else {
             currentWindowName.set(windowName);
+        }
 
         String[] parts = requestURI.split("/");
         boolean contextFound = false;
@@ -470,10 +477,11 @@ public abstract class App extends Application
                 return;
             }
             LinkHandler linkHandler = AppBeans.getPrototype(LinkHandler.NAME, this, action, params);
-            if (connection.isConnected())
+            if (connection.isConnected()) {
                 linkHandler.handle();
-            else
+            } else {
                 this.linkHandler = linkHandler;
+            }
         }
     }
 
@@ -534,7 +542,10 @@ public abstract class App extends Application
         workerTimer.stop();
     }
 
-    Window getCurrentWindow() {
+    /**
+     * For internal use only
+     */
+    public Window getCurrentWindow() {
         String name = currentWindowName.get();
         return (name == null ? getMainWindow() : getWindow(name));
     }
@@ -567,8 +578,9 @@ public abstract class App extends Application
     }
 
     public WebTimer getWorkerTimer() {
-        if (workerTimer != null)
+        if (workerTimer != null) {
             return workerTimer;
+        }
 
         workerTimer = new WebTimer(webConfig.getUiCheckInterval(), true);
         workerTimer.stop();
@@ -654,5 +666,23 @@ public abstract class App extends Application
 
     public String getClientAddress() {
         return clientAddress;
+    }
+
+    public void closeAllWindows() {
+        log.debug("Closing all windows");
+        try {
+            Collection<Window> windows = App.getInstance().getWindows();
+            for (Window win : new ArrayList<>(windows)) {
+                if (win instanceof AppWindow) {
+                    WebWindowManager wm = ((AppWindow) win).getWindowManager();
+                    wm.closeAll();
+                }
+
+                WebWindowManager.removeCloseListeners(win);
+                removeWindow(win);
+            }
+        } catch (Throwable e) {
+            log.error("Error closing all windows", e);
+        }
     }
 }

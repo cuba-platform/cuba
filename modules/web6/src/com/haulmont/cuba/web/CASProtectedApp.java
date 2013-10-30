@@ -4,9 +4,6 @@
  */
 package com.haulmont.cuba.web;
 
-import com.haulmont.cuba.core.global.PersistenceHelper;
-import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.security.global.LoginException;
 import com.vaadin.service.ApplicationContext;
 import com.vaadin.ui.Window;
@@ -17,11 +14,15 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.ArrayList;
 
+/**
+ * @author krokhin
+ * @version $Id$
+ */
 public class CASProtectedApp extends App implements ConnectionListener {
 
-    private static Log log = LogFactory.getLog(CASProtectedApp.class);
-    
     private static final long serialVersionUID = -6926944868742949956L;
+
+    private static Log log = LogFactory.getLog(CASProtectedApp.class);
 
     @Override
     protected Connection createConnection() {
@@ -93,15 +94,11 @@ public class CASProtectedApp extends App implements ConnectionListener {
                 appWindow.setName(name);
                 addWindow(appWindow);
 
-                connection.addListener(appWindow);
-
                 return appWindow;
             } else {
                 //todo think what I should to do in this case?
             }
         }
-
         return window;
     }
-
 }

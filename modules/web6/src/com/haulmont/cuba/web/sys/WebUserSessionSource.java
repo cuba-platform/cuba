@@ -16,9 +16,8 @@ import com.haulmont.cuba.web.App;
 import javax.annotation.ManagedBean;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 @ManagedBean(UserSessionSource.NAME)
 public class WebUserSessionSource extends AbstractUserSessionSource {
@@ -31,9 +30,9 @@ public class WebUserSessionSource extends AbstractUserSessionSource {
 
     @Override
     public boolean checkCurrentUserSession() {
-        if (App.isBound())
+        if (App.isBound()) {
             return App.getInstance().getConnection().isConnected() && App.getInstance().getConnection().getSession() != null;
-        else {
+        } else {
             SecurityContext securityContext = AppContext.getSecurityContext();
             if (securityContext == null)
                 return false;
@@ -53,18 +52,22 @@ public class WebUserSessionSource extends AbstractUserSessionSource {
 
     @Override
     public UserSession getUserSession() {
-        if (App.isBound())
-            return App.getInstance().getConnection().getSession();
-        else {
+        UserSession session;
+        if (App.isBound()) {
+            session = App.getInstance().getConnection().getSession();
+        } else {
             SecurityContext securityContext = AppContext.getSecurityContext();
             if (securityContext == null)
                 throw new IllegalStateException("No security context bound to the current thread");
 
-            if (securityContext.getSession() != null)
-                return securityContext.getSession();
-            else {
-                return userSessionService.getUserSession(securityContext.getSessionId());
+            if (securityContext.getSession() != null) {
+                session = securityContext.getSession();
+            } else {
+                session = userSessionService.getUserSession(securityContext.getSessionId());
             }
         }
+        if (session == null)
+            throw new IllegalStateException("No user session");
+        return session;
     }
 }

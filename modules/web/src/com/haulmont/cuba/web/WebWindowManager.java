@@ -280,23 +280,6 @@ public class WebWindowManager extends WindowManager {
         };
     }
 
-    protected ComponentContainer createNewWinLayout(Window window, Component... components) {
-        final VerticalLayout layout = new VerticalLayout();
-        layout.setSizeFull();
-        if (components != null) {
-            for (final Component c : components) {
-                layout.addComponent(c);
-            }
-        }
-
-        final Component component = WebComponentsHelper.getComposition(window);
-        component.setSizeFull();
-        layout.addComponent(component);
-        layout.setExpandRatio(component, 1);
-
-        return layout;
-    }
-
     protected Component showWindowNewTab(final Window window, final boolean multipleOpen, final String caption,
                                          final String description) {
         final WindowBreadCrumbs breadCrumbs = createWindowBreadCrumbs();

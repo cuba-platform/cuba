@@ -16,7 +16,7 @@ import com.haulmont.cuba.web.App;
  * @version $Id$
  */
 public class ChangeSubstUserAction extends AbstractAction {
-    private User user;
+    protected User user;
 
     public ChangeSubstUserAction(User user) {
         super("changeSubstUserAction");

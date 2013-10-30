@@ -12,6 +12,7 @@ import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
+import com.haulmont.cuba.web.auth.ActiveDirectoryConnection;
 import com.haulmont.cuba.web.auth.ActiveDirectoryHelper;
 import com.haulmont.cuba.web.toolkit.Timer;
 import com.vaadin.service.ApplicationContext;
@@ -30,11 +31,11 @@ import java.util.Map;
  */
 public class DefaultApp extends App implements ConnectionListener {
 
-    private static Log log = LogFactory.getLog(DefaultApp.class);
-
-    private boolean principalIsWrong;
-
     private static final long serialVersionUID = 70273562618123015L;
+
+    protected boolean principalIsWrong;
+
+    private static Log log = LogFactory.getLog(DefaultApp.class);
 
     // Login on start only on first request from user
     protected boolean tryLoginOnStart = true;
@@ -105,7 +106,6 @@ public class DefaultApp extends App implements ConnectionListener {
                 appWindow.setName(name);
                 addWindow(appWindow);
                 appWindow.focus();
-                connection.addListener(appWindow);
 
                 return appWindow;
             } else {
@@ -153,25 +153,33 @@ public class DefaultApp extends App implements ConnectionListener {
             afterLoggedIn();
         } else {
             log.debug("Closing all windows");
-            getWindowManager().closeAll();
 
-            getTimers().stopAll();
+            if (webConfig.getInvalidateHttpSessionOnLogout()) {
+                cleanupBackgroundTasks();
+                getTimers().stopAll();
 
-            for (Object win : new ArrayList<Object>(getWindows())) {
-                removeWindow((Window) win);
+                closeAllWindows();
+
+                this.close();
+            } else {
+                cleanupBackgroundTasks();
+                getTimers().stopAll();
+
+                closeAllWindows();
+
+                String name = currentWindowName.get();
+                if (name == null) {
+                    name = createWindowName(false);
+                }
+
+                Window window = createLoginWindow();
+                window.setName(name);
+                setMainWindow(window);
+
+                currentWindowName.set(window.getName());
+
+                initExceptionHandlers(false);
             }
-
-            String name = currentWindowName.get();
-            if (name == null)
-                name = createWindowName(false);
-
-            Window window = createLoginWindow();
-            window.setName(name);
-            setMainWindow(window);
-
-            currentWindowName.set(window.getName());
-
-            initExceptionHandlers(false);
         }
     }
 

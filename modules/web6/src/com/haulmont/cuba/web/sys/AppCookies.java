@@ -2,7 +2,7 @@
  * Copyright (c) 2008-2013 Haulmont. All rights reserved.
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
-package com.haulmont.cuba.web;
+package com.haulmont.cuba.web.sys;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -14,6 +14,10 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 public abstract class AppCookies implements Serializable {
 
     private static final long serialVersionUID = 5958656635050664762L;

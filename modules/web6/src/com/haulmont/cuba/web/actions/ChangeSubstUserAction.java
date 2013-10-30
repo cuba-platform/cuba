@@ -5,7 +5,9 @@
 
 package com.haulmont.cuba.web.actions;
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.security.entity.User;
@@ -13,13 +15,11 @@ import com.haulmont.cuba.web.App;
 import com.vaadin.ui.Window;
 
 /**
- * <p>$Id$</p>
- *
  * @author shishov
+ * @version $Id$
  */
-
 public class ChangeSubstUserAction extends AbstractAction {
-    private User user;
+    protected User user;
 
     public ChangeSubstUserAction(User user) {
         super("changeSubstUserAction");
@@ -31,6 +31,7 @@ public class ChangeSubstUserAction extends AbstractAction {
         return "icons/ok.png";
     }
 
+    @Override
     public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
         final App app = App.getInstance();
         app.getWindowManager().checkModificationsAndCloseAll(
@@ -42,8 +43,8 @@ public class ChangeSubstUserAction extends AbstractAction {
                             doAfterChangeUser();
                         } catch (javax.persistence.NoResultException e) {
                             App.getInstance().getAppWindow().showNotification(
-                                    MessageProvider.formatMessage(AppConfig.getMessagesPack(), "userDeleteMsg",
-                                    user.getName()),
+                                    AppBeans.get(Messages.class).formatMessage(
+                                            AppConfig.getMessagesPack(), "userDeleteMsg",user.getName()),
                                     Window.Notification.TYPE_WARNING_MESSAGE
                             );
                             doRevert();

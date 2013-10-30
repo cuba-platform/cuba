@@ -2,7 +2,7 @@
  * Copyright (c) 2008-2013 Haulmont. All rights reserved.
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
-package com.haulmont.cuba.web;
+package com.haulmont.cuba.web.auth;
 
 import com.haulmont.cuba.security.global.LoginException;
 
@@ -10,6 +10,9 @@ import java.util.Locale;
 
 /**
  * Interface to be implemented by middleware connection objects supporting ActiveDirectory integration.
+ *
+ * @author krokhin
+ * @version $Id$
  */
 public interface ActiveDirectoryConnection {
 

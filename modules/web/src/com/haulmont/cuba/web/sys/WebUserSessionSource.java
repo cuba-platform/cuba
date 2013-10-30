@@ -30,9 +30,9 @@ public class WebUserSessionSource extends AbstractUserSessionSource {
 
     @Override
     public boolean checkCurrentUserSession() {
-        if (App.isBound())
+        if (App.isBound()) {
             return App.getInstance().getConnection().isConnected() && App.getInstance().getConnection().getSession() != null;
-        else {
+        } else {
             SecurityContext securityContext = AppContext.getSecurityContext();
             if (securityContext == null)
                 return false;
@@ -62,8 +62,7 @@ public class WebUserSessionSource extends AbstractUserSessionSource {
 
             if (securityContext.getSession() != null) {
                 session = securityContext.getSession();
-            }
-            else {
+            } else {
                 session = userSessionService.getUserSession(securityContext.getSessionId());
             }
         }
