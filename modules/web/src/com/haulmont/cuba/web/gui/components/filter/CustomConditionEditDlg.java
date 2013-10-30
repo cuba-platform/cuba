@@ -25,6 +25,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Window to create a new custom filter condition.
+ *
  * @author krivopustov
  * @version $Id$
  */

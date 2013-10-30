@@ -39,13 +39,13 @@ import java.util.*;
  */
 public class AddConditionDlg extends Window {
 
-    private static List<?> MODEL_PROPERTY_IDS = Collections.singletonList("caption");
+    protected static List<?> MODEL_PROPERTY_IDS = Collections.singletonList("caption");
 
-    private Tree tree;
-    private Button okBtn;
+    protected Tree tree;
+    protected Button okBtn;
 
-    private SelectionHandler selectionHandler;
-    private ModelItem selectedItem;
+    protected SelectionHandler selectionHandler;
+    protected ModelItem selectedItem;
 
     public AddConditionDlg(MetaClass metaClass,
                            List<AbstractConditionDescriptor> propertyDescriptors,
@@ -142,7 +142,7 @@ public class AddConditionDlg extends Window {
         tree.focus();
     }
 
-    private void initButtonsLayout(HorizontalLayout buttonsLayout) {
+    protected void initButtonsLayout(HorizontalLayout buttonsLayout) {
         buttonsLayout.setWidth("100%");
         buttonsLayout.setSpacing(true);
 
@@ -170,7 +170,7 @@ public class AddConditionDlg extends Window {
         buttonsLayout.addComponent(cancelBtn);
     }
 
-    private void initShortcuts() {
+    protected void initShortcuts() {
         ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
         KeyCombination close = KeyCombination.create(clientConfig.getCloseShortcut());
         KeyCombination commit = KeyCombination.create(clientConfig.getCommitShortcut());
@@ -197,7 +197,7 @@ public class AddConditionDlg extends Window {
         WebComponentsHelper.setActions(this, actionsMap);
     }
 
-    private void commit(SelectionHandler selectionHandler) {
+    protected void commit(SelectionHandler selectionHandler) {
         if (selectionHandler != null && tree.getValue() != null
                 && ((ModelItem) tree.getValue()).getDescriptor() != null) {
             selectionHandler.select(((ModelItem) tree.getValue()).getDescriptor());
@@ -232,7 +232,7 @@ public class AddConditionDlg extends Window {
         }
     }
 
-    private static class ItemWrapper implements Item {
+    protected static class ItemWrapper implements Item {
 
         private ModelItem modelItem;
 
@@ -307,7 +307,7 @@ public class AddConditionDlg extends Window {
         }
     }
 
-    private static class Model implements Container.Hierarchical {
+    protected static class Model implements Container.Hierarchical {
 
         private MetaClass metaClass;
         private List<AbstractConditionDescriptor> propertyDescriptors;

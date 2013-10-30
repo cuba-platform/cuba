@@ -18,6 +18,12 @@ import org.apache.commons.lang.StringUtils;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Window to create a new custom filter condition.
+ *
+ * @author krivopustov
+ * @version $Id$
+ */
 public class CustomConditionEditDlg extends AbstractCustomConditionEditDlg<Window> {
 
     protected Editor impl;
@@ -31,7 +37,7 @@ public class CustomConditionEditDlg extends AbstractCustomConditionEditDlg<Windo
         ShortcutAction commitAction = new ShortcutAction("commit", ShortcutAction.KeyCode.ENTER,
                 new int[]{ShortcutAction.ModifierKey.CTRL});
 
-        Map<Action, Runnable> actions = new HashMap<Action, Runnable>();
+        Map<Action, Runnable> actions = new HashMap<>();
         actions.put(closeAction, new Runnable() {
             @Override
             public void run() {
@@ -75,17 +81,20 @@ public class CustomConditionEditDlg extends AbstractCustomConditionEditDlg<Windo
     protected class Editor extends Window {
         public Editor() {
             super(condition.getLocCaption());
-            setWidth("470px");
+
+            setWidth(-1, UNITS_PIXELS);
             setModal(true);
+            setResizable(false);
 
             VerticalLayout layout = new VerticalLayout();
-            layout.setMargin(true);
+            layout.setWidth(-1, UNITS_PIXELS);
             layout.setSpacing(true);
 
             setContent(layout);
 
             entityAlias = condition.getEntityAlias();
-            Label eaLab = new Label(MessageProvider.formatMessage(MESSAGES_PACK, "CustomConditionEditDlg.hintLabel", entityAlias));
+            Label eaLab = new Label(AppBeans.get(Messages.class)
+                    .formatMessage(MESSAGES_PACK, "CustomConditionEditDlg.hintLabel", entityAlias));
             eaLab.setContentMode(Label.CONTENT_XHTML);
             layout.addComponent(eaLab);
 
@@ -159,7 +168,6 @@ public class CustomConditionEditDlg extends AbstractCustomConditionEditDlg<Windo
 
             HorizontalLayout btnLayout = new HorizontalLayout();
             btnLayout.setSpacing(true);
-            btnLayout.setMargin(true, false, false, false);
 
             btnLayout.addComponent(WebComponentsHelper.unwrap(btnOk));
             btnLayout.addComponent(WebComponentsHelper.unwrap(btnCancel));
@@ -170,5 +178,4 @@ public class CustomConditionEditDlg extends AbstractCustomConditionEditDlg<Windo
             close();
         }
     }
-
 }
