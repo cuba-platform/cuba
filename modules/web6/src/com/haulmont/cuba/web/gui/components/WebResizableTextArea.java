@@ -26,7 +26,10 @@ public class WebResizableTextArea
 
     @Override
     protected com.haulmont.cuba.web.toolkit.ui.ResizableTextArea createTextFieldImpl() {
-        return new com.haulmont.cuba.web.toolkit.ui.ResizableTextArea();
+        com.haulmont.cuba.web.toolkit.ui.ResizableTextArea textArea =
+                new com.haulmont.cuba.web.toolkit.ui.ResizableTextArea();
+        textArea.setRows(5);
+        return textArea;
     }
 
     @Override

@@ -21,6 +21,8 @@ public class WebTextArea
 
     @Override
     protected TextField createTextFieldImpl() {
-        return new TextField();
+        TextField textField = new TextField();
+        textField.setRows(5);
+        return textField;
     }
 }
