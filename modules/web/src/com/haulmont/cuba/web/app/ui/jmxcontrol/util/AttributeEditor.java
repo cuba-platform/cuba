@@ -72,6 +72,8 @@ public class AttributeEditor {
             return BooleanUtils.isTrue(value);
         } else if (textField != null) {
             String strValue = textField.getValue();
+            if (strValue == null)
+                strValue = "";
             return AttributeHelper.convert(type, strValue);
         }
         // array
