@@ -394,7 +394,7 @@ configure(webModule) {
         appName = 'cuba'
         appJars('cuba-global', 'cuba-client', 'cuba-gui', 'cuba-web', 'cuba-web-auth',
                 'vaadin-server', 'vaadin-shared-deps', 'vaadin-shared', 'vaadin-theme-compiler',
-                'aceeditor', 'popupbutton')
+                'aceeditor', 'popupbutton', 'appletintegration')
     }
 
     deploy << {
@@ -628,7 +628,7 @@ configure(webLegacyModule) {
     task deploy(dependsOn: assemble, type: CubaDeployment) {
         appName = 'cuba6'
         appJars('cuba-global', 'cuba-client', 'cuba-gui', 'cuba-web-auth', 'cuba-web6',
-                'vaadin', 'popupbutton')
+                'vaadin', 'popupbutton', 'appletintegration')
     }
 
     deploy << {
