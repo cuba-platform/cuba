@@ -153,33 +153,22 @@ public class DefaultApp extends App implements ConnectionListener {
             afterLoggedIn();
         } else {
             log.debug("Closing all windows");
+            cleanupBackgroundTasks();
+            getTimers().stopAll();
 
-            if (webConfig.getInvalidateHttpSessionOnLogout()) {
-                cleanupBackgroundTasks();
-                getTimers().stopAll();
+            closeAllWindows();
 
-                closeAllWindows();
+            String name = currentWindowName.get();
+            if (name == null)
+                name = createWindowName(false);
 
-                this.close();
-            } else {
-                cleanupBackgroundTasks();
-                getTimers().stopAll();
+            Window window = createLoginWindow();
+            window.setName(name);
+            setMainWindow(window);
 
-                closeAllWindows();
+            currentWindowName.set(window.getName());
 
-                String name = currentWindowName.get();
-                if (name == null) {
-                    name = createWindowName(false);
-                }
-
-                Window window = createLoginWindow();
-                window.setName(name);
-                setMainWindow(window);
-
-                currentWindowName.set(window.getName());
-
-                initExceptionHandlers(false);
-            }
+            initExceptionHandlers(false);
         }
     }
 
