@@ -283,22 +283,6 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
             throw new GuiDevelopmentException("ComponentLoaderContext.frame is null", context.getFullFrameId());
     }
 
-    /**
-     * @param expression
-     * @return
-     * @deprecated Do not use!
-     */
-    @Deprecated
-    protected Boolean evaluateBoolean(String expression) {
-        Boolean value;
-        if (isBoolean(expression)) {
-            value = Boolean.valueOf(expression);
-        } else {
-            value = scripting.evaluateGroovy(expression, context.getBinding());
-        }
-        return value;
-    }
-
     protected static boolean isBoolean(String s) {
         return "true".equals(s) || "false".equals(s);
     }
