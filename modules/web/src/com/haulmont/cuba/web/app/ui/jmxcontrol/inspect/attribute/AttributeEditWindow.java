@@ -64,7 +64,8 @@ public class AttributeEditWindow extends AbstractEditor<ManagedBeanAttribute> {
             }
         } catch (Exception e) {
             getDialogParams().setWidth(640);
-            showMessageDialog(String.format(getMessage("editAttribute.exception"), mba.getName()), e.getMessage(),
+            showMessageDialog(String.format(getMessage("editAttribute.exception"), mba.getName()),
+                    e.getClass().getCanonicalName() + " " + e.getMessage() + "\n",
                     MessageType.WARNING);
             mba.setValue(oldValue);
             return false;

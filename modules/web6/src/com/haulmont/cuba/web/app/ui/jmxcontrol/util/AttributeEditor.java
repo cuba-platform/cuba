@@ -18,34 +18,38 @@ import org.apache.commons.lang.BooleanUtils;
  */
 public class AttributeEditor {
 
-    private CheckBox checkBox;
-    private TextField textField;
-    private BoxLayout layout;
-    private String type;
+    protected CheckBox checkBox;
+    protected TextField textField;
+    protected BoxLayout layout;
+    protected String type;
 
     public AttributeEditor(IFrame frame, String type) {
-        this(frame, type, null);
+        this(frame, type, null, false);
     }
 
-    public AttributeEditor(IFrame frame, String type, Object value) {
+    public AttributeEditor(IFrame frame, String type, Object value, boolean requestFocus) {
         this.type = type;
         if (AttributeHelper.isBoolean(type)) {
             checkBox = new WebCheckBox();
             checkBox.setFrame(frame);
-            checkBox.requestFocus();
+            if (requestFocus) {
+                checkBox.requestFocus();
+            }
             if (value != null) {
                 checkBox.setValue(value);
             }
-        }
-        else if (AttributeHelper.isArray(type)) {
+
+        } else if (AttributeHelper.isArray(type)) {
             layout = new WebVBoxLayout();
             layout.setSpacing(true);
-        }
-        else {
+        } else {
             textField = new WebTextField();
             textField.setWidth("500px");
             textField.setFrame(frame);
-            textField.requestFocus();
+
+            if (requestFocus) {
+                textField.requestFocus();
+            }
             if (value != null) {
                 textField.setValue(value.toString());
             }
@@ -64,11 +68,12 @@ public class AttributeEditor {
 
     public Object getAttributeValue() {
         if (checkBox != null) {
-            Boolean value = (Boolean) checkBox.getValue();
+            Boolean value = checkBox.getValue();
             return BooleanUtils.isTrue(value);
-        }
-        else if (textField != null) {
+        } else if (textField != null) {
             String strValue = textField.getValue();
+            if (strValue == null)
+                strValue = "";
             return AttributeHelper.convert(type, strValue);
         }
         // array

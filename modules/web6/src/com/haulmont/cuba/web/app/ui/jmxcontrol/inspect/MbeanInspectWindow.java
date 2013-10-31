@@ -5,19 +5,16 @@
 
 package com.haulmont.cuba.web.app.ui.jmxcontrol.inspect;
 
-import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
-import com.haulmont.cuba.web.jmx.entity.ManagedBeanAttribute;
-import com.haulmont.cuba.web.jmx.entity.ManagedBeanInfo;
-import com.haulmont.cuba.web.jmx.entity.ManagedBeanOperation;
-import com.haulmont.cuba.web.jmx.entity.ManagedBeanOperationParameter;
-import com.haulmont.cuba.web.jmx.entity.AttributeHelper;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.app.ui.jmxcontrol.util.AttributeEditor;
-import com.haulmont.cuba.web.gui.components.*;
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.jmx.JmxControlAPI;
+import com.haulmont.cuba.web.jmx.entity.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,10 +31,10 @@ public class MbeanInspectWindow extends AbstractEditor {
 
     private Log log = LogFactory.getLog(getClass());
 
-    @Named("attributes")
-    protected Table attrTable;
+    @Inject
+    protected Table attributesTable;
 
-    @Named("attributes.edit")
+    @Named("attributesTable.edit")
     protected Action editAttributeAction;
 
     @Inject
@@ -54,22 +51,22 @@ public class MbeanInspectWindow extends AbstractEditor {
         super.init(params);
 
         com.haulmont.cuba.web.toolkit.ui.Table vaadinAttrTable =
-                (com.haulmont.cuba.web.toolkit.ui.Table) WebComponentsHelper.unwrap(attrTable);
+                (com.haulmont.cuba.web.toolkit.ui.Table) WebComponentsHelper.unwrap(attributesTable);
         vaadinAttrTable.setTextSelectionEnabled(true);
 
-        attrTable.setItemClickAction(editAttributeAction);
+        attributesTable.setItemClickAction(editAttributeAction);
         attrDs.addListener(new CollectionDsListenerAdapter<ManagedBeanAttribute>() {
             @Override
             public void collectionChanged(CollectionDatasource ds, Operation operation, List<ManagedBeanAttribute> items) {
                 if (ds.getItemIds().isEmpty()) {
-                    attrTable.setHeight("80px"); // reduce its height if no attributes
+                    attributesTable.setHeight("80px"); // reduce its height if no attributes
                 }
             }
         });
     }
 
     public void editAttribute() {
-        Set<ManagedBeanAttribute> selected = attrTable.getSelected();
+        Set<ManagedBeanAttribute> selected = attributesTable.getSelected();
         if (selected.isEmpty()) {
             return;
         }
@@ -91,19 +88,18 @@ public class MbeanInspectWindow extends AbstractEditor {
         });
     }
 
-    private void reloadAttribute(ManagedBeanAttribute attribute) {
+    protected void reloadAttribute(ManagedBeanAttribute attribute) {
         attribute = jmxControlAPI.loadAttributeValue(attribute);
-        attrTable.getDatasource().updateItem(attribute);
+
+        attrDs.updateItem(attribute);
     }
 
     public void reloadAttributes() {
-        attrTable.getDatasource().refresh();
+        attributesTable.getDatasource().refresh();
     }
 
     @Override
-    public void setItem(Entity item) {
-        super.setItem(item);
-
+    protected void postInit() {
         initOperationsLayout((ManagedBeanInfo) getItem());
 
         ManagedBeanInfo mbean = (ManagedBeanInfo) getItem();
@@ -112,21 +108,22 @@ public class MbeanInspectWindow extends AbstractEditor {
         }
     }
 
-    private void initOperationsLayout(ManagedBeanInfo mbean) {
+    protected void initOperationsLayout(ManagedBeanInfo mbean) {
+        ComponentsFactory componentsFactory = AppConfig.getFactory();
         BoxLayout container = operations;
         for (final ManagedBeanOperation op : mbean.getOperations()) {
-            BoxLayout vl = new WebVBoxLayout();
+            BoxLayout vl = componentsFactory.createComponent(BoxLayout.VBOX);
             vl.setMargin(false, false, true, false);
             vl.setSpacing(true);
             vl.setStyleName("operationContainer");
 
-            Label nameLbl = new WebLabel();
+            Label nameLbl = componentsFactory.createComponent(Label.NAME);
             nameLbl.setValue(op.getReturnType() + " " + op.getName() + "()");
             nameLbl.setStyleName("h2");
             vl.add(nameLbl);
 
             if (StringUtils.isNotEmpty(op.getDescription())) {
-                Label descrLbl = new WebLabel();
+                Label descrLbl = componentsFactory.createComponent(Label.NAME);
                 descrLbl.setValue(op.getDescription());
                 vl.add(descrLbl);
             }
@@ -134,35 +131,44 @@ public class MbeanInspectWindow extends AbstractEditor {
             final List<AttributeEditor> attrProviders = new ArrayList<>();
 
             if (!op.getParameters().isEmpty()) {
-                GridLayout grid = new WebGridLayout();
+                GridLayout grid = componentsFactory.createComponent(GridLayout.NAME);
                 grid.setSpacing(true);
-                grid.setColumns(4);
+                grid.setColumns(3);
                 grid.setRows(op.getParameters().size());
                 int row = 0;
                 for (ManagedBeanOperationParameter param : op.getParameters()) {
-                    Label pnameLbl = new WebLabel();
+                    Label pnameLbl = componentsFactory.createComponent(Label.NAME);
                     pnameLbl.setValue(param.getName());
 
-                    Label ptypeLbl = new WebLabel();
+                    Label ptypeLbl = componentsFactory.createComponent(Label.NAME);
                     ptypeLbl.setValue(param.getType());
 
                     AttributeEditor prov = new AttributeEditor(this, param.getType());
                     attrProviders.add(prov);
                     Component editField = prov.getComponent();
 
-                    Label pdescrLbl = new WebLabel();
-                    pdescrLbl.setValue(param.getDescription());
+                    Component editComposition = editField;
+
+                    if (StringUtils.isNotBlank(param.getDescription())) {
+                        Label pdescrLbl = componentsFactory.createComponent(Label.NAME);
+                        pdescrLbl.setValue(param.getDescription());
+
+                        BoxLayout editorLayout = componentsFactory.createComponent(BoxLayout.VBOX);
+                        editorLayout.add(editField);
+                        editorLayout.add(pdescrLbl);
+
+                        editComposition = editorLayout;
+                    }
 
                     grid.add(pnameLbl, 0, row);
                     grid.add(ptypeLbl, 1, row);
-                    grid.add(editField, 2, row);
-                    grid.add(pdescrLbl, 3, row);
+                    grid.add(editComposition, 2, row);
                     row++;
                 }
                 vl.add(grid);
             }
 
-            Button invokeBtn = new WebButton();
+            Button invokeBtn = componentsFactory.createComponent(Button.NAME);
             invokeBtn.setAction(new AbstractAction("invoke") {
                 @Override
                 public void actionPerform(Component component) {
@@ -179,13 +185,13 @@ public class MbeanInspectWindow extends AbstractEditor {
             container.add(vl);
         }
         if (mbean.getOperations().isEmpty()) {
-            Label lbl = new WebLabel();
+            Label lbl = componentsFactory.createComponent(Label.NAME);
             lbl.setValue(getMessage("mbean.operations.none"));
             container.add(lbl);
         }
     }
 
-    private void invokeOperation(ManagedBeanOperation op, List<AttributeEditor> attrProviders) {
+    protected void invokeOperation(ManagedBeanOperation op, List<AttributeEditor> attrProviders) {
         Map<String, Object> params = new HashMap<>();
         Object[] paramValues = new Object[attrProviders.size()];
         try {
@@ -206,6 +212,7 @@ public class MbeanInspectWindow extends AbstractEditor {
         } catch (Exception e) {
             params.put("exception", e);
         }
+
         Window w = openWindow("jmxConsoleOperationResult", WindowManager.OpenType.DIALOG, params);
         w.addListener(new CloseListener() {
             @Override
@@ -215,7 +222,7 @@ public class MbeanInspectWindow extends AbstractEditor {
         });
     }
 
-    public void close(Component component) {
-        super.close("close",true);
+    public void close() {
+        super.close("close", true);
     }
 }

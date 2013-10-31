@@ -5,12 +5,11 @@
 
 package com.haulmont.cuba.web.app.ui.jmxcontrol.inspect.attribute;
 
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.GridLayout;
-import com.haulmont.cuba.web.jmx.entity.ManagedBeanAttribute;
 import com.haulmont.cuba.web.app.ui.jmxcontrol.util.AttributeEditor;
 import com.haulmont.cuba.web.jmx.JmxControlAPI;
+import com.haulmont.cuba.web.jmx.entity.ManagedBeanAttribute;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.inject.Inject;
@@ -19,24 +18,24 @@ import javax.inject.Inject;
  * @author budarov
  * @version $Id$
  */
-public class AttributeEditWindow extends AbstractEditor {
+public class AttributeEditWindow extends AbstractEditor<ManagedBeanAttribute> {
 
-    private AttributeEditor valueHolder;
+    protected AttributeEditor valueHolder;
 
     @Inject
     protected JmxControlAPI jmxControlAPI;
 
-    @Override
-    public void setItem(Entity item) {
-        super.setItem(item);
+    @Inject
+    protected GridLayout valueContainer;
 
-        ManagedBeanAttribute mba = (ManagedBeanAttribute) getItem();
+    @Override
+    protected void postInit() {
+        ManagedBeanAttribute mba = getItem();
         final String type = mba.getType();
 
-        GridLayout layout = getComponent("valueContainer");
-        valueHolder = new AttributeEditor(this, type, mba.getValue());
+        valueHolder = new AttributeEditor(this, type, mba.getValue(), true);
 
-        layout.add(valueHolder.getComponent(), 1, 0);
+        valueContainer.add(valueHolder.getComponent(), 1, 0);
 
         if (mba.getName() != null) {
             setCaption(formatMessage("editAttribute.title.format", mba.getName()));
@@ -51,7 +50,7 @@ public class AttributeEditWindow extends AbstractEditor {
     }
 
     private boolean assignValue() {
-        ManagedBeanAttribute mba = (ManagedBeanAttribute) getItem();
+        ManagedBeanAttribute mba = getItem();
 
         Object oldValue = mba.getValue();
         try {
@@ -65,7 +64,8 @@ public class AttributeEditWindow extends AbstractEditor {
             }
         } catch (Exception e) {
             getDialogParams().setWidth(640);
-            showMessageDialog(String.format(getMessage("editAttribute.exception"), mba.getName()), e.getMessage(),
+            showMessageDialog(String.format(getMessage("editAttribute.exception"), mba.getName()),
+                    e.getClass().getCanonicalName() + " " + e.getMessage() + "\n",
                     MessageType.WARNING);
             mba.setValue(oldValue);
             return false;

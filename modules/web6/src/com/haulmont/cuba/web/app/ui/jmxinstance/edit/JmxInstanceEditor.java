@@ -10,6 +10,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.jmx.JmxControlAPI;
+import com.haulmont.cuba.web.jmx.JmxControlException;
 import org.apache.commons.lang.StringUtils;
 
 import javax.inject.Inject;
@@ -27,10 +28,10 @@ public class JmxInstanceEditor extends AbstractEditor<JmxInstance> {
     @Inject
     protected FieldGroup jmxFieldGroup;
 
-    protected PasswordField passwordField;
-
     @Inject
     protected JmxControlAPI jmxControlAPI;
+
+    protected PasswordField passwordField;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -49,12 +50,21 @@ public class JmxInstanceEditor extends AbstractEditor<JmxInstance> {
             }
         });
     }
+
+    @Override
+    protected void postInit() {
+        super.postInit();
+
+        passwordField.setValue(getItem().getPassword());
+    }
+
     @Override
     protected boolean preCommit() {
         return validateConnection() && super.preCommit();
     }
 
     private boolean validateConnection() {
+        getItem().setPassword(passwordField.<String>getValue());
         // try to connect to instance and assign cluster node name
         try {
             String remoteNodeName = jmxControlAPI.getRemoteNodeName(getItem());
@@ -63,7 +73,7 @@ public class JmxInstanceEditor extends AbstractEditor<JmxInstance> {
         } catch (SecurityException e) {
             showNotification(getMessage("invalidCredentials"), NotificationType.WARNING);
             return false;
-        } catch (Exception e) {
+        } catch (JmxControlException e) {
             showNotification(getMessage("unableToConnectToInterface"), NotificationType.WARNING);
             return false;
         }
