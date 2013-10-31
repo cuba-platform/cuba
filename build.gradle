@@ -438,9 +438,7 @@ configure(webToolkitModule) {
     dependencies {
         compile(webModule)
 
-        compile(group: 'com.vaadin', name: 'vaadin-client-compiled', version: vaadinVersion)
         compile(group: 'com.vaadin', name: 'vaadin-client', version: vaadinVersion)
-
         compile(group: 'com.vaadin', name: 'vaadin-client-compiler', version: vaadinVersion)
 
         widgetSetBuilding(webModule)
