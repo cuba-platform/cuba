@@ -163,6 +163,9 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
                 else
                     return getDefaultValue(metaProperty.getRangeJavaClass());
             } else {
+                if (value == null)
+                    return null;
+
                 return metadataTools.format(value, ((MetaPropertyPath) column.getId()).getMetaProperty());
             }
         } else {

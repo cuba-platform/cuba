@@ -9,7 +9,10 @@ import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Label;
@@ -127,7 +130,14 @@ public class WebLabel
     @Override
     public void setValue(Object value) {
         final Object prevValue = getValue();
-        component.setValue((String) value);
+        if (metaProperty != null) {
+            if (datasource.getItem() != null) {
+                InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), value);
+            }
+        } else {
+            String text = formatValue(value);
+            component.setValue(text);
+        }
         fireValueChanged(prevValue, value);
     }
 
@@ -174,5 +184,25 @@ public class WebLabel
         for (ValueListener listener : listeners) {
             listener.valueChanged(this, "value", prevValue, value);
         }
+    }
+
+    public String formatValue(Object value) {
+        String text;
+        if (formatter == null) {
+            if (value == null) {
+                text = "";
+            } else {
+                MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
+
+                if (metaProperty != null) {
+                    text = metadataTools.format(value, metaProperty);
+                } else {
+                    text = metadataTools.format(value);
+                }
+            }
+        } else {
+            text = formatter.format(value);
+        }
+        return text;
     }
 }

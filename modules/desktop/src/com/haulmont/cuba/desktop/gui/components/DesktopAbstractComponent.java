@@ -6,11 +6,9 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.Range;
-import com.haulmont.chile.core.model.utils.InstanceUtils;
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.data.ComponentSize;
 import com.haulmont.cuba.desktop.theme.DesktopTheme;
@@ -25,13 +23,12 @@ import javax.swing.*;
 import java.util.Locale;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public abstract class DesktopAbstractComponent<C extends JComponent>
         implements
-        DesktopComponent, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame {
+            DesktopComponent, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame {
 
     protected C impl;
 
@@ -267,25 +264,20 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
          * @return Formatted string
          */
         public String formatValue(Object value) {
-            String text = "";
+            String text;
             if (formatter == null) {
                 if (value == null) {
                     text = "";
                 } else {
+                    MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
+
                     if (metaProperty != null) {
-                        Range range = metaProperty.getRange();
-                        if (range.isDatatype()) {
-                            text = range.asDatatype().format(value, locale);
-                        } else if (range.isEnum()) {
-                            text = MessageProvider.getMessage((Enum) value);
-                        } else if (range.isClass()) {
-                            text = InstanceUtils.getInstanceName((Instance) value);
-                        } else
-                            text = String.valueOf(value);
+                        text = metadataTools.format(value, metaProperty);
                     } else if (datatype != null) {
                         text = datatype.format(value, locale);
-                    } else
-                        text = String.valueOf(value);
+                    } else {
+                        text = metadataTools.format(value);
+                    }
                 }
             } else {
                 text = formatter.format(value);

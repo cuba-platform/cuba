@@ -7,6 +7,8 @@ package com.haulmont.cuba.core.global;
 
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.*;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.SoftDelete;
@@ -70,12 +72,11 @@ public class MetadataTools {
      * Formats a value according to the property type.
      * @param value    object to format
      * @param property metadata
-     * @return formatted value as string, or null if value is null
+     * @return formatted value as string
      */
-    @Nullable
     public String format(@Nullable Object value, MetaProperty property) {
         if (value == null)
-            return null;
+            return "";
         Objects.requireNonNull(property, "property is null");
 
         Range range = property.getRange();
@@ -84,11 +85,32 @@ public class MetadataTools {
             return datatype.format(value, userSessionSource.getLocale());
         } else if (range.isEnum()) {
             return messages.getMessage((Enum) value);
+        } else if (value instanceof Instance) {
+            return ((Instance) value).getInstanceName();
         } else {
-            if (value instanceof Instance)
-                return ((Instance) value).getInstanceName();
-            else
-                return value.toString();
+            return value.toString();
+        }
+    }
+
+    /**
+     * Formats a value according to the value type.
+     * @param value    object to format
+     * @return formatted value as string
+     */
+    public String format(@Nullable Object value) {
+        if (value == null) {
+            return "";
+        } else if (value instanceof Instance) {
+            return ((Instance) value).getInstanceName();
+        } else if (value instanceof EnumClass && value instanceof Enum) {
+            return messages.getMessage((Enum) value, userSessionSource.getLocale());
+        } else {
+            Datatype datatype = Datatypes.get(value.getClass());
+            if (datatype != null) {
+                return datatype.format(value, userSessionSource.getLocale());
+            }
+
+            return value.toString();
         }
     }
 

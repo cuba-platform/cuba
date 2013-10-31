@@ -4,32 +4,38 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Label;
+import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
-import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.Instance;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Collections;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class WebLabel
     extends
         WebAbstractComponent<com.vaadin.ui.Label>
     implements
-        Label, Component.Wrapper
-{
-    protected List<ValueListener> listeners = new ArrayList<ValueListener>();
+        Label, Component.Wrapper {
+
+    protected List<ValueListener> listeners = new ArrayList<>();
 
     protected Datasource<Entity> datasource;
     protected MetaProperty metaProperty;
@@ -84,6 +90,26 @@ public class WebLabel
         };
     }
 
+    public String formatValue(Object value) {
+        String text;
+        if (formatter == null) {
+            if (value == null) {
+                text = "";
+            } else {
+                MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
+
+                if (metaProperty != null) {
+                    text = metadataTools.format(value, metaProperty);
+                } else {
+                    text = metadataTools.format(value);
+                }
+            }
+        } else {
+            text = formatter.format(value);
+        }
+        return text;
+    }
+
     @Override
     public <T> T getValue() {
         return (T) component.getValue();
@@ -92,6 +118,9 @@ public class WebLabel
     @Override
     public void setValue(Object value) {
         final Object prevValue = getValue();
+        if (metaProperty == null) {
+            value = formatValue(value);
+        }
         component.setValue(value);
         fireValueChanged(prevValue, value);
     }
