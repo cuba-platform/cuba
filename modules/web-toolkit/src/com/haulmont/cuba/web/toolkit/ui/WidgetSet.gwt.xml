@@ -11,6 +11,7 @@
     <!-- Inherit DefaultWidgetSet -->
     <inherits name="com.vaadin.DefaultWidgetSet"/>
     <inherits name="org.vaadin.aceeditor.AceEditorWidgetSet"/>
+    <inherits name="org.vaadin.applet.AppletintegrationWidgetset"/>
     <inherits name="org.vaadin.hene.popupbutton.widgetset.PopupbuttonWidgetset"/>
 
     <replace-with class="com.haulmont.cuba.web.toolkit.ui.client.tooltip.CubaTooltip">

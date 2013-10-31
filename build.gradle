@@ -74,6 +74,7 @@ def hsqldb = [group: 'org.hsqldb', name: 'hsqldb', version: '2.2.9']
 /* Legacy dependencies */
 def vaadinLegacy = [group: 'com.haulmont.thirdparty', name: 'vaadin', version: vaadinLegacyVersion]
 def popupButtonLegacy = [group: 'com.haulmont.thirdparty', name: 'popupbutton', version: '1.0.0']
+def appletIntegrationLegacy = [group: 'com.haulmont.thirdparty', name: 'appletintegration', version: '1.1.4']
 def gwtUser = [group: 'com.google.gwt', name: 'gwt-user', version: '2.3.0']
 def gwtDev = [group: 'com.google.gwt', name: 'gwt-dev', version: '2.3.0']
 def gwtServlets = [group: 'com.google.gwt', name: 'gwt-servlet', version: '2.3.0']
@@ -353,6 +354,7 @@ configure(webModule) {
 
         compile(group: 'com.vaadin', name: 'vaadin-server', version: vaadinVersion)
         /* Vaadin addons */
+        compile(group: 'com.haulmont.thirdparty', name: 'appletintegration', version: '1.2.10')
         compile(group: 'com.haulmont.thirdparty', name: 'popupbutton', version: '2.2.1')
         compile(group: 'org.vaadin.addons', name: 'aceeditor', version: '0.8.9')
 
@@ -565,6 +567,7 @@ configure(webLegacyModule) {
 
         compile(vaadinLegacy)
         compile(popupButtonLegacy)
+        compile(appletIntegrationLegacy)
 
         provided(webToolkitLegacyModule)
         provided(gwtUser)
@@ -668,6 +671,7 @@ configure(webToolkitLegacyModule) {
     dependencies {
         compile(vaadinLegacy)
         compile(popupButtonLegacy)
+        compile(appletIntegrationLegacy)
 
         provided(gwtUser)
         provided(gwtDev)

@@ -8,6 +8,7 @@
         "http://google-web-toolkit.googlecode.com/svn/trunk/distro-source/core/src/gwt-module.dtd">
 <module>
     <inherits name="com.vaadin.terminal.gwt.DefaultWidgetSet" />
+    <inherits name="org.vaadin.applet.AppletintegrationWidgetset"/>
     <inherits name="org.vaadin.hene.popupbutton.widgetset.PopupbuttonWidgetset" />
 
     <!-- Uncomment if 'ru' locale support will be needed -->
