@@ -17,13 +17,19 @@ import com.haulmont.cuba.core.entity.AppFolder;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.*;
+import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.filter.*;
-import com.haulmont.cuba.gui.data.*;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.HierarchicalDatasource;
+import com.haulmont.cuba.gui.data.ValueChangingListener;
+import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.filter.DenyingClause;
 import com.haulmont.cuba.gui.filter.QueryFilter;
 import com.haulmont.cuba.gui.presentations.Presentations;
@@ -59,8 +65,6 @@ import org.vaadin.hene.popupbutton.PopupButton;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static org.apache.commons.lang.BooleanUtils.isTrue;
 
 /**
  * Generic filter implementation for the web-client.
@@ -115,6 +119,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
     protected Component applyTo;
 
     protected FilterEntity noFilter;
+    protected FilterEntity filterEntityBeforeCopy;
 
     protected AppliedFilter lastAppliedFilter;
     protected LinkedList<AppliedFilterHolder> appliedFilters = new LinkedList<>();
@@ -228,7 +233,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         updateControls();
     }
 
-    private void addApplied() {
+    protected void addApplied() {
         if (lastAppliedFilter == null)
             return;
 
@@ -272,7 +277,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         appliedFilters.add(new AppliedFilterHolder(lastAppliedFilter, layout, button));
     }
 
-    private void removeLastApplied() {
+    protected void removeLastApplied() {
         if (!appliedFilters.isEmpty()) {
             AppliedFilterHolder holder = appliedFilters.removeLast();
             appliedFiltersLayout.removeComponent(holder.layout);
@@ -291,7 +296,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         select.focus();
     }
 
-    private void initMaxResultsLayout() {
+    protected void initMaxResultsLayout() {
         maxResultsLayout = new HorizontalLayout();
         maxResultsLayout.setSpacing(true);
         maxResultsCb = new CheckBox(messages.getMainMessage("filter.maxResults.label1"));
@@ -336,7 +341,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         maxResultsLayout.setStyleName("filter-maxresults");
     }
 
-    private void fillActions() {
+    protected void fillActions() {
         for (Action action : new ArrayList<>(actionsButton.getActions())) {
             actionsButton.removeAction(action);
         }
@@ -383,11 +388,11 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         updateFolderActions();
     }
 
-    private void updateFolderActions() {
+    protected void updateFolderActions() {
         Action saveAsFolderAction = actionsButton.getAction(SaveAsFolderAction.SAVE_AS_FOLDER);
         Action saveAsAppFolderAction = actionsButton.getAction(SaveAsFolderAction.SAVE_AS_APP_FOLDER);
 
-        if (isFolderActionsEnabled()) {
+        if (filterEntity != null && isFolderActionsEnabled()) {
             if (filterEntity.getCode() == null && foldersPane != null
                     && filterEntity.getFolder() == null && saveAsFolderAction == null) {
                 actionsButton.addAction(new SaveAsFolderAction(false));
@@ -490,7 +495,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
             datasource.refresh();
     }
 
-    private void applyDatasourceFilter() {
+    protected void applyDatasourceFilter() {
         if (filterEntity != null && filterEntity.getXml() != null) {
             Element element = Dom4j.readDocument(filterEntity.getXml()).getRootElement();
             QueryFilter queryFilter = new QueryFilter(element, datasource.getMetaClass().getName());
@@ -506,7 +511,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         }
     }
 
-    private void createFilterEntity() {
+    protected void createFilterEntity() {
         filterEntity = metadata.create(FilterEntity.class);
 
         filterEntity.setComponentId(getComponentPath());
@@ -526,18 +531,20 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
 //        );
     }
 
-    private void copyFilterEntity() {
+    protected void copyFilterEntity() {
+
         FilterEntity newFilterEntity = metadata.create(FilterEntity.class);
         newFilterEntity.setComponentId(filterEntity.getComponentId());
         newFilterEntity.setName(messages.getMessage(MESSAGES_PACK, "newFilterName"));
         newFilterEntity.setUser(userSessionSource.getUserSession().getCurrentOrSubstitutedUser());
         //newFilterEntity.setCode(filterEntity.getCode());
         newFilterEntity.setXml(filterEntity.getXml());
+        filterEntityBeforeCopy = filterEntity;
         filterEntity = newFilterEntity;
     }
 
-    private String getComponentPath() {
-        StringBuilder sb = new StringBuilder(getId());
+    protected String getComponentPath() {
+        StringBuilder sb = new StringBuilder(getId() != null ? getId() : "filterWithoutId");
         IFrame frame = getFrame();
         while (frame != null) {
             sb.insert(0, ".");
@@ -552,7 +559,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         return sb.toString();
     }
 
-    private void createParamsLayout(boolean focusOnConditions) {
+    protected void createParamsLayout(boolean focusOnConditions) {
         boolean hasGroups = false;
         for (AbstractCondition condition : conditions.getRoots()) {
             if (condition.isGroup() && !condition.isHidden()) {
@@ -562,7 +569,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         }
         if (hasGroups && conditions.getRootNodes().size() > 1) {
             WebGroupBox groupBox = new WebGroupBox();
-            groupBox.setWidth("-1");
+            groupBox.setWidth(Component.AUTO_SIZE);
             groupBox.setCaption(messages.getMessage(AbstractCondition.MESSAGES_PACK, "GroupType.AND"));
             ComponentContainer container = groupBox.getComponent();
             paramsLayout = container;
@@ -572,7 +579,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         }
     }
 
-    private ComponentContainer recursivelyCreateParamsLayout(boolean focusOnConditions,
+    protected ComponentContainer recursivelyCreateParamsLayout(boolean focusOnConditions,
                                                              List<Node<AbstractCondition>> nodes,
                                                              ComponentContainer parentContainer,
                                                              int level) {
@@ -618,34 +625,36 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
                 }
                 cellContent = groupBox;
             } else {
-                HorizontalLayout paramLayout = new HorizontalLayout();
-                paramLayout.setSpacing(true);
-                paramLayout.setMargin(false);
                 if (condition.getParam().getJavaClass() != null) {
-                    Label label = new Label(condition.getLocCaption());
-                    paramLayout.addComponent(label);
-
                     ParamEditor paramEditor = new ParamEditor(condition, true, true);
                     if (focusOnConditions && !focusSet) {
                         paramEditor.setFocused();
                         focusSet = true;
                     }
 
-                    paramLayout.addComponent(paramEditor);
+                    cellContent = paramEditor;
+                } else {
+                    HorizontalLayout paramLayout = new HorizontalLayout();
+                    paramLayout.setSpacing(true);
+                    paramLayout.setMargin(false);
+                    paramLayout.setSizeUndefined();
+                    paramLayout.setStyleName("cuba-generic-filter-paramcell");
+
+                    cellContent = paramLayout;
                 }
-                cellContent = paramLayout;
             }
             grid.addComponent(cellContent, i % columns, i / columns);
             grid.setComponentAlignment(cellContent, com.vaadin.ui.Alignment.MIDDLE_RIGHT);
         }
 
-        if (parentContainer != null)
+        if (parentContainer != null) {
             parentContainer.addComponent(grid);
+        }
 
         return grid;
     }
 
-    private void setActions(Table table) {
+    protected void setActions(Table table) {
         if (foldersPane == null) {
             return;
         }
@@ -760,7 +769,6 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         loadFilterEntities();
 
         Window window = ComponentsHelper.getWindow(this);
-
         Collection<FilterEntity> filters = (Collection<FilterEntity>) select.getItemIds();
         FilterEntity defaultFilter = getDefaultFilter(filters, window);
         if (defaultFilter != null) {
@@ -825,7 +833,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         }
     }
 
-    private void internalSetFilterEntity() {
+    protected void internalSetFilterEntity() {
         List<FilterEntity> list = new ArrayList(select.getItemIds());
         list.remove(filterEntity);
 
@@ -891,19 +899,20 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         return name;
     }
 
-
     public List<AbstractCondition> getConditions() {
         return Collections.unmodifiableList(conditions.toConditionsList());
     }
 
     public void editorCancelled() {
-        if (filterEntity.getXml() == null)
+        filterEntity = filterEntityBeforeCopy;
+        filterEntityBeforeCopy = null;
+        if (filterEntity != null && filterEntity.getXml() == null)
             filterEntity = null;
 
         switchToUse();
     }
 
-    private String getFilterCaption(FilterEntity filter) {
+    protected String getFilterCaption(FilterEntity filter) {
         if (filter.getCode() == null)
             return filter.getName();
         else {
@@ -911,7 +920,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         }
     }
 
-    private void loadFilterEntities() {
+    protected void loadFilterEntities() {
         DataService ds = AppBeans.get(DataService.class);
         LoadContext ctx = new LoadContext(metadata.getExtendedEntities().getEffectiveMetaClass(FilterEntity.class));
         ctx.setView("app");
@@ -925,8 +934,8 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
 
         ctx.setQueryString("select f from " + effectiveMetaClass.getName() + " f " +
                 "where f.componentId = :component and (f.user is null or f.user.id = :userId) order by f.name")
-                .addParameter("component", getComponentPath())
-                .addParameter("userId", user.getId());
+                .setParameter("component", getComponentPath())
+                .setParameter("userId", user.getId());
 
         List<FilterEntity> filters = new ArrayList<>(ds.<FilterEntity>loadList(ctx));
         final Map<FilterEntity, String> captions = new HashMap<>();
@@ -952,7 +961,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         }
     }
 
-    private FilterEntity getDefaultFilter(Collection<FilterEntity> filters, Window window) {
+    protected FilterEntity getDefaultFilter(Collection<FilterEntity> filters, Window window) {
         // First check if there is parameter with name equal to this filter component id, containing a filter code to apply
         Map<String, Object> params = window.getContext().getParams();
         String code = (String) params.get(getId());
@@ -995,7 +1004,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         return null;
     }
 
-    private void saveFilterEntity() {
+    protected void saveFilterEntity() {
         Boolean isDefault = filterEntity.getIsDefault();
         Boolean applyDefault = filterEntity.getApplyDefault();
         if (filterEntity.getFolder() == null) {
@@ -1025,17 +1034,14 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         }
     }
 
-    private void deleteFilterEntity() {
+    protected void deleteFilterEntity() {
         DataService ds = AppBeans.get(DataService.class);
         CommitContext ctx = new CommitContext();
         ctx.setRemoveInstances(Collections.singletonList(filterEntity));
         ds.commit(ctx);
     }
 
-    private void createEditLayout() {
-        editLayout = new VerticalLayout();
-        editLayout.setSpacing(true);
-
+    protected void createEditLayout() {
         List<String> names = new ArrayList<>();
         Map<String, Locale> locales = globalConfig.getAvailableLocales();
         for (Object id : select.getItemIds()) {
@@ -1065,7 +1071,19 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
                 }
             }
         });
-        editLayout.addComponent(editor.getLayout());
+        editLayout = editor.getLayout();
+    }
+
+    @Override
+    public void setFrame(IFrame frame) {
+        super.setFrame(frame);
+        ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+        frame.addAction(new AbstractAction("applyFilter", clientConfig.getFilterApplyShortcut()) {
+            @Override
+            public void actionPerform(Component component) {
+                apply(false);
+            }
+        });
     }
 
     @Override
@@ -1089,7 +1107,6 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
 
         if (datasource instanceof CollectionDatasource.Lazy || datasource instanceof HierarchicalDatasource) {
             setUseMaxResults(false);
-
         } else {
             int maxResults = persistenceManager.getFetchUI(datasource.getMetaClass().getName());
             maxResultsField.setValue(String.valueOf(maxResults));
@@ -1098,7 +1115,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         }
     }
 
-    private void switchToUse() {
+    protected void switchToUse() {
         editing = false;
         editor = null;
 
@@ -1118,7 +1135,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         component.addComponent(paramsLayout);
     }
 
-    private void switchToEdit() {
+    protected void switchToEdit() {
         editing = true;
         updateControls();
         component.removeComponent(paramsLayout);
@@ -1126,7 +1143,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         component.addComponent(editLayout);
     }
 
-    private void updateControls() {
+    protected void updateControls() {
         fillActions();
         actionsButton.setVisible(!editing);
         ((PopupButton) actionsButton.getComponent()).setPopupVisible(false);
@@ -1136,13 +1153,15 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         select.setEnabled(!editing);
         applyBtn.setVisible(!editing);
         actionsButton.setVisible(editable && isEditFiltersPermitted());
+        if (pinAppliedFilterBtn != null)
+            pinAppliedFilterBtn.setEnabled(!editing && filterEntity != null && filterEntity.getXml() != null);
     }
 
-    private boolean checkGlobalAppFolderPermission() {
+    protected boolean checkGlobalAppFolderPermission() {
         return userSessionSource.getUserSession().isSpecificPermitted(GLOBAL_APP_FOLDERS_PERMISSION);
     }
 
-    private boolean checkGlobalFilterPermission() {
+    protected boolean checkGlobalFilterPermission() {
         if (filterEntity == null || filterEntity.getUser() != null)
             return true;
         else
@@ -1189,7 +1208,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
     public <T extends Component> T getComponent(String id) {
         String[] elements = ValuePathHelper.parse(id);
         if (elements.length == 1)
-            return (T) getOwnComponent(id);
+            return getOwnComponent(id);
         else
             throw new UnsupportedOperationException("Filter contains only one level of subcomponents");
     }
@@ -1204,7 +1223,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         return getOwnComponents();
     }
 
-    private void parseFilterXml() {
+    protected void parseFilterXml() {
         if (filterEntity == null) {
             conditions = new ConditionsTree();
         } else {
@@ -1243,7 +1262,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         Boolean applyDefault = false;
         Collection<FilterEntity> filters = (Collection<FilterEntity>) select.getItemIds();
         for (FilterEntity filter : filters) {
-            if (isTrue(filter.getIsDefault())) {
+            if (BooleanUtils.isTrue(filter.getIsDefault())) {
                 defaultId = filter.getId();
                 applyDefault = filter.getApplyDefault();
                 break;
@@ -1293,7 +1312,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         }
     }
 
-    private void saveAsFolder(boolean isAppFolder) {
+    protected void saveAsFolder(boolean isAppFolder) {
         final AbstractSearchFolder folder;
         if (isAppFolder)
             folder = (metadata.create(AppFolder.class));
@@ -1399,7 +1418,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         App.getInstance().getAppWindow().addWindow(window);
     }
 
-    private String submintParameters() {
+    protected String submintParameters() {
         FilterParser parser = new FilterParser(filterEntity.getXml(), MESSAGES_PACK, filterEntity.getComponentId(), datasource);
         parser.fromXml();
         List<AbstractCondition> defaultConditions = parser.getConditions().toConditionsList();
@@ -1416,19 +1435,19 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         return parser.toXml().getXml();
     }
 
-    private SearchFolder saveFolder(SearchFolder folder) {
+    protected SearchFolder saveFolder(SearchFolder folder) {
         SearchFolder savedFolder = (SearchFolder) foldersPane.saveFolder(folder);
         foldersPane.refreshFolders();
         return savedFolder;
     }
 
-    private AppFolder saveAppFolder(AppFolder folder) {
+    protected AppFolder saveAppFolder(AppFolder folder) {
         AppFolder savedFolder = (AppFolder) foldersPane.saveFolder(folder);
         foldersPane.refreshFolders();
         return savedFolder;
     }
 
-    private void delete() {
+    protected void delete() {
         if (required) {
             int size = 0;
             for (Object itemId : select.getItemIds()) {
@@ -1470,7 +1489,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         );
     }
 
-    private void setDefaultFilter() {
+    protected void setDefaultFilter() {
         if (filterEntity != null) {
             filterEntity.setIsDefault(true);
             defaultFilterEmpty = false;
@@ -1504,7 +1523,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         actionsButton.setVisible(editable && isEditFiltersPermitted());
     }
 
-    private boolean isEditFiltersPermitted() {
+    protected boolean isEditFiltersPermitted() {
         return AppBeans.get(UserSessionSource.class).getUserSession().isSpecificPermitted("cuba.gui.filter.edit");
     }
 
@@ -1523,7 +1542,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         this.required = required;
     }
 
-    private void updateComponentRequired() {
+    protected void updateComponentRequired() {
         if (select.getValue() == null) {
             // select first item
             Collection<?> itemIds = select.getItemIds();
@@ -1708,7 +1727,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         public static final String SAVE_AS_APP_FOLDER = "saveAsAppFolderAction";
         public static final String SAVE_AS_FOLDER = "saveAsFolderAction";
 
-        private boolean isAppFolder;
+        protected boolean isAppFolder;
 
         protected SaveAsFolderAction(boolean isAppFolder) {
             super(isAppFolder ? SAVE_AS_APP_FOLDER : SAVE_AS_FOLDER);
@@ -1728,10 +1747,10 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
 
     protected static class ParamWrapper implements HasValue {
 
-        private final AbstractCondition condition;
-        private final AbstractParam param;
+        protected final AbstractCondition condition;
+        protected final AbstractParam param;
 
-        private ParamWrapper(AbstractCondition condition, AbstractParam param) {
+        protected ParamWrapper(AbstractCondition condition, AbstractParam param) {
             this.condition = condition;
             this.param = param;
         }
@@ -1782,11 +1801,11 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
             return (T) value;
         }
 
-        private String wrapValueForLike(Object value) {
+        protected String wrapValueForLike(Object value) {
             return ParametersHelper.CASE_INSENSITIVE_MARKER + "%" + value + "%";
         }
 
-        private String wrapValueForLike(Object value, boolean before, boolean after) {
+        protected String wrapValueForLike(Object value, boolean before, boolean after) {
             return ParametersHelper.CASE_INSENSITIVE_MARKER + (before ? "%" : "") + value + (after ? "%" : "");
         }
 
@@ -1917,10 +1936,10 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         }
     }
 
-    protected class AddToSetAction extends AbstractAction {
-        private Table table;
+    protected class AddToSetAction extends ItemTrackingAction {
+        protected Table table;
 
-        private AddToSetAction(Table table) {
+        protected AddToSetAction(Table table) {
             super("addToSet");
             this.table = table;
         }
@@ -1944,14 +1963,15 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
                 params.put("foldersPane", foldersPane);
                 params.put("entityClass", datasource.getMetaClass().getJavaClass().getName());
                 params.put("query", datasource.getQuery());
-
-                WebFilter.this.getFrame().openWindow("saveSetInFolder", WindowManager.OpenType.DIALOG, params);
+                WebFilter.this.getFrame().openWindow("saveSetInFolder",
+                        WindowManager.OpenType.DIALOG,
+                        params);
             }
         }
     }
 
-    protected class RemoveFromSetAction extends AbstractAction {
-        private Table table;
+    protected class RemoveFromSetAction extends ItemTrackingAction {
+        protected Table table;
 
         protected RemoveFromSetAction(Table table) {
             super("removeFromCurSet");
@@ -2013,6 +2033,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
                 lookupAlias.append(".lookup");
             }
             frame.openLookup(lookupAlias.toString(), new Window.Lookup.Handler() {
+
                 @Override
                 public void handleLookup(Collection items) {
                     String filterXml = filterEntity.getXml();
@@ -2142,7 +2163,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         public final HorizontalLayout layout;
         public final Button button;
 
-        private AppliedFilterHolder(AppliedFilter filter, HorizontalLayout layout, Button button) {
+        protected AppliedFilterHolder(AppliedFilter filter, HorizontalLayout layout, Button button) {
             this.filter = filter;
             this.layout = layout;
             this.button = button;
