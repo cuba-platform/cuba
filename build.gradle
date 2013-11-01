@@ -549,10 +549,6 @@ configure(portalModule) {
 }
 
 configure(webLegacyModule) {
-    configurations {
-        gwtBuilding
-    }
-
     dependencies {
         compile(sharedLibModule)
         compile(globalModule)
@@ -570,13 +566,7 @@ configure(webLegacyModule) {
         compile(appletIntegrationLegacy)
 
         provided(webToolkitLegacyModule)
-        provided(gwtUser)
-        provided(gwtDev)
-        provided(gwtServlets)
-        provided(validationApi)
         provided(servletApi)
-
-        gwtBuilding(validationApi + [classifier: 'sources'])
     }
 
     def resourceBuildTimeStamp = new java.text.SimpleDateFormat('yyyy_MM_dd_HH_mm').format(new Date())
@@ -673,10 +663,11 @@ configure(webToolkitLegacyModule) {
         compile(popupButtonLegacy)
         compile(appletIntegrationLegacy)
 
-        provided(gwtUser)
-        provided(gwtDev)
-        provided(gwtServlets)
-        provided(validationApi)
+        compile(gwtUser)
+        compile(gwtDev)
+        compile(gwtServlets)
+        compile(validationApi)
+        compile(validationApi + ['classifier' : 'sources'])
     }
 
     jar {
