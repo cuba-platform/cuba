@@ -26,7 +26,6 @@ import java.util.Map;
 public class SettingsWindow extends AbstractWindow {
 
     protected boolean changeThemeEnabled = false;
-    protected OptionsGroup modeOptions;
     protected String msgTabbed;
     protected String msgSingle;
 
@@ -45,6 +44,15 @@ public class SettingsWindow extends AbstractWindow {
     @Inject
     protected Button cancelBtn;
 
+    @Inject
+    protected Button changePasswordBtn;
+
+    @Inject
+    protected OptionsGroup modeOptions;
+
+    @Inject
+    protected LookupField appThemeField;
+
     @Override
     public void init(Map<String, Object> params) {
         Boolean changeThemeEnabledParam = (Boolean) params.get("changeThemeEnabled");
@@ -56,27 +64,23 @@ public class SettingsWindow extends AbstractWindow {
         msgTabbed = getMessage("modeTabbed");
         msgSingle = getMessage("modeSingle");
 
-        modeOptions = getComponent("mainWindowMode");
         modeOptions.setOptionsList(Arrays.asList(msgTabbed, msgSingle));
         if (mode == AppWindow.Mode.TABBED)
             modeOptions.setValue(msgTabbed);
         else
             modeOptions.setValue(msgSingle);
 
-        final LookupField theme = getComponent("mainWindowTheme");
-
         WebConfig webConfig = configuration.getConfig(WebConfig.class);
         List<String> themesList = webConfig.getAvailableAppThemes();
-        theme.setOptionsList(themesList);
+        appThemeField.setOptionsList(themesList);
 
         String userAppTheme = userSettingsTools.loadAppWindowTheme();
-        theme.setValue(userAppTheme);
+        appThemeField.setValue(userAppTheme);
 
-        theme.setEditable(changeThemeEnabled);
+        appThemeField.setEditable(changeThemeEnabled);
 
-        Button changePasswBtn = getComponent("changePassw");
         final User user = userSessionSource.getUserSession().getUser();
-        changePasswBtn.setAction(
+        changePasswordBtn.setAction(
                 new AbstractAction("changePassw") {
                     @Override
                     public void actionPerform(Component component) {
@@ -85,7 +89,7 @@ public class SettingsWindow extends AbstractWindow {
                 }
         );
         if (!user.equals(userSessionSource.getUserSession().getCurrentOrSubstitutedUser())) {
-            changePasswBtn.setEnabled(false);
+            changePasswordBtn.setEnabled(false);
         }
 
         okBtn.setAction(
@@ -93,7 +97,7 @@ public class SettingsWindow extends AbstractWindow {
                     @Override
                     public void actionPerform(Component component) {
                         if (changeThemeEnabled) {
-                            String selectedTheme = theme.getValue();
+                            String selectedTheme = appThemeField.getValue();
                             userSettingsTools.saveAppWindowTheme(selectedTheme);
                             // set cookie
                             App.getInstance().setUserAppTheme(selectedTheme);
