@@ -10,6 +10,8 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.WindowContext;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.xml.ParameterInfo;
 import org.apache.commons.lang.ObjectUtils;
@@ -360,9 +362,19 @@ public class DsContextImpl implements DsContextImplementation {
 
     @Override
     public <T extends Datasource> T get(String id) {
-        Datasource ds = datasourceMap.get(id);
-        if (ds == null && parent != null) {
-            ds = parent.get(id);
+        Datasource ds = null;
+        if (!id.contains(".")) {
+            ds = datasourceMap.get(id);
+            if (ds == null && parent != null) {
+                ds = parent.get(id);
+            }
+        } else {
+            String nestedFramePath = id.substring(0, id.lastIndexOf("."));
+            Component nestedFrame = getWindowContext().getFrame().getComponent(nestedFramePath);
+            if ((nestedFrame) != null && (nestedFrame instanceof IFrame)) {
+                String nestedDsId = id.substring(id.lastIndexOf(".") + 1);
+                ds = ((IFrame) nestedFrame).getDsContext().get(nestedDsId);
+            }
         }
         return (T) ds;
     }

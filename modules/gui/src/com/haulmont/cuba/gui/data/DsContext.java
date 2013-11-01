@@ -35,7 +35,8 @@ public interface DsContext {
     DataSupplier getDataSupplier();
 
     /**
-     * Get datasource by name.
+     * Get datasource by name. Name may contain path to a datasource in nested frame
+     * e.g. {@code someFrameId.someDatasourceId}
      *
      * @param name  datasource name
      * @return      datasource instance or null if not found
