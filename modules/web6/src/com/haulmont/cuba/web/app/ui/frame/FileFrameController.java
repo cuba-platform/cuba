@@ -14,7 +14,8 @@ import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
-import com.haulmont.cuba.web.app.FileDownloadHelper;
+import com.haulmont.cuba.gui.app.core.file.FileDownloadHelper;
+import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.util.Map;
@@ -56,7 +57,7 @@ public class FileFrameController extends AbstractWindow {
             public void uploadSucceeded(Event event) {
                 fd = new FileDescriptor();
                 fd.setName(uploadField.getFileName());
-                fd.setExtension(FileDownloadHelper.getFileExt(uploadField.getFileName()));
+                fd.setExtension(FilenameUtils.getExtension(uploadField.getFileName()));
 
                 FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
                 File file = fileUploading.getFile(uploadField.getFileId());

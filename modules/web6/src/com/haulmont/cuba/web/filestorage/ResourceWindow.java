@@ -9,11 +9,11 @@ import com.haulmont.cuba.gui.export.ClosedDataProviderException;
 import com.haulmont.cuba.gui.export.ExportDataProvider;
 import com.haulmont.cuba.gui.export.ExportFormat;
 import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.app.FileDownloadHelper;
 import com.vaadin.service.ApplicationContext;
 import com.vaadin.terminal.DownloadStream;
 import com.vaadin.terminal.gwt.server.WebApplicationContext;
 import com.vaadin.ui.Window;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -74,7 +74,7 @@ public class ResourceWindow extends Window {
         String contentType;
         if (exportFormat != null) {
             contentType = exportFormat.getContentType();
-            if (StringUtils.isEmpty(FileDownloadHelper.getFileExt(fileName)))
+            if (StringUtils.isEmpty(FilenameUtils.getExtension(fileName)))
                 fileName += "." + exportFormat.getFileExt();
         } else {
             contentType = "application/octet-stream";

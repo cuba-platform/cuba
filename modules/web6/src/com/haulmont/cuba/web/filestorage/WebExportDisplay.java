@@ -11,7 +11,6 @@ import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.export.*;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
-import com.haulmont.cuba.web.app.FileDownloadHelper;
 import com.haulmont.cuba.web.toolkit.ui.JavaScriptHost;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;

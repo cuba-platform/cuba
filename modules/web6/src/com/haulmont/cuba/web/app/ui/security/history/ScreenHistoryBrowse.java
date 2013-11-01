@@ -8,12 +8,12 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.DialogParams;
+import com.haulmont.cuba.gui.app.LinkColumnHelper;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.security.entity.ScreenHistoryEntity;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
-import com.haulmont.cuba.web.app.LinkColumnHelper;
 import com.haulmont.cuba.web.gui.components.ShowLinkAction;
 import com.haulmont.cuba.web.sys.LinkHandler;
 
