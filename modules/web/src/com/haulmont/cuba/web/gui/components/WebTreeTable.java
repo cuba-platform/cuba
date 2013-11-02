@@ -8,7 +8,6 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.TreeTable;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
@@ -30,7 +29,7 @@ import java.util.*;
  * @author abramov
  * @version $Id$
  */
-public class WebTreeTable extends WebAbstractTable<CubaTreeTable> implements TreeTable, Component.Wrapper {
+public class WebTreeTable extends WebAbstractTable<CubaTreeTable> implements TreeTable {
 
     protected String hierarchyProperty;
 

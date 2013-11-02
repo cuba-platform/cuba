@@ -20,11 +20,7 @@ import java.util.Set;
  * @author krivopustov
  * @version $Id$
  */
-public class WebTree
-        extends
-            WebAbstractList<com.haulmont.cuba.web.toolkit.ui.Tree>
-        implements
-            Tree, Component.Wrapper {
+public class WebTree extends WebAbstractList<com.haulmont.cuba.web.toolkit.ui.Tree> implements Tree {
 
     protected String hierarchyProperty;
     protected CaptionMode captionMode = CaptionMode.ITEM;

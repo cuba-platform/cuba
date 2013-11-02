@@ -6,7 +6,6 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.autocomplete.AutoCompleteSupport;
 import com.haulmont.cuba.gui.autocomplete.Suggester;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.SourceCodeEditor;
 
 /**
@@ -17,7 +16,7 @@ public class WebSourceCodeEditor
     extends
         WebAbstractTextField<com.haulmont.cuba.web.toolkit.ui.AutoCompleteTextField>
     implements
-        SourceCodeEditor, Component.Wrapper {
+        SourceCodeEditor {
 
     protected Mode mode;
 

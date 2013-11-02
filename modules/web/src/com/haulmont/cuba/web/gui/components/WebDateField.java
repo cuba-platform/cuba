@@ -33,11 +33,7 @@ import java.util.Locale;
  * @author abramov
  * @version $Id$
  */
-public class WebDateField
-        extends
-            WebAbstractField<CubaDateFieldWrapper>
-        implements
-            DateField, Component.Wrapper {
+public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> implements DateField {
 
     protected Resolution resolution;
 

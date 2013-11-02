@@ -5,18 +5,13 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.CheckBox;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.web.toolkit.ui.CubaCheckBox;
 
 /**
  * @author abramov
  * @version $Id$
  */
-public class WebCheckBox
-    extends
-        WebAbstractField<com.vaadin.ui.CheckBox>
-    implements
-        CheckBox, Component.Wrapper {
+public class WebCheckBox extends WebAbstractField<com.vaadin.ui.CheckBox> implements CheckBox {
 
     public WebCheckBox() {
         this.component = new CubaCheckBox();

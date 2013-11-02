@@ -24,9 +24,9 @@ import java.util.*;
  */
 public class WebSplitPanel
         extends
-        WebAbstractComponent<AbstractSplitPanel>
+            WebAbstractComponent<AbstractSplitPanel>
         implements
-        SplitPanel, Component.HasSettings, Component.Wrapper {
+            SplitPanel, Component.HasSettings {
 
     protected String id;
 

@@ -11,7 +11,6 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.TextInputField;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -39,7 +38,7 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
     extends
         WebAbstractField<T>
     implements
-        TextInputField, Component.Wrapper {
+        TextInputField {
 
     protected static Log log = LogFactory.getLog(WebAbstractTextField.class);
 

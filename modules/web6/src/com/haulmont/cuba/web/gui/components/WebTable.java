@@ -20,7 +20,11 @@ import com.vaadin.terminal.Resource;
 
 import java.util.*;
 
-public class WebTable extends WebAbstractTable<com.haulmont.cuba.web.toolkit.ui.Table> implements Component.Wrapper {
+/**
+ * @author abramov
+ * @version $Id$
+ */
+public class WebTable extends WebAbstractTable<com.haulmont.cuba.web.toolkit.ui.Table> {
 
     public WebTable() {
         component = new com.haulmont.cuba.web.toolkit.ui.Table() {

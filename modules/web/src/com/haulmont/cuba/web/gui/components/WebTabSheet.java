@@ -27,7 +27,7 @@ public class WebTabSheet
         extends
             WebAbstractComponent<com.vaadin.ui.TabSheet>
         implements
-            TabSheet, Component.Wrapper, Component.Container {
+            TabSheet, Component.Container {
 
     protected boolean postInitTaskAdded;
     protected boolean componentTabChangeListenerInitialized;

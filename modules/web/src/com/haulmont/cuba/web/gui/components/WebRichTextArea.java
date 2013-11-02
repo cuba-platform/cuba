@@ -4,7 +4,6 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.cuba.gui.components.Component;
 import com.vaadin.ui.RichTextArea;
 
 /**
@@ -15,7 +14,7 @@ public class WebRichTextArea
     extends
         WebAbstractField<RichTextArea>
     implements
-        com.haulmont.cuba.gui.components.RichTextArea, Component.Wrapper {
+        com.haulmont.cuba.gui.components.RichTextArea {
 
     public WebRichTextArea() {
         component = new RichTextArea();

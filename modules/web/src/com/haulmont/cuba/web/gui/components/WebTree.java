@@ -23,15 +23,11 @@ import java.util.Set;
  * @author krivopustov
  * @version $Id$
  */
-public class WebTree
-        extends
-            WebAbstractList<CubaTree>
-        implements
-            Tree, Component.Wrapper {
+public class WebTree extends WebAbstractList<CubaTree> implements Tree {
 
-    private String hierarchyProperty;
-    private CaptionMode captionMode = CaptionMode.ITEM;
-    private String captionProperty;
+    protected String hierarchyProperty;
+    protected CaptionMode captionMode = CaptionMode.ITEM;
+    protected String captionProperty;
     
     public WebTree() {
         component = new CubaTree();

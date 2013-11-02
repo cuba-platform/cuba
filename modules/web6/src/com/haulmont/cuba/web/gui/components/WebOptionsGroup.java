@@ -5,7 +5,6 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.OptionsGroup;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.toolkit.ui.OptionGroup;
@@ -24,11 +23,11 @@ public class WebOptionsGroup
         extends
             WebAbstractOptionsField<OptionGroup>
         implements
-            OptionsGroup, Component.Wrapper {
+            OptionsGroup {
 
-    private static final String HORIZONTAL_STYLENAME = "horizontal";
+    protected static final String HORIZONTAL_STYLENAME = "horizontal";
 
-    private Orientation orientation = Orientation.VERTICAL;
+    protected Orientation orientation = Orientation.VERTICAL;
 
     public WebOptionsGroup() {
         component = new OptionGroup() {
@@ -160,7 +159,7 @@ public class WebOptionsGroup
         this.orientation = orientation;
     }
 
-    private void updateComponentStyle(Orientation orientation) {
+    protected void updateComponentStyle(Orientation orientation) {
         if (orientation == Orientation.HORIZONTAL) {
             component.addStyleName(HORIZONTAL_STYLENAME);
         }

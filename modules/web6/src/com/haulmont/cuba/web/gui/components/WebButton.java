@@ -4,10 +4,9 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.web.WebConfig;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.NativeButton;
@@ -24,7 +23,7 @@ public class WebButton
         extends
             WebAbstractComponent<com.vaadin.ui.Button>
         implements
-            Button, Component.Wrapper {
+            Button {
 
     protected Action action;
     protected String icon;

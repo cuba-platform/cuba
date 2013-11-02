@@ -9,7 +9,6 @@ import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.TextInputField;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -34,7 +33,7 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
         extends
             WebAbstractField<T>
         implements
-            TextInputField, Component.Wrapper {
+            TextInputField {
 
     private static Log log = LogFactory.getLog(WebAbstractTextField.class);
 

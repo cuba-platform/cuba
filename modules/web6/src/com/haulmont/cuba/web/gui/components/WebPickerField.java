@@ -11,7 +11,6 @@ import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.CaptionMode;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.PickerField;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
@@ -26,7 +25,10 @@ import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author abramov
@@ -36,7 +38,7 @@ public class WebPickerField
         extends
             WebAbstractField<com.haulmont.cuba.web.toolkit.ui.PickerField>
         implements
-            PickerField, Component.Wrapper {
+            PickerField {
 
     protected CaptionMode captionMode = CaptionMode.ITEM;
     protected String captionProperty;

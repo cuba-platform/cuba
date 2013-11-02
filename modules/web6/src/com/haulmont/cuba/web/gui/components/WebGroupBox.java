@@ -27,8 +27,7 @@ import java.util.*;
  * @author abramov
  * @version $Id$
  */
-public class WebGroupBox extends WebAbstractComponent<GroupBox>
-        implements GroupBoxLayout, Component.Wrapper, GroupBox.ExpandChangeHandler {
+public class WebGroupBox extends WebAbstractComponent<GroupBox> implements GroupBoxLayout, GroupBox.ExpandChangeHandler {
 
     protected List<Component> components = new ArrayList<>();
     protected Alignment alignment = Alignment.TOP_LEFT;

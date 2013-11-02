@@ -20,7 +20,7 @@ import java.awt.*;
  * @author krivopustov
  * @version $Id$
  */
-public class DesktopTextField extends DesktopAbstractTextField<JTextComponent> implements TextField, Component.Wrapper {
+public class DesktopTextField extends DesktopAbstractTextField<JTextComponent> implements TextField {
 
     public DesktopTextField() {
     }

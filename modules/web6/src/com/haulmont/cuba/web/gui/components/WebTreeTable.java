@@ -8,7 +8,6 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.TreeTable;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
@@ -34,7 +33,7 @@ public class WebTreeTable
     extends
         WebAbstractTable<com.haulmont.cuba.web.toolkit.ui.TreeTable>
     implements
-        TreeTable, Component.Wrapper {
+        TreeTable {
 
     protected String hierarchyProperty;
     

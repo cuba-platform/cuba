@@ -17,7 +17,7 @@ import java.awt.event.KeyEvent;
  * @author artamonov
  * @version $Id$
  */
-public class DesktopTextArea extends DesktopAbstractTextField<JTextArea> implements TextArea, Component.Wrapper {
+public class DesktopTextArea extends DesktopAbstractTextField<JTextArea> implements TextArea {
 
     protected JComponent composition;
 

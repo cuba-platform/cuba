@@ -7,7 +7,6 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -28,7 +27,7 @@ import java.util.*;
  */
 public class WebLookupField
         extends WebAbstractOptionsField<FilterSelect>
-        implements LookupField, Component.Wrapper {
+        implements LookupField {
 
     protected Object nullOption;
     protected Entity nullEntity;

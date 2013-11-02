@@ -19,7 +19,7 @@ import java.util.*;
  * @author abramov
  * @version $Id$
  */
-public class WebScrollBoxLayout extends WebAbstractComponent<Panel> implements ScrollBoxLayout, Component.Wrapper {
+public class WebScrollBoxLayout extends WebAbstractComponent<Panel> implements ScrollBoxLayout {
 
     public static final String CUBA_SCROLLBOX_CONTENT_STYLE = "cuba-scrollbox-content";
 

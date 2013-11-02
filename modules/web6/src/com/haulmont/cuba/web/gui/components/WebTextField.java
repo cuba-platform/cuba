@@ -6,7 +6,6 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.TextField;
 
@@ -20,7 +19,7 @@ public class WebTextField
     extends
         WebAbstractTextField<com.haulmont.cuba.web.toolkit.ui.TextField>
     implements
-        TextField, Component.Wrapper {
+        TextField {
 
     protected Datatype datatype;
 

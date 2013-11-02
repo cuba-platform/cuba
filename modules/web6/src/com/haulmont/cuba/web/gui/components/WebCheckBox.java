@@ -6,7 +6,6 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.gui.components.CheckBox;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
@@ -22,7 +21,7 @@ public class WebCheckBox
     extends
         WebAbstractField<com.haulmont.cuba.web.toolkit.ui.CheckBox>
     implements
-        CheckBox, Component.Wrapper {
+        CheckBox {
 
     public WebCheckBox() {
         this.component = new com.haulmont.cuba.web.toolkit.ui.CheckBox();

@@ -12,7 +12,6 @@ import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.data.TreeModelAdapter;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
@@ -37,9 +36,7 @@ import java.util.Set;
  * @author krivopustov
  * @version $Id$
  */
-public class DesktopTree
-        extends DesktopAbstractActionsHolderComponent<JTree>
-        implements Tree, Component.Wrapper {
+public class DesktopTree extends DesktopAbstractActionsHolderComponent<JTree> implements Tree {
 
     protected String hierarchyProperty;
     protected HierarchicalDatasource<Entity<Object>, Object> datasource;

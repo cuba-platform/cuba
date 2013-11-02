@@ -5,7 +5,6 @@
 
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.web.toolkit.ui.CubaTextArea;
 import com.vaadin.ui.TextArea;
 
@@ -17,7 +16,7 @@ public class WebTextArea
         extends
             WebAbstractTextArea<TextArea>
         implements
-            com.haulmont.cuba.gui.components.TextArea, Component.Wrapper {
+            com.haulmont.cuba.gui.components.TextArea {
 
     @Override
     protected TextArea createTextFieldImpl() {

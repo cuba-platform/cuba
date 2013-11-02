@@ -6,8 +6,7 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.desktop.sys.vcl.Flushable;
-import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.PasswordField;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,9 +15,7 @@ import java.awt.*;
  * @author artamonov
  * @version $Id$
  */
-public class DesktopPasswordField
-        extends DesktopAbstractTextField<JPasswordField>
-        implements PasswordField, Component.Wrapper {
+public class DesktopPasswordField extends DesktopAbstractTextField<JPasswordField> implements PasswordField {
 
     @Override
     protected JPasswordField createTextComponentImpl() {

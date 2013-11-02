@@ -5,15 +5,13 @@
 
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.PasswordField;
 
 /**
  * @author artamonov
  * @version $Id$
  */
-public class WebPasswordField extends WebAbstractTextField<com.vaadin.ui.PasswordField>
-        implements PasswordField, Component.Wrapper {
+public class WebPasswordField extends WebAbstractTextField<com.vaadin.ui.PasswordField> implements PasswordField {
 
     @Override
     protected com.vaadin.ui.PasswordField createTextFieldImpl() {

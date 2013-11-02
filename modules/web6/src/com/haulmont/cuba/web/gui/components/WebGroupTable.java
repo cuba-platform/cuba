@@ -11,7 +11,6 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.GroupTable;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.data.*;
@@ -36,7 +35,7 @@ import java.util.*;
  * @version $Id$
  */
 public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolkit.ui.GroupTable>
-        implements GroupTable, Component.Wrapper {
+        implements GroupTable {
 
     protected Map<Table.Column, GroupAggregationCells> groupAggregationCells = null;
 
@@ -115,6 +114,7 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
         return new GroupAggregationDatasourceListener();
     }
 
+    @Override
     protected CollectionDsWrapper createContainerDatasource(CollectionDatasource datasource, Collection<MetaPropertyPath> columns) {
         return new GroupTableDsWrapper(datasource, columns);
     }
@@ -145,26 +145,32 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
         }
     }
 
+    @Override
     public void groupBy(Object[] properties) {
         component.groupBy(properties);
     }
 
+    @Override
     public void expandAll() {
         component.expandAll();
     }
 
+    @Override
     public void expand(GroupInfo groupId) {
         component.expand(groupId);
     }
 
+    @Override
     public void collapseAll() {
         component.collapseAll();
     }
 
+    @Override
     public void collapse(GroupInfo groupId) {
         component.collapse(groupId);
     }
 
+    @Override
     public boolean isExpanded(GroupInfo groupId) {
         return component.isExpanded(groupId);
     }

@@ -7,7 +7,6 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
@@ -24,7 +23,7 @@ import java.util.*;
  * @author abramov
  * @version $Id$
  */
-public class WebTable extends WebAbstractTable<CubaTable> implements Component.Wrapper {
+public class WebTable extends WebAbstractTable<CubaTable> {
 
     public WebTable() {
         component = new CubaTable() {

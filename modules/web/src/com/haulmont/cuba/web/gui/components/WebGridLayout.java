@@ -17,8 +17,7 @@ import java.util.*;
  * @author abramov
  * @version $Id$
  */
-public class WebGridLayout extends WebAbstractComponent<CubaGridLayout>
-        implements GridLayout, Component.Wrapper {
+public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implements GridLayout {
 
     protected String id;
 

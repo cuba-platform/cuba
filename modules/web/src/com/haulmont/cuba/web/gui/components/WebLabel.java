@@ -13,7 +13,6 @@ import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MetadataTools;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -34,11 +33,7 @@ import java.util.List;
  * @author abramov
  * @version $Id$
  */
-public class WebLabel
-        extends
-            WebAbstractComponent<com.vaadin.ui.Label>
-        implements
-            Label, Component.Wrapper {
+public class WebLabel extends WebAbstractComponent<com.vaadin.ui.Label> implements Label {
 
     protected List<ValueListener> listeners = new ArrayList<>();
 

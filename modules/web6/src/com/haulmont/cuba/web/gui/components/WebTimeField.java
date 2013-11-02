@@ -8,7 +8,6 @@ import com.google.common.base.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.UserSessionProvider;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.components.TimeField;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -27,17 +26,20 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 
-public class WebTimeField extends WebAbstractField<MaskedTextField> implements TimeField, Component.Wrapper
-{
-    private boolean showSeconds;
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
+public class WebTimeField extends WebAbstractField<MaskedTextField> implements TimeField {
+    protected boolean showSeconds;
 
-    private String mask;
-    private String placeholder;
-    private String timeFormat;
+    protected String mask;
+    protected String placeholder;
+    protected String timeFormat;
 
-    private DateField.Resolution resolution;
+    protected DateField.Resolution resolution;
 
-    private Log log = LogFactory.getLog(WebTimeField.class);
+    protected Log log = LogFactory.getLog(WebTimeField.class);
 
     protected static final int DIGIT_WIDTH = 23;
     
@@ -165,6 +167,7 @@ public class WebTimeField extends WebAbstractField<MaskedTextField> implements T
             super.setValue(value);
     }
 
+    @Override
     public boolean getShowSeconds() {
         return showSeconds;
     }
@@ -189,6 +192,7 @@ public class WebTimeField extends WebAbstractField<MaskedTextField> implements T
         }
     }
 
+    @Override
     public void setShowSeconds(boolean showSeconds) {
         this.showSeconds = showSeconds;
         if (showSeconds) {

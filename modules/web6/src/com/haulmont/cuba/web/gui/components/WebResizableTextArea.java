@@ -5,7 +5,6 @@
 
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ResizableTextArea;
 import com.haulmont.cuba.gui.components.ResizeListener;
 
@@ -20,7 +19,7 @@ public class WebResizableTextArea
         extends
             WebAbstractTextArea<com.haulmont.cuba.web.toolkit.ui.ResizableTextArea>
         implements
-            ResizableTextArea, Component.Wrapper {
+            ResizableTextArea {
 
     protected final List<ResizeListener> resizeListeners = new ArrayList<>();
 

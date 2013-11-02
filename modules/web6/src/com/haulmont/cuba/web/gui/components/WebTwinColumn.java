@@ -6,7 +6,6 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.TwinColumn;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
@@ -22,11 +21,7 @@ import java.util.*;
  * @author gorodnov
  * @version $Id$
  */
-public class WebTwinColumn
-        extends
-            WebAbstractOptionsField<TwinColumnSelect>
-        implements
-            TwinColumn, Component.Wrapper {
+public class WebTwinColumn extends WebAbstractOptionsField<TwinColumnSelect> implements TwinColumn {
 
     private Object nullOption;
 

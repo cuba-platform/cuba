@@ -7,10 +7,12 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.chile.core.datatypes.Enumeration;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.gui.components.CaptionMode;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.web.gui.data.*;
+import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
+import com.haulmont.cuba.web.gui.data.EnumerationContainer;
+import com.haulmont.cuba.web.gui.data.ItemWrapper;
+import com.haulmont.cuba.web.gui.data.ObjectContainer;
 import com.vaadin.data.Property;
 import com.vaadin.ui.AbstractSelect;
 
@@ -24,7 +26,7 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
     extends
         WebAbstractField<T>
     implements
-        com.haulmont.cuba.gui.components.Field, Component.Wrapper {
+        com.haulmont.cuba.gui.components.Field {
 
     protected List optionsList;
     protected Map<String, Object> optionsMap;

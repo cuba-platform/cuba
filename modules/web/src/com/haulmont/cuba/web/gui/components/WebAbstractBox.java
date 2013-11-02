@@ -17,7 +17,7 @@ import java.util.*;
  * @author abramov
  * @version $Id$
  */
-class WebAbstractBox extends WebAbstractComponent<AbstractOrderedLayout> implements BoxLayout, Component.Wrapper {
+class WebAbstractBox extends WebAbstractComponent<AbstractOrderedLayout> implements BoxLayout {
 
     protected Collection<Component> ownComponents = new HashSet<>();
     protected Map<String, Component> componentByIds = new HashMap<>();

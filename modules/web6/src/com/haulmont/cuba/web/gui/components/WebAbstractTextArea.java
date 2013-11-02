@@ -5,7 +5,6 @@
 
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.web.toolkit.ui.TextField;
 
 /**
@@ -16,7 +15,7 @@ public abstract class WebAbstractTextArea<T extends TextField>
         extends
             WebAbstractTextField<T>
         implements
-            com.haulmont.cuba.gui.components.TextArea, Component.Wrapper {
+            com.haulmont.cuba.gui.components.TextArea {
 
     protected boolean trimming = true;
 

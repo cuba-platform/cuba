@@ -20,7 +20,7 @@ public class WebWidgetsTree
         extends
             WebAbstractList<CubaWidgetsTree>
         implements
-            WidgetsTree, Component.Wrapper {
+            WidgetsTree {
 
     protected String hierarchyProperty;
 

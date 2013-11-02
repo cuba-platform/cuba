@@ -19,7 +19,7 @@ public class WebWidgetsTree
         extends
             WebAbstractList<com.haulmont.cuba.web.toolkit.ui.WidgetsTree>
         implements
-            WidgetsTree, Component.Wrapper {
+            WidgetsTree {
 
     protected String hierarchyProperty;
 

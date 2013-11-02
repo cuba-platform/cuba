@@ -5,7 +5,6 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.OptionsGroup;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.toolkit.ui.CubaOptionGroup;
@@ -28,7 +27,7 @@ public class WebOptionsGroup
         extends
             WebAbstractOptionsField<CubaOptionGroup>
         implements
-            OptionsGroup, Component.Wrapper {
+            OptionsGroup {
 
     protected Orientation orientation = Orientation.VERTICAL;
 

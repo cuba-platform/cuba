@@ -9,7 +9,6 @@ import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.components.TimeField;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -33,15 +32,15 @@ import java.util.Locale;
  * @author krivopustov
  * @version $Id$
  */
-public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implements TimeField, Component.Wrapper {
-    private boolean showSeconds;
+public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implements TimeField {
+    protected boolean showSeconds;
 
-    private String placeholder;
-    private String timeFormat;
+    protected String placeholder;
+    protected String timeFormat;
 
-    private DateField.Resolution resolution;
+    protected DateField.Resolution resolution;
 
-    private Log log = LogFactory.getLog(WebTimeField.class);
+    protected Log log = LogFactory.getLog(WebTimeField.class);
 
     protected static final int DIGIT_WIDTH = 23;
     
