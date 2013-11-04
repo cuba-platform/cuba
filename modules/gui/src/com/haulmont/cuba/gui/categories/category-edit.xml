@@ -19,8 +19,10 @@
 
     <layout expand="categoryAttrsFrame" spacing="true">
         <hbox id="categoryProperties" spacing="true">
-            <textField width="200px" id="name" datasource="categoryDs" property="name" required="true" caption="msg://name"/>
-            <lookupField width="200px" id="entityType" caption="msg://entityType" required="true"/>
+            <textField width="200px" id="name" datasource="categoryDs" property="name" required="true"
+                       requiredMessage="msg://nameRequired" caption="msg://name"/>
+            <lookupField width="200px" id="entityType" caption="msg://entityType" required="true"
+                         requiredMessage="msg://entityTypeRequired"/>
             <checkBox id="isDefault" caption="msg://isDefault"/>
         </hbox>
         <label value="msg://attributes" stylename="h2"/>
