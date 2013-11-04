@@ -638,6 +638,10 @@ public abstract class WindowManager {
         final String screenClass = element.attributeValue("class");
         if (!StringUtils.isBlank(screenClass)) {
             Class<Window> aClass = scripting.loadClass(screenClass);
+            if (aClass == null) {
+                String msg = AppBeans.get(Messages.class).getMainMessage("unableToLoadControllerClass");
+                throw new DevelopmentException(msg);
+            }
             Window wrappingWindow = ((WrappedWindow) window).wrapBy(aClass);
 
             if (wrappingWindow instanceof AbstractWindow) {
