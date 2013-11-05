@@ -85,6 +85,9 @@
     <screen id="backgroundWorkProgressWindow"
             template="/com/haulmont/cuba/gui/backgroundwork/background-work-progress-window.xml"/>
 
+    <screen id="excelExport"
+            template="/com/haulmont/cuba/gui/app/core/excel/excel-export.xml"/>
+
     <screen id="sys$FileDescriptor.browse"
             template="/com/haulmont/cuba/gui/app/core/file/file-browse.xml"/>
 

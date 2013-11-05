@@ -3,15 +3,10 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<window
-        xmlns="http://schemas.haulmont.com/cuba/5.0/window.xsd"
-        class="com.haulmont.cuba.web.app.ui.export.excel.ExcelExportBrowser"
-        messagesPack="com.haulmont.cuba.web.app.ui.export.excel"
-        caption="msg://caption"
-        >
-
-    <dsContext>
-    </dsContext>
+<window xmlns="http://schemas.haulmont.com/cuba/5.0/window.xsd"
+        class="com.haulmont.cuba.gui.app.core.excel.ExcelExportBrowser"
+        messagesPack="com.haulmont.cuba.gui.app.core.excel"
+        caption="msg://caption">
 
     <layout expand="table-panel">
         <vbox id="table-panel" expand="exportOptions" spacing="true" margin="true">

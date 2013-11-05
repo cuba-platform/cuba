@@ -30,7 +30,7 @@ public class ExcelAction extends AbstractAction {
 
     protected final Table table;
     protected final ExportDisplay display;
-    private boolean parameterized;
+    protected boolean parameterized = false;
 
     /**
      * The simplest constructor. The action uses default name and other parameters.
@@ -83,6 +83,7 @@ public class ExcelAction extends AbstractAction {
      * This method is invoked by action owner component.
      * @param component component invoking action
      */
+    @Override
     public void actionPerform(Component component) {
         if (parameterized)
             parameterizedExport();
@@ -102,7 +103,7 @@ public class ExcelAction extends AbstractAction {
      * Export via screen "excelExport".
      */
     protected void parameterizedExport() {
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("table", table);
         params.put("exportDisplay", display);
         table.getFrame().openWindow("excelExport", WindowManager.OpenType.DIALOG, params);

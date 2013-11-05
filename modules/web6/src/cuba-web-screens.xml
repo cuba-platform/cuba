@@ -7,9 +7,6 @@
 
     <include file="/com/haulmont/cuba/gui/cuba-screens.xml"/>
 
-    <screen id="excelExport"
-            template="/com/haulmont/cuba/web/app/ui/export/excel/excel-export.xml"/>
-
     <screen id="settings"
             template="/com/haulmont/cuba/web/app/ui/core/settings/settings-window.xml"/>
 
