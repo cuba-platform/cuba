@@ -6,142 +6,170 @@ package com.haulmont.cuba.web.toolkit.data.util;
 
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.data.GroupTableContainer;
+import com.haulmont.cuba.web.toolkit.data.TableContainer;
 import com.vaadin.data.Container;
 import com.vaadin.data.util.ContainerOrderedWrapper;
 
 import java.util.Collection;
 import java.util.Map;
 
-@SuppressWarnings("serial")
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 public class GroupTableContainerWrapper extends ContainerOrderedWrapper
         implements GroupTableContainer, AggregationContainer {
-    private boolean groupTableContainer;
+
+    private boolean isGroupTableContainer;
+
+    private GroupTableContainer groupTableContainer;
+    private Container container;
 
     public GroupTableContainerWrapper(Container toBeWrapped) {
         super(toBeWrapped);
 
-        groupTableContainer = toBeWrapped instanceof GroupTableContainer;
+        isGroupTableContainer = toBeWrapped instanceof GroupTableContainer;
+        if (isGroupTableContainer)
+            groupTableContainer = (GroupTableContainer) toBeWrapped;
+        container = toBeWrapped;
     }
 
+    @Override
     public void groupBy(final Object[] properties) {
-        if (groupTableContainer) {
-            ((GroupTableContainer) container).groupBy(properties);
+        if (isGroupTableContainer) {
+            groupTableContainer.groupBy(properties);
         } else {
             throw new IllegalStateException("Wrapped container is not GroupTableContainer:"
                     + container.getClass());
         }
     }
 
+    @Override
     public boolean isGroup(Object id) {
-        return groupTableContainer && ((GroupTableContainer) container).isGroup(id);
+        return isGroupTableContainer && groupTableContainer.isGroup(id);
     }
 
+    @Override
     public Collection<?> rootGroups() {
-        if (groupTableContainer) {
-            return ((GroupTableContainer) container).rootGroups();
+        if (isGroupTableContainer) {
+            return groupTableContainer.rootGroups();
         } else {
             throw new IllegalStateException("Wrapped container is not GroupTableContainer:"
                     + container.getClass());
         }
     }
 
+    @Override
     public boolean hasChildren(Object id) {
-        return groupTableContainer && ((GroupTableContainer) container).hasChildren(id);
+        return isGroupTableContainer && groupTableContainer.hasChildren(id);
     }
 
+    @Override
     public Collection<?> getChildren(Object id) {
-        if (groupTableContainer) {
-            return ((GroupTableContainer) container).getChildren(id);
+        if (isGroupTableContainer) {
+            return groupTableContainer.getChildren(id);
         } else {
             throw new IllegalStateException("Wrapped container is not GroupTableContainer:"
                     + container.getClass());
         }
     }
 
+    @Override
     public boolean hasGroups() {
-        return groupTableContainer && ((GroupTableContainer) container).hasGroups();
+        return isGroupTableContainer && groupTableContainer.hasGroups();
     }
 
+    @Override
     public Object getGroupProperty(Object itemId) {
-        if (groupTableContainer) {
-            return ((GroupTableContainer) container).getGroupProperty(itemId);
+        if (isGroupTableContainer) {
+            return groupTableContainer.getGroupProperty(itemId);
         }
         throw new IllegalStateException("Wrapped container is not GroupTableContainer:"
                 + container.getClass());
     }
 
+    @Override
     public Object getGroupPropertyValue(Object itemId) {
-        if (groupTableContainer) {
-            return ((GroupTableContainer) container).getGroupPropertyValue(itemId);
+        if (isGroupTableContainer) {
+            return groupTableContainer.getGroupPropertyValue(itemId);
         }
         throw new IllegalStateException("Wrapped container is not GroupTableContainer:"
                 + container.getClass());
     }
 
+    @Override
     public Collection<?> getGroupItemIds(Object itemId) {
-        if (groupTableContainer) {
-            return ((GroupTableContainer) container).getGroupItemIds(itemId);
+        if (isGroupTableContainer) {
+            return groupTableContainer.getGroupItemIds(itemId);
         }
         throw new IllegalStateException("Wrapped container is not GroupTableContainer:"
                 + container.getClass());
     }
 
+    @Override
     public int getGroupItemsCount(Object itemId) {
-        if (groupTableContainer) {
-            return ((GroupTableContainer) container).getGroupItemsCount(itemId);
+        if (isGroupTableContainer) {
+            return groupTableContainer.getGroupItemsCount(itemId);
         }
         throw new IllegalStateException("Wrapped container is not GroupTableContainer:"
                 + container.getClass());
     }
 
+    @Override
     public Collection<?> getGroupProperties() {
-        if (groupTableContainer) {
-            return ((GroupTableContainer) container).getGroupProperties();
+        if (isGroupTableContainer) {
+            return groupTableContainer.getGroupProperties();
         }
         throw new IllegalStateException("Wrapped container is not GroupTableContainer:"
                 + container.getClass());
     }
 
+    @Override
     public void expand(Object id) {
-        if (groupTableContainer) {
-            ((GroupTableContainer) container).expand(id);
+        if (isGroupTableContainer) {
+            groupTableContainer.expand(id);
         } else {
             throw new IllegalStateException("Wrapped container is not GroupTableContainer:"
                     + container.getClass());
         }
     }
 
+    @Override
     public boolean isExpanded(Object id) {
-        return groupTableContainer && ((GroupTableContainer) container).isExpanded(id);
+        return isGroupTableContainer && groupTableContainer.isExpanded(id);
     }
 
+    @Override
     public void expandAll() {
-        if (groupTableContainer) {
-            ((GroupTableContainer) container).expandAll();
+        if (isGroupTableContainer) {
+            groupTableContainer.expandAll();
         } else {
             throw new IllegalStateException("Wrapped container is not GroupTableContainer:"
                     + container.getClass());
         }
     }
 
+    @Override
     public void collapseAll() {
-        if (groupTableContainer) {
-            ((GroupTableContainer) container).collapseAll();
+        if (isGroupTableContainer) {
+            groupTableContainer.collapseAll();
         } else {
             throw new IllegalStateException("Wrapped container is not GroupTableContainer:"
                     + container.getClass());
         }
     }
 
+    @Override
     public void collapse(Object id) {
-        if (groupTableContainer) {
-            ((GroupTableContainer) container).collapse(id);
+        if (isGroupTableContainer) {
+            groupTableContainer.collapse(id);
         } else {
             throw new IllegalStateException("Wrapped container is not GroupTableContainer:"
                     + container.getClass());
         }
     }
 
+    @Override
     public Collection getAggregationPropertyIds() {
         if (container instanceof AggregationContainer) {
             return ((AggregationContainer) container).getAggregationPropertyIds();
@@ -150,6 +178,7 @@ public class GroupTableContainerWrapper extends ContainerOrderedWrapper
                 + container.getClass());
     }
 
+    @Override
     public Type getContainerPropertyAggregation(Object propertyId) {
         if (container instanceof AggregationContainer) {
             return ((AggregationContainer) container).getContainerPropertyAggregation(propertyId);
@@ -158,6 +187,7 @@ public class GroupTableContainerWrapper extends ContainerOrderedWrapper
                 + container.getClass());
     }
 
+    @Override
     public void addContainerPropertyAggregation(Object propertyId, Type type) {
         if (container instanceof AggregationContainer) {
             ((AggregationContainer) container).addContainerPropertyAggregation(propertyId, type);
@@ -167,6 +197,7 @@ public class GroupTableContainerWrapper extends ContainerOrderedWrapper
         }
     }
 
+    @Override
     public void removeContainerPropertyAggregation(Object propertyId) {
         if (container instanceof AggregationContainer) {
             ((AggregationContainer) container).removeContainerPropertyAggregation(propertyId);
@@ -176,6 +207,7 @@ public class GroupTableContainerWrapper extends ContainerOrderedWrapper
         }
     }
 
+    @Override
     public Map<Object, Object> aggregate(Context context) {
         if (container instanceof AggregationContainer) {
             return ((AggregationContainer) container).aggregate(context);
@@ -184,6 +216,7 @@ public class GroupTableContainerWrapper extends ContainerOrderedWrapper
                 + container.getClass());
     }
 
+    @Override
     public void sort(Object[] propertyId, boolean[] ascending) {
         if (container instanceof Sortable) {
             ((Sortable) container).sort(propertyId, ascending);
@@ -193,11 +226,19 @@ public class GroupTableContainerWrapper extends ContainerOrderedWrapper
         }
     }
 
+    @Override
     public Collection<?> getSortableContainerPropertyIds() {
         if (container instanceof Sortable) {
             return ((Sortable) container).getSortableContainerPropertyIds();
         }
         throw new IllegalStateException("Wrapped container is not Sortable: "
                 + container.getClass());
+    }
+
+    @Override
+    public void resetSortOrder() {
+        if (container instanceof TableContainer) {
+            ((TableContainer) container).resetSortOrder();
+        }
     }
 }

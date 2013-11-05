@@ -9,6 +9,10 @@ import com.vaadin.data.Container;
 import java.util.Map;
 import java.util.Collection;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 public interface AggregationContainer extends Container {
 
     enum Type {

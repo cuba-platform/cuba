@@ -272,6 +272,13 @@ public class WebTreeTable
         public Map<Object, Object> aggregate(Context context) {
             return __aggregate(this, context);
         }
+
+        @Override
+        public void resetSortOrder() {
+            if (datasource instanceof CollectionDatasource.Sortable) {
+                ((CollectionDatasource.Sortable) datasource).resetSortOrder();
+            }
+        }
     }
 
     protected class MyTreeTable extends com.haulmont.cuba.web.toolkit.ui.TreeTable {

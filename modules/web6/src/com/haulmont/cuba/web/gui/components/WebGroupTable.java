@@ -193,9 +193,9 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
         private List<Object> aggregationProperties = null;
 
         //Supports items expanding
-        private final Set<GroupInfo> expanded = new HashSet<GroupInfo>();
+        private final Set<GroupInfo> expanded = new HashSet<>();
 
-        private Set<GroupInfo> expandState = new HashSet<GroupInfo>();
+        private Set<GroupInfo> expandState = new HashSet<>();
 
         //Items cache
         private LinkedList<Object> cachedItemIds;
@@ -307,6 +307,7 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
             }
         }
 
+        @Override
         public Collection<?> rootGroups() {
             if (hasGroups()) {
                 return ((GroupDatasource) datasource).rootGroups();
@@ -314,10 +315,12 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
             return Collections.emptyList();
         }
 
+        @Override
         public boolean hasChildren(Object id) {
             return isGroup(id) && ((GroupDatasource) datasource).hasChildren((GroupInfo) id);
         }
 
+        @Override
         public Collection<?> getChildren(Object id) {
             if (isGroup(id)) {
                 return ((GroupDatasource) datasource).getChildren((GroupInfo) id);
@@ -325,6 +328,7 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
             return Collections.emptyList();
         }
 
+        @Override
         public Collection<?> getGroupItemIds(Object id) {
             if (isGroup(id)) {
                 return ((GroupDatasource) datasource).getGroupItemIds((GroupInfo) id);
@@ -332,6 +336,7 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
             return Collections.emptyList();
         }
 
+        @Override
         public int getGroupItemsCount(Object id) {
             if (isGroup(id)) {
                 return ((GroupDatasource) datasource).getGroupItemsCount((GroupInfo) id);
@@ -339,10 +344,12 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
             return 0;
         }
 
+        @Override
         public boolean isGroup(Object id) {
             return (id instanceof GroupInfo) && ((GroupDatasource) datasource).containsGroup((GroupInfo) id);
         }
 
+        @Override
         public Object getGroupProperty(Object id) {
             if (isGroup(id)) {
                 return ((GroupDatasource) datasource).getGroupProperty((GroupInfo) id);
@@ -350,6 +357,7 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
             return null;
         }
 
+        @Override
         public Object getGroupPropertyValue(Object id) {
             if (isGroup(id)) {
                 return ((GroupDatasource) datasource).getGroupPropertyValue((GroupInfo) id);
@@ -357,10 +365,12 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
             return null;
         }
 
+        @Override
         public boolean hasGroups() {
             return groupDatasource && ((GroupDatasource) datasource).hasGroups();
         }
 
+        @Override
         public Collection<?> getGroupProperties() {
             if (hasGroups()) {
                 return ((GroupDatasource) datasource).getGroupProperties();
@@ -368,6 +378,7 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
             return Collections.emptyList();
         }
 
+        @Override
         public void expandAll() {
             if (hasGroups()) {
                 this.expanded.clear();
@@ -385,6 +396,7 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
             }
         }
 
+        @Override
         public void expand(Object id) {
             if (isGroup(id)) {
                 expanded.add((GroupInfo) id);
@@ -392,6 +404,7 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
             }
         }
 
+        @Override
         public void collapseAll() {
             if (hasGroups()) {
                 expanded.clear();
@@ -399,6 +412,7 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
             }
         }
 
+        @Override
         public void collapse(Object id) {
             if (isGroup(id)) {
                 expanded.remove((GroupInfo) id);
@@ -406,10 +420,12 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
             }
         }
 
+        @Override
         public boolean isExpanded(Object id) {
             return isGroup(id) && expanded.contains((GroupInfo) id);
         }
 
+        @Override
         public Collection getAggregationPropertyIds() {
             if (aggregationProperties != null) {
                 return Collections.unmodifiableList(aggregationProperties);
@@ -417,10 +433,12 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
             return Collections.emptyList();
         }
 
+        @Override
         public Type getContainerPropertyAggregation(Object propertyId) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public void addContainerPropertyAggregation(Object propertyId, Type type) {
             if (aggregationProperties == null) {
                 aggregationProperties = new LinkedList<Object>();
@@ -430,6 +448,7 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
             aggregationProperties.add(propertyId);
         }
 
+        @Override
         public void removeContainerPropertyAggregation(Object propertyId) {
             if (aggregationProperties != null) {
                 aggregationProperties.remove(propertyId);
@@ -578,6 +597,13 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
         @Override
         protected DatasourceListener createDatasourceListener() {
             return new GroupDataSourceRefreshListener();
+        }
+
+        @Override
+        public void resetSortOrder() {
+            if (datasource instanceof CollectionDatasource.Sortable) {
+                ((CollectionDatasource.Sortable) datasource).resetSortOrder();
+            }
         }
 
         protected class GroupDataSourceRefreshListener extends DataSourceRefreshListener {

@@ -6,6 +6,7 @@ package com.haulmont.cuba.web.toolkit.data.util;
 
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.data.GroupTableContainer;
+import com.haulmont.cuba.web.toolkit.data.TableContainer;
 import com.vaadin.data.Container;
 import com.vaadin.data.util.ContainerOrderedWrapper;
 
@@ -235,6 +236,8 @@ public class GroupTableContainerWrapper extends ContainerOrderedWrapper
 
     @Override
     public void resetSortOrder() {
-        groupTableContainer.resetSortOrder();
+        if (container instanceof TableContainer) {
+            ((TableContainer) container).resetSortOrder();
+        }
     }
 }

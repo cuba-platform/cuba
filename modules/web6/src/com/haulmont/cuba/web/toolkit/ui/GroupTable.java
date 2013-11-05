@@ -59,8 +59,7 @@ public class GroupTable extends Table implements GroupTableContainer {
             newDataSource = new IndexedContainer();
         }
 
-        super.setContainerDataSource(
-                new GroupTableContainerWrapper(newDataSource));
+        super.setContainerDataSource(new GroupTableContainerWrapper(newDataSource));
 
         initComponent();
 

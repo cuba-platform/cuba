@@ -14,6 +14,7 @@ import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.gui.data.SortableCollectionDsWrapper;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
+import com.haulmont.cuba.web.toolkit.data.TableContainer;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.terminal.Resource;
@@ -138,7 +139,7 @@ public class WebTable extends WebAbstractTable<com.haulmont.cuba.web.toolkit.ui.
     }
 
     protected class SortableTableDsWrapper extends SortableCollectionDsWrapper
-            implements AggregationContainer {
+            implements AggregationContainer, TableContainer {
 
         private List<Object> aggregationProperties = null;
 
@@ -210,6 +211,13 @@ public class WebTable extends WebAbstractTable<com.haulmont.cuba.web.toolkit.ui.
         @Override
         public Map<Object, Object> aggregate(Context context) {
             return __aggregate(this, context);
+        }
+
+        @Override
+        public void resetSortOrder() {
+            if (datasource instanceof CollectionDatasource.Sortable) {
+                ((CollectionDatasource.Sortable) datasource).resetSortOrder();
+            }
         }
     }
 }

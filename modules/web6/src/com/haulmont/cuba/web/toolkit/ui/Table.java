@@ -5,6 +5,7 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
+import com.haulmont.cuba.web.toolkit.data.TableContainer;
 import com.haulmont.cuba.web.toolkit.data.util.AggregationContainerOrderedWrapper;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
@@ -28,7 +29,7 @@ import java.util.*;
  */
 @SuppressWarnings("serial")
 @ClientWidget(IScrollTable.class)
-public class Table extends com.vaadin.ui.Table implements AggregationContainer {
+public class Table extends com.vaadin.ui.Table implements AggregationContainer, TableContainer {
 
     protected LinkedList<Object> editableColumns = null;
     protected boolean storeColWidth = false;
@@ -52,6 +53,16 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
     protected ActionManager shortcutsManager = new ActionManager();
 
     private List<CollapseListener> columnCollapseListeners = new ArrayList<>();
+
+    @Override
+    public void resetSortOrder() {
+        sortContainerPropertyId = null;
+        sortAscending = true;
+
+        if (items instanceof TableContainer) {
+            ((TableContainer) items).resetSortOrder();
+        }
+    }
 
     public interface CollapseListener {
         void columnCollapsed(Object columnId, boolean collapsed);
@@ -266,6 +277,12 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
         if (variables.containsKey("pagelength")) {
             setPageLength(((Integer) variables.get("pagelength")).intValue());
             clientNeedsContentRefresh = true;
+        }
+
+        if (variables.containsKey("resetsortorder")) {
+            resetSortOrder();
+
+            requestRepaint();
         }
 
         return clientNeedsContentRefresh;

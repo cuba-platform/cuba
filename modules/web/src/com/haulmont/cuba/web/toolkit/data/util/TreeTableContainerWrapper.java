@@ -6,6 +6,7 @@
 package com.haulmont.cuba.web.toolkit.data.util;
 
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
+import com.haulmont.cuba.web.toolkit.data.TableContainer;
 import com.haulmont.cuba.web.toolkit.data.TreeTableContainer;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
@@ -471,8 +472,8 @@ public class TreeTableContainerWrapper
 
     @Override
     public void resetSortOrder() {
-        if (treeTableContainer) {
-            ((TreeTableContainer)container).resetSortOrder();
+        if (container instanceof TableContainer) {
+            ((TableContainer) container).resetSortOrder();
         }
     }
 }

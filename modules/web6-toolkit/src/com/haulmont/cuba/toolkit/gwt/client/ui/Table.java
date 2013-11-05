@@ -66,6 +66,8 @@ public abstract class Table
     // For fix bug overflow:auto in webkit
     protected Widget parentOverflowContainer;
 
+    protected int sortClickCounter = 0;
+
     //[6.6]
     private KeyPressHandler navKeyPressHandler = new KeyPressHandler() {
 
@@ -170,7 +172,6 @@ public abstract class Table
     protected boolean sortAscending;
     protected String sortColumn;
     protected boolean enableCancelSorting = false;
-    protected int sortSwitchCounts = 0;
     protected boolean columnReordering;
 
     /**
@@ -1519,27 +1520,7 @@ public abstract class Table
                     if (!moved && event.getButton() == Event.BUTTON_LEFT) {
                         // mouse event was a click to header -> sort column
                         if (sortable) {
-                            if (sortColumn.equals(cid)) {
-                                sortSwitchCounts++;
-                                if (Boolean.TRUE.equals(enableCancelSorting) && (sortSwitchCounts % 3) == 0){
-                                    // cancel sorting
-                                    client.updateVariable(paintableId, "cancelsorting",
-                                            "", true);
-                                    sortSwitchCounts= 0;
-                                }
-                                else{
-                                    // just toggle order
-                                    client.updateVariable(paintableId, "sortascending",
-                                            !sortAscending, true);
-                                }
-                            } else {
-                                sortSwitchCounts = 1;
-                                // set table sorted by this column
-                                client.updateVariable(paintableId, "sortcolumn",
-                                        cid, true);
-                            }
-                            // get also cache columns at the same request
-                            bodyContainer.setScrollPosition(0);
+                            sortColumn();
                         }
                         break;
                     }
@@ -1582,6 +1563,65 @@ public abstract class Table
                     break;
                 default:
                     break;
+            }
+        }
+
+        protected void sortColumn() {
+            boolean reloadDataFromServer = true;
+
+            if (cid.equals(sortColumn)) {
+                if (sortColumn == null) {
+                    // anyway sort ascending
+                    client.updateVariable(paintableId, "sortascending", !sortAscending, false);
+                } else if (sortAscending) {
+                    if (sortClickCounter < 2) {
+                        // special case for initial revert sorting instead of reset sort order
+                        if (sortClickCounter == 0) {
+                            client.updateVariable(paintableId, "sortascending", !sortAscending, false);
+                        } else {
+                            reloadDataFromServer = false;
+                            sortClickCounter = 0;
+                            sortColumn = null;
+                            sortAscending = true;
+
+                            client.updateVariable(paintableId, "resetsortorder", "", true);
+                        }
+                    } else {
+                        client.updateVariable(paintableId, "sortascending", !sortAscending, false);
+                    }
+                } else {
+                    if (sortClickCounter < 2) {
+                        // special case for initial revert sorting instead of reset sort order
+                        if (sortClickCounter == 0) {
+                            client.updateVariable(paintableId, "sortascending", !sortAscending, false);
+                        } else {
+                            reloadDataFromServer = false;
+                            sortClickCounter = 0;
+                            sortColumn = null;
+                            sortAscending = true;
+
+                            client.updateVariable(paintableId, "resetsortorder", "", true);
+                        }
+                    } else {
+                        reloadDataFromServer = false;
+                        sortClickCounter = 0;
+                        sortColumn = null;
+                        sortAscending = true;
+
+                        client.updateVariable(paintableId, "resetsortorder", "", true);
+                    }
+                }
+                sortClickCounter++;
+            } else {
+                sortClickCounter = 0;
+
+                // set table sorted by this column
+                client.updateVariable(paintableId, "sortcolumn", cid, false);
+            }
+
+            if (reloadDataFromServer) {
+                // get also cache columns at the same request
+                bodyContainer.setScrollPosition(0);
             }
         }
 

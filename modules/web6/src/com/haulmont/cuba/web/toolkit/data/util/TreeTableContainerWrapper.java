@@ -6,6 +6,7 @@
 package com.haulmont.cuba.web.toolkit.data.util;
 
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
+import com.haulmont.cuba.web.toolkit.data.TableContainer;
 import com.haulmont.cuba.web.toolkit.data.TreeTableContainer;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
@@ -467,5 +468,12 @@ public class TreeTableContainerWrapper
         }
         throw new IllegalStateException("Wrapped container is not AggregationContainer: "
                 + container.getClass());
+    }
+
+    @Override
+    public void resetSortOrder() {
+        if (container instanceof TableContainer) {
+            ((TableContainer) container).resetSortOrder();
+        }
     }
 }
