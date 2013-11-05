@@ -369,11 +369,13 @@ public class DsContextImpl implements DsContextImplementation {
                 ds = parent.get(id);
             }
         } else {
-            String nestedFramePath = id.substring(0, id.lastIndexOf("."));
-            Component nestedFrame = getWindowContext().getFrame().getComponent(nestedFramePath);
-            if ((nestedFrame) != null && (nestedFrame instanceof IFrame)) {
-                String nestedDsId = id.substring(id.lastIndexOf(".") + 1);
-                ds = ((IFrame) nestedFrame).getDsContext().get(nestedDsId);
+            if (windowContext != null) {
+                String nestedFramePath = id.substring(0, id.indexOf("."));
+                Component nestedFrame = getWindowContext().getFrame().getComponent(nestedFramePath);
+                if ((nestedFrame) != null && (nestedFrame instanceof IFrame)) {
+                    String nestedDsId = id.substring(id.indexOf(".") + 1);
+                    ds = ((IFrame) nestedFrame).getDsContext().get(nestedDsId);
+                }
             }
         }
         return (T) ds;
