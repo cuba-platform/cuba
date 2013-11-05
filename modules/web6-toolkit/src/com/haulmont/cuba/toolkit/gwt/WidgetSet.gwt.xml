@@ -26,5 +26,5 @@
     -->
 
     <!--<set-property name="user.agent" value="gecko1_8"/>-->
-    <set-property name="user.agent" value="safari" />
+    <!--<set-property name="user.agent" value="safari" />-->
 </module>
