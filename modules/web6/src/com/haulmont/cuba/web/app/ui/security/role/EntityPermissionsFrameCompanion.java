@@ -5,7 +5,8 @@
 
 package com.haulmont.cuba.web.app.ui.security.role;
 
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.app.security.role.edit.tabs.EntityPermissionsFrame;
 import com.haulmont.cuba.gui.components.Component;
@@ -13,14 +14,16 @@ import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.security.entity.OperationPermissionTarget;
 import com.haulmont.cuba.gui.security.entity.PermissionVariant;
-import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.cuba.web.gui.components.WebComponentsUtils;
 
 /**
- * <p>$Id$</p>
- *
  * @author artamonov
+ * @version $Id$
  */
 public class EntityPermissionsFrameCompanion implements EntityPermissionsFrame.Companion {
+
+    protected Messages messages = AppBeans.get(Messages.NAME);
+
     @Override
     public void initPermissionColoredColumns(Table entityPermissionsTable) {
         addGeneratedColumnByOperation(entityPermissionsTable, "createPermissionVariant");
@@ -29,7 +32,7 @@ public class EntityPermissionsFrameCompanion implements EntityPermissionsFrame.C
         addGeneratedColumnByOperation(entityPermissionsTable, "deletePermissionVariant");
     }
 
-    private void addGeneratedColumnByOperation(Table entityPermissionsTable, final String propertyName) {
+    protected void addGeneratedColumnByOperation(Table entityPermissionsTable, final String propertyName) {
         entityPermissionsTable.addGeneratedColumn(propertyName, new Table.ColumnGenerator<OperationPermissionTarget>() {
             @Override
             public Component generateCell(OperationPermissionTarget entity) {
@@ -38,18 +41,18 @@ public class EntityPermissionsFrameCompanion implements EntityPermissionsFrame.C
         });
     }
 
-    private Label generateLabelByPermissionVariant(PermissionVariant permissionVariant) {
+    protected Label generateLabelByPermissionVariant(PermissionVariant permissionVariant) {
         Label label = AppConfig.getFactory().createComponent(Label.NAME);
-        com.vaadin.ui.Label vLabel = (com.vaadin.ui.Label) WebComponentsHelper.unwrap(label);
-        vLabel.setContentMode(com.vaadin.ui.Label.CONTENT_XHTML);
+
+        WebComponentsUtils.allowHtmlContent(label);
 
         StringBuilder builder = new StringBuilder();
         if (permissionVariant != PermissionVariant.NOTSET) {
             builder.append("<span style=\"color:").append(permissionVariant.getColor()).append(";\">")
-                    .append(MessageProvider.getMessage(permissionVariant)).append("</span>");
+                    .append(messages.getMessage(permissionVariant)).append("</span>");
         }
 
-        vLabel.setValue(builder.toString());
+        label.setValue(builder.toString());
 
         return label;
     }

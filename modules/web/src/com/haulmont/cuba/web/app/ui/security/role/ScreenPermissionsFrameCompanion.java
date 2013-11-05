@@ -15,22 +15,24 @@ import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.TreeTable;
 import com.haulmont.cuba.gui.security.entity.BasicPermissionTarget;
 import com.haulmont.cuba.gui.security.entity.PermissionVariant;
-import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
-import com.vaadin.shared.ui.label.ContentMode;
+import com.haulmont.cuba.web.gui.components.WebComponentsUtils;
 
 /**
  * @author artamonov
  * @version $Id$
  */
-public class ScreenPermissionsFrameCompanion implements ScreenPermissionsFrame.Companion{
+public class ScreenPermissionsFrameCompanion implements ScreenPermissionsFrame.Companion {
+
+    protected Messages messages = AppBeans.get(Messages.NAME);
+
     @Override
     public void initPermissionColoredColumns(TreeTable screenPermissionsTree) {
         screenPermissionsTree.addGeneratedColumn("permissionVariant", new Table.ColumnGenerator<BasicPermissionTarget>() {
             @Override
             public Component generateCell(BasicPermissionTarget entity) {
                 Label label = AppConfig.getFactory().createComponent(Label.NAME);
-                com.vaadin.ui.Label vLabel = (com.vaadin.ui.Label) WebComponentsHelper.unwrap(label);
-                vLabel.setContentMode(ContentMode.HTML);
+
+                WebComponentsUtils.allowHtmlContent(label);
 
                 StringBuilder builder = new StringBuilder();
 
@@ -38,10 +40,10 @@ public class ScreenPermissionsFrameCompanion implements ScreenPermissionsFrame.C
 
                 if (permissionVariant != PermissionVariant.NOTSET) {
                     builder.append("<span style=\"color:").append(permissionVariant.getColor()).append(";\">")
-                            .append(AppBeans.get(Messages.class).getMessage(permissionVariant)).append("</span>");
+                            .append(messages.getMessage(permissionVariant)).append("</span>");
                 }
 
-                vLabel.setValue(builder.toString());
+                label.setValue(builder.toString());
 
                 return label;
             }
