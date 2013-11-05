@@ -133,11 +133,14 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
 
     protected Metadata metadata = AppBeans.get(Metadata.class);
 
+    protected String userStyleName = null;
+
     public WebFilter() {
         persistenceManager = AppBeans.get(PersistenceManagerService.NAME);
         component = new VerticalActionsLayout();
 
         messages = AppBeans.get(Messages.class);
+        component.setStyleName("generic-filter");
         userSessionSource = AppBeans.get(UserSessionSource.class);
 
         defaultFilterCaption = messages.getMessage(MESSAGES_PACK, "defaultFilter");
@@ -163,7 +166,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
 
         // don't add margin because filter is usually placed inside a groupbox that adds margins to its content
         component.setMargin(false);
-        component.setStyleName("generic-filter");
+        component.setStyleName("cuba-generic-filter");
 
         foldersPane = App.getInstance().getAppWindow().getFoldersPane();
 
@@ -180,7 +183,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
 
         select = new FilterSelect();
         select.setWidth(300, Sizeable.UNITS_PIXELS);
-        select.setStyleName("generic-filter-select");
+        select.setStyleName("cuba-generic-filter-select");
         select.setNullSelectionAllowed(true);
         select.setNullSelectionItemId(noFilter);
         select.setImmediate(true);
@@ -577,6 +580,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         } else {
             paramsLayout = recursivelyCreateParamsLayout(focusOnConditions, conditions.getRootNodes(), null, 0);
         }
+        paramsLayout.setStyleName("cuba-generic-filter-paramslayout");
     }
 
     protected ComponentContainer recursivelyCreateParamsLayout(boolean focusOnConditions,
@@ -1577,6 +1581,20 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
     @Override
     public boolean isFolderActionsEnabled() {
         return folderActionsEnabled;
+    }
+
+    @Override
+    public void setStyleName(String name) {
+        if (userStyleName != null)
+            getComposition().removeStyleName(userStyleName);
+        this.userStyleName = name;
+        if (name != null)
+            getComposition().addStyleName(userStyleName);
+    }
+
+    @Override
+    public String getStyleName() {
+        return userStyleName;
     }
 
     @Override

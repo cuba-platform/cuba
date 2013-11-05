@@ -523,7 +523,7 @@ public class AppWindow extends Window implements UserSubstitutionListener,
 
             Button searchBtn = new Button();
             searchBtn.setStyleName(BaseTheme.BUTTON_LINK);
-            searchBtn.setIcon(new VersionedThemeResource("select/img/fts-btn.png"));
+            searchBtn.setIcon(new VersionedThemeResource("app/images/fts-btn.png"));
             searchBtn.addListener(
                     new Button.ClickListener() {
                         @Override
