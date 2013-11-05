@@ -165,7 +165,9 @@ public class LoginWindow extends Window implements Action.Handler {
         welcomeLayout.setHeight("-1px");
         welcomeLayout.setSpacing(true);
 
-        Label label = new Label(messages.getMessage(getMessagesPack(), "loginWindow.welcomeLabel", loc));
+        String welcomeMsg = messages.getMessage(getMessagesPack(), "loginWindow.welcomeLabel", loc);
+        Label label = new Label(welcomeMsg.replace("\n", "<br/>"));
+        label.setContentMode(Label.CONTENT_XHTML);
         label.setWidth("-1px");
         label.setStyleName("login-caption");
 
