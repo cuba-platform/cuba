@@ -5,6 +5,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
@@ -389,7 +390,8 @@ public class WebFieldGroup
             MetaProperty metaProperty = dsComponent.getMetaProperty();
 
             if (metaProperty != null) {
-                dsComponent.setEditable(security.isEntityAttrModificationPermitted(metaProperty)
+                MetaClass metaClass = dsComponent.getDatasource().getMetaClass();
+                dsComponent.setEditable(security.isEntityAttrModificationPermitted(metaClass, metaProperty.getName())
                         && dsComponent.isEditable());
             }
         }

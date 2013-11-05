@@ -1464,7 +1464,8 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                 MetaProperty metaProperty = dsComponent.getMetaProperty();
 
                 if (metaProperty != null) {
-                    dsComponent.setEditable(security.isEntityAttrModificationPermitted(metaProperty)
+                    MetaClass metaClass = dsComponent.getDatasource().getMetaClass();
+                    dsComponent.setEditable(security.isEntityAttrModificationPermitted(metaClass, metaProperty.getName())
                             && dsComponent.isEditable());
                 }
             }

@@ -67,6 +67,12 @@ public class SecurityImpl implements Security {
     }
 
     @Override
+    public boolean isEntityAttrModificationPermitted(MetaClass metaClass, String propertyName) {
+        return (isEntityOpPermitted(metaClass, EntityOp.CREATE) || isEntityOpPermitted(metaClass, EntityOp.UPDATE))
+                && isEntityAttrPermitted(metaClass, propertyName, EntityAttrAccess.MODIFY);
+    }
+
+    @Override
     public boolean isSpecificPermitted(String name) {
         return userSessionSource.getUserSession().isSpecificPermitted(name);
     }

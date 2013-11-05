@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -584,7 +585,8 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
             MetaProperty metaProperty = dsComponent.getMetaProperty();
 
             if (metaProperty != null) {
-                dsComponent.setEditable(security.isEntityAttrModificationPermitted(metaProperty)
+                MetaClass metaClass = dsComponent.getDatasource().getMetaClass();
+                dsComponent.setEditable(security.isEntityAttrModificationPermitted(metaClass, metaProperty.getName())
                         && dsComponent.isEditable());
             }
         }
