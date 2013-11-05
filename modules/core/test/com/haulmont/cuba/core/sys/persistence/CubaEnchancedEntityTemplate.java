@@ -14,6 +14,10 @@ import org.apache.commons.lang.ObjectUtils;
 
 import java.util.*;
 
+/**
+ * Used for byte code analysis
+ */
+@SuppressWarnings("unused")
 class CubaEnchancedEntityTemplate implements Instance {
     public UUID getUuid() {
         throw new UnsupportedOperationException();
