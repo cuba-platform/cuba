@@ -22,9 +22,6 @@
     <screen id="ftsSearchResults"
             template="/com/haulmont/fts/web/ui/results/search-results.xml"/>
 
-    <screen id="entityRestore"
-            template="/com/haulmont/cuba/web/app/ui/core/restore/entity-restore.xml"/>
-
     <screen id="saveSetInFolder" template="/com/haulmont/cuba/web/app/folders/save-set-window.xml"/>
 
     <!-- JMX control -->

@@ -2,25 +2,24 @@
  * Copyright (c) 2008-2013 Haulmont. All rights reserved.
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
-package com.haulmont.cuba.web.app.ui.core.restore;
+package com.haulmont.cuba.gui.app.core.restore;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.annotation.EnableRestore;
-import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.ViewRepository;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.GroupDatasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.web.WebConfig;
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 
 import javax.inject.Inject;
 import java.util.*;
@@ -30,6 +29,10 @@ import java.util.*;
  * @version $Id$
  */
 public class EntityRestore extends AbstractWindow {
+
+    public static interface Companion {
+        List<String> getClientSpecificRestoreEntities();
+    }
 
     @Inject
     protected LookupField entities;
@@ -45,6 +48,9 @@ public class EntityRestore extends AbstractWindow {
 
     @Inject
     protected MetadataTools metadataTools;
+
+    @Inject
+    protected ViewRepository viewRepository;
 
     @Inject
     protected MessageTools messageTools;
@@ -70,6 +76,8 @@ public class EntityRestore extends AbstractWindow {
                 return getMessage("actions.Refresh");
             }
         });
+        primaryFilter.setVisible(false);
+        entities.setOptionsMap(getEntitiesLookupFieldOptions());
 
         Window layout = getComponent();
         layout.remove(primaryFilter);
@@ -77,16 +85,18 @@ public class EntityRestore extends AbstractWindow {
         entities.setOptionsMap(getEntitiesLookupFieldOptions());
     }
 
-    private void buildLayout() {
+    protected void buildLayout() {
         Object value = entities.getValue();
         if (value != null) {
             MetaClass metaClass = (MetaClass) value;
             MetaProperty deleteTsMetaProperty = metaClass.getProperty("deleteTs");
             if (deleteTsMetaProperty != null) {
-                if (entitiesTable != null)
+                if (entitiesTable != null) {
                     tablePanel.remove(entitiesTable);
-                if (filter != null)
+                }
+                if (filter != null) {
                     tablePanel.remove(filter);
+                }
 
                 ComponentsFactory componentsFactory = AppConfig.getFactory();
 
@@ -105,16 +115,19 @@ public class EntityRestore extends AbstractWindow {
                 entitiesTable.setRowsCount(rowsCount);
 
                 //collect properties in order to add non-system columns first
-                LinkedList<Table.Column> nonSystemPropertyColumns = new LinkedList<Table.Column>();
-                LinkedList<Table.Column> systemPropertyColumns = new LinkedList<Table.Column>();
+                LinkedList<Table.Column> nonSystemPropertyColumns = new LinkedList<>();
+                LinkedList<Table.Column> systemPropertyColumns = new LinkedList<>();
+                List<MetaProperty> metaProperties = new ArrayList<>();
                 for (MetaProperty metaProperty : metaClass.getProperties()) {
                     //don't show embedded & multiple referred entities
-                    if (isEmbedded(metaProperty))
+                    if (isEmbedded(metaProperty)) {
                         continue;
+                    }
 
-                    if (metaProperty.getRange().getCardinality().isMany())
+                    if (metaProperty.getRange().getCardinality().isMany()) {
                         continue;
-
+                    }
+                    metaProperties.add(metaProperty);
                     Table.Column column = new Table.Column(metaClass.getPropertyPath(metaProperty.getName()));
                     if (!metadataTools.isSystem(metaProperty)) {
                         column.setCaption(getPropertyCaption(metaClass, metaProperty));
@@ -125,16 +138,18 @@ public class EntityRestore extends AbstractWindow {
                     }
                 }
 
-                for (Table.Column column : nonSystemPropertyColumns)
+                for (Table.Column column : nonSystemPropertyColumns) {
                     entitiesTable.addColumn(column);
+                }
 
-                for (Table.Column column : systemPropertyColumns)
+                for (Table.Column column : systemPropertyColumns) {
                     entitiesTable.addColumn(column);
+                }
 
                 entitiesDs = new DsBuilder(getDsContext())
                         .setId("entitiesDs")
                         .setMetaClass(metaClass)
-                        .setViewName(View.LOCAL)
+                        .setView(buildView(metaClass, metaProperties))
                         .buildGroupDatasource();
 
                 entitiesDs.setQuery("select e from " + metaClass.getName() + " e " +
@@ -145,10 +160,24 @@ public class EntityRestore extends AbstractWindow {
                 entitiesTable.setDatasource(entitiesDs);
 
                 filter = componentsFactory.createComponent(Filter.NAME);
-                filter.setId("primaryFilter");
+                String filterId = metaClass.getName().replace("$", "");
+                filter.setId(filterId + "GenericFilter");
                 filter.setFrame(getFrame());
                 filter.setStyleName(primaryFilter.getStyleName());
-                filter.setXmlDescriptor(primaryFilter.getXmlDescriptor());
+                StringBuilder sb = new StringBuilder("");
+                for (MetaProperty property : metaClass.getProperties()) {
+                    if (property.getAnnotatedElement().getAnnotation(com.haulmont.chile.core.annotations.MetaProperty.class) != null) {
+                        sb.append(property.getName()).append("|");
+                    }
+                }
+                Element filterElement = primaryFilter.getXmlDescriptor();
+                String exclProperties = sb.toString();
+                if (!"".equals(exclProperties)) {
+                    Element properties = filterElement.element("properties");
+                    properties.attribute("exclude").setValue(exclProperties
+                            .substring(0, exclProperties.lastIndexOf("|")));
+                }
+                filter.setXmlDescriptor(filterElement);
                 filter.setUseMaxResults(true);
                 filter.setDatasource(entitiesDs);
 
@@ -180,7 +209,20 @@ public class EntityRestore extends AbstractWindow {
         }
     }
 
-    private void showRestoreDialog() {
+    protected View buildView(MetaClass metaClass, List<MetaProperty> props) {
+        View view = new View(metaClass.getJavaClass());
+        for (MetaProperty property : props) {
+            if (Entity.class.isAssignableFrom(property.getJavaType())) {
+                view.addProperty(property.getName(),
+                        viewRepository.getView((Class) property.getJavaType(), View.MINIMAL));
+            } else {
+                view.addProperty(property.getName());
+            }
+        }
+        return view;
+    }
+
+    protected void showRestoreDialog() {
         final Set<Entity> listEntity = entitiesTable.getSelected();
         Entity entity = entitiesDs.getItem();
         if (listEntity != null && entity != null && listEntity.size() > 0) {
@@ -210,21 +252,23 @@ public class EntityRestore extends AbstractWindow {
         }
     }
 
-    private boolean isEmbedded(MetaProperty metaProperty) {
+    protected boolean isEmbedded(MetaProperty metaProperty) {
         return metaProperty.getAnnotatedElement().isAnnotationPresent(javax.persistence.Embedded.class);
     }
 
-    private String getPropertyCaption(MetaClass meta, MetaProperty metaProperty) {
+    protected String getPropertyCaption(MetaClass meta, MetaProperty metaProperty) {
         return messageTools.getPropertyCaption(meta, metaProperty.getFullName());
     }
 
     protected Map<String, Object> getEntitiesLookupFieldOptions() {
-        List<String> restoreEntities = new ArrayList<String>();
-        String restoreEntitiesProp = ConfigProvider.getConfig(WebConfig.class).getRestoreEntityId();
-        if (StringUtils.isNotBlank(restoreEntitiesProp))
-            restoreEntities.addAll(Arrays.asList(StringUtils.split(restoreEntitiesProp, ',')));
+        List<String> restoreEntities = new ArrayList<>();
 
-        Map<String, Object> options = new TreeMap<String, Object>();
+        EntityRestore.Companion companion = getCompanion();
+        if (companion != null) {
+            restoreEntities.addAll(companion.getClientSpecificRestoreEntities());
+        }
+
+        Map<String, Object> options = new TreeMap<>();
 
         for (MetaClass metaClass : metadataTools.getAllPersistentMetaClasses()) {
             Boolean enableRestore = (Boolean) metaClass.getAnnotations().get(EnableRestore.class.getName());

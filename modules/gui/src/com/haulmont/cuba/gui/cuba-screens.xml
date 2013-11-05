@@ -79,6 +79,9 @@
 
     <screen id="sysInfoWindow" template="/com/haulmont/cuba/gui/app/core/showinfo/show-info.xml"/>
 
+    <screen id="entityRestore"
+            template="/com/haulmont/cuba/gui/app/core/restore/entity-restore.xml"/>
+
     <screen id="backgroundWorkWindow"
             template="/com/haulmont/cuba/gui/backgroundwork/background-work-window.xml"/>
 

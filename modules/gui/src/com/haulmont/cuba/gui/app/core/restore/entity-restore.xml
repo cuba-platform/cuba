@@ -3,13 +3,15 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<window
-        xmlns="http://schemas.haulmont.com/cuba/5.0/window.xsd"
-        class="com.haulmont.cuba.web.app.ui.core.restore.EntityRestore"
-        messagesPack="com.haulmont.cuba.web.app.ui.core.restore"
+<window xmlns="http://schemas.haulmont.com/cuba/5.0/window.xsd"
+        class="com.haulmont.cuba.gui.app.core.restore.EntityRestore"
+        messagesPack="com.haulmont.cuba.gui.app.core.restore"
         caption="msg://entityRestore.caption"
-        focusComponent="entities"
-        >
+        focusComponent="entities">
+
+    <companions>
+        <web class="com.haulmont.cuba.web.app.ui.core.restore.EntityRestoreCompanion"/>
+    </companions>
 
     <dsContext/>
 
@@ -19,7 +21,7 @@
             <button id="refreshButton" icon="icons/refresh.png"/>
         </hbox>
 
-        <filter id="primaryFilter">
+        <filter id="primaryFilter" margin="false,false,true,false">
             <properties include=".*" exclude=""/>
         </filter>
 
