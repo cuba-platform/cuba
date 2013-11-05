@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.gui.app.core.excel;
 
+import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.export.ExcelExporter;
 import com.haulmont.cuba.gui.export.ExportDisplay;
@@ -15,10 +16,12 @@ import java.util.*;
  * @author tulupov
  * @version $Id$
  */
-public class ExcelExportBrowser extends AbstractWindow {
+public class ExcelExportOptionsWindow extends AbstractWindow {
 
+    @WindowParam(required = true)
     protected Table table;
 
+    @WindowParam(required = true)
     protected ExportDisplay exportDisplay;
 
     @Inject
@@ -43,9 +46,6 @@ public class ExcelExportBrowser extends AbstractWindow {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        table = (Table) params.get("param$table");
-        exportDisplay = (ExportDisplay) params.get("param$exportDisplay");
-
         initValues();
         initCheckBox();
 
@@ -54,7 +54,7 @@ public class ExcelExportBrowser extends AbstractWindow {
         closeBtn.setAction(new AbstractAction("actions.Cancel") {
             @Override
             public void actionPerform(Component component) {
-                ExcelExportBrowser.this.close(null);
+                ExcelExportOptionsWindow.this.close(null);
             }
         });
 
@@ -90,7 +90,7 @@ public class ExcelExportBrowser extends AbstractWindow {
             exportExpandedCheckBox.setEnabled(true);
             exportExpandedCheckBox.setValue(Boolean.TRUE);
         } else {
-            exportExpandedCheckBox.setEnabled(false);
+            exportExpandedCheckBox.setVisible(false);
             exportExpandedCheckBox.setValue(Boolean.FALSE);
         }
     }
@@ -186,7 +186,7 @@ public class ExcelExportBrowser extends AbstractWindow {
         public void actionPerform(Component component) {
             ExcelExporter ee = new ExcelExporter();
             ee.exportTable(table, getSelectedColumns(true), (Boolean) exportExpandedCheckBox.getValue(), exportDisplay);
-            ExcelExportBrowser.this.close(null);
+            ExcelExportOptionsWindow.this.close(CLOSE_ACTION_ID);
         }
     }
 }

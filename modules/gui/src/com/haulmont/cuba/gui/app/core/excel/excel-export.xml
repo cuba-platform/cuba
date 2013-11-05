@@ -4,12 +4,12 @@
   -->
 
 <window xmlns="http://schemas.haulmont.com/cuba/5.0/window.xsd"
-        class="com.haulmont.cuba.gui.app.core.excel.ExcelExportBrowser"
+        class="com.haulmont.cuba.gui.app.core.excel.ExcelExportOptionsWindow"
         messagesPack="com.haulmont.cuba.gui.app.core.excel"
         caption="msg://caption">
 
-    <layout expand="table-panel">
-        <vbox id="table-panel" expand="exportOptions" spacing="true" margin="true">
+    <layout expand="tablePanel" spacing="true">
+        <vbox id="tablePanel" expand="exportOptions" spacing="true">
             <label id="label1" value="msg://availableColumns" stylename="large"/>
             <optionsGroup id="exportOptions" multiselect="true" captionProperty="caption"/>
             <hbox spacing="true">
