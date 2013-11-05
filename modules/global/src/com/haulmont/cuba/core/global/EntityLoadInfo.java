@@ -27,14 +27,22 @@ import java.util.UUID;
  */
 public class EntityLoadInfo {
 
+    private static final String NEW_PREFIX = "NEW-";
+
     private MetaClass metaClass;
     private UUID id;
     private String viewName;
+    private boolean newEntity;
 
     private EntityLoadInfo(UUID id, MetaClass metaClass, String viewName) {
+        this(id, metaClass, viewName, false);
+    }
+
+    private EntityLoadInfo(UUID id, MetaClass metaClass, String viewName, boolean newEntity) {
         this.id = id;
         this.metaClass = metaClass;
         this.viewName = viewName;
+        this.newEntity = newEntity;
     }
 
     public UUID getId() {
@@ -48,6 +56,10 @@ public class EntityLoadInfo {
     @Nullable
     public String getViewName() {
         return viewName;
+    }
+
+    public boolean isNewEntity() {
+        return newEntity;
     }
 
     /**
@@ -78,6 +90,9 @@ public class EntityLoadInfo {
      * @return      info instance or null if the string can not be parsed. Any exception is silently swallowed.
      */
     public static @Nullable EntityLoadInfo parse(String str) {
+        if (str.startsWith(NEW_PREFIX)) {
+            return parseNew(str);
+        }
         int dashCount = StringUtils.countMatches(str, "-");
         if (dashCount < 5) {
             return null;
@@ -114,6 +129,22 @@ public class EntityLoadInfo {
         }
 
         return new EntityLoadInfo(id, metaClass, viewName);
+    }
+
+    private static EntityLoadInfo parseNew(String str) {
+        int dashCount = StringUtils.countMatches(str, "-");
+        if (dashCount != 1 && !str.startsWith(NEW_PREFIX)) {
+            return null;
+        }
+
+        int dashPos = str.indexOf('-');
+        String entityName = str.substring(dashPos + 1);
+        MetaClass metaClass = AppBeans.get(Metadata.class).getSession().getClass(entityName);
+        if (metaClass == null) {
+            return null;
+        }
+
+        return new EntityLoadInfo(null, metaClass, null, true);
     }
 
     @Override

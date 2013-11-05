@@ -69,6 +69,9 @@ public class LinkHandler {
     @Inject
     protected Folders folders;
 
+    @Inject
+    protected Metadata metadata;
+
     protected App app;
     protected String action;
     protected Map<String, String> requestParams;
@@ -302,6 +305,10 @@ public class LinkHandler {
     }
 
     protected Entity loadEntityInstance(EntityLoadInfo info) {
+        if (info.isNewEntity()) {
+            return metadata.create(info.getMetaClass());
+        }
+
         LoadContext ctx = new LoadContext(info.getMetaClass()).setId(info.getId());
         if (info.getViewName() != null)
             ctx.setView(info.getViewName());
