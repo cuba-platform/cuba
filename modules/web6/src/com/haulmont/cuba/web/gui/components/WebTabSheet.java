@@ -191,6 +191,7 @@ public class WebTabSheet
         final com.vaadin.ui.Component tabComponent = WebComponentsHelper.unwrap(component);
         tabComponent.setSizeFull();
 
+        this.components.put(tabComponent, new ComponentDescriptor(name, component));
         this.component.addTab(tabComponent);
 
         return tab;
