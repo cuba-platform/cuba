@@ -4,10 +4,7 @@
  */
 package com.haulmont.cuba.web;
 
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.GlobalConfig;
-import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.security.app.UserSessionService;
@@ -114,6 +111,8 @@ public abstract class App extends Application
 
     protected WebTimer workerTimer;
 
+    protected String webResourceTimestamp = "null";
+
     protected App() {
         log.trace("Creating application " + this);
         try {
@@ -134,6 +133,13 @@ public abstract class App extends Application
             cookies.setCookiesEnabled(true);
             timers = new AppTimers(this);
             backgroundTaskManager = new BackgroundTaskManager();
+
+            String resourcesTimestampPath = webConfig.getResourcesTimestampPath();
+            if (StringUtils.isNotEmpty(resourcesTimestampPath)) {
+                String timestamp = AppBeans.get(Resources.class).getResourceAsString(resourcesTimestampPath);
+                if (StringUtils.isNotEmpty(timestamp))
+                    this.webResourceTimestamp = timestamp;
+            }
         } catch (Exception e) {
             log.fatal("Error initializing application", e);
             throw new Error("Error initializing application. See log for details.");
@@ -662,6 +668,10 @@ public abstract class App extends Application
 
     public boolean isTestModeRequest() {
         return testModeRequest;
+    }
+
+    public String getWebResourceTimestamp() {
+        return webResourceTimestamp;
     }
 
     public String getClientAddress() {

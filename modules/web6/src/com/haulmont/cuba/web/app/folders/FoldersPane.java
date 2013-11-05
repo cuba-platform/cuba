@@ -34,6 +34,7 @@ import com.haulmont.cuba.web.app.UserSettingsTools;
 import com.haulmont.cuba.web.filestorage.WebExportDisplay;
 import com.haulmont.cuba.web.gui.components.WebSplitPanel;
 import com.haulmont.cuba.web.toolkit.Timer;
+import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.vaadin.event.Action;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.terminal.Resource;
@@ -462,12 +463,12 @@ public class FoldersPane extends VerticalLayout {
             if (webConfig.getShowFolderIcons()) {
                 if (folder instanceof SearchFolder) {
                     if (BooleanUtils.isTrue(((SearchFolder) folder).getIsSet())) {
-                        tree.setItemIcon(folder, new ThemeResource("icons/set-small.png"));
+                        tree.setItemIcon(folder, new VersionedThemeResource("icons/set-small.png"));
                     } else {
-                        tree.setItemIcon(folder, new ThemeResource("icons/search-folder-small.png"));
+                        tree.setItemIcon(folder, new VersionedThemeResource("icons/search-folder-small.png"));
                     }
                 } else if (folder instanceof AppFolder) {
-                    tree.setItemIcon(folder, new ThemeResource("icons/app-folder-small.png"));
+                    tree.setItemIcon(folder, new VersionedThemeResource("icons/app-folder-small.png"));
                 }
             }
         }
@@ -498,9 +499,9 @@ public class FoldersPane extends VerticalLayout {
 
     protected Resource getMenuItemIcon() {
         if (visible) {
-            return new ThemeResource("icons/folders_pane_icon_active.png");
+            return new VersionedThemeResource("icons/folders_pane_icon_active.png");
         } else {
-            return new ThemeResource("icons/folders_pane_icon.png");
+            return new VersionedThemeResource("icons/folders_pane_icon.png");
         }
     }
 

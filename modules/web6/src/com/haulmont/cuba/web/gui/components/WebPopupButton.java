@@ -6,7 +6,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
-import com.vaadin.terminal.ThemeResource;
+import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.StringUtils;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 public class WebPopupButton
         extends WebAbstractComponent<PopupButton>
-        implements com.haulmont.cuba.gui.components.PopupButton{
+        implements com.haulmont.cuba.gui.components.PopupButton {
 
     protected Component popupComponent;
     protected com.vaadin.ui.Component vPopupComponent;
@@ -71,7 +71,7 @@ public class WebPopupButton
     public void setIcon(String icon) {
         this.icon = icon;
         if (!StringUtils.isEmpty(icon)) {
-            component.setIcon(new ThemeResource(icon));
+            component.setIcon(new VersionedThemeResource(icon));
             component.addStyleName(WebButton.ICON_STYLE);
         } else {
             component.setIcon(null);
@@ -108,7 +108,7 @@ public class WebPopupButton
     @Override
     public void setMenuWidth(String width) {
         if (vPopupComponent != null && width != null) {
-            vPopupComponent.setWidth(width);    
+            vPopupComponent.setWidth(width);
         }
     }
 
@@ -130,7 +130,7 @@ public class WebPopupButton
             button.setIcon(null); // don't show icons to look the same as Table actions
 
             com.vaadin.ui.Button vButton = (com.vaadin.ui.Button) button.getComposition();
-            vButton.setImmediate(true);            
+            vButton.setImmediate(true);
             vButton.setSizeFull();
             vButton.setStyleName(BaseTheme.BUTTON_LINK);
 

@@ -20,6 +20,7 @@ import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.WebDateField;
 import com.haulmont.cuba.web.gui.components.WebLookupField;
 import com.haulmont.cuba.web.gui.components.WebPickerField;
+import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
 import com.vaadin.terminal.*;
@@ -161,11 +162,11 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
 
     private void updateIcons() {
         if (isReadOnly()) {
-            setPickerButtonIcon(new ThemeResource("pickerfield/img/lookup-btn-readonly.png"));
-            setClearButtonIcon(new ThemeResource("pickerfield/img/clear-btn-readonly.png"));
+            setPickerButtonIcon(new VersionedThemeResource("components/pickerfield/images/lookup-btn-readonly.png"));
+            setClearButtonIcon(new VersionedThemeResource("components/pickerfield/images/clear-btn-readonly.png"));
         } else {
-            setPickerButtonIcon(new ThemeResource("pickerfield/img/lookup-btn.png"));
-            setClearButtonIcon(new ThemeResource("pickerfield/img/clear-btn.png"));
+            setPickerButtonIcon(new VersionedThemeResource("components/pickerfield/images/lookup-btn.png"));
+            setClearButtonIcon(new VersionedThemeResource("components/pickerfield/images/clear-btn.png"));
         }
     }
 
@@ -542,7 +543,7 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
             bottomLayout.setSpacing(true);
 
             Button okBtn = new Button(messages.getMessage(AppConfig.getMessagesPack(), "actions.Ok"));
-            okBtn.setIcon(new ThemeResource("icons/ok.png"));
+            okBtn.setIcon(new VersionedThemeResource("icons/ok.png"));
             okBtn.setStyleName(WebButton.ICON_STYLE);
             okBtn.addListener(
                     new Button.ClickListener() {
@@ -555,7 +556,7 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
             bottomLayout.addComponent(okBtn);
 
             Button cancelBtn = new Button(messages.getMessage(AppConfig.getMessagesPack(), "actions.Cancel"));
-            cancelBtn.setIcon(new ThemeResource("icons/cancel.png"));
+            cancelBtn.setIcon(new VersionedThemeResource("icons/cancel.png"));
             cancelBtn.setStyleName(WebButton.ICON_STYLE);
             cancelBtn.addListener(
                     new Button.ClickListener() {
@@ -605,7 +606,7 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
 
             Button delItemBtn = new Button();
             delItemBtn.setStyleName(BaseTheme.BUTTON_LINK);
-            delItemBtn.setIcon(new ThemeResource("icons/tab-remove.png"));
+            delItemBtn.setIcon(new VersionedThemeResource("icons/tab-remove.png"));
             delItemBtn.addStyleName("filter-param-list-edit-del");
             delItemBtn.addListener(
                     new Button.ClickListener() {

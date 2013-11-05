@@ -17,6 +17,7 @@ import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.security.entity.Presentation;
 import com.haulmont.cuba.security.entity.SearchFolder;
 import com.haulmont.cuba.web.gui.components.WebButton;
+import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.*;
@@ -132,14 +133,14 @@ public class FolderEditWindow extends Window {
         layout.addComponent(buttonsLayout);
 
         okBtn = new Button(getMessage("actions.Ok"));
-        okBtn.setIcon(new ThemeResource("icons/ok.png"));
+        okBtn.setIcon(new VersionedThemeResource("icons/ok.png"));
         okBtn.addStyleName(WebButton.ICON_STYLE);
 
         initButtonOkListener();
         buttonsLayout.addComponent(okBtn);
 
         Button cancelBtn = new Button(getMessage("actions.Cancel"));
-        cancelBtn.setIcon(new ThemeResource("icons/cancel.png"));
+        cancelBtn.setIcon(new VersionedThemeResource("icons/cancel.png"));
         cancelBtn.addStyleName(WebButton.ICON_STYLE);
         cancelBtn.addListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {

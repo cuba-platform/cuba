@@ -38,6 +38,7 @@ import com.haulmont.cuba.web.gui.components.presentations.TablePresentations;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
+import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.ui.FieldWrapper;
 import com.vaadin.data.Item;
@@ -1314,9 +1315,9 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
             com.vaadin.ui.Embedded checkBoxImage;
             if (BooleanUtils.isTrue((Boolean) value)){
-                checkBoxImage = new com.vaadin.ui.Embedded("", new ThemeResource("components/table/images/checkbox-checked.png"));
+                checkBoxImage = new com.vaadin.ui.Embedded("", new VersionedThemeResource("components/table/images/checkbox-checked.png"));
             } else {
-                checkBoxImage = new com.vaadin.ui.Embedded("", new ThemeResource("components/table/images/checkbox-unchecked.png"));
+                checkBoxImage = new com.vaadin.ui.Embedded("", new VersionedThemeResource("components/table/images/checkbox-unchecked.png"));
             }
             return checkBoxImage;
         }

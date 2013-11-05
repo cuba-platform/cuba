@@ -8,7 +8,7 @@ import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.web.WebConfig;
-import com.vaadin.terminal.ThemeResource;
+import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.vaadin.ui.NativeButton;
 import org.apache.commons.lang.StringUtils;
 
@@ -19,11 +19,7 @@ import java.beans.PropertyChangeListener;
  * @author abramov
  * @version $Id$
  */
-public class WebButton
-        extends
-            WebAbstractComponent<com.vaadin.ui.Button>
-        implements
-            Button {
+public class WebButton extends WebAbstractComponent<com.vaadin.ui.Button> implements Button {
 
     protected Action action;
     protected String icon;
@@ -124,7 +120,7 @@ public class WebButton
     public void setIcon(String icon) {
         this.icon = icon;
         if (!StringUtils.isEmpty(icon)) {
-            component.setIcon(new ThemeResource(icon));
+            component.setIcon(new VersionedThemeResource(icon));
             component.addStyleName(ICON_STYLE);
         } else {
             component.setIcon(null);

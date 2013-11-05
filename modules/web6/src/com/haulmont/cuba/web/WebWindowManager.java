@@ -17,6 +17,7 @@ import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.sys.WindowBreadCrumbs;
+import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.ui.ActionsTabSheet;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.terminal.ThemeResource;
@@ -921,7 +922,7 @@ public class WebWindowManager extends WindowManager {
             }
 
             if (action.getIcon() != null) {
-                button.setIcon(new ThemeResource(action.getIcon()));
+                button.setIcon(new VersionedThemeResource(action.getIcon()));
                 button.addStyleName(WebButton.ICON_STYLE);
             }
             setDebugId(button, action.getId());

@@ -7,8 +7,8 @@ package com.haulmont.cuba.web.sys;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppWindow;
+import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.vaadin.terminal.Sizeable;
-import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -66,7 +66,7 @@ public class WindowBreadCrumbs extends HorizontalLayout {
                     window.close(Window.CLOSE_ACTION_ID);
                 }
             });
-            closeBtn.setIcon(new ThemeResource("images/close.png"));
+            closeBtn.setIcon(new VersionedThemeResource("images/close.png"));
             closeBtn.setStyleName("closetab-button");
             App.getInstance().getWindowManager()
                     .setDebugId(closeBtn, "closeBtn");

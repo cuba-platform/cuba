@@ -16,9 +16,9 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
+import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.AbstractProperty;
-import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.themes.BaseTheme;
@@ -338,7 +338,7 @@ public class WebPickerField
         @Override
         public void setIcon(String icon) {
             if (!StringUtils.isBlank(icon)) {
-                component.setIcon(new ThemeResource(icon));
+                component.setIcon(new VersionedThemeResource(icon));
                 component.addStyleName(BaseTheme.BUTTON_LINK);
             } else {
                 component.setIcon(null);

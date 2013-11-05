@@ -28,6 +28,7 @@ import com.haulmont.cuba.web.app.folders.FoldersPane;
 import com.haulmont.cuba.web.gui.components.WebSplitPanel;
 import com.haulmont.cuba.web.sys.MenuBuilder;
 import com.haulmont.cuba.web.sys.WindowBreadCrumbs;
+import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.ui.ActionsTabSheet;
 import com.haulmont.cuba.web.toolkit.ui.JavaScriptHost;
 import com.haulmont.cuba.web.toolkit.ui.RichNotification;
@@ -522,7 +523,7 @@ public class AppWindow extends Window implements UserSubstitutionListener,
 
             Button searchBtn = new Button();
             searchBtn.setStyleName(BaseTheme.BUTTON_LINK);
-            searchBtn.setIcon(new ThemeResource("select/img/fts-btn.png"));
+            searchBtn.setIcon(new VersionedThemeResource("select/img/fts-btn.png"));
             searchBtn.addListener(
                     new Button.ClickListener() {
                         @Override
@@ -570,7 +571,7 @@ public class AppWindow extends Window implements UserSubstitutionListener,
         menuBar = new com.haulmont.cuba.web.toolkit.ui.MenuBar();
         menuBar.setWidth("100%");
         menuBar.setMoreMenuItem(null);
-        menuBar.getMoreMenuItem().setIcon(new ThemeResource("app/images/more-item.png"));
+        menuBar.getMoreMenuItem().setIcon(new VersionedThemeResource("app/images/more-item.png"));
 
         if (globalConfig.getTestMode()) {
             getWindowManager().setDebugId(menuBar, "appMenu");
@@ -658,7 +659,7 @@ public class AppWindow extends Window implements UserSubstitutionListener,
         if ("application.logoImage".equals(logoImagePath))
             return null;
 
-        return new Embedded(null, new ThemeResource(logoImagePath));
+        return new Embedded(null, new VersionedThemeResource(logoImagePath));
     }
 
     protected void addUserIndicator(HorizontalLayout parentLayout) {
@@ -724,7 +725,7 @@ public class AppWindow extends Window implements UserSubstitutionListener,
         );
         logoutBtn.setDescription(messages.getMessage(getMessagesPack(), "logoutBtnDescription"));
         logoutBtn.setStyleName("white-border");
-        logoutBtn.setIcon(new ThemeResource("app/images/exit.png"));
+        logoutBtn.setIcon(new VersionedThemeResource("app/images/exit.png"));
         getWindowManager().setDebugId(logoutBtn, "logoutBtn");
         return logoutBtn;
     }
@@ -747,7 +748,7 @@ public class AppWindow extends Window implements UserSubstitutionListener,
         );
         newWindowBtn.setDescription(messages.getMessage(getMessagesPack(), "newWindowBtnDescription"));
         newWindowBtn.setStyleName("white-border");
-        newWindowBtn.setIcon(new ThemeResource("app/images/new-window.png"));
+        newWindowBtn.setIcon(new VersionedThemeResource("app/images/new-window.png"));
         return newWindowBtn;
     }
 

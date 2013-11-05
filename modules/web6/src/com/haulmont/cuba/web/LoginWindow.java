@@ -11,6 +11,7 @@ import com.haulmont.cuba.web.auth.ActiveDirectoryConnection;
 import com.haulmont.cuba.web.auth.ActiveDirectoryHelper;
 import com.haulmont.cuba.web.auth.DomainAliasesResolver;
 import com.haulmont.cuba.web.sys.Browser;
+import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.vaadin.data.Property;
 import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
@@ -228,7 +229,7 @@ public class LoginWindow extends Window implements Action.Handler {
         okButton.setCaption(messages.getMessage(getMessagesPack(), "loginWindow.okButton", loc));
         okButton.addListener(new SubmitListener());
         okButton.setStyleName("submit-login-btn");
-        okButton.setIcon(new ThemeResource("app/images/login-button.png"));
+        okButton.setIcon(new VersionedThemeResource("app/images/login-button.png"));
         form.addField("button", okButton);
         formLayout.setComponentAlignment(okButton, Alignment.MIDDLE_CENTER);
 
@@ -257,7 +258,7 @@ public class LoginWindow extends Window implements Action.Handler {
         if ("loginWindow.logoImage".equals(loginLogoImagePath))
             return null;
 
-        return new Embedded(null, new ThemeResource(loginLogoImagePath));
+        return new Embedded(null, new VersionedThemeResource(loginLogoImagePath));
     }
 
     protected void initUI(App app) {

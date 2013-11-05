@@ -8,6 +8,7 @@ import com.haulmont.cuba.core.app.ServerInfoService;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
+import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
@@ -17,6 +18,7 @@ import com.vaadin.terminal.gwt.server.*;
 import com.vaadin.ui.Window;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -352,8 +354,7 @@ public class CubaApplicationServlet extends ApplicationServlet {
         }
         page.write(fileName);
         if (nocache) {
-            String timestamp = releaseTimestamp();
-            page.write(timestamp == null ? "" : "?" + timestamp);
+            page.write("?v=" + getResourceVersion());
         }
         page.write("\" language=\"javascript\"> </script>");
     }
@@ -364,6 +365,8 @@ public class CubaApplicationServlet extends ApplicationServlet {
         // script
         // tag to be dominate styles injected by widget
         // set
+        String webResourceTimestamp = getResourceVersion();
+
         page.write("<script type=\"text/javascript\">\n");
         page.write("//<![CDATA[\n");
         page.write("if(!vaadin.themesLoaded['" + themeName + "']) {\n");
@@ -371,15 +374,28 @@ public class CubaApplicationServlet extends ApplicationServlet {
         page.write("stylesheet.setAttribute('rel', 'stylesheet');\n");
         page.write("stylesheet.setAttribute('type', 'text/css');\n");
 
-        String timestamp = releaseTimestamp();
         page.write("stylesheet.setAttribute('href', '" + themeUri
-                + "/styles.css" + (timestamp == null ? "" : "?" + timestamp) + "');\n");
+                + "/styles.css" + "?v=" + webResourceTimestamp + "');\n");
         page.write("document.getElementsByTagName('head')[0].appendChild(stylesheet);\n");
-        if (timestamp != null) {
-            page.write("vaadin.themeReleaseTimestamp=" + timestamp + ";\n");
-        }
+        page.write("vaadin.themeReleaseTimestamp=\"" + webResourceTimestamp + "\";\n");
         page.write("vaadin.themesLoaded['" + themeName + "'] = true;\n}\n");
         page.write("//]]>\n</script>\n");
+    }
+
+    protected String getResourceVersion() {
+        String webResourceTimestamp;
+        String resourcesTimestampPath = webConfig.getResourcesTimestampPath();
+        if (StringUtils.isNotEmpty(resourcesTimestampPath)) {
+            String timestamp = AppBeans.get(Resources.class).getResourceAsString(resourcesTimestampPath);
+            if (StringUtils.isNotEmpty(timestamp)) {
+                webResourceTimestamp = timestamp;
+            } else {
+                webResourceTimestamp = "DEBUG";
+            }
+        } else {
+            webResourceTimestamp = "DEBUG";
+        }
+        return webResourceTimestamp;
     }
 
     @Override
@@ -397,9 +413,7 @@ public class CubaApplicationServlet extends ApplicationServlet {
             ((App) application).getCookies().updateCookies(request);
 
             return application;
-        } catch (final IllegalAccessException e) {
-            throw new ServletException("getNewApplication failed", e);
-        } catch (final InstantiationException e) {
+        } catch (final IllegalAccessException | InstantiationException e) {
             throw new ServletException("getNewApplication failed", e);
         }
     }

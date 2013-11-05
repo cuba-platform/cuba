@@ -60,6 +60,8 @@ public class ApplicationConfiguration implements EntryPoint {
     private String authorizationErrorMessage;
     private String authorizationErrorUrl;
 
+    protected String resourcesVersion = "DEBUG";
+
     private String blockUiMessage = "Please wait";
     private boolean useUiBlocking = false;
 
@@ -200,6 +202,10 @@ public class ApplicationConfiguration implements EntryPoint {
         this.handleHistoryBack = handleHistoryBack;
     }
 
+    public String getResourcesVersion() {
+        return resourcesVersion;
+    }
+
     private native void loadFromDOM()
     /*-{
 
@@ -214,6 +220,9 @@ public class ApplicationConfiguration implements EntryPoint {
             this.@com.vaadin.terminal.gwt.client.ApplicationConfiguration::themeUri = jsobj.themeUri;
             this.@com.vaadin.terminal.gwt.client.ApplicationConfiguration::sessionId = jsobj.sessionId;
 
+            if(jsobj.appVersion) {
+                this.@com.vaadin.terminal.gwt.client.ApplicationConfiguration::resourcesVersion = jsobj.resourcesVersion;
+            }
             if(jsobj.windowName) {
                 this.@com.vaadin.terminal.gwt.client.ApplicationConfiguration::windowName = jsobj.windowName;
             }

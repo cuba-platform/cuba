@@ -7,6 +7,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.ui.FieldGroupLayout;
 import com.haulmont.cuba.web.toolkit.ui.HorizontalActionsLayout;
@@ -15,7 +16,6 @@ import com.vaadin.event.Action;
 import com.vaadin.terminal.ClassResource;
 import com.vaadin.terminal.FileResource;
 import com.vaadin.terminal.Resource;
-import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -38,7 +38,7 @@ public class WebComponentsHelper {
         } else if (resURL.startsWith("jar:")) {
             return new ClassResource(resURL.substring("jar:".length()), App.getInstance());
         } else if (resURL.startsWith("theme:")) {
-            return new ThemeResource(resURL.substring("theme:".length()));
+            return new VersionedThemeResource(resURL.substring("theme:".length()));
         } else {
             throw new UnsupportedOperationException();
         }

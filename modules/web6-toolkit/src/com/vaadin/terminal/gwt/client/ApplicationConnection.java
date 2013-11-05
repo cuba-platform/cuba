@@ -398,6 +398,10 @@ public class ApplicationConnection {
         return configuration.getApplicationUri();
     }
 
+    public String getResourcesVersion() {
+        return configuration.getResourcesVersion();
+    }
+
     /**
      * Indicates whether or not there are currently active UIDL requests. Used
      * internally to squence requests properly, seldom needed in Widgets.
@@ -2405,12 +2409,13 @@ public class ApplicationConnection {
                         + uidlUri + ")");
             }
             String params = configuration.getThemeReleaseTimestamp() != null ?
-                    "?" + configuration.getThemeReleaseTimestamp() : "";
+                    "?v=" + configuration.getThemeReleaseTimestamp() : "";
             uidlUri = themeUri + uidlUri.substring(7) + params;
         }
         if (uidlUri.startsWith("app://")) {
             uidlUri = getAppUri() + uidlUri.substring(6);
         }
+
         return uidlUri;
     }
 

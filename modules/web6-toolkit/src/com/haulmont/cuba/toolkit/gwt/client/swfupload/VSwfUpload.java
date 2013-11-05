@@ -138,7 +138,7 @@ public class VSwfUpload
                 String themeUri = client.getThemeUri();
                 themeUri = themeUri + (themeUri.endsWith("/") ? "" : "/");
                 // Appearance properties
-                String imageUrl = themeUri + "multiupload/images/button.png";
+                String imageUrl = themeUri + "multiupload/images/button.png?v=" + client.getResourcesVersion();
                 opts.set("button_image_url", imageUrl);
 
                 opts.set("button_width", width);
