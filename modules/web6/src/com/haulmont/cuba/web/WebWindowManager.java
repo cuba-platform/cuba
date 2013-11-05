@@ -346,6 +346,7 @@ public class WebWindowManager extends WindowManager {
         } else {
             getTabs().put(layout, (WindowBreadCrumbs) components[0]);
             layout.addStyleName("single");
+            layout.addStyleName("cuba-app-work-area-single-window");
             layout.setMargin(true);
             layout.setWidth("99.9%");
             layout.setHeight("99.85%");
