@@ -219,7 +219,10 @@ public abstract class Table
     //Key down navigation
     protected boolean navigation = true;
     protected String selectedKey;
-    protected int focusWidgetIndex = -1;
+
+//    disabled due to #PL-3049
+//    protected int focusWidgetIndex = -1;
+
     private boolean hasFocus = false;
     private int dragmode;
 
@@ -2599,15 +2602,16 @@ public abstract class Table
                 }
                 widgetColumns.put(w, colIndex);
 
-                if (w instanceof HasFocusHandlers) {
-                    ((HasFocusHandlers) w).addFocusHandler(new FocusHandler() {
-                        @Override
-                        public void onFocus(FocusEvent event) {
-                            Table.this.focusWidgetIndex = childWidgets.indexOf(w);
-                            VConsole.log("onFocus: Focus widget index: " + Table.this.focusWidgetIndex);
-                        }
-                    });
-                }
+//                disabled due to #PL-3049
+//                if (w instanceof HasFocusHandlers) {
+//                    ((HasFocusHandlers)w).addFocusHandler(new FocusHandler() {
+//                        @Override
+//                        public void onFocus(FocusEvent event) {
+//                            Table.this.focusWidgetIndex = childWidgets.indexOf(w);
+//                            VConsole.log(">>> onFocus: Focus widget index: " + Table.this.focusWidgetIndex);
+//                        }
+//                    });
+//                }
             }
 
             @Override
@@ -3055,14 +3059,15 @@ public abstract class Table
                     if (navigation) {
                         selectedKey = key;
                     }
-                    if (!childWidgets.isEmpty()) {
-                        int i = focusWidgetIndex > -1 && (focusWidgetIndex < childWidgets.size()) ? focusWidgetIndex : 0;
-                        Widget w = (Widget) childWidgets.get(i);
-                        if (w instanceof com.vaadin.terminal.gwt.client.Focusable) {
-                            ((com.vaadin.terminal.gwt.client.Focusable) w).focus();
-                        }
-                        VConsole.log("onSelect: Focus widget index: " + focusWidgetIndex);
-                    }
+//                    disabled due to #PL-3049
+//                    if (!childWidgets.isEmpty()) {
+//                        int i = focusWidgetIndex > -1 && (focusWidgetIndex < childWidgets.size()) ? focusWidgetIndex : 0;
+//                        Widget w = (Widget) childWidgets.get(i);
+//                        if (w instanceof com.vaadin.terminal.gwt.client.Focusable) {
+//                            ((com.vaadin.terminal.gwt.client.Focusable) w).focus();
+//                        }
+//                        VConsole.log("onSelect: Focus widget index: " + focusWidgetIndex);
+//                    }
 
                     addStyleName("v-selected");
                 } else {
@@ -3073,7 +3078,6 @@ public abstract class Table
                     removeStyleName("v-selected");
                 }
             }
-
             /**
              * Is called when a user clicks an item when holding SHIFT key down.
              * This will select a new range from the last focused row
