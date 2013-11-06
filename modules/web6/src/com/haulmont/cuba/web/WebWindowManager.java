@@ -720,7 +720,7 @@ public class WebWindowManager extends WindowManager {
                 getTabs().remove(layout);
                 stacks.remove(windowBreadCrumbs);
                 fireListeners(window, getTabs().size() != 0);
-                if (tabs.isEmpty()) {
+                if (tabs.isEmpty() && app.getConnection().isConnected()) {
                     appWindow.showStartupScreen();
                 }
                 break;
@@ -752,7 +752,7 @@ public class WebWindowManager extends WindowManager {
                     tab.setCaption(formatTabCaption(currentWindow.getCaption(), currentWindow.getDescription()));
                 }
                 fireListeners(window, getTabs().size() != 0);
-                if (tabs.isEmpty()) {
+                if (tabs.isEmpty() && app.getConnection().isConnected()) {
                     appWindow.showStartupScreen();
                 }
                 break;
