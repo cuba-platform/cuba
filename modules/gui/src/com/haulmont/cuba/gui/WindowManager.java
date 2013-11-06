@@ -753,5 +753,21 @@ public abstract class WindowManager {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    /**
+     * Open a web page in browser.
+     * @param url       URL of the page
+     * @param params    optional parameters.
+     * <p/>The following parameters are recognized by Web client:
+     * <ul>
+     * <li/> <code>target</code> - String value used as the target name in a
+     * window.open call in the client. This means that special values such as
+     * "_blank", "_self", "_top", "_parent" have special meaning. If not specified, "_blank" is used.
+     * <li/> <code>width</code> - Integer value specifying the width of the browser window in pixels
+     * <li/> <code>height</code> - Integer value specifying the height of the browser window in pixels
+     * <li/> <code>border</code> - String value specifying the border style of the window of the browser window.
+     * Possible values are "DEFAULT", "MINIMAL", "NONE".
+     * </ul>
+     * Desktop client doesn't support any parameters and just ignores them.
+     */
     public abstract void showWebPage(String url, @Nullable Map<String, Object> params);
 }

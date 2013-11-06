@@ -19,7 +19,7 @@ import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.sys.WindowBreadCrumbs;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.ui.ActionsTabSheet;
-import com.haulmont.cuba.web.toolkit.ui.JavaScriptHost;
+import com.vaadin.terminal.ExternalResource;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -943,8 +943,34 @@ public class WebWindowManager extends WindowManager {
 
     @Override
     public void showWebPage(String url, @Nullable Map<String, Object> params) {
-        JavaScriptHost scriptHost = App.getInstance().getAppWindow().getScriptHost();
-        scriptHost.viewDocument(url);
+        String target = null;
+        Integer width = null;
+        Integer height = null;
+        String borderType = "DEFAULT";
+
+        if (params != null) {
+            target = (String) params.get("target");
+            width = (Integer) params.get("width");
+            height = (Integer) params.get("height");
+            borderType = (String) params.get("border");
+        }
+
+        if (target == null) {
+            target = "_blank";
+        }
+
+        int border = com.vaadin.ui.Window.BORDER_DEFAULT;
+        if ("MINIMAL".equals(borderType)) {
+            border = com.vaadin.ui.Window.BORDER_MINIMAL;
+        } else if ("NONE".equals(borderType)) {
+            border = com.vaadin.ui.Window.BORDER_NONE;
+        }
+
+        if (width != null && height != null) {
+            App.getInstance().getAppWindow().open(new ExternalResource(url), target, width, height, border);
+        } else {
+            App.getInstance().getAppWindow().open(new ExternalResource(url), target);
+        }
     }
 
     private void removeWindowsWithName(String name) {
