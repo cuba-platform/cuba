@@ -78,7 +78,7 @@ public class WebWindowManager extends WindowManager {
         screenHistorySupport = new ScreenHistorySupport();
     }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public Collection<Window> getOpenWindows() {
@@ -765,30 +765,37 @@ public class WebWindowManager extends WindowManager {
         }
     }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public void showNotification(String caption, IFrame.NotificationType type) {
-        Notification notification = new Notification(caption, WebComponentsHelper.convertNotificationType(type));
-        if (type.equals(IFrame.NotificationType.HUMANIZED))
+        Notification notification = new Notification(
+                ComponentsHelper.preprocessHtmlMessage(caption),
+                WebComponentsHelper.convertNotificationType(type));
+
+        notification.setHtmlContentAllowed(true);
+        if (type.equals(IFrame.NotificationType.HUMANIZED)) {
             notification.setDelayMsec(HUMANIZED_NOTIFICATION_DELAY_MSEC);
+        }
         notification.show(Page.getCurrent());
     }
 
     @Override
     public void showNotification(String caption, String description, IFrame.NotificationType type) {
-        Notification notification = new Notification(caption, description, WebComponentsHelper.convertNotificationType(type));
-        if (type.equals(IFrame.NotificationType.HUMANIZED))
+        Notification notification = new Notification(
+                ComponentsHelper.preprocessHtmlMessage(caption),
+                ComponentsHelper.preprocessHtmlMessage(description),
+                WebComponentsHelper.convertNotificationType(type));
+
+        notification.setHtmlContentAllowed(true);
+        if (type.equals(IFrame.NotificationType.HUMANIZED)) {
             notification.setDelayMsec(HUMANIZED_NOTIFICATION_DELAY_MSEC);
+        }
         notification.show(Page.getCurrent());
     }
 
     @Override
-    public void showMessageDialog(
-            String title,
-            String message,
-            IFrame.MessageType messageType) {
-
+    public void showMessageDialog(String title, String message, IFrame.MessageType messageType) {
         final com.vaadin.ui.Window window = new com.vaadin.ui.Window(title);
         window.setId("cuba-message-dialog");
         setDebugId(window, "cuba-message-dialog");
@@ -805,7 +812,7 @@ public class WebWindowManager extends WindowManager {
         layout.setMargin(true);
         window.setContent(layout);
 
-        Label desc = new Label(message);
+        Label desc = new Label(ComponentsHelper.preprocessHtmlMessage(message));
         desc.setContentMode(ContentMode.HTML);
         layout.addComponent(desc);
 
@@ -826,12 +833,7 @@ public class WebWindowManager extends WindowManager {
     }
 
     @Override
-    public void showOptionDialog(
-            String title,
-            String message,
-            IFrame.MessageType messageType,
-            Action[] actions) {
-
+    public void showOptionDialog(String title, String message, IFrame.MessageType messageType, Action[] actions) {
         final com.vaadin.ui.Window window = new com.vaadin.ui.Window(title);
         window.setId("cuba-option-dialog");
         setDebugId(window, "cuba-option-dialog");
@@ -844,7 +846,7 @@ public class WebWindowManager extends WindowManager {
             }
         });
 
-        Label messageBox = new Label(message, ContentMode.HTML);
+        Label messageBox = new Label(ComponentsHelper.preprocessHtmlMessage(message), ContentMode.HTML);
 
         float width;
         if (getDialogParams().getWidth() != null) {

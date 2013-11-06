@@ -248,4 +248,17 @@ public abstract class ComponentsHelper {
         if (actions.contains(ListActionType.REFRESH))
             owner.addAction(new RefreshAction(owner));
     }
+
+    /**
+     * Automatically converts space symbols to HTML form.
+     *
+     * @param message HTML message
+     * @return HTML
+     */
+    public static String preprocessHtmlMessage(String message) {
+        String html = StringUtils.replace(message, "\n", "<br/>");
+        html = StringUtils.replace(html, " ", "&nbsp;");
+        html = StringUtils.replace(html, "\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
+        return html;
+    }
 }

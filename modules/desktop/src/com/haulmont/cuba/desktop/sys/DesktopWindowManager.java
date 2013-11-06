@@ -12,6 +12,7 @@ import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.DesktopConfig;
 import com.haulmont.cuba.desktop.TopLevelFrame;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.ScreenHistorySupport;
 import com.haulmont.cuba.gui.WindowManager;
@@ -714,7 +715,7 @@ public class DesktopWindowManager extends WindowManager {
             public void run() {
                 JOptionPane.showMessageDialog(
                         frame,
-                        message,
+                        "<html>" + ComponentsHelper.preprocessHtmlMessage(message),
                         title,
                         swingMessageType
                 );
@@ -763,7 +764,7 @@ public class DesktopWindowManager extends WindowManager {
             throw new UnsupportedOperationException("Not more than 3 actions supported");
 
         final JOptionPane optionPane = new JOptionPane(
-                message,
+                "<html>" + ComponentsHelper.preprocessHtmlMessage(message),
                 DesktopComponentsHelper.convertMessageType(messageType),
                 optionType,
                 null,

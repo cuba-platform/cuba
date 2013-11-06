@@ -5,12 +5,12 @@
 
 package com.haulmont.cuba.desktop;
 
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
 import com.haulmont.cuba.desktop.sys.DisabledGlassPane;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.IFrame;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.StringUtils;
@@ -20,8 +20,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 
 /**
  * Represents Top - level application frame
@@ -65,7 +63,6 @@ public class TopLevelFrame extends JFrame {
     protected void showNotificationPopup(String title, String caption, IFrame.NotificationType type) {
         JPanel panel = new JPanel(new MigLayout("flowy"));
         panel.setBorder(BorderFactory.createLineBorder(Color.gray));
-
 
         switch (type) {
             case WARNING:
@@ -118,9 +115,12 @@ public class TopLevelFrame extends JFrame {
         timer.start();
     }
 
-
     public void showNotification(String caption, String description, IFrame.NotificationType type) {
-        DesktopConfig config = ConfigProvider.getConfig(DesktopConfig.class);
+        DesktopConfig config = AppBeans.get(Configuration.class).getConfig(DesktopConfig.class);
+
+        caption = ComponentsHelper.preprocessHtmlMessage(caption);
+        description = ComponentsHelper.preprocessHtmlMessage(description);
+
         if (config.isDialogNotificationsEnabled() && type != IFrame.NotificationType.TRAY) {
             showNotificationDialog(caption, description, type);
         } else {
@@ -133,14 +133,13 @@ public class TopLevelFrame extends JFrame {
     }
 
     protected void showNotificationDialog(String caption, String description, IFrame.NotificationType type) {
-        String title = MessageProvider.getMessage(AppConfig.getMessagesPack(), "notification.title." + type);
+        String title = AppBeans.get(Messages.class).getMessage(AppConfig.getMessagesPack(), "notification.title." + type);
         String text;
         if (StringUtils.isNotBlank(caption)) {
             text = String.format("<html><b>%s</b><br>%s", caption, description);
         } else {
             text = "<html>" + description;
         }
-
 
         int messageType = DesktopComponentsHelper.convertNotificationType(type);
 

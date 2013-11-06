@@ -711,12 +711,44 @@ public abstract class WindowManager {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    /**
+     * Show notification with HTML caption. <br/>
+     * Automatically converts line breaks to &lt;br&#47;&gt;.
+     *
+     * @param caption HTML text
+     * @param type type
+     */
     public abstract void showNotification(String caption, IFrame.NotificationType type);
 
+    /**
+     * Show notification with HTML caption and HTML description. <br/>
+     * Automatically converts line breaks to &lt;br&#47;&gt;.
+     *
+     * @param caption HTML text
+     * @param description HTML text
+     * @param type type
+     */
     public abstract void showNotification(String caption, String description, IFrame.NotificationType type);
 
+    /**
+     * Show message dialog with title and HTML message. <br/>
+     * Automatically converts line breaks to &lt;br&#47;&gt;.
+     *
+     * @param title window title
+     * @param message HTML text
+     * @param messageType type
+     */
     public abstract void showMessageDialog(String title, String message, IFrame.MessageType messageType);
 
+    /**
+     * Show option dialog with title and HTML message. <br/>
+     * Automatically converts line breaks to &lt;br&#47;&gt;.
+     *
+     * @param title window title
+     * @param message HTML text
+     * @param messageType type
+     * @param actions available actions
+     */
     public abstract void showOptionDialog(String title, String message, IFrame.MessageType messageType, Action[] actions);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
