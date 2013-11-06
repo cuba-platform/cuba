@@ -65,6 +65,14 @@
     border-style: none;
 }
 
+.v-disabled.v-button.v-button-link:hover {
+  background: transparent;
+}
+
+.v-disabled.v-button.v-button-link:focus {
+  border-color: transparent;
+}
+
 .v-button:hover {
     background: transparent url(images/bg-button-hover.gif) repeat-x;
 }
