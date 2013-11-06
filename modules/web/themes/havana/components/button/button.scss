@@ -83,6 +83,15 @@
     }
   }
 
+  .v-disabled.#{$primaryStyleName}.#{$primaryStyleName}-link:hover {
+    background: transparent;
+  }
+
+  .v-disabled.#{$primaryStyleName}.#{$primaryStyleName}-link:focus {
+    outline: none;
+    border-color: transparent;
+  }
+
   .#{$primaryStyleName}-link:focus {
     outline: none;
     border: 1px dashed $theme_linkColor;
