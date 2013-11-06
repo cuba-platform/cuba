@@ -9,6 +9,8 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewProperty;
 import com.haulmont.cuba.gui.WindowParams;
@@ -16,6 +18,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.PropertyDatasource;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +31,9 @@ public class CollectionDsHelper {
 
     public static List<MetaPropertyPath> createProperties(View view, MetaClass metaClass) {
         List<MetaPropertyPath> properties = new ArrayList<>();
-        if (view != null) {
+        MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
+
+        if (view != null && metadataTools.isPersistent(metaClass)) {
             for (ViewProperty property : view.getProperties()) {
                 final String name = property.getName();
 
@@ -42,6 +47,12 @@ public class CollectionDsHelper {
                 }
             }
         } else {
+            if (view != null) {
+                String message = String.format("Specified view %s for datasource with not persistent entity %s",
+                        view.getName(), metaClass.getName());
+                LogFactory.getLog(CollectionDsHelper.class).warn(message);
+            }
+
             for (MetaProperty metaProperty : metaClass.getProperties()) {
                 final Range range = metaProperty.getRange();
                 if (range == null) continue;
@@ -69,5 +80,4 @@ public class CollectionDsHelper {
             }
         }
     }
-
 }

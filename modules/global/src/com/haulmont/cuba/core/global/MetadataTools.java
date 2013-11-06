@@ -271,6 +271,13 @@ public class MetadataTools {
     }
 
     /**
+     * Determine whether the given metaclass is persistent, that is stored in the database.
+     */
+    public boolean isPersistent(MetaClass metaClass) {
+        return metaClass.getJavaClass().isAnnotationPresent(javax.persistence.Entity.class);
+    }
+
+    /**
      * Return a collection of properties included into entity's name pattern (see {@link NamePattern}).
      * @param metaClass entity metaclass
      * @return collection of the name pattern properties
@@ -378,7 +385,7 @@ public class MetadataTools {
     public Collection<MetaClass> getAllPersistentMetaClasses() {
         List<MetaClass> result = new ArrayList<>();
         for (MetaClass metaClass : metadata.getSession().getClasses()) {
-            if (metaClass.getJavaClass().isAnnotationPresent(javax.persistence.Entity.class)) {
+            if (isPersistent(metaClass)) {
                 result.add(metaClass);
             }
         }
