@@ -9,7 +9,10 @@
     padding-bottom: 0;
 }
 
-.pickerfield .v-button {
+.pickerfield .v-button,
+.v-table-cell-content .pickerfield .v-button,
+.v-table-cell-content .pickerfield .v-button:hover {
+    min-width: 25px;
     height: 25px;
     line-height: 18px;
     background: url(images/lookup-picker-btn.png) right white;
@@ -35,16 +38,30 @@
     background: url(images/lookup-picker-btn-focus.png) right white;
 }
 
-.pickerfield .v-button-caption {
+.pickerfield .v-button-caption,
+.v-table-cell-content .pickerfield .v-button-caption {
     margin: 0;
 }
 
-.pickerfield .v-button-link {
+.pickerfield .v-button-link,
+.v-table-cell-content .pickerfield .v-button-link {
     border: none;
 }
 
-.pickerfield .v-icon {
-    margin: 0;
+.pickerfield .v-button .v-icon,
+.v-table-cell-content .pickerfield .v-button .v-icon {
+  min-width: 25px;
+  height: 25px;
+  margin: 0;
+}
+
+.v-table-cell-content .pickerfield .v-button-wrap {
+  padding: 0;
+  height: 25px;
+}
+
+.v-table-cell-content .pickerfield .v-button-link {
+  padding: 0;
 }
 
 .pickerfield .v-readonly.v-textfield.v-textfield-focus,
