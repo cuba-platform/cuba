@@ -67,21 +67,6 @@ public interface Security {
      *     <li/> {@link EntityOp#CREATE} or {@link EntityOp#UPDATE} on the whole entity
      *     <li/> {@link EntityAttrAccess#MODIFY} on the attribute
      * </ul>
-     * This method infers entity class from {@link MetaProperty#getDomain()}.
-     *
-     * @param metaProperty  entity attribute
-     *
-     * @deprecated Use {@link #isEntityAttrModificationPermitted(com.haulmont.chile.core.model.MetaClass, String)} instead
-     */
-    @Deprecated
-    boolean isEntityAttrModificationPermitted(MetaProperty metaProperty);
-
-    /**
-     * Check if current user can modify an entity attribute. It means that he has the following permissions:
-     * <ul>
-     *     <li/> {@link EntityOp#CREATE} or {@link EntityOp#UPDATE} on the whole entity
-     *     <li/> {@link EntityAttrAccess#MODIFY} on the attribute
-     * </ul>
      *
      * @param metaClass  entity attribute's meta class
      * @param propertyName  entity attribute's name
