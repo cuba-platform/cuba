@@ -17,6 +17,7 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.terminal.ErrorMessage;
 import com.vaadin.ui.AbstractSelect;
+import org.apache.commons.lang.ObjectUtils;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -190,12 +191,28 @@ public class WebLookupField
         component.addListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
+                if (settingValue)
+                    return;
+
+                settingValue = true;
+
                 final Object value = getValue();
-                fireValueChanged(prevValue, value);
-                prevValue = value;
+
+                Object newValue = fireValueChanging(prevValue, value);
+
+                final Object oldValue = prevValue;
+                prevValue = newValue;
+
+                if (!ObjectUtils.equals(value, newValue)) {
+                    WebLookupField.this.component.setValue(newValue);
+                }
+                fireValueChanged(oldValue, newValue);
+
                 if (optionsDatasource != null) {
                     optionsDatasource.setItem((Entity) value);
                 }
+
+                settingValue = false;
             }
         });
     }
