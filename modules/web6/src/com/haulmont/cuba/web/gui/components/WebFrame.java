@@ -16,6 +16,7 @@ import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.toolkit.ui.JavaScriptHost;
 import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
 import org.dom4j.Element;
 
@@ -270,7 +271,7 @@ public class WebFrame extends WebAbstractBox implements IFrame, WrappedFrame {
 
     @Override
     public void showWebPage(String url, @Nullable Map<String, Object> params) {
-        //todo artamonov rewrite generated body
+        App.getInstance().getWindowManager().showWebPage(url, params);
     }
 
     @Override

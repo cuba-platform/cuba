@@ -19,6 +19,7 @@ import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.sys.WindowBreadCrumbs;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.ui.ActionsTabSheet;
+import com.haulmont.cuba.web.toolkit.ui.JavaScriptHost;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -942,7 +943,8 @@ public class WebWindowManager extends WindowManager {
 
     @Override
     public void showWebPage(String url, @Nullable Map<String, Object> params) {
-        //todo artamonov rewrite generated body
+        JavaScriptHost scriptHost = App.getInstance().getAppWindow().getScriptHost();
+        scriptHost.viewDocument(url);
     }
 
     private void removeWindowsWithName(String name) {

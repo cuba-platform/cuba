@@ -27,6 +27,7 @@ import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebFrameActionsHolder;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
+import com.haulmont.cuba.web.toolkit.ui.JavaScriptHost;
 import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.terminal.Sizeable;
@@ -426,7 +427,7 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
 
     @Override
     public void showWebPage(String url, @Nullable Map<String, Object> params) {
-        //todo artamonov rewrite generated body
+        App.getInstance().getWindowManager().showWebPage(url, params);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
