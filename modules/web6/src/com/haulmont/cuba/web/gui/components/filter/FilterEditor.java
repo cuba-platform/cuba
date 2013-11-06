@@ -454,7 +454,7 @@ public class FilterEditor extends AbstractFilterEditor {
 
     @Override
     protected void showNotification(String caption, String description) {
-        App.getInstance().getAppWindow().showNotification(caption, description, Window.Notification.TYPE_HUMANIZED_MESSAGE);
+        App.getInstance().getWindowManager().showNotification(caption, description, IFrame.NotificationType.HUMANIZED);
     }
 
     public AbstractOrderedLayout getLayout() {

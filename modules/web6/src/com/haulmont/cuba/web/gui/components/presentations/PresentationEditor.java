@@ -9,6 +9,7 @@ import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.security.entity.Presentation;
 import com.haulmont.cuba.security.entity.User;
@@ -97,20 +98,20 @@ public class PresentationEditor extends Window {
 
                 //check that name is empty
                 if (StringUtils.isEmpty((String) nameField.getValue())) {
-                    App.getInstance().getAppWindow().showNotification(
+                    App.getInstance().getWindowManager().showNotification(
                             getMessage("PresentationsEditor.error"),
                             getMessage("PresentationsEditor.error.nameRequired"),
-                            Window.Notification.TYPE_HUMANIZED_MESSAGE);
+                            IFrame.NotificationType.HUMANIZED);
                     return;
                 }
 
                 //check that name is unique
                 final Presentation pres = presentations.getPresentationByName((String) nameField.getValue());
                 if (pres != null && !pres.equals(presentation)) {
-                    App.getInstance().getAppWindow().showNotification(
+                    App.getInstance().getWindowManager().showNotification(
                             getMessage("PresentationsEditor.error"),
                             getMessage("PresentationsEditor.error.nameAlreadyExists"),
-                            Window.Notification.TYPE_HUMANIZED_MESSAGE);
+                            IFrame.NotificationType.HUMANIZED);
                     return;
                 }
 

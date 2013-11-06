@@ -20,7 +20,6 @@ import com.haulmont.cuba.web.sys.WindowBreadCrumbs;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.ui.ActionsTabSheet;
 import com.vaadin.terminal.Sizeable;
-import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.*;
@@ -791,13 +790,18 @@ public class WebWindowManager extends WindowManager {
 
     @Override
     public void showNotification(String caption, IFrame.NotificationType type) {
-        app.getAppWindow().showNotification(caption, WebComponentsHelper.convertNotificationType(type));
+        app.getAppWindow().showNotification(
+                ComponentsHelper.preprocessHtmlMessage(caption),
+                WebComponentsHelper.convertNotificationType(type));
     }
 
     @Override
     public void showNotification(String caption, String description, IFrame.NotificationType type) {
-        com.vaadin.ui.Window.Notification notify =
-                new com.vaadin.ui.Window.Notification(caption, description, WebComponentsHelper.convertNotificationType(type));
+        com.vaadin.ui.Window.Notification notify = new com.vaadin.ui.Window.Notification(
+                ComponentsHelper.preprocessHtmlMessage(caption),
+                ComponentsHelper.preprocessHtmlMessage(description),
+                WebComponentsHelper.convertNotificationType(type));
+
         if (type.equals(IFrame.NotificationType.HUMANIZED)) {
             notify.setDelayMsec(3000);
         }
@@ -805,11 +809,7 @@ public class WebWindowManager extends WindowManager {
     }
 
     @Override
-    public void showMessageDialog(
-            String title,
-            String message,
-            IFrame.MessageType messageType
-    ) {
+    public void showMessageDialog(String title, String message, IFrame.MessageType messageType) {
         removeWindowsWithName("cuba-message-dialog");
 
         final com.vaadin.ui.Window window = new com.vaadin.ui.Window(title);
@@ -827,7 +827,7 @@ public class WebWindowManager extends WindowManager {
         layout.setMargin(true);
         window.setContent(layout);
 
-        Label desc = new Label(message, Label.CONTENT_XHTML);
+        Label desc = new Label(ComponentsHelper.preprocessHtmlMessage(message), Label.CONTENT_XHTML);
         layout.addComponent(desc);
 
         float width;
@@ -847,12 +847,7 @@ public class WebWindowManager extends WindowManager {
     }
 
     @Override
-    public void showOptionDialog(
-            String title,
-            String message,
-            IFrame.MessageType messageType,
-            Action[] actions
-    ) {
+    public void showOptionDialog(String title, String message, IFrame.MessageType messageType, Action[] actions) {
         removeWindowsWithName("cuba-option-dialog");
 
         final com.vaadin.ui.Window window = new com.vaadin.ui.Window(title);
@@ -867,7 +862,7 @@ public class WebWindowManager extends WindowManager {
             }
         });
 
-        Label messageBox = new Label(message, Label.CONTENT_XHTML);
+        Label messageBox = new Label(ComponentsHelper.preprocessHtmlMessage(message), Label.CONTENT_XHTML);
 
         float width;
         if (getDialogParams().getWidth() != null) {

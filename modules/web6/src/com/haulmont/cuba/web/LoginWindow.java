@@ -6,6 +6,7 @@ package com.haulmont.cuba.web;
 
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.web.auth.ActiveDirectoryConnection;
 import com.haulmont.cuba.web.auth.ActiveDirectoryHelper;
@@ -15,7 +16,6 @@ import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.vaadin.data.Property;
 import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
-import com.vaadin.terminal.ThemeResource;
 import com.vaadin.terminal.gwt.server.WebApplicationContext;
 import com.vaadin.terminal.gwt.server.WebBrowser;
 import com.vaadin.ui.*;
@@ -382,8 +382,9 @@ public class LoginWindow extends Window implements Action.Handler {
         } catch (LoginException e) {
             log.info("Login failed: " + e.toString());
             // todo Fix notification about exception while AD Auth
+            String message = messages.getMessage(getMessagesPack(), "loginWindow.loginFailed", loc);
             showNotification(
-                    messages.getMessage(getMessagesPack(), "loginWindow.loginFailed", loc),
+                    ComponentsHelper.preprocessHtmlMessage(message),
                     e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
 
             if (loginByRememberMe) {
