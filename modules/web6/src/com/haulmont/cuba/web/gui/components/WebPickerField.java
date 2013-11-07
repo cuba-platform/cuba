@@ -6,9 +6,13 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.PickerField;
@@ -51,6 +55,10 @@ public class WebPickerField
 
     protected WebPickerFieldActionHandler actionHandler;
 
+    protected Metadata metadata = AppBeans.get(Metadata.class);
+
+    protected MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
+
     public WebPickerField() {
         component = new Picker(this);
         component.setImmediate(true);
@@ -74,12 +82,17 @@ public class WebPickerField
             @Override
             public String toString() {
                 if (value instanceof Instance) {
-                    if (CaptionMode.PROPERTY.equals(getCaptionMode()))
-                        return String.valueOf(((Instance) value).getValue(getCaptionProperty()));
-                    else
+                    if (CaptionMode.PROPERTY.equals(getCaptionMode())) {
+                        Object propertyValue = ((Instance)value).getValue(captionProperty);
+                        MetaProperty property = metadata.getClass(value.getClass()).getProperty(captionProperty);
+
+                        return metadataTools.format(propertyValue, property);
+                    } else {
                         return ((Instance) value).getInstanceName();
-                } else
+                    }
+                } else {
                     return super.toString();
+                }
             }
         });
 
@@ -158,14 +171,9 @@ public class WebPickerField
     public void setValue(Object value) {
         if (component.isReadOnly())
             return;
-        if (component.getPropertyDataSource() != null) {
-            this.value = value;
-            super.setValue(value);
-        } else {
-            this.value = value;
-            ItemWrapper wrapper = createItemWrapper(value);
-            super.setValue(wrapper);
-        }
+        this.value = value;
+        ItemWrapper wrapper = createItemWrapper(value);
+        super.setValue(wrapper);
     }
 
     @Override
@@ -215,12 +223,9 @@ public class WebPickerField
             }
         }
 
-
         setRequired(metaProperty.isMandatory());
 
         this.metaClass = metaProperty.getRange().asClass();
-
-
     }
 
     @Override
