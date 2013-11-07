@@ -7,26 +7,24 @@ package com.haulmont.cuba.web.toolkit.ui;
 import com.haulmont.cuba.toolkit.gwt.client.ui.VWidgetsTree;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
-import com.vaadin.terminal.Resource;
 import com.vaadin.ui.ClientWidget;
 import com.vaadin.ui.Component;
 
 import java.io.Serializable;
 import java.util.LinkedList;
 
-@SuppressWarnings("serial")
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 @ClientWidget(VWidgetsTree.class)
 public class WidgetsTree extends com.vaadin.ui.Tree {
 
     private WidgetBuilder widgetBuilder;
 
     @Override
-    protected void paintItem(
-            PaintTarget target,
-            Object itemId,
-            LinkedList<String> selectedKeys,
-            LinkedList<String> expandedKeys
-    ) throws PaintException {
+    protected void paintItem(PaintTarget target, Object itemId,
+                             LinkedList<String> selectedKeys, LinkedList<String> expandedKeys) throws PaintException {
         if (widgetBuilder != null) {
             Component c = widgetBuilder.buildWidget(this, itemId, areChildrenAllowed(itemId));
             if (c != null) {
@@ -69,5 +67,4 @@ public class WidgetsTree extends com.vaadin.ui.Tree {
     public interface WidgetBuilder extends Serializable {
         Component buildWidget(WidgetsTree source, Object itemId, boolean leaf);
     }
-
 }

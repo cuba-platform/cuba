@@ -74,6 +74,11 @@
     background: transparent url(../tree/images/item-expanded.png) no-repeat 0 1px;
 }
 
+.widgets-tree .v-tree-node-leaf .v-tree-node-caption,
+.widgets-tree .v-tree-node-children .v-tree-node-leaf .v-tree-node-caption {
+  background: 0;
+}
+
 .widgets-tree .v-tree-node .v-tree-node-content {
     margin-left: 16px;
 }

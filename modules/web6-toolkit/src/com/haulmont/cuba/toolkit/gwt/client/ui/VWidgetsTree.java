@@ -11,6 +11,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.terminal.gwt.client.*;
+import com.vaadin.terminal.gwt.client.ui.Icon;
 import com.vaadin.terminal.gwt.client.ui.VTree;
 import com.vaadin.terminal.gwt.client.ui.layout.CellBasedLayout;
 
@@ -32,41 +33,53 @@ public class VWidgetsTree extends VTree implements Container {
     private CellBasedLayout.Spacing borderPaddingsInfo = null;
 
     public VWidgetsTree() {
-        super();
         setStyleName(CLASSNAME);
     }
 
     @Override
     protected TreeNode createTreeNode(UIDL childUidl) {
+        VConsole.log("[?] Has Widget " + childUidl.getBooleanAttribute("hasWidget"));
+
         if (childUidl.getBooleanAttribute("hasWidget")) {
+            VConsole.log(">> Create Widget Node");
+
             return new WidgetTreeNode(childUidl);
         } else {
+            VConsole.log(">> Create Node");
+
             return super.createTreeNode(childUidl);
         }
     }
 
     @Override
     public void setWidth(String width) {
-        if (width == null) { return; }
+        if (width == null) {
+            return;
+        }
         super.setWidth(width);
     }
 
+    @Override
     public void replaceChildComponent(Widget oldComponent, Widget newComponent) {
         //do nothing
     }
 
+    @Override
     public boolean hasChildComponent(Widget component) {
         return widgetNodes.containsKey(component);
     }
 
+    @Override
     public void updateCaption(Paintable component, UIDL uidl) {
         //do nothing
     }
 
+    @Override
     public boolean requestLayout(Set<Paintable> children) {
         return false;
     }
 
+    @Override
     public RenderSpace getAllocatedSpace(Widget child) {
         WidgetTreeNode node = widgetNodes.get(child);
         if (borderPaddingsInfo == null) {
@@ -96,7 +109,6 @@ public class VWidgetsTree extends VTree implements Container {
     }
 
     class WidgetTreeNode extends TreeNode {
-
         private FlowPanel nodeContent;
         private SimplePanel nodeWidget;
 
@@ -112,21 +124,80 @@ public class VWidgetsTree extends VTree implements Container {
             }
         }
 
-        @Override
-        protected void constructDom() {
-            // workaround for a very weird IE6 issue #1245
-            if (BrowserInfo.get().isIE6()) {
-                ie6compatnode = DOM.createDiv();
-                setStyleName(ie6compatnode, CLASSNAME + "-ie6compatnode");
-                DOM.setInnerText(ie6compatnode, " ");
-                DOM.appendChild(getElement(), ie6compatnode);
+        public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
+            setText(uidl.getStringAttribute("caption"));
+            key = uidl.getStringAttribute("key");
 
-                DOM.sinkEvents(ie6compatnode, Event.ONCLICK);
+            keyToNode.put(key, this);
+
+            if (uidl.hasAttribute("al")) {
+                actionKeys = uidl.getStringArrayAttribute("al");
             }
 
+            boolean isNode = uidl.getTag().equals("node");
+
+            // always render child UIDL
+            // either for node or for leaf
+            renderChildNodes(uidl.getChildIterator());
+            childNodeContainer.setVisible(childNodeContainer.getWidgetCount() != 0);
+
+            if (!isNode) {
+                addStyleName(CLASSNAME + "-leaf");
+            }
+
+            addStyleName(CLASSNAME);
+            if (uidl.hasAttribute("style")) {
+                addStyleName(CLASSNAME + "-" + uidl.getStringAttribute("style"));
+                Widget.setStyleName(nodeCaptionDiv, CLASSNAME + "-caption-"
+                        + uidl.getStringAttribute("style"), true);
+                childNodeContainer.addStyleName(CLASSNAME + "-children-"
+                        + uidl.getStringAttribute("style"));
+            }
+
+            if (uidl.getBooleanAttribute("expanded") && !getState()) {
+                setState(true, false);
+            }
+
+            if (uidl.getBooleanAttribute("selected")) {
+                setSelected(true);
+                // ensure that identifier is in selectedIds array (this may be a
+                // partial update)
+                selectedIds.add(key);
+            }
+
+            if (uidl.hasAttribute("icon")) {
+                if (icon == null) {
+                    icon = new Icon(client);
+                    DOM.insertBefore(DOM.getFirstChild(nodeCaptionDiv), icon
+                            .getElement(), nodeCaptionSpan);
+                }
+                icon.setUri(uidl.getStringAttribute("icon"));
+            } else {
+                if (icon != null) {
+                    DOM.removeChild(DOM.getFirstChild(nodeCaptionDiv), icon
+                            .getElement());
+                    icon = null;
+                }
+            }
+
+            if (isNode) {
+                canExpand = uidl.hasAttribute("hasChildren");
+                if (canExpand) {
+                    removeStyleName("noChildren");
+                } else {
+                    addStyleName("noChildren");
+                }
+            }
+
+            if (BrowserInfo.get().isIE6() && isAttached()) {
+                fixWidth();
+            }
+        }
+
+        @Override
+        protected void constructDom() {
             nodeCaptionDiv = DOM.createDiv();
-            DOM.setElementProperty(nodeCaptionDiv, "className", CLASSNAME
-                    + "-caption");
+            DOM.setElementProperty(nodeCaptionDiv, "className", CLASSNAME + "-caption");
             Element wrapper = DOM.createDiv();
             nodeCaptionSpan = DOM.createSpan();
             DOM.appendChild(getElement(), nodeCaptionDiv);
@@ -172,17 +243,22 @@ public class VWidgetsTree extends VTree implements Container {
             TreeNode childTree = null;
             while (i.hasNext()) {
                 final UIDL childUidl = (UIDL) i.next();
+                VConsole.log(">> Child tag: " + childUidl.getTag());
+
                 if ("widget".equals(childUidl.getTag())) {
+                    VConsole.log(">> Render widget");
                     Iterator it = childUidl.getChildIterator();
                     paintWidget((UIDL) it.next());
                     continue;
                 }
+
                 // actions are in bit weird place, don't mix them with children,
                 // but current node's actions
                 if ("actions".equals(childUidl.getTag())) {
                     updateActionMap(childUidl);
                     continue;
                 }
+
                 childTree = createTreeNode(childUidl);
                 childNodeContainer.add(childTree);
                 childTree.updateFromUIDL(childUidl, client);

@@ -96,7 +96,7 @@ public class WebWidgetsTree
                         boolean leaf
                 ) {
                     Component widget = widgetBuilder.build((HierarchicalDatasource) datasource, itemId, leaf);
-                    return WebComponentsHelper.unwrap(widget);
+                    return WebComponentsHelper.getComposition(widget);
                 }
             });
         } else {

@@ -89,12 +89,9 @@ public class WebWidgetsTree
         if (widgetBuilder != null) {
             component.setWidgetBuilder(new com.haulmont.cuba.web.toolkit.ui.WidgetsTree.WidgetBuilder() {
                 public com.vaadin.ui.Component buildWidget(
-                        com.haulmont.cuba.web.toolkit.ui.WidgetsTree source,
-                        Object itemId,
-                        boolean leaf
-                ) {
+                        com.haulmont.cuba.web.toolkit.ui.WidgetsTree source, Object itemId,boolean leaf) {
                     Component widget = widgetBuilder.build((HierarchicalDatasource) datasource, itemId, leaf);
-                    return WebComponentsHelper.unwrap(widget);
+                    return WebComponentsHelper.getComposition(widget);
                 }
             });
         } else {
