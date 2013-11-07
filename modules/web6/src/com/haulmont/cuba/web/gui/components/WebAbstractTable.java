@@ -288,6 +288,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             }
             Component rc = WebComponentsHelper.unwrap(rowsCount);
             topPanel.addComponent(rc);
+            topPanel.setExpandRatio(rc, 1);
             topPanel.setComponentAlignment(rc, com.vaadin.ui.Alignment.BOTTOM_RIGHT);
         }
     }
