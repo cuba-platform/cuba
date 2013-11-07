@@ -10,14 +10,19 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.LinkedHashMap;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class AvailableLocalesFactory extends TypeFactory {
 
+    @Override
     public Object build(String string) {
         if (string == null)
             return null;
 
         String[] items = string.split(";");
-        Map<String, Locale> map = new LinkedHashMap<String, Locale>(items.length);
+        Map<String, Locale> map = new LinkedHashMap<>(items.length);
         for (String item : items) {
             String[] parts = item.split("\\|");
             String[] locParts = parts[1].split("_");
