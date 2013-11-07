@@ -4,10 +4,13 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.PickerField;
@@ -45,6 +48,10 @@ public class WebPickerField
 
     protected WebPickerFieldActionHandler actionHandler;
 
+    protected Metadata metadata = AppBeans.get(Metadata.class);
+
+    protected MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
+
     public WebPickerField() {
         component = new Picker(this);
         component.setImmediate(true);
@@ -57,7 +64,11 @@ public class WebPickerField
                 if (captionMode == CaptionMode.PROPERTY
                         && StringUtils.isNotEmpty(captionProperty)
                         && (value != null)) {
-                    return ((Instance) value).getValue(captionProperty);
+
+                    Object propertyValue = value.getValue(captionProperty);
+
+                    MetaProperty property = metadata.getClass(value.getClass()).getProperty(captionProperty);
+                    return metadataTools.format(propertyValue, property);
                 }
 
                 return super.convertToPresentation(value, targetType, locale);

@@ -14,6 +14,8 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.desktop.sys.vcl.Picker;
 import com.haulmont.cuba.gui.components.Action;
@@ -27,18 +29,14 @@ import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
-import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
-import java.util.List;
 
 /**
  * @author krivopustov
  * @version $Id$
  */
-public class DesktopPickerField
-        extends DesktopAbstractField<Picker>
-        implements PickerField {
+public class DesktopPickerField extends DesktopAbstractField<Picker> implements PickerField {
 
     protected CaptionMode captionMode = CaptionMode.ITEM;
     protected String captionProperty;
@@ -52,17 +50,21 @@ public class DesktopPickerField
     protected Object prevValue;
     protected String prevTextValue;
 
-    private boolean editable = true;
+    protected boolean editable = true;
 
     protected java.util.List<Action> actionsOrder = new LinkedList<>();
 
-    private int modifiersMask;
-    private Map<Action, List<KeyStroke>> keyStrokesMap = new HashMap<>();
+    protected int modifiersMask;
+    protected Map<Action, List<KeyStroke>> keyStrokesMap = new HashMap<>();
 
-    private String caption;
-    private boolean updatingInstance;
+    protected String caption;
+    protected boolean updatingInstance;
 
-    private Object nullValue = new Object();
+    protected Object nullValue = new Object();
+
+    protected Metadata metadata = AppBeans.get(Metadata.class);
+
+    protected MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
 
     public DesktopPickerField() {
         impl = new Picker();
@@ -184,9 +186,10 @@ public class DesktopPickerField
     @Override
     public <T> T getValue() {
         if ((datasource != null) && (metaPropertyPath != null) && (datasource.getState() == Datasource.State.VALID)) {
-            return (T) datasource.getItem().getValue(metaProperty.getName());
-        } else
+            return datasource.getItem().getValue(metaProperty.getName());
+        } else {
             return (T) prevValue;
+        }
     }
 
     @Override
@@ -294,7 +297,10 @@ public class DesktopPickerField
                 if (captionMode.equals(CaptionMode.ITEM)) {
                     text = ((Instance) value).getInstanceName();
                 } else {
-                    text = ((Instance) value).getValueEx(captionProperty);
+                    Object propertyValue = ((Instance)value).getValue(captionProperty);
+                    MetaProperty property = metadata.getClass(value.getClass()).getProperty(captionProperty);
+
+                    text = metadataTools.format(propertyValue, property);
                 }
             } else {
                 text = value.toString();
