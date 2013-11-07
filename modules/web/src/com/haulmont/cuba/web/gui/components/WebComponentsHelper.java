@@ -360,8 +360,25 @@ public class WebComponentsHelper {
         }
     }
 
+    /**
+     * Tests if component visible and its container visible.
+     *
+     * @param child component
+     * @return component visibility
+     */
     public static boolean isComponentVisible(Component child) {
         return child.isVisible() && (child.getParent() == null || isComponentVisible(child.getParent()));
+    }
+
+    /**
+     * Tests if component enabled and visible and its container enabled.
+     *
+     * @param child component
+     * @return component enabled state
+     */
+    public static boolean isComponentEnabled(Component child) {
+        return child.isEnabled() && (child.getParent() == null || isComponentEnabled(child.getParent())) &&
+                isComponentVisible(child);
     }
 
     public static int convertFieldGroupCaptionAlignment(FieldGroup.FieldCaptionAlignment captionAlignment) {

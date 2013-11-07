@@ -141,7 +141,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         }
     }
 
-    protected void loadVisible(Component component, Element element) {
+    protected boolean loadVisible(Component component, Element element) {
         if (component instanceof DatasourceComponent
                 && ((DatasourceComponent) component).getDatasource() != null) {
             MetaProperty metaProperty = ((DatasourceComponent) component).getMetaProperty();
@@ -153,7 +153,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
                     || ((metaProperty != null) &&
                     !userSession.isEntityAttrPermitted(metaClass, metaProperty.getName(), EntityAttrAccess.VIEW))) {
                 component.setVisible(false);
-                return;
+                return false;
             }
         }
 
@@ -166,11 +166,16 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         }
 
         if (!StringUtils.isEmpty(visible)) {
-            component.setVisible(Boolean.valueOf(visible));
+            Boolean visibleValue = Boolean.valueOf(visible);
+            component.setVisible(visibleValue);
+
+            return visibleValue;
         }
+
+        return true;
     }
 
-    protected void loadEnable(Component component, Element element) {
+    protected boolean loadEnable(Component component, Element element) {
         String enable = element.attributeValue("enable");
         if (enable == null) {
             final Element e = element.element("enable");
@@ -180,8 +185,13 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         }
 
         if (!StringUtils.isEmpty(enable)) {
-            component.setEnabled(Boolean.valueOf(enable));
+            Boolean enabled = Boolean.valueOf(enable);
+            component.setEnabled(enabled);
+
+            return enabled;
         }
+
+        return true;
     }
 
     protected String loadResourceString(String caption) {

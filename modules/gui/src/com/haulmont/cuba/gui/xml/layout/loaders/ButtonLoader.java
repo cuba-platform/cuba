@@ -26,8 +26,9 @@ public class ButtonLoader extends com.haulmont.cuba.gui.xml.layout.loaders.Compo
 
         assignXmlDescriptor(component, element);
         loadId(component, element);
-        loadVisible(component, element);
-        loadEnable(component, element);
+
+        boolean enabled = loadEnable(component, element);
+        boolean visible = loadVisible(component, element);
 
         loadStyleName(component, element);
 
@@ -41,12 +42,12 @@ public class ButtonLoader extends com.haulmont.cuba.gui.xml.layout.loaders.Compo
 
         assignFrame(component);
 
-        loadInvoke(component, element);
+        loadInvoke(component, enabled, visible, element);
 
         return component;
     }
 
-    protected void loadInvoke(Button component, Element element) {
+    protected void loadInvoke(Button component, boolean enabled, boolean visible, Element element) {
         if (!StringUtils.isBlank(element.attributeValue("action"))) {
             return;
         }
@@ -58,7 +59,7 @@ public class ButtonLoader extends com.haulmont.cuba.gui.xml.layout.loaders.Compo
 
         DeclarativeAction action = new DeclarativeAction(component.getId() + "_action",
                 component.getCaption(), component.getIcon(),
-                component.isEnabled(), component.isVisible(),
+                enabled, visible,
                 methodName,
                 component.getFrame()
         );

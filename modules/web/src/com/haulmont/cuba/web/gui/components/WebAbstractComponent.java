@@ -79,7 +79,7 @@ public class WebAbstractComponent<T extends com.vaadin.ui.Component>
 
     @Override
     public boolean isEnabled() {
-        return getComposition().isEnabled();
+        return WebComponentsHelper.isComponentEnabled(getComposition());
     }
 
     @Override
@@ -95,6 +95,20 @@ public class WebAbstractComponent<T extends com.vaadin.ui.Component>
     @Override
     public void setVisible(boolean visible) {
         getComposition().setVisible(visible);
+    }
+
+    /**
+     * @return component enabled property
+     */
+    public boolean getComponentEnabledFlag() {
+        return getComposition().isEnabled();
+    }
+
+    /**
+     * @return component visible property
+     */
+    public boolean getComponentVisibleFlag() {
+        return getComposition().isVisible();
     }
 
     @Override

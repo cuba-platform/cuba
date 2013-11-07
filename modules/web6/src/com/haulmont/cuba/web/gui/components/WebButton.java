@@ -4,7 +4,8 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.web.WebConfig;
@@ -27,7 +28,7 @@ public class WebButton extends WebAbstractComponent<com.vaadin.ui.Button> implem
     public static final String ICON_STYLE = "icon";
 
     public WebButton() {
-        if (ConfigProvider.getConfig(WebConfig.class).getUseNativeButtons()) {
+        if (AppBeans.get(Configuration.class).getConfig(WebConfig.class).getUseNativeButtons()) {
             component = new NativeButton();
         } else {
             component = new com.vaadin.ui.Button();

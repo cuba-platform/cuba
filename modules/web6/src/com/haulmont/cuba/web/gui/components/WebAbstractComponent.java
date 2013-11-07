@@ -6,6 +6,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Layout;
 import org.dom4j.Element;
 
@@ -73,6 +74,20 @@ public class WebAbstractComponent<T extends com.vaadin.ui.Component>
         return getComposition().isEnabled();
     }
 
+    /**
+     * @return component enabled property
+     */
+    public boolean getComponentEnabledFlag() {
+        return ((AbstractComponent)getComposition()).isComponentEnabled();
+    }
+
+    /**
+     * @return component visible property
+     */
+    public boolean getComponentVisibleFlag() {
+        return ((AbstractComponent)getComposition()).isComponentVisible();
+    }
+
     @Override
     public void setEnabled(boolean enabled) {
         getComposition().setEnabled(enabled);
@@ -125,10 +140,12 @@ public class WebAbstractComponent<T extends com.vaadin.ui.Component>
         getComposition().setWidth(width);
     }
 
+    @Deprecated
     public boolean isExpandable() {
         return expandable;
     }
 
+    @Deprecated
     public void setExpandable(boolean expandable) {
         this.expandable = expandable;
     }
