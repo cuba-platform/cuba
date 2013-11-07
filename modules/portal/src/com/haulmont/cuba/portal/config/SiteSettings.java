@@ -7,12 +7,14 @@ package com.haulmont.cuba.portal.config;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.FormatStrings;
-import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.ManagedBean;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -29,7 +31,8 @@ public class SiteSettings {
      * @return Full relative path on server
      */
     public String composeFullRelativePath(String path) {
-        String webAppPrefix = "/".concat(ConfigProvider.getConfig(GlobalConfig.class).getWebContextName().intern());
+        GlobalConfig globalConfig = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class);
+        String webAppPrefix = "/".concat(globalConfig.getWebContextName().intern());
         return path.startsWith("/") ? webAppPrefix.concat(path) : webAppPrefix.concat("/").concat(path);
     }
 
@@ -38,14 +41,18 @@ public class SiteSettings {
      * @return Full absolute path including protocol, domain and webapp prefix
      */
     public String composeFullAbsolutePath(String path) {
-        String webAppUrl = ConfigProvider.getConfig(GlobalConfig.class).getWebAppUrl();
+        String webAppUrl = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class).getWebAppUrl();
         webAppUrl = StringUtils.chomp(webAppUrl, "/"); //remove last slash
         return path.startsWith("/") ? webAppUrl.concat(path) : webAppUrl.concat("/").concat(path);
     }
 
     public Properties getFreeMarkerSettings() {
-        PortalConfig webportalConfig = ConfigProvider.getConfig(PortalConfig.class);
-        Locale locale = new Locale(webportalConfig.getDefaultLocale());
+        GlobalConfig globalConfig = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class);
+        Map<String,Locale> availableLocales = globalConfig.getAvailableLocales();
+        if (availableLocales.isEmpty())
+            throw new IllegalStateException("Property cuba.availableLocales is not configured");
+
+        Locale locale = availableLocales.values().iterator().next();
         FormatStrings formatStrings = Datatypes.getFormatStrings(locale);
 
         final Properties freemarkerSettings = new Properties();

@@ -26,11 +26,6 @@ public interface PortalConfig extends Config {
     @Property("cuba.trustedClientPassword")
     String getTrustedClientPassword();
 
-    @Property("cuba.portal.defaultLocale")
-    @DefaultString("en")
-    String getDefaultLocale();
-    void setDefaultLocale(String defaultLocale);
-
     @Property("cuba.portal.theme")
     @DefaultString("default")
     String getTheme();
