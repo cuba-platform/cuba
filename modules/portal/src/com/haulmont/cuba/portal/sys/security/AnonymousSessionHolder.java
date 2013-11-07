@@ -5,7 +5,9 @@
 
 package com.haulmont.cuba.portal.sys.security;
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.PasswordEncryption;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
@@ -24,6 +26,7 @@ import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Collection;
 import java.util.Locale;
 
 /**
@@ -70,10 +73,13 @@ public class AnonymousSessionHolder {
         String login = config.getAnonymousUserLogin();
         String password = config.getTrustedClientPassword();
 
-        Locale defaulLocale = new Locale(config.getDefaultLocale());
+        GlobalConfig globalConfig = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class);
+        Collection<Locale> locales = globalConfig.getAvailableLocales().values();
+
+        Locale defaultLocale = locales.iterator().next();
         UserSession userSession;
         try {
-            userSession = loginService.loginTrusted(login, password, defaulLocale);
+            userSession = loginService.loginTrusted(login, password, defaultLocale);
             // Set client info on middleware
             AppContext.setSecurityContext(new SecurityContext(userSession));
 
