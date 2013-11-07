@@ -397,7 +397,7 @@ public class LoginWindow extends UIView implements Action.Handler {
             String message = messages.getMessage(getMessagesPack(), "loginWindow.loginFailed", loc);
             new Notification(
                     ComponentsHelper.preprocessHtmlMessage(message),
-                    e.getMessage(), Notification.Type.ERROR_MESSAGE, true)
+                    StringUtils.abbreviate(e.getMessage(), 1000), Notification.Type.ERROR_MESSAGE, true)
             .show(getUI().getPage());
 
             if (loginByRememberMe) {
