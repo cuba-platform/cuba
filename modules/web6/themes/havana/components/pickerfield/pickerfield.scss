@@ -18,7 +18,8 @@
     background: url(images/lookup-picker-btn.png) right white;
 }
 
-.pickerfield.v-readonly .v-button {
+.pickerfield.v-readonly .v-button,
+.pickerfield.v-readonly .v-horizontallayout-childfocus .v-button {
     background: url(images/lookup-picker-btn-readonly.png) right;
 }
 
@@ -68,6 +69,14 @@
 .pickerfield .v-textfield-readonly.v-textfield-focus,
 .pickerfield .v-textfield-focus {
     border-color: #4d7ab2;
+}
+
+.pickerfield.v-readonly .v-readonly.v-textfield,
+.pickerfield.v-readonly .v-textfield-readonly,
+.pickerfield.v-readonly .v-horizontallayout-childfocus .v-textfield-focus ,
+.pickerfield.v-readonly .v-readonly.v-textfield.v-textfield-focus,
+.pickerfield.v-readonly .v-textfield-readonly.v-textfield-focus {
+  border-color: #C3C3C3;
 }
 
 .pickerfield .v-readonly.v-textfield,
