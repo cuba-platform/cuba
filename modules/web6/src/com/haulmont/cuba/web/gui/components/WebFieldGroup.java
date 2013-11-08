@@ -15,6 +15,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.web.gui.WebWindow;
+import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.toolkit.ui.*;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -718,6 +719,11 @@ public class WebFieldGroup
             com.vaadin.ui.Field f = component.getField(field.getId());
             if (f != null && f.isVisible() && f.isEnabled() && !f.isReadOnly()) {
                 Object value = convertRawValue(field, getFieldValue(field));
+                // Fix for old pickerfield implementation
+                if (value instanceof ItemWrapper) {
+                    value = ((ItemWrapper) value).getItem();
+                }
+
                 if (isEmpty(value)) {
                     if (isRequired(field)) {
                         problems.put(field.getId(), new RequiredValueMissingException(f.getRequiredError(), this));
