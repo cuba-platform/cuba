@@ -205,6 +205,8 @@ public class WebPickerField
             throw new RuntimeException(String.format("Property '%s' not found in class %s", property, metaClass));
         }
 
+        this.metaClass = metaProperty.getRange().asClass();
+
         final MetaPropertyPath propertyPath = new MetaPropertyPath(metaProperty.getDomain(), metaProperty);
         final ItemWrapper wrapper = createDatasourceWrapper(datasource, Collections.singleton(propertyPath));
         final Property itemProperty = wrapper.getItemProperty(propertyPath);
@@ -241,8 +243,6 @@ public class WebPickerField
         }
 
         setRequired(metaProperty.isMandatory());
-
-        this.metaClass = metaProperty.getRange().asClass();
     }
 
     @Override
