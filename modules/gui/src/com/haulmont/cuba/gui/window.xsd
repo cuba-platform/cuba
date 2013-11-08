@@ -924,7 +924,7 @@
         <xs:attributeGroup ref="hasVisibility"/>
 
         <xs:attribute name="requiredMessage" type="xs:string" use="optional"/>
-        <xs:attribute name="custom" type="xs:string" use="optional"/>
+        <xs:attribute name="custom" type="xs:boolean" use="optional"/>
 
         <xs:attribute name="datasource" type="xs:string" use="optional"/>
 
