@@ -1,4 +1,3 @@
-
 create table SYS_SERVER (
     ID uuid not null,
     CREATE_TS timestamp,
@@ -581,7 +580,7 @@ create table SYS_SENDING_MESSAGE (
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
     VERSION integer,
-    UPDATE_TS timestamp,
+    UPDATE_TS timestamp with time zone,
     UPDATED_BY varchar(50),
     DELETE_TS timestamp,
     DELETED_BY varchar(50),
@@ -591,7 +590,7 @@ create table SYS_SENDING_MESSAGE (
     CAPTION varchar(500),
     CONTENT_TEXT text,
     CONTENT_TEXT_FILE_ID uuid,
-    DEADLINE timestamp,
+    DEADLINE timestamp with time zone,
     STATUS int,
     DATE_SENT timestamp,
     ATTEMPTS_COUNT int,
