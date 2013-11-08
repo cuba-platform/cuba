@@ -27,11 +27,9 @@ import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebFrameActionsHolder;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
-import com.haulmont.cuba.web.toolkit.ui.JavaScriptHost;
 import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.terminal.Sizeable;
-import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.TabSheet;
@@ -544,7 +542,7 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
         this.element = element;
     }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public void add(Component component) {
@@ -1022,7 +1020,7 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
                 });
             } else if (lookupComponent instanceof Tree) {
                 final Tree tree = (Tree) lookupComponent;
-                com.haulmont.cuba.web.toolkit.ui.Tree treeComponent =
+                final com.haulmont.cuba.web.toolkit.ui.Tree treeComponent =
                         (com.haulmont.cuba.web.toolkit.ui.Tree) WebComponentsHelper.unwrap(tree);
                 treeComponent.setDoubleClickMode(true);
                 treeComponent.addListener(new ItemClickEvent.ItemClickListener() {
@@ -1030,9 +1028,8 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
                     public void itemClick(ItemClickEvent event) {
                         CollectionDatasource treeCds = tree.getDatasource();
                         if (treeCds != null) {
-                            Entity item = treeCds.getItem(event.getItemId());
-                            if (item != null) {
-                                treeCds.setItem(item);
+                            if (event.getItem() != null) {
+                                treeComponent.setValue(event.getItemId());
                                 fireSelectAction();
                             }
                         }
