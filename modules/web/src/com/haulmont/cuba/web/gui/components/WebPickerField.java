@@ -106,6 +106,30 @@ public class WebPickerField
     }
 
     @Override
+    public void setValue(Object value) {
+        if (component.isReadOnly())
+            return;
+
+        if (datasource == null && metaClass == null) {
+            throw new IllegalStateException("Datasource or metaclass must be set for field");
+        }
+
+        if (value != null) {
+            Class fieldClass = getMetaClass().getJavaClass();
+            Class<?> valueClass = value.getClass();
+            if (!fieldClass.isAssignableFrom(valueClass)) {
+                throw new IllegalArgumentException(
+                        String.format("Could not set value with class %s to field with class %s",
+                                fieldClass.getCanonicalName(),
+                                valueClass.getCanonicalName())
+                );
+            }
+        }
+
+        super.setValue(value);
+    }
+
+    @Override
     public LookupAction addLookupAction() {
         LookupAction action = new LookupAction(this);
         addAction(action);

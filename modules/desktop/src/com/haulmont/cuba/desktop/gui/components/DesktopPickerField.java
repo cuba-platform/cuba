@@ -194,6 +194,25 @@ public class DesktopPickerField extends DesktopAbstractField<Picker> implements 
 
     @Override
     public void setValue(Object value) {
+        if (!isEditable())
+            return;
+
+        if (datasource == null && metaClass == null) {
+            throw new IllegalStateException("Datasource or metaclass must be set for field");
+        }
+
+        if (value != null) {
+            Class fieldClass = getMetaClass().getJavaClass();
+            Class<?> valueClass = value.getClass();
+            if (!fieldClass.isAssignableFrom(valueClass)) {
+                throw new IllegalArgumentException(
+                        String.format("Could not set value with class %s to field with class %s",
+                                fieldClass.getCanonicalName(),
+                                valueClass.getCanonicalName())
+                );
+            }
+        }
+
         if (!ObjectUtils.equals(prevValue, value)) {
             updateInstance(value);
             updateComponent(value);
