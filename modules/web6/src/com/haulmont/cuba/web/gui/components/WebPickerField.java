@@ -185,8 +185,10 @@ public class WebPickerField
         }
 
         this.value = value;
-        ItemWrapper wrapper = createItemWrapper(value);
-        super.setValue(wrapper);
+        if (component.getPropertyDataSource() != null) {
+            component.getPropertyDataSource().setValue(value);
+        }
+        super.setValue(createItemWrapper(value));
     }
 
     @Override
@@ -209,7 +211,6 @@ public class WebPickerField
                 new DsListenerAdapter() {
                     @Override
                     public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
-
                         Object prevValue = value;
                         Object newValue = InstanceUtils.getValueEx(item, propertyPath.getPath());
                         setValue(newValue);
@@ -218,7 +219,6 @@ public class WebPickerField
 
                     @Override
                     public void valueChanged(Entity source, String property, Object prevValue, Object value) {
-
                         if (property.equals(propertyPath.toString())) {
                             setValue(value);
                             fireValueChanged(prevValue, value);
