@@ -397,35 +397,17 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
 
     @Override
     public void showNotification(String caption, NotificationType type) {
-        com.vaadin.ui.Window.Notification notification =
-                new com.vaadin.ui.Window.Notification(caption, WebComponentsHelper.convertNotificationType(type));
-        if (type.equals(IFrame.NotificationType.HUMANIZED))
-            notification.setDelayMsec(3000);
-
-        com.vaadin.ui.Window window = component.getWindow();
-        if (window != null)
-            window.showNotification(notification);
-        else
-            App.getInstance().getAppWindow().showNotification(notification);
+        getWindowManager().showNotification(caption, type);
     }
 
     @Override
     public void showNotification(String caption, String description, NotificationType type) {
-        com.vaadin.ui.Window.Notification notification =
-                new com.vaadin.ui.Window.Notification(caption, description, WebComponentsHelper.convertNotificationType(type));
-        if (type.equals(IFrame.NotificationType.HUMANIZED))
-            notification.setDelayMsec(3000);
-
-        com.vaadin.ui.Window window = component.getWindow();
-        if (window != null)
-            window.showNotification(notification);
-        else
-            App.getInstance().getAppWindow().showNotification(notification);
+        getWindowManager().showNotification(caption, description, type);
     }
 
     @Override
     public void showWebPage(String url, @Nullable Map<String, Object> params) {
-        App.getInstance().getWindowManager().showWebPage(url, params);
+        getWindowManager().showWebPage(url, params);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

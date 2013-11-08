@@ -21,7 +21,6 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.settings.Settings;
-import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.AppWindow;
 import com.haulmont.cuba.web.WebWindowManager;
@@ -418,17 +417,17 @@ public class WebWindow implements Window, Component.Wrapper,
 
     @Override
     public void showNotification(String caption, NotificationType type) {
-        App.getInstance().getWindowManager().showNotification(caption, type);
+        getWindowManager().showNotification(caption, type);
     }
 
     @Override
     public void showNotification(String caption, String description, NotificationType type) {
-        App.getInstance().getWindowManager().showNotification(caption, description, type);
+        getWindowManager().showNotification(caption, description, type);
     }
 
     @Override
     public void showWebPage(String url, @Nullable Map<String, Object> params) {
-        App.getInstance().getWindowManager().showWebPage(url, params);
+        getWindowManager().showWebPage(url, params);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
