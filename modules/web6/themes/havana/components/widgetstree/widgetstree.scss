@@ -7,6 +7,11 @@
     text-align: left;
     background: #fff;
     overflow: auto;
+    outline: 0;
+}
+
+.widgets-tree:focus {
+  outline: 0;
 }
 
 .widgets-tree .v-tree-node {
