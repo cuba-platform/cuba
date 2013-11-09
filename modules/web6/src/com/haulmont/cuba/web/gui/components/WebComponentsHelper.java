@@ -215,12 +215,16 @@ public class WebComponentsHelper {
     public static int convertNotificationType(IFrame.NotificationType type) {
         switch (type) {
             case TRAY:
+            case TRAY_HTML:
                 return com.vaadin.ui.Window.Notification.TYPE_TRAY_NOTIFICATION;
             case HUMANIZED:
+            case HUMANIZED_HTML:
                 return com.vaadin.ui.Window.Notification.TYPE_HUMANIZED_MESSAGE;
             case WARNING:
+            case WARNING_HTML:
                 return com.vaadin.ui.Window.Notification.TYPE_WARNING_MESSAGE;
             case ERROR:
+            case ERROR_HTML:
                 return com.vaadin.ui.Window.Notification.TYPE_ERROR_MESSAGE;
             default:
                 return com.vaadin.ui.Window.Notification.TYPE_WARNING_MESSAGE;

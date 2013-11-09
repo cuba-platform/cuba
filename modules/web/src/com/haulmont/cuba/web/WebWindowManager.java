@@ -19,6 +19,7 @@ import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.sys.WindowBreadCrumbs;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.ui.CubaTabSheet;
+import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
@@ -31,6 +32,7 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -769,11 +771,12 @@ public class WebWindowManager extends WindowManager {
 
     @Override
     public void showNotification(String caption, IFrame.NotificationType type) {
+        boolean html = IFrame.NotificationType.isHTML(type);
         Notification notification = new Notification(
-                ComponentsHelper.preprocessHtmlMessage(caption),
+                html ? ComponentsHelper.preprocessHtmlMessage(caption) : caption,
                 WebComponentsHelper.convertNotificationType(type));
 
-        notification.setHtmlContentAllowed(true);
+        notification.setHtmlContentAllowed(html);
         if (type.equals(IFrame.NotificationType.HUMANIZED)) {
             notification.setDelayMsec(HUMANIZED_NOTIFICATION_DELAY_MSEC);
         }
@@ -782,12 +785,13 @@ public class WebWindowManager extends WindowManager {
 
     @Override
     public void showNotification(String caption, String description, IFrame.NotificationType type) {
+        boolean html = IFrame.NotificationType.isHTML(type);
         Notification notification = new Notification(
-                ComponentsHelper.preprocessHtmlMessage(caption),
-                ComponentsHelper.preprocessHtmlMessage(description),
+                html ? ComponentsHelper.preprocessHtmlMessage(caption) : caption,
+                html ? ComponentsHelper.preprocessHtmlMessage(description) : description,
                 WebComponentsHelper.convertNotificationType(type));
 
-        notification.setHtmlContentAllowed(true);
+        notification.setHtmlContentAllowed(html);
         if (type.equals(IFrame.NotificationType.HUMANIZED)) {
             notification.setDelayMsec(HUMANIZED_NOTIFICATION_DELAY_MSEC);
         }
@@ -799,6 +803,20 @@ public class WebWindowManager extends WindowManager {
         final com.vaadin.ui.Window window = new com.vaadin.ui.Window(title);
         window.setId("cuba-message-dialog");
         setDebugId(window, "cuba-message-dialog");
+
+        window.addAction(new ShortcutListener("Esc", ShortcutAction.KeyCode.ESCAPE, null) {
+            @Override
+            public void handleAction(Object sender, Object target) {
+                window.close();
+            }
+        });
+
+        window.addAction(new ShortcutListener("Enter", ShortcutAction.KeyCode.ENTER, null) {
+            @Override
+            public void handleAction(Object sender, Object target) {
+                window.close();
+            }
+        });
 
         window.addCloseListener(new com.vaadin.ui.Window.CloseListener() {
             @Override
@@ -812,9 +830,11 @@ public class WebWindowManager extends WindowManager {
         layout.setMargin(true);
         window.setContent(layout);
 
-        Label desc = new Label(ComponentsHelper.preprocessHtmlMessage(message));
-        desc.setContentMode(ContentMode.HTML);
-        layout.addComponent(desc);
+        Label messageLab = new Label(IFrame.MessageType.isHTML(messageType) ?
+                ComponentsHelper.preprocessHtmlMessage(message) :
+                StringEscapeUtils.escapeHtml(message).replace("\n", "<br/>"));
+        messageLab.setContentMode(ContentMode.HTML);
+        layout.addComponent(messageLab);
 
         float width;
         if (getDialogParams().getWidth() != null) {
@@ -830,6 +850,7 @@ public class WebWindowManager extends WindowManager {
 
         appWindow.getAppUI().addWindow(window);
         window.center();
+        window.focus();
     }
 
     @Override
@@ -846,7 +867,10 @@ public class WebWindowManager extends WindowManager {
             }
         });
 
-        Label messageBox = new Label(ComponentsHelper.preprocessHtmlMessage(message), ContentMode.HTML);
+        Label messageLab = new Label(IFrame.MessageType.isHTML(messageType) ?
+                ComponentsHelper.preprocessHtmlMessage(message) :
+                StringEscapeUtils.escapeHtml(message).replace("\n", "<br/>"));
+        messageLab.setContentMode(ContentMode.HTML);
 
         float width;
         if (getDialogParams().getWidth() != null) {
@@ -909,11 +933,11 @@ public class WebWindowManager extends WindowManager {
 
         actionsBar.addComponent(buttonsContainer);
 
-        layout.addComponent(messageBox);
+        layout.addComponent(messageLab);
         layout.addComponent(actionsBar);
 
-        messageBox.setSizeFull();
-        layout.setExpandRatio(messageBox, 1);
+        messageLab.setSizeFull();
+        layout.setExpandRatio(messageLab, 1);
         layout.setComponentAlignment(actionsBar, com.vaadin.ui.Alignment.BOTTOM_RIGHT);
 
         appWindow.getAppUI().addWindow(window);

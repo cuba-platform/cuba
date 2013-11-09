@@ -90,26 +90,35 @@ public class DesktopComponentsHelper {
     }
 
     public static int convertMessageType(IFrame.MessageType messageType) {
-        if (messageType.equals(IFrame.MessageType.CONFIRMATION))
-            return JOptionPane.QUESTION_MESSAGE;
-        else if (messageType.equals(IFrame.MessageType.WARNING))
-            return JOptionPane.WARNING_MESSAGE;
-        else
-            return JOptionPane.INFORMATION_MESSAGE;
+        switch (messageType) {
+            case CONFIRMATION:
+            case CONFIRMATION_HTML:
+                return JOptionPane.QUESTION_MESSAGE;
+            case WARNING:
+            case WARNING_HTML:
+                return JOptionPane.WARNING_MESSAGE;
+            default:
+                return JOptionPane.INFORMATION_MESSAGE;
+        }
     }
 
     public static int convertNotificationType(IFrame.NotificationType type) {
         switch (type) {
             case WARNING:
+            case WARNING_HTML:
                 return JOptionPane.WARNING_MESSAGE;
             case ERROR:
+            case ERROR_HTML:
                 return JOptionPane.ERROR_MESSAGE;
             case HUMANIZED:
+            case HUMANIZED_HTML:
                 return JOptionPane.INFORMATION_MESSAGE;
             case TRAY:
+            case TRAY_HTML:
                 return JOptionPane.WARNING_MESSAGE;
+            default:
+                return JOptionPane.PLAIN_MESSAGE;
         }
-        return JOptionPane.PLAIN_MESSAGE;
     }
 
     public static void adjustSize(JButton button) {

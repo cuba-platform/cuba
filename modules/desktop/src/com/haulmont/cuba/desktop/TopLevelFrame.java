@@ -13,6 +13,7 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.IFrame;
 import net.miginfocom.swing.MigLayout;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
@@ -66,9 +67,11 @@ public class TopLevelFrame extends JFrame {
 
         switch (type) {
             case WARNING:
+            case WARNING_HTML:
                 panel.setBackground(Color.yellow);
                 break;
             case ERROR:
+            case ERROR_HTML:
                 panel.setBackground(Color.orange);
                 break;
             default:
@@ -118,10 +121,16 @@ public class TopLevelFrame extends JFrame {
     public void showNotification(String caption, String description, IFrame.NotificationType type) {
         DesktopConfig config = AppBeans.get(Configuration.class).getConfig(DesktopConfig.class);
 
-        caption = ComponentsHelper.preprocessHtmlMessage(caption);
-        description = ComponentsHelper.preprocessHtmlMessage(description);
+        if (IFrame.NotificationType.isHTML(type)) {
+            caption = ComponentsHelper.preprocessHtmlMessage(caption);
+            description = ComponentsHelper.preprocessHtmlMessage(description);
+        } else {
+            caption = StringEscapeUtils.escapeHtml(caption).replace("\n", "<br/>");
+            description = StringEscapeUtils.escapeHtml(description).replace("\n", "<br/>");
+        }
 
-        if (config.isDialogNotificationsEnabled() && type != IFrame.NotificationType.TRAY) {
+        if (config.isDialogNotificationsEnabled()
+                && type != IFrame.NotificationType.TRAY && type != IFrame.NotificationType.TRAY_HTML) {
             showNotificationDialog(caption, description, type);
         } else {
             showNotificationPopup(caption, description, type);
@@ -143,7 +152,7 @@ public class TopLevelFrame extends JFrame {
 
         int messageType = DesktopComponentsHelper.convertNotificationType(type);
 
-        String closeText = MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Close");
+        String closeText = AppBeans.get(Messages.class).getMainMessage("actions.Close");
         JButton option = new JButton(closeText);
         option.setPreferredSize(new Dimension(80, DesktopComponentsHelper.BUTTON_HEIGHT));
 

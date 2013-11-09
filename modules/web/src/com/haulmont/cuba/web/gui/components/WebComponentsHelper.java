@@ -213,12 +213,16 @@ public class WebComponentsHelper {
     public static Notification.Type convertNotificationType(IFrame.NotificationType type) {
         switch (type) {
             case TRAY:
+            case TRAY_HTML:
                 return Notification.Type.TRAY_NOTIFICATION;
             case HUMANIZED:
+            case HUMANIZED_HTML:
                 return Notification.Type.HUMANIZED_MESSAGE;
             case WARNING:
+            case WARNING_HTML:
                 return Notification.Type.WARNING_MESSAGE;
             case ERROR:
+            case ERROR_HTML:
                 return Notification.Type.ERROR_MESSAGE;
             default:
                 return Notification.Type.WARNING_MESSAGE;

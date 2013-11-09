@@ -712,42 +712,46 @@ public abstract class WindowManager {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Show notification with HTML caption. <br/>
-     * Automatically converts line breaks to &lt;br&#47;&gt;.
+     * Show notification. <br/>
+     * Supports line breaks (<code>\n</code>).
      *
-     * @param caption HTML text
-     * @param type type
+     * @param caption text
+     * @param type    defines how to display the notification.
+     *                Don't forget to escape data from the database in case of <code>*_HTML</code> types!
      */
     public abstract void showNotification(String caption, IFrame.NotificationType type);
 
     /**
-     * Show notification with HTML caption and HTML description. <br/>
-     * Automatically converts line breaks to &lt;br&#47;&gt;.
+     * Show notification with caption description. <br/>
+     * Supports line breaks (<code>\n</code>).
      *
-     * @param caption HTML text
-     * @param description HTML text
-     * @param type type
+     * @param caption     caption
+     * @param description text
+     * @param type        defines how to display the notification.
+     *                    Don't forget to escape data from the database in case of <code>*_HTML</code> types!
      */
     public abstract void showNotification(String caption, String description, IFrame.NotificationType type);
 
     /**
-     * Show message dialog with title and HTML message. <br/>
-     * Automatically converts line breaks to &lt;br&#47;&gt;.
+     * Show message dialog with title and message. <br/>
+     * Supports line breaks (<code>\n</code>).
      *
-     * @param title window title
-     * @param message HTML text
-     * @param messageType type
+     * @param title       dialog title
+     * @param message     text
+     * @param messageType defines how to display the dialog.
+     *                    Don't forget to escape data from the database in case of <code>*_HTML</code> types!
      */
     public abstract void showMessageDialog(String title, String message, IFrame.MessageType messageType);
 
     /**
-     * Show option dialog with title and HTML message. <br/>
-     * Automatically converts line breaks to &lt;br&#47;&gt;.
+     * Show options dialog with title and message. <br/>
+     * Supports line breaks (<code>\n</code>).
      *
-     * @param title window title
-     * @param message HTML text
-     * @param messageType type
-     * @param actions available actions
+     * @param title       dialog title
+     * @param message     text
+     * @param messageType defines how to display the dialog.
+     *                    Don't forget to escape data from the database in case of <code>*_HTML</code> types!
+     * @param actions     available actions
      */
     public abstract void showOptionDialog(String title, String message, IFrame.MessageType messageType, Action[] actions);
 

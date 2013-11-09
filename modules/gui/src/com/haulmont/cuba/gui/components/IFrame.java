@@ -197,35 +197,54 @@ public interface IFrame
      * Message dialog type.
      */
     enum MessageType {
+        /** Confirmation with plain text message */
         CONFIRMATION,
-        WARNING
+        /** Confirmation with HTML message */
+        CONFIRMATION_HTML,
+        /** Warning with plain text message */
+        WARNING,
+        /** Warning with HTML message */
+        WARNING_HTML;
+
+        public static boolean isHTML(MessageType type) {
+            return type == CONFIRMATION_HTML || type == WARNING_HTML;
+        }
     }
 
     /**
-     * Show a message dialog.
-     * @param title         dialog title
-     * @param message       message
-     * @param messageType   type which may affect the dialog style
+     * Show message dialog with title and message. <br/>
+     * Message supports line breaks (<code>\n</code>).
+     *
+     * @param title       dialog title
+     * @param message     text
+     * @param messageType defines how to display the dialog.
+     *                    Don't forget to escape data from the database in case of <code>*_HTML</code> types!
      */
     void showMessageDialog(String title, String message, MessageType messageType);
 
     /**
-     * Show an options dialog.
-     * @param title         dialog title
-     * @param message       message
-     * @param messageType   type which may affect the dialog style
-     * @param actions       array of actions that represent options. For standard options consider use of
-     * {@link DialogAction} instances.
+     * Show options dialog with title and message. <br/>
+     * Message supports line breaks (<code>\n</code>).
+     *
+     * @param title       dialog title
+     * @param message     text
+     * @param messageType defines how to display the dialog.
+     *                    Don't forget to escape data from the database in case of <code>*_HTML</code> types!
+     * @param actions     array of actions that represent options. For standard options consider use of
+     *                    {@link DialogAction} instances.
      */
     void showOptionDialog(String title, String message, MessageType messageType, Action[] actions);
 
     /**
-     * Show an options dialog.
-     * @param title         dialog title
-     * @param message       message
-     * @param messageType   type which may affect the dialog style
-     * @param actions       list of actions that represent options. For standard options consider use of
-     * {@link DialogAction} instances.
+     * Show options dialog with title and message. <br/>
+     * Message supports line breaks (<code>\n</code>).
+     *
+     * @param title       dialog title
+     * @param message     text
+     * @param messageType defines how to display the dialog.
+     *                    Don't forget to escape data from the database in case of <code>*_HTML</code> types!
+     * @param actions     array of actions that represent options. For standard options consider use of
+     *                    {@link DialogAction} instances.
      */
     void showOptionDialog(String title, String message, MessageType messageType, java.util.List<Action> actions);
 
@@ -235,24 +254,46 @@ public interface IFrame
      * Popup notification type.
      */
     enum NotificationType {
+        /** Tray popup with plain text message */
         TRAY,
+        /** Tray popup with HTML message */
+        TRAY_HTML,
+        /** Standard popup with plain text message */
         HUMANIZED,
+        /** Standard popup with HTML message */
+        HUMANIZED_HTML,
+        /** Warning popup with plain text message */
         WARNING,
-        ERROR
+        /** Warning popup with HTML message */
+        WARNING_HTML,
+        /** Error popup with plain text message */
+        ERROR,
+        /** Error popup with HTML message */
+        ERROR_HTML;
+
+        public static boolean isHTML(NotificationType type) {
+            return type == TRAY_HTML || type == HUMANIZED_HTML || type == WARNING_HTML || type == ERROR_HTML;
+        }
     }
 
     /**
-     * Show a notification.
-     * @param caption   notification message
-     * @param type      type which may affect the popup style
+     * Show notification. <br/>
+     * Supports line breaks (<code>\n</code>).
+     *
+     * @param caption text
+     * @param type    defines how to display the notification.
+     *                Don't forget to escape data from the database in case of <code>*_HTML</code> types!
      */
     void showNotification(String caption, NotificationType type);
 
     /**
-     * Show a notification.
-     * @param caption       notification message
-     * @param description   notification description to show next to the message
-     * @param type          type which may affect the popup style
+     * Show notification with caption description. <br/>
+     * Supports line breaks (<code>\n</code>).
+     *
+     * @param caption     caption
+     * @param description text
+     * @param type        defines how to display the notification.
+     *                    Don't forget to escape data from the database in case of <code>*_HTML</code> types!
      */
     void showNotification(String caption, String description, NotificationType type);
 

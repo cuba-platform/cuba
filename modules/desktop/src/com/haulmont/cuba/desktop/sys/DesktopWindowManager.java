@@ -710,22 +710,18 @@ public class DesktopWindowManager extends WindowManager {
     @Override
     public void showMessageDialog(final String title, final String message, IFrame.MessageType messageType) {
         final int swingMessageType = DesktopComponentsHelper.convertMessageType(messageType);
+        final String msg = IFrame.MessageType.isHTML(messageType) ?
+                "<html>" + ComponentsHelper.preprocessHtmlMessage(message) : message;
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                JOptionPane.showMessageDialog(
-                        frame,
-                        "<html>" + ComponentsHelper.preprocessHtmlMessage(message),
-                        title,
-                        swingMessageType
-                );
+                JOptionPane.showMessageDialog(frame, msg, title, swingMessageType);
             }
         });
     }
 
     @Override
     public void showOptionDialog(String title, String message, IFrame.MessageType messageType, final Action[] actions) {
-
         final JDialog dialog = new JDialog(frame, title, false);
 
         Object[] options = new Object[actions.length];
@@ -763,8 +759,11 @@ public class DesktopWindowManager extends WindowManager {
         else
             throw new UnsupportedOperationException("Not more than 3 actions supported");
 
+        final String msg = IFrame.MessageType.isHTML(messageType) ?
+                "<html>" + ComponentsHelper.preprocessHtmlMessage(message) : message;
+
         final JOptionPane optionPane = new JOptionPane(
-                "<html>" + ComponentsHelper.preprocessHtmlMessage(message),
+                msg,
                 DesktopComponentsHelper.convertMessageType(messageType),
                 optionType,
                 null,
