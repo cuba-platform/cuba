@@ -12,18 +12,23 @@ import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.ui.Layout;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
 import java.util.*;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 @SuppressWarnings("serial")
 public class WebSplitPanel extends com.vaadin.ui.SplitPanel
-        implements SplitPanel, Component.HasSettings
-{
+        implements SplitPanel, Component.HasSettings {
+
     protected String id;
 
-    protected Map<String, Component> componentByIds = new HashMap<String, Component>();
-    protected Collection<Component> ownComponents = new HashSet<Component>();
+    protected Map<String, Component> componentByIds = new HashMap<>();
+    protected Collection<Component> ownComponents = new HashSet<>();
 
     private Alignment alignment = Alignment.TOP_LEFT;
 
@@ -130,8 +135,17 @@ public class WebSplitPanel extends com.vaadin.ui.SplitPanel
         if (e != null) {
             String value = e.attributeValue("value");
             String unit = e.attributeValue("unit");
-            if (!StringUtils.isBlank(value) && !StringUtils.isBlank(unit))
-                setSplitPosition(Integer.valueOf(value), Integer.valueOf(unit));
+            if (!StringUtils.isBlank(value) && !StringUtils.isBlank(unit)) {
+                try {
+                    Integer posValue = Integer.valueOf(value);
+                    Integer unitValue = Integer.valueOf(unit);
+
+                    setSplitPosition(posValue, unitValue);
+                } catch (NumberFormatException ex) {
+                    LogFactory.getLog(WebSplitPanel.class).warn(
+                            String.format("Unable to applySettings for position %s and unit %s", value, unit));
+                }
+            }
         }
     }
 
