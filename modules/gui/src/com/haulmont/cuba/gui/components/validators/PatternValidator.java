@@ -35,9 +35,9 @@ public class PatternValidator implements Field.Validator {
 
     @Override
     public void validate(Object value) throws ValidationException {
-        if (!(value != null && pattern.matcher(((String) value)).matches())) {
+        if (value == null || !pattern.matcher(((String) value)).matches()) {
             String msg = message != null ? messages.getTools().loadString(messagesPack, message) : "Invalid value '%s'";
-            throw new ValidationException(String.format(msg, value));
+            throw new ValidationException(String.format(msg, value != null ? value : ""));
         }
     }
 }
