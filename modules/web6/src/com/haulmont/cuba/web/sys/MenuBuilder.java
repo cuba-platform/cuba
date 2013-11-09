@@ -127,7 +127,7 @@ public class MenuBuilder {
         try {
             windowInfo = windowConfig.getWindowInfo(item.getId());
         } catch (NoSuchScreenException e) {
-            log.warn("Invalid screen ID for menu item: " + item.getId());
+            log.error("Invalid screen ID for menu item: " + item.getId());
         }
 
         final MenuCommand command;
