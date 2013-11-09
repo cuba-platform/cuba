@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.gui.components.validators;
 
+import com.haulmont.cuba.gui.components.ValidationException;
 import org.dom4j.Element;
 
 /**
@@ -25,5 +26,11 @@ public class EmailValidator extends PatternValidator {
 
     public EmailValidator() {
         super(MULTI_EMAIL_PATTERN);
+    }
+
+    @Override
+    public void validate(Object value) throws ValidationException {
+        if (value != null)
+            super.validate(value);
     }
 }
