@@ -32,8 +32,6 @@ public class WebLookupPickerField
     protected WebPickerField pickerField;
 
     public WebLookupPickerField() {
-        super();
-
         // delegate error indication
         this.componentErrorHandler = new ComponentErrorHandler() {
             @Override
@@ -198,6 +196,16 @@ public class WebLookupPickerField
     @Override
     public float getWidth() {
         return pickerField.getWidth();
+    }
+
+    @Override
+    public void setCaption(String caption) {
+        pickerField.setCaption(caption);
+    }
+
+    @Override
+    public String getCaption() {
+        return pickerField.getCaption();
     }
 
     public static class Picker extends WebPickerField.Picker {
