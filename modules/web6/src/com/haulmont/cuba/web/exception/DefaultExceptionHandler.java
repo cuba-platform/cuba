@@ -81,7 +81,7 @@ public class DefaultExceptionHandler implements ExceptionHandler {
                 break;
             }
         }
-        App.getInstance().addWindow(dialog);
+        App.getInstance().getAppWindow().addWindow(dialog);
         dialog.focus();
     }
 

@@ -37,6 +37,8 @@ public class ExceptionDialog extends Window {
 
     protected Button showStackTraceButton;
 
+    protected TextArea messageTextArea;
+
     protected boolean isStackTraceVisible = false;
 
     protected Messages messages = AppBeans.get(Messages.class);
@@ -50,21 +52,24 @@ public class ExceptionDialog extends Window {
     public ExceptionDialog(Throwable throwable) {
         setCaption(messages.getMessage(getClass(), "exceptionDialog.caption"));
         setWidth(600, UNITS_PIXELS);
+        setHeight(175, UNITS_PIXELS);
         center();
 
         final String text = getText(throwable);
         final String stackTrace = getStackTrace(throwable);
 
         mainLayout = new VerticalLayout();
+        mainLayout.setHeight(100, UNITS_PERCENTAGE);
         mainLayout.setSpacing(true);
 
-        TextArea textArea = new TextArea();
-        textArea.setHeight(100, UNITS_PIXELS);
-        textArea.setWidth(100, UNITS_PIXELS);
-        textArea.setValue(text);
-        textArea.setReadOnly(true);
+        messageTextArea = new TextArea();
+        messageTextArea.setHeight(100, UNITS_PERCENTAGE);
+        messageTextArea.setWidth(100, UNITS_PERCENTAGE);
+        messageTextArea.setValue(text);
+        messageTextArea.setReadOnly(true);
 
-        mainLayout.addComponent(textArea);
+        mainLayout.addComponent(messageTextArea);
+        mainLayout.setExpandRatio(messageTextArea, 1f);
 
         HorizontalLayout buttonsLayout = new HorizontalLayout();
         buttonsLayout.setSpacing(true);
@@ -202,11 +207,13 @@ public class ExceptionDialog extends Window {
         isStackTraceVisible = visible;
 
         if (visible) {
+            messageTextArea.setHeight(110, UNITS_PIXELS);
+            mainLayout.setExpandRatio(messageTextArea, 0);
+
             showStackTraceButton.setCaption(messages.getMessage(getClass(), "exceptionDialog.hideStackTrace"));
 
             mainLayout.addComponent(stackTraceScrollablePanel);
-            mainLayout.setExpandRatio(stackTraceScrollablePanel, 1.0f);
-            mainLayout.setHeight(100, UNITS_PERCENTAGE);
+            mainLayout.setExpandRatio(stackTraceScrollablePanel, 1f);
 
             setWidth(750, UNITS_PIXELS);
             setHeight(650, UNITS_PIXELS);
@@ -214,13 +221,15 @@ public class ExceptionDialog extends Window {
             setResizable(true);
             center();
         } else {
+            messageTextArea.setHeight(100, UNITS_PERCENTAGE);
+            mainLayout.setExpandRatio(messageTextArea, 1f);
+
             showStackTraceButton.setCaption(messages.getMessage(getClass(), "exceptionDialog.showStackTrace"));
 
-            mainLayout.setHeight(-1, UNITS_PIXELS);
             mainLayout.removeComponent(stackTraceScrollablePanel);
 
             setWidth(600, UNITS_PIXELS);
-            setHeight(-1, UNITS_PERCENTAGE);
+            setHeight(175, UNITS_PIXELS);
 
             setResizable(false);
             center();
