@@ -6,6 +6,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.util.Dom4j;
+import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
@@ -49,6 +50,7 @@ import com.haulmont.cuba.web.toolkit.ui.FilterSelect;
 import com.haulmont.cuba.web.toolkit.ui.GroupBox;
 import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
 import com.vaadin.data.Property;
+import com.vaadin.data.Validator;
 import com.vaadin.data.validator.IntegerValidator;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.terminal.Sizeable;
@@ -62,6 +64,7 @@ import org.apache.commons.lang.*;
 import org.dom4j.*;
 import org.vaadin.hene.popupbutton.PopupButton;
 
+import java.text.ParseException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -417,10 +420,9 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
 
     @Override
     public boolean apply(boolean isNewWindow) {
+        WebWindowManager wm = App.getInstance().getWindowManager();
         if (clientConfig.getGenericFilterChecking()) {
             if (filterEntity != null) {
-                WebWindowManager wm = App.getInstance().getWindowManager();
-
                 boolean haveRequiredConditions = haveFilledRequiredConditions();
                 if (!haveRequiredConditions) {
                     if (!isNewWindow) {
@@ -444,11 +446,24 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         applyDatasourceFilter();
 
         if (useMaxResults) {
-            int maxResults;
-            if (BooleanUtils.isTrue((Boolean) maxResultsCb.getValue()))
-                maxResults = Integer.valueOf((String) maxResultsField.getValue());  //persistenceManager.getFetchUI(datasource.getMetaClass().getName());
-            else
-                maxResults = persistenceManager.getMaxFetchUI(datasource.getMetaClass().getName());
+            int maxResults = 0;
+            if (BooleanUtils.isTrue((Boolean) maxResultsCb.getValue())) {
+                String maxResultsFieldValue = String.valueOf(maxResultsField.getValue());
+                if (StringUtils.isNotBlank(maxResultsFieldValue)) {
+                    try {
+                        //noinspection ConstantConditions
+                        maxResults = Datatypes.get(Integer.class).parse(maxResultsFieldValue, userSessionSource.getLocale());
+                        if(maxResults < 0) {
+                            maxResultsField.setValue(0);
+                            wm.showNotification(messages.getMainMessage("validationFail.caption"),
+                                    messages.getMainMessage("validationFail"), IFrame.NotificationType.TRAY);
+                        }
+                    } catch (ParseException e) {
+                        throw new Validator.InvalidValueException("");
+                    }
+                } else
+                    maxResults = persistenceManager.getMaxFetchUI(datasource.getMetaClass().getName());
+            }
             datasource.setMaxResults(maxResults);
         }
         if (datasource instanceof CollectionDatasource.SupportsPaging)
