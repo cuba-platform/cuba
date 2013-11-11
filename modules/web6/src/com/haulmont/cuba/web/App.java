@@ -183,9 +183,7 @@ public abstract class App extends Application
     }
 
     /**
-     * Used from CubaApplicationServlet throw reflection
-     *
-     * @return
+     * Used from CubaApplicationServlet by reflection
      */
     @SuppressWarnings("unused")
     public static Application.SystemMessages getSystemMessages() {
@@ -207,19 +205,26 @@ public abstract class App extends Application
         String webContext = AppContext.getProperty("cuba.webContextName");
 
         if (AppContext.isStarted()) {
-            Messages messages = AppBeans.get(Messages.class);
-            String messagePack = messages.getMainMessagePack();
+            try {
+                Messages messages = AppBeans.get(Messages.class);
+                String messagePack = messages.getMainMessagePack();
 
-            msgs.setSessionExpiredCaption(messages.getMessage(messagePack, "sessionExpiredCaption", locale));
-            msgs.setSessionExpiredMessage(messages.getMessage(messagePack, "sessionExpiredMessage", locale));
+                msgs.setSessionExpiredCaption(messages.getMessage(messagePack, "sessionExpiredCaption", locale));
+                msgs.setSessionExpiredMessage(messages.getMessage(messagePack, "sessionExpiredMessage", locale));
 
-            msgs.setCommunicationErrorCaption(messages.getMessage(messagePack, "communicationErrorCaption", locale));
-            msgs.setCommunicationErrorMessage(messages.getMessage(messagePack, "communicationErrorMessage", locale));
+                msgs.setCommunicationErrorCaption(messages.getMessage(messagePack, "communicationErrorCaption", locale));
+                msgs.setCommunicationErrorMessage(messages.getMessage(messagePack, "communicationErrorMessage", locale));
 
-            msgs.setInternalErrorCaption(messages.getMessage(messagePack, "internalErrorCaption", locale));
-            msgs.setInternalErrorMessage(messages.getMessage(messagePack, "internalErrorMessage", locale));
+                msgs.setInternalErrorCaption(messages.getMessage(messagePack, "internalErrorCaption", locale));
+                msgs.setInternalErrorMessage(messages.getMessage(messagePack, "internalErrorMessage", locale));
 
-            msgs.setUiBlockingMessage(messages.getMessage(messagePack, "uiBlockingMessage", locale));
+                msgs.setUiBlockingMessage(messages.getMessage(messagePack, "uiBlockingMessage", locale));
+            } catch (Exception e) {
+                log.error("Unable to set system messages", e);
+                throw new RuntimeException("Unable to set system messages. " +
+                        "It usually happens when the middleware web application is not responding due to " +
+                        "errors on start. See logs for details.", e);
+            }
         }
 
         msgs.setInternalErrorURL("/" + webContext + "?restartApp");

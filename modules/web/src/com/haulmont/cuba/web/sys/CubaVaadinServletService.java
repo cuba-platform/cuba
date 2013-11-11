@@ -85,16 +85,23 @@ public class CubaVaadinServletService extends VaadinServletService {
                 CustomizedSystemMessages msgs = new CustomizedSystemMessages();
 
                 if (AppContext.isStarted()) {
-                    Messages messages = AppBeans.get(Messages.class);
+                    try {
+                        Messages messages = AppBeans.get(Messages.class);
 
-                    msgs.setInternalErrorCaption(messages.getMainMessage("internalErrorCaption", locale));
-                    msgs.setInternalErrorMessage(messages.getMainMessage("internalErrorMessage", locale));
+                        msgs.setInternalErrorCaption(messages.getMainMessage("internalErrorCaption", locale));
+                        msgs.setInternalErrorMessage(messages.getMainMessage("internalErrorMessage", locale));
 
-                    msgs.setCommunicationErrorCaption(messages.getMainMessage("communicationErrorCaption", locale));
-                    msgs.setCommunicationErrorMessage(messages.getMainMessage("communicationErrorMessage", locale));
+                        msgs.setCommunicationErrorCaption(messages.getMainMessage("communicationErrorCaption", locale));
+                        msgs.setCommunicationErrorMessage(messages.getMainMessage("communicationErrorMessage", locale));
 
-                    msgs.setSessionExpiredCaption(messages.getMainMessage("sessionExpiredErrorCaption", locale));
-                    msgs.setSessionExpiredMessage(messages.getMainMessage("sessionExpiredErrorMessage", locale));
+                        msgs.setSessionExpiredCaption(messages.getMainMessage("sessionExpiredErrorCaption", locale));
+                        msgs.setSessionExpiredMessage(messages.getMainMessage("sessionExpiredErrorMessage", locale));
+                    } catch (Exception e) {
+                        log.error("Unable to set system messages", e);
+                        throw new RuntimeException("Unable to set system messages. " +
+                                "It usually happens when the middleware web application is not responding due to " +
+                                "errors on start. See logs for details.", e);
+                    }
                 }
                 msgs.setOutOfSyncNotificationEnabled(false);
 
