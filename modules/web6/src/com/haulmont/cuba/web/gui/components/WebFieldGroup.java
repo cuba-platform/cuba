@@ -34,7 +34,7 @@ public class WebFieldGroup
     protected Map<FieldConfig, Integer> fieldsColumn = new HashMap<>();
     protected Map<Integer, List<FieldConfig>> columnFields = new HashMap<>();
 
-    protected Map<String, Component> fieldComponents = new LinkedHashMap<>();
+    protected Map<FieldConfig, Component> fieldComponents = new LinkedHashMap<>();
 
     protected Set<FieldConfig> readOnlyFields = new HashSet<>();
 
@@ -94,12 +94,18 @@ public class WebFieldGroup
 
     @Override
     public FieldConfig getField(String id) {
-        for (final Map.Entry<String, FieldConfig> entry : fields.entrySet()) {
-            if (entry.getKey().equals(id)) {
-                return entry.getValue();
-            }
-        }
-        return null;
+        return fields.get(id);
+    }
+
+    @Override
+    public Component getFieldComponent(String id) {
+        FieldConfig fc = getField(id);
+        return getFieldComponent(fc);
+    }
+
+    @Override
+    public Component getFieldComponent(FieldConfig fieldConfig) {
+        return fieldComponents.get(fieldConfig);
     }
 
     @Override
@@ -229,7 +235,7 @@ public class WebFieldGroup
 
                 applyPermissions(fieldComponent);
 
-                registerFieldComponent(id, fieldComponent);
+                registerFieldComponent(fieldConfig, fieldComponent);
 
                 return fieldImpl;
             }
@@ -330,14 +336,14 @@ public class WebFieldGroup
                 }
 
                 FieldBasket fieldBasket = createField(fieldDatasource, fieldConf);
-                registerFieldComponent(fieldConf.getId(), fieldBasket.getField());
+                registerFieldComponent(fieldConf, fieldBasket.getField());
                 component.addField(fieldConf.getId(), fieldBasket.getComposition());
             }
         }
     }
 
-    protected void registerFieldComponent(String id, Component field) {
-        fieldComponents.put(id, field);
+    protected void registerFieldComponent(FieldConfig fieldConf, Component field) {
+        fieldComponents.put(fieldConf, field);
     }
 
     protected FieldBasket createField(Datasource fieldDatasource, FieldConfig fieldConf) {
@@ -483,7 +489,7 @@ public class WebFieldGroup
 
     @Override
     public boolean isRequired(FieldConfig field) {
-        Component fieldComponent = fieldComponents.get(field.getId());
+        Component fieldComponent = fieldComponents.get(field);
         if (fieldComponent instanceof Field) {
             Field cubaField = (Field) fieldComponent;
             return cubaField.isRequired();
@@ -495,7 +501,7 @@ public class WebFieldGroup
 
     @Override
     public void setRequired(FieldConfig field, boolean required, String message) {
-        Component fieldComponent = fieldComponents.get(field.getId());
+        Component fieldComponent = fieldComponents.get(field);
         if (fieldComponent instanceof Field) {
             Field cubaField = (Field) fieldComponent;
             cubaField.setRequired(required);
@@ -534,7 +540,7 @@ public class WebFieldGroup
 
     @Override
     public void setEditable(FieldConfig field, boolean editable) {
-        Component fieldComponent = fieldComponents.get(field.getId());
+        Component fieldComponent = fieldComponents.get(field);
         if (fieldComponent instanceof Field) {
             Field cubaField = (Field) fieldComponent;
             cubaField.setEditable(editable);
@@ -706,37 +712,36 @@ public class WebFieldGroup
         if (!isVisible() || !isEditable() || !isEnabled()) {
             return;
         }
+        final Map<FieldConfig, Exception> problems = new LinkedHashMap<>();
 
-        final Map<Object, Exception> problems = new HashMap<>();
+        for (Map.Entry<FieldConfig, Component> componentEntry : fieldComponents.entrySet()) {
+            FieldConfig field = componentEntry.getKey();
+            Component component = componentEntry.getValue();
 
-        for (FieldConfig field : getFields()) {
-            Component fieldComponent = fieldComponents.get(field.getId());
+            if (!isEditable(field) || !isEnabled(field) || !isVisible(field)) {
+                continue;
+            }
 
-            if (fieldComponent instanceof Field) {
-                Field cubaField = (Field) fieldComponent;
-
-                Object value = cubaField.getValue();
-                if (isEmpty(value) && isRequired(field.getId())) {
-                    problems.put(field.getId(), new RequiredValueMissingException(cubaField.getRequiredMessage(), this));
-                } else {
-                    List<com.haulmont.cuba.gui.components.Field.Validator> validators = fieldValidators.get(field);
-                    if (validators != null) {
-                        for (com.haulmont.cuba.gui.components.Field.Validator validator : validators) {
-                            try {
-                                validator.validate(value);
-                            } catch (ValidationException e) {
-                                problems.put(field.getId(), e);
-                            }
-                        }
+            // If has valid state
+            if ((component instanceof Validatable) &&
+                    (component instanceof Editable)) {
+                // If editable
+                if (component.isVisible() &&
+                        component.isEnabled() &&
+                        ((Editable) component).isEditable()) {
+                    try {
+                        ((Validatable) component).validate();
+                    } catch (ValidationException ex) {
+                        problems.put(field, ex);
                     }
                 }
             }
         }
 
         if (!problems.isEmpty()) {
-            Map<FieldConfig, Exception> problemFields = new HashMap<>();
-            for (Map.Entry<Object, Exception> entry : problems.entrySet()) {
-                problemFields.put(getField(entry.getKey().toString()), entry.getValue());
+            Map<FieldConfig, Exception> problemFields = new LinkedHashMap<>();
+            for (Map.Entry<FieldConfig, Exception> entry : problems.entrySet()) {
+                problemFields.put(entry.getKey(), entry.getValue());
             }
 
             StringBuilder msgBuilder = new StringBuilder();

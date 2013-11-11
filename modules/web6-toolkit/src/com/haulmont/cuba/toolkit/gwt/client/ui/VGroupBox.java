@@ -42,8 +42,6 @@ public class VGroupBox extends VPanel {
 
     @Override
     protected void constructDOM() {
-        VConsole.log(">> Style: " + mainStyleName);
-
         fieldset = DOM.createFieldSet();
         legend = DOM.createLegend();
         expander = DOM.createDiv();

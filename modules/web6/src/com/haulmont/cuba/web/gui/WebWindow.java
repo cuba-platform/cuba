@@ -52,7 +52,7 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
     protected String debugId;
 
     protected Map<String, Component> componentByIds = new HashMap<>();
-    protected Collection<Component> ownComponents = new HashSet<>();
+    protected Collection<Component> ownComponents = new LinkedHashSet<>();
     protected Map<String, Component> allComponents = new HashMap<>();
 
     protected String messagePack;
@@ -204,11 +204,8 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
                     log.trace("Validation failed", e);
                 else if (log.isDebugEnabled())
                     log.debug("Validation failed: " + e);
-                if (e instanceof RequiredValueMissingException) {
-                    errors.add(((RequiredValueMissingException) e).getComponent(), e.getMessage());
-                } else {
-                    errors.add((Component)field, e.getMessage());
-                }
+
+                ComponentsHelper.fillErrorMessages((Validatable) component, e, errors);
             }
         }
 
@@ -234,7 +231,8 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
                         log.trace("Validation failed", e);
                     else if (log.isDebugEnabled())
                         log.debug("Validation failed: " + e);
-                    errors.add(component, e.getMessage());
+
+                    ComponentsHelper.fillErrorMessages((Validatable) component, e, errors);
                 }
             }
         }
@@ -276,7 +274,7 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
     protected void showValidationErrors(ValidationErrors errors) {
         StringBuilder buffer = new StringBuilder();
         for (ValidationErrors.Item error : errors.getAll()) {
-            buffer.append(error.description).append("<br/>");
+            buffer.append(error.description).append("\n");
         }
 
         showNotification(AppBeans.get(Messages.class).getMessage(WebWindow.class, "validationFail.caption"),
@@ -285,9 +283,8 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
 
     protected void focusProblemComponent(ValidationErrors errors) {
         Component component = null;
-        for (ValidationErrors.Item error : errors.getAll()) {
-            if (component == null)
-                component = error.component;
+        if (!errors.getAll().isEmpty()) {
+            component = errors.getAll().iterator().next().component;
         }
 
         if (component != null) {
@@ -296,19 +293,25 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
                 com.vaadin.ui.Component c = vComponent;
                 com.vaadin.ui.Component prevC = null;
                 while (c != null) {
-                    if (c instanceof com.vaadin.ui.Component.Focusable) {
-                        ((com.vaadin.ui.Component.Focusable) c).focus();
-                    } else if (c instanceof TabSheet && !((TabSheet) c).getSelectedTab().equals(prevC)) {
+                    if (c instanceof TabSheet && !((TabSheet) c).getSelectedTab().equals(prevC)) {
                         ((TabSheet) c).setSelectedTab(prevC);
                         break;
                     }
                     prevC = c;
                     c = c.getParent();
                 }
-                if (vComponent instanceof com.vaadin.ui.Component.Focusable)
-                    ((com.vaadin.ui.Component.Focusable) vComponent).focus();
+
+                // focus first up component
+                c = vComponent;
+                while (c != null) {
+                    if (c instanceof com.vaadin.ui.Component.Focusable) {
+                        ((com.vaadin.ui.Component.Focusable) c).focus();
+                        break;
+                    }
+                    c = c.getParent();
+                }
             } catch (Exception e) {
-                //
+                log.warn("Error while validation handling ", e);
             }
         }
     }

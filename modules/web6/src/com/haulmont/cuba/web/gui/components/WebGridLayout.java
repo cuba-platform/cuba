@@ -11,12 +11,16 @@ import com.vaadin.ui.Layout;
 
 import java.util.*;
 
-public class WebGridLayout extends com.vaadin.ui.GridLayout implements GridLayout 
-{
+/**
+ * @author abramov
+ * @version $Id$
+ */
+public class WebGridLayout extends com.vaadin.ui.GridLayout implements GridLayout {
+
     protected String id;
 
-    protected Map<String, Component> componentByIds = new HashMap<String, Component>();
-    protected Collection<Component> ownComponents = new HashSet<Component>();
+    protected Map<String, Component> componentByIds = new HashMap<>();
+    protected Collection<Component> ownComponents = new LinkedHashSet<>();
 
     private Alignment alignment = Alignment.TOP_LEFT;
 

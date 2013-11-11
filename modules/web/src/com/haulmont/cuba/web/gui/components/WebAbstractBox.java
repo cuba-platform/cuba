@@ -19,7 +19,7 @@ import java.util.*;
  */
 class WebAbstractBox extends WebAbstractComponent<AbstractOrderedLayout> implements BoxLayout {
 
-    protected Collection<Component> ownComponents = new HashSet<>();
+    protected Collection<Component> ownComponents = new LinkedHashSet<>();
     protected Map<String, Component> componentByIds = new HashMap<>();
 
     protected Alignment alignment = Alignment.TOP_LEFT;

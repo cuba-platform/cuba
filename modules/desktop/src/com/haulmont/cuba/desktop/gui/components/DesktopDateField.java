@@ -17,6 +17,7 @@ import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
 import com.haulmont.cuba.desktop.sys.layout.MigBoxLayoutAdapter;
 import com.haulmont.cuba.desktop.sys.vcl.DatePicker.DatePicker;
+import com.haulmont.cuba.desktop.sys.vcl.FocusableComponent;
 import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.components.RequiredValueMissingException;
 import com.haulmont.cuba.gui.components.ValidationException;
@@ -36,13 +37,10 @@ import java.util.Calendar;
 import java.util.Date;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
-public class DesktopDateField
-        extends DesktopAbstractField<JPanel>
-        implements DateField {
+public class DesktopDateField extends DesktopAbstractField<JPanel> implements DateField {
 
     private Resolution resolution;
     private Datasource datasource;
@@ -65,7 +63,8 @@ public class DesktopDateField
     private boolean editable = true;
 
     public DesktopDateField() {
-        impl = new JPanel();
+        impl = new FocusableComposition();
+
         initComponentParts();
         setResolution(Resolution.MIN);
         setDateFormat(Datatypes.getFormatStrings(UserSessionProvider.getLocale()).getDateTimeFormat());
@@ -411,6 +410,14 @@ public class DesktopDateField
         if (isHourUsed()) {
             decorateMissingValue(timeField.getImpl(), value);
             timeField.getImpl().repaint();
+        }
+    }
+
+    public class FocusableComposition extends JPanel implements FocusableComponent {
+
+        @Override
+        public void focus() {
+            DesktopDateField.this.requestFocus();
         }
     }
 }

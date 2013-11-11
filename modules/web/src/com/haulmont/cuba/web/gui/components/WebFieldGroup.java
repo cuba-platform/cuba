@@ -4,7 +4,6 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -14,7 +13,6 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
-import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.toolkit.ui.CubaCheckBox;
 import com.haulmont.cuba.web.toolkit.ui.CubaFieldGroup;
 import com.haulmont.cuba.web.toolkit.ui.CubaFieldGroupLayout;
@@ -22,7 +20,6 @@ import com.haulmont.cuba.web.toolkit.ui.CubaFieldWrapper;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-import java.text.ParseException;
 import java.util.*;
 
 /**
@@ -38,6 +35,8 @@ public class WebFieldGroup
     protected Map<String, FieldConfig> fields = new LinkedHashMap<>();
     protected Map<FieldConfig, Integer> fieldsColumn = new HashMap<>();
     protected Map<Integer, List<FieldConfig>> columnFields = new HashMap<>();
+
+    protected Map<FieldConfig, Component> fieldComponents = new LinkedHashMap<>();
 
     protected Set<FieldConfig> readOnlyFields = new HashSet<>();
 
@@ -98,6 +97,17 @@ public class WebFieldGroup
     @Override
     public FieldConfig getField(String id) {
         return fields.get(id);
+    }
+
+    @Override
+    public Component getFieldComponent(String id) {
+        FieldConfig fc = getField(id);
+        return getFieldComponent(fc);
+    }
+
+    @Override
+    public Component getFieldComponent(FieldConfig fieldConfig) {
+        return fieldComponents.get(fieldConfig);
     }
 
     @Override
@@ -229,6 +239,8 @@ public class WebFieldGroup
 
                 applyPermissions(fieldComponent);
 
+                registerFieldComponent(fieldConf, fieldComponent);
+
                 return fieldImpl;
             }
         });
@@ -317,22 +329,28 @@ public class WebFieldGroup
         for (final String id : this.fields.keySet()) {
             final FieldConfig fieldConf = getField(id);
             if (!fieldConf.isCustom()) {
-                com.vaadin.ui.Field field;
+                Datasource fieldDatasource;
 
                 if (datasource != null && fieldConf.getDatasource() == null) {
-                    field = createField(datasource, fieldConf);
-                    component.addField(fieldConf.getId(), field);
+                    fieldDatasource = datasource;
                 } else if (fieldConf.getDatasource() != null) {
-                    field = createField(fieldConf.getDatasource(), fieldConf);
-                    component.addField(fieldConf.getId(), field);
+                    fieldDatasource = fieldConf.getDatasource();
                 } else {
                     throw new IllegalStateException(String.format("Unable to get datasource for field '%s'", id));
                 }
+
+                FieldBasket fieldBasket = createField(fieldDatasource, fieldConf);
+                registerFieldComponent(fieldConf, fieldBasket.getField());
+                component.addField(fieldConf.getId(), fieldBasket.getComposition());
             }
         }
     }
 
-    protected com.vaadin.ui.Field createField(Datasource fieldDatasource, FieldConfig fieldConf) {
+    protected void registerFieldComponent(FieldConfig fieldConfig, Component field) {
+        fieldComponents.put(fieldConfig, field);
+    }
+
+    protected FieldBasket createField(Datasource fieldDatasource, FieldConfig fieldConf) {
         Component fieldComponent =
                 fieldFactory.createField(fieldDatasource, fieldConf.getId(), fieldConf.getXmlDescriptor());
 
@@ -381,7 +399,7 @@ public class WebFieldGroup
 
         applyPermissions(fieldComponent);
 
-        return fieldImpl;
+        return new FieldBasket(fieldComponent, fieldImpl);
     }
 
     protected void applyPermissions(Component c) {
@@ -413,37 +431,6 @@ public class WebFieldGroup
     @Override
     public void setColumns(int cols) {
         this.cols = cols;
-    }
-
-    protected Object convertRawValue(FieldConfig field, Object value) throws ValidationException {
-        if (value instanceof String) {
-            Datatype datatype = null;
-            MetaPropertyPath propertyPath = null;
-
-            if (field.getDatasource() != null) {
-                propertyPath = field.getDatasource().getMetaClass().getPropertyPath(field.getId());
-            } else if (datasource != null) {
-                propertyPath = datasource.getMetaClass().getPropertyPath(field.getId());
-            }
-
-            if (propertyPath != null) {
-                if (propertyPath.getMetaProperty().getRange().isDatatype()) {
-                    datatype = propertyPath.getRange().asDatatype();
-                }
-            }
-
-            if (datatype != null) {
-                try {
-                    return datatype.parse((String) value, AppBeans.get(UserSessionSource.class).getLocale());
-                } catch (ParseException ignored) {
-                    String message = messages.getMessage(WebWindow.class, "invalidValue");
-                    String fieldCaption = messageTools.getPropertyCaption(propertyPath.getMetaProperty());
-                    message = String.format(message, fieldCaption);
-                    throw new ValidationException(message);
-                }
-            }
-        }
-        return value;
     }
 
     @Override
@@ -506,16 +493,29 @@ public class WebFieldGroup
 
     @Override
     public boolean isRequired(FieldConfig field) {
-        com.vaadin.ui.Field f = component.getField(field.getId());
-        return f.isRequired();
+        Component fieldComponent = fieldComponents.get(field);
+        if (fieldComponent instanceof Field) {
+            Field cubaField = (Field) fieldComponent;
+            return cubaField.isRequired();
+        } else {
+            com.vaadin.ui.Field f = component.getField(field.getId());
+            return f.isRequired();
+        }
     }
 
     @Override
     public void setRequired(FieldConfig field, boolean required, String message) {
-        com.vaadin.ui.Field f = component.getField(field.getId());
-        f.setRequired(required);
-        if (required) {
-            f.setRequiredError(message);
+        Component fieldComponent = fieldComponents.get(field);
+        if (fieldComponent instanceof Field) {
+            Field cubaField = (Field) fieldComponent;
+            cubaField.setRequired(required);
+            cubaField.setRequiredMessage(message);
+        } else {
+            com.vaadin.ui.Field f = component.getField(field.getId());
+            f.setRequired(required);
+            if (required) {
+                f.setRequiredError(message);
+            }
         }
     }
 
@@ -544,8 +544,15 @@ public class WebFieldGroup
 
     @Override
     public void setEditable(FieldConfig field, boolean editable) {
-        com.vaadin.ui.Field f = component.getField(field.getId());
-        f.setReadOnly(!editable);
+        Component fieldComponent = fieldComponents.get(field);
+        if (fieldComponent instanceof Field) {
+            Field cubaField = (Field) fieldComponent;
+            cubaField.setEditable(editable);
+        } else {
+            com.vaadin.ui.Field f = component.getField(field.getId());
+            f.setReadOnly(!editable);
+        }
+
         if (editable) {
             readOnlyFields.remove(field);
         } else {
@@ -710,37 +717,37 @@ public class WebFieldGroup
             return;
         }
 
-        final Map<Object, Exception> problems = new HashMap<>();
+        final Map<FieldConfig, Exception> problems = new LinkedHashMap<>();
 
-        // todo use cuba fields for validation
+        for (Map.Entry<FieldConfig, Component> componentEntry : fieldComponents.entrySet()) {
+            FieldConfig field = componentEntry.getKey();
+            Component fieldComponent = componentEntry.getValue();
 
-        for (FieldConfig field : getFields()) {
-            com.vaadin.ui.Field f = component.getField(field.getId());
-            if (f != null && f.isVisible() && f.isEnabled() && !f.isReadOnly()) {
-                Object value = convertRawValue(field, getFieldValue(field));
-                if (isEmpty(value)) {
-                    if (isRequired(field)) {
-                        problems.put(field.getId(), new RequiredValueMissingException(f.getRequiredError(), this));
-                    }
-                } else {
-                    List<com.haulmont.cuba.gui.components.Field.Validator> validators = fieldValidators.get(field);
-                    if (validators != null) {
-                        for (com.haulmont.cuba.gui.components.Field.Validator validator : validators) {
-                            try {
-                                validator.validate(value);
-                            } catch (ValidationException e) {
-                                problems.put(field.getId(), e);
-                            }
-                        }
+            if (!isEditable(field) || !isEnabled(field) || !isVisible(field)) {
+                continue;
+            }
+
+            // If has valid state
+            if ((fieldComponent instanceof Validatable) &&
+                    (fieldComponent instanceof Editable)) {
+                // If editable
+                if (fieldComponent.isVisible() &&
+                        fieldComponent.isEnabled() &&
+                        ((Editable) fieldComponent).isEditable()) {
+
+                    try {
+                        ((Validatable) fieldComponent).validate();
+                    } catch (ValidationException ex) {
+                        problems.put(field, ex);
                     }
                 }
             }
         }
 
         if (!problems.isEmpty()) {
-            Map<FieldConfig, Exception> problemFields = new HashMap<>();
-            for (Map.Entry<Object, Exception> entry : problems.entrySet()) {
-                problemFields.put(getField(entry.getKey().toString()), entry.getValue());
+            Map<FieldConfig, Exception> problemFields = new LinkedHashMap<>();
+            for (Map.Entry<FieldConfig, Exception> entry : problems.entrySet()) {
+                problemFields.put(getField(entry.getKey().getId()), entry.getValue());
             }
 
             StringBuilder msgBuilder = new StringBuilder();
@@ -798,6 +805,26 @@ public class WebFieldGroup
             } else {
                 return null;
             }
+        }
+    }
+
+    protected class FieldBasket {
+
+        private com.vaadin.ui.Field composition;
+
+        private Component field;
+
+        public FieldBasket(Component field, com.vaadin.ui.Field composition) {
+            this.field = field;
+            this.composition = composition;
+        }
+
+        public com.vaadin.ui.Field getComposition() {
+            return composition;
+        }
+
+        public Component getField() {
+            return field;
         }
     }
 }

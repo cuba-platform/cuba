@@ -15,16 +15,15 @@ import javax.swing.*;
 import java.util.*;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class DesktopSplitPanel
         extends DesktopAbstractComponent<JSplitPane>
-        implements SplitPanel, Component.HasSettings
-{
-    protected Map<String, Component> componentByIds = new HashMap<String, Component>();
-    protected Collection<Component> ownComponents = new HashSet<Component>();
+        implements SplitPanel, Component.HasSettings {
+
+    protected Map<String, Component> componentByIds = new HashMap<>();
+    protected Collection<Component> ownComponents = new LinkedHashSet<>();
 
     public DesktopSplitPanel() {
         impl = new JSplitPane();

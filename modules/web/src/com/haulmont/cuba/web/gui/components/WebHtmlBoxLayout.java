@@ -18,7 +18,7 @@ import java.util.*;
  */
 public class WebHtmlBoxLayout extends WebAbstractComponent<CustomLayout> implements HtmlBoxLayout {
 
-    protected Collection<Component> ownComponents = new HashSet<>();
+    protected Collection<Component> ownComponents = new LinkedHashSet<>();
     protected Map<String, Component> componentByIds = new HashMap<>();
 
     public WebHtmlBoxLayout() {

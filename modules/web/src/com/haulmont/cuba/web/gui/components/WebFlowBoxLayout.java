@@ -19,7 +19,7 @@ import java.util.*;
  */
 public class WebFlowBoxLayout extends WebAbstractComponent<CubaFlowLayout> implements FlowBoxLayout {
 
-    protected Collection<Component> ownComponents = new HashSet<>();
+    protected Collection<Component> ownComponents = new LinkedHashSet<>();
     protected Map<String, Component> componentByIds = new HashMap<>();
 
     public WebFlowBoxLayout() {

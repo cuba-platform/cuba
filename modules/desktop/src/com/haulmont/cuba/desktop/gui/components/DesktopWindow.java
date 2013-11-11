@@ -19,12 +19,13 @@ import com.haulmont.cuba.desktop.gui.data.TreeModelAdapter;
 import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
 import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
 import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
+import com.haulmont.cuba.desktop.sys.vcl.FocusableComponent;
+import com.haulmont.cuba.desktop.sys.vcl.FocusableTable;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.AbstractAction;
-import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.BoxLayout;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -36,7 +37,6 @@ import net.miginfocom.swing.MigLayout;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
-import sun.swing.plaf.synth.Paint9Painter;
 
 import javax.annotation.Nullable;
 import javax.swing.*;
@@ -67,7 +67,7 @@ public class DesktopWindow implements Window, Component.Disposable,
     protected String id;
 
     protected Map<String, Component> componentByIds = new HashMap<>();
-    protected Collection<Component> ownComponents = new HashSet<>();
+    protected Collection<Component> ownComponents = new LinkedHashSet<>();
 
     protected Map<String, Component> allComponents = new HashMap<>();
 
@@ -849,11 +849,8 @@ public class DesktopWindow implements Window, Component.Disposable,
                     log.trace("Validation failed", e);
                 else if (log.isDebugEnabled())
                     log.debug("Validation failed: " + e);
-                if (e instanceof RequiredValueMissingException) {
-                    errors.add(((RequiredValueMissingException) e).getComponent(), e.getMessage());
-                } else {
-                    errors.add((Component)field, e.getMessage());
-                }
+
+                ComponentsHelper.fillErrorMessages(field, e, errors);
             }
         }
 
@@ -874,11 +871,8 @@ public class DesktopWindow implements Window, Component.Disposable,
                         log.trace("Validation failed", e);
                     else if (log.isDebugEnabled())
                         log.debug("Validation failed: " + e);
-                    if (e instanceof RequiredValueMissingException) {
-                        errors.add(((RequiredValueMissingException) e).getComponent(), e.getMessage());
-                    } else {
-                        errors.add(component, e.getMessage());
-                    }
+
+                    ComponentsHelper.fillErrorMessages((Validatable) component, e, errors);
                 }
             }
         }
@@ -894,13 +888,54 @@ public class DesktopWindow implements Window, Component.Disposable,
 
         showValidationErrors(errors);
 
+        focusProblemComponent(errors);
+
         return false;
+    }
+
+    protected void focusProblemComponent(ValidationErrors errors) {
+        Component component = null;
+        if (!errors.getAll().isEmpty()) {
+            component = errors.getAll().iterator().next().component;
+        }
+
+        if (component != null) {
+            try {
+                JComponent jComponent = DesktopComponentsHelper.unwrap(component);
+                java.awt.Component c = jComponent;
+                java.awt.Component prevC = null;
+                while (c != null) {
+                    if (c instanceof JTabbedPane && !((JTabbedPane) c).getSelectedComponent().equals(prevC)) {
+                        ((JTabbedPane) c).setSelectedComponent(prevC);
+                        break;
+                    }
+                    prevC = c;
+                    c = c.getParent();
+                }
+
+                if (jComponent instanceof FocusableComponent) {
+                    ((FocusableComponent) jComponent).focus();
+                } else {
+                    // focus first up component
+                    c = jComponent;
+                    while (c != null) {
+                        if (c.isFocusable()) {
+                            c.requestFocus();
+                            break;
+                        }
+                        c = c.getParent();
+                    }
+                }
+            } catch (Exception e) {
+                log.warn("Error while validation handling ", e);
+            }
+        }
     }
 
     protected void showValidationErrors(ValidationErrors errors) {
         StringBuilder buffer = new StringBuilder();
         for (ValidationErrors.Item error : errors.getAll()) {
-            buffer.append(error.description).append("<br/>");
+            buffer.append(error.description).append("\n");
         }
         showNotification(
                 messages.getMainMessage("validationFail.caption"),

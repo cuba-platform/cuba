@@ -59,7 +59,7 @@ public class WebWindow implements Window, Component.Wrapper,
     protected String debugId;
 
     protected Map<String, Component> componentByIds = new HashMap<>();
-    protected Collection<Component> ownComponents = new HashSet<>();
+    protected Collection<Component> ownComponents = new LinkedHashSet<>();
     protected Map<String, Component> allComponents = new HashMap<>();
 
     protected List<Timer> timers = new LinkedList<>();
@@ -222,11 +222,8 @@ public class WebWindow implements Window, Component.Wrapper,
                     log.trace("Validation failed", e);
                 else if (log.isDebugEnabled())
                     log.debug("Validation failed: " + e);
-                if (e instanceof RequiredValueMissingException) {
-                    errors.add(((RequiredValueMissingException) e).getComponent(), e.getMessage());
-                } else {
-                    errors.add((Component)field, e.getMessage());
-                }
+
+                ComponentsHelper.fillErrorMessages((Validatable) component, e, errors);
             }
         }
 
@@ -247,11 +244,8 @@ public class WebWindow implements Window, Component.Wrapper,
                         log.trace("Validation failed", e);
                     else if (log.isDebugEnabled())
                         log.debug("Validation failed: " + e);
-                    if (e instanceof RequiredValueMissingException) {
-                        errors.add(((RequiredValueMissingException) e).getComponent(), e.getMessage());
-                    } else {
-                        errors.add(component, e.getMessage());
-                    }
+
+                    ComponentsHelper.fillErrorMessages((Validatable) component, e, errors);
                 }
             }
         }
@@ -303,10 +297,8 @@ public class WebWindow implements Window, Component.Wrapper,
 
     protected void focusProblemComponent(ValidationErrors errors) {
         Component component = null;
-        for (ValidationErrors.Item error : errors.getAll()) {
-            if (component == null) {
-                component = error.component;
-            }
+        if (!errors.getAll().isEmpty()) {
+            component = errors.getAll().iterator().next().component;
         }
 
         if (component != null) {
@@ -318,14 +310,19 @@ public class WebWindow implements Window, Component.Wrapper,
                     if (c instanceof TabSheet && !((TabSheet) c).getSelectedTab().equals(prevC)) {
                         ((TabSheet) c).setSelectedTab(prevC);
                         break;
-                    } else if (c instanceof com.vaadin.ui.Component.Focusable) {
-                        ((com.vaadin.ui.Component.Focusable) c).focus();
                     }
                     prevC = c;
                     c = c.getParent();
                 }
-                if (vComponent instanceof com.vaadin.ui.Component.Focusable) {
-                    ((com.vaadin.ui.Component.Focusable) vComponent).focus();
+
+                // focus first up component
+                c = vComponent;
+                while (c != null) {
+                    if (c instanceof com.vaadin.ui.Component.Focusable) {
+                        ((com.vaadin.ui.Component.Focusable) c).focus();
+                        break;
+                    }
+                    c = c.getParent();
                 }
             } catch (Exception e) {
                 log.warn("Error while validation handling ", e);

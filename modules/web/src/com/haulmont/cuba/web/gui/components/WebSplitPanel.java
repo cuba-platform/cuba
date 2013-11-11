@@ -31,7 +31,7 @@ public class WebSplitPanel
     protected String id;
 
     protected Map<String, Component> componentByIds = new HashMap<>();
-    protected Collection<Component> ownComponents = new HashSet<>();
+    protected Collection<Component> ownComponents = new LinkedHashSet<>();
 
     protected Alignment alignment = Alignment.TOP_LEFT;
 

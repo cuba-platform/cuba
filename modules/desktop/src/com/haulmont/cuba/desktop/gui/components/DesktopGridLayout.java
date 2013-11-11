@@ -18,9 +18,8 @@ import javax.swing.*;
 import java.util.*;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class DesktopGridLayout
         extends DesktopAbstractComponent<JPanel>
@@ -28,9 +27,9 @@ public class DesktopGridLayout
 {
     protected GridLayoutAdapter layoutAdapter;
 
-    protected Collection<Component> ownComponents = new HashSet<Component>();
-    protected Map<String, Component> componentByIds = new HashMap<String, Component>();
-    protected Map<Component, ComponentCaption> captions = new HashMap<Component, ComponentCaption>();
+    protected Collection<Component> ownComponents = new LinkedHashSet<>();
+    protected Map<String, Component> componentByIds = new HashMap<>();
+    protected Map<Component, ComponentCaption> captions = new HashMap<>();
     protected Map<Component, Pair<JPanel, BoxLayoutAdapter>> wrappers = new HashMap<>();
 
     public DesktopGridLayout() {

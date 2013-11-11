@@ -16,21 +16,20 @@ import javax.swing.*;
 import java.util.*;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public abstract class DesktopAbstractBox
         extends DesktopAbstractComponent<JPanel>
-        implements com.haulmont.cuba.gui.components.BoxLayout, DesktopContainer
-{
+        implements com.haulmont.cuba.gui.components.BoxLayout, DesktopContainer {
+
     protected BoxLayoutAdapter layoutAdapter;
 
-    protected Collection<Component> ownComponents = new HashSet<Component>();
-    protected Map<String, Component> componentByIds = new HashMap<String, Component>();
+    protected Collection<Component> ownComponents = new LinkedHashSet<>();
+    protected Map<String, Component> componentByIds = new HashMap<>();
 
     protected Component expandedComponent;
-    protected Map<Component, ComponentCaption> captions = new HashMap<Component, ComponentCaption>();
+    protected Map<Component, ComponentCaption> captions = new HashMap<>();
     protected Map<Component, Pair<JPanel, BoxLayoutAdapter>> wrappers = new HashMap<>();
 
     public DesktopAbstractBox() {

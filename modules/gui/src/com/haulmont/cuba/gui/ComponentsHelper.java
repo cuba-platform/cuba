@@ -20,25 +20,31 @@ import java.util.*;
  * @version $Id$
  */
 public abstract class ComponentsHelper {
-    public static final String[] UNIT_SYMBOLS = { "px", "pt", "pc", "em", "ex",
-            "mm", "cm", "in", "%" };
+    public static final String[] UNIT_SYMBOLS = { "px", "pt", "pc", "em", "ex", "mm", "cm", "in", "%" };
 
     /**
      * Returns the collection of components within the specified container and all of its children.
+     *
      * @param container container to start from
      * @return          collection of components
      */
     public static Collection<Component> getComponents(Component.Container container) {
+        Collection<Component> res = new LinkedHashSet<>();
+
+        fillChildComponents(container, res);
+
+        return res;
+    }
+
+    private static void fillChildComponents(Component.Container container, Collection<Component> components) {
         final Collection<Component> ownComponents = container.getOwnComponents();
-        Set<Component> res = new HashSet<>(ownComponents);
+        components.addAll(ownComponents);
 
         for (Component component : ownComponents) {
             if (component instanceof Component.Container) {
-                res.addAll(getComponents((Component.Container) component));
+                fillChildComponents((Component.Container) component, components);
             }
         }
-
-        return res;
     }
 
     /**
@@ -260,5 +266,28 @@ public abstract class ComponentsHelper {
         html = StringUtils.replace(html, " ", "&nbsp;");
         html = StringUtils.replace(html, "\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
         return html;
+    }
+
+    /**
+     * Place component with error message to validation errors container.
+     *
+     * @param component validatable component
+     * @param e         exception
+     * @param errors    errors container
+     */
+    public static void fillErrorMessages(Component.Validatable component, ValidationException e, ValidationErrors errors) {
+        if (e instanceof FieldGroup.FieldsValidationException && component instanceof FieldGroup) {
+            FieldGroup fieldGroup = (FieldGroup) component;
+
+            Map<FieldGroup.FieldConfig, Exception> fields = ((FieldGroup.FieldsValidationException) e).getProblemFields();
+            for (Map.Entry<FieldGroup.FieldConfig, Exception> problem : fields.entrySet()) {
+                Component fieldComponent = fieldGroup.getFieldComponent(problem.getKey());
+                errors.add(fieldComponent, problem.getValue().getMessage());
+            }
+        } else if (e instanceof RequiredValueMissingException) {
+            errors.add(((RequiredValueMissingException) e).getComponent(), e.getMessage());
+        } else {
+            errors.add((Component) component, e.getMessage());
+        }
     }
 }

@@ -23,6 +23,9 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
     java.util.List<FieldConfig> getFields();
     FieldConfig getField(String id);
 
+    Component getFieldComponent(String id);
+    Component getFieldComponent(FieldConfig fieldConfig);
+
     void addField(FieldConfig field);
     void addField(FieldConfig field, int col);
     void removeField(FieldConfig field);

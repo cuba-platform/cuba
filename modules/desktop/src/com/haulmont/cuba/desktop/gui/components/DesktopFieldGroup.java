@@ -46,7 +46,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
     protected Map<String, FieldConfig> fields = new LinkedHashMap<>();
     protected Map<FieldConfig, Integer> fieldsColumn = new HashMap<>();
-    protected Map<FieldConfig, Component> fieldComponents = new HashMap<>();
+    protected Map<FieldConfig, Component> fieldComponents = new LinkedHashMap<>();
     protected Map<FieldConfig, JLabel> fieldLabels = new HashMap<>();
     protected Map<FieldConfig, ToolTipButton> fieldTooltips = new HashMap<>();
     protected Map<Integer, List<FieldConfig>> columnFields = new HashMap<>();
@@ -91,6 +91,17 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
             }
         }
         return null;
+    }
+
+    @Override
+    public Component getFieldComponent(String id) {
+        FieldConfig fc = getField(id);
+        return getFieldComponent(fc);
+    }
+
+    @Override
+    public Component getFieldComponent(FieldConfig fieldConfig) {
+        return fieldComponents.get(fieldConfig);
     }
 
     private void fillColumnFields(int col, FieldConfig field) {
@@ -682,26 +693,26 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
             return;
         }
 
-        Map<FieldConfig, Exception> problems = new HashMap<>();
+        Map<FieldConfig, Exception> problems = new LinkedHashMap<>();
 
         for (Map.Entry<FieldConfig, Component> componentEntry : fieldComponents.entrySet()) {
             FieldConfig field = componentEntry.getKey();
-            Component component = componentEntry.getValue();
+            Component fieldComponent = componentEntry.getValue();
 
             if (!isEditable(field) || !isEnabled(field) || !isVisible(field)) {
                 continue;
             }
 
             // If has valid state
-            if ((component instanceof Validatable) &&
-                    (component instanceof Editable)) {
+            if ((fieldComponent instanceof Validatable) &&
+                    (fieldComponent instanceof Editable)) {
                 // If editable
-                if (component.isVisible() &&
-                        component.isEnabled() &&
-                        ((Editable) component).isEditable()) {
+                if (fieldComponent.isVisible() &&
+                        fieldComponent.isEnabled() &&
+                        ((Editable) fieldComponent).isEditable()) {
 
                     try {
-                        ((Validatable) component).validate();
+                        ((Validatable) fieldComponent).validate();
                     } catch (ValidationException ex) {
                         problems.put(field, ex);
                     }
@@ -710,18 +721,24 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         }
 
         if (!problems.isEmpty()) {
+            Map<FieldConfig, Exception> problemFields = new LinkedHashMap<>();
+            for (Map.Entry<FieldConfig, Exception> entry : problems.entrySet()) {
+                problemFields.put(entry.getKey(), entry.getValue());
+            }
+
             StringBuilder msgBuilder = new StringBuilder();
-            for (Iterator<FieldConfig> iterator = problems.keySet().iterator(); iterator.hasNext(); ) {
+            for (Iterator<FieldConfig> iterator = problemFields.keySet().iterator(); iterator.hasNext(); ) {
                 FieldConfig field = iterator.next();
-                Exception ex = problems.get(field);
+                Exception ex = problemFields.get(field);
                 msgBuilder.append(ex.getMessage());
                 if (iterator.hasNext()) {
-                    msgBuilder.append("<br>");
+                    msgBuilder.append("\n");
                 }
             }
 
             FieldsValidationException validationException = new FieldsValidationException(msgBuilder.toString());
-            validationException.setProblemFields(problems);
+            validationException.setProblemFields(problemFields);
+
             throw validationException;
         }
     }

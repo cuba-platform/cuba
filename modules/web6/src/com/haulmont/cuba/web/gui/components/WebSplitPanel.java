@@ -28,7 +28,7 @@ public class WebSplitPanel extends com.vaadin.ui.SplitPanel
     protected String id;
 
     protected Map<String, Component> componentByIds = new HashMap<>();
-    protected Collection<Component> ownComponents = new HashSet<>();
+    protected Collection<Component> ownComponents = new LinkedHashSet<>();
 
     private Alignment alignment = Alignment.TOP_LEFT;
 

@@ -15,18 +15,17 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
-public class Picker extends JComponent {
+public class Picker extends JComponent implements FocusableComponent {
 
     protected JPanel contentPanel;
     protected JComponent editor;
     protected JPanel actionsPanel;
     protected boolean enabled = true;
 
-    protected List<JButton> buttons = new ArrayList<JButton>();
+    protected List<JButton> buttons = new ArrayList<>();
 
     public Picker() {
         setLayout(new BorderLayout());
@@ -94,6 +93,7 @@ public class Picker extends JComponent {
         ((JTextField) editor).setText((String) value);
     }
 
+    @Override
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
         editor.setEnabled(enabled);
@@ -102,11 +102,18 @@ public class Picker extends JComponent {
         }
     }
 
+    @Override
     public boolean isEnabled() {
         return enabled;
     }
 
+    @Override
     public void requestFocus(){
         editor.requestFocus();
+    }
+
+    @Override
+    public void focus() {
+        requestFocus();
     }
 }
