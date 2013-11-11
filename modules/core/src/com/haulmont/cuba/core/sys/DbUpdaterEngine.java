@@ -243,7 +243,7 @@ public class DbUpdaterEngine implements DbUpdater {
         log.info("Updating database...");
 
         if (!changelogTableExists) {
-            log.info("Changelog table not found, creating it and mark all scripts as executed");
+            log.info("Changelog table not found, creating it and marking all scripts as executed");
 
             createChangelogTable();
 
@@ -324,20 +324,23 @@ public class DbUpdaterEngine implements DbUpdater {
         );
         QueryRunner runner = new QueryRunner(getDataSource());
         while (tokenizer.hasNext()) {
-            String sql = tokenizer.nextToken();
-            try {
-                if (isLikelySelect(sql)) {
-                    runner.query(sql, new ResultSetHandler<Object>() {
-                        @Override
-                        public Object handle(ResultSet rs) throws SQLException {
-                            return null;
-                        }
-                    });
-                } else {
-                    runner.update(sql);
+            String sql = tokenizer.nextToken().trim();
+            if (!StringUtils.isEmpty(sql)) {
+                log.debug("Executing SQL:\n" + sql);
+                try {
+                    if (isLikelySelect(sql)) {
+                        runner.query(sql, new ResultSetHandler<Object>() {
+                            @Override
+                            public Object handle(ResultSet rs) throws SQLException {
+                                return null;
+                            }
+                        });
+                    } else {
+                        runner.update(sql);
+                    }
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
                 }
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
             }
         }
     }
