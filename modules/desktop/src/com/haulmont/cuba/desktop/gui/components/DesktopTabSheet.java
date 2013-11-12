@@ -7,6 +7,7 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.DetachedFrame;
+import com.haulmont.cuba.desktop.gui.data.DesktopContainerHelper;
 import com.haulmont.cuba.desktop.sys.ButtonTabComponent;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentVisitor;
@@ -29,7 +30,7 @@ import java.util.*;
  */
 public class DesktopTabSheet
         extends DesktopAbstractComponent<JTabbedPane>
-        implements TabSheet, Component.Container, AutoExpanding {
+        implements TabSheet, DesktopContainer, AutoExpanding {
 
     protected Map<Component, String> components = new HashMap<>();
 
@@ -95,6 +96,8 @@ public class DesktopTabSheet
         tabs.add(tab);
         components.put(component, name);
 
+        DesktopContainerHelper.assignContainer(component, this);
+
         JComponent comp = DesktopComponentsHelper.getComposition(component);
 
         impl.addTab("", comp);
@@ -136,6 +139,8 @@ public class DesktopTabSheet
         TabImpl tab = new TabImpl(name, tabContent, true);
         tabs.add(tab);
         components.put(tabContent, name);
+
+        DesktopContainerHelper.assignContainer(tabContent, this);
 
         final JComponent comp = DesktopComponentsHelper.getComposition(tabContent);
 
@@ -345,6 +350,11 @@ public class DesktopTabSheet
     @Override
     public boolean expandsHeight() {
         return false;
+    }
+
+    @Override
+    public void updateComponent(Component child) {
+        // do nothing
     }
 
     protected class TabImpl implements TabSheet.Tab {

@@ -46,6 +46,8 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
     protected final String swingPropertyId = "cubaId";
     public static final String swingPropertyClass = "cubaClass";
 
+    public boolean visible = true;
+
     protected C getImpl() {
         return impl;
     }
@@ -105,16 +107,16 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
 
     @Override
     public boolean isVisible() {
-        boolean componentVisible = getComposition() != null && getComposition().isVisible();
-
         if (container != null)
-            return componentVisible && container.isVisible();
+            return visible && container.isVisible();
         else
-            return componentVisible;
+            return visible;
     }
 
     @Override
     public void setVisible(boolean visible) {
+        this.visible = visible;
+
         getComposition().setVisible(visible);
         requestContainerUpdate();
     }
