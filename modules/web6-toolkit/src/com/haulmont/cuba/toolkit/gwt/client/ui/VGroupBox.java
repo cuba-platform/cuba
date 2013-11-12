@@ -17,8 +17,6 @@ import com.vaadin.terminal.gwt.client.ui.VPanel;
  */
 public class VGroupBox extends VPanel {
 
-    public static final String CLASSNAME = "group-box";
-
     protected int contentNodeBorderPaddingsHor = -1;
     protected int contentNodeBorderPaddingsVer = -1;
 
@@ -34,14 +32,18 @@ public class VGroupBox extends VPanel {
 
     protected boolean captionVisible = false;
 
-    protected String mainStyleName = CLASSNAME;
-
     @SuppressWarnings("unused")
     public VGroupBox() {
     }
 
+    protected String getMainStyleName() {
+        return "group-box";
+    }
+
     @Override
     protected void constructDOM() {
+        String mainStyleName = getMainStyleName();
+
         fieldset = DOM.createFieldSet();
         legend = DOM.createLegend();
         expander = DOM.createDiv();

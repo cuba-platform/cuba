@@ -13,13 +13,9 @@ import com.vaadin.terminal.gwt.client.UIDL;
  */
 public class VFieldGroup extends VGroupBox {
 
-    public static final String FIELDGROUP_CLASSNAME = "fieldgroup";
-
     @Override
-    protected void constructDOM() {
-        this.mainStyleName = FIELDGROUP_CLASSNAME;
-
-        super.constructDOM();
+    protected String getMainStyleName() {
+        return "fieldgroup";
     }
 
     @Override

@@ -100,6 +100,9 @@ public class VMaskedTextField extends VTextField {
         keyHandler = new KeyHandler();
         addKeyDownHandler(keyHandler);
         addKeyUpHandler(keyHandler);
+
+        VConsole.log("[!!!]");
+
         addInputHandler(getElement());
         debug("VMaskedTextField created");
     }
@@ -267,9 +270,16 @@ public class VMaskedTextField extends VTextField {
 
     protected native void addInputHandler(Element elementID)/*-{
         var temp = this;  // hack to hold on to 'this' reference
-        elementID.addEventListener("input", function (e) {
-            temp.@com.haulmont.cuba.toolkit.gwt.client.ui.VMaskedTextField::handleInput()();
-        }, false)
+
+        if (elementID.addEventListener) {
+            elementID.addEventListener("input", function (e) {
+                temp.@com.haulmont.cuba.toolkit.gwt.client.ui.VMaskedTextField::handleInput()();
+            }, false)
+        } else {
+            elementID.attachEvent("input", function(e) {
+                temp.@com.haulmont.cuba.toolkit.gwt.client.ui.VMaskedTextField::handleInput()();
+            })
+        }
     }-*/;
 
     public void handleInput() {
