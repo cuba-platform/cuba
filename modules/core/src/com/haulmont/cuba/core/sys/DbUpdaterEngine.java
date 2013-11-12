@@ -363,7 +363,7 @@ public class DbUpdaterEngine implements DbUpdater {
                 }
             });
 
-            scriptEngine.run(file.getAbsolutePath(), bind);
+            scriptEngine.run(file.getName(), bind);
         } catch (IOException | ResourceException | ScriptException e) {
             throw new RuntimeException(e);
         }
