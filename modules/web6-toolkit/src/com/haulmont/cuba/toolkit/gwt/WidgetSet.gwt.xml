@@ -11,6 +11,8 @@
     <inherits name="org.vaadin.applet.AppletintegrationWidgetset"/>
     <inherits name="org.vaadin.hene.popupbutton.widgetset.PopupbuttonWidgetset" />
 
+    <script src="../../resources/js/swfobject.js"/>
+
     <!-- Uncomment if 'ru' locale support will be needed -->
     <!--<extend-property name="locale" values="ru"/>-->
 
