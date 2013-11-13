@@ -877,11 +877,14 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         this.styleProvider = styleProvider;
 
         for (Table.Column col : columnsOrder) {
-            if (tableModel.isGeneratedColumn(col)) {
-                // it handles styles himself
-            } else {
+            // generated column handles styles himself
+            if (!tableModel.isGeneratedColumn(col)) {
                 TableColumn tableColumn = getColumn(col);
-                tableColumn.setCellRenderer(styleProvider != null ? new StylingCellRenderer() : null);
+
+                // If column hidden by security
+                if (tableColumn != null) {
+                    tableColumn.setCellRenderer(styleProvider != null ? new StylingCellRenderer() : null);
+                }
             }
         }
     }
