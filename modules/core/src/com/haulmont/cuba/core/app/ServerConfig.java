@@ -8,10 +8,7 @@ import com.haulmont.cuba.core.config.Config;
 import com.haulmont.cuba.core.config.Property;
 import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
-import com.haulmont.cuba.core.config.defaults.Default;
-import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
-import com.haulmont.cuba.core.config.defaults.DefaultInt;
-import com.haulmont.cuba.core.config.defaults.DefaultString;
+import com.haulmont.cuba.core.config.defaults.*;
 
 /**
  * Configuration parameters interface used by the CORE layer.
@@ -94,6 +91,14 @@ public interface ServerConfig extends Config {
     @DefaultBoolean(false)
     boolean getSchedulingActive();
     void setSchedulingActive(boolean value);
+
+    /**
+     * @return Scheduled tasks execution control.
+     */
+    @Property("cuba.schedulingInterval")
+    @DefaultLong(1000)
+    long getSchedulingInterval();
+    void setSchedulingInterval(long value);
 
     /**
      * @return Path to resource containing the release number

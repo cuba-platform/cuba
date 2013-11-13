@@ -141,7 +141,7 @@
     <task:scheduled-tasks scheduler="scheduler">
         <task:scheduled ref="cuba_UserSessions" method="processEviction" fixed-rate="10000"/>
         <task:scheduled ref="cuba_LockManager" method="expireLocks" fixed-rate="60000"/>
-        <task:scheduled ref="cuba_Scheduling" method="processScheduledTasks" fixed-rate="1000"/>
+        <task:scheduled ref="cuba_Scheduling" method="processScheduledTasks" fixed-rate="${cuba.schedulingInterval?:1000}"/>
         <!--<task:scheduled ref="cuba_QueryResultsManager" method="deleteForInactiveSessions" fixed-rate="600000"/>-->
     </task:scheduled-tasks>
 

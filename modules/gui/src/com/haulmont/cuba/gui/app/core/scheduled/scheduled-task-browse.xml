@@ -37,6 +37,8 @@
                 <column id="scriptName"/>
                 <column id="userName"/>
                 <column id="singleton"/>
+                <column id="schedulingType"/>
+                <column id="cron"/>
                 <column id="period"/>
                 <column id="timeout"/>
                 <column id="startDate"/>

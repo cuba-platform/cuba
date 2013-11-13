@@ -18,13 +18,13 @@
     </dsContext>
 
     <layout expand="windowActions" spacing="true">
-        <grid spacing="true">
+        <grid id="grid" spacing="true">
             <columns count="3"/>
             <rows>
                 <row>
                     <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.definedBy"/>
-                    <lookupField id="definedByField" datasource="taskDs" property="definedBy" width="400px"
-                                 required="true"/>
+                    <optionsGroup id="definedByField" datasource="taskDs" property="definedBy" width="180px"
+                                 required="true" multiselect="false" orientation="horizontal"/>
                     <label value=""/> <!-- temporary workaround until #1701 is fixed -->
                 </row>
                 <row>
@@ -61,16 +61,30 @@
                     <checkBox id="singletonField" datasource="taskDs" property="singleton"/>
                 </row>
                 <row>
-                    <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.period"/>
-                    <textField id="periodField" datasource="taskDs" property="period" width="180px"/>
+                    <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.schedulingType"/>
+                    <optionsGroup id="schedulingTypeField" datasource="taskDs" property="schedulingType"
+                                  required="true" multiselect="false" orientation="horizontal"/>
                 </row>
+                <!--scheduling type options start-->
+                <row>
+                    <label id="cronLabel" value="msg://com.haulmont.cuba.core.entity/ScheduledTask.cron"/>
+                    <textField id="cronField" datasource="taskDs" property="cron" width="180px" required="true">
+                        <validator class="com.haulmont.cuba.gui.app.core.scheduled.CronValidator" message="msg://validation.cronInvalid"/>
+                    </textField>
+
+                </row>
+                <row>
+                    <label id="periodLabel" value="msg://com.haulmont.cuba.core.entity/ScheduledTask.period"/>
+                    <textField id="periodField" datasource="taskDs" property="period" width="180px" required="true"/>
+                </row>
+                <row>
+                    <label id="startDateLabel" value="msg://com.haulmont.cuba.core.entity/ScheduledTask.startDate"/>
+                    <dateField id="startDateField" datasource="taskDs" property="startDate" width="180px"/>
+                </row>
+                <!--scheduling type options end-->
                 <row>
                     <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.timeout"/>
                     <textField id="timeoutField" datasource="taskDs" property="timeout" width="180px"/>
-                </row>
-                <row>
-                    <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.startDate"/>
-                    <dateField id="startDateField" datasource="taskDs" property="startDate" width="180px"/>
                 </row>
                 <row>
                     <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.timeFrame"/>

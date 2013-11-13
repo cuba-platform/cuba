@@ -240,6 +240,8 @@ create table SYS_SCHEDULED_TASK (
     LAST_START_TIME timestamp,
     LAST_START_SERVER varchar2(50),
     DESCRIPTION varchar2(1000),
+    CRON varchar2(100),
+    SCHEDULING_TYPE varchar2(1) default 'P',
     primary key(ID)
 )^
 create unique index IDX_SYS_SCH_TAS_UNI_BEA_MET on SYS_SCHEDULED_TASK(BEAN_NAME, METHOD_NAME, METHOD_PARAMS, DELETE_TS)^

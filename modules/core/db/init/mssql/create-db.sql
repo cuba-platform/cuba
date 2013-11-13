@@ -118,6 +118,8 @@ create table SYS_SCHEDULED_TASK (
     LAST_START_TIME datetime,
     LAST_START_SERVER varchar(50),
     DESCRIPTION varchar(1000),
+    CRON varchar(100),
+    SCHEDULING_TYPE varchar(1) default 'P',
     --
     primary key (ID)
 )^

@@ -8,7 +8,9 @@ package com.haulmont.cuba.core.app.scheduling;
 import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.app.ServerInfoAPI;
+import com.haulmont.cuba.core.app.ServerInfoService;
 import com.haulmont.cuba.core.entity.ScheduledTask;
+import com.haulmont.cuba.core.entity.SchedulingType;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.sys.AppContext;
@@ -22,13 +24,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
+import org.springframework.scheduling.support.CronSequenceGenerator;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -63,6 +63,9 @@ public class Scheduling implements SchedulingAPI {
 
     @Inject
     protected UserSessionManager userSessionManager;
+
+    @Inject
+    protected ServerInfoService serverInfoService;
 
     protected Map<ScheduledTask, Long> runningTasks = new ConcurrentHashMap<ScheduledTask, Long>();
 
@@ -140,6 +143,10 @@ public class Scheduling implements SchedulingAPI {
         return tasks;
     }
 
+    protected long getSchedulingInterval() {
+        return configuration.getConfig(ServerConfig.class).getSchedulingInterval();
+    }
+
     protected void processTask(ScheduledTask task) {
         if (isRunning(task)) {
             log.trace(task + " is running");
@@ -155,18 +162,17 @@ public class Scheduling implements SchedulingAPI {
             if (!checkFirst(task, serverPriority, now))
                 return;
 
-            long period = task.getPeriod() * 1000;
+            long period = task.getPeriod() != null ? task.getPeriod() * 1000 : 0;
             long frame = task.getTimeFrame() != null ? task.getTimeFrame() * 1000 : period / 2;
+            if (frame == 0) {//for cron tasks, where period is null we set default frame as scheduling interval
+                frame = getSchedulingInterval();
+            }
 
             if (BooleanUtils.isTrue(task.getSingleton())) {
-                if (task.getStartDate() != null) {
-                    long repetitions = (now - task.getStartDate().getTime()) / period;
-                    long currentStart = task.getStartDate().getTime() + repetitions * period;
+                if (task.getStartDate() != null || SchedulingType.CRON == task.getSchedulingType()) {
+                    long currentStart = calculateCurrentStart(task, task.getLastStart(), now, period, frame);
 
-                    log.trace(task + "\n now=" + now + " frame=" + frame + " repetitions=" + repetitions +
-                            " currentStart=" + currentStart + " lastStart=" + task.getLastStart());
-
-                    if (now >= currentStart && now < (currentStart + frame) && task.getLastStart() < currentStart) {
+                    if (needToStartNow(now, frame, task.getLastStart(), currentStart)) {
                         runSingletonTask(task, now, me);
                     } else {
                         log.trace(task + "\n not in time frame to start");
@@ -190,8 +196,7 @@ public class Scheduling implements SchedulingAPI {
 
                     if (task.getLastStart() == 0
                             || shouldSwitch
-                            || (task.getLastStart() + (giveChanceToPreviousHost ? period + period / 2 : period) <= now))
-                    {
+                            || (task.getLastStart() + (giveChanceToPreviousHost ? period + period / 2 : period) <= now)) {
                         runSingletonTask(task, now, me);
                     } else {
                         log.trace(task + "\n time has not come and we shouldn't switch");
@@ -202,15 +207,10 @@ public class Scheduling implements SchedulingAPI {
                 if (lastStart == null) {
                     lastStart = 0L;
                 }
-                if (task.getStartDate() != null) {
-                    long repetitions = (now - task.getStartDate().getTime()) / period;
-                    long currentStart = task.getStartDate().getTime() + repetitions * period;
+                if (task.getStartDate() != null || SchedulingType.CRON == task.getSchedulingType()) {
+                    long currentStart = calculateCurrentStart(task, lastStart, now, period, frame);
 
-                    if (log.isTraceEnabled())
-                        log.trace(task + "\n now=" + now + " lastStart=" + lastStart + " frame=" + frame
-                                + " repetitions=" + repetitions + " currentStart=" + currentStart);
-
-                    if (now >= currentStart && now < (currentStart + frame) && lastStart < currentStart) {
+                    if (needToStartNow(now, frame, lastStart, currentStart)) {
                         runTask(task, now);
                     } else {
                         log.trace(task + "\n not in time frame to start");
@@ -229,6 +229,48 @@ public class Scheduling implements SchedulingAPI {
         } catch (Throwable throwable) {
             log.error("Unable to process " + task, throwable);
         }
+    }
+
+    private boolean needToStartNow(long now, long frame, long lastStart, long currentStart) {
+        return currentStart <= now && now < currentStart + frame && lastStart < currentStart;
+    }
+
+    protected long calculateCurrentStart(ScheduledTask task, long lastStart, long now, long period, long frame) {
+        String cron = task.getCron();
+        if (SchedulingType.CRON == task.getSchedulingType()) {
+            StopWatch sw = new Log4JStopWatch("Cron next date calculations");
+            CronSequenceGenerator cronSequenceGenerator = new CronSequenceGenerator(cron, getCurrentTimeZone());
+            //if last start = 0 (task never has run) or to far in the past, we use (NOW - FRAME) timestamp for pivot time
+            //this approach should work fine cause cron works with absolute time
+            long pivotPreviousTime = Math.max(lastStart, now - frame);
+
+            Date currentStart = null;
+            Date nextDate = cronSequenceGenerator.next(new Date(pivotPreviousTime));
+            while (nextDate.getTime() < now) {//if next date is in past try to find next date nearest to now
+                currentStart = nextDate;
+                nextDate = cronSequenceGenerator.next(nextDate);
+            }
+
+            if (currentStart == null) {
+                currentStart = nextDate;
+            }
+
+            log.trace(task + "\n now=" + now + " frame=" + frame
+                    + " currentStart=" + currentStart + " lastStart=" + lastStart + " cron=" + cron);
+            sw.stop();
+            return currentStart.getTime();
+        } else {
+            long repetitions = (now - task.getStartDate().getTime()) / period;
+            long currentStart = task.getStartDate().getTime() + repetitions * period;
+
+            log.trace(task + "\n now=" + now + " frame=" + frame + " repetitions=" + repetitions +
+                    " currentStart=" + currentStart + " lastStart=" + lastStart);
+            return currentStart;
+        }
+    }
+
+    protected TimeZone getCurrentTimeZone() {
+        return serverInfoService.getTimeZone();
     }
 
     protected boolean lastServerWasNotMe(ScheduledTask task, String me) {

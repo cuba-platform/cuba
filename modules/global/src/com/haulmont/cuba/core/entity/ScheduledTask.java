@@ -77,7 +77,7 @@ public class ScheduledTask extends BaseUuidEntity implements Updatable, SoftDele
     @Column(name = "IS_ACTIVE")
     protected Boolean active;
 
-    @Column(name = "PERIOD", nullable = false)
+    @Column(name = "PERIOD")
     protected Integer period;
 
     @Column(name = "TIMEOUT")
@@ -85,6 +85,12 @@ public class ScheduledTask extends BaseUuidEntity implements Updatable, SoftDele
 
     @Column(name = "START_DATE")
     protected Date startDate;
+
+    @Column(name = "CRON")
+    protected String cron;
+
+    @Column(name = "SCHEDULING_TYPE")
+    protected String schedulingType;
 
     @Column(name = "TIME_FRAME")
     protected Integer timeFrame;
@@ -320,6 +326,22 @@ public class ScheduledTask extends BaseUuidEntity implements Updatable, SoftDele
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getCron() {
+        return cron;
+    }
+
+    public void setCron(String cron) {
+        this.cron = cron;
+    }
+
+    public SchedulingType getSchedulingType() {
+        return SchedulingType.fromId(schedulingType);
+    }
+
+    public void setSchedulingType(SchedulingType schedulingType) {
+        this.schedulingType = SchedulingType.getId(schedulingType);
     }
 
     public List<MethodParameterInfo> getMethodParameters() {

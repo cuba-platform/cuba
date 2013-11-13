@@ -11,12 +11,14 @@ import com.haulmont.cuba.core.app.scheduled.MethodParameterInfo;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.ScheduledTask;
 import com.haulmont.cuba.core.entity.ScheduledTaskDefinedBy;
+import com.haulmont.cuba.core.entity.SchedulingType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.StringUtils;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
 
@@ -36,7 +38,7 @@ public class ScheduledTaskEditor extends AbstractEditor {
     protected LookupField userNameField;
 
     @Inject
-    protected LookupField definedByField;
+    protected OptionsGroup definedByField;
 
     @Inject
     protected TextField classNameField;
@@ -68,11 +70,59 @@ public class ScheduledTaskEditor extends AbstractEditor {
     @Inject
     protected ComponentsFactory componentsFactory;
 
+    @Inject
+    protected OptionsGroup schedulingTypeField;
+
     //List holds an information about methods of selected bean
     List<MethodInfo> availableMethods = new ArrayList<>();
 
+    @Inject
+    protected TextField cronField;
+
+    @Inject
+    protected TextField periodField;
+
+    @Inject
+    protected DateField startDateField;
+
+    @Inject
+    protected Label cronLabel;
+
+    @Inject
+    protected Label periodLabel;
+
+    @Inject
+    protected Label startDateLabel;
+
+
+    private void show(Component... components) {
+        for (Component component : components) {
+            component.setVisible(true);
+        }
+    }
+
+    private void hide(Component... components) {
+        for (Component component : components) {
+            component.setVisible(false);
+        }
+    }
+
+    private void clear(Field... fields) {
+        for (Field component : fields) {
+            component.setValue(null);
+        }
+    }
+
     @Override
     public void init(Map<String, Object> params) {
+        schedulingTypeField.setOptionsList(Arrays.asList(SchedulingType.values()));
+        schedulingTypeField.addListener(new ValueListener() {
+            @Override
+            public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
+                setSchedulingTypeField((SchedulingType) value);
+            }
+        });
+
         definedByField.setOptionsList(Arrays.asList(ScheduledTaskDefinedBy.values()));
         definedByField.addListener(new ValueListener() {
             @Override
@@ -95,28 +145,8 @@ public class ScheduledTaskEditor extends AbstractEditor {
                 }
             }
 
-            private void show(Component... components) {
-                for (Component component : components) {
-                    component.setVisible(true);
-                }
-            }
-
             private void hideAll() {
-                classNameField.setVisible(false);
-                classNameLabel.setVisible(false);
-                scriptNameField.setVisible(false);
-                scriptNameLabel.setVisible(false);
-                beanNameField.setVisible(false);
-                beanNameLabel.setVisible(false);
-                methodNameField.setVisible(false);
-                methodNameLabel.setVisible(false);
-                methodParamsBox.setVisible(false);
-            }
-
-            private void clear(Field... fields) {
-                for (Field component : fields) {
-                    component.setValue(null);
-                }
+                hide(classNameField, classNameLabel, scriptNameField, scriptNameLabel, beanNameField, beanNameLabel, methodNameField, methodNameLabel, methodParamsBox);
             }
         });
 
@@ -159,6 +189,18 @@ public class ScheduledTaskEditor extends AbstractEditor {
         });
 
         userNameField.setOptionsList(service.getAvailableUsers());
+    }
+
+    private void setSchedulingTypeField(SchedulingType value) {
+        if (SchedulingType.CRON == value) {
+            hide(periodField, periodLabel, startDateField, startDateLabel);
+            clear(periodField, startDateField);
+            show(cronField, cronLabel);
+        } else {
+            show(periodField, periodLabel, startDateField, startDateLabel);
+            hide(cronField, cronLabel);
+            clear(cronField);
+        }
     }
 
     @Override
