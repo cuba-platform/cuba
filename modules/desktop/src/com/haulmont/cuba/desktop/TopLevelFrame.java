@@ -118,8 +118,13 @@ public class TopLevelFrame extends JFrame {
         timer.start();
     }
 
-    public void showNotification(String caption, String description, IFrame.NotificationType type) {
+    public void showNotification(@Nullable String caption, @Nullable String description, IFrame.NotificationType type) {
         DesktopConfig config = AppBeans.get(Configuration.class).getConfig(DesktopConfig.class);
+
+        if (caption == null)
+            caption = "";
+        if (description == null)
+            description = "";
 
         if (IFrame.NotificationType.isHTML(type)) {
             caption = ComponentsHelper.preprocessHtmlMessage(caption);
