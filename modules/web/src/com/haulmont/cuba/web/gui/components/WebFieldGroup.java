@@ -10,6 +10,8 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -17,6 +19,7 @@ import com.haulmont.cuba.web.toolkit.ui.CubaCheckBox;
 import com.haulmont.cuba.web.toolkit.ui.CubaFieldGroup;
 import com.haulmont.cuba.web.toolkit.ui.CubaFieldGroupLayout;
 import com.haulmont.cuba.web.toolkit.ui.CubaFieldWrapper;
+import com.vaadin.ui.*;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -764,6 +767,17 @@ public class WebFieldGroup
             validationException.setProblemFields(problemFields);
 
             throw validationException;
+        }
+    }
+
+    @Override
+    public void requestFocus() {
+        for (Component component : fieldComponents.values()) {
+            com.vaadin.ui.Component vComponent = WebComponentsHelper.unwrap(component);
+            if (vComponent instanceof com.vaadin.ui.Component.Focusable) {
+                ((com.vaadin.ui.Component.Focusable) vComponent).focus();
+                break;
+            }
         }
     }
 
