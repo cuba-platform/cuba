@@ -881,7 +881,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
             if (!tableModel.isGeneratedColumn(col)) {
                 TableColumn tableColumn = getColumn(col);
 
-                // If column hidden by security
+                // If column is not hidden by security
                 if (tableColumn != null) {
                     tableColumn.setCellRenderer(styleProvider != null ? new StylingCellRenderer() : null);
                 }
