@@ -13,19 +13,17 @@
         <web class="com.haulmont.cuba.web.app.ui.core.restore.EntityRestoreCompanion"/>
     </companions>
 
-    <dsContext/>
-
-    <layout expand="tablePanel" spacing="true">
+    <layout spacing="true" expand="tablePanel">
         <hbox spacing="true">
             <lookupField id="entities" width="250px"/>
             <button id="refreshButton" icon="icons/refresh.png"/>
         </hbox>
 
-        <filter id="primaryFilter" margin="false,false,true,false">
+        <filter id="primaryFilter" margin="false,false,true,false" visible="false">
             <properties include=".*" exclude=""/>
         </filter>
 
-        <vbox id="tablePanel" spacing="true">
+        <vbox id="tablePanel" spacing="true" height="100%">
         </vbox>
     </layout>
 </window>

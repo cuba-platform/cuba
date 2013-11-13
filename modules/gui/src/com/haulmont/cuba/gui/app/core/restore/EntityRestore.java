@@ -76,12 +76,6 @@ public class EntityRestore extends AbstractWindow {
                 return getMessage("actions.Refresh");
             }
         });
-        primaryFilter.setVisible(false);
-        entities.setOptionsMap(getEntitiesLookupFieldOptions());
-
-        Window layout = getComponent();
-        layout.remove(primaryFilter);
-
         entities.setOptionsMap(getEntitiesLookupFieldOptions());
     }
 
