@@ -110,6 +110,10 @@
     .#{$primaryStyleName}-cell-wrapper.widget-container {
       padding-top: 2px;
       padding-bottom: 2px;
+
+      .v-label {
+        white-space: nowrap;
+      }
     }
 
     .#{$primaryStyleName}-row,
