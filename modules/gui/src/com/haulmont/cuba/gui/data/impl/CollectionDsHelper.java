@@ -9,10 +9,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MetadataTools;
-import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.core.global.ViewProperty;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -38,11 +35,34 @@ public class CollectionDsHelper {
                 final String name = property.getName();
 
                 final MetaProperty metaProperty = metaClass.getProperty(name);
+                if (metaProperty == null) {
+                    String message = String.format("Unable to find property %s for entity %s", name, metaClass.getName());
+                    throw new DevelopmentException(message);
+                }
+
+                if (!metadataTools.isPersistent(metaProperty)) {
+                    String message = String.format(
+                            "Specified transient property %s in view for datasource with persistent entity %s",
+                            name, metaClass.getName());
+
+                    LogFactory.getLog(CollectionDsHelper.class).warn(message);
+                    continue;
+                }
+
                 final Range range = metaProperty.getRange();
-                if (range == null) continue;
+                if (range == null) {
+                    continue;
+                }
 
                 final Range.Cardinality cardinality = range.getCardinality();
                 if (!cardinality.isMany()) {
+                    properties.add(new MetaPropertyPath(metaProperty.getDomain(), metaProperty));
+                }
+            }
+
+            // add all non-persistent properties
+            for (MetaProperty metaProperty : metaClass.getProperties()) {
+                if (metadataTools.isTransient(metaProperty)) {
                     properties.add(new MetaPropertyPath(metaProperty.getDomain(), metaProperty));
                 }
             }
@@ -63,6 +83,7 @@ public class CollectionDsHelper {
                 }
             }
         }
+
         return properties;
     }
 
