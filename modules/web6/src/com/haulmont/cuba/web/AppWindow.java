@@ -276,26 +276,27 @@ public class AppWindow extends Window implements UserSubstitutionListener,
 
             if (foldersPane != null) {
                 foldersSplit = new WebSplitPanel();
+                SplitPanel vFoldersSplit = foldersSplit.getComponent();
 
                 if (webConfig.getUseLightHeader()) {
                     foldersSplit.setShowHookButton(true);
-                    foldersSplit.setImmediate(true);
+                    vFoldersSplit.setImmediate(true);
                     foldersPane.setVisible(true);
                     foldersSplit.setDefaultPosition(webConfig.getFoldersPaneDefaultWidth() + "px");
                 }
 
                 foldersSplit.setOrientation(SplitPanel.ORIENTATION_HORIZONTAL);
-                foldersSplit.setSplitPosition(0, UNITS_PIXELS);
+                vFoldersSplit.setSplitPosition(0, UNITS_PIXELS);
 
                 if (!webConfig.getUseLightHeader())
                     foldersSplit.setLocked(true);
 
-                foldersSplit.addComponent(foldersPane);
+                vFoldersSplit.addComponent(foldersPane);
 
-                middleLayout.addComponent(foldersSplit);
-                middleLayout.setExpandRatio(foldersSplit, 1);
+                middleLayout.addComponent(vFoldersSplit);
+                middleLayout.setExpandRatio(vFoldersSplit, 1);
 
-                foldersPane.init(foldersSplit);
+                foldersPane.init(vFoldersSplit);
             }
         }
 
@@ -399,7 +400,9 @@ public class AppWindow extends Window implements UserSubstitutionListener,
     protected void initStartupScreen() {
         if (mainLayout != null) {
             if (foldersPane != null) {
-                foldersSplit.removeComponent(mainLayout);
+                SplitPanel vFoldersSplit = foldersSplit.getComponent();
+
+                vFoldersSplit.removeComponent(mainLayout);
             } else {
                 middleLayout.removeComponent(mainLayout);
             }
@@ -408,7 +411,9 @@ public class AppWindow extends Window implements UserSubstitutionListener,
         mainLayout = new VerticalLayout();
         mainLayout.setSizeFull();
         if (foldersPane != null) {
-            foldersSplit.addComponent(mainLayout);
+            SplitPanel vFoldersSplit = foldersSplit.getComponent();
+
+            vFoldersSplit.addComponent(mainLayout);
         } else {
             middleLayout.addComponent(mainLayout);
             middleLayout.setExpandRatio(mainLayout, 1);
@@ -766,10 +771,13 @@ public class AppWindow extends Window implements UserSubstitutionListener,
             foldersPane.savePosition();
             FoldersPane oldFoldersPane = foldersPane;
             foldersPane = createFoldersPane();
+
+            SplitPanel vFoldersSplit = foldersSplit.getComponent();
+
             if (foldersPane != null) {
-                foldersPane.init(foldersSplit);
+                foldersPane.init(vFoldersSplit);
             }
-            foldersSplit.replaceComponent(oldFoldersPane, foldersPane);
+            vFoldersSplit.replaceComponent(oldFoldersPane, foldersPane);
         }
         substUserSelect.select(connection.getSession().getCurrentOrSubstitutedUser());
     }

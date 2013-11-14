@@ -27,22 +27,22 @@ import com.haulmont.cuba.security.app.UserSettingService;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.security.entity.SearchFolder;
 import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.sys.AppTimers;
 import com.haulmont.cuba.web.AppWindow;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.UserSettingsTools;
 import com.haulmont.cuba.web.filestorage.WebExportDisplay;
 import com.haulmont.cuba.web.gui.components.WebSplitPanel;
+import com.haulmont.cuba.web.sys.AppTimers;
 import com.haulmont.cuba.web.toolkit.Timer;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.vaadin.event.Action;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.terminal.Resource;
 import com.vaadin.terminal.Sizeable;
-import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.SplitPanel;
 import com.vaadin.ui.Tree;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.BooleanUtils;
@@ -52,6 +52,8 @@ import org.apache.commons.logging.LogFactory;
 
 import java.io.IOException;
 import java.util.*;
+
+import com.haulmont.cuba.web.toolkit.Timer;
 
 /**
  * Left panel containing application and search folders.
@@ -163,7 +165,9 @@ public class FoldersPane extends VerticalLayout {
 
         if (show) {
             if (horSplit != null) {
-                horSplit.setSplitPosition(horizontalSplitPos, Sizeable.UNITS_PIXELS);
+                SplitPanel vaadinHSplit = horSplit.getComponent();
+
+                vaadinHSplit.setSplitPosition(horizontalSplitPos, Sizeable.UNITS_PIXELS);
                 horSplit.setLocked(false);
             } else {
                 setWidth(horizontalSplitPos, Sizeable.UNITS_PIXELS);
@@ -213,7 +217,8 @@ public class FoldersPane extends VerticalLayout {
 
             if (appFoldersPane != null && searchFoldersPane != null) {
                 vertSplit = new WebSplitPanel();
-                vertSplit.setSplitPosition(verticalSplitPos, Sizeable.UNITS_PIXELS);
+                SplitPanel vaadinVSplit = vertSplit.getComponent();
+                vaadinVSplit.setSplitPosition(verticalSplitPos, Sizeable.UNITS_PIXELS);
 
                 VerticalLayout afLayout = new VerticalLayout();
                 afLayout.setSpacing(true);
@@ -222,7 +227,7 @@ public class FoldersPane extends VerticalLayout {
                     addFoldersLabel(afLayout, appFoldersLabel);
                 afLayout.addComponent(appFoldersPane);
                 afLayout.setExpandRatio(appFoldersPane, 1);
-                vertSplit.setFirstComponent(afLayout);
+                vaadinVSplit.setFirstComponent(afLayout);
 
                 VerticalLayout sfLayout = new VerticalLayout();
                 sfLayout.setSpacing(true);
@@ -231,9 +236,9 @@ public class FoldersPane extends VerticalLayout {
                     addFoldersLabel(sfLayout, searchFoldersLabel);
                 sfLayout.addComponent(searchFoldersPane);
                 sfLayout.setExpandRatio(searchFoldersPane, 1);
-                vertSplit.setSecondComponent(sfLayout);
+                vaadinVSplit.setSecondComponent(sfLayout);
 
-                addComponent(vertSplit);
+                addComponent(vaadinVSplit);
             } else {
                 if (appFoldersPane != null) {
                     if (appFoldersLabel != null)
@@ -270,7 +275,9 @@ public class FoldersPane extends VerticalLayout {
             savePosition();
 
             if (horSplit != null) {
-                horSplit.setSplitPosition(0, Sizeable.UNITS_PIXELS);
+                SplitPanel vaadinHSplit = horSplit.getComponent();
+
+                vaadinHSplit.setSplitPosition(0, Sizeable.UNITS_PIXELS);
                 horSplit.setLocked(true);
             } else {
                 setWidth(0, Sizeable.UNITS_PIXELS);
@@ -370,10 +377,16 @@ public class FoldersPane extends VerticalLayout {
 
     public void savePosition() {
         if (visible) {
-            if (horSplit != null)
-                horizontalSplitPos = horSplit.getSplitPosition();
-            if (vertSplit != null)
-                verticalSplitPos = vertSplit.getSplitPosition();
+            if (horSplit != null) {
+                SplitPanel vaadinHSplit = horSplit.getComponent();
+
+                horizontalSplitPos = vaadinHSplit.getSplitPosition();
+            }
+            if (vertSplit != null) {
+                SplitPanel vaadinVSplit = vertSplit.getComponent();
+
+                verticalSplitPos = vaadinVSplit.getSplitPosition();
+            }
         }
         userSettingsTools.saveFoldersState(
                 visible,
