@@ -16,7 +16,6 @@ import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.toolkit.ui.JavaScriptHost;
 import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
 import org.dom4j.Element;
 
@@ -109,14 +108,19 @@ public class WebFrame extends WebAbstractBox implements IFrame, WrappedFrame {
             }
             return result;
         } else {
-            com.haulmont.cuba.gui.components.Component frame = allComponents.get(elements[0]);
-            if (frame != null && frame instanceof Container) {
+            Component innerComponent = allComponents.get(elements[0]);
+            if (innerComponent != null && innerComponent instanceof Container) {
                 final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
-                String subPath = ValuePathHelper.format(subList.toArray(new String[]{}));
-                return (T) ((Container) frame).getComponent(subPath);
-            } else {
-                return null;
+                String subPath = ValuePathHelper.format(subList.toArray(new String[subList.size()]));
+                return ((Container) innerComponent).getComponent(subPath);
+            } else if (innerComponent instanceof FieldGroup) {
+                final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
+                String subPath = ValuePathHelper.format(subList.toArray(new String[subList.size()]));
+
+                //noinspection unchecked
+                return (T) ((FieldGroup) innerComponent).getFieldComponent(subPath);
             }
+            return null;
         }
     }
 

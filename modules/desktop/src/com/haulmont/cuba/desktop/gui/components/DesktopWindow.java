@@ -20,7 +20,6 @@ import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
 import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
 import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
 import com.haulmont.cuba.desktop.sys.vcl.FocusableComponent;
-import com.haulmont.cuba.desktop.sys.vcl.FocusableTable;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Action;
@@ -615,6 +614,7 @@ public class DesktopWindow implements Window, Component.Disposable,
 
     @Override
     public <T extends Component> T getOwnComponent(String id) {
+        //noinspection unchecked
         return (T) componentByIds.get(id);
     }
 
@@ -622,19 +622,27 @@ public class DesktopWindow implements Window, Component.Disposable,
     public <T extends Component> T getComponent(String id) {
         final String[] elements = ValuePathHelper.parse(id);
         if (elements.length == 1) {
+            //noinspection unchecked
             T component = (T) allComponents.get(id);
             if (component != null)
                 return component;
             else
+                //noinspection unchecked
                 return (T) getTimer(id);
         } else {
-            Component frame = allComponents.get(elements[0]);
-            if (frame != null && frame instanceof Container) {
+            Component innerComponent = allComponents.get(elements[0]);
+            if (innerComponent != null && innerComponent instanceof Container) {
                 final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
                 String subPath = ValuePathHelper.format(subList.toArray(new String[subList.size()]));
-                return ((Container) frame).getComponent(subPath);
-            } else
-                return null;
+                return ((Container) innerComponent).getComponent(subPath);
+            } else if (innerComponent instanceof FieldGroup) {
+                final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
+                String subPath = ValuePathHelper.format(subList.toArray(new String[subList.size()]));
+
+                //noinspection unchecked
+                return (T) ((FieldGroup) innerComponent).getFieldComponent(subPath);
+            }
+            return null;
         }
     }
 

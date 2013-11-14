@@ -102,7 +102,7 @@ public class DesktopSplitPanel
 
     @Override
     public <T extends Component> T getComponent(String id) {
-        return DesktopComponentsHelper.<T>getComponent(this, id);
+        return ComponentsHelper.getComponent(this, id);
     }
 
     @Override

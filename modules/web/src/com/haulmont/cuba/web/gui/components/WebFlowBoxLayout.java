@@ -65,7 +65,7 @@ public class WebFlowBoxLayout extends WebAbstractComponent<CubaFlowLayout> imple
     @Nullable
     @Override
     public <T extends Component> T getComponent(String id) {
-        return WebComponentsHelper.getComponent(this, id);
+        return ComponentsHelper.getComponent(this, id);
     }
 
     @Override

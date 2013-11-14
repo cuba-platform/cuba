@@ -15,8 +15,10 @@ import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.vaadin.ui.Layout;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -60,20 +62,21 @@ public class WebTabSheet
     @Override
     public <T extends Component> T getOwnComponent(String id) {
         for (Tab tab : tabs.values()) {
-            if (tab.getComponent() instanceof Container) {
-                final Component component = WebComponentsHelper.getComponent((Container) tab.getComponent(), id);
-                if (component != null) {
-                    return (T) component;
-                }
+            ComponentDescriptor componentDescriptor = components.get(tab.getComponent());
+            Component tabComponent = componentDescriptor.getComponent();
+
+            if (StringUtils.equals(id, tabComponent.getId())) {
+                return (T) tabComponent;
             }
         }
 
         return null;
     }
 
+    @Nullable
     @Override
     public <T extends Component> T getComponent(String id) {
-        return WebComponentsHelper.getComponent(this, id);
+        return ComponentsHelper.getComponent(this, id);
     }
 
     @Override

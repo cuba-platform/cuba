@@ -85,7 +85,7 @@ public class WebSplitPanel extends WebAbstractComponent<com.vaadin.ui.SplitPanel
 
     @Override
     public <T extends Component> T getComponent(String id) {
-        return WebComponentsHelper.getComponent(this, id);
+        return ComponentsHelper.getComponent(this, id);
     }
 
     @Override

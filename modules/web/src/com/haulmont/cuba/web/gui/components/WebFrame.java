@@ -101,13 +101,19 @@ public class WebFrame extends WebVBoxLayout implements IFrame, WrappedFrame {
             }
             return result;
         } else {
-            com.haulmont.cuba.gui.components.Component frame = allComponents.get(elements[0]);
-            if (frame != null && frame instanceof Container) {
+            Component innerComponent = allComponents.get(elements[0]);
+            if (innerComponent != null && innerComponent instanceof Container) {
                 final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
                 String subPath = ValuePathHelper.format(subList.toArray(new String[subList.size()]));
-                return ((Container) frame).getComponent(subPath);
-            } else
-                return null;
+                return ((Container) innerComponent).getComponent(subPath);
+            } else if (innerComponent instanceof FieldGroup) {
+                final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
+                String subPath = ValuePathHelper.format(subList.toArray(new String[subList.size()]));
+
+                //noinspection unchecked
+                return (T) ((FieldGroup) innerComponent).getFieldComponent(subPath);
+            }
+            return null;
         }
     }
 

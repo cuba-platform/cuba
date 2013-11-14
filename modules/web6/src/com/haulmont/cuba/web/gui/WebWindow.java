@@ -655,15 +655,27 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
     public <T extends Component> T getComponent(String id) {
         final String[] elements = ValuePathHelper.parse(id);
         if (elements.length == 1) {
-            return (T) allComponents.get(id);
+            //noinspection unchecked
+            T component = (T) allComponents.get(id);
+            if (component != null)
+                return component;
+            else
+                //noinspection unchecked
+                return (T) getTimer(id);
         } else {
-            Component frame = allComponents.get(elements[0]);
-            if (frame != null && frame instanceof Container) {
+            Component innerComponent = allComponents.get(elements[0]);
+            if (innerComponent != null && innerComponent instanceof Container) {
                 final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
                 String subPath = ValuePathHelper.format(subList.toArray(new String[subList.size()]));
-                return (T) ((Container) frame).getComponent(subPath);
-            } else
-                return null;
+                return ((Container) innerComponent).getComponent(subPath);
+            } else if (innerComponent instanceof FieldGroup) {
+                final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
+                String subPath = ValuePathHelper.format(subList.toArray(new String[subList.size()]));
+
+                //noinspection unchecked
+                return (T) ((FieldGroup) innerComponent).getFieldComponent(subPath);
+            }
+            return null;
         }
 //        return WebComponentsHelper.<T>getComponent(this, id);
     }

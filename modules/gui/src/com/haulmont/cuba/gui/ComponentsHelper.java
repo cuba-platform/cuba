@@ -36,6 +36,54 @@ public abstract class ComponentsHelper {
         return res;
     }
 
+    @Nullable
+    public static <T extends com.haulmont.cuba.gui.components.Component> T getComponent(
+            com.haulmont.cuba.gui.components.Component.Container container, String id) {
+        final String[] elements = ValuePathHelper.parse(id);
+        if (elements.length == 1) {
+            final com.haulmont.cuba.gui.components.Component component = container.getOwnComponent(id);
+
+            if (component == null)
+                return getComponentByIteration(container, id);
+            else
+                return (T) component;
+
+        } else {
+            com.haulmont.cuba.gui.components.Component innerComponent = container.getOwnComponent(elements[0]);
+
+            if (innerComponent == null) {
+                return getComponentByIteration(container, id);
+            } else {
+                if (innerComponent instanceof Component.Container) {
+                    final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
+                    String subPath = ValuePathHelper.format(subList.toArray(new String[subList.size()]));
+                    return ((com.haulmont.cuba.gui.components.Component.Container) innerComponent).getComponent(subPath);
+                } else if (innerComponent instanceof com.haulmont.cuba.gui.components.FieldGroup) {
+                    final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
+                    String subPath = ValuePathHelper.format(subList.toArray(new String[subList.size()]));
+
+                    //noinspection unchecked
+                    return (T) ((FieldGroup) innerComponent).getFieldComponent(subPath);
+                }
+                return null;
+            }
+        }
+    }
+
+    @Nullable
+    private static <T extends com.haulmont.cuba.gui.components.Component> T getComponentByIteration(com.haulmont.cuba.gui.components.Component.Container container, String id) {
+        for (com.haulmont.cuba.gui.components.Component component : container.getOwnComponents()) {
+            if (id.equals(component.getId()))
+                return (T) component;
+            else {
+                if (component instanceof com.haulmont.cuba.gui.components.Component.Container) {
+                    return getComponentByIteration((com.haulmont.cuba.gui.components.Component.Container) component, id);
+                }
+            }
+        }
+        return null;
+    }
+
     private static void fillChildComponents(Component.Container container, Collection<Component> components) {
         final Collection<Component> ownComponents = container.getOwnComponents();
         components.addAll(ownComponents);

@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
@@ -21,6 +22,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import org.apache.commons.lang.StringUtils;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.util.*;
 
@@ -110,63 +112,14 @@ public class WebComponentsHelper {
         return res;
     }
 
+    /**
+     * @deprecated Use ComponentsHelper.getComponent() instead
+     */
+    @Deprecated
+    @Nullable
     public static <T extends com.haulmont.cuba.gui.components.Component> T getComponent(
-            com.haulmont.cuba.gui.components.Component.Container comp, String id) {
-        final Component unwrapedComponent = unwrap(comp);
-        final ComponentContainer container =
-                unwrapedComponent instanceof Form ?
-                        ((Form) unwrapedComponent).getLayout() :
-                        (ComponentContainer) unwrapedComponent;
-
-        final String[] elements = ValuePathHelper.parse(id);
-        if (elements.length == 1) {
-            final com.haulmont.cuba.gui.components.Component component = comp.getOwnComponent(id);
-
-            if (component == null)
-                return getComponentByIterate(container, id);
-            else
-                return (T) component;
-
-        } else {
-            com.haulmont.cuba.gui.components.Component component = comp.getOwnComponent(elements[0]);
-            if (component == null) {
-                return getComponentByIterate(container, id);
-            } else {
-                final List<String> subpath = Arrays.asList(elements).subList(1, elements.length);
-                if (component instanceof com.haulmont.cuba.gui.components.Component.Container) {
-                    return ((com.haulmont.cuba.gui.components.Component.Container) component).<T>getComponent(
-                            ValuePathHelper.format(subpath.toArray(new String[subpath.size()])));
-                } else {
-                    return null;
-                }
-            }
-        }
-    }
-
-    protected static <T extends com.haulmont.cuba.gui.components.Component> T getComponentByIterate(ComponentContainer container, String id) {
-        com.haulmont.cuba.gui.components.Component component;
-        for (Object aContainer : container) {
-            Component c = (Component) aContainer;
-
-            if (c instanceof com.haulmont.cuba.gui.components.Component.Container) {
-                component = ((com.haulmont.cuba.gui.components.Component.Container) c).getComponent(id);
-                if (component != null) return (T) component;
-            } else if (c instanceof WebComponentEx) {
-                component = ((WebComponentEx) c).asComponent();
-                if (component instanceof com.haulmont.cuba.gui.components.Component.Container) {
-                    component = ((com.haulmont.cuba.gui.components.Component.Container) component).getComponent(id);
-                    if (component != null) return (T) component;
-                }
-            } else if (c instanceof ComponentContainer) {
-                component = getComponentByIterate(((ComponentContainer) c), id);
-                if (component != null) return (T) component;
-            } else if (c instanceof Form) {
-                component = getComponentByIterate(((Form) c).getLayout(), id);
-                if (component != null) return (T) component;
-            }
-        }
-
-        return null;
+            com.haulmont.cuba.gui.components.Component.Container container, String id) {
+        return ComponentsHelper.getComponent(container, id);
     }
 
     public static void expand(AbstractOrderedLayout layout, Component component, String height, String width) {

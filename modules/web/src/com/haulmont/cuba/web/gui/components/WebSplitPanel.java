@@ -16,6 +16,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.dom4j.Element;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -99,9 +100,10 @@ public class WebSplitPanel
         return (T) componentByIds.get(id);
     }
 
+    @Nullable
     @Override
     public <T extends Component> T getComponent(String id) {
-        return WebComponentsHelper.getComponent(this, id);
+        return ComponentsHelper.getComponent(this, id);
     }
 
     @Override

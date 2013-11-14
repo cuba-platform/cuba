@@ -16,6 +16,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import javax.swing.*;
@@ -64,19 +65,18 @@ public class DesktopTabSheet
 
     @Override
     public <T extends Component> T getOwnComponent(String id) {
-        for (TabImpl tab : tabs) {
-            if (tab.getComponent() instanceof Container) {
-                Component component = DesktopComponentsHelper.getComponent((Container) tab.getComponent(), id);
-                if (component != null)
-                    return (T) component;
+        for (Component tabComponent : components.keySet()) {
+            if (StringUtils.equals(id, tabComponent.getId())) {
+                return (T) tabComponent;
             }
         }
+
         return null;
     }
 
     @Override
     public <T extends Component> T getComponent(String id) {
-        return DesktopComponentsHelper.<T>getComponent(this, id);
+        return ComponentsHelper.getComponent(this, id);
     }
 
     @Override

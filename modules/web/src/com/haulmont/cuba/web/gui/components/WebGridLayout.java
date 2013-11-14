@@ -11,6 +11,7 @@ import com.haulmont.cuba.web.toolkit.ui.CubaGridLayout;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Layout;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -123,9 +124,10 @@ public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implemen
         return (T) componentByIds.get(id);
     }
 
+    @Nullable
     @Override
     public <T extends Component> T getComponent(String id) {
-        return WebComponentsHelper.getComponent(this, id);
+        return ComponentsHelper.getComponent(this, id);
     }
 
     @Override

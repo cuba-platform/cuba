@@ -326,19 +326,26 @@ public class DesktopFrame
     public <T extends Component> T getComponent(String id) {
         final String[] elements = ValuePathHelper.parse(id);
         if (elements.length == 1) {
+            //noinspection unchecked
             T result = (T) allComponents.get(id);
             if (result == null && getFrame() != null) {
-                result = getFrame().<T>getComponent(id);
+                result = getFrame().getComponent(id);
             }
             return result;
         } else {
-            com.haulmont.cuba.gui.components.Component frame = allComponents.get(elements[0]);
-            if (frame != null && frame instanceof Container) {
+            Component innerComponent = allComponents.get(elements[0]);
+            if (innerComponent != null && innerComponent instanceof Container) {
                 final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
                 String subPath = ValuePathHelper.format(subList.toArray(new String[subList.size()]));
-                return (T) ((Container) frame).getComponent(subPath);
-            } else
-                return null;
+                return ((Container) innerComponent).getComponent(subPath);
+            } else if (innerComponent instanceof FieldGroup) {
+                final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
+                String subPath = ValuePathHelper.format(subList.toArray(new String[subList.size()]));
+
+                //noinspection unchecked
+                return (T) ((FieldGroup) innerComponent).getFieldComponent(subPath);
+            }
+            return null;
         }
     }
 

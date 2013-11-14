@@ -7,13 +7,14 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.desktop.DetachedFrame;
 import com.haulmont.cuba.desktop.TopLevelFrame;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.components.AbstractFrame;
 import com.haulmont.cuba.gui.components.Component;
-import org.apache.commons.lang.ArrayUtils;
+import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.KeyCombination;
 
 import javax.annotation.Nullable;
 import javax.swing.*;
-import javax.swing.Action;
 import java.awt.*;
 import java.awt.event.InputEvent;
 import java.util.Collections;
@@ -46,47 +47,13 @@ public class DesktopComponentsHelper {
         return (JComponent) comp;
     }
 
+    /**
+     * @deprecated Use ComponentsHelper.getComponent() instead
+     */
+    @Deprecated
     @Nullable
-    public static <T extends Component> T getComponent(Component.Container comp, String id) {
-        final String[] elements = ValuePathHelper.parse(id);
-        if (elements.length == 1) {
-            final Component component = comp.getOwnComponent(id);
-
-            if (component == null) {
-                Component c = getComponentByIteration(comp, id);
-                if (c != null)
-                    return (T) c;
-            } else {
-                return (T) component;
-            }
-        } else {
-            Component component = comp.getOwnComponent(elements[0]);
-            if (component == null) {
-                Component c = getComponentByIteration(comp, id);
-                if (c != null)
-                    return (T) c;
-            } else {
-                String[] subpath = (String[]) ArrayUtils.subarray(elements, 1, elements.length);
-                if (component instanceof Component.Container) {
-                    return ((Component.Container) component).<T>getComponent(ValuePathHelper.format(subpath));
-                }
-            }
-        }
-        return null;
-    }
-
-    @Nullable
-    private static <T extends Component> T getComponentByIteration(Component.Container container, String id) {
-        for (Component component : container.getOwnComponents()) {
-            if (id.equals(component.getId()))
-                return (T) component;
-            else {
-                if (component instanceof Component.Container) {
-                    return (T) getComponentByIteration((Component.Container) component, id);
-                }
-            }
-        }
-        return null;
+    public static <T extends Component> T getComponent(Component.Container container, String id) {
+        return ComponentsHelper.getComponent(container, id);
     }
 
     public static int convertMessageType(IFrame.MessageType messageType) {
@@ -152,7 +119,7 @@ public class DesktopComponentsHelper {
     }
 
     /**
-     * Convert {@link ShortcutAction.Modifier} to {@link InputEvent} modifier constraint.
+     * Convert {@link KeyCombination.Modifier} to {@link InputEvent} modifier constraint.
      *
      * @param modifier modifier to convert
      * @return {@link InputEvent} modifier constraint

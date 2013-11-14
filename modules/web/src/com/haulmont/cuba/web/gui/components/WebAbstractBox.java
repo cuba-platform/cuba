@@ -11,6 +11,7 @@ import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Layout;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -54,9 +55,10 @@ class WebAbstractBox extends WebAbstractComponent<AbstractOrderedLayout> impleme
         return (T) componentByIds.get(id);
     }
 
+    @Nullable
     @Override
     public <T extends Component> T getComponent(String id) {
-        return WebComponentsHelper.getComponent(this, id);
+        return ComponentsHelper.getComponent(this, id);
     }
 
     @Override

@@ -21,10 +21,8 @@ import java.util.*;
  * @author krivopustov
  * @version $Id$
  */
-public class DesktopGridLayout
-        extends DesktopAbstractComponent<JPanel>
-        implements GridLayout, DesktopContainer
-{
+public class DesktopGridLayout extends DesktopAbstractComponent<JPanel> implements GridLayout, DesktopContainer {
+
     protected GridLayoutAdapter layoutAdapter;
 
     protected Collection<Component> ownComponents = new LinkedHashSet<>();
@@ -38,26 +36,32 @@ public class DesktopGridLayout
         layoutAdapter = GridLayoutAdapter.create(impl);
     }
 
+    @Override
     public float getColumnExpandRatio(int col) {
         return layoutAdapter.getColumnExpandRatio(col);
     }
 
+    @Override
     public void setColumnExpandRatio(int col, float ratio) {
         layoutAdapter.setColumnExpandRatio(col, ratio);
     }
 
+    @Override
     public float getRowExpandRatio(int row) {
         return layoutAdapter.getRowExpandRatio(row);
     }
 
+    @Override
     public void setRowExpandRatio(int row, float ratio) {
         layoutAdapter.setRowExpandRatio(row, ratio);
     }
 
+    @Override
     public void add(Component component, int col, int row) {
         add(component, col, row, col, row);
     }
 
+    @Override
     public void add(Component component, int col, int row, int col2, int row2) {
         final JComponent composition = DesktopComponentsHelper.getComposition(component);
 
@@ -100,22 +104,27 @@ public class DesktopGridLayout
         DesktopContainerHelper.assignContainer(component, this);
     }
 
+    @Override
     public int getRows() {
         return layoutAdapter.getRows();
     }
 
+    @Override
     public void setRows(int rows) {
         layoutAdapter.setRows(rows);
     }
 
+    @Override
     public int getColumns() {
         return layoutAdapter.getColumns();
     }
 
+    @Override
     public void setColumns(int columns) {
         layoutAdapter.setColumns(columns);
     }
 
+    @Override
     public void add(Component component) {
         // captions not added here
         final JComponent composition = DesktopComponentsHelper.getComposition(component);
@@ -133,6 +142,7 @@ public class DesktopGridLayout
         DesktopContainerHelper.assignContainer(component, this);
     }
 
+    @Override
     public void remove(Component component) {
         if (wrappers.containsKey(component)) {
             impl.remove(wrappers.get(component).getFirst());
@@ -161,30 +171,37 @@ public class DesktopGridLayout
         });
     }
 
+    @Override
     public <T extends Component> T getOwnComponent(String id) {
         return (T) componentByIds.get(id);
     }
 
+    @Override
     public <T extends Component> T getComponent(String id) {
-        return DesktopComponentsHelper.<T>getComponent(this, id);
+        return ComponentsHelper.getComponent(this, id);
     }
 
+    @Override
     public Collection<Component> getOwnComponents() {
         return Collections.unmodifiableCollection(ownComponents);
     }
 
+    @Override
     public Collection<Component> getComponents() {
         return ComponentsHelper.getComponents(this);
     }
 
+    @Override
     public void setMargin(boolean enable) {
         layoutAdapter.setMargin(enable);
     }
 
+    @Override
     public void setMargin(boolean topEnable, boolean rightEnable, boolean bottomEnable, boolean leftEnable) {
         layoutAdapter.setMargin(topEnable, rightEnable, bottomEnable, leftEnable);
     }
 
+    @Override
     public void setSpacing(boolean enabled) {
         layoutAdapter.setSpacing(enabled);
     }
