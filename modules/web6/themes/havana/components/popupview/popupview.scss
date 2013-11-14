@@ -14,3 +14,10 @@
 .v-popupview {
 	cursor: pointer;
 }
+
+.v-popupview-abbreviated {
+  text-decoration: none;
+  border-bottom: 1px dashed;
+  padding-bottom: 1px;
+  display: inline;
+}

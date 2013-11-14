@@ -53,7 +53,9 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.TextArea;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.DocumentHelper;
@@ -117,6 +119,8 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     protected String customStyle;
 
     protected Security security = AppBeans.get(Security.class);
+
+    protected static final int MAX_TEXT_LENGTH_GAP = 10;
 
     @Override
     public java.util.List<Table.Column> getColumns() {
@@ -531,6 +535,8 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                         final Datatype datatype = propertyPath.getRange().asDatatype();
                         if (BooleanDatatype.NAME.equals(datatype.getName()) && column.getFormatter() == null) {
                             addGeneratedColumn(propertyPath, new ReadOnlyBooleanDatatypeGenerator());
+                        } else if (column.getMaxTextLength() != null) {
+                            addGeneratedColumn(propertyPath, new AbbreviatedColumnGenerator(column));
                         }
                     }
                 } else if (propertyPath.getRange().isEnum()) {
@@ -1321,6 +1327,50 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                 checkBoxImage = new com.vaadin.ui.Embedded("", new VersionedThemeResource("components/table/images/checkbox-unchecked.png"));
             }
             return checkBoxImage;
+        }
+    }
+
+
+    protected class AbbreviatedColumnGenerator implements SystemTableColumnGenerator {
+
+        protected Table.Column column;
+
+        public AbbreviatedColumnGenerator(Table.Column column) {
+            this.column = column;
+        }
+
+        @Override
+        public com.vaadin.ui.Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
+            return generateCell((AbstractSelect) source, itemId, columnId);
+        }
+
+        protected com.vaadin.ui.Component generateCell(AbstractSelect source, Object itemId, Object columnId) {
+            final Property property = source.getItem(itemId).getItemProperty(columnId);
+            final Object value = property.getValue();
+
+            if (value == null) {
+                return null;
+            }
+            com.vaadin.ui.Component cell;
+
+            String stringValue = value.toString();
+            int maxTextLength = column.getMaxTextLength();
+            if (stringValue.length() > maxTextLength + MAX_TEXT_LENGTH_GAP)  {
+                TextArea content = new TextArea(null, stringValue);
+                content.setWidth("100%");
+                content.setHeight("100%");
+                content.setReadOnly(true);
+                CssLayout cssLayout = new CssLayout();
+                cssLayout.setHeight("300px");
+                cssLayout.setWidth("400px");
+                cell = new PopupView(StringEscapeUtils.escapeHtml(StringUtils.abbreviate(stringValue, maxTextLength)),
+                        cssLayout);
+                cell.addStyleName("abbreviated");
+                cssLayout.addComponent(content);
+            } else {
+                cell = new Label(stringValue);
+            }
+            return cell;
         }
     }
 
