@@ -155,21 +155,6 @@ public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implemen
     }
 
     @Override
-    public Alignment getAlignment() {
-        return alignment;
-    }
-
-    @Override
-    public void setAlignment(Alignment alignment) {
-        this.alignment = alignment;
-        final com.vaadin.ui.Component parentComponent = component.getParent();
-        if (parentComponent instanceof Layout.AlignmentHandler) {
-            ((Layout.AlignmentHandler) parentComponent).setComponentAlignment(component,
-                    WebComponentsHelper.convertAlignment(alignment));
-        }
-    }
-
-    @Override
     public void setMargin(boolean enable) {
         component.setMargin(enable);
     }

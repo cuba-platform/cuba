@@ -336,36 +336,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     }
 
     @Override
-    public float getHeight() {
-        return componentComposition.getHeight();
-    }
-
-    @Override
-    public int getHeightUnits() {
-        return UNIT_SYMBOLS.indexOf(componentComposition.getHeightUnits());
-    }
-
-    @Override
-    public void setHeight(String height) {
-        componentComposition.setHeight(height);
-    }
-
-    @Override
-    public float getWidth() {
-        return componentComposition.getWidth();
-    }
-
-    @Override
-    public void setWidth(String width) {
-        componentComposition.setWidth(width);
-    }
-
-    @Override
-    public int getWidthUnits() {
-        return UNIT_SYMBOLS.indexOf(componentComposition.getWidthUnits());
-    }
-
-    @Override
     public boolean isAllowPopupMenu() {
         return component.isAllowPopupMenu();
     }

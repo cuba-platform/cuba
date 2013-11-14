@@ -275,16 +275,6 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
     }
 
     @Override
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    @Override
     public void requestFocus() {
         Iterator<com.vaadin.ui.Component> componentIterator = getComponentContent().iterator();
         if (componentIterator.hasNext()) {
@@ -292,21 +282,6 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
             if (component instanceof com.vaadin.ui.Component.Focusable) {
                 ((com.vaadin.ui.Component.Focusable) component).focus();
             }
-        }
-    }
-
-    @Override
-    public Alignment getAlignment() {
-        return alignment;
-    }
-
-    @Override
-    public void setAlignment(Alignment alignment) {
-        this.alignment = alignment;
-        final com.vaadin.ui.Component parentComponent = component.getParent();
-        if (parentComponent instanceof Layout.AlignmentHandler) {
-            ((Layout.AlignmentHandler) parentComponent).setComponentAlignment(component,
-                    WebComponentsHelper.convertAlignment(alignment));
         }
     }
 

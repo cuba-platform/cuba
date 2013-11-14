@@ -10,7 +10,6 @@ import com.haulmont.cuba.gui.components.SplitPanel;
 import com.haulmont.cuba.web.toolkit.ui.CubaHorizontalSplitPanel;
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.AbstractSplitPanel;
-import com.vaadin.ui.Layout;
 import com.vaadin.ui.VerticalSplitPanel;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -117,31 +116,7 @@ public class WebSplitPanel
     }
 
     @Override
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    @Override
     public void requestFocus() {
-    }
-
-    @Override
-    public Alignment getAlignment() {
-        return alignment;
-    }
-
-    @Override
-    public void setAlignment(Alignment alignment) {
-        this.alignment = alignment;
-        final com.vaadin.ui.Component parentComponent = component.getParent();
-        if (parentComponent instanceof Layout.AlignmentHandler) {
-            ((Layout.AlignmentHandler) parentComponent).setComponentAlignment(component, WebComponentsHelper.convertAlignment(alignment));
-        }
     }
 
     @Override
