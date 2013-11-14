@@ -840,13 +840,13 @@ public class VTree extends FocusElementPanel implements Paintable, VHasDropHandl
             }
         }
 
-        private void fireClick(final Event evt) {
+        protected void fireClick(Event evt) {
             /*
              * Ensure we have focus in tree before sending variables. Otherwise
              * previously modified field may contain dirty variables.
              */
             if (!treeHasFocus) {
-                if (isIE6OrOpera()) {
+                if (BrowserInfo.get().isOpera()) {
                     if (focusedNode == null) {
                         getNodeByKey(key).setFocused(true);
                     } else {
@@ -857,11 +857,13 @@ public class VTree extends FocusElementPanel implements Paintable, VHasDropHandl
                 }
             }
             final MouseEventDetails details = new MouseEventDetails(evt);
+            final int eventType = evt.getTypeInt();
+
             ScheduledCommand command = new ScheduledCommand() {
                 public void execute() {
                     // non-immediate iff an immediate select event is going to
                     // happen
-                    boolean imm = (evt.getTypeInt() == Event.ONDBLCLICK && doubleClickMode)
+                    boolean imm = (eventType == Event.ONDBLCLICK && doubleClickMode)
                             || !immediate
                             || !selectable
                             || (!isNullSelectionAllowed && isSelected() && selectedIds
