@@ -28,7 +28,7 @@ public enum DbmsType {
         public Map<String, String> getJpaParameters() {
             Map<String, String> params = new HashMap<>();
             params.put("openjpa.jdbc.DBDictionary",
-                    "com.haulmont.cuba.core.sys.persistence.CubaHSQLDictionary(RequiresCastForComparisons=true)");
+                    "com.haulmont.cuba.core.sys.persistence.CubaHSQLDictionary(RequiresCastForComparisons=true,SupportsSelectForUpdate=true)");
             params.put("openjpa.jdbc.MappingDefaults",
                     "FieldStrategies='java.util.UUID=com.haulmont.cuba.core.sys.persistence.UuidStringValueHandler'");
             return params;
