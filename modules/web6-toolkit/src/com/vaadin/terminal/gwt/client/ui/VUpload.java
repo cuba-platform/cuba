@@ -33,11 +33,7 @@ import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.vaadin.terminal.gwt.client.ApplicationConnection;
-import com.vaadin.terminal.gwt.client.Paintable;
-import com.vaadin.terminal.gwt.client.UIDL;
-import com.vaadin.terminal.gwt.client.VConsole;
-import com.vaadin.terminal.gwt.client.VTooltip;
+import com.vaadin.terminal.gwt.client.*;
 
 /**
  * 
@@ -46,7 +42,7 @@ import com.vaadin.terminal.gwt.client.VTooltip;
  * <br/>
  * [Compatible with Vaadin 6.6]
  */
-public class VUpload extends FormPanel implements Paintable {
+public class VUpload extends SimplePanel implements Paintable {
 
     private final class MyFileUpload extends FileUpload {
         @Override
@@ -57,7 +53,7 @@ public class VUpload extends FormPanel implements Paintable {
                         && !"".equals(fu.getFilename())) {
                     submit();
                 }
-            } else if (event.getTypeInt() == Event.ONFOCUS) {
+            } else if (BrowserInfo.get().isIE() && event.getTypeInt() == Event.ONFOCUS) {
                 // IE and user has clicked on hidden textarea part of upload
                 // field. Manually open file selector, other browsers do it by
                 // default.
@@ -176,9 +172,9 @@ public class VUpload extends FormPanel implements Paintable {
         paintableId = uidl.getId();
         if (uidl.hasAttribute("action")) {
             String action = uidl.getStringAttribute("action");
-            setAction("".equals(action) ? "#" : action);
+            element.setAction("".equals(action) ? "#" : action);
         } else {
-            setAction(client.getAppUri());
+            element.setAction(client.getAppUri());
         }
         nextUploadId = uidl.getIntAttribute("nextid");
 
@@ -380,5 +376,4 @@ public class VUpload extends FormPanel implements Paintable {
             synthesizedFrame = null;
         }
     }
-
 }
