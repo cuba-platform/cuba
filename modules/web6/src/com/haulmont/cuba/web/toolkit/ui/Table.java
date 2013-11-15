@@ -54,6 +54,11 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer, 
 
     private List<CollapseListener> columnCollapseListeners = new ArrayList<>();
 
+    /**
+     * Table cell specific tooltip generator
+     */
+    private ItemDescriptionGenerator itemDescriptionGenerator;
+
     @Override
     public void resetSortOrder() {
         sortContainerPropertyId = null;
@@ -556,6 +561,8 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer, 
 
             paintCellStyleGenerator(target, itemId);
 
+            paintRowTooltips(target, itemId);
+
             // cells
             int currentColumn = 0;
             for (final Iterator it = visibleColumns.iterator(); it.hasNext(); currentColumn++) {
@@ -763,6 +770,7 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer, 
         } else {
             target.addText((String) value);
         }
+        paintCellTooltips(target, itemId, columnId);
     }
 
     protected void paintAggregationRow(PaintTarget target, Map<Object, Object> aggregations) throws PaintException {
@@ -1228,5 +1236,68 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer, 
         String pageLengthSelectorCaption();
         boolean showPageLengthSelector();
         int[] pageLengths();
+    }
+
+    private void paintCellTooltips(PaintTarget target, Object itemId,
+                                   Object columnId) throws PaintException {
+        if (itemDescriptionGenerator != null) {
+            String itemDescription = itemDescriptionGenerator
+                    .generateDescription(this, itemId, columnId);
+            if (itemDescription != null && !itemDescription.equals("")) {
+                target.addAttribute("descr-" + columnIdMap.key(columnId),
+                        itemDescription);
+            }
+        }
+    }
+
+    private void paintRowTooltips(PaintTarget target, Object itemId)
+            throws PaintException {
+        if (itemDescriptionGenerator != null) {
+            String rowDescription = itemDescriptionGenerator
+                    .generateDescription(this, itemId, null);
+            if (rowDescription != null && !rowDescription.equals("")) {
+                target.addAttribute("rowdescr", rowDescription);
+            }
+        }
+    }
+
+    public void setItemDescriptionGenerator(ItemDescriptionGenerator generator) {
+        if (generator != itemDescriptionGenerator) {
+            itemDescriptionGenerator = generator;
+            // Assures the visual refresh. No need to reset the page buffer
+            // before as the content has not changed, only the descriptions
+            refreshRenderedCells();
+        }
+    }
+
+
+
+
+    /**
+     * Get the item description generator which generates tooltips for cells and
+     * rows in the Table.
+     */
+    public ItemDescriptionGenerator getItemDescriptionGenerator() {
+        return itemDescriptionGenerator;
+    }
+
+    public interface ItemDescriptionGenerator extends Serializable {
+
+        /**
+         * Called by Table when a cell (and row) is painted or a item is painted
+         * in Tree
+         *
+         * @param source
+         *            The source of the generator, the Tree or Table the
+         *            generator is attached to
+         * @param itemId
+         *            The itemId of the painted cell
+         * @param propertyId
+         *            The propertyId of the cell, null when getting row
+         *            description
+         * @return The description or "tooltip" of the item.
+         */
+        public String generateDescription(Component source, Object itemId,
+                                          Object propertyId);
     }
 }

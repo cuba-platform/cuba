@@ -2395,7 +2395,7 @@ public abstract class Table
                 setElement(rowElement);
                 DOM.sinkEvents(getElement(), Event.ONMOUSEDOWN | Event.ONMOUSEUP | Event.ONCLICK
                         | Event.TOUCHEVENTS | Event.ONDBLCLICK
-                        | Event.ONCONTEXTMENU);
+                        | Event.ONCONTEXTMENU  | VTooltip.TOOLTIP_EVENTS);
             }
 
             public ITableRow(UIDL uidl, char[] aligns) {
@@ -2412,12 +2412,20 @@ public abstract class Table
                     addStyleName(CLASSNAME + "-row-" + rowStyle);
                 }
 
+                String rowDescription = uidl.getStringAttribute("rowdescr");
+                if (rowDescription != null && !rowDescription.equals("")) {
+                    TooltipInfo tooltipInfo = new TooltipInfo(rowDescription);
+                    client.registerTooltip(Table.this, rowElement, tooltipInfo);
+                } else {
+                    client.registerTooltip(Table.this, rowElement, null);
+                }
+
                 int col = 0;
 
                 // row header
                 if (showRowHeaders) {
                     addCell(buildCaptionHtmlSnippet(uidl), aligns[col], "", col,
-                            true);
+                            true, null);
                     col++;
                 }
 
@@ -2494,11 +2502,17 @@ public abstract class Table
                         style = uidl.getStringAttribute("style-" + columnId);
                     }
 
+                    String description = null;
+                    if (uidl.hasAttribute("descr-" + columnId)) {
+                        description = uidl.getStringAttribute("descr-"
+                                + columnId);
+                    }
+
                     if (cell instanceof String) {
-                        addCell(cell.toString(), aligns[col], style, col, false);
+                        addCell(cell.toString(), aligns[col], style, col, false, description);
                     } else {
                         Paintable cellContent = client.getPaintable((UIDL) cell);
-                        addCell((Widget) cellContent, aligns[col], style, col);
+                        addCell((Widget) cellContent, aligns[col], style, col, description);
                         paintComponent(cellContent, (UIDL) cell);
                     }
                     col++;
@@ -2506,7 +2520,7 @@ public abstract class Table
             }
 
             public void addCell(String text, char align, String style, int col,
-                                boolean textIsHTML) {
+                                boolean textIsHTML, String description) {
                 // String only content is optimized by not using Label widget
                 final Element td = DOM.createTD();
                 final Element container = DOM.createDiv();
@@ -2537,6 +2551,17 @@ public abstract class Table
                 tableCells.add(td);
 
                 Tools.textSelectionEnable(td, textSelectionEnabled);
+
+                setTooltip(td, description);
+            }
+
+            protected void setTooltip(Element td, String description) {
+                if (description != null && !description.equals("")) {
+                    TooltipInfo info = new TooltipInfo(description);
+                    client.registerTooltip(Table.this, td, info);
+                } else {
+                    client.registerTooltip(Table.this, td, null);
+                }
             }
 
             public void removeCells() {
@@ -2546,7 +2571,7 @@ public abstract class Table
                 tableCells.clear();
             }
 
-            public void addCell(Widget w, char align, String style, int col) {
+            public void addCell(Widget w, char align, String style, int col, String description) {
                 final Element td = DOM.createTD();
                 final Element container = DOM.createDiv();
 
@@ -2577,6 +2602,7 @@ public abstract class Table
                 }
 
                 setCellWidget(container, w, col);
+                setTooltip(td, description);
             }
 
             protected void moveCol(int oldIndex, int newIndex) {
@@ -2671,6 +2697,21 @@ public abstract class Table
                 }
             }
 
+            private void handleTooltips(final Event event, Element target){
+                if(target.hasTagName("TD")){
+                    if(client.getTooltipTitleInfo(Table.this, target) != null){
+                        // Cell has description, use it
+                        client.handleTooltipEvent(event, Table.this, target);
+                    } else {
+                    // Cell might have row description, use row description
+                        client.handleTooltipEvent(event, Table.this, target.getParentElement());
+                    }
+                } else {
+                // Table row (tr)
+                    client.handleTooltipEvent(event, Table.this, target);
+                }
+            }
+
             /*
              * React on click that occur on content cells only
              */
@@ -2683,6 +2724,11 @@ public abstract class Table
                 if (Tools.isCheckbox(targetElement) || Tools.isRadio(targetElement))
                     return;
                 boolean targetCellOrRowFound = targetTdOrTr != null;
+
+                if(targetCellOrRowFound){
+                    handleTooltips(event, targetTdOrTr);
+                }
+
                 switch (DOM.eventGetType(event)) {
                     case Event.ONCLICK:
                         handleClickEvent(event);

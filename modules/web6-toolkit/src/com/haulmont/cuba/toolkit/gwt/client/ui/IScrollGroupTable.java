@@ -427,8 +427,15 @@ public class IScrollGroupTable extends IScrollTable {
                 Iterator it = uidl.getChildIterator();
                 while (colIndex < visibleColOrder.length) {
                     String columnId = visibleColOrder[colIndex];
+
+                    String description = null;
+                    if (uidl.hasAttribute("descr-" + columnId)) {
+                        description = uidl.getStringAttribute("descr-"
+                                + columnId);
+                    }
+
                     if ("-1".equals(columnId)) { //paint cell for columns group divider
-                        addCell("", aligns[colIndex], "", colIndex, false);
+                        addCell("", aligns[colIndex], "", colIndex, false, description);
                     } else if (it.hasNext()) {
                         Object cell = it.next();
                         String style = "";
@@ -437,12 +444,12 @@ public class IScrollGroupTable extends IScrollTable {
                         }
 
                         if (cell instanceof String) {
-                            addCell(cell.toString(), aligns[colIndex], style, colIndex, false);
+                            addCell(cell.toString(), aligns[colIndex], style, colIndex, false, description);
 
                         } else {
                             Paintable cellContent = client
                                     .getPaintable((UIDL) cell);
-                            addCell((Widget) cellContent, aligns[colIndex], style, colIndex);
+                            addCell((Widget) cellContent, aligns[colIndex], style, colIndex, description);
                             paintComponent(cellContent, (UIDL) cell);
                         }
                     }
@@ -486,15 +493,21 @@ public class IScrollGroupTable extends IScrollTable {
                         Iterator it = uidl.getChildIterator();
                         while (colIndex < visibleColOrder.length) {
                             String columnId = visibleColOrder[colIndex];
+                            String description = null;
+                            if (uidl.hasAttribute("descr-" + columnId)) {
+                                description = uidl.getStringAttribute("descr-"
+                                        + columnId);
+                            }
+
                             if ("-1".equals(columnId)) {//paint cell for columns group divider
-                                addCell("", aligns[colIndex], "", colIndex, false);
+                                addCell("", aligns[colIndex], "", colIndex, false, description);
                             } else if (it.hasNext()) {
                                 final Object cell = it.next();
                                 if (cell instanceof String) {
-                                    addCell((String) cell, aligns[colIndex], "", colIndex, false);
+                                    addCell((String) cell, aligns[colIndex], "", colIndex, false, description);
                                 } else {
                                     Paintable p = client.getPaintable((UIDL) cell);
-                                    addCell((Widget) p, aligns[colIndex], "", colIndex);
+                                    addCell((Widget) p, aligns[colIndex], "", colIndex, description);
                                     paintComponent(p, (UIDL) cell);
                                 }
                             }

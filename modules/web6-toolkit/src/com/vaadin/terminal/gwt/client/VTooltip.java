@@ -18,12 +18,9 @@ package com.vaadin.terminal.gwt.client;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.*;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.haulmont.cuba.toolkit.gwt.client.ui.Table;
 import com.vaadin.terminal.gwt.client.ui.VButton;
 import com.vaadin.terminal.gwt.client.ui.VCheckBox;
 import com.vaadin.terminal.gwt.client.ui.VOverlay;
@@ -119,7 +116,7 @@ public class VTooltip extends VOverlay {
                     sinkEvents(Event.ONMOUSEOVER | Event.ONMOUSEOUT);
                 }
             });
-            if (!(tooltipOwner instanceof VButton)&&!(tooltipOwner instanceof VCheckBox)) {
+            if (!(tooltipOwner instanceof VButton)&&!(tooltipOwner instanceof VCheckBox)&&!(tooltipOwner instanceof Table)) {
                 nativePreviewHandlerRegistration = Event.addNativePreviewHandler(new Event.NativePreviewHandler() {
                     @Override
                     public void onPreviewNativeEvent(Event.NativePreviewEvent event) {
@@ -149,7 +146,7 @@ public class VTooltip extends VOverlay {
     }
 
     public void showTooltip(Paintable owner, Event event, Object key) {
-        if (!(owner instanceof VButton)&&!(owner instanceof VCheckBox)) {
+        if (!(owner instanceof VButton)&&!(owner instanceof VCheckBox)&&!(owner instanceof Table)) {
             updatePosition(event);
             tooltipOwner = owner;
             TooltipInfo info = ac.getTooltipTitleInfo(owner, tooltipKey);
@@ -226,7 +223,7 @@ public class VTooltip extends VOverlay {
     };
 
     public void hideTooltip() {
-        if (!(tooltipOwner instanceof VButton)&&!(tooltipOwner instanceof VCheckBox)) {
+        if (!(tooltipOwner instanceof VButton)&&!(tooltipOwner instanceof VCheckBox)&&!(tooltipOwner instanceof Table)) {
             if (nativePreviewHandlerRegistration != null) {
                 nativePreviewHandlerRegistration.removeHandler();
             }
@@ -265,8 +262,7 @@ public class VTooltip extends VOverlay {
     public void handleTooltipEvent(Event event, Paintable owner, Object key) {
         final int type = DOM.eventGetType(event);
         if ((VTooltip.TOOLTIP_EVENTS & type) == type && owner != null) {
-            if ((tooltipOwner instanceof VButton || tooltipOwner instanceof VCheckBox || tooltipOwner == null) &&
-                    ((owner instanceof VButton) || (owner instanceof VCheckBox))) {
+            if ((owner instanceof VButton) || (owner instanceof VCheckBox) || (owner instanceof Table)) {
                 if (type == Event.ONMOUSEOVER) {
                     showTooltip(owner, event, key);
                 } else if (type == Event.ONMOUSEMOVE) {
@@ -284,7 +280,7 @@ public class VTooltip extends VOverlay {
 
     @Override
     public void onBrowserEvent(Event event) {
-        if (!(tooltipOwner instanceof VButton)&&!(tooltipOwner instanceof VCheckBox)){
+        if (!(tooltipOwner instanceof VButton)&&!(tooltipOwner instanceof VCheckBox) &&!(tooltipOwner instanceof Table)){
             return;
         }
         final int type = DOM.eventGetType(event);

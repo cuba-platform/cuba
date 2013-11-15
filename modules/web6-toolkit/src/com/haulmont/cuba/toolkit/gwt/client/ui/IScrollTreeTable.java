@@ -238,7 +238,7 @@ public class IScrollTreeTable
                 // row header
                 if (showRowHeaders) {
                     addCell(buildCaptionHtmlSnippet(uidl), aligns[col], "", col,
-                            true);
+                            true, null);
                     col++;
                 }
 
@@ -266,7 +266,7 @@ public class IScrollTreeTable
             }
 
             @Override
-            public void addCell(String text, char align, String style, int col, boolean textIsHTML) {
+            public void addCell(String text, char align, String style, int col, boolean textIsHTML, String description) {
                 // String only content is optimized by not using Label widget
                 final Element td = DOM.createTD();
                 final Element container = DOM.createDiv();
@@ -308,10 +308,12 @@ public class IScrollTreeTable
                 tableCells.add(td);
 
                 Tools.textSelectionEnable(td, textSelectionEnabled);
+
+                setTooltip(td, description);
             }
 
             @Override
-            public void addCell(Widget w, char align, String style, int col) {
+            public void addCell(Widget w, char align, String style, int col, String description) {
                 final Element td = DOM.createTD();
                 final Element container = DOM.createDiv();
 
@@ -359,6 +361,8 @@ public class IScrollTreeTable
                 }
 
                 setCellWidget(contentDiv, w, col);
+
+                setTooltip(td, description);
             }
 
             public void disableBrowserIntelligence() {
