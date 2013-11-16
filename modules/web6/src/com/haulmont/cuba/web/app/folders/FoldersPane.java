@@ -87,8 +87,8 @@ public class FoldersPane extends VerticalLayout {
     protected int verticalSplitPos;
 
     protected AppWindow parentAppWindow;
-    protected WebSplitPanel vertSplit;
-    protected WebSplitPanel horSplit;
+    protected SplitPanel vertSplit;
+    protected SplitPanel horSplit;
 
     protected WebConfig webConfig = AppBeans.get(Configuration.class).getConfig(WebConfig.class);
 
@@ -115,8 +115,8 @@ public class FoldersPane extends VerticalLayout {
     }
 
     public void init(Component parent) {
-        if (parent instanceof WebSplitPanel) {
-            horSplit = (WebSplitPanel) parent;
+        if (parent instanceof SplitPanel) {
+            horSplit = (SplitPanel) parent;
         }
 
         boolean visible;
@@ -165,9 +165,7 @@ public class FoldersPane extends VerticalLayout {
 
         if (show) {
             if (horSplit != null) {
-                SplitPanel vaadinHSplit = horSplit.getComponent();
-
-                vaadinHSplit.setSplitPosition(horizontalSplitPos, Sizeable.UNITS_PIXELS);
+                horSplit.setSplitPosition(horizontalSplitPos, Sizeable.UNITS_PIXELS);
                 horSplit.setLocked(false);
             } else {
                 setWidth(horizontalSplitPos, Sizeable.UNITS_PIXELS);
@@ -216,9 +214,8 @@ public class FoldersPane extends VerticalLayout {
             }
 
             if (appFoldersPane != null && searchFoldersPane != null) {
-                vertSplit = new WebSplitPanel();
-                SplitPanel vaadinVSplit = vertSplit.getComponent();
-                vaadinVSplit.setSplitPosition(verticalSplitPos, Sizeable.UNITS_PIXELS);
+                vertSplit = new WebSplitPanel().getComponent();
+                vertSplit.setSplitPosition(verticalSplitPos, Sizeable.UNITS_PIXELS);
 
                 VerticalLayout afLayout = new VerticalLayout();
                 afLayout.setSpacing(true);
@@ -227,7 +224,7 @@ public class FoldersPane extends VerticalLayout {
                     addFoldersLabel(afLayout, appFoldersLabel);
                 afLayout.addComponent(appFoldersPane);
                 afLayout.setExpandRatio(appFoldersPane, 1);
-                vaadinVSplit.setFirstComponent(afLayout);
+                vertSplit.setFirstComponent(afLayout);
 
                 VerticalLayout sfLayout = new VerticalLayout();
                 sfLayout.setSpacing(true);
@@ -236,9 +233,9 @@ public class FoldersPane extends VerticalLayout {
                     addFoldersLabel(sfLayout, searchFoldersLabel);
                 sfLayout.addComponent(searchFoldersPane);
                 sfLayout.setExpandRatio(searchFoldersPane, 1);
-                vaadinVSplit.setSecondComponent(sfLayout);
+                vertSplit.setSecondComponent(sfLayout);
 
-                addComponent(vaadinVSplit);
+                addComponent(vertSplit);
             } else {
                 if (appFoldersPane != null) {
                     if (appFoldersLabel != null)
@@ -275,9 +272,7 @@ public class FoldersPane extends VerticalLayout {
             savePosition();
 
             if (horSplit != null) {
-                SplitPanel vaadinHSplit = horSplit.getComponent();
-
-                vaadinHSplit.setSplitPosition(0, Sizeable.UNITS_PIXELS);
+                horSplit.setSplitPosition(0, Sizeable.UNITS_PIXELS);
                 horSplit.setLocked(true);
             } else {
                 setWidth(0, Sizeable.UNITS_PIXELS);
@@ -378,14 +373,10 @@ public class FoldersPane extends VerticalLayout {
     public void savePosition() {
         if (visible) {
             if (horSplit != null) {
-                SplitPanel vaadinHSplit = horSplit.getComponent();
-
-                horizontalSplitPos = vaadinHSplit.getSplitPosition();
+                horizontalSplitPos = horSplit.getSplitPosition();
             }
             if (vertSplit != null) {
-                SplitPanel vaadinVSplit = vertSplit.getComponent();
-
-                verticalSplitPos = vaadinVSplit.getSplitPosition();
+                verticalSplitPos = vertSplit.getSplitPosition();
             }
         }
         userSettingsTools.saveFoldersState(
