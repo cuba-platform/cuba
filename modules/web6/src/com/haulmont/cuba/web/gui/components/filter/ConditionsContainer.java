@@ -359,7 +359,7 @@ class ConditionsContainer implements Container.Hierarchical, Container.Sortable,
                 return new ObjectProperty<>((OperationEditor.Editor) condition.createOperationEditor().getImpl());
 
             } else if (id.equals(PARAM_PROP_ID)) {
-                ParamEditor paramEditor = new ParamEditor(condition, false, false);
+                ParamEditor paramEditor = new ParamEditor(condition, false, false, false);
                 // pack editor component to table cell
                 paramEditor.setWidth(100, Sizeable.UNITS_PERCENTAGE);
                 paramEditor.setFieldWidth("100%");
