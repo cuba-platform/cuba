@@ -698,6 +698,7 @@ public class WebWindowManager extends WindowManager {
         switch (openMode.openType) {
             case DIALOG: {
                 final com.vaadin.ui.Window win = (com.vaadin.ui.Window) openMode.getData();
+                removeCloseListeners(win);
                 App.getInstance().getAppWindow().removeWindow(win);
                 fireListeners(window, getTabs().size() != 0);
                 break;
