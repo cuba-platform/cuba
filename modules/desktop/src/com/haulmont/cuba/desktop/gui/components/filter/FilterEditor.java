@@ -559,6 +559,7 @@ public class FilterEditor extends AbstractFilterEditor {
 
         protected abstract JComponent getComponent(Object value);
 
+        @Override
         public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
             JComponent component = components.get(value);
             JPanel wrapper;
@@ -574,6 +575,7 @@ public class FilterEditor extends AbstractFilterEditor {
             return wrapper;
         }
 
+        @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
                                                        int row, int column) {
             JComponent component = components.get(value);
@@ -601,6 +603,7 @@ public class FilterEditor extends AbstractFilterEditor {
 
     protected class OperationCell extends AbstractCell {
 
+        @Override
         protected JComponent getComponent(final Object value) {
             AbstractOperationEditor editor = ((AbstractCondition<Param>) value).getOperationEditor();
             if (editor == null) {
@@ -622,12 +625,14 @@ public class FilterEditor extends AbstractFilterEditor {
 
     protected class ParamCell extends AbstractCell {
 
+        @Override
         protected JComponent getComponent(Object value) {
-            JPanel component = new ParamEditor((AbstractCondition<Param>) value, false);
+            JPanel component = new ParamEditor((AbstractCondition<Param>) value, false, false);
             setComponentWidth(component, PARAM_COLUMN_WIDTH);
             return component;
         }
 
+        @Override
         protected JPanel wrapComponent(JComponent component) {
             return (JPanel) component;
         }
@@ -635,6 +640,7 @@ public class FilterEditor extends AbstractFilterEditor {
 
     protected class DeleteCell extends AbstractCell {
 
+        @Override
         protected JComponent getComponent(final Object value) {
             final JButton delBtn = new JButton(App.getInstance().getResources().getIcon("icons/item-remove.png"));
             delBtn.addActionListener(new ActionListener() {

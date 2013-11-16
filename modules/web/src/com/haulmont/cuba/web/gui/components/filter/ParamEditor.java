@@ -16,8 +16,11 @@ public class ParamEditor extends HorizontalLayout implements AbstractCondition.L
     protected AbstractCondition<Param> condition;
     protected Component field;
     protected String fieldWidth = null;
+    protected boolean applyRequired;
 
-    public ParamEditor(final AbstractCondition<Param> condition, boolean showOperation, boolean showCaption) {
+    public ParamEditor(final AbstractCondition<Param> condition,
+                       boolean showOperation, boolean showCaption, boolean applyRequired) {
+
         this.condition = condition;
 
         setSpacing(true);
@@ -36,7 +39,9 @@ public class ParamEditor extends HorizontalLayout implements AbstractCondition.L
                 setComponentAlignment(opLab, Alignment.MIDDLE_LEFT);
             }
             field = condition.getParam().createEditComponent();
-            if (field instanceof Field) {
+
+            this.applyRequired = applyRequired;
+            if (applyRequired && field instanceof Field) {
                 ((Field) field).setRequired(condition.isRequired());
             }
             addComponent(field);
@@ -58,6 +63,9 @@ public class ParamEditor extends HorizontalLayout implements AbstractCondition.L
             removeComponent(field);
         }
         field = condition.getParam().createEditComponent();
+        if (applyRequired && field instanceof Field) {
+            ((Field) field).setRequired(condition.isRequired());
+        }
         field.setWidth(fieldWidth);
         addComponent(field);
     }

@@ -23,9 +23,8 @@ import java.util.List;
 /**
  * {@link ConditionsTree} adapter for the desktop-client table component.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
 */
 class ConditionsTableModel extends AbstractTableModel {
 

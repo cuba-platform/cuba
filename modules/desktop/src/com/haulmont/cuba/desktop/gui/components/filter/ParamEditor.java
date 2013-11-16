@@ -14,20 +14,24 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 /**
- * <p>$Id$</p>
- *
  * @author devyatkin
+ * @version $Id$
  */
 public class ParamEditor extends JPanel implements AbstractCondition.Listener {
-    private AbstractCondition<Param> condition;
-    private JComponent field;
 
-    public ParamEditor(final AbstractCondition<Param> condition, boolean showOperation) {
+    protected AbstractCondition<Param> condition;
+    protected JComponent field;
+    protected boolean applyRequired;
+
+    public ParamEditor(final AbstractCondition<Param> condition, boolean showOperation, boolean applyRequired) {
         super(new MigLayout("insets 0 0 0 0, align left"));
         this.condition = condition;
 
         if (condition.getParam() != null) {
-            field = condition.getParam().createEditComponent();
+            ParamEditorComponent editComponent = condition.getParam().createEditComponent();
+            editComponent.setRequired(applyRequired && condition.isRequired());
+
+            field = editComponent.getComponent();
             if (showOperation) {
                 JLabel opLab = new JLabel(condition.getOperationCaption());
                 add(opLab);
@@ -37,6 +41,9 @@ public class ParamEditor extends JPanel implements AbstractCondition.Listener {
             }
         }
         condition.addListener(this);
+
+        this.applyRequired = applyRequired;
+
         //for composite components
         addPropertyChangeListener("background", new PropertyChangeListener() {
             @Override
@@ -54,7 +61,6 @@ public class ParamEditor extends JPanel implements AbstractCondition.Listener {
 
     @Override
     public void captionChanged() {
-
     }
 
     @Override
@@ -62,10 +68,12 @@ public class ParamEditor extends JPanel implements AbstractCondition.Listener {
         if (field != null) {
             remove(field);
         }
-        field = condition.getParam().createEditComponent();
+        ParamEditorComponent editComponent = condition.getParam().createEditComponent();
+        editComponent.setRequired(applyRequired && condition.isRequired());
+
+        field = editComponent.getComponent();
         updateBackground();
         add(field);
-
     }
 
     @Override

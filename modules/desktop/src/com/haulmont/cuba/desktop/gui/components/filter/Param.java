@@ -17,12 +17,15 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.desktop.gui.components.*;
 import com.haulmont.cuba.desktop.sys.vcl.ExtendedComboBox;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.DateField;
+import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.filter.AbstractParam;
-import com.haulmont.cuba.gui.data.*;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.DsBuilder;
+import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import org.apache.commons.lang.BooleanUtils;
@@ -43,7 +46,7 @@ import java.util.List;
  * @author devyatkin
  * @version $Id$
  */
-public class Param extends AbstractParam<JComponent> {
+public class Param extends AbstractParam<ParamEditorComponent> {
 
     public static final Dimension TEXT_COMPONENT_DIM = new Dimension(120, Integer.MAX_VALUE);
 
@@ -63,8 +66,8 @@ public class Param extends AbstractParam<JComponent> {
     }
 
     @Override
-    public JComponent createEditComponent() {
-        JComponent component;
+    public ParamEditorComponent createEditComponent() {
+        ParamEditorComponent component;
 
         switch (type) {
             case DATATYPE:
@@ -89,7 +92,7 @@ public class Param extends AbstractParam<JComponent> {
         return component;
     }
 
-    private JComponent createUnaryField() {
+    protected ParamEditorComponent createUnaryField() {
         final JCheckBox field = new JCheckBox();
 
         field.addActionListener(new ActionListener() {
@@ -101,11 +104,11 @@ public class Param extends AbstractParam<JComponent> {
         });
 
         field.setSelected(BooleanUtils.isTrue((Boolean) value));
-        return field;
+        return new NonRequiredParamEditorComponent(field);
     }
 
-    private JComponent createDatatypeField(Datatype datatype) {
-        JComponent component;
+    protected ParamEditorComponent createDatatypeField(Datatype datatype) {
+        ParamEditorComponent component;
 
         if (String.class.equals(javaClass)) {
             component = createTextField();
@@ -123,7 +126,7 @@ public class Param extends AbstractParam<JComponent> {
         return component;
     }
 
-    private JComponent createTextField() {
+    protected ParamEditorComponent createTextField() {
         final DesktopTextField field = new DesktopTextField();
         field.addListener(new ValueListener() {
             @Override
@@ -156,14 +159,12 @@ public class Param extends AbstractParam<JComponent> {
         } else
             field.setValue(value);
 
-        field.setRequired(required);
-
         JComponent component = field.getComponent();
         component.setMaximumSize(TEXT_COMPONENT_DIM);
-        return component;
+        return new FieldParamEditorComponent(field);
     }
 
-    private JComponent createDateField(Class javaClass) {
+    protected ParamEditorComponent createDateField(Class javaClass) {
         if (inExpr) {
             if (property != null) {
                 TemporalType tt = (TemporalType) property.getAnnotations().get("temporal");
@@ -173,7 +174,7 @@ public class Param extends AbstractParam<JComponent> {
             }
             final ListEditComponent component = new ListEditComponent(javaClass);
             initListEdit(component);
-            return component;
+            return new NonRequiredParamEditorComponent(component);
         }
 
         final DesktopDateField field = new DesktopDateField();
@@ -189,10 +190,10 @@ public class Param extends AbstractParam<JComponent> {
         }
         if (dateOnly) {
             resolution = DateField.Resolution.DAY;
-            formatStr = MessageProvider.getMessage(AppConfig.getMessagesPack(), "dateFormat");
+            formatStr = messages.getMessage(AppConfig.getMessagesPack(), "dateFormat");
         } else {
             resolution = DateField.Resolution.MIN;
-            formatStr = MessageProvider.getMessage(AppConfig.getMessagesPack(), "dateTimeFormat");
+            formatStr = messages.getMessage(AppConfig.getMessagesPack(), "dateTimeFormat");
         }
         field.setResolution(resolution);
         field.setDateFormat(formatStr);
@@ -205,11 +206,10 @@ public class Param extends AbstractParam<JComponent> {
         });
 
         field.setValue(value);
-        field.setRequired(required);
-        return field.getComposition();
+        return new FieldParamEditorComponent(field);
     }
 
-    private JComponent createNumberField(final Datatype datatype) {
+    protected ParamEditorComponent createNumberField(final Datatype datatype) {
         final DesktopTextField field = new DesktopTextField();
 
         field.addListener(new ValueListener() {
@@ -226,10 +226,10 @@ public class Param extends AbstractParam<JComponent> {
                         for (String part : parts) {
                             Object p;
                             try {
-                                p = datatype.parse(part, UserSessionProvider.getLocale());
+                                p = datatype.parse(part, userSessionSource.getLocale());
                             } catch (ParseException e) {
                                 DesktopComponentsHelper.getTopLevelFrame(field).getWindowManager()
-                                        .showNotification(MessageProvider.getMessage(AbstractParam.class,
+                                        .showNotification(messages.getMessage(AbstractParam.class,
                                                 "Param.numberInvalid"), IFrame.NotificationType.ERROR);
                                 return;
                             }
@@ -237,10 +237,10 @@ public class Param extends AbstractParam<JComponent> {
                         }
                     } else {
                         try {
-                            v = datatype.parse((String) value, UserSessionProvider.getLocale());
+                            v = datatype.parse((String) value, userSessionSource.getLocale());
                         } catch (ParseException e) {
                             DesktopComponentsHelper.getTopLevelFrame(field).getWindowManager()
-                                    .showNotification(MessageProvider.getMessage(AbstractParam.class,
+                                    .showNotification(messages.getMessage(AbstractParam.class,
                                             "Param.numberInvalid"), IFrame.NotificationType.ERROR);
                             return;
                         }
@@ -253,31 +253,48 @@ public class Param extends AbstractParam<JComponent> {
             }
         });
 
-        field.setValue(value == null ? "" : datatype.format(value, UserSessionProvider.getLocale()));
-        field.setRequired(required);
-        return field.getComposition();
+        field.setValue(value == null ? "" : datatype.format(value, userSessionSource.getLocale()));
+
+        return new FieldParamEditorComponent(field);
     }
 
-    private JComponent createBooleanField() {
+    protected ParamEditorComponent createBooleanField() {
         final JComboBox field = new ExtendedComboBox();
 
         field.addItem("");
         field.addItem(Boolean.TRUE);
         field.addItem(Boolean.FALSE);
-        field.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                setValue(field.getSelectedItem());
-                DesktopComponentsHelper.decorateMissingValue(field, required);
-            }
-        });
-        DesktopComponentsHelper.decorateMissingValue(field, required);
 
         field.setSelectedItem(value);
-        return field;
+        return new ParamEditorComponent(field) {
+
+            protected boolean required;
+
+            {
+                field.addItemListener(new ItemListener() {
+                    @Override
+                    public void itemStateChanged(ItemEvent e) {
+                        setValue(field.getSelectedItem());
+                        DesktopComponentsHelper.decorateMissingValue(field, required);
+                    }
+                });
+            }
+
+            @Override
+            public boolean isRequired() {
+                return false;
+            }
+
+            @Override
+            public void setRequired(boolean required) {
+                this.required = required;
+
+                DesktopComponentsHelper.decorateMissingValue(field, required);
+            }
+        };
     }
 
-    private JComponent createUuidField() {
+    protected ParamEditorComponent createUuidField() {
         final DesktopTextField field = new DesktopTextField();
 
         field.addListener(new ValueListener() {
@@ -298,7 +315,7 @@ public class Param extends AbstractParam<JComponent> {
                             setValue(UUID.fromString((String) value));
                         } catch (IllegalArgumentException ie) {
                             DesktopComponentsHelper.getTopLevelFrame(field).getWindowManager().showNotification
-                                    (MessageProvider.getMessage(AbstractParam.class, "Param.uuid.Err"),
+                                    (messages.getMessage(AbstractParam.class, "Param.uuid.Err"),
                                             IFrame.NotificationType.HUMANIZED);
                         }
                     }
@@ -310,21 +327,21 @@ public class Param extends AbstractParam<JComponent> {
         });
 
         field.setValue(value == null ? "" : value.toString());
-        field.setRequired(required);
-        return field.getComposition();
+
+        return new FieldParamEditorComponent(field);
     }
 
-    private JComponent createEntityLookup() {
-        MetaClass metaClass = MetadataProvider.getSession().getClass(javaClass);
+    protected ParamEditorComponent createEntityLookup() {
+        MetaClass metaClass = AppBeans.get(Metadata.class).getSession().getClass(javaClass);
 
-        PersistenceManagerService persistenceManager = ServiceLocator.lookup(PersistenceManagerService.NAME);
+        PersistenceManagerService persistenceManager = AppBeans.get(PersistenceManagerService.NAME);
         boolean useLookupScreen = persistenceManager.useLookupScreen(metaClass.getName());
 
         if (useLookupScreen) {
             if (inExpr) {
                 final ListEditComponent component = new ListEditComponent(metaClass);
                 initListEdit(component);
-                return component;
+                return new NonRequiredParamEditorComponent(component);
             } else {
                 DesktopPickerField picker = new DesktopPickerField();
                 picker.setMetaClass(metaClass);
@@ -341,10 +358,10 @@ public class Param extends AbstractParam<JComponent> {
                         }
                 );
                 picker.setValue(value);
-                picker.setRequired(required);
+
                 JComponent component = picker.getComponent();
                 component.setMaximumSize(TEXT_COMPONENT_DIM);
-                return component;
+                return new FieldParamEditorComponent(picker);
             }
         } else {
             CollectionDatasource ds = new DsBuilder(datasource.getDsContext())
@@ -374,7 +391,7 @@ public class Param extends AbstractParam<JComponent> {
             if (inExpr) {
                 final ListEditComponent component = new ListEditComponent(ds);
                 initListEdit(component);
-                return component;
+                return new NonRequiredParamEditorComponent(component);
             } else {
                 final DesktopLookupField lookup = new DesktopLookupField();
                 lookup.setOptionsDatasource(ds);
@@ -403,15 +420,14 @@ public class Param extends AbstractParam<JComponent> {
                 });
 
                 lookup.setValue(value);
-                lookup.setRequired(required);
                 JComponent component = lookup.getComponent();
                 component.setMaximumSize(TEXT_COMPONENT_DIM);
-                return component;
+                return new FieldParamEditorComponent(lookup);
             }
         }
     }
 
-    private void initListEdit(final ListEditComponent component) {
+    protected void initListEdit(final ListEditComponent component) {
         component.addListener(
                 new ValueListener() {
                     @Override
@@ -429,15 +445,15 @@ public class Param extends AbstractParam<JComponent> {
         }
     }
 
-    private JComponent createRuntimeEnumLookup() {
-        DataService dataService = ServiceLocator.lookup(DataService.NAME);
+    protected ParamEditorComponent createRuntimeEnumLookup() {
+        DataService dataService = AppBeans.get(DataService.NAME);
         LoadContext context = new LoadContext(CategoryAttribute.class);
         LoadContext.Query q = context.setQueryString("select a from sys$CategoryAttribute a where a.id = :id");
         context.setView("_local");
         q.setParameter("id", categoryAttrId);
         CategoryAttribute categoryAttribute = dataService.load(context);
 
-        runtimeEnum = new LinkedList<String>();
+        runtimeEnum = new LinkedList<>();
         String enumerationString = categoryAttribute.getEnumeration();
         String[] array = StringUtils.split(enumerationString, ',');
         for (String s : array) {
@@ -450,7 +466,7 @@ public class Param extends AbstractParam<JComponent> {
         if (inExpr) {
             final ListEditComponent component = new ListEditComponent(runtimeEnum);
             initListEdit(component);
-            return component;
+            return new NonRequiredParamEditorComponent(component);
         } else {
             DesktopLookupField lookup = new DesktopLookupField();
             lookup.setOptionsList(runtimeEnum);
@@ -464,19 +480,19 @@ public class Param extends AbstractParam<JComponent> {
             lookup.setValue(value);
             lookup.setRequired(required);
 
-            return lookup.getComponent();
+            return new FieldParamEditorComponent(lookup);
         }
     }
 
-    private JComponent createEnumLookup() {
+    protected ParamEditorComponent createEnumLookup() {
         if (inExpr) {
             final ListEditComponent component = new ListEditComponent(javaClass);
             initListEdit(component);
-            return component;
+            return new NonRequiredParamEditorComponent(component);
         } else {
-            Map<String, Object> options = new HashMap<String, Object>();
+            Map<String, Object> options = new HashMap<>();
             for (Object obj : javaClass.getEnumConstants()) {
-                options.put(MessageProvider.getMessage((Enum) obj), obj);
+                options.put(messages.getMessage((Enum) obj), obj);
             }
 
             DesktopLookupField lookup = new DesktopLookupField();
@@ -489,8 +505,44 @@ public class Param extends AbstractParam<JComponent> {
             });
 
             lookup.setValue(value);
-            lookup.setRequired(required);
-            return lookup.getComponent();
+
+            return new FieldParamEditorComponent(lookup);
+        }
+    }
+
+    protected static class NonRequiredParamEditorComponent extends ParamEditorComponent {
+
+        protected NonRequiredParamEditorComponent(JComponent component) {
+            super(component);
+        }
+
+        @Override
+        public boolean isRequired() {
+            return false;
+        }
+
+        @Override
+        public void setRequired(boolean required) {
+        }
+    }
+
+    protected static class FieldParamEditorComponent extends ParamEditorComponent {
+
+        protected Field field;
+
+        public FieldParamEditorComponent(Field field) {
+            super(DesktopComponentsHelper.getComposition(field));
+            this.field = field;
+        }
+
+        @Override
+        public boolean isRequired() {
+            return field.isRequired();
+        }
+
+        @Override
+        public void setRequired(boolean required) {
+            field.setRequired(required);
         }
     }
 }

@@ -630,7 +630,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
                 cellContent = groupBox;
             } else {
                 if (condition.getParam().getJavaClass() != null) {
-                    ParamEditor paramEditor = new ParamEditor(condition, true, true);
+                    ParamEditor paramEditor = new ParamEditor(condition, true, true, true);
                     if (focusOnConditions && !focusSet) {
                         paramEditor.setFocused();
                         focusSet = true;
