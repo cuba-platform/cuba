@@ -174,6 +174,11 @@ public class WebLookupPickerField
     }
 
     @Override
+    public String getRequiredMessage() {
+        return pickerField.getRequiredMessage();
+    }
+
+    @Override
     public boolean isRequired() {
         return pickerField.isRequired();
     }
