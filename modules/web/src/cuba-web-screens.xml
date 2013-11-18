@@ -16,12 +16,6 @@
     <screen id="logWindow"
             class="com.haulmont.cuba.web.log.LogWindowLauncher"/>
 
-    <screen id="ftsSearch"
-            class="com.haulmont.fts.web.ui.results.SearchLauncher"/>
-
-    <screen id="ftsSearchResults"
-            template="/com/haulmont/fts/web/ui/results/search-results.xml"/>
-
     <screen id="saveSetInFolder" template="/com/haulmont/cuba/web/app/folders/save-set-window.xml"/>
 
     <!-- JMX control -->
