@@ -19,7 +19,7 @@
     </dsContext>
 
     <layout>
-        <vbox height="100%" margin="true" expand="historyTable" spacing="true">
+        <vbox height="100%" margin="true" spacing="true">
             <table id="historyTable" editable="false" sortable="true" multiselect="true" height="100%" width="100%">
                 <columns>
                     <column id="user" caption="msg://entityOpenHistoryFrame.user"/>
