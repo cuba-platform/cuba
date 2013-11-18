@@ -26,13 +26,15 @@ public class SendingMessage extends StandardEntity {
 
     private static final long serialVersionUID = -8156998515878702538L;
 
+    public static final int CAPTION_LENGTH = 500;
+
     @Column(name = "ADDRESS_TO")
     protected String address;
 
     @Column(name = "ADDRESS_FROM")
     protected String from;
 
-    @Column(name = "CAPTION")
+    @Column(name = "CAPTION", length = CAPTION_LENGTH)
     protected String caption;
 
     /**

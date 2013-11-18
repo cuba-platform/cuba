@@ -528,6 +528,9 @@ public class Emailer implements EmailerAPI {
         sendingMessage.setAddress(address);
         sendingMessage.setFrom(from);
         sendingMessage.setContentText(body);
+        if (caption != null && caption.length() > SendingMessage.CAPTION_LENGTH) {
+            caption = caption.substring(0, SendingMessage.CAPTION_LENGTH);
+        }
         sendingMessage.setCaption(caption);
         sendingMessage.setAttemptsCount(attemptsCount);
         sendingMessage.setDeadline(deadline);
