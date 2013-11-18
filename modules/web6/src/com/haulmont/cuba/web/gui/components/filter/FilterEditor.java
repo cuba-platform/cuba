@@ -7,8 +7,10 @@ package com.haulmont.cuba.web.gui.components.filter;
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.CategorizedEntity;
-import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.filter.*;
 import com.haulmont.cuba.gui.components.filter.addcondition.SelectionHandler;
@@ -113,7 +115,7 @@ public class FilterEditor extends AbstractFilterEditor {
 
         // Save button
         saveBtn = WebComponentsHelper.createButton("icons/ok.png");
-        saveBtn.setCaption(messages.getMessage(AppConfig.getMessagesPack(), "actions.Ok"));
+        saveBtn.setCaption(messages.getMainMessage("actions.Ok"));
         saveBtn.addListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
@@ -127,7 +129,7 @@ public class FilterEditor extends AbstractFilterEditor {
 
         // Cancel button
         Button cancelBtn = WebComponentsHelper.createButton("icons/cancel.png");
-        cancelBtn.setCaption(messages.getMessage(AppConfig.getMessagesPack(), "actions.Cancel"));
+        cancelBtn.setCaption(messages.getMainMessage("actions.Cancel"));
         cancelBtn.addListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
@@ -359,9 +361,12 @@ public class FilterEditor extends AbstractFilterEditor {
                     @Override
                     public void handleAction(Action action, Object sender, Object target) {
                         if (action.equals(showNameAction)) {
+                            Node<AbstractCondition> node = (Node<AbstractCondition>) target;
                             App.getInstance().getWindowManager().showMessageDialog(
                                     messages.getMessage(MESSAGES_PACK, "FilterEditor.showNameTitle"),
-                                    ((Node<AbstractCondition>) target).getData().getParam().getName(),
+                                    node != null && node.getData().getParam() != null ?
+                                            node.getData().getParam().getName() :
+                                            messages.getMessage(MESSAGES_PACK, "FilterEditor.conditionIsNotSelected"),
                                     IFrame.MessageType.CONFIRMATION
                             );
                         }
