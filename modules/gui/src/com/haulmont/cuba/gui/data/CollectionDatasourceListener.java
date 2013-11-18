@@ -9,16 +9,19 @@ import com.haulmont.cuba.core.entity.Entity;
 import java.util.List;
 
 /**
- * Listener to {@link CollectionDatasource} events
+ * Listener to {@link CollectionDatasource} events.
+ *
+ * @see com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter
  *
  * @param <T> type of entity the datasource contains
+ *
  * @author abramov
  * @version $Id$
  */
 public interface CollectionDatasourceListener<T extends Entity> extends DatasourceListener<T> {
 
     /**
-     * Operation which caused the datasource change
+     * Operation which caused the datasource change.
      */
     public enum Operation {
         REFRESH,
@@ -29,7 +32,7 @@ public interface CollectionDatasourceListener<T extends Entity> extends Datasour
     }
 
     /**
-     * Enclosed collection changed
+     * Enclosed collection changed.
      *
      * @param ds        datasource
      * @param operation operation which caused the datasource change

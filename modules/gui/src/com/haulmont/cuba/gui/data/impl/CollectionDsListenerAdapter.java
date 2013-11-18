@@ -11,7 +11,8 @@ import com.haulmont.cuba.core.entity.Entity;
 import java.util.List;
 
 /**
- * @param <T>
+ * Adapter class for {@link CollectionDatasourceListener}. Use it if you need to implement only few methods.
+ *
  * @author tulupov
  * @version $Id$
  */

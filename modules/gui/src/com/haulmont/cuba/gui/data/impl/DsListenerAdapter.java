@@ -11,7 +11,8 @@ import com.haulmont.cuba.core.entity.Entity;
 import javax.annotation.Nullable;
 
 /**
- * @param <T>
+ * Adapter class for {@link DatasourceListener}. Use it if you need to implement only few methods.
+ *
  * @author tulupov
  * @version $Id$
  */

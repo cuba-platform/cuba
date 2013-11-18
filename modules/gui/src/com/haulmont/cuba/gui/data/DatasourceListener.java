@@ -9,16 +9,22 @@ import com.haulmont.cuba.core.entity.Entity;
 import javax.annotation.Nullable;
 
 /**
- * Listener to basic datasource events
+ * Listener to basic datasource events.
+ *
+ * @see Datasource#addListener(DatasourceListener)
+ * @see Datasource#removeListener(DatasourceListener)
+ * @see com.haulmont.cuba.gui.data.impl.DsListenerAdapter
  *
  * @param <T> type of entity the datasource contains
+ *
  * @author abramov
  * @version $Id$
  */
 public interface DatasourceListener<T extends Entity> extends ValueListener<T> {
 
     /**
-     * Current item changed
+     * Current item changed, that is now {@link com.haulmont.cuba.gui.data.Datasource#getItem()} returns a different
+     * instance.
      *
      * @param ds       datasource
      * @param prevItem previous selected item
@@ -27,7 +33,7 @@ public interface DatasourceListener<T extends Entity> extends ValueListener<T> {
     void itemChanged(Datasource<T> ds, @Nullable T prevItem, @Nullable T item);
 
     /**
-     * Datasource state changed
+     * Datasource state changed.
      *
      * @param ds        datasource
      * @param prevState previous state

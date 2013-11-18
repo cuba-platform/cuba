@@ -76,7 +76,14 @@ public interface DsContext {
      */
     void registerDependency(Datasource ds, Datasource dependFrom, String property);
 
+    /**
+     * Add commit events listener.
+     */
     void addListener(CommitListener listener);
+
+    /**
+     * Remove commit events listener.
+     */
     void removeListener(CommitListener listener);
 
     /**
@@ -92,8 +99,14 @@ public interface DsContext {
 
     /**
      * This listener allows to intercept commit events.
-     * <br>Can be used to augment CommitContext with entities which must be committed in the
-     * same transaction as datasources content.
+     * <p/> Should be used to augment {@link CommitContext} with entities which must be committed in the
+     * same transaction as datasources content. To do this, add needed entity instances to
+     * {@link com.haulmont.cuba.core.global.CommitContext#getCommitInstances()} or
+     * {@link com.haulmont.cuba.core.global.CommitContext#getRemoveInstances()} collections.
+     *
+     * @see DsContext#addListener(com.haulmont.cuba.gui.data.DsContext.CommitListener)
+     * @see DsContext#removeListener(com.haulmont.cuba.gui.data.DsContext.CommitListener)
+     * @see CommitListenerAdapter
      */
     public interface CommitListener {
         /**
@@ -108,6 +121,21 @@ public interface DsContext {
          * @param result    set of committed entities returning from the middleware service
          */
         void afterCommit(CommitContext context, Set<Entity> result);
+    }
+
+    /**
+     * An abstract adapter class for {@link CommitListener}. Use it if you need to implement only one of two methods.
+     *
+     * @see DsContext#addListener(com.haulmont.cuba.gui.data.DsContext.CommitListener)
+     * @see DsContext#removeListener(com.haulmont.cuba.gui.data.DsContext.CommitListener)
+     */
+    public abstract class CommitListenerAdapter implements CommitListener {
+        @Override
+        public void beforeCommit(CommitContext context) {
+        }
+        @Override
+        public void afterCommit(CommitContext context, Set<Entity> result) {
+        }
     }
 }
 

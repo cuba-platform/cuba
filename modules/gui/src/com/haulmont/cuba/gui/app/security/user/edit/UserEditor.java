@@ -99,11 +99,7 @@ public class UserEditor extends AbstractEditor<User> {
         initCustomFields(PersistenceHelper.isNew(WindowParams.ITEM.getEntity(params)));
 
         dsContext.addListener(
-                new DsContext.CommitListener() {
-                    @Override
-                    public void beforeCommit(CommitContext context) {
-                    }
-
+                new DsContext.CommitListenerAdapter() {
                     @Override
                     public void afterCommit(CommitContext context, Set<Entity> result) {
                         for (Entity entity : result) {

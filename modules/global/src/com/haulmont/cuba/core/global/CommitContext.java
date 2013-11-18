@@ -52,21 +52,23 @@ public class CommitContext implements Serializable {
     }
 
     /**
-     * @return collection of changed entities to be committed to the database
+     * @return direct reference to collection of changed entities that will be committed to the database.
+     * The collection is modifiable.
      */
     public <E extends Entity> Collection<E> getCommitInstances() {
         return commitInstances;
     }
 
     /**
-     * @param commitInstances collection of changed entities to be committed to the database
+     * @param commitInstances collection of changed entities that will be committed to the database
      */
     public void setCommitInstances(Collection commitInstances) {
         this.commitInstances = commitInstances;
     }
 
     /**
-     * @return collection of entities to be removed from the database
+     * @return direct reference to collection of entities that will be removed from the database.
+     * The collection is modifiable.
      */
     public <E extends Entity> Collection<E> getRemoveInstances() {
         return removeInstances;
