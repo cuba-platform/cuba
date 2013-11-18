@@ -19,12 +19,14 @@
     </dsContext>
 
     <layout>
-        <table id="historyTable" editable="false" sortable="true" multiselect="true">
-            <columns>
-                <column id="user" caption="msg://entityOpenHistoryFrame.user"/>
-                <column id="createTs" caption="msg://entityOpenHistoryFrame.createTs"/>
-            </columns>
-            <rows datasource="openHistoryDs"/>
-        </table>
+        <vbox height="100%" margin="true" expand="historyTable" spacing="true">
+            <table id="historyTable" editable="false" sortable="true" multiselect="true" height="100%" width="100%">
+                <columns>
+                    <column id="user" caption="msg://entityOpenHistoryFrame.user"/>
+                    <column id="createTs" caption="msg://entityOpenHistoryFrame.createTs"/>
+                </columns>
+                <rows datasource="openHistoryDs"/>
+            </table>
+        </vbox>
     </layout>
 </window>
