@@ -13,6 +13,7 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.haulmont.cuba.toolkit.gwt.client.Properties;
 import com.haulmont.cuba.toolkit.gwt.client.ResourcesLoader;
+import com.haulmont.cuba.toolkit.gwt.client.Tools;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.Paintable;
 import com.vaadin.terminal.gwt.client.UIDL;
@@ -110,6 +111,7 @@ public class VSwfUpload
 
         SwfUploadAPI.onReady(new Runnable() {
             public void run() {
+                Tools.fixFlashTitleIE8();
                 initSwfUploadObjects();
                 String appUri = client.getAppUri();
                 appUri = appUri + (appUri.endsWith("/") ? "" : "/");

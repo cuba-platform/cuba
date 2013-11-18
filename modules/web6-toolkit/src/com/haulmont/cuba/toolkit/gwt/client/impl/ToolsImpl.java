@@ -171,4 +171,16 @@ public class ToolsImpl {
         return false;
     }-*/;
 
+    public native void fixFlashTitleIE8JS() /*-{
+        if (!$wnd["cubaFlashDownloadIeFixMade"]) {
+            var originalTitle = $doc.title.split("#")[0];
+            $doc.attachEvent('onpropertychange', function (evt) {
+                if(evt.propertyName === 'title' && $doc.title !== originalTitle) {
+                    $doc.title = originalTitle;
+                }
+            });
+            $wnd["cubaFlashDownloadIeFixMade"] = true;
+        }
+    }-*/;
+
 }

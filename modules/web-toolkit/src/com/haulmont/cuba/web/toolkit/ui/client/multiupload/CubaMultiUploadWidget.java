@@ -15,6 +15,7 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.haulmont.cuba.web.toolkit.ui.client.Properties;
+import com.haulmont.cuba.web.toolkit.ui.client.Tools;
 import com.haulmont.cuba.web.toolkit.ui.client.logging.ClientLogger;
 import com.haulmont.cuba.web.toolkit.ui.client.logging.ClientLoggerFactory;
 
@@ -158,6 +159,9 @@ public class CubaMultiUploadWidget extends FormPanel {
     }
 
     public void initializeSwfUpload() {
+
+        Tools.fixFlashTitleIE8();
+
         Options opts = Options.create();
 
         opts.set("flash_url", swfUri);

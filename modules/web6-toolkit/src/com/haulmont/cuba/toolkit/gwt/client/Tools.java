@@ -7,6 +7,7 @@ package com.haulmont.cuba.toolkit.gwt.client;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.haulmont.cuba.toolkit.gwt.client.impl.ToolsImpl;
+import com.vaadin.terminal.gwt.client.BrowserInfo;
 import com.vaadin.terminal.gwt.client.RenderInformation;
 
 public class Tools {
@@ -142,5 +143,12 @@ public class Tools {
         DOM.setStyleAttribute(el, "overflow", "");
 
         return s;
+    }
+
+    public static void fixFlashTitleIE8() {
+        // if url has '#' then title changed in ie8 after flash loaded. This fix changed set normal title
+        if (BrowserInfo.get().isIE8()) {
+            impl.fixFlashTitleIE8JS();
+        }
     }
 }

@@ -9,6 +9,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.haulmont.cuba.web.toolkit.ui.client.sys.ToolsImpl;
+import com.vaadin.client.BrowserInfo;
 import com.vaadin.client.RenderInformation;
 
 /**
@@ -160,4 +161,12 @@ public class Tools {
         }
         element.setClassName(newClassName.trim());
     }
+
+    public static void fixFlashTitleIE8() {
+        // if url has '#' then title changed in ie8 after flash loaded. This fix changed set normal title
+        if (BrowserInfo.get().isIE8()) {
+            impl.fixFlashTitleIE8JS();
+        }
+    }
+
 }
