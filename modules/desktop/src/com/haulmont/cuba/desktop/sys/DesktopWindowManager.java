@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.desktop.sys;
 
+import com.google.common.base.Strings;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
@@ -711,7 +712,7 @@ public class DesktopWindowManager extends WindowManager {
     public void showMessageDialog(final String title, final String message, IFrame.MessageType messageType) {
         final int swingMessageType = DesktopComponentsHelper.convertMessageType(messageType);
         final String msg = IFrame.MessageType.isHTML(messageType) ?
-                "<html>" + ComponentsHelper.preprocessHtmlMessage(message) : message;
+                "<html>" + Strings.nullToEmpty(ComponentsHelper.preprocessHtmlMessage(message)) : message;
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -760,7 +761,7 @@ public class DesktopWindowManager extends WindowManager {
             throw new UnsupportedOperationException("Not more than 3 actions supported");
 
         final String msg = IFrame.MessageType.isHTML(messageType) ?
-                "<html>" + ComponentsHelper.preprocessHtmlMessage(message) : message;
+                "<html>" + Strings.nullToEmpty(ComponentsHelper.preprocessHtmlMessage(message)) : message;
 
         final JOptionPane optionPane = new JOptionPane(
                 msg,

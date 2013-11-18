@@ -795,21 +795,18 @@ public class WebWindowManager extends WindowManager {
 
     @Override
     public void showNotification(String caption, IFrame.NotificationType type) {
-        caption = IFrame.NotificationType.isHTML(type) ?
-                ComponentsHelper.preprocessHtmlMessage(caption) :
-                StringEscapeUtils.escapeHtml(caption).replace("\n", "<br/>");
+        caption = ComponentsHelper.preprocessHtmlMessage(
+                IFrame.NotificationType.isHTML(type) ? caption : StringEscapeUtils.escapeHtml(caption));
 
         app.getAppWindow().showNotification(caption, WebComponentsHelper.convertNotificationType(type));
     }
 
     @Override
     public void showNotification(String caption, String description, IFrame.NotificationType type) {
-        caption = IFrame.NotificationType.isHTML(type) ?
-                ComponentsHelper.preprocessHtmlMessage(caption) :
-                StringEscapeUtils.escapeHtml(caption).replace("\n", "<br/>");
-        description = IFrame.NotificationType.isHTML(type) ?
-                ComponentsHelper.preprocessHtmlMessage(description) :
-                StringEscapeUtils.escapeHtml(description).replace("\n", "<br/>");
+        caption = ComponentsHelper.preprocessHtmlMessage(
+                IFrame.NotificationType.isHTML(type) ? caption : StringEscapeUtils.escapeHtml(caption));
+        description = ComponentsHelper.preprocessHtmlMessage(
+                IFrame.NotificationType.isHTML(type) ? description : StringEscapeUtils.escapeHtml(description));
 
         com.vaadin.ui.Window.Notification notify = new com.vaadin.ui.Window.Notification(
                 caption, description, WebComponentsHelper.convertNotificationType(type));
@@ -853,9 +850,8 @@ public class WebWindowManager extends WindowManager {
         layout.setMargin(true);
         window.setContent(layout);
 
-        Label messageLab = new Label(IFrame.MessageType.isHTML(messageType) ?
-                ComponentsHelper.preprocessHtmlMessage(message) :
-                StringEscapeUtils.escapeHtml(message).replace("\n", "<br/>"));
+        Label messageLab = new Label(ComponentsHelper.preprocessHtmlMessage(
+                IFrame.MessageType.isHTML(messageType) ? message : StringEscapeUtils.escapeHtml(message)));
         messageLab.setContentMode(Label.CONTENT_XHTML);
         layout.addComponent(messageLab);
 
@@ -892,9 +888,8 @@ public class WebWindowManager extends WindowManager {
             }
         });
 
-        Label messageLab = new Label(IFrame.MessageType.isHTML(messageType) ?
-                ComponentsHelper.preprocessHtmlMessage(message) :
-                StringEscapeUtils.escapeHtml(message).replace("\n", "<br/>"));
+        Label messageLab = new Label(ComponentsHelper.preprocessHtmlMessage(
+                IFrame.MessageType.isHTML(messageType) ? message : StringEscapeUtils.escapeHtml(message)));
         messageLab.setContentMode(Label.CONTENT_XHTML);
 
         float width;

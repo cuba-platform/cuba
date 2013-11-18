@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.desktop;
 
+import com.google.common.base.Strings;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
@@ -118,21 +119,13 @@ public class TopLevelFrame extends JFrame {
         timer.start();
     }
 
-    public void showNotification(@Nullable String caption, @Nullable String description, IFrame.NotificationType type) {
+    public void showNotification(String caption, String description, IFrame.NotificationType type) {
         DesktopConfig config = AppBeans.get(Configuration.class).getConfig(DesktopConfig.class);
 
-        if (caption == null)
-            caption = "";
-        if (description == null)
-            description = "";
-
-        if (IFrame.NotificationType.isHTML(type)) {
-            caption = ComponentsHelper.preprocessHtmlMessage(caption);
-            description = ComponentsHelper.preprocessHtmlMessage(description);
-        } else {
-            caption = StringEscapeUtils.escapeHtml(caption).replace("\n", "<br/>");
-            description = StringEscapeUtils.escapeHtml(description).replace("\n", "<br/>");
-        }
+        caption = Strings.nullToEmpty(ComponentsHelper.preprocessHtmlMessage(
+                IFrame.NotificationType.isHTML(type) ? caption : StringEscapeUtils.escapeHtml(caption)));
+        description = Strings.nullToEmpty(ComponentsHelper.preprocessHtmlMessage(
+                IFrame.NotificationType.isHTML(type) ? description : StringEscapeUtils.escapeHtml(description)));
 
         if (config.isDialogNotificationsEnabled()
                 && type != IFrame.NotificationType.TRAY && type != IFrame.NotificationType.TRAY_HTML) {

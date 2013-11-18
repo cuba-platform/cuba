@@ -830,9 +830,8 @@ public class WebWindowManager extends WindowManager {
         layout.setMargin(true);
         window.setContent(layout);
 
-        Label messageLab = new Label(IFrame.MessageType.isHTML(messageType) ?
-                ComponentsHelper.preprocessHtmlMessage(message) :
-                StringEscapeUtils.escapeHtml(message).replace("\n", "<br/>"));
+        Label messageLab = new Label(ComponentsHelper.preprocessHtmlMessage(
+                IFrame.MessageType.isHTML(messageType) ? message : StringEscapeUtils.escapeHtml(message)));
         messageLab.setContentMode(ContentMode.HTML);
         layout.addComponent(messageLab);
 
@@ -867,9 +866,8 @@ public class WebWindowManager extends WindowManager {
             }
         });
 
-        Label messageLab = new Label(IFrame.MessageType.isHTML(messageType) ?
-                ComponentsHelper.preprocessHtmlMessage(message) :
-                StringEscapeUtils.escapeHtml(message).replace("\n", "<br/>"));
+        Label messageLab = new Label(ComponentsHelper.preprocessHtmlMessage(
+                IFrame.MessageType.isHTML(messageType) ? message : StringEscapeUtils.escapeHtml(message)));
         messageLab.setContentMode(ContentMode.HTML);
 
         float width;
