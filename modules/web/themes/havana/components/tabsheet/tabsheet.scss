@@ -36,7 +36,7 @@
           }
         }
 
-        .#{$primaryStyleName}-tabitem-selected {
+        .#{$primaryStyleName}-tabitem.#{$primaryStyleName}-tabitem-selected {
           height: 25px;
           line-height: 14px;
           margin-bottom: 0;
@@ -50,7 +50,7 @@
         padding-left: 0;
       }
 
-      .#{$primaryStyleName}-tabitemcell:first-child .#{$primaryStyleName}-tabitem-selected {
+      .#{$primaryStyleName}-tabitemcell:first-child .#{$primaryStyleName}-tabitem.#{$primaryStyleName}-tabitem-selected {
         border-left: 1px solid $theme_tabsheetThirdBorderColor;
         padding-left: 6px;
       }
@@ -62,8 +62,8 @@
         padding-left: 0;
       }
 
-      .#{$primaryStyleName}-tabitem-selected-first,
-      .#{$primaryStyleName}-tabitem-selected {
+      .#{$primaryStyleName}-tabitem.#{$primaryStyleName}-tabitem-selected-first,
+      .#{$primaryStyleName}-tabitem.#{$primaryStyleName}-tabitem-selected {
         background: $theme_tabsheetThirdBackgroundColor;
         border-color: $theme_tabsheetThirdBorderColor;
       }
@@ -108,7 +108,7 @@
         }
       }
 
-      .#{$primaryStyleName}-tabitem-selected {
+      .#{$primaryStyleName}-tabitem.#{$primaryStyleName}-tabitem-selected {
         height: 25px;
         line-height: 14px;
         margin-bottom: 0;
@@ -130,13 +130,13 @@
         padding-left: 0;
       }
 
-      .#{$primaryStyleName}-tabitemcell:first-child .#{$primaryStyleName}-tabitem-selected {
+      .#{$primaryStyleName}-tabitemcell:first-child .#{$primaryStyleName}-tabitem.#{$primaryStyleName}-tabitem-selected {
         border-left: 1px solid $theme_tabsheetSecondBorderColor;
         padding-left: 6px;
       }
 
-      .#{$primaryStyleName}-tabitemcell-selected,
-      .#{$primaryStyleName}-tabitemcell-selected-first {
+      .#{$primaryStyleName}-tabitem.#{$primaryStyleName}-tabitemcell-selected,
+      .#{$primaryStyleName}-tabitem.#{$primaryStyleName}-tabitemcell-selected-first {
         border: 0;
         padding-left: 0;
       }
@@ -270,7 +270,7 @@
       }
 
       .#{$primaryStyleName}-tabitem .v-caption .v-captiontext,
-      .#{$primaryStyleName}-tabitem-selected .v-caption .v-captiontext {
+      .#{$primaryStyleName}-tabitem.#{$primaryStyleName}-tabitem-selected .v-caption .v-captiontext {
         font-family: $theme_fonts;
         font-size: 12px;
         font-weight: normal;
@@ -281,7 +281,7 @@
         color: $theme_tabsheetCaptionInactiveColor;
       }
 
-      .#{$primaryStyleName}-tabitem-selected .v-caption .v-captiontext {
+      .#{$primaryStyleName}-tabitem.#{$primaryStyleName}-tabitem-selected .v-caption .v-captiontext {
         color: $theme_tabsheetCaptionActiveColor;
       }
 
@@ -310,7 +310,7 @@
         }
       }
 
-      .#{$primaryStyleName}-tabitem-selected {
+      .#{$primaryStyleName}-tabitem.#{$primaryStyleName}-tabitem-selected {
         .v-caption {
           background: none;
           margin: 0 -1px 0 0;
@@ -323,11 +323,11 @@
         }
       }
 
-      .#{$primaryStyleName}-tabitem-selected-first,
-      .#{$primaryStyleName}-tabitem-selected {
-        border-top: 1px solid $theme_tabsheetSelectedBorderColor;
-        border-left: 1px solid $theme_tabsheetSelectedBorderColor;
-        border-right: 1px solid $theme_tabsheetSelectedBorderColor;
+      .#{$primaryStyleName}-tabitem.#{$primaryStyleName}-tabitem-selected-first,
+      .#{$primaryStyleName}-tabitem.#{$primaryStyleName}-tabitem-selected {
+        border-top: 1px solid $theme_tabsheetBorderColor;
+        border-left: 1px solid $theme_tabsheetBorderColor;
+        border-right: 1px solid $theme_tabsheetBorderColor;
         background: url(images/main-tabitem-bg.png) repeat-x;
         border-bottom: 0;
         height: 28px;
@@ -342,7 +342,7 @@
       margin-left: 0;
     }
 
-    .#{$primaryStyleName}-loading .#{$primaryStyleName}-tabitem-selected .v-captiontext {
+    .#{$primaryStyleName}-loading .#{$primaryStyleName}-tabitem.#{$primaryStyleName}-tabitem-selected .v-captiontext {
       background: transparent;
       margin-left: -5px;
       padding-left: 5px;
