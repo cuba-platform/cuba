@@ -40,7 +40,7 @@ public class OptimisticExceptionHandler extends AbstractExceptionHandler {
         String packageName = entityClassName.substring(0, entityClassName.lastIndexOf("."));
         String localizedEntityName = messages.getMessage(packageName, entityName);
 
-        String msg = messages.formatMessage(getClass(),
+        String msg = messages.formatMessage(messages.getMainMessagePack(),
                 "optimisticException.message", "\"" + localizedEntityName + "\"");
         app.getAppWindow().showNotification(msg, Window.Notification.TYPE_ERROR_MESSAGE);
     }
