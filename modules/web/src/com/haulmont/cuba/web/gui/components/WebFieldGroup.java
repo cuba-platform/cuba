@@ -19,7 +19,6 @@ import com.haulmont.cuba.web.toolkit.ui.CubaCheckBox;
 import com.haulmont.cuba.web.toolkit.ui.CubaFieldGroup;
 import com.haulmont.cuba.web.toolkit.ui.CubaFieldGroupLayout;
 import com.haulmont.cuba.web.toolkit.ui.CubaFieldWrapper;
-import com.vaadin.ui.*;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -42,8 +41,6 @@ public class WebFieldGroup
     protected Map<FieldConfig, Component> fieldComponents = new LinkedHashMap<>();
 
     protected Set<FieldConfig> readOnlyFields = new HashSet<>();
-
-    protected Map<FieldConfig, List<com.haulmont.cuba.gui.components.Field.Validator>> fieldValidators = new HashMap<>();
 
     protected Datasource<Entity> datasource;
     protected FieldFactory fieldFactory = new WebFieldGroupFieldFactory();
@@ -437,24 +434,19 @@ public class WebFieldGroup
     }
 
     @Override
-    public void addValidator(final FieldConfig field, final com.haulmont.cuba.gui.components.Field.Validator validator) {
-        List<com.haulmont.cuba.gui.components.Field.Validator> validators = fieldValidators.get(field);
-        if (validators == null) {
-            validators = new ArrayList<>();
-            fieldValidators.put(field, validators);
-        }
-        if (!validators.contains(validator)) {
-            validators.add(validator);
+    public void addValidator(FieldConfig field, Field.Validator validator) {
+        Component component = fieldComponents.get(field);
+        if (component instanceof Field) {
+            ((Field) component).addValidator(validator);
         }
     }
 
     @Override
-    public void addValidator(String fieldId, com.haulmont.cuba.gui.components.Field.Validator validator) {
-        FieldConfig field = getField(fieldId);
-        if (field == null) {
-            throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
+    public void addValidator(String fieldId, Field.Validator validator) {
+        FieldConfig field = fields.get(fieldId);
+        if (fieldId != null) {
+            addValidator(field, validator);
         }
-        addValidator(field, validator);
     }
 
     @Override
