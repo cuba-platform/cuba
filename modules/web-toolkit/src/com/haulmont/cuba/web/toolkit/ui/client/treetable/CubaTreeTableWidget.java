@@ -9,17 +9,19 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.TableCellElement;
 import com.google.gwt.event.dom.client.ContextMenuEvent;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.FocusHandler;
+import com.google.gwt.event.dom.client.HasFocusHandlers;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import com.haulmont.cuba.web.toolkit.ui.client.Tools;
+import com.haulmont.cuba.web.toolkit.ui.client.logging.ClientLogger;
+import com.haulmont.cuba.web.toolkit.ui.client.logging.ClientLoggerFactory;
 import com.vaadin.client.UIDL;
 import com.vaadin.client.Util;
 import com.vaadin.client.ui.*;
@@ -40,6 +42,8 @@ public class CubaTreeTableWidget extends VTreeTable {
     protected VOverlay presentationsEditorPopup;
 
     private Widget presentationsMenu;
+
+    protected ClientLogger logger = ClientLoggerFactory.getLogger("CubaTreeTableWidget");
 
     @Override
     protected void handleBodyContextMenu(ContextMenuEvent event) {
@@ -66,10 +70,6 @@ public class CubaTreeTableWidget extends VTreeTable {
     @Override
     protected TableHead createTableHead() {
         return new CubaTreeTableTableHead();
-    }
-
-    public Widget getPresentationsMenu() {
-        return presentationsMenu;
     }
 
     public void setPresentationsMenu(Widget presentationsMenu) {
@@ -207,6 +207,8 @@ public class CubaTreeTableWidget extends VTreeTable {
 
     protected class CubaTreeTableBody extends VTreeTableScrollBody {
 
+        protected Widget lastFocusedWidget = null;
+
         @Override
         protected VScrollTableRow createRow(UIDL uidl, char[] aligns2) {
             if (uidl.hasAttribute("gen_html")) {
@@ -228,6 +230,74 @@ public class CubaTreeTableWidget extends VTreeTable {
                 super.initCellWithWidget(w, align, style, sorted, td);
 
                 td.getFirstChildElement().addClassName(WIDGET_CELL_CLASSNAME);
+
+                // Support for #PL-2080
+                recursiveAddFocusHandler(w, w);
+            }
+
+            protected void recursiveAddFocusHandler(final Widget w, final Widget topWidget) {
+                if (w instanceof HasFocusHandlers) {
+                    ((HasFocusHandlers) w).addFocusHandler(new FocusHandler() {
+                        @Override
+                        public void onFocus(FocusEvent event) {
+                            lastFocusedWidget = w;
+
+                            if (logger.enabled) {
+                                logger.log("onFocus: Focus widget in column: " + childWidgets.indexOf(topWidget));
+                            }
+
+                            if (!isSelected()) {
+                                deselectAll();
+
+                                toggleSelection();
+                                setRowFocus(CubaTreeTableRow.this);
+
+                                sendSelectedRows();
+                            }
+                        }
+                    });
+                }
+
+                if (w instanceof HasWidgets) {
+                    for (Widget child: (HasWidgets)w) {
+                        recursiveAddFocusHandler(child, topWidget);
+                    }
+                }
+            }
+
+            protected void handleFocusForWidget() {
+                if (lastFocusedWidget == null) {
+                    return;
+                }
+
+                logger.log("Handle focus");
+
+                if (isSelected()) {
+                    if (lastFocusedWidget instanceof com.vaadin.client.Focusable) {
+                        ((com.vaadin.client.Focusable) lastFocusedWidget).focus();
+
+                        if (logger.enabled) {
+                            logger.log("onSelect: Focus widget");
+                        }
+                    } else if (lastFocusedWidget instanceof com.google.gwt.user.client.ui.Focusable) {
+                        ((com.google.gwt.user.client.ui.Focusable) lastFocusedWidget).setFocus(true);
+
+                        if (logger.enabled) {
+                            logger.log("onSelect: Focus GWT widget");
+                        }
+                    }
+                }
+
+                lastFocusedWidget = null;
+            }
+
+            @Override
+            public void onBrowserEvent(Event event) {
+                super.onBrowserEvent(event);
+
+                if (event.getTypeInt() == Event.ONMOUSEUP) {
+                    handleFocusForWidget();
+                }
             }
 
             @Override

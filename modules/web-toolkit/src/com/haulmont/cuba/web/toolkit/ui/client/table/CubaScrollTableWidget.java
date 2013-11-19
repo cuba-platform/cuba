@@ -18,6 +18,7 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -52,7 +53,7 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
 
     protected VOverlay presentationsEditorPopup;
 
-    private Widget presentationsMenu;
+    protected Widget presentationsMenu;
 
     protected CubaScrollTableWidget() {
         // handle shortcuts
@@ -76,10 +77,6 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
     @Override
     public ShortcutActionHandler getShortcutActionHandler() {
         return shortcutHandler;
-    }
-
-    public Widget getPresentationsMenu() {
-        return presentationsMenu;
     }
 
     public void setPresentationsMenu(Widget presentationsMenu) {
@@ -290,6 +287,12 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
                 super.initCellWithWidget(w, align, style, sorted, td);
 
                 td.getFirstChildElement().addClassName(WIDGET_CELL_CLASSNAME);
+
+                // Support for #PL-2080
+                recursiveAddFocusHandler(w, w);
+            }
+
+            protected void recursiveAddFocusHandler(final Widget w, final Widget topWidget) {
                 if (w instanceof HasFocusHandlers) {
                     ((HasFocusHandlers) w).addFocusHandler(new FocusHandler() {
                         @Override
@@ -297,7 +300,7 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
                             lastFocusedWidget = w;
 
                             if (logger.enabled) {
-                                logger.log("onFocus: Focus widget in column: " + childWidgets.indexOf(w));
+                                logger.log("onFocus: Focus widget in column: " + childWidgets.indexOf(topWidget));
                             }
 
                             if (!isSelected()) {
@@ -305,9 +308,17 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
 
                                 toggleSelection();
                                 setRowFocus(CubaScrollTableRow.this);
+
+                                sendSelectedRows();
                             }
                         }
                     });
+                }
+
+                if (w instanceof HasWidgets) {
+                    for (Widget child: (HasWidgets)w) {
+                        recursiveAddFocusHandler(child, topWidget);
+                    }
                 }
             }
 
