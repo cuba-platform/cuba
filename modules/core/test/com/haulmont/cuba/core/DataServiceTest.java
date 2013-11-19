@@ -49,8 +49,6 @@ public class DataServiceTest extends CubaTestCase {
     }
 
     public void testLoad() {
-        DataService dataService = Locator.lookup(DataService.NAME);
-
         Server server = new Server();
         UUID id = server.getId();
         server.setName("localhost");
@@ -66,8 +64,6 @@ public class DataServiceTest extends CubaTestCase {
     }
 
     public void testLoadList() {
-        DataService dataService = Locator.lookup(DataService.NAME);
-
         Server server = new Server();
         server.setName("localhost");
         server.setRunning(true);
@@ -83,8 +79,6 @@ public class DataServiceTest extends CubaTestCase {
     }
 
     public void testLoadListById() {
-        DataService dataService = Locator.lookup(DataService.NAME);
-
         Server server = new Server();
         UUID id = server.getId();
         server.setName("localhost");
@@ -107,5 +101,21 @@ public class DataServiceTest extends CubaTestCase {
         // here should be a warning or something
         List<Server> list = dataService.loadList(loadContext);
         assertTrue(list.size() == 1);
+    }
+
+    public void testLoadListCaseInsensitive() {
+        Server server = new Server();
+        server.setName("LocalHost");
+        server.setRunning(true);
+
+        dataService.commit(new CommitContext(Collections.<Entity>singleton(server)));
+
+        final LoadContext loadContext =
+                new LoadContext(Server.class);
+        loadContext.setQueryString("select s from sys$Server s where s.name like :name")
+                .setParameter("name", "(?i)%loc%host%");
+
+        List<Server> list = dataService.loadList(loadContext);
+        assertTrue(list.size() > 0);
     }
 }
