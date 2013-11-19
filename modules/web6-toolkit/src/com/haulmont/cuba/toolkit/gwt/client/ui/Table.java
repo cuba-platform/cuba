@@ -2202,6 +2202,11 @@ public abstract class Table
 
     }
 
+    public interface PaintListener {
+
+        void afterPaint(Widget w);
+    }
+
     public abstract class ITableBody extends Panel {
         public static final int CELL_EXTRA_WIDTH = 20;
 
@@ -2221,6 +2226,10 @@ public abstract class Table
         protected char[] aligns;
 
         protected int firstRendered;
+
+        protected Widget lastFocusedWidget = null;
+
+        protected Map<Widget, PaintListener> pendingPaintListeners = new HashMap<Widget, PaintListener>();
 
         public ITableBody() {
             setElement(container);
@@ -2468,6 +2477,11 @@ public abstract class Table
             protected void paintComponent(Paintable p, UIDL uidl) {
                 if (isAttached()) {
                     p.updateFromUIDL(uidl, client);
+
+                    if (pendingPaintListeners.containsKey(p)) {
+                        PaintListener paintListener = pendingPaintListeners.remove(p);
+                        paintListener.afterPaint((Widget) p);
+                    }
                 } else {
                     if (pendingComponentPaints == null) {
                         pendingComponentPaints = new LinkedHashMap<Paintable, UIDL>();
@@ -2481,7 +2495,13 @@ public abstract class Table
                 super.onAttach();
                 if (pendingComponentPaints != null) {
                     for (final Map.Entry<Paintable, UIDL> entry : pendingComponentPaints.entrySet()) {
-                        entry.getKey().updateFromUIDL(entry.getValue(), client);
+                        Paintable pendingWidget = entry.getKey();
+                        pendingWidget.updateFromUIDL(entry.getValue(), client);
+
+                        if (pendingPaintListeners.containsKey(pendingWidget)) {
+                            PaintListener paintListener = pendingPaintListeners.remove(pendingWidget);
+                            paintListener.afterPaint((Widget) pendingWidget);
+                        }
                     }
                 }
             }
@@ -2628,16 +2648,63 @@ public abstract class Table
                 }
                 widgetColumns.put(w, colIndex);
 
-//                disabled due to #PL-3049
-//                if (w instanceof HasFocusHandlers) {
-//                    ((HasFocusHandlers)w).addFocusHandler(new FocusHandler() {
-//                        @Override
-//                        public void onFocus(FocusEvent event) {
-//                            Table.this.focusWidgetIndex = childWidgets.indexOf(w);
-//                            VConsole.log(">>> onFocus: Focus widget index: " + Table.this.focusWidgetIndex);
-//                        }
-//                    });
-//                }
+                // Support for #PL-2080
+                pendingPaintListeners.put(w, new PaintListener() {
+                    @Override
+                    public void afterPaint(Widget w) {
+                        recursiveAddFocusHandler(w, w);
+                    }
+                });
+            }
+
+            protected void recursiveAddFocusHandler(final Widget w, final Widget topWidget) {
+                if (w instanceof HasFocusHandlers) {
+                    ((HasFocusHandlers) w).addFocusHandler(new FocusHandler() {
+                        @Override
+                        public void onFocus(FocusEvent event) {
+                            lastFocusedWidget = w;
+
+                            VConsole.log("onFocus: Focus widget in column: " + childWidgets.indexOf(topWidget));
+
+                            if (!isSelected()) {
+                                deselectAll();
+
+                                toggleSelection();
+                                setRowFocus(ITableRow.this);
+
+                                sendSelectedRows();
+                            }
+                        }
+                    });
+                }
+
+                if (w instanceof HasWidgets) {
+                    for (Widget child: (HasWidgets)w) {
+                        recursiveAddFocusHandler(child, topWidget);
+                    }
+                }
+            }
+
+            protected void handleFocusForWidget() {
+                if (lastFocusedWidget == null) {
+                    return;
+                }
+
+                VConsole.log("Handle focus for Table");
+
+                if (isSelected()) {
+                    if (lastFocusedWidget instanceof Focusable) {
+                        ((Focusable) lastFocusedWidget).focus();
+
+                        VConsole.log("onSelect: Focus table cell widget");
+                    } else if (lastFocusedWidget instanceof com.google.gwt.user.client.ui.Focusable) {
+                        ((com.google.gwt.user.client.ui.Focusable) lastFocusedWidget).setFocus(true);
+
+                        VConsole.log("onSelect: Focus GWT table cell widget");
+                    }
+                }
+
+                lastFocusedWidget = null;
             }
 
             @Override
@@ -2904,6 +2971,7 @@ public abstract class Table
                         if (targetCellOrRowFound) {
                             mDown = false;
                         }
+                        handleFocusForWidget();
                         break;
                     case Event.ONCONTEXTMENU:
                         if (selectMode > com.vaadin.terminal.gwt.client.ui.Table.SELECT_MODE_NONE) {
