@@ -588,8 +588,11 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     @Override
     public void resumeListeners() {
         listenersSuspended = false;
-        fireCollectionChanged(lastCollectionChangeOperation,
-                lastCollectionChangeItems != null ? lastCollectionChangeItems : Collections.<Entity>emptyList());
+
+        if (lastCollectionChangeOperation != null) {
+            fireCollectionChanged(lastCollectionChangeOperation,
+                    lastCollectionChangeItems != null ? lastCollectionChangeItems : Collections.<Entity>emptyList());
+        }
 
         lastCollectionChangeOperation = null;
         lastCollectionChangeItems = null;

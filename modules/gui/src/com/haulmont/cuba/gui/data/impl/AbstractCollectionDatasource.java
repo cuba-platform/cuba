@@ -378,8 +378,11 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
     @Override
     public void resumeListeners() {
         listenersSuspended = false;
-        fireCollectionChanged(lastCollectionChangeOperation,
-                lastCollectionChangeItems != null ? lastCollectionChangeItems : Collections.<Entity>emptyList());
+
+        if (lastCollectionChangeOperation != null) {
+            fireCollectionChanged(lastCollectionChangeOperation,
+                    lastCollectionChangeItems != null ? lastCollectionChangeItems : Collections.<Entity>emptyList());
+        }
 
         lastCollectionChangeOperation = null;
         lastCollectionChangeItems = null;
@@ -402,8 +405,8 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
 
         if (CommitMode.DATASTORE.equals(getCommitMode())) {
             final DataSupplier supplier = getDataSupplier();
-            Set<Entity> commitInstances = new HashSet<Entity>();
-            Set<Entity> deleteInstances = new HashSet<Entity>();
+            Set<Entity> commitInstances = new HashSet<>();
+            Set<Entity> deleteInstances = new HashSet<>();
 
             commitInstances.addAll(itemToCreate);
             commitInstances.addAll(itemToUpdate);
@@ -431,7 +434,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         if (sortInfos[0].getPropertyPath() instanceof MetaPropertyPath) {
             final MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
             final boolean asc = Sortable.Order.ASC.equals(sortInfos[0].getOrder());
-            return new EntityComparator<T>(propertyPath, asc);
+            return new EntityComparator<>(propertyPath, asc);
         } else {
             // If we can not sort the datasource, just return the empty comparator.
             return new Comparator<T>() {
