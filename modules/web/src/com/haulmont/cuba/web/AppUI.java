@@ -47,6 +47,24 @@ public class AppUI extends UI implements ErrorHandler {
             app = createApplication();
             VaadinSession.getCurrent().setAttribute(App.class, app);
 
+            // set root error handler
+            VaadinSession.getCurrent().setErrorHandler(new ErrorHandler() {
+                @Override
+                public void error(com.vaadin.server.ErrorEvent event) {
+                    try {
+                        App.getInstance().getExceptionHandlers().handle(event);
+                        App.getInstance().getAppLog().log(event);
+                    } catch (Throwable e) {
+                        //noinspection ThrowableResultOfMethodCallIgnored
+                        log.error("Error handling exception\nOriginal exception:\n"
+                                + ExceptionUtils.getStackTrace(event.getThrowable())
+                                + "\nException in handlers:\n"
+                                + ExceptionUtils.getStackTrace(e)
+                        );
+                    }
+                }
+            });
+
             applicationInitRequired = true;
 
         } else {
