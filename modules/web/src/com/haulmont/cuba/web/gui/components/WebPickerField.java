@@ -278,7 +278,11 @@ public class WebPickerField
         component.addActionHandler(actionHandler);
     }
 
-    private static class PickerButton extends WebButton {
+    protected static class PickerButton extends WebButton {
+
+        protected PickerButton() {
+            component.setTabIndex(-1);
+        }
 
         @Override
         public void setIcon(String icon) {
