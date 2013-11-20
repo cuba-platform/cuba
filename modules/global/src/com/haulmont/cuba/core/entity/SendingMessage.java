@@ -133,6 +133,9 @@ public class SendingMessage extends StandardEntity {
     }
 
     public void setCaption(String caption) {
+        if (caption != null && caption.length() > SendingMessage.CAPTION_LENGTH) {
+            caption = caption.substring(0, SendingMessage.CAPTION_LENGTH);
+        }
         this.caption = caption;
     }
 
