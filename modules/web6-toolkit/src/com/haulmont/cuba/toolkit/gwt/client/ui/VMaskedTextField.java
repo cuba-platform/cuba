@@ -101,8 +101,6 @@ public class VMaskedTextField extends VTextField {
         addKeyDownHandler(keyHandler);
         addKeyUpHandler(keyHandler);
 
-        VConsole.log("[!!!]");
-
         addInputHandler(getElement());
         debug("VMaskedTextField created");
     }
