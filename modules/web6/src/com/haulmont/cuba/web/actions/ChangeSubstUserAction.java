@@ -5,14 +5,11 @@
 
 package com.haulmont.cuba.web.actions;
 
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.AbstractAction;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.App;
-import com.vaadin.ui.Window;
 
 /**
  * @author shishov
@@ -42,10 +39,10 @@ public class ChangeSubstUserAction extends AbstractAction {
                             app.getConnection().substituteUser(user);
                             doAfterChangeUser();
                         } catch (javax.persistence.NoResultException e) {
-                            App.getInstance().getAppWindow().showNotification(
-                                    AppBeans.get(Messages.class).formatMessage(
-                                            AppConfig.getMessagesPack(), "userDeleteMsg",user.getName()),
-                                    Window.Notification.TYPE_WARNING_MESSAGE
+                            app.getWindowManager().showNotification(
+                                    messages.formatMessage(AppConfig.getMessagesPack(), "substitutionNotPerformed",
+                                            user.getName()),
+                                    IFrame.NotificationType.WARNING
                             );
                             doRevert();
                         }

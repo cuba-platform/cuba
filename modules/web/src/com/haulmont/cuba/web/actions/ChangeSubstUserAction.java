@@ -41,7 +41,7 @@ public class ChangeSubstUserAction extends AbstractAction {
                             doAfterChangeUser();
                         } catch (javax.persistence.NoResultException e) {
                             app.getWindowManager().showNotification(
-                                    messages.formatMessage(AppConfig.getMessagesPack(), "userDeleteMsg",
+                                    messages.formatMessage(AppConfig.getMessagesPack(), "substitutionNotPerformed",
                                             user.getName()),
                                     IFrame.NotificationType.WARNING
                             );
