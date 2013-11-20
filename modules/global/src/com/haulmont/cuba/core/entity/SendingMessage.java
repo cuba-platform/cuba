@@ -7,6 +7,7 @@ package com.haulmont.cuba.core.entity;
 
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.SendingStatus;
+import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
@@ -133,10 +134,7 @@ public class SendingMessage extends StandardEntity {
     }
 
     public void setCaption(String caption) {
-        if (caption != null && caption.length() > SendingMessage.CAPTION_LENGTH) {
-            caption = caption.substring(0, SendingMessage.CAPTION_LENGTH);
-        }
-        this.caption = caption;
+        this.caption = StringUtils.substring(caption, 0, SendingMessage.CAPTION_LENGTH);
     }
 
     public String getCaption() {
