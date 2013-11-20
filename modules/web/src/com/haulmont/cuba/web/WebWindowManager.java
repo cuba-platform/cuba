@@ -919,7 +919,7 @@ public class WebWindowManager extends WindowManager {
                 }
             }
 
-            if (action.getIcon() != null) {
+            if (StringUtils.isNotEmpty(action.getIcon())) {
                 button.setIcon(new VersionedThemeResource(action.getIcon()));
                 button.addStyleName(WebButton.ICON_STYLE);
             }
