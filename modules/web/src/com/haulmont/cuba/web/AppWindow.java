@@ -562,7 +562,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
             HorizontalLayout searchLayout = new HorizontalLayout();
             searchLayout.setMargin(new MarginInfo(false, true, false, true));
 
-            final TextField searchField = new TextField();
+            final TextField searchField = new CubaTextField();
             searchField.setWidth(120, Unit.PIXELS);
             searchField.setId("ftsField." + (int) (Math.random() * 1000000));
             searchField.addShortcutListener(new ShortcutListener("fts", com.vaadin.event.ShortcutAction.KeyCode.ENTER, null) {
