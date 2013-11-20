@@ -452,6 +452,7 @@
     <xs:complexType name="checkBoxComponent">
         <xs:attributeGroup ref="hasId"/>
 
+        <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasEditable"/>
         <xs:attributeGroup ref="hasCaption"/>
         <xs:attributeGroup ref="hasStyle"/>
