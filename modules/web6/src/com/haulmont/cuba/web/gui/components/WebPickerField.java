@@ -192,7 +192,13 @@ public class WebPickerField
         if (component.getPropertyDataSource() != null) {
             component.getPropertyDataSource().setValue(value);
         }
-        super.setValue(createItemWrapper(value));
+
+        boolean componentReadOnly = component.isReadOnly();
+        component.setReadOnly(false);
+
+        component.setValue(createItemWrapper(value));
+
+        component.setReadOnly(componentReadOnly);
     }
 
     @Override
