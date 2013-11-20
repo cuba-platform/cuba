@@ -91,6 +91,7 @@
       font-size: 11px;
       line-height: 15px;
       color: $theme_tableTextColor;
+      border-bottom: 1px solid $theme_tableCellSeparatorColor;
 
       .v-button-caption,
       .v-button-link .v-button-caption {
@@ -155,7 +156,7 @@
 
     .#{$primaryStyleName}-focus .#{$primaryStyleName}-cell-content {
       border-top: 0;
-      border-bottom: 0;
+      border-bottom: 1px solid $theme_tableCellSeparatorColor;
     }
 
     .#{$primaryStyleName}-focus .#{$primaryStyleName}-cell-wrapper {
