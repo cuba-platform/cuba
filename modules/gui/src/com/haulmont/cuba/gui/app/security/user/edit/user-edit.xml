@@ -37,7 +37,7 @@
                 <field id="middleName"/>
                 <field id="position"/>
                 <field id="email">
-                    <validator class="com.haulmont.cuba.gui.components.validators.EmailValidator" message="msg://invalidValue"/>
+                    <validator class="com.haulmont.cuba.gui.components.validators.EmailValidator" message="msg://email.alert"/>
                 </field>
                 <field id="ipMask"/>
                 <!-- hidden, todo rewrite broken permission lookups -->
