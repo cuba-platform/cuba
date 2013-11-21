@@ -56,6 +56,10 @@
     border-color: #4d7ab2;
 }
 
+.v-disabled.v-button:focus {
+  border: #9BB3D3 1px solid;
+}
+
 .v-button-link:focus {
     outline: none;
     border: 1px dashed #4d7ab2;
