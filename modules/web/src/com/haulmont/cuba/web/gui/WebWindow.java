@@ -472,6 +472,13 @@ public class WebWindow implements Window, Component.Wrapper,
             if (child instanceof Panel) {
                 child = ((Panel) child).getContent();
             }
+            if (child instanceof TabSheet) {
+                // #PL-3176
+                // we don't know about selected tab after request
+                // may be focused component lays on not selected tab
+                // it may break component tree
+                continue;
+            }
             if (child instanceof ComponentContainer) {
                 com.vaadin.ui.Component.Focusable result = getComponentToFocus((ComponentContainer) child);
                 if (result != null) {
