@@ -29,7 +29,9 @@ public class PickerField extends CustomField {
     protected String requiredError;
 
     protected List<Button> buttons = new ArrayList<>();
-    private HorizontalLayout container;
+    protected HorizontalLayout container;
+
+    protected String userStyleName;
 
     public PickerField() {
         initTextField();
@@ -53,6 +55,20 @@ public class PickerField extends CustomField {
         setCompositionRoot(container);
         setStyleName("pickerfield");
         setWidth(DEFAULT_WIDTH + "px");
+    }
+
+    @Override
+    public void setStyleName(String name) {
+        if (userStyleName != null)
+            removeStyleName(userStyleName);
+        this.userStyleName = name;
+        if (name != null)
+            addStyleName(userStyleName);
+    }
+
+    @Override
+    public String getStyleName() {
+        return userStyleName;
     }
 
     protected void initTextField() {
