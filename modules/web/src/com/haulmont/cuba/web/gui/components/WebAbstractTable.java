@@ -147,6 +147,9 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         //noinspection RedundantCast
         columns.remove((MetaPropertyPath) column.getId());
         columnsOrder.remove(column);
+
+        // todo artamonov remove after fix #VAADIN-12980
+        component.refreshRowCache();
     }
 
     @Override
