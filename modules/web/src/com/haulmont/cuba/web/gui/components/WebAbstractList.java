@@ -10,6 +10,7 @@ import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.vaadin.ui.AbstractSelect;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -59,6 +60,7 @@ public abstract class WebAbstractList<T extends AbstractSelect>
         }
     }
 
+    @Nullable
     protected Set<Object> getSelectedItemIds() {
         final Object value = component.getValue();
         if (value == null) {
@@ -90,6 +92,10 @@ public abstract class WebAbstractList<T extends AbstractSelect>
             }
             itemIds.add(item.getId());
         }
+        setSelectedIds(itemIds);
+    }
+
+    protected void setSelectedIds(Collection<Object> itemIds) {
         if (component.isMultiSelect()) {
             component.setValue(itemIds);
         } else {

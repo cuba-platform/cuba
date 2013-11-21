@@ -93,8 +93,9 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     // Indicates that model is being changed.
     protected boolean isAdjusting = false;
 
+//    disable for #PL-2035
     // Disable listener that points selection model to folow ds item.
-    protected boolean disableItemListener = false;
+//    protected boolean disableItemListener = false;
 
     protected boolean fontInitialized = false;
     protected int defaultRowHeight = 24;
@@ -511,6 +512,25 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                     public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
                         onDataChange();
                         packRows();
+
+                        // #PL-2035, reload selection from ds
+                        Set<Entity> selectedItems = getSelected();
+                        if (selectedItems == null) {
+                            selectedItems = Collections.emptySet();
+                        }
+
+                        Set<Entity> newSelection = new HashSet<>();
+                        for (Entity entity : selectedItems) {
+                            if (ds.containsItem(entity.getId())) {
+                                newSelection.add(entity);
+                            }
+                        }
+
+                        if (newSelection.isEmpty()) {
+                            setSelected((Entity) null);
+                        } else {
+                            setSelected(newSelection);
+                        }
                     }
 
                     @Override
@@ -532,12 +552,13 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                         packRows();
                     }
 
-                    @Override
-                    public void itemChanged(Datasource<Entity> ds, @Nullable Entity prevItem, @Nullable Entity item) {
-                        if (!disableItemListener && !selectedItems.contains(item)) {
-                            setSelected(item);
-                        }
-                    }
+//                    disabled for #PL-2035
+//                    @Override
+//                    public void itemChanged(Datasource<Entity> ds, @Nullable Entity prevItem, @Nullable Entity item) {
+//                        if (!disableItemListener && !selectedItems.contains(item)) {
+//                            setSelected(item);
+//                        }
+//                    }
                 }
         );
 
@@ -677,13 +698,15 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                             return;
 
                         selectedItems = getSelected();
-                        disableItemListener = true;
+//                        disabled for #PL-2035
+//                        disableItemListener = true;
                         if (!selectedItems.isEmpty()) {
                             datasource.setItem(selectedItems.iterator().next());
                         } else {
                             datasource.setItem(null);
                         }
-                        disableItemListener = false;
+//                        disabled for #PL-2035
+//                        disableItemListener = false;
                     }
                 }
         );
@@ -699,10 +722,12 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         }
     }
 
+    @Override
     public boolean isAllowPopupMenu() {
         return allowPopupMenu;
     }
 
+    @Override
     public void setAllowPopupMenu(boolean allowPopupMenu) {
         this.allowPopupMenu = allowPopupMenu;
     }

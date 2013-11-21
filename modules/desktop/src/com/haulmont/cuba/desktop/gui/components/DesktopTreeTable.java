@@ -33,7 +33,8 @@ import java.util.*;
 public class DesktopTreeTable
         extends DesktopAbstractTable<JXTreeTableExt>
         implements TreeTable {
-    private String hierarchyProperty;
+
+    protected String hierarchyProperty;
 
     protected Map<Integer, TableCellRenderer> cellRenderers = new HashMap<>();
 
@@ -184,14 +185,16 @@ public class DesktopTreeTable
                             return;
                         }
                         selectedItems = getSelected();
-                        disableItemListener = true;
+//                        disabled for #PL-2035
+//                        disableItemListener = true;
                         // noinspection unchecked
                         if (selectedItems.isEmpty()) {
                             datasource.setItem(null);
                         } else {
                             datasource.setItem(selectedItems.iterator().next());
                         }
-                        disableItemListener = false;
+//                        disabled for #PL-2035
+//                        disableItemListener = false;
                     }
                 }
         );

@@ -48,7 +48,6 @@ import com.vaadin.event.ShortcutListener;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.terminal.Resource;
-import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -113,8 +112,9 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     // Map column id to Printable representation
     protected Map<String, Printable> printables = new HashMap<>();
 
+//  disabled for #PL-2035
     // Disable listener that points component value to follow the ds item.
-    protected boolean disableItemListener = false;
+//    protected boolean disableItemListener = false;
 
     protected String customStyle;
 
@@ -394,7 +394,8 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                 if (datasource == null) return;
 
                 final Set<Entity> selected = getSelected();
-                disableItemListener = true;
+//                disabled for #PL-2035
+//                disableItemListener = true;
                 if (selected.isEmpty()) {
                     datasource.setItem(null);
                 } else {
@@ -403,7 +404,8 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                         datasource.setItem(null);
                     datasource.setItem(selected.iterator().next());
                 }
-                disableItemListener = false;
+//                disabled for #PL-2035
+//                disableItemListener = false;
             }
         });
 
@@ -702,17 +704,42 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             rowsCount.setDatasource(datasource);
         }
 
-        // noinspection unchecked
-        datasource.addListener(new CollectionDsActionsNotifier(this) {
+        datasource.addListener(new CollectionDsActionsNotifier(this){
             @Override
-            public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
-                super.itemChanged(ds, prevItem, item);
+            public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
+                // #PL-2035, reload selection from ds
+                Set<Object> selectedItemIds = getSelectedItemIds();
+                if (selectedItemIds == null) {
+                    selectedItemIds = Collections.emptySet();
+                }
 
-                if (!disableItemListener && !getSelected().contains(item)) {
-                    setSelected(item);
+                Set<Object> newSelection = new HashSet<>();
+                for (Object entityId : selectedItemIds) {
+                    if (ds.containsItem(entityId)) {
+                        newSelection.add(entityId);
+                    }
+                }
+
+                if (newSelection.isEmpty()) {
+                    setSelected((Entity) null);
+                } else {
+                    setSelectedIds(newSelection);
                 }
             }
         });
+
+        // noinspection unchecked
+//        disabled for #PL-2035
+//        datasource.addListener(new CollectionDsActionsNotifier(this) {
+//            @Override
+//            public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
+//                super.itemChanged(ds, prevItem, item);
+//
+//                if (!disableItemListener && !getSelected().contains(item)) {
+//                    setSelected(item);
+//                }
+//            }
+//        });
 
         datasource.addListener(new CollectionDsActionsNotifier(this));
 

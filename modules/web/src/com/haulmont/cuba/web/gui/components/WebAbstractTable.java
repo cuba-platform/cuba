@@ -109,8 +109,9 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     // Map column id to Printable representation
     protected Map<String, Printable> printables = new HashMap<>();
 
+//  disabled for #PL-2035
     // Disable listener that points component value to follow the ds item.
-    protected boolean disableItemListener = false;
+//    protected boolean disableItemListener = false;
 
     protected static final int MAX_TEXT_LENGTH_GAP = 10;
 
@@ -369,7 +370,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                 if (datasource == null) return;
 
                 final Set<Entity> selected = getSelected();
-                disableItemListener = true;
+//                disabled for #PL-2035
+//                disableItemListener = true;
                 if (selected.isEmpty()) {
                     datasource.setItem(null);
                 } else {
@@ -378,7 +380,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                         datasource.setItem(null);
                     datasource.setItem(selected.iterator().next());
                 }
-                disableItemListener = false;
+//                disabled for #PL-2035
+//                disableItemListener = false;
             }
         });
 
@@ -682,16 +685,41 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         if (rowsCount != null)
             rowsCount.setDatasource(datasource);
 
-        // noinspection unchecked
         datasource.addListener(new CollectionDsActionsNotifier(this) {
             @Override
-            public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
-                super.itemChanged(ds, prevItem, item);
-                if (!disableItemListener && !getSelected().contains(item)) {
-                    setSelected(item);
+            public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
+                // #PL-2035, reload selection from ds
+                Set<Object> selectedItemIds = getSelectedItemIds();
+                if (selectedItemIds == null) {
+                    selectedItemIds = Collections.emptySet();
+                }
+
+                Set<Object> newSelection = new HashSet<>();
+                for (Object entityId : selectedItemIds) {
+                    if (ds.containsItem(entityId)) {
+                        newSelection.add(entityId);
+                    }
+                }
+
+                if (newSelection.isEmpty()) {
+                    setSelected((Entity) null);
+                } else {
+                    setSelectedIds(newSelection);
                 }
             }
         });
+
+//        disabled for #PL-2035
+        // noinspection unchecked
+//        datasource.addListener(new CollectionDsActionsNotifier(this) {
+//            @Override
+//            public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
+//                super.itemChanged(ds, prevItem, item);
+//                if (!disableItemListener && !getSelected().contains(item)) {
+//                    setSelected(item);
+//                }
+//            }
+//        });
 
         for (Action action : getActions()) {
             action.refreshState();
