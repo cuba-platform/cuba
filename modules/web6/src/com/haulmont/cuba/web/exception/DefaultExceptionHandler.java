@@ -7,6 +7,7 @@ package com.haulmont.cuba.web.exception;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.web.WebWindowManager;
 import com.vaadin.terminal.*;
 import com.vaadin.terminal.gwt.server.ChangeVariablesErrorEvent;
 import com.vaadin.ui.AbstractComponent;
@@ -31,14 +32,14 @@ public class DefaultExceptionHandler implements ExceptionHandler {
         // Copied from com.vaadin.Application.terminalError()
 
         Throwable t = event.getThrowable();
-        if (t instanceof SocketException || !App.isBound()) {
+        if (t instanceof SocketException) {
             // Most likely client browser closed socket
             return true;
         }
 
         if (t != null) {
             if (app.getConnection().getSession() != null) {
-                showDialog(t);
+                showDialog(app, t);
             } else {
                 showNotification(app, t);
             }
@@ -69,7 +70,7 @@ public class DefaultExceptionHandler implements ExceptionHandler {
         return true;
     }
 
-    protected void showDialog(Throwable exception) {
+    protected void showDialog(App app, Throwable exception) {
         Throwable rootCause = ExceptionUtils.getRootCause(exception);
         if (rootCause == null) {
             rootCause = exception;
@@ -81,7 +82,7 @@ public class DefaultExceptionHandler implements ExceptionHandler {
                 break;
             }
         }
-        App.getInstance().getAppWindow().addWindow(dialog);
+        app.getAppWindow().addWindow(dialog);
         dialog.focus();
     }
 
@@ -91,10 +92,13 @@ public class DefaultExceptionHandler implements ExceptionHandler {
             rootCause = exception;
         }
 
-        App.getInstance().getWindowManager().showNotification(
-                messages.getMessage(DefaultExceptionHandler.class, "exceptionDialog.caption", app.getLocale()),
-                rootCause.getClass().getSimpleName() + (rootCause.getMessage() != null ? "\n" + rootCause.getMessage() : ""),
-                IFrame.NotificationType.ERROR
-        );
+        WebWindowManager windowManager = app.getWindowManager();
+        if (windowManager != null) {
+            windowManager.showNotification(
+                    messages.getMessage(DefaultExceptionHandler.class, "exceptionDialog.caption", app.getLocale()),
+                    rootCause.getClass().getSimpleName() + (rootCause.getMessage() != null ? "\n" + rootCause.getMessage() : ""),
+                    IFrame.NotificationType.ERROR
+            );
+        }
     }
 }

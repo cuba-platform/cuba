@@ -6,14 +6,15 @@ package com.haulmont.cuba.web.exception;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
+import com.haulmont.cuba.web.WebWindowManager;
 import com.vaadin.server.AbstractErrorMessage;
 import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.server.ErrorEvent;
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.Window;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
@@ -35,14 +36,14 @@ public class DefaultExceptionHandler implements ExceptionHandler {
 
         //noinspection ThrowableResultOfMethodCallIgnored
         Throwable t = event.getThrowable();
-        if (t instanceof SocketException || !App.isBound()) {
+        if (t instanceof SocketException) {
             // Most likely client browser closed socket
             return true;
         }
 
         if (t != null) {
             if (app.getConnection().getSession() != null) {
-                showDialog(t);
+                showDialog(app, t);
             } else {
                 showNotification(app, t);
             }
@@ -59,7 +60,7 @@ public class DefaultExceptionHandler implements ExceptionHandler {
         return true;
     }
 
-    protected void showDialog(Throwable exception) {
+    protected void showDialog(App app, Throwable exception) {
         Throwable rootCause = ExceptionUtils.getRootCause(exception);
         if (rootCause == null) {
             rootCause = exception;
@@ -71,7 +72,7 @@ public class DefaultExceptionHandler implements ExceptionHandler {
                 break;
             }
         }
-        AppUI.getCurrent().addWindow(dialog);
+        app.getAppUI().addWindow(dialog);
         dialog.focus();
     }
 
@@ -80,9 +81,13 @@ public class DefaultExceptionHandler implements ExceptionHandler {
         if (rootCause == null) {
             rootCause = exception;
         }
-        Notification.show(
-                messages.getMessage(DefaultExceptionHandler.class, "exceptionDialog.caption", app.getLocale()),
-                rootCause.getClass().getSimpleName() + (rootCause.getMessage() != null ? "\n" + rootCause.getMessage() : ""),
-                Notification.Type.ERROR_MESSAGE);
+        WebWindowManager windowManager = app.getWindowManager();
+        if (windowManager != null) {
+            windowManager.showNotification(
+                    messages.getMessage(DefaultExceptionHandler.class, "exceptionDialog.caption", app.getLocale()),
+                    rootCause.getClass().getSimpleName() + (rootCause.getMessage() != null ? "\n" + rootCause.getMessage() : ""),
+                    IFrame.NotificationType.ERROR
+            );
+        }
     }
 }
