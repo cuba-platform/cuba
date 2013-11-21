@@ -31,7 +31,7 @@ public class DefaultExceptionHandler implements ExceptionHandler {
         // Copied from com.vaadin.Application.terminalError()
 
         Throwable t = event.getThrowable();
-        if (t instanceof SocketException) {
+        if (t instanceof SocketException || !App.isBound()) {
             // Most likely client browser closed socket
             return true;
         }

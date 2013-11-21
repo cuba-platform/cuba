@@ -35,7 +35,7 @@ public class DefaultExceptionHandler implements ExceptionHandler {
 
         //noinspection ThrowableResultOfMethodCallIgnored
         Throwable t = event.getThrowable();
-        if (t instanceof SocketException) {
+        if (t instanceof SocketException || !App.isBound()) {
             // Most likely client browser closed socket
             return true;
         }
