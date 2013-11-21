@@ -15,6 +15,7 @@ import com.haulmont.cuba.gui.components.filter.AbstractCondition;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.vaadin.ui.ComponentContainer;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -48,7 +49,11 @@ public class AppliedFilter {
     }
 
     public String getText() {
-        StringBuilder sb = new StringBuilder(filterEntity.getName());
+        String name = filterEntity.getName();
+        if (StringUtils.isBlank(name)) {
+            name = messages.getMainMessage(filterEntity.getCode());
+        }
+        StringBuilder sb = new StringBuilder(name);
 
         if (!params.isEmpty()) {
             sb.append(": ");
