@@ -110,11 +110,11 @@ public class WebPickerField
         if (component.isReadOnly())
             return;
 
-        if (datasource == null && metaClass == null) {
-            throw new IllegalStateException("Datasource or metaclass must be set for field");
-        }
-
         if (value != null) {
+            if (datasource == null && metaClass == null) {
+                throw new IllegalStateException("Datasource or metaclass must be set for field");
+            }
+
             Class fieldClass = getMetaClass().getJavaClass();
             Class<?> valueClass = value.getClass();
             if (!fieldClass.isAssignableFrom(valueClass)) {
