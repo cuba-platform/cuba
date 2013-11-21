@@ -48,7 +48,7 @@ public class ShowLinkAction extends AbstractAction {
         App.getInstance().getWindowManager().showMessageDialog(
                 messages.getMessage(mp, "table.showLinkAction"),
                 compileLink(ds),
-                IFrame.MessageType.CONFIRMATION
+                IFrame.MessageType.CONFIRMATION_HTML
         );
     }
 

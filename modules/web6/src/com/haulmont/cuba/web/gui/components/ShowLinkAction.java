@@ -7,7 +7,6 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.AbstractAction;
@@ -51,7 +50,7 @@ public class ShowLinkAction extends AbstractAction {
         App.getInstance().getWindowManager().showMessageDialog(
                 AppBeans.get(Messages.class).getMessage(mp, "table.showLinkAction"),
                 compileLink(ds),
-                IFrame.MessageType.CONFIRMATION
+                IFrame.MessageType.CONFIRMATION_HTML
         );
     }
 
