@@ -62,7 +62,7 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
         field.setWidth("100%");
         container.setExpandRatio(field, 1);
 
-        setStyleName("cuba-pickerfield");
+        setPrimaryStyleName("cuba-pickerfield");
         setWidth(DEFAULT_WIDTH + "px");
     }
 
