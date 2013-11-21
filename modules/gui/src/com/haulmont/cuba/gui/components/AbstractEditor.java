@@ -101,6 +101,20 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
     /**
      * Hook to be implemented in subclasses. Called by {@link #setItem(com.haulmont.cuba.core.entity.Entity)}.
      * At the moment of calling the main datasource is initialized and {@link #getItem()} returns reloaded entity instance.
+     * <p/>
+     * This method can be called second time by {@link #postCommit(boolean, boolean)} if the window is not closed after
+     * commit. Then {@link #getItem()} contains instance, returned from {@code DataService.commit()}.
+     * This is useful for initialization of components that have to show fresh information from the current instance.
+     * <p/>
+     * Example:
+     * <pre>
+     * protected void postInit() {
+     *     if (!PersistenceHelper.isNew(getItem())) {
+     *        diffFrame.loadVersions(getItem());
+     *        entityLogDs.refresh();
+     *    }
+     * }
+     * </pre>
      */
     protected void postInit() {
     }
