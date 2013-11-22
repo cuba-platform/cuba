@@ -76,7 +76,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     protected static final String FIELD_WIDTH = "200px";
 
     public void init(Map<String, Object> params) {
-        getDialogParams().setWidth(250);
+        getDialogParams().setWidth(251);
 
         dataService = getDsContext().getDataSupplier();
         fieldsContainer = getComponent("attributeProperties");
@@ -223,6 +223,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
 
         if (RuntimePropsDatasource.PropertyType.DATE.equals(dataType)) {
             BoxLayout boxLayout = factory.createComponent(BoxLayout.VBOX);
+            boxLayout.setId("defaultDateBox");
             CheckBox checkBox = factory.createComponent(CheckBox.NAME);
             checkBox.setId("defaultDateIsCurrent");
             checkBox.setCaption(getMessage("currentDate"));
@@ -501,6 +502,10 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         Component component5 = fieldsContainer.getComponent("screenField");
         if (component5 != null) {
             fieldsContainer.remove(component5);
+        }
+        Component component6 = fieldsContainer.getComponent("defaultDateBox");
+        if (component6 != null) {
+            fieldsContainer.remove(component6);
         }
     }
 
