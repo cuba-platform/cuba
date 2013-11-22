@@ -83,13 +83,16 @@ public class CubaFieldGroupLayoutComponentSlot extends CubaGridLayoutSlot implem
         Style captionStyle = caption != null ? caption.getElement().getStyle() : null;
         int captionWidth = getCaptionWidth();
 
+        boolean clearCaptionRight = false;
+
         boolean captionAboveCompnent;
         if (caption == null) {
             captionAboveCompnent = false;
             if (isCaptionInline()) {
                 style.clearPaddingLeft();
             }
-            style.clearPaddingRight();
+
+            clearCaptionRight = true;
         } else {
             captionAboveCompnent = !caption.shouldBePlacedAfterComponent();
             if (!captionAboveCompnent) {
@@ -110,7 +113,8 @@ public class CubaFieldGroupLayoutComponentSlot extends CubaGridLayoutSlot implem
                 }
                 captionStyle.setLeft(0, Style.Unit.PX);
                 captionStyle.clearRight();
-                style.clearPaddingRight();
+
+                clearCaptionRight = true;
             }
         }
 
@@ -123,6 +127,8 @@ public class CubaFieldGroupLayoutComponentSlot extends CubaGridLayoutSlot implem
                 availableWidth = 0;
             }
             style.setPaddingRight(indicatorsWidth, Style.Unit.PX);
+        } else if (clearCaptionRight) {
+            style.clearPaddingRight();
         }
 
         if (marginRight > 0) {
@@ -296,7 +302,7 @@ public class CubaFieldGroupLayoutComponentSlot extends CubaGridLayoutSlot implem
         }
     }
 
-    public void setInidcatorsWidth(String width) {
+    public void setIndicatorsWidth(String width) {
         if (rightCaption != null) {
             DOM.setStyleAttribute(rightCaption, "width", width);
         }

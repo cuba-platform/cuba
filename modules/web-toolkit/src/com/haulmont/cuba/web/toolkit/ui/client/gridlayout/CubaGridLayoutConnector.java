@@ -9,9 +9,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.CubaGridLayout;
 import com.haulmont.cuba.web.toolkit.ui.client.caption.CubaCaptionWidget;
-import com.vaadin.client.ApplicationConnection;
 import com.vaadin.client.ComponentConnector;
-import com.vaadin.client.UIDL;
 import com.vaadin.client.VCaption;
 import com.vaadin.client.ui.VGridLayout;
 import com.vaadin.client.ui.gridlayout.GridLayoutConnector;
@@ -33,11 +31,6 @@ public class CubaGridLayoutConnector extends GridLayoutConnector {
     @Override
     protected Widget createWidget() {
         return GWT.create(CubaGridLayoutWidget.class);
-    }
-
-    @Override
-    public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
-        super.updateFromUIDL(uidl, client);
     }
 
     protected void setDefaultCaptionParameters(CubaCaptionWidget widget) {
@@ -64,6 +57,7 @@ public class CubaGridLayoutConnector extends GridLayoutConnector {
             caption.updateCaption();
         } else {
             layout.setCaption(childConnector.getWidget(), null);
+            getLayoutManager().setNeedsLayout(this);
         }
     }
 }

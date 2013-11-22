@@ -10,9 +10,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.CubaFieldGroupLayout;
 import com.haulmont.cuba.web.toolkit.ui.client.caption.CubaCaptionWidget;
 import com.haulmont.cuba.web.toolkit.ui.client.gridlayout.CubaGridLayoutConnector;
-import com.vaadin.client.ApplicationConnection;
 import com.vaadin.client.ComponentConnector;
-import com.vaadin.client.UIDL;
 import com.vaadin.client.ui.VGridLayout;
 import com.vaadin.shared.ui.Connect;
 
@@ -41,12 +39,12 @@ public class CubaFieldGroupLayoutConnector extends CubaGridLayoutConnector {
     }
 
     @Override
-    public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
-        super.updateFromUIDL(uidl, client);
-
+    public void layoutHorizontally() {
         if (needUpdateCaptionSizes) {
             updateCaptionSizes();
         }
+
+        super.layoutHorizontally();
 
         needUpdateCaptionSizes = false;
     }
@@ -62,6 +60,9 @@ public class CubaFieldGroupLayoutConnector extends CubaGridLayoutConnector {
     public void updateCaption(ComponentConnector childConnector) {
         super.updateCaption(childConnector);
         needUpdateCaptionSizes = true;
+
+        // always relayout after caption changes
+        getLayoutManager().setNeedsLayout(this);
     }
 
     public void updateCaptionSizes() {
@@ -73,17 +74,11 @@ public class CubaFieldGroupLayoutConnector extends CubaGridLayoutConnector {
     }
 
     protected void updateCaptionSizes(VGridLayout.Cell[] column) {
+        // reset indicators width
+        resetIndicatorsWidth(column);
+
         int maxCaptionWidth = 0;
         int maxIndicatorsWidth = 0;
-
-        // reset indicators width
-        for (VGridLayout.Cell cell : column) {
-            if (cell != null && isCaptionInlineApplicable(cell)) {
-                cell.slot.getCaption().getElement().getStyle().clearWidth();
-
-                ((CubaFieldGroupLayoutComponentSlot) cell.slot).resetIndicatorsWidth();
-            }
-        }
 
         // calculate max widths
         for (VGridLayout.Cell cell : column) {
@@ -100,8 +95,18 @@ public class CubaFieldGroupLayoutConnector extends CubaGridLayoutConnector {
                 cell.slot.getCaption().setWidth(maxCaptionWidth + "px");
 
                 if (cell.slot.isRelativeWidth()) {
-                    ((CubaFieldGroupLayoutComponentSlot) cell.slot).setInidcatorsWidth(maxIndicatorsWidth + "px");
+                    ((CubaFieldGroupLayoutComponentSlot) cell.slot).setIndicatorsWidth(maxIndicatorsWidth + "px");
                 }
+            }
+        }
+    }
+
+    protected void resetIndicatorsWidth(VGridLayout.Cell[] column) {
+        for (VGridLayout.Cell cell : column) {
+            if (cell != null && isCaptionInlineApplicable(cell)) {
+                cell.slot.getCaption().getElement().getStyle().clearWidth();
+
+                ((CubaFieldGroupLayoutComponentSlot) cell.slot).resetIndicatorsWidth();
             }
         }
     }

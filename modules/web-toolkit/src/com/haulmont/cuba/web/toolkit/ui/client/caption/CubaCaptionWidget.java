@@ -264,10 +264,6 @@ public class CubaCaptionWidget extends VCaption {
         this.captionHolder = captionHolder;
     }
 
-    public boolean isCaptionPlacedAfterComponentByDefault() {
-        return captionPlacedAfterComponentByDefault;
-    }
-
     public void setCaptionPlacedAfterComponentByDefault(boolean captionPlacedAfterComponentByDefault) {
         this.captionPlacedAfterComponentByDefault = captionPlacedAfterComponentByDefault;
     }
