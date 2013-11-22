@@ -221,11 +221,42 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
     @Override
     public void setEditable(boolean editable) {
-        this.editable = editable;
-        if (datasource != null) {
-            refreshColumns(component.getContainerDataSource());
+        if (this.editable != editable) {
+            this.editable = editable;
+
+            component.disableContentBufferRefreshing();
+
+            if (datasource != null) {
+                com.vaadin.data.Container ds = component.getContainerDataSource();
+
+                @SuppressWarnings("unchecked")
+                final Collection<MetaPropertyPath> propertyIds = (Collection<MetaPropertyPath>) ds.getContainerPropertyIds();
+                // added generated columns
+                final List<Pair<Object, com.vaadin.ui.Table.ColumnGenerator>> columnGenerators = new LinkedList<>();
+
+                for (final MetaPropertyPath id : propertyIds) {
+                    final Table.Column column = getColumn(id.toString());
+                    // save generators only for non editable columns
+                    if (!column.isEditable()) {
+                        com.vaadin.ui.Table.ColumnGenerator generator = component.getColumnGenerator(id);
+                        if (generator != null && !(generator instanceof WebAbstractTable.SystemTableColumnGenerator)) {
+                            columnGenerators.add(new Pair<Object, com.vaadin.ui.Table.ColumnGenerator>(id, generator));
+                        }
+                    }
+                }
+
+                refreshColumns(ds);
+
+                // restore generated columns
+                for (Pair<Object, com.vaadin.ui.Table.ColumnGenerator> generatorEntry : columnGenerators) {
+                    component.addGeneratedColumn(generatorEntry.getFirst(), generatorEntry.getSecond());
+                }
+            }
+
+            component.setEditable(editable);
+
+            component.enableContentBufferRefreshing(true);
         }
-        component.setEditable(editable);
     }
 
     protected void setEditableColumns(List<MetaPropertyPath> editableColumns) {

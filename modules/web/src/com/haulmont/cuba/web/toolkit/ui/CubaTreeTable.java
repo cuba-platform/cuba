@@ -17,6 +17,7 @@ import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.Field;
 
 import java.util.*;
 
@@ -29,6 +30,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableContainer, CubaEnhancedTable {
 
     protected LinkedList<Object> editableColumns = null;
+
+    protected boolean autowirePropertyDsForFields = false;
 
     @Override
     protected CubaTreeTableState getState() {
@@ -65,6 +68,46 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
         if (isTextSelectionEnabled() != textSelectionEnabled) {
             getState(true).textSelectionEnabled = textSelectionEnabled;
         }
+    }
+
+    @Override
+    public void disableContentBufferRefreshing() {
+        disableContentRefreshing();
+    }
+
+    @Override
+    public void enableContentBufferRefreshing(boolean refreshContent) {
+        enableContentRefreshing(refreshContent);
+    }
+
+    @Override
+    protected Object getPropertyValue(Object rowId, Object colId,
+                                      Property property) {
+        if (isColumnEditable(colId, isEditable()) && fieldFactory != null) {
+            final Field<?> f = fieldFactory.createField(
+                    getContainerDataSource(), rowId, colId, this);
+            if (f != null) {
+                // Remember that we have made this association so we can remove
+                // it when the component is removed
+                associatedProperties.put(f, property);
+                if (autowirePropertyDsForFields) {
+                    bindPropertyToField(rowId, colId, property, f);
+                }
+                return f;
+            }
+        }
+
+        return formatPropertyValue(rowId, colId, property);
+    }
+
+    @Override
+    public boolean isAutowirePropertyDsForFields() {
+        return autowirePropertyDsForFields;
+    }
+
+    @Override
+    public void setAutowirePropertyDsForFields(boolean autowirePropertyDsForFields) {
+        this.autowirePropertyDsForFields = autowirePropertyDsForFields;
     }
 
     @Override

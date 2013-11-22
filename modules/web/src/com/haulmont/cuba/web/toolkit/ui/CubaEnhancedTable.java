@@ -27,4 +27,10 @@ public interface CubaEnhancedTable {
 
     boolean isTextSelectionEnabled();
     void setTextSelectionEnabled(boolean textSelectionEnabled);
+
+    void disableContentBufferRefreshing();
+    void enableContentBufferRefreshing(boolean refreshContent);
+
+    boolean isAutowirePropertyDsForFields();
+    void setAutowirePropertyDsForFields(boolean autowirePropertyDsForFields);
 }

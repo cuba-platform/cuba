@@ -46,13 +46,15 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer, 
 
     protected boolean enableCancelSorting = true;
 
-    private boolean textSelectionEnabled;
+    protected boolean textSelectionEnabled;
 
-    private boolean showTotalAggregation = true;
+    protected boolean showTotalAggregation = true;
 
     protected ActionManager shortcutsManager = new ActionManager();
 
-    private List<CollapseListener> columnCollapseListeners = new ArrayList<>();
+    protected List<CollapseListener> columnCollapseListeners = new ArrayList<>();
+
+    protected boolean autowirePropertyDsForFields = false;
 
     /**
      * Table cell specific tooltip generator
@@ -113,7 +115,7 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer, 
         }
 
         if (this.editableColumns == null) {
-            this.editableColumns = new LinkedList<Object>();
+            this.editableColumns = new LinkedList<>();
         } else {
             this.editableColumns.clear();
         }
@@ -327,12 +329,22 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer, 
             final Field f = fieldFactory.createField(getContainerDataSource(),
                     rowId, colId, this);
             if (f != null) {
-                f.setPropertyDataSource(property);
+                if (autowirePropertyDsForFields) {
+                    f.setPropertyDataSource(property);
+                }
                 return f;
             }
         }
 
         return formatPropertyValue(rowId, colId, property);
+    }
+
+    public boolean isAutowirePropertyDsForFields() {
+        return autowirePropertyDsForFields;
+    }
+
+    public void setAutowirePropertyDsForFields(boolean autowirePropertyDsForFields) {
+        this.autowirePropertyDsForFields = autowirePropertyDsForFields;
     }
 
     protected boolean isColumnEditable(Object columnId) {
@@ -1270,8 +1282,15 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer, 
         }
     }
 
+    @Override
+    public boolean disableContentRefreshing() {
+        return super.disableContentRefreshing();
+    }
 
-
+    @Override
+    public void enableContentRefreshing(boolean refreshContent) {
+        super.enableContentRefreshing(refreshContent);
+    }
 
     /**
      * Get the item description generator which generates tooltips for cells and
