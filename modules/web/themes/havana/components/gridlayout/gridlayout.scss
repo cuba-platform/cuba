@@ -5,7 +5,6 @@
 
 @mixin havana-gridlayout {
 
-  .v-gridlayout-slot {
-    @include box-defaults;
-  }
+  // just a stub for possible extension
+  // do not assign box defaults mixin to grid layout slot
 }
