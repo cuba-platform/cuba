@@ -172,6 +172,10 @@
 .v-button-closetab-button {
   border: none;
   background: transparent none;
+
+  .v-icon {
+    border-top: 2px solid transparent;
+  }
 }
 
 .v-button-closetab-button .v-button-wrap,
@@ -316,9 +320,9 @@
  * Work area in single mode
  */
 
-.v-verticallayout-single {
-  background: #fff url("images/bg_main.gif") repeat-x;
-}
+//.v-verticallayout-single {
+//  background: #fff url("images/bg_main.gif") repeat-x;
+//}
 
 /*
  * Here go
