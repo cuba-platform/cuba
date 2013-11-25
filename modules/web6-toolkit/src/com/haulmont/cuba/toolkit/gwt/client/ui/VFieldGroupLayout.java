@@ -14,8 +14,7 @@ import com.vaadin.terminal.gwt.client.ui.layout.CellBasedLayout;
 import com.vaadin.terminal.gwt.client.ui.layout.ChildComponentContainer;
 
 /**
- * @author gorodnov
- * @version $Id$
+ * VFieldGroupLayout
  */
 public class VFieldGroupLayout extends VGridLayout {
 
@@ -29,11 +28,6 @@ public class VFieldGroupLayout extends VGridLayout {
     @Override
     protected ChildComponentContainer createComponentContainer(Paintable paintable) {
         return new FieldGroupComponentContainer((Widget) paintable, CellBasedLayout.ORIENTATION_VERTICAL);
-    }
-
-    @Override
-    protected Cell createCell(UIDL c) {
-        return new FieldGroupComponentCell(c);
     }
 
     @Override
@@ -275,13 +269,11 @@ public class VFieldGroupLayout extends VGridLayout {
             if (tooltipElement != null) {
                 fakeCaptionWidth += TOOLTIP_INDICATOR_WIDTH;
             }
-            if (rightCaption != null && widthChanged) {
+            if (rightCaption != null && widthChanged)
                 DOM.setStyleAttribute(rightCaption, "width", fakeCaptionWidth + "px");
-            }
             additionalWidth = MAX_ADDITIONAL_WIDTH - fakeCaptionWidth;
         }
 
-        @Override
         protected void setCaption(VCaption newCaption) {
             if (newCaption != null) {
                 newCaption.removeFromParent();
@@ -344,7 +336,6 @@ public class VFieldGroupLayout extends VGridLayout {
             }
         }
 
-        @Override
         public void updateContainerDOMSize() {
             int width = contSize.getWidth();
             int height = contSize.getHeight() - alignmentTopOffset;
@@ -376,58 +367,6 @@ public class VFieldGroupLayout extends VGridLayout {
 
                 // Remove initial height
                 caption.setHeight("");
-            }
-        }
-    }
-
-    protected class FieldGroupComponentCell extends Cell {
-
-        public FieldGroupComponentCell(UIDL c) {
-            super(c);
-        }
-
-        @Override
-        public int getWidth() {
-            if (cc != null) {
-                int w = cc.getWidgetSize().getWidth();
-
-                if (verticalCaption) {
-                    w += cc.getCaptionWidthAfterComponent();
-                } else {
-                    FieldGroupComponentContainer fc = (FieldGroupComponentContainer) cc;
-
-                    w += fc.getCaptionWidth() + MAX_ADDITIONAL_WIDTH;
-                }
-
-                return w;
-            } else {
-                return 0;
-            }
-        }
-
-        @Override
-        public int getHeight() {
-            if (cc != null) {
-                int h = cc.getWidgetSize().getHeight();
-                if (verticalCaption) {
-                    h += cc.getCaptionHeightAboveComponent();
-                } else {
-                    h = Math.max(h, cc.getCaptionHeight());
-                }
-                return h;
-            } else {
-                return 0;
-            }
-        }
-
-        @Override
-        public RenderSpace getAllocatedSpace() {
-            if (verticalCaption) {
-                return new RenderSpace(getAvailableWidth() - cc.getCaptionWidthAfterComponent(),
-                        getAvailableHeight() - cc.getCaptionHeightAboveComponent());
-            } else {
-                return new RenderSpace(getAvailableWidth() - cc.getCaptionWidth(),
-                        getAvailableHeight() - cc.getCaptionHeight());
             }
         }
     }
