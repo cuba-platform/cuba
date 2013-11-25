@@ -321,6 +321,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         textField.setCaption(getMessage("ENUMERATION"));
         textField.setWidth(FIELD_WIDTH);
         textField.setRequired(true);
+        textField.setRequiredMessage(getMessage("enumRequired"));
         textField.addListener(new ValueListener() {
             @Override
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
