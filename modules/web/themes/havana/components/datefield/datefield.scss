@@ -51,6 +51,7 @@
     background-image: url(sprites/date-select-button.png);  /** sprite-ref: components; */
     vertical-align: top;
     cursor: pointer;
+    outline: 0;
   }
 
   .#{$primaryStyleName}-button-focus {
