@@ -291,6 +291,6 @@ public class MessageTools {
     public Locale getDefaultLocale() {
         if (globalConfig.getAvailableLocales().isEmpty())
             throw new DevelopmentException("Invalid cuba.availableLocales application property");
-        return trimLocale(globalConfig.getAvailableLocales().entrySet().iterator().next().getValue());
+        return globalConfig.getAvailableLocales().entrySet().iterator().next().getValue();
     }
 }
