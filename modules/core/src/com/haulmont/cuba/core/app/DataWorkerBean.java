@@ -292,7 +292,7 @@ public class DataWorkerBean implements DataWorker {
     @SuppressWarnings("unchecked")
     private List getResultList(LoadContext context, Query query, boolean ensureDistinct) {
         List list = query.getResultList();
-        if (!ensureDistinct)
+        if (!ensureDistinct || list.size() == 0)
             return list;
 
         int requestedFirst = context.getQuery().getFirstResult();
