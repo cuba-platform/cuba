@@ -7,13 +7,12 @@
         xmlns="http://schemas.haulmont.com/cuba/5.0/window.xsd"
         class="com.haulmont.cuba.web.app.ui.core.settings.SettingsWindow"
         messagesPack="com.haulmont.cuba.web.app.ui.core.settings"
-        focusComponent="mainWindowTheme"
-        >
+        focusComponent="appThemeField">
 
     <dsContext/>
 
     <layout expand="buttons">
-        <groupBox stylename="edit-area">
+        <groupBox>
             <grid spacing="true">
                 <columns>
                     <column flex="1"/>
@@ -22,15 +21,15 @@
                 <rows>
                     <row>
                         <label value="msg://mainWindowMode"/>
-                        <optionsGroup id="mainWindowMode"/>
+                        <optionsGroup id="modeOptions"/>
                     </row>
                     <row>
                         <label value="msg://mainWindowTheme"/>
-                        <lookupField id="mainWindowTheme" required="true" width="150"
+                        <lookupField id="appThemeField" required="true" width="150"
                                      requiredMessage="msg://mainWindowThemeMsg"/>
                     </row>
                     <row>
-                        <button id="changePassw" icon="icons/change-pass.png"/>
+                        <button id="changePasswordBtn" icon="icons/change-pass.png"/>
                     </row>
                 </rows>
             </grid>
