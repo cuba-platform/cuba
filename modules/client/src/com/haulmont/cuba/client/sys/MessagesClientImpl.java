@@ -12,7 +12,6 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.AbstractMessages;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
 import javax.annotation.ManagedBean;
@@ -47,8 +46,9 @@ public class MessagesClientImpl extends AbstractMessages {
 
     @Override
     protected Locale getUserLocale() {
-        UserSession userSession = userSessionSource.getUserSession();
-        return userSession != null ? userSession.getLocale() : Locale.getDefault();
+        return userSessionSource.checkCurrentUserSession() ?
+                userSessionSource.getUserSession().getLocale() :
+                messageTools.getDefaultLocale();
     }
 
     @Override
