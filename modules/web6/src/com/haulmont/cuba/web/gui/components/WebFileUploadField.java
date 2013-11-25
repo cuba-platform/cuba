@@ -80,7 +80,7 @@ public class WebFileUploadField extends WebAbstractComponent<Upload> implements 
                 final long maxSize = maxUploadSizeMb * BYTES_IN_MEGABYTE;
                 if (event.getContentLength() > maxSize) {
                     component.interruptUpload();
-                    String warningMsg = messages.getMessage(AppConfig.getMessagesPack(), "upload.fileTooBig.message");
+                    String warningMsg = messages.formatMessage(AppConfig.getMessagesPack(), "upload.fileTooBig.message", event.getFilename(), maxUploadSizeMb);
                     getFrame().showNotification(warningMsg, IFrame.NotificationType.WARNING);
                 } else {
                     final Listener.Event e = new Listener.Event(event.getFilename());
