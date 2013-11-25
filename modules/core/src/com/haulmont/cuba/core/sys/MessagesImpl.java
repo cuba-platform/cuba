@@ -25,8 +25,8 @@ public class MessagesImpl extends AbstractMessages {
     @Override
     protected Locale getUserLocale() {
         return userSessionSource.checkCurrentUserSession() ?
-                    userSessionSource.getUserSession().getLocale() :
-                    Locale.getDefault();
+                userSessionSource.getUserSession().getLocale() :
+                messageTools.getDefaultLocale();
     }
 
     @Override

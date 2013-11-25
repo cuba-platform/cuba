@@ -21,7 +21,7 @@ public interface UserSessionSource {
     String NAME = "cuba_UserSessionSource";
 
     /**
-     * @return  true if the current user session is valid
+     * @return  true if the current user session is valid and calling {@link #getUserSession()} is safe
      */
     boolean checkCurrentUserSession();
 

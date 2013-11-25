@@ -132,13 +132,15 @@ public class LoginWorkerBean implements LoginWorker {
 
     @Override
     public UserSession loginSystem(String login) throws LoginException {
+        Locale locale = messages.getTools().trimLocale(Locale.getDefault());
+
         Transaction tx = persistence.createTransaction();
         try {
             User user = loadUser(login);
             if (user == null)
-                throw new LoginException(getInvalidCredentialsMessage(login, Locale.getDefault()));
+                throw new LoginException(getInvalidCredentialsMessage(login, locale));
 
-            UserSession session = userSessionManager.createSession(user, Locale.getDefault(), true);
+            UserSession session = userSessionManager.createSession(user, locale, true);
             if (user.getDefaultSubstitutedUser() != null) {
                 session = userSessionManager.createSession(session, user.getDefaultSubstitutedUser());
             }

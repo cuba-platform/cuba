@@ -274,4 +274,23 @@ public class MessageTools {
     public String localeToString(Locale locale) {
         return useLocaleLanguageOnly() ? locale.getLanguage() : locale.toString();
     }
+
+    /**
+     * Trims locale to language-only if {@link #useLocaleLanguageOnly()} is true.
+     * @param locale    a locale
+     * @return          the locale with the same language and empty country and variant
+     */
+    public Locale trimLocale(Locale locale) {
+        return useLocaleLanguageOnly() ? Locale.forLanguageTag(locale.getLanguage()) : locale;
+    }
+
+    /**
+     * @return first locale from the list defined in <code>cuba.availableLocales</code> app property, taking into
+     * account {@link #useLocaleLanguageOnly()} return value.
+     */
+    public Locale getDefaultLocale() {
+        if (globalConfig.getAvailableLocales().isEmpty())
+            throw new DevelopmentException("Invalid cuba.availableLocales application property");
+        return trimLocale(globalConfig.getAvailableLocales().entrySet().iterator().next().getValue());
+    }
 }

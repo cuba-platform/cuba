@@ -191,10 +191,7 @@ public abstract class App extends Application
         if (!AppContext.isStarted()) {
             defaultLocale = Locale.getDefault();
         } else {
-            GlobalConfig globalConfig = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class);
-            Set<Map.Entry<String, Locale>> localeSet = globalConfig.getAvailableLocales().entrySet();
-            Map.Entry<String, Locale> localeEntry = localeSet.iterator().next();
-            defaultLocale = localeEntry.getValue();
+            defaultLocale = AppBeans.get(MessageTools.class).getDefaultLocale();
         }
         return compileSystemMessages(defaultLocale);
     }

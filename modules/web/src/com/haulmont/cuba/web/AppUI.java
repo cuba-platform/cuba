@@ -104,8 +104,7 @@ public class AppUI extends UI implements ErrorHandler {
         if (applicationInitRequired) {
             app.init();
 
-            Locale locale = AppBeans.get(MessageTools.class).useLocaleLanguageOnly() ?
-                    Locale.forLanguageTag(request.getLocale().getLanguage()) : request.getLocale();
+            Locale locale = AppBeans.get(MessageTools.class).trimLocale(request.getLocale());
             app.setLocale(locale);
 
             applicationInitRequired = false;

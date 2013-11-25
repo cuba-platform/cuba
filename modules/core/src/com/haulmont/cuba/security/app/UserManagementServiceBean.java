@@ -63,6 +63,9 @@ public class UserManagementServiceBean implements UserManagementService {
     @Inject
     protected UserSessionSource userSessionSource;
 
+    @Inject
+    protected MessageTools messageTools;
+
     protected void checkUpdatePermission(Class entityClass) {
         if (!userSessionSource.getUserSession().isEntityOpPermitted(metadata.getClassNN(entityClass), EntityOp.UPDATE))
             throw new AccessDeniedException(PermissionType.ENTITY_OP, metadata.getClassNN(entityClass).getName());
@@ -224,10 +227,12 @@ public class UserManagementServiceBean implements UserManagementService {
                                                    Map<String, Template> localizedSubjectTemplates,
                                                    Map<String, Template> localizedBodyTemplates) {
 
-        String locale = StringUtils.isEmpty(user.getLanguage()) ? Locale.getDefault().getLanguage() : user.getLanguage();
+        boolean userLocaleIsUnknown = StringUtils.isEmpty(user.getLanguage());
+        String locale = userLocaleIsUnknown ?
+                messageTools.getDefaultLocale().getLanguage() : user.getLanguage();
 
         Template bodyTemplate;
-        if (Locale.getDefault().getLanguage().equals(locale))
+        if (userLocaleIsUnknown)
             bodyTemplate = bodyDefaultTemplate;
         else {
             if (localizedBodyTemplates.containsKey(locale))
@@ -251,7 +256,7 @@ public class UserManagementServiceBean implements UserManagementService {
         }
 
         Template subjectTemplate;
-        if (Locale.getDefault().getLanguage().equals(locale))
+        if (userLocaleIsUnknown)
             subjectTemplate = subjectDefaultTemplate;
         else {
             if (localizedSubjectTemplates.containsKey(locale))

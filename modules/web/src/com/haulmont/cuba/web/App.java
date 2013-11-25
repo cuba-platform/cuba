@@ -5,10 +5,7 @@
 
 package com.haulmont.cuba.web;
 
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.GlobalConfig;
-import com.haulmont.cuba.core.global.Resources;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.web.auth.ActiveDirectoryHelper;
@@ -154,9 +151,8 @@ public abstract class App {
     protected void init() {
         log.debug("Initializing application");
 
-        // todo locale
         // get default locale from config
-        locale = globalConfig.getAvailableLocales().entrySet().iterator().next().getValue();
+        locale = AppBeans.get(MessageTools.class).getDefaultLocale();
 
         if (ActiveDirectoryHelper.useActiveDirectory())
             principal = RequestContext.get().getRequest().getUserPrincipal();
