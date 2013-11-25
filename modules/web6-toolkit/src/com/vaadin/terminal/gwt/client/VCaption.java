@@ -379,7 +379,6 @@ public class VCaption extends HTML {
         }
 
         return width;
-
     }
 
     public int getRequiredWidth() {
@@ -399,19 +398,17 @@ public class VCaption extends HTML {
                 if (requiredWidth > textWidth) {
                     textWidth = requiredWidth;
                 }
-
             }
             width += textWidth;
         }
-        if (requiredFieldIndicator != null) {
+        if (requiredFieldIndicator != null && getElement().isOrHasChild(requiredFieldIndicator)) {
             width += Util.getRequiredWidth(requiredFieldIndicator);
         }
-        if (errorIndicatorElement != null) {
+        if (errorIndicatorElement != null && getElement().isOrHasChild(errorIndicatorElement)) {
             width += Util.getRequiredWidth(errorIndicatorElement);
         }
 
         return width;
-
     }
 
     public int getHeight() {
@@ -473,11 +470,11 @@ public class VCaption extends HTML {
             int availableWidth = maxWidth;
 
             // DOM.setStyleAttribute(getElement(), "width", maxWidth + "px");
-            if (requiredFieldIndicator != null) {
+            if (requiredFieldIndicator != null && getElement().isOrHasChild(requiredFieldIndicator)) {
                 availableWidth -= Util.getRequiredWidth(requiredFieldIndicator);
             }
 
-            if (errorIndicatorElement != null) {
+            if (errorIndicatorElement != null && getElement().isOrHasChild(errorIndicatorElement)) {
                 availableWidth -= Util.getRequiredWidth(errorIndicatorElement);
             }
 
@@ -500,7 +497,6 @@ public class VCaption extends HTML {
                 int captionWidth = Util.getRequiredWidth(captionText);
                 if (availableWidth > captionWidth) {
                     availableWidth -= captionWidth;
-
                 } else {
                     DOM.setStyleAttribute(captionText, "width", availableWidth
                             + "px");
