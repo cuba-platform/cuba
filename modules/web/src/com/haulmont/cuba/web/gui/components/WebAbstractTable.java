@@ -249,7 +249,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
                 // restore generated columns
                 for (Pair<Object, com.vaadin.ui.Table.ColumnGenerator> generatorEntry : columnGenerators) {
-                    component.addGeneratedColumn(generatorEntry.getFirst(), generatorEntry.getSecond());
+                    component.addGeneratedColumnInternal(generatorEntry.getFirst(), generatorEntry.getSecond());
                 }
             }
 
@@ -1127,12 +1127,16 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                 }
             }
 
+            component.disableContentBufferRefreshing();
+
             refreshColumns(ds);
 
             // restore generated columns
             for (Pair<Object, com.vaadin.ui.Table.ColumnGenerator> generatorEntry : columnGenerators) {
-                component.addGeneratedColumn(generatorEntry.getFirst(), generatorEntry.getSecond());
+                component.addGeneratedColumnInternal(generatorEntry.getFirst(), generatorEntry.getSecond());
             }
+
+            component.enableContentBufferRefreshing(true);
         }
         component.markAsDirtyRecursive();
     }

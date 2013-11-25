@@ -6,6 +6,7 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.web.gui.components.presentations.TablePresentations;
+import com.vaadin.ui.Table;
 
 /**
  * Interface to generalize additional functionality in {@link CubaTable}, {@link CubaGroupTable} and {@link CubaTreeTable}
@@ -33,4 +34,10 @@ public interface CubaEnhancedTable {
 
     boolean isAutowirePropertyDsForFields();
     void setAutowirePropertyDsForFields(boolean autowirePropertyDsForFields);
+
+    /**
+     * Just add generated column to table without checks and without cells refresh. </br>
+     * For internal use only.
+     */
+    void addGeneratedColumnInternal(Object id, Table.ColumnGenerator generatedColumn);
 }

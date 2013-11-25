@@ -110,6 +110,24 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
         this.autowirePropertyDsForFields = autowirePropertyDsForFields;
     }
 
+    /**
+     * Just add generated column to table without checks and without cells refresh. </br>
+     * For internal use only.
+     */
+    @Override
+    public void addGeneratedColumnInternal(Object id, ColumnGenerator generatedColumn) {
+        if (generatedColumn == null) {
+            throw new IllegalArgumentException(
+                    "Can not add null as a GeneratedColumn");
+        }
+        if (columnGenerators.containsKey(id)) {
+            throw new IllegalArgumentException(
+                    "Can not add the same GeneratedColumn twice, id:" + id);
+        } else {
+            columnGenerators.put(id, generatedColumn);
+        }
+    }
+
     @Override
     public boolean isAllowPopupMenu() {
         return getState(false).allowPopupMenu;

@@ -53,7 +53,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextArea;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -237,16 +236,13 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                 // added generated columns
                 final List<Pair<Object, com.vaadin.ui.Table.ColumnGenerator>> columnGenerators = new LinkedList<>();
 
-                Object[] visibleColumns = component.getVisibleColumns();
                 for (final MetaPropertyPath id : propertyIds) {
-                    if (ArrayUtils.contains(visibleColumns, id)) {
-                        final Table.Column column = getColumn(id.toString());
-                        // save generators only for non editable columns
-                        if (!column.isEditable()) {
-                            com.vaadin.ui.Table.ColumnGenerator generator = component.getColumnGenerator(id);
-                            if (generator != null && !(generator instanceof WebAbstractTable.SystemTableColumnGenerator)) {
-                                columnGenerators.add(new Pair<Object, com.vaadin.ui.Table.ColumnGenerator>(id, generator));
-                            }
+                    final Table.Column column = getColumn(id.toString());
+                    // save generators only for non editable columns
+                    if (!column.isEditable()) {
+                        com.vaadin.ui.Table.ColumnGenerator generator = component.getColumnGenerator(id);
+                        if (generator != null && !(generator instanceof WebAbstractTable.SystemTableColumnGenerator)) {
+                            columnGenerators.add(new Pair<Object, com.vaadin.ui.Table.ColumnGenerator>(id, generator));
                         }
                     }
                 }
@@ -255,7 +251,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
                 // restore generated columns
                 for (Pair<Object, com.vaadin.ui.Table.ColumnGenerator> generatorEntry : columnGenerators) {
-                    component.addGeneratedColumn(generatorEntry.getFirst(), generatorEntry.getSecond());
+                    component.addGeneratedColumnInternal(generatorEntry.getFirst(), generatorEntry.getSecond());
                 }
             }
 
@@ -1154,12 +1150,16 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                 }
             }
 
+            component.disableContentRefreshing();
+
             refreshColumns(ds);
 
             // restore generated columns
             for (Pair<Object, com.vaadin.ui.Table.ColumnGenerator> generatorEntry : columnGenerators) {
-                component.addGeneratedColumn(generatorEntry.getFirst(), generatorEntry.getSecond());
+                component.addGeneratedColumnInternal(generatorEntry.getFirst(), generatorEntry.getSecond());
             }
+
+            component.enableContentRefreshing(true);
         }
         component.requestRepaintAll();
     }

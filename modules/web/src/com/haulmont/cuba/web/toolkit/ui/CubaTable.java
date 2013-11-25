@@ -210,6 +210,24 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
         }
     }
 
+    /**
+     * Just add generated column to table without checks and without cells refresh. </br>
+     * For internal use only.
+     */
+    @Override
+    public void addGeneratedColumnInternal(Object id, ColumnGenerator generatedColumn) {
+        if (generatedColumn == null) {
+            throw new IllegalArgumentException(
+                    "Can not add null as a GeneratedColumn");
+        }
+        if (columnGenerators.containsKey(id)) {
+            throw new IllegalArgumentException(
+                    "Can not add the same GeneratedColumn twice, id:" + id);
+        } else {
+            columnGenerators.put(id, generatedColumn);
+        }
+    }
+
     @Override
     protected void paintActions(PaintTarget target, Set<Action> actionSet) throws PaintException {
         super.paintActions(target, actionSet);
