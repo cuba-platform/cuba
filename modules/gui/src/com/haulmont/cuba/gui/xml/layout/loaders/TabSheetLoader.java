@@ -38,6 +38,7 @@ public class TabSheetLoader extends ContainerLoader {
         loadHeight(component, element);
         loadWidth(component, element);
 
+        @SuppressWarnings("unchecked")
         final List<Element> tabElements = element.elements("tab");
         for (Element tabElement : tabElements) {
             final String name = tabElement.attributeValue("id");
@@ -75,6 +76,11 @@ public class TabSheetLoader extends ContainerLoader {
                 if (e != null) {
                     enable = e.getText();
                 }
+            }
+
+            String style = tabElement.attributeValue("stylename");
+            if (style != null) {
+                tab.setStyleName(style);
             }
 
             if (!StringUtils.isEmpty(enable)) {

@@ -1126,6 +1126,8 @@
                     <xs:attributeGroup ref="requiresId"/>
                     <xs:attributeGroup ref="requiresCaption"/>
 
+                    <xs:attributeGroup ref="hasStyle"/>
+
                     <xs:attribute name="enable" type="xs:boolean" use="optional"/>
                     <xs:attribute name="lazy" type="xs:boolean" use="optional"/>
                     <xs:attribute name="margin" type="xs:boolean" use="optional"/>

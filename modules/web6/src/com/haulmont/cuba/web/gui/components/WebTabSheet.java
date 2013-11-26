@@ -61,10 +61,12 @@ public class WebTabSheet
     @Override
     public <T extends Component> T getOwnComponent(String id) {
         for (Tab tab : tabs.values()) {
+            //noinspection SuspiciousMethodCalls
             ComponentDescriptor componentDescriptor = components.get(tab.getComponent());
             Component tabComponent = componentDescriptor.getComponent();
 
             if (StringUtils.equals(id, tabComponent.getId())) {
+                //noinspection unchecked
                 return (T) tabComponent;
             }
         }
@@ -178,8 +180,19 @@ public class WebTabSheet
 
         @Override
         public void setCaptionStyleName(String styleName) {
+            setStyleName(styleName);
+        }
+
+        @Override
+        public void setStyleName(String styleName) {
             com.vaadin.ui.TabSheet.Tab vaadinTab = WebTabSheet.this.component.getTab(WebComponentsHelper.unwrap(component));
             vaadinTab.setCaptionStyle(styleName);
+        }
+
+        @Override
+        public String getStyleName() {
+            com.vaadin.ui.TabSheet.Tab vaadinTab = WebTabSheet.this.component.getTab(WebComponentsHelper.unwrap(component));
+            return vaadinTab.getStyleName();
         }
     }
 
@@ -281,6 +294,7 @@ public class WebTabSheet
 
     @Override
     public Collection<TabSheet.Tab> getTabs() {
+        //noinspection unchecked
         return (Collection) tabs.values();
     }
 

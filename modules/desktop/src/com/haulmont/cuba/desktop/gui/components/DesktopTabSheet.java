@@ -67,6 +67,7 @@ public class DesktopTabSheet
     public <T extends Component> T getOwnComponent(String id) {
         for (Component tabComponent : components.keySet()) {
             if (StringUtils.equals(id, tabComponent.getId())) {
+                //noinspection unchecked
                 return (T) tabComponent;
             }
         }
@@ -370,6 +371,7 @@ public class DesktopTabSheet
         private boolean lazyInitialized;
         private ButtonTabComponent buttonTabComponent;
 
+        private String styleName;
 
         private TabCloseHandler closeHandler;
 
@@ -487,8 +489,20 @@ public class DesktopTabSheet
 
         @Override
         public void setCaptionStyleName(String styleName) {
+            setStyleName(styleName);
+        }
+
+        @Override
+        public void setStyleName(String styleName) {
+            this.styleName = styleName;
+
             ButtonTabComponent buttonTabComponent = getButtonTabComponent();
             App.getInstance().getTheme().applyStyle(buttonTabComponent.getTitleLabel(), styleName);
+        }
+
+        @Override
+        public String getStyleName() {
+            return styleName;
         }
 
         public ButtonTabComponent getButtonTabComponent() {
@@ -546,7 +560,6 @@ public class DesktopTabSheet
                 }
                 break;
             }
-
         }
         final TabImpl tabToDetach = tabAtIndex;
         final ButtonTabComponent tabComponent = tabToDetach.getButtonTabComponent();
