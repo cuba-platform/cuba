@@ -212,7 +212,9 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
     @SuppressWarnings({"unchecked"})
     protected <T> T wrapAsCollection(Object o) {
         if (isMultiSelect()) {
-            if (o != null) {
+            if (o instanceof Collection) {
+                return (T) Collections.unmodifiableCollection((Collection)o);
+            } else if (o != null) {
                 return (T) Collections.singleton(o);
             } else {
                 return (T) Collections.emptySet();

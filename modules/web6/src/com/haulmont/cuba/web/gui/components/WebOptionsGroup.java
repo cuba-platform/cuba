@@ -13,6 +13,7 @@ import com.vaadin.ui.AbstractSelect;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -60,9 +61,9 @@ public class WebOptionsGroup
     public <T> T getValue() {
         if (optionsDatasource != null) {
             final Object key = super.getValue();
-            return (T) getValueFromKey(key);
+            return getValueFromKey(key);
         } else {
-            return (T) wrapAsCollection(super.getValue());
+            return wrapAsCollection(super.getValue());
         }
     }
 
@@ -70,7 +71,7 @@ public class WebOptionsGroup
     @SuppressWarnings({"unchecked"})
     protected <T> T getValueFromKey(Object key) {
         if (key instanceof Collection) {
-            final Set<Object> set = new HashSet<>();
+            final Set<Object> set = new LinkedHashSet<>();
             for (Object o : (Collection) key) {
                 Object t = getValue(o);
                 set.add(t);
