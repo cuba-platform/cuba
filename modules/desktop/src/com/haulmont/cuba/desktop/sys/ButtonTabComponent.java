@@ -5,12 +5,6 @@
 
 package com.haulmont.cuba.desktop.sys;
 
-/**
- * <p>$Id$</p>
- *
- * @author krivopustov
- */
-
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 
@@ -22,9 +16,11 @@ import java.awt.*;
 import java.awt.event.*;
 
 /**
- * Component to be used as tabComponent;
- * Contains a JLabel to show the text and
- * a JButton to close the tab it belongs to
+ * Component to be used as tabComponent. <br/>
+ * Contains a JLabel to show the text and a JButton to close the tab it belongs to.
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 public class ButtonTabComponent extends JPanel {
 

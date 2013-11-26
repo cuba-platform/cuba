@@ -111,8 +111,8 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
     }
 
     /**
-     * Just add generated column to table without checks and without cells refresh. </br>
-     * For internal use only.
+     * Just add generated column to table without checks and without cells refresh. <br/>
+     * <b>For internal use only.</b>
      */
     @Override
     public void addGeneratedColumnInternal(Object id, ColumnGenerator generatedColumn) {
