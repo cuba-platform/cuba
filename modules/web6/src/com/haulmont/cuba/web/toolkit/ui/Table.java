@@ -324,8 +324,8 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer, 
     }
 
     /**
-     * Just add generated column to table without checks and without cells refresh. </br>
-     * For internal use only.
+     * Just add generated column to table without checks and without cells refresh. <br/>
+     * <b>For internal use only.</b>
      */
     public void addGeneratedColumnInternal(Object id, ColumnGenerator generatedColumn) {
         if (generatedColumn == null) {
