@@ -321,6 +321,10 @@
         .#{$primaryStyleName}-caption-close {
           background-image: url(sprites/tab-remove-active.png); /** sprite-ref: components; */
         }
+
+        .#{$primaryStyleName}-caption-close:hover {
+          background-image: url(sprites/tab-remove-hover.png);  /** sprite-ref: components; */
+        }
       }
 
       .#{$primaryStyleName}-tabitem.#{$primaryStyleName}-tabitem-selected-first,
