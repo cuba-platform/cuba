@@ -27,6 +27,7 @@ import com.vaadin.data.Property;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 
 import java.util.*;
@@ -61,6 +62,7 @@ public class AddConditionDlg extends Window {
         setHeight("300px");
 
         VerticalLayout layout = new VerticalLayout();
+        layout.setMargin(new MarginInfo(true, false, false, false));
         layout.setSpacing(true);
         layout.setSizeFull();
 
