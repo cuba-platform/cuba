@@ -18,7 +18,7 @@
     </dsContext>
 
     <timers>
-        <timer id="updateLogTailTimer" delay="5000" repeating="true" onTimer="invoke:updateLogTail"/>
+        <timer id="updateLogTailTimer" delay="5000" repeating="true" onTimer="invoke:updateLogTail" autostart="true"/>
     </timers>
 
     <layout expand="logFieldBox" spacing="true">
@@ -43,7 +43,7 @@
 
         <tabSheet width="100%">
             <tab id="viewTab" caption="msg://tab.view" margin="true">
-                <hbox id="logSelectBox" spacing="true" expandable="false">
+                <hbox id="logSelectBox" spacing="true">
                     <label id="labelLogFile" value="msg://log.file"/>
                     <lookupField id="logFileNameField" width="300px"/>
                     <button id="downloadButton" caption="msg://actions.Download" invoke="downloadLog"/>
@@ -52,7 +52,7 @@
                 </hbox>
             </tab>
             <tab id="optionsTab" caption="msg://tab.options" margin="true">
-                <hbox id="logLevelBox" spacing="true" expandable="false">
+                <hbox id="logLevelBox" spacing="true">
                     <grid spacing="true">
                         <columns count="5"/>
                         <rows>

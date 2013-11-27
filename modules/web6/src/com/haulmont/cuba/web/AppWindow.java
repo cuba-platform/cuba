@@ -25,6 +25,7 @@ import com.haulmont.cuba.web.actions.ChangeSubstUserAction;
 import com.haulmont.cuba.web.actions.DoNotChangeSubstUserAction;
 import com.haulmont.cuba.web.app.UserSettingsTools;
 import com.haulmont.cuba.web.app.folders.FoldersPane;
+import com.haulmont.cuba.web.gui.WebTimer;
 import com.haulmont.cuba.web.gui.components.WebSplitPanel;
 import com.haulmont.cuba.web.sys.MenuBuilder;
 import com.haulmont.cuba.web.sys.WindowBreadCrumbs;
@@ -131,6 +132,8 @@ public class AppWindow extends Window implements UserSubstitutionListener,
 
     protected WebWindowManager windowManager;
 
+    protected WebTimer workerTimer;
+
     public AppWindow(App app) {
         log.trace("Creating " + this);
         this.app = app;
@@ -165,6 +168,15 @@ public class AppWindow extends Window implements UserSubstitutionListener,
         checkSessions();
 
         connection.addListener(this);
+    }
+
+    public WebTimer getWorkerTimer() {
+        if (workerTimer != null) {
+            return workerTimer;
+        }
+
+        workerTimer = new WebTimer(webConfig.getUiCheckInterval(), true);
+        return workerTimer;
     }
 
     public WebWindowManager getWindowManager() {

@@ -18,14 +18,14 @@ import java.util.List;
  */
 public class Timer extends AbstractComponent {
 
-    private int delay;
-    private boolean repeating;
+    protected int delay = 0;
+    protected boolean repeating = false;
 
-    private boolean stopped;
+    protected boolean stopped = true;
 
-    private List<Listener> listeners = null;
+    protected List<Listener> listeners = null;
 
-    private boolean dirty = true;
+    protected boolean dirty = true;
 
     public Timer(int delay, boolean repeating) {
         if (delay < 500)  {

@@ -1495,6 +1495,7 @@
                                         <xs:attribute name="delay" type="xs:integer" use="required"/>
                                         <xs:attribute name="repeating" type="xs:boolean" use="optional"/>
                                         <xs:attribute name="onTimer" type="xs:string" use="optional" default="invoke:"/>
+                                        <xs:attribute name="autostart" type="xs:boolean" use="optional" default="false"/>
                                     </xs:complexType>
                                 </xs:element>
                             </xs:choice>

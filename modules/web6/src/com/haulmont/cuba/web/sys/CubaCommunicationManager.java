@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.AppWindow;
 import com.haulmont.cuba.web.gui.WebTimer;
 import com.haulmont.cuba.web.toolkit.Timer;
 import com.haulmont.cuba.web.toolkit.ui.MultiUpload;
@@ -77,16 +78,19 @@ public class CubaCommunicationManager extends CommunicationManager {
         deadTimers.clear();
 
         // WebBackgroundWorker special timer
-        WebTimer workerTimer = application.getWorkerTimer();
-        int workerListenersCount = workerTimer.getTimerListeners().size();
-        if (workerTimer.getTimerImpl().isStopped()) {
-            if (workerListenersCount > 0)  {
-                workerTimer.start();
-                application.addTimer(workerTimer.getTimerImpl());
+        if (window instanceof AppWindow) {
+            WebTimer workerTimer = ((AppWindow) window).getWorkerTimer();
+            int workerListenersCount = workerTimer.getTimerListeners().size();
+            if (workerTimer.getTimerImpl().isStopped()) {
+                if (workerListenersCount > 0) {
+                    workerTimer.start();
+                    application.addTimer(workerTimer.getTimerImpl());
+                }
+            } else {
+                if (workerListenersCount == 0) {
+                    workerTimer.stop();
+                }
             }
-        } else {
-            if (workerListenersCount == 0)
-                workerTimer.stop();
         }
 
         // paint timers

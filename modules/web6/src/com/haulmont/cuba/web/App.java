@@ -12,7 +12,6 @@ import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.auth.ActiveDirectoryHelper;
 import com.haulmont.cuba.web.auth.WebAuthConfig;
 import com.haulmont.cuba.web.exception.ExceptionHandlers;
-import com.haulmont.cuba.web.gui.WebTimer;
 import com.haulmont.cuba.web.log.AppLog;
 import com.haulmont.cuba.web.sys.AppCookies;
 import com.haulmont.cuba.web.sys.AppTimers;
@@ -108,8 +107,6 @@ public abstract class App extends Application
     protected final WebConfig webConfig;
 
     protected final WebAuthConfig webAuthConfig;
-
-    protected WebTimer workerTimer;
 
     protected String webResourceTimestamp = "null";
 
@@ -546,8 +543,12 @@ public abstract class App extends Application
 
     public void cleanupBackgroundTasks() {
         backgroundTaskManager.cleanupTasks();
-        workerTimer.removeAllListeners();
-        workerTimer.stop();
+        for (Window w : getWindows()) {
+            if (w instanceof AppWindow) {
+                ((AppWindow) w).getWorkerTimer().removeAllListeners();
+                ((AppWindow) w).getWorkerTimer().stop();
+            }
+        }
     }
 
     /**
@@ -583,16 +584,6 @@ public abstract class App extends Application
      */
     public void addTimer(final Timer timer, com.haulmont.cuba.gui.components.Window owner) {
         timers.add(timer, owner);
-    }
-
-    public WebTimer getWorkerTimer() {
-        if (workerTimer != null) {
-            return workerTimer;
-        }
-
-        workerTimer = new WebTimer(webConfig.getUiCheckInterval(), true);
-        workerTimer.stop();
-        return workerTimer;
     }
 
     public void reinitializeAppearanceProperties() {

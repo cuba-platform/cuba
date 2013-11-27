@@ -321,7 +321,6 @@ public class DesktopWindow implements Window, Component.Disposable,
     public void addTimer(Timer timer) {
         if (timer instanceof DesktopTimer) {
             timers.add(timer);
-            timer.start();
         }
     }
 

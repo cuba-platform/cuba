@@ -17,7 +17,6 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import java.lang.reflect.Method;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -87,7 +86,7 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
         }
     }
 
-    private void loadTimers(ComponentsFactory factory, Window component, Element element) {
+    protected void loadTimers(ComponentsFactory factory, Window component, Element element) {
         Element timersElement = element.element("timers");
         if (timersElement != null) {
             final List timers = timersElement.elements("timer");
@@ -97,7 +96,7 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
         }
     }
 
-    private void loadTimer(ComponentsFactory factory, final Window component, Element element) {
+    protected void loadTimer(ComponentsFactory factory, final Window component, Element element) {
         final Timer timer = factory.createTimer();
         timer.setXmlDescriptor(element);
         timer.setId(element.attributeValue("id"));
@@ -118,7 +117,6 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
             throw new GuiDevelopmentException("Timer 'delay' must be greater than 0", context.getFullFrameId(),
                     "Timer ID", timer.getId());
         timer.setDelay(value);
-
         timer.setRepeating(BooleanUtils.toBoolean(element.attributeValue("repeating")));
 
         addAssignTimerFrameTask(timer);
@@ -154,6 +152,10 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
         }
 
         component.addTimer(timer);
+
+        if ("true".equals(element.attributeValue("autostart"))) {
+            timer.start();
+        }
     }
 
     protected void loadFocusedComponent(Window window, Element element) {
@@ -161,7 +163,7 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
         window.setFocusComponent(componentId);
     }
 
-    private void addAssignTimerFrameTask(final Timer timer) {
+    protected void addAssignTimerFrameTask(final Timer timer) {
         context.addPostInitTask(new PostInitTask() {
             @Override
             public void execute(Context context, IFrame window) {

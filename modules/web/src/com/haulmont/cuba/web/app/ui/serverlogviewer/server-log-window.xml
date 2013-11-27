@@ -18,7 +18,7 @@
     </dsContext>
 
     <timers>
-        <timer id="updateLogTailTimer" delay="5000" repeating="true" onTimer="invoke:updateLogTail"/>
+        <timer id="updateLogTailTimer" delay="5000" repeating="true" onTimer="invoke:updateLogTail" autostart="true"/>
     </timers>
 
     <layout expand="logFieldBox" spacing="true">

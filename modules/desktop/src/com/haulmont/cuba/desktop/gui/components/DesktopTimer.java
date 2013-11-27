@@ -24,13 +24,15 @@ import java.util.List;
  */
 public class DesktopTimer extends DesktopAbstractComponent<JLabel> implements com.haulmont.cuba.gui.components.Timer {
 
-    private boolean repeating;
-    private int delay;
+    private Log log = LogFactory.getLog(getClass());
 
-    private List<TimerListener> timerListeners = new ArrayList<>();
+    protected boolean repeating = false;
+    protected int delay = 0;
+
+    protected List<TimerListener> timerListeners = new ArrayList<>();
     protected Timer timer;
 
-    private Log log = LogFactory.getLog(getClass());
+    protected volatile boolean started = false;
 
     public DesktopTimer() {
         impl = new JLabel();
@@ -61,25 +63,36 @@ public class DesktopTimer extends DesktopAbstractComponent<JLabel> implements co
 
     @Override
     public void start() {
-        timer = new Timer(delay, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                onTimerAction();
-            }
-        });
-        timer.setRepeats(repeating);
-        timer.start();
+        if (!started) {
+            timer = new Timer(delay, new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    onTimerAction();
+
+                    if (!timer.isRepeats()) {
+                        stop();
+                    }
+                }
+            });
+            timer.setRepeats(repeating);
+            timer.start();
+        }
     }
 
     @Override
     public void stop() {
-        if (timer == null)
-            return;
+        if (started) {
+            if (timer == null) {
+                return;
+            }
 
-        timer.stop();
-        timer = null;
-        for (TimerListener listener : timerListeners) {
-            listener.onStopTimer(this);
+            timer.stop();
+            timer = null;
+            for (TimerListener listener : timerListeners) {
+                listener.onStopTimer(this);
+            }
+
+            started = false;
         }
     }
 
@@ -105,7 +118,7 @@ public class DesktopTimer extends DesktopAbstractComponent<JLabel> implements co
                 RemoteException re = (RemoteException) ExceptionUtils.getThrowableList(ex).get(reIdx);
                 for (RemoteException.Cause cause : re.getCauses()) {
                     if (cause.getThrowable() instanceof NoUserSessionException) {
-                        timer.stop();
+                        disposeTimer();
                         throw ex;
                     }
                 }
@@ -118,6 +131,8 @@ public class DesktopTimer extends DesktopAbstractComponent<JLabel> implements co
      * Remove all listeners and stop timer
      */
     public void disposeTimer() {
+        started = false;
+
         if (timer == null)
             return;
 

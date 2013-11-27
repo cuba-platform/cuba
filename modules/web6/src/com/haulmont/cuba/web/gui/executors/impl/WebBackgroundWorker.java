@@ -96,7 +96,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
         }
 
         // UI timer
-        WebTimer pingTimer = appInstance.getWorkerTimer();
+        WebTimer pingTimer = appInstance.getAppWindow().getWorkerTimer();
 
         final WebTimerListener webTimerListener = new WebTimerListener(pingTimer);
 
