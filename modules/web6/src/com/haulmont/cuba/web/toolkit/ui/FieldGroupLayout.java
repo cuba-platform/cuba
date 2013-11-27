@@ -21,7 +21,11 @@ public class FieldGroupLayout extends GridLayout {
     public static final int CAPTION_ALIGN_LEFT = 0;
     public static final int CAPTION_ALIGN_TOP = 1;
 
-    private int captionAlignment = CAPTION_ALIGN_LEFT;
+    protected int captionAlignment = CAPTION_ALIGN_LEFT;
+
+    public FieldGroupLayout() {
+        setSpacing(true);
+    }
 
     @Override
     public void paintContent(PaintTarget target) throws PaintException {

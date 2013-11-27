@@ -10,7 +10,9 @@ import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.CubaFieldGroupLayout;
 import com.haulmont.cuba.web.toolkit.ui.client.caption.CubaCaptionWidget;
 import com.haulmont.cuba.web.toolkit.ui.client.gridlayout.CubaGridLayoutConnector;
+import com.vaadin.client.ApplicationConnection;
 import com.vaadin.client.ComponentConnector;
+import com.vaadin.client.UIDL;
 import com.vaadin.client.ui.VGridLayout;
 import com.vaadin.shared.ui.Connect;
 
@@ -36,6 +38,18 @@ public class CubaFieldGroupLayoutConnector extends CubaGridLayoutConnector {
     @Override
     public CubaFieldGroupLayoutState getState() {
         return (CubaFieldGroupLayoutState) super.getState();
+    }
+
+    @Override
+    public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
+        super.updateFromUIDL(uidl, client);
+
+        // try layout now to smooth layout process
+        if (needUpdateCaptionSizes) {
+            updateCaptionSizes();
+        }
+
+        needUpdateCaptionSizes = false;
     }
 
     @Override

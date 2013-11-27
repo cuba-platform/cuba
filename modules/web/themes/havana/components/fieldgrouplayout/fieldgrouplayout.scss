@@ -9,7 +9,7 @@
   @include base-gridlayout($primaryStyleName);
 
   .#{$primaryStyleName}-spacing-on {
-    padding-left: 4px;
+    padding-left: 8px;
     padding-top: 4px;
   }
 
