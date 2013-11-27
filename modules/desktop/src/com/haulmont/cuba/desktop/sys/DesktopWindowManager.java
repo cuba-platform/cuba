@@ -215,6 +215,7 @@ public class DesktopWindowManager extends WindowManager {
         if (addWindowData) {
             addWindowData(window, windowData, openType);
         }
+        afterShowWindow(window);
     }
 
     private void showInMainWindowManager(Window window, String caption, String description, OpenType openType, boolean multipleOpen) {
@@ -957,7 +958,6 @@ public class DesktopWindowManager extends WindowManager {
         }
 
         addShortcuts(window);
-        afterShowWindow(window);
     }
 
     public void checkModificationsAndCloseAll(final Runnable runIfOk, final @Nullable Runnable runIfCancel) {
