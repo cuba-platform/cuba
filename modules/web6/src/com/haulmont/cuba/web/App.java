@@ -679,6 +679,7 @@ public abstract class App extends Application
             for (Window win : new ArrayList<>(windows)) {
                 if (win instanceof AppWindow) {
                     WebWindowManager wm = ((AppWindow) win).getWindowManager();
+                    wm.disableSavingScreenHistory = true;
                     wm.closeAll();
                 }
 

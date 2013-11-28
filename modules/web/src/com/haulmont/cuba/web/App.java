@@ -227,7 +227,7 @@ public abstract class App {
     /**
      * Create the login window instance.
      *
-     * @param ui    current UI
+     * @param ui current UI
      * @return login window
      */
     protected UIView createLoginWindow(AppUI ui) {
@@ -237,7 +237,7 @@ public abstract class App {
     /**
      * Create the main window instance.
      *
-     * @param ui    current UI
+     * @param ui current UI
      * @return main window
      */
     protected AppWindow createAppWindow(AppUI ui) {
@@ -334,8 +334,11 @@ public abstract class App {
         try {
             for (AppUI ui : getAppUIs()) {
                 AppWindow appWindow = ui.getAppWindow();
-                if (appWindow != null)
-                    appWindow.getWindowManager().closeAll();
+                if (appWindow != null) {
+                    WebWindowManager webWindowManager = appWindow.getWindowManager();
+                    webWindowManager.disableSavingScreenHistory = true;
+                    webWindowManager.closeAll();
+                }
 
                 for (com.vaadin.ui.Window win : new ArrayList<>(ui.getWindows())) {
                     WebWindowManager.removeCloseListeners(win);
