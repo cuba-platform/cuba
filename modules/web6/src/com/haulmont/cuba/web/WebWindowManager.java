@@ -238,16 +238,16 @@ public class WebWindowManager extends WindowManager {
                         return;
                     }
                 }
-                component = showWindowNewTab(window, multipleOpen, caption, description, appWindow);
+                component = showWindowNewTab(window, multipleOpen, caption, description);
                 break;
 
             case THIS_TAB:
                 appWindow.closeStartupScreen();
-                component = showWindowThisTab(window, caption, description, appWindow);
+                component = showWindowThisTab(window, caption, description);
                 break;
 
             case DIALOG:
-                component = showWindowDialog(window, caption, description, appWindow, forciblyDialog);
+                component = showWindowDialog(window, caption, description, forciblyDialog);
                 break;
 
             default:
@@ -267,7 +267,7 @@ public class WebWindowManager extends WindowManager {
     }
 
     protected Component showWindowNewTab(final Window window, final boolean multipleOpen, final String caption,
-                                         final String description, AppWindow appWindow) {
+                                         final String description) {
         final WindowBreadCrumbs breadCrumbs = createWindowBreadCrumbs();
         breadCrumbs.addListener(
                 new WindowBreadCrumbs.Listener() {
@@ -290,13 +290,13 @@ public class WebWindowManager extends WindowManager {
         breadCrumbs.addWindow(window);
 
         //noinspection UnnecessaryLocalVariable
-        final Layout layout = createNewTabLayout(window, multipleOpen, caption, description, appWindow, breadCrumbs);
+        final Layout layout = createNewTabLayout(window, multipleOpen, caption, description, breadCrumbs);
 
         return layout;
     }
 
     protected Layout createNewTabLayout(final Window window, final boolean multipleOpen, final String caption,
-                                        final String description, AppWindow appWindow, Component... components) {
+                                        final String description, Component... components) {
         final VerticalLayout layout = new VerticalLayout();
         layout.setSizeFull();
         if (components != null) {
@@ -453,7 +453,7 @@ public class WebWindowManager extends WindowManager {
         }
     }
 
-    protected Component showWindowThisTab(final Window window, final String caption, final String description, AppWindow appWindow) {
+    protected Component showWindowThisTab(final Window window, final String caption, final String description) {
         VerticalLayout layout;
 
         if (AppWindow.Mode.TABBED.equals(appWindow.getMode())) {
@@ -506,7 +506,7 @@ public class WebWindowManager extends WindowManager {
     }
 
     protected Component showWindowDialog(final Window window, final String caption, final String description,
-                                         AppWindow appWindow, boolean forciblyDialog) {
+                                         boolean forciblyDialog) {
         removeWindowsWithName(window.getId());
 
         final com.vaadin.ui.Window win = createDialogWindow(window);
