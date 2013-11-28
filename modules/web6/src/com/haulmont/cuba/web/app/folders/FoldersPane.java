@@ -197,6 +197,7 @@ public class FoldersPane extends VerticalLayout {
                 timer = new FoldersPaneTimer(period, true);
                 timer.addListener(createAppFolderUpdater());
                 appTimers.add(timer, parentAppWindow);
+                timer.start();
             }
 
             Component searchFoldersPane = createSearchFoldersPane();
