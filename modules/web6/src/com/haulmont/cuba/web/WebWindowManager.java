@@ -174,7 +174,6 @@ public class WebWindowManager extends WindowManager {
 
     @Override
     protected void showWindow(final Window window, final String caption, final String description, OpenType type, final boolean multipleOpen) {
-        AppWindow appWindow = app.getAppWindow();
         boolean forciblyDialog = false;
         if (type != OpenType.DIALOG && hasModalWindow()) {
             type = OpenType.DIALOG;
@@ -410,7 +409,7 @@ public class WebWindowManager extends WindowManager {
     }
 
     public void setCurrentWindowCaption(Window window, String caption, String description) {
-        TabSheet tabSheet = app.getAppWindow().getTabSheet();
+        TabSheet tabSheet = appWindow.getTabSheet();
         if (tabSheet == null) {
             return; // for SINGLE tabbing mode
         }
@@ -577,7 +576,7 @@ public class WebWindowManager extends WindowManager {
         }
         win.setModal(true);
 
-        App.getInstance().getAppWindow().addWindow(win);
+        appWindow.addWindow(win);
         win.center();
 
         return win;
@@ -689,7 +688,6 @@ public class WebWindowManager extends WindowManager {
     }
 
     private void closeWindow(Window window, WindowOpenMode openMode) {
-        AppWindow appWindow = app.getAppWindow();
 
         if (!disableSavingScreenHistory) {
             screenHistorySupport.saveScreenHistory(window, openMode.getOpenType());
@@ -699,7 +697,7 @@ public class WebWindowManager extends WindowManager {
             case DIALOG: {
                 final com.vaadin.ui.Window win = (com.vaadin.ui.Window) openMode.getData();
                 removeCloseListeners(win);
-                App.getInstance().getAppWindow().removeWindow(win);
+                appWindow.removeWindow(win);
                 fireListeners(window, getTabs().size() != 0);
                 break;
             }
@@ -752,7 +750,7 @@ public class WebWindowManager extends WindowManager {
                 layout.setExpandRatio(component, 1);
 
                 if (AppWindow.Mode.TABBED.equals(appWindow.getMode())) {
-                    TabSheet tabSheet = app.getAppWindow().getTabSheet();
+                    TabSheet tabSheet = appWindow.getTabSheet();
                     TabSheet.Tab tab = tabSheet.getTab(layout);
                     tab.setCaption(formatTabCaption(currentWindow.getCaption(), currentWindow.getDescription()));
                 }
@@ -798,7 +796,7 @@ public class WebWindowManager extends WindowManager {
         caption = ComponentsHelper.preprocessHtmlMessage(
                 IFrame.NotificationType.isHTML(type) ? caption : StringEscapeUtils.escapeHtml(caption));
 
-        app.getAppWindow().showNotification(caption, WebComponentsHelper.convertNotificationType(type));
+        appWindow.showNotification(caption, WebComponentsHelper.convertNotificationType(type));
     }
 
     @Override
@@ -814,7 +812,7 @@ public class WebWindowManager extends WindowManager {
         if (type.equals(IFrame.NotificationType.HUMANIZED)) {
             notify.setDelayMsec(3000);
         }
-        app.getAppWindow().showNotification(notify);
+        appWindow.showNotification(notify);
     }
 
     @Override
@@ -828,21 +826,21 @@ public class WebWindowManager extends WindowManager {
         window.addAction(new ShortcutListener("Esc", ShortcutAction.KeyCode.ESCAPE, null) {
             @Override
             public void handleAction(Object sender, Object target) {
-                App.getInstance().getAppWindow().removeWindow(window);
+                appWindow.removeWindow(window);
             }
         });
 
         window.addAction(new ShortcutListener("Enter", ShortcutAction.KeyCode.ENTER, null) {
             @Override
             public void handleAction(Object sender, Object target) {
-                App.getInstance().getAppWindow().removeWindow(window);
+                appWindow.removeWindow(window);
             }
         });
 
         window.addListener(new com.vaadin.ui.Window.CloseListener() {
             @Override
             public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
-                App.getInstance().getAppWindow().removeWindow(window);
+                appWindow.removeWindow(window);
             }
         });
 
@@ -867,7 +865,7 @@ public class WebWindowManager extends WindowManager {
         window.setResizable(false);
         window.setModal(true);
 
-        App.getInstance().getAppWindow().addWindow(window);
+        appWindow.addWindow(window);
         window.center();
         window.focus();
     }
@@ -884,7 +882,7 @@ public class WebWindowManager extends WindowManager {
         window.addListener(new com.vaadin.ui.Window.CloseListener() {
             @Override
             public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
-                app.getAppWindow().removeWindow(window);
+                appWindow.removeWindow(window);
             }
         });
 
@@ -922,7 +920,6 @@ public class WebWindowManager extends WindowManager {
                 @Override
                 public void buttonClick(Button.ClickEvent event) {
                     action.actionPerform(null);
-                    AppWindow appWindow = app.getAppWindow();
                     if (appWindow != null) // possible appWindow is null after logout
                     {
                         appWindow.removeWindow(window);
@@ -964,7 +961,7 @@ public class WebWindowManager extends WindowManager {
         layout.setExpandRatio(messageLab, 1);
         layout.setComponentAlignment(actionsBar, com.vaadin.ui.Alignment.BOTTOM_RIGHT);
 
-        App.getInstance().getAppWindow().addWindow(window);
+        appWindow.addWindow(window);
         window.center();
     }
 
@@ -994,14 +991,14 @@ public class WebWindowManager extends WindowManager {
         }
 
         if (width != null && height != null) {
-            App.getInstance().getAppWindow().open(new ExternalResource(url), target, width, height, border);
+            appWindow.open(new ExternalResource(url), target, width, height, border);
         } else {
-            App.getInstance().getAppWindow().open(new ExternalResource(url), target);
+            appWindow.open(new ExternalResource(url), target);
         }
     }
 
     private void removeWindowsWithName(String name) {
-        final com.vaadin.ui.Window mainWindow = app.getAppWindow();
+        final com.vaadin.ui.Window mainWindow = appWindow;
 
         for (com.vaadin.ui.Window childWindow : new ArrayList<>(mainWindow.getChildWindows())) {
             if (name.equals(childWindow.getName())) {
@@ -1060,7 +1057,7 @@ public class WebWindowManager extends WindowManager {
 
     @Override
     protected Window getWindow(Integer hashCode) {
-        if (AppWindow.Mode.SINGLE.equals(app.getAppWindow().getMode())) {
+        if (AppWindow.Mode.SINGLE.equals(appWindow.getMode())) {
             return null;
         }
         Set<Map.Entry<Window, Integer>> set = windows.entrySet();
@@ -1080,7 +1077,7 @@ public class WebWindowManager extends WindowManager {
             } else {
                 int maxCount = webConfig.getMaxTabCount();
                 if (maxCount > 0 && maxCount <= tabs.size()) {
-                    app.getAppWindow().showNotification(
+                    appWindow.showNotification(
                             messages.formatMessage(AppConfig.getMessagesPack(), "tooManyOpenTabs.message", maxCount),
                             com.vaadin.ui.Window.Notification.TYPE_WARNING_MESSAGE);
                     throw new SilentException();
