@@ -119,7 +119,8 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
         timer.setDelay(value);
         timer.setRepeating(BooleanUtils.toBoolean(element.attributeValue("repeating")));
 
-        addAssignTimerFrameTask(timer);
+        boolean autostart = "true".equals(element.attributeValue("autostart"));
+        addAssignTimerFrameTask(timer, autostart);
 
         final String onTimer = element.attributeValue("onTimer");
         if (!StringUtils.isEmpty(onTimer)) {
@@ -152,10 +153,6 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
         }
 
         component.addTimer(timer);
-
-        if ("true".equals(element.attributeValue("autostart"))) {
-            timer.start();
-        }
     }
 
     protected void loadFocusedComponent(Window window, Element element) {
@@ -163,11 +160,14 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
         window.setFocusComponent(componentId);
     }
 
-    protected void addAssignTimerFrameTask(final Timer timer) {
+    protected void addAssignTimerFrameTask(final Timer timer, final boolean autostart) {
         context.addPostInitTask(new PostInitTask() {
             @Override
             public void execute(Context context, IFrame window) {
                 timer.setFrame(window);
+                if (autostart) {
+                    timer.start();
+                }
             }
         });
     }
