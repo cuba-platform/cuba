@@ -37,7 +37,7 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * Login window.
+ * Standard login window.
  * <p/>
  * Specific application should inherit from this class and create appropriate
  * instance in {@link DefaultApp#createLoginWindow()} method
@@ -47,24 +47,29 @@ import java.util.Map;
  */
 public class LoginWindow extends Window implements Action.Handler {
 
+    protected Log log = LogFactory.getLog(getClass());
+
     public static final String COOKIE_LOGIN = "rememberMe.Login";
     public static final String COOKIE_PASSWORD = "rememberMe.Password";
     public static final String COOKIE_REMEMBER_ME = "rememberMe";
 
-    protected Log log = LogFactory.getLog(getClass());
-
-    // must be 8 symbols
-    private static final String PASSWORD_KEY = "25tuThUw";
-
     private static final char[] DOMAIN_SEPARATORS = new char[]{'\\', '@'};
+
+    /**
+     * This key is used to encrypt password in cookie to support "remember me" in AD auth.
+     * Must be of 8 symbols.
+     */
+    private static final String PASSWORD_KEY = "25tuThUw";
 
     protected Connection connection;
 
     protected TextField loginField;
     protected PasswordField passwordField;
     protected AbstractSelect localesSelect;
-    protected Locale loc;
+
+    protected Locale resolvedLocale;
     protected Map<String, Locale> locales;
+
     protected GlobalConfig globalConfig;
     protected WebConfig webConfig;
 
@@ -89,9 +94,9 @@ public class LoginWindow extends Window implements Action.Handler {
         webConfig = configuration.getConfig(WebConfig.class);
         locales = globalConfig.getAvailableLocales();
 
-        loc = resolveLocale(app);
+        resolvedLocale = resolveLocale(app);
 
-        setCaption(messages.getMessage(getMessagesPack(), "loginWindow.caption", loc));
+        setCaption(messages.getMessage(getMessagesPack(), "loginWindow.caption", resolvedLocale));
         this.connection = connection;
 
         loginField = new TextField();
@@ -166,7 +171,7 @@ public class LoginWindow extends Window implements Action.Handler {
         welcomeLayout.setHeight("-1px");
         welcomeLayout.setSpacing(true);
 
-        String welcomeMsg = messages.getMessage(getMessagesPack(), "loginWindow.welcomeLabel", loc);
+        String welcomeMsg = messages.getMessage(getMessagesPack(), "loginWindow.welcomeLabel", resolvedLocale);
         Label label = new Label(welcomeMsg.replace("\n", "<br/>"));
         label.setContentMode(Label.CONTENT_XHTML);
         label.setWidth("-1px");
@@ -199,20 +204,20 @@ public class LoginWindow extends Window implements Action.Handler {
         centerLayout.addComponent(form);
         centerLayout.setComponentAlignment(form, Alignment.MIDDLE_CENTER);
 
-        loginField.setCaption(messages.getMessage(getMessagesPack(), "loginWindow.loginField", loc));
+        loginField.setCaption(messages.getMessage(getMessagesPack(), "loginWindow.loginField", resolvedLocale));
         form.addField("loginField", loginField);
         loginField.setWidth(fieldWidth + "px");
         loginField.setStyleName("login-field");
         formLayout.setComponentAlignment(loginField, Alignment.MIDDLE_CENTER);
 
-        passwordField.setCaption(messages.getMessage(getMessagesPack(), "loginWindow.passwordField", loc));
+        passwordField.setCaption(messages.getMessage(getMessagesPack(), "loginWindow.passwordField", resolvedLocale));
         passwordField.setWidth(fieldWidth + "px");
         passwordField.setStyleName("password-field");
         form.addField("passwordField", passwordField);
         formLayout.setComponentAlignment(passwordField, Alignment.MIDDLE_CENTER);
 
         if (localesSelectVisible) {
-            localesSelect.setCaption(messages.getMessage(getMessagesPack(), "loginWindow.localesSelect", loc));
+            localesSelect.setCaption(messages.getMessage(getMessagesPack(), "loginWindow.localesSelect", resolvedLocale));
             localesSelect.setWidth(fieldWidth + "px");
             localesSelect.setNullSelectionAllowed(false);
             formLayout.addComponent(localesSelect);
@@ -220,13 +225,13 @@ public class LoginWindow extends Window implements Action.Handler {
         }
 
         if (rememberMe != null) {
-            rememberMe.setCaption(messages.getMessage(getMessagesPack(), "loginWindow.rememberMe", loc));
+            rememberMe.setCaption(messages.getMessage(getMessagesPack(), "loginWindow.rememberMe", resolvedLocale));
             rememberMe.setStyleName("rememberMe");
             form.addField("rememberMe", rememberMe);
             formLayout.setComponentAlignment(rememberMe, Alignment.MIDDLE_CENTER);
         }
 
-        okButton.setCaption(messages.getMessage(getMessagesPack(), "loginWindow.okButton", loc));
+        okButton.setCaption(messages.getMessage(getMessagesPack(), "loginWindow.okButton", resolvedLocale));
         okButton.addListener(new SubmitListener());
         okButton.setStyleName("submit-login-btn");
         okButton.setIcon(new VersionedThemeResource("app/images/login-button.png"));
@@ -254,7 +259,7 @@ public class LoginWindow extends Window implements Action.Handler {
 
     @Nullable
     protected Embedded getLogoImage() {
-        final String loginLogoImagePath = messages.getMainMessage("loginWindow.logoImage", loc);
+        final String loginLogoImagePath = messages.getMainMessage("loginWindow.logoImage", resolvedLocale);
         if ("loginWindow.logoImage".equals(loginLogoImagePath))
             return null;
 
@@ -301,7 +306,7 @@ public class LoginWindow extends Window implements Action.Handler {
     }
 
     protected void initFields(App app) {
-        String currLocale = messages.getTools().localeToString(loc);
+        String currLocale = messages.getTools().localeToString(resolvedLocale);
         String selected = null;
         for (Map.Entry<String, Locale> entry : locales.entrySet()) {
             localesSelect.addItem(entry.getKey());
@@ -368,7 +373,7 @@ public class LoginWindow extends Window implements Action.Handler {
                 if (loginByRememberMe && StringUtils.isNotEmpty(password))
                     password = decryptPassword(password);
 
-                ActiveDirectoryHelper.getAuthProvider().authenticate(login, password, loc);
+                ActiveDirectoryHelper.getAuthProvider().authenticate(login, password, resolvedLocale);
                 login = convertLoginString(login);
 
                 ((ActiveDirectoryConnection) connection).loginActiveDirectory(login, locale);
@@ -382,7 +387,7 @@ public class LoginWindow extends Window implements Action.Handler {
         } catch (LoginException e) {
             log.info("Login failed: " + e.toString());
             // todo Fix notification about exception while AD Auth
-            String message = messages.getMessage(getMessagesPack(), "loginWindow.loginFailed", loc);
+            String message = messages.getMessage(getMessagesPack(), "loginWindow.loginFailed", resolvedLocale);
             showNotification(
                     ComponentsHelper.preprocessHtmlMessage(message),
                     e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
@@ -459,6 +464,13 @@ public class LoginWindow extends Window implements Action.Handler {
         }
     }
 
+    /**
+     * Encrypt password to store in cookie for "remember me". <br/>
+     * Used only for AD auth.
+     *
+     * @param password  plain password
+     * @return          encrypted password
+     */
     protected String encryptPassword(String password) {
         SecretKeySpec key = new SecretKeySpec(PASSWORD_KEY.getBytes(), "DES");
         IvParameterSpec ivSpec = new IvParameterSpec(PASSWORD_KEY.getBytes());
@@ -473,7 +485,13 @@ public class LoginWindow extends Window implements Action.Handler {
         return result;
     }
 
-    // if decrypt password is impossible returns encrypted password
+    /**
+     * Decrypt the password stored in cookie. <br/>
+     * Used only for AD auth.
+     *
+     * @param password  encrypted password
+     * @return          plain password, or input string if decryption fails
+     */
     protected String decryptPassword(String password) {
         SecretKeySpec key = new SecretKeySpec(PASSWORD_KEY.getBytes(), "DES");
         IvParameterSpec ivSpec = new IvParameterSpec(PASSWORD_KEY.getBytes());
@@ -503,7 +521,7 @@ public class LoginWindow extends Window implements Action.Handler {
             if (browserInfo.isIE() && !browserInfo.isChromeFrame()) {
                 final Layout layout = new VerticalLayout();
                 layout.setStyleName("loginUserHint");
-                layout.addComponent(new Label(messages.getMessage(getMessagesPack(), "chromeframe.hint", loc),
+                layout.addComponent(new Label(messages.getMessage(getMessagesPack(), "chromeframe.hint", resolvedLocale),
                         Label.CONTENT_XHTML));
                 return layout;
             }

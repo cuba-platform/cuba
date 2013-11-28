@@ -14,6 +14,7 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.auth.RequestContext;
 import com.vaadin.server.*;
+import com.vaadin.server.communication.HeartbeatHandler;
 import com.vaadin.server.communication.PublishedFileHandler;
 import com.vaadin.server.communication.ServletBootstrapHandler;
 import org.apache.commons.lang.StringUtils;
@@ -145,6 +146,9 @@ public class CubaVaadinServletService extends VaadinServletService {
             } else if (handler instanceof ServletBootstrapHandler) {
                 // replace ServletBootstrapHandler with CubaApplicationBootstrapHandler
                 cubaRequestHandlers.add(new CubaApplicationBootstrapHandler());
+            } else if (handler instanceof HeartbeatHandler) {
+                // replace HeartbeatHandler with CubaHeartbeatHandler
+                cubaRequestHandlers.add(new CubaHeartbeatHandler());
             } else {
                 cubaRequestHandlers.add(handler);
             }
@@ -178,6 +182,26 @@ public class CubaVaadinServletService extends VaadinServletService {
             }
 
             return super.handleRequest(session, request, response);
+        }
+    }
+
+    // Add ability to handle hearbeats in App
+    protected static class CubaHeartbeatHandler extends HeartbeatHandler {
+
+        private Log log = LogFactory.getLog(CubaHeartbeatHandler.class);
+
+        @Override
+        public boolean synchronizedHandleRequest(VaadinSession session, VaadinRequest request, VaadinResponse response)
+                throws IOException {
+            boolean result = super.synchronizedHandleRequest(session, request, response);
+
+            log.trace("Handle heartbeat");
+
+            if (result && App.isBound()) {
+                App.getInstance().onHeartbeat();
+            }
+
+            return result;
         }
     }
 }

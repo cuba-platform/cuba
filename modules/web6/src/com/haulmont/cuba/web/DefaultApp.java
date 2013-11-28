@@ -56,8 +56,10 @@ public class DefaultApp extends App implements ConnectionListener {
         LoginWindow window = new LoginWindow(this, connection);
 
         Timer timer = createSessionPingTimer(false);
-        if (timer != null)
+        if (timer != null) {
             timers.add(timer, window);
+            timer.start();
+        }
 
         return window;
     }

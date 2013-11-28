@@ -52,11 +52,6 @@
             <param-name>widgetset</param-name>
             <param-value>com.haulmont.cuba.web.toolkit.ui.WidgetSet</param-value>
         </init-param>
-        <init-param>
-            <description>Heartbeat of active UI in seconds</description>
-            <param-name>heartbeatInterval</param-name>
-            <param-value>30</param-value>
-        </init-param>
         <load-on-startup>0</load-on-startup>
     </servlet>
 

@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * @author artamonov
@@ -50,10 +51,23 @@ public class CubaApplicationServlet extends VaadinServlet {
 
     @Override
     public void init(ServletConfig servletConfig) throws ServletException {
-        super.init(servletConfig);
-
         Configuration configuration = AppBeans.get(Configuration.class);
         webConfig = configuration.getConfig(WebConfig.class);
+
+        super.init(servletConfig);
+    }
+
+    @Override
+    protected DeploymentConfiguration createDeploymentConfiguration(Properties initParameters) {
+        int sessionExpirationTimeout = webConfig.getHttpSessionExpirationTimeoutSec();
+        int sessionPingPeriod = sessionExpirationTimeout / 3;
+
+        if (sessionPingPeriod > 0) {
+            // configure Vaadin heartbeat according to web config
+            initParameters.setProperty("heartbeatInterval", String.valueOf(sessionPingPeriod));
+        }
+
+        return super.createDeploymentConfiguration(initParameters);
     }
 
     @Override

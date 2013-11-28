@@ -46,27 +46,35 @@ import java.util.Map;
  */
 public class LoginWindow extends UIView implements Action.Handler {
 
+    protected Log log = LogFactory.getLog(getClass());
+
     public static final String COOKIE_LOGIN = "rememberMe.Login";
     public static final String COOKIE_PASSWORD = "rememberMe.Password";
     public static final String COOKIE_REMEMBER_ME = "rememberMe";
 
-    protected Log log = LogFactory.getLog(getClass());
+    private static final char[] DOMAIN_SEPARATORS = new char[]{'\\', '@'};
 
     /**
-     * This key is used to encrypt password in cookie to support "remember me".
+     * This key is used to encrypt password in cookie to support "remember me" in AD auth.
      * Must be of 8 symbols.
      */
     private static final String PASSWORD_KEY = "25tuThUw";
 
-    private static final char[] DOMAIN_SEPARATORS = new char[]{'\\', '@'};
-
     protected Connection connection;
+
+    protected final AppUI ui;
+
+    protected final App app;
+
+    protected VerticalLayout mainLayout;
 
     protected TextField loginField;
     protected PasswordField passwordField;
     protected AbstractSelect localesSelect;
-    protected Locale loc;
+
+    protected Locale resolvedLocale;
     protected Map<String, Locale> locales;
+
     protected GlobalConfig globalConfig;
     protected WebConfig webConfig;
 
@@ -82,8 +90,17 @@ public class LoginWindow extends UIView implements Action.Handler {
     protected Configuration configuration;
     protected PasswordEncryption passwordEncryption;
 
+    /**
+     * @deprecated Use {@link #LoginWindow(AppUI)}. In next minor release will be removed
+     */
+    @Deprecated
     public LoginWindow(App app, Connection connection) {
+        this(app.getAppUI());
+    }
+
+    public LoginWindow(AppUI ui) {
         log.trace("Creating " + this);
+        this.ui = ui;
 
         configuration = AppBeans.get(Configuration.NAME);
         messages = AppBeans.get(Messages.NAME);
@@ -93,9 +110,11 @@ public class LoginWindow extends UIView implements Action.Handler {
         webConfig = configuration.getConfig(WebConfig.class);
         locales = globalConfig.getAvailableLocales();
 
-        loc = resolveLocale(app);
+        app = ui.getApp();
 
-        this.connection = connection;
+        resolvedLocale = resolveLocale(app);
+
+        connection = app.getConnection();
 
         loginField = new TextField();
         passwordField = new PasswordField();
@@ -151,7 +170,7 @@ public class LoginWindow extends UIView implements Action.Handler {
     }
 
     protected void initStandartUI(int formWidth, int formHeight, int fieldWidth, boolean localesSelectVisible) {
-        VerticalLayout mainLayout = new VerticalLayout();
+        mainLayout = new VerticalLayout();
         mainLayout.setStyleName(getStyle("main-layout"));
 
         FormLayout loginFormLayout = new FormLayout();
@@ -169,7 +188,7 @@ public class LoginWindow extends UIView implements Action.Handler {
         welcomeLayout.setHeight(Sizeable.SIZE_UNDEFINED,  Unit.PIXELS);
         welcomeLayout.setSpacing(true);
 
-        String welcomeMsg = messages.getMessage(getMessagesPack(), "loginWindow.welcomeLabel", loc);
+        String welcomeMsg = messages.getMessage(getMessagesPack(), "loginWindow.welcomeLabel", resolvedLocale);
         Label label = new Label(welcomeMsg.replace("\n", "<br/>"));
         label.setContentMode(ContentMode.HTML);
         label.setWidth(Sizeable.SIZE_UNDEFINED,  Unit.PIXELS);
@@ -203,20 +222,20 @@ public class LoginWindow extends UIView implements Action.Handler {
         centerLayout.addComponent(form);
         centerLayout.setComponentAlignment(form, Alignment.MIDDLE_CENTER);
 
-        loginField.setCaption(messages.getMessage(getMessagesPack(), "loginWindow.loginField", loc));
+        loginField.setCaption(messages.getMessage(getMessagesPack(), "loginWindow.loginField", resolvedLocale));
         loginFormLayout.addComponent(loginField);
         loginField.setWidth(fieldWidth + "px");
         loginField.setStyleName(getStyle("username-field"));
         loginFormLayout.setComponentAlignment(loginField, Alignment.MIDDLE_CENTER);
 
-        passwordField.setCaption(messages.getMessage(getMessagesPack(), "loginWindow.passwordField", loc));
+        passwordField.setCaption(messages.getMessage(getMessagesPack(), "loginWindow.passwordField", resolvedLocale));
         passwordField.setWidth(fieldWidth + "px");
         passwordField.setStyleName(getStyle("password-field"));
         loginFormLayout.addComponent(passwordField);
         loginFormLayout.setComponentAlignment(passwordField, Alignment.MIDDLE_CENTER);
 
         if (localesSelectVisible) {
-            localesSelect.setCaption(messages.getMessage(getMessagesPack(), "loginWindow.localesSelect", loc));
+            localesSelect.setCaption(messages.getMessage(getMessagesPack(), "loginWindow.localesSelect", resolvedLocale));
             localesSelect.setWidth(fieldWidth + "px");
             localesSelect.setNullSelectionAllowed(false);
             loginFormLayout.addComponent(localesSelect);
@@ -224,13 +243,13 @@ public class LoginWindow extends UIView implements Action.Handler {
         }
 
         if (rememberMeAllowed) {
-            rememberMe.setCaption(messages.getMessage(getMessagesPack(), "loginWindow.rememberMe", loc));
+            rememberMe.setCaption(messages.getMessage(getMessagesPack(), "loginWindow.rememberMe", resolvedLocale));
             rememberMe.setStyleName(getStyle("remember-me"));
             loginFormLayout.addComponent(rememberMe);
             loginFormLayout.setComponentAlignment(rememberMe, Alignment.MIDDLE_CENTER);
         }
 
-        okButton.setCaption(messages.getMessage(getMessagesPack(), "loginWindow.okButton", loc));
+        okButton.setCaption(messages.getMessage(getMessagesPack(), "loginWindow.okButton", resolvedLocale));
         okButton.addClickListener(new SubmitListener());
         okButton.setStyleName(getStyle("submit"));
         okButton.setIcon(new VersionedThemeResource("app/images/login-button.png"));
@@ -259,7 +278,7 @@ public class LoginWindow extends UIView implements Action.Handler {
 
     @Nullable
     protected Image getLogoImage() {
-        final String loginLogoImagePath = messages.getMainMessage("loginWindow.logoImage", loc);
+        final String loginLogoImagePath = messages.getMainMessage("loginWindow.logoImage", resolvedLocale);
         if (StringUtils.isBlank(loginLogoImagePath) || "loginWindow.logoImage".equals(loginLogoImagePath))
             return null;
 
@@ -304,7 +323,7 @@ public class LoginWindow extends UIView implements Action.Handler {
     }
 
     protected void initFields() {
-        String currLocale = messages.getTools().localeToString(loc);
+        String currLocale = messages.getTools().localeToString(resolvedLocale);
         String selected = null;
         App app = App.getInstance();
         for (Map.Entry<String, Locale> entry : locales.entrySet()) {
@@ -341,7 +360,7 @@ public class LoginWindow extends UIView implements Action.Handler {
 
     @Override
     public String getTitle() {
-        return messages.getMessage(getMessagesPack(), "loginWindow.caption", loc);
+        return messages.getMessage(getMessagesPack(), "loginWindow.caption", resolvedLocale);
     }
 
     public class SubmitListener implements Button.ClickListener {
@@ -378,7 +397,7 @@ public class LoginWindow extends UIView implements Action.Handler {
                 if (loginByRememberMe && StringUtils.isNotEmpty(password))
                     password = decryptPassword(password);
 
-                ActiveDirectoryHelper.getAuthProvider().authenticate(login, password, loc);
+                ActiveDirectoryHelper.getAuthProvider().authenticate(login, password, resolvedLocale);
                 login = convertLoginString(login);
 
                 ((ActiveDirectoryConnection) connection).loginActiveDirectory(login, locale);
@@ -394,7 +413,7 @@ public class LoginWindow extends UIView implements Action.Handler {
         } catch (LoginException e) {
             log.info("Login failed: " + e.toString());
 
-            String message = messages.getMessage(getMessagesPack(), "loginWindow.loginFailed", loc);
+            String message = messages.getMessage(getMessagesPack(), "loginWindow.loginFailed", resolvedLocale);
             new Notification(
                     ComponentsHelper.preprocessHtmlMessage(message),
                     StringUtils.abbreviate(e.getMessage(), 1000), Notification.Type.ERROR_MESSAGE, true)
@@ -473,7 +492,8 @@ public class LoginWindow extends UIView implements Action.Handler {
     }
 
     /**
-     * Encrypt password to store in cookie for "remember me".
+     * Encrypt password to store in cookie for "remember me". <br/>
+     * Used only for AD auth.
      *
      * @param password  plain password
      * @return          encrypted password
@@ -493,7 +513,8 @@ public class LoginWindow extends UIView implements Action.Handler {
     }
 
     /**
-     * Decrypt the password stored in cookie.
+     * Decrypt the password stored in cookie. <br/>
+     * Used only for AD auth.
      *
      * @param password  encrypted password
      * @return          plain password, or input string if decryption fails
@@ -526,7 +547,7 @@ public class LoginWindow extends UIView implements Action.Handler {
             if (browserInfo.isIE() && !browserInfo.isChromeFrame()) {
                 final Layout layout = new VerticalLayout();
                 layout.setStyleName(getStyle("user-hint"));
-                layout.addComponent(new Label(messages.getMessage(getMessagesPack(), "chromeframe.hint", loc),
+                layout.addComponent(new Label(messages.getMessage(getMessagesPack(), "chromeframe.hint", resolvedLocale),
                         ContentMode.HTML));
                 return layout;
             }

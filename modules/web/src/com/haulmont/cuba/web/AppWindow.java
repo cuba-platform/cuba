@@ -86,7 +86,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
 
     protected CubaTimer workerTimer;
 
-    protected AppUI ui;
+    protected final AppUI ui;
 
     protected final App app;
 

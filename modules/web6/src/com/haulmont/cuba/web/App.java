@@ -286,6 +286,7 @@ public abstract class App extends Application
         Timer timer = createSessionPingTimer(true);
         if (timer != null) {
             timers.add(timer, appWindow);
+            timer.start();
         }
 
         return appWindow;

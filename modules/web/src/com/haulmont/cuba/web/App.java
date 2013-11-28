@@ -44,7 +44,7 @@ public abstract class App {
 
     private static Log log = LogFactory.getLog(App.class);
 
-    private AppLog appLog;
+    protected AppLog appLog;
 
     protected Connection connection;
 
@@ -56,7 +56,7 @@ public abstract class App {
 
     protected final WebAuthConfig webAuthConfig;
 
-    private AppCookies cookies;
+    protected AppCookies cookies;
 
     protected LinkHandler linkHandler;
 
@@ -72,7 +72,7 @@ public abstract class App {
 
     protected String webResourceTimestamp = "null";
 
-    private String clientAddress;
+    protected String clientAddress;
 
     public App() {
         log.trace("Creating application " + this);
@@ -167,6 +167,23 @@ public abstract class App {
     }
 
     /**
+     * Called from hearbeat request. <br/>
+     * Used for ping middleware session and show session messages
+     */
+    public void onHeartbeat() {
+        if (getConnection().isConnected()) {
+            // Ping middleware session if connected and show messages
+            log.debug("Ping session");
+            UserSessionService service = AppBeans.get(UserSessionService.NAME);
+            String message = service.getMessages();
+            if (message != null) {
+                message = message.replace("\n", "<br/>");
+                getWindowManager().showNotification(message, IFrame.NotificationType.ERROR_HTML);
+            }
+        }
+    }
+
+    /**
      * @return Current App instance. Can be invoked anywhere in application code.
      * @throws IllegalStateException if no application instance is bound to the current {@link VaadinSession}
      */
@@ -214,7 +231,7 @@ public abstract class App {
      * @return login window
      */
     protected UIView createLoginWindow(AppUI ui) {
-        return new LoginWindow(this, connection);
+        return new LoginWindow(ui);
     }
 
     /**
@@ -224,41 +241,14 @@ public abstract class App {
      * @return main window
      */
     protected AppWindow createAppWindow(AppUI ui) {
-        AppWindow window = new AppWindow(ui);
-
-        CubaTimer timer = createSessionPingTimer();
-        if (timer != null) {
-            window.addTimer(timer);
-            timer.start();
-        }
-
-        return window;
+        return new AppWindow(ui);
     }
 
+    /**
+     * @deprecated Unused. In next minor release will be removed
+     */
+    @Deprecated
     protected CubaTimer createSessionPingTimer() {
-        int sessionExpirationTimeout = webConfig.getHttpSessionExpirationTimeoutSec();
-        int sessionPingPeriod = sessionExpirationTimeout / 3;
-        if (sessionPingPeriod > 0) {
-            CubaTimer timer = new CubaTimer();
-            timer.setRepeating(true);
-            timer.setDelay(sessionPingPeriod * 1000);
-            timer.addTimerListener(new CubaTimer.TimerListener() {
-                @Override
-                public void onTimer(CubaTimer timer) {
-                    log.debug("Ping session");
-                    UserSessionService service = AppBeans.get(UserSessionService.NAME);
-                    String message = service.getMessages();
-                    if (message != null) {
-                        App.getInstance().getWindowManager().showNotification(message, IFrame.NotificationType.ERROR);
-                    }
-                }
-
-                @Override
-                public void onStopTimer(CubaTimer timer) {
-                }
-            });
-            return timer;
-        }
         return null;
     }
 
