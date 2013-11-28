@@ -1005,7 +1005,7 @@ public class WebWindowManager extends WindowManager {
 
     @Override
     protected Window getWindow(Integer hashCode) {
-        if (AppWindow.Mode.SINGLE.equals(app.getAppWindow().getMode()))
+        if (AppWindow.Mode.SINGLE.equals(appWindow.getMode()))
             return null;
         for (Map.Entry<Window, Integer> entry : windows.entrySet()) {
             if (hashCode.equals(entry.getValue())) {
