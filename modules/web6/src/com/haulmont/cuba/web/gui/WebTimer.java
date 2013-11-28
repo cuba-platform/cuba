@@ -29,12 +29,12 @@ public class WebTimer extends WebAbstractComponent<Timer> implements com.haulmon
 
     @Override
     public void start() {
-        component.startTimer();
+        component.start();
     }
 
     @Override
     public void stop() {
-        component.stopTimer();
+        component.stop();
     }
 
     @Override

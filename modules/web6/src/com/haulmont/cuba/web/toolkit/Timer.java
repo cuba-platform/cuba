@@ -49,14 +49,14 @@ public class Timer extends AbstractComponent {
         dirty = false;
     }
 
-    public void stopTimer() {
+    public void stop() {
         if (!isStopped()) {
             stopped = true;
             dirty = true;
         }
     }
 
-    public void startTimer() {
+    public void start() {
         if (isStopped()) {
             stopped = false;
             dirty = true;
@@ -78,7 +78,7 @@ public class Timer extends AbstractComponent {
     public void removeListener(Listener listener) {
         if (listeners != null) {
             if (listeners.remove(listener) && listeners.isEmpty()) {
-                stopTimer();
+                stop();
             }
         }
     }

@@ -53,8 +53,6 @@ import org.apache.commons.logging.LogFactory;
 import java.io.IOException;
 import java.util.*;
 
-import com.haulmont.cuba.web.toolkit.Timer;
-
 /**
  * Left panel containing application and search folders.
  *
@@ -193,7 +191,7 @@ public class FoldersPane extends VerticalLayout {
                 Collection<Timer> timers = appTimers.getAll(parentAppWindow);
                 for (Timer t : timers) {
                     if (t instanceof FoldersPane.FoldersPaneTimer)
-                        t.stopTimer();
+                        t.stop();
                 }
 
                 timer = new FoldersPaneTimer(period, true);
@@ -264,7 +262,7 @@ public class FoldersPane extends VerticalLayout {
 
         } else {
             if (timer != null)
-                timer.stopTimer();
+                timer.stop();
 
             removeAllComponents();
             setMargin(false);

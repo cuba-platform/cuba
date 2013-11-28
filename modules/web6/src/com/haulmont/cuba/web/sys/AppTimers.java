@@ -90,7 +90,7 @@ public class AppTimers {
                 if (owner != null) {
                     owner.addListener(new com.haulmont.cuba.gui.components.Window.CloseListener() {
                         public void windowClosed(String actionId) {
-                            timer.stopTimer();
+                            timer.stop();
                         }
                     });
                 }
@@ -105,7 +105,7 @@ public class AppTimers {
         Set<Timer> timers = new HashSet<>(timerWindow.keySet());
         for (final Timer timer : timers) {
             if (timer != null && !timer.isStopped()) {
-                timer.stopTimer();
+                timer.stop();
             }
         }
         stopTimers = true;
