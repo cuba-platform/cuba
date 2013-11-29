@@ -430,7 +430,6 @@ public class AppWindow extends Window implements UserSubstitutionListener,
             middleLayout.addComponent(mainLayout);
             middleLayout.setExpandRatio(mainLayout, 1);
         }
-        mainLayout.setMargin(new Layout.MarginInfo(true, false, false, false));
         mainLayout.setSpacing(false);
     }
 
