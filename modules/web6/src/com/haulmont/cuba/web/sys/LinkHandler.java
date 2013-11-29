@@ -177,7 +177,7 @@ public class LinkHandler {
             app.getWindowManager().showOptionDialog(
                     messages.getMessage(getClass(), "warning.title"),
                     getWarningMessage(user),
-                    IFrame.MessageType.WARNING,
+                    IFrame.MessageType.WARNING_HTML,
                     new Action[]{
                             new DialogAction(DialogAction.Type.OK) {
                                 @Override
