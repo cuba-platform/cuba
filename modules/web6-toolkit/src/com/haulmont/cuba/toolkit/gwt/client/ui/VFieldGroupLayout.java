@@ -171,7 +171,10 @@ public class VFieldGroupLayout extends VGridLayout {
 
         @Override
         public int getCaptionWidthAfterComponent() {
-            return rightCaption == null ? 0 : Util.getRequiredWidth(rightCaption);
+            Cell cell = paintableToCell.get((Paintable)widget);
+
+            return MAX_ADDITIONAL_WIDTH +
+                    Math.max(getCaptionWidth(), captionWidths != null ? captionWidths[cell.getCol()] : 0);
         }
 
         @Override
@@ -384,40 +387,6 @@ public class VFieldGroupLayout extends VGridLayout {
 
         public FieldGroupComponentCell(UIDL c) {
             super(c);
-        }
-
-        @Override
-        public int getWidth() {
-            if (cc != null) {
-                int w = cc.getWidgetSize().getWidth();
-
-                if (verticalCaption) {
-                    w += cc.getCaptionWidthAfterComponent();
-                } else {
-                    FieldGroupComponentContainer fc = (FieldGroupComponentContainer) cc;
-
-                    w += fc.getCaptionWidth() + MAX_ADDITIONAL_WIDTH;
-                }
-
-                return w;
-            } else {
-                return 0;
-            }
-        }
-
-        @Override
-        public int getHeight() {
-            if (cc != null) {
-                int h = cc.getWidgetSize().getHeight();
-                if (verticalCaption) {
-                    h += cc.getCaptionHeightAboveComponent();
-                } else {
-                    h = Math.max(h, cc.getCaptionHeight());
-                }
-                return h;
-            } else {
-                return 0;
-            }
         }
     }
 }
