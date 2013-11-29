@@ -2658,10 +2658,18 @@ public abstract class Table
             }
 
             protected void recursiveAddFocusHandler(final Widget w, final Widget topWidget) {
-                if (w instanceof HasFocusHandlers) {
+                if (w instanceof HasWidgets) {
+                    for (Widget child: (HasWidgets)w) {
+                        recursiveAddFocusHandler(child, topWidget);
+                    }
+                } else if (w instanceof HasFocusHandlers) {
                     ((HasFocusHandlers) w).addFocusHandler(new FocusHandler() {
                         @Override
                         public void onFocus(FocusEvent event) {
+                            if (childWidgets.indexOf(topWidget) < 0) {
+                                return;
+                            }
+
                             lastFocusedWidget = w;
 
                             VConsole.log("onFocus: Focus widget in column: " + childWidgets.indexOf(topWidget));
@@ -2676,12 +2684,6 @@ public abstract class Table
                             }
                         }
                     });
-                }
-
-                if (w instanceof HasWidgets) {
-                    for (Widget child: (HasWidgets)w) {
-                        recursiveAddFocusHandler(child, topWidget);
-                    }
                 }
             }
 
