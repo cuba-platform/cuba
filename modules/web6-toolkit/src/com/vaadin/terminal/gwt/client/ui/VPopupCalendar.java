@@ -372,8 +372,7 @@ public class VPopupCalendar extends VTextualDate implements Paintable, Field,
     @Override
     protected int getFieldExtraWidth() {
         if (fieldExtraWidth < 0) {
-            fieldExtraWidth = super.getFieldExtraWidth();
-            fieldExtraWidth += calendarToggle.getOffsetWidth();
+            fieldExtraWidth = calendarToggle.getOffsetWidth();
         }
         return fieldExtraWidth;
     }
