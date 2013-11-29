@@ -33,6 +33,7 @@ import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.ui.ActionsTabSheet;
 import com.haulmont.cuba.web.toolkit.ui.JavaScriptHost;
 import com.haulmont.cuba.web.toolkit.ui.RichNotification;
+import com.haulmont.cuba.web.toolkit.ui.WindowOpenButton;
 import com.vaadin.data.Property;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.terminal.*;
@@ -752,17 +753,16 @@ public class AppWindow extends Window implements UserSubstitutionListener,
         if (!webConfig.getUseLightHeader())
             buttonTitle = messages.getMessage(getMessagesPack(), "newWindowBtn");
 
-        Button newWindowBtn = new Button(buttonTitle,
-                new Button.ClickListener() {
-                    private static final long serialVersionUID = -2017737447316558248L;
+        // Use special button to force open new window as tab
+        WindowOpenButton newWindowBtn = new WindowOpenButton();
+        newWindowBtn.setCaption(buttonTitle);
+        newWindowBtn.setUrlProvider(new WindowOpenButton.UrlProvider() {
+            @Override
+            public String getUrl() {
+                return App.getInstance().getURL() + App.generateWebWindowName();
+            }
+        });
 
-                    @Override
-                    public void buttonClick(Button.ClickEvent event) {
-                        String name = App.generateWebWindowName();
-                        open(new ExternalResource(App.getInstance().getURL() + name), "_new");
-                    }
-                }
-        );
         newWindowBtn.setDescription(messages.getMessage(getMessagesPack(), "newWindowBtnDescription"));
         newWindowBtn.setStyleName("white-border");
         newWindowBtn.setIcon(new VersionedThemeResource("app/images/new-window.png"));
