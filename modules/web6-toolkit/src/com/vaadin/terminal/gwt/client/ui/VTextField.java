@@ -272,8 +272,12 @@ public class VTextField extends TextBoxBase implements Paintable, Field,
             }
         }
         focusedTextField = this;
-        if (client.hasEventListeners(this, EventId.FOCUS)) {
-            client.updateVariable(client.getPid(this), EventId.FOCUS, "", true);
+
+        // if not used in DateField
+        if (client.getPid(this) != null) {
+            if (client.hasEventListeners(this, EventId.FOCUS)) {
+                client.updateVariable(client.getPid(this), EventId.FOCUS, "", true);
+            }
         }
 
         Container layout = Util.getLayout(this);
