@@ -298,7 +298,9 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
                     for (Widget child: (HasWidgets)w) {
                         recursiveAddFocusHandler(child, topWidget);
                     }
-                } else if (w instanceof HasFocusHandlers) {
+                }
+
+                if (w instanceof HasFocusHandlers) {
                     ((HasFocusHandlers) w).addFocusHandler(new FocusHandler() {
                         @Override
                         public void onFocus(FocusEvent event) {
