@@ -236,10 +236,20 @@ public class CubaTreeTableWidget extends VTreeTable {
             }
 
             protected void recursiveAddFocusHandler(final Widget w, final Widget topWidget) {
+                if (w instanceof HasWidgets) {
+                    for (Widget child: (HasWidgets)w) {
+                        recursiveAddFocusHandler(child, topWidget);
+                    }
+                }
+
                 if (w instanceof HasFocusHandlers) {
                     ((HasFocusHandlers) w).addFocusHandler(new FocusHandler() {
                         @Override
                         public void onFocus(FocusEvent event) {
+                            if (childWidgets.indexOf(topWidget) < 0) {
+                                return;
+                            }
+
                             lastFocusedWidget = w;
 
                             if (logger.enabled) {
@@ -256,12 +266,6 @@ public class CubaTreeTableWidget extends VTreeTable {
                             }
                         }
                     });
-                }
-
-                if (w instanceof HasWidgets) {
-                    for (Widget child: (HasWidgets)w) {
-                        recursiveAddFocusHandler(child, topWidget);
-                    }
                 }
             }
 
