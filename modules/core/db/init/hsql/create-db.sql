@@ -37,8 +37,6 @@ create table SYS_CONFIG (
     constraint SYS_CONFIG_UNIQ_NAME unique (NAME)
 )^
 
--- alter table SYS_CONFIG add ^
-
 ------------------------------------------------------------------------------------------------------------
 
 create table SYS_FILE (
@@ -190,8 +188,6 @@ create table SEC_GROUP (
     constraint SEC_GROUP_PARENT foreign key (PARENT_ID) references SEC_GROUP(ID)
 )^
 
--- alter table SEC_GROUP add constraint SEC_GROUP_PARENT foreign key (PARENT_ID) references SEC_GROUP(ID)^
-
 ------------------------------------------------------------------------------------------------------------
 
 create table SEC_GROUP_HIERARCHY (
@@ -207,10 +203,6 @@ create table SEC_GROUP_HIERARCHY (
     constraint SEC_GROUP_HIERARCHY_GROUP foreign key (GROUP_ID) references SEC_GROUP(ID),
     constraint SEC_GROUP_HIERARCHY_PARENT foreign key (PARENT_ID) references SEC_GROUP(ID)
 )^
-
--- alter table SEC_GROUP_HIERARCHY add constraint SEC_GROUP_HIERARCHY_GROUP foreign key (GROUP_ID) references SEC_GROUP(ID)^
-
--- alter table SEC_GROUP_HIERARCHY add constraint SEC_GROUP_HIERARCHY_PARENT foreign key (PARENT_ID) references SEC_GROUP(ID)^
 
 ------------------------------------------------------------------------------------------------------------
 
@@ -247,12 +239,6 @@ create table SEC_USER (
         references SEC_USER(ID)
 )^
 
--- alter table SEC_USER add constraint SEC_USER_UNIQ_LOGIN unique (LOGIN_LC, DELETE_TS)^
-
--- alter table SEC_USER add constraint SEC_USER_GROUP foreign key (GROUP_ID) references SEC_GROUP(ID)^
-
--- alter table SEC_USER add constraint SEC_USER_DEFAULT_SUBSTITUTED_USER foreign key (DEFAULT_SUBSTITUTED_USER_ID) references SEC_USER(ID)^
-
 ------------------------------------------------------------------------------------------------------------
 
 create table SEC_USER_ROLE (
@@ -273,12 +259,6 @@ create table SEC_USER_ROLE (
     constraint SEC_USER_ROLE_ROLE foreign key (ROLE_ID) references SEC_ROLE(ID),
     constraint SEC_USER_ROLE_UNIQ_ROLE unique (USER_ID, ROLE_ID, DELETE_TS)
 )^
-
--- alter table SEC_USER_ROLE add constraint SEC_USER_ROLE_USER foreign key (USER_ID) references SEC_USER(ID)^
-
--- alter table SEC_USER_ROLE add constraint SEC_USER_ROLE_ROLE foreign key (ROLE_ID) references SEC_ROLE(ID)^
-
--- alter table SEC_USER_ROLE add constraint SEC_USER_ROLE_UNIQ_ROLE unique (USER_ID, ROLE_ID, DELETE_TS)^
 
 ------------------------------------------------------------------------------------------------------------
 
@@ -302,10 +282,6 @@ create table SEC_PERMISSION (
     constraint SEC_PERMISSION_UNIQUE unique (ROLE_ID, PERMISSION_TYPE, TARGET, DELETE_TS)
 )^
 
--- alter table SEC_PERMISSION add constraint SEC_PERMISSION_ROLE foreign key (ROLE_ID) references SEC_ROLE(ID)^
-
--- alter table SEC_PERMISSION add constraint SEC_PERMISSION_UNIQUE unique (ROLE_ID, TYPE, TARGET, DELETE_TS)^
-
 ------------------------------------------------------------------------------------------------------------
 
 create table SEC_CONSTRAINT (
@@ -326,8 +302,6 @@ create table SEC_CONSTRAINT (
     primary key (ID),
     constraint SEC_CONSTRAINT_GROUP foreign key (GROUP_ID) references SEC_GROUP(ID)
 )^
-
--- alter table SEC_CONSTRAINT add constraint SEC_CONSTRAINT_GROUP foreign key (GROUP_ID) references SEC_GROUP(ID)^
 
 ------------------------------------------------------------------------------------------------------------
 
@@ -350,8 +324,6 @@ create table SEC_SESSION_ATTR (
     constraint SEC_SESSION_ATTR_GROUP foreign key (GROUP_ID) references SEC_GROUP(ID)
 )^
 
--- alter table SEC_SESSION_ATTR add constraint SEC_SESSION_ATTR_GROUP foreign key (GROUP_ID) references SEC_GROUP(ID)^
-
 ------------------------------------------------------------------------------------------------------------
 
 create table SEC_USER_SETTING (
@@ -368,10 +340,6 @@ create table SEC_USER_SETTING (
     constraint SEC_USER_SETTING_USER foreign key (USER_ID) references SEC_USER(ID),
     constraint SEC_USER_SETTING_UNIQ unique (USER_ID, NAME, CLIENT_TYPE)
 )^
-
--- alter table SEC_USER_SETTING add constraint SEC_USER_SETTING_USER foreign key (USER_ID) references SEC_USER(ID)^
-
--- alter table SEC_USER_SETTING add constraint SEC_USER_SETTING_UNIQ unique (USER_ID, NAME, CLIENT_TYPE)^
 
 ------------------------------------------------------------------------------------------------------------
 
@@ -396,10 +364,6 @@ create table SEC_USER_SUBSTITUTION (
         references SEC_USER(ID)
 )^
 
--- alter table SEC_USER_SUBSTITUTION add constraint FK_SEC_USER_SUBSTITUTION_USER foreign key (USER_ID) references SEC_USER(ID)^
-
--- alter table SEC_USER_SUBSTITUTION add constraint FK_SEC_USER_SUBSTITUTION_SUBSTITUTED_USER foreign key (SUBSTITUTED_USER_ID) references SEC_USER(ID)^
-
 ------------------------------------------------------------------------------------------------------------
 
 create table SEC_LOGGED_ENTITY (
@@ -415,8 +379,6 @@ create table SEC_LOGGED_ENTITY (
     constraint SEC_LOGGED_ENTITY_UNIQ_NAME unique (NAME)
 )^
 
--- alter table SEC_LOGGED_ENTITY add constraint SEC_LOGGED_ENTITY_UNIQ_NAME unique (NAME)^
-
 ------------------------------------------------------------------------------------------------------------
 
 create table SEC_LOGGED_ATTR (
@@ -431,10 +393,6 @@ create table SEC_LOGGED_ATTR (
     constraint FK_SEC_LOGGED_ATTR_ENTITY foreign key (ENTITY_ID) references SEC_LOGGED_ENTITY(ID),
     constraint SEC_LOGGED_ATTR_UNIQ_NAME unique (ENTITY_ID, NAME)
 )^
-
--- alter table SEC_LOGGED_ATTR add constraint FK_SEC_LOGGED_ATTR_ENTITY foreign key (ENTITY_ID) references SEC_LOGGED_ENTITY(ID)^
-
--- alter table SEC_LOGGED_ATTR add constraint SEC_LOGGED_ATTR_UNIQ_NAME unique (ENTITY_ID, NAME)^
 
 ------------------------------------------------------------------------------------------------------------
 
@@ -454,8 +412,6 @@ create table SEC_ENTITY_LOG (
     constraint FK_SEC_ENTITY_LOG_USER foreign key (USER_ID) references SEC_USER(ID)
 )^
 
--- alter table SEC_ENTITY_LOG add constraint FK_SEC_ENTITY_LOG_USER foreign key (USER_ID) references SEC_USER(ID)^
-
 ------------------------------------------------------------------------------------------------------------
 
 create table SEC_ENTITY_LOG_ATTR (
@@ -472,8 +428,6 @@ create table SEC_ENTITY_LOG_ATTR (
     primary key (ID),
     constraint FK_SEC_ENTITY_LOG_ATTR_ITEM foreign key (ITEM_ID) references SEC_ENTITY_LOG(ID)
 )^
-
--- alter table SEC_ENTITY_LOG_ATTR add constraint FK_SEC_ENTITY_LOG_ATTR_ITEM foreign key (ITEM_ID) references SEC_ENTITY_LOG(ID)^
 
 ------------------------------------------------------------------------------------------------------------
 
@@ -497,8 +451,6 @@ create table SEC_FILTER (
     constraint FK_SEC_FILTER_USER foreign key (USER_ID) references SEC_USER(ID)
 )^
 
--- alter table SEC_FILTER add constraint FK_SEC_FILTER_USER foreign key (USER_ID) references SEC_USER(ID)^
-
 ------------------------------------------------------------------------------------------------------------
 
 create table SYS_FOLDER (
@@ -521,8 +473,6 @@ create table SYS_FOLDER (
     constraint FK_SYS_FOLDER_PARENT foreign key (PARENT_ID) references SYS_FOLDER(ID)
 )^
 
--- alter table SYS_FOLDER add constraint FK_SYS_FOLDER_PARENT foreign key (PARENT_ID) references SYS_FOLDER(ID)^
-
 ------------------------------------------------------------------------------------------------------------
 
 create table SYS_APP_FOLDER (
@@ -536,8 +486,6 @@ create table SYS_APP_FOLDER (
     primary key (FOLDER_ID),
     constraint FK_SYS_APP_FOLDER_FOLDER foreign key (FOLDER_ID) references SYS_FOLDER(ID)
 )^
-
--- alter table SYS_APP_FOLDER add constraint FK_SYS_APP_FOLDER_FOLDER foreign key (FOLDER_ID) references SYS_FOLDER(ID)^
 
 ------------------------------------------------------------------------------------------------------------
 
@@ -558,8 +506,6 @@ create table SEC_PRESENTATION (
     constraint SEC_PRESENTATION_USER foreign key (USER_ID) references SEC_USER(ID)
 )^
 
--- alter table SEC_PRESENTATION add constraint SEC_PRESENTATION_USER foreign key (USER_ID) references SEC_USER(ID)^
-
 ------------------------------------------------------------------------------------------------------------
 
 create table SEC_SEARCH_FOLDER (
@@ -579,12 +525,6 @@ create table SEC_SEARCH_FOLDER (
         references SEC_PRESENTATION(ID)
         on delete set null
 )^
-
--- alter table SEC_SEARCH_FOLDER add constraint FK_SEC_SEARCH_FOLDER_FOLDER foreign key (FOLDER_ID) references SYS_FOLDER(ID)^
-
--- alter table SEC_SEARCH_FOLDER add constraint FK_SEC_SEARCH_FOLDER_USER foreign key (USER_ID) references SEC_USER(ID)^
-
--- alter table SEC_SEARCH_FOLDER add constraint FK_SEC_SEARCH_FOLDER_PRESENTATION foreign key (PRESENTATION_ID) references SEC_PRESENTATION(ID) on delete set null^
 
 ------------------------------------------------------------------------------------------------------------
 
