@@ -8,7 +8,6 @@ package com.haulmont.cuba.desktop.gui.components;
 import com.haulmont.cuba.desktop.gui.data.TableModelAdapter;
 import com.haulmont.cuba.desktop.sys.vcl.JXTableExt;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import org.apache.commons.lang.ObjectUtils;
 import org.jdesktop.swingx.JXTable;
 
 import javax.swing.event.ChangeEvent;
