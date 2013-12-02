@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.web.filestorage;
 
+import com.haulmont.cuba.core.global.FileTypesHelper;
 import com.haulmont.cuba.gui.export.ClosedDataProviderException;
 import com.haulmont.cuba.gui.export.ExportDataProvider;
 import com.haulmont.cuba.gui.export.ExportFormat;
@@ -77,7 +78,11 @@ public class ResourceWindow extends Window {
             if (StringUtils.isEmpty(FilenameUtils.getExtension(fileName)))
                 fileName += "." + exportFormat.getFileExt();
         } else {
-            contentType = "application/octet-stream";
+            if (isAttachment) {
+                contentType = "application/octet-stream";
+            } else {
+                contentType = FileTypesHelper.getMIMEType(fileName);
+            }
         }
 
         contentType += ";charset=\"UTF-8\"";
@@ -91,7 +96,7 @@ public class ResourceWindow extends Window {
             throw new RuntimeException(e);
         }
 
-        DownloadStream downloadStream = null;
+        DownloadStream downloadStream;
         try {
             downloadStream = new CloseableDownloadStream(dataProvider, contentType, fileName);
         } catch (ClosedDataProviderException e) {
