@@ -28,7 +28,7 @@ public class VFieldGroupLayout extends VGridLayout {
 
     @Override
     protected ChildComponentContainer createComponentContainer(Paintable paintable) {
-        return new FieldGroupComponentContainer((Widget) paintable, CellBasedLayout.ORIENTATION_VERTICAL);
+        return new FieldGroupComponentContainer(this, (Widget) paintable, CellBasedLayout.ORIENTATION_VERTICAL);
     }
 
     @Override
@@ -165,16 +165,28 @@ public class VFieldGroupLayout extends VGridLayout {
         protected Element tooltipElement;
         protected int additionalWidth = MAX_ADDITIONAL_WIDTH;
 
-        protected FieldGroupComponentContainer(Widget widget, int orientation) {
+        protected VFieldGroupLayout parent;
+
+        protected FieldGroupComponentContainer(VFieldGroupLayout parent, Widget widget, int orientation) {
             super(widget, orientation);
+
+            this.parent = parent;
         }
 
         @Override
         public int getCaptionWidthAfterComponent() {
+            RenderInformation.FloatSize relativeSize = parent.client.getRelativeSize(parent);
+
+            // It is required for 100% width resize
+            if (relativeSize != null && relativeSize.getWidth() > 0) {
+                return rightCaption != null ? Util.getRequiredWidth(rightCaption) : 0;
+            }
+
+            //noinspection RedundantCast
             Cell cell = paintableToCell.get((Paintable)widget);
 
             return MAX_ADDITIONAL_WIDTH +
-                    Math.max(getCaptionWidth(), captionWidths != null ? captionWidths[cell.getCol()] : 0);
+                    Math.max(getCaptionWidth(), captionWidths != null ? captionWidths[cell.getCol()] : getCaptionWidth());
         }
 
         @Override
@@ -372,7 +384,8 @@ public class VFieldGroupLayout extends VGridLayout {
                 } else {
                     Cell cell = paintableToCell.get(widget);
                     int maxWidth = VFieldGroupLayout.this.captionWidths[cell.getCol()];
-                    caption.setMaxWidth(maxWidth + spacingPixelsHorizontal);
+
+                    caption.setMaxWidth(Math.max(captionWidth, maxWidth + spacingPixelsHorizontal));
                 }
 
                 captionWidth = caption.getRenderedWidth();
