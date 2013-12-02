@@ -23,7 +23,6 @@ public class DesktopTable extends DesktopAbstractTable<JXTable> {
 
     public DesktopTable() {
         impl = new JXTableExt() {
-
             @Override
             public void setFont(Font font) {
                 super.setFont(font);
@@ -33,15 +32,17 @@ public class DesktopTable extends DesktopAbstractTable<JXTable> {
             @Override
             public void editingStopped(ChangeEvent e) {
                 TableCellEditor editor = getCellEditor();
-                if (editor != null && editingColumn >= 0) {
+                if (editor != null) {
                     Object value = editor.getCellEditorValue();
                     DesktopTable tableComponent = DesktopTable.this;
-                    Column editColumn = tableComponent.getColumns().get(editingColumn);
-                    if (tableComponent.isEditable() && editColumn.isEditable() &&
-                            !tableModel.isGeneratedColumn(editColumn)) {
-                        setValueAt(value, editingRow, editingColumn);
+                    if (editingColumn >= 0) {
+                        Column editColumn = tableComponent.getColumns().get(editingColumn);
+                        if (tableComponent.isEditable() && editColumn.isEditable() &&
+                                !tableModel.isGeneratedColumn(editColumn)) {
+                            setValueAt(value, editingRow, editingColumn);
+                        }
+                        removeEditor();
                     }
-                    removeEditor();
                 }
             }
         };
