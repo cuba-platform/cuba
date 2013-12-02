@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.sys.AbstractAppContextLoader;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SingleSecurityContextHolder;
 import com.haulmont.cuba.gui.AppConfig;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
 import org.apache.commons.lang.text.StrLookup;
@@ -18,9 +19,7 @@ import org.apache.commons.lang.text.StrTokenizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -93,16 +92,13 @@ public class DesktopAppContextLoader extends AbstractAppContextLoader {
             try {
                 stream = getClass().getResourceAsStream(str);
                 if (stream != null) {
-                    properties.load(stream);
+                    Reader reader = new InputStreamReader(stream, "UTF-8");
+                    properties.load(reader);
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             } finally {
-                try {
-                    if (stream != null) stream.close();
-                } catch (IOException e) {
-                    //
-                }
+                IOUtils.closeQuietly(stream);
             }
         }
 
