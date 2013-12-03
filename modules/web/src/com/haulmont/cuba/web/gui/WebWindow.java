@@ -29,6 +29,7 @@ import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebFrameActionsHolder;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.ui.CubaTimer;
+import com.haulmont.cuba.web.toolkit.ui.CubaTree;
 import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.Sizeable;
@@ -1062,7 +1063,8 @@ public class WebWindow implements Window, Component.Wrapper,
                 });
             } else if (lookupComponent instanceof Tree) {
                 final Tree tree = (Tree) lookupComponent;
-                final com.vaadin.ui.Tree treeComponent = (com.vaadin.ui.Tree) WebComponentsHelper.unwrap(tree);
+                final CubaTree treeComponent = (CubaTree) WebComponentsHelper.unwrap(tree);
+                treeComponent.setDoubleClickMode(true);
                 treeComponent.addItemClickListener(new ItemClickEvent.ItemClickListener() {
                     @Override
                     public void itemClick(ItemClickEvent event) {

@@ -8,6 +8,7 @@ package com.haulmont.cuba.web.toolkit.ui.client.tree;
 import com.haulmont.cuba.web.toolkit.ui.CubaTree;
 import com.vaadin.client.ApplicationConnection;
 import com.vaadin.client.UIDL;
+import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.VTree;
 import com.vaadin.client.ui.tree.TreeConnector;
@@ -26,10 +27,18 @@ public class CubaTreeConnector extends TreeConnector {
     }
 
     @Override
+    public CubaTreeState getState() {
+        return (CubaTreeState) super.getState();
+    }
+
+    @Override
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
         super.updateFromUIDL(uidl, client);
+
         getWidget().setContextMenuHandling(false);
-        // We may have actions attached to this panel
+        getWidget().setDoubleClickHandling(false);
+
+        // We may have actions attached to this tree
         if (uidl.getChildCount() > 1) {
             final int cnt = uidl.getChildCount();
             for (int i = 1; i < cnt; i++) {
@@ -41,6 +50,15 @@ public class CubaTreeConnector extends TreeConnector {
                     getWidget().getShortcutActionHandler().updateActionMap(childUidl);
                 }
             }
+        }
+    }
+
+    @Override
+    public void onStateChanged(StateChangeEvent stateChangeEvent) {
+        super.onStateChanged(stateChangeEvent);
+
+        if (stateChangeEvent.hasPropertyChanged("doubleClickMode")) {
+            getWidget().doubleClickMode = getState().doubleClickMode;
         }
     }
 

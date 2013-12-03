@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.haulmont.cuba.web.toolkit.ui.client.tree.CubaTreeState;
 import com.vaadin.event.Action;
 import com.vaadin.event.ActionManager;
 import com.vaadin.event.ShortcutListener;
@@ -21,11 +22,31 @@ import java.util.Set;
  */
 public class CubaTree extends Tree {
 
-    private static final String POPUP_SELECTION = "popupSelection";
+    protected static final String POPUP_SELECTION = "popupSelection";
 
-    private boolean popupSelection = false;
+    protected boolean popupSelection = false;
 
     protected ActionManager shortcutsManager = new ActionManager();
+
+    @Override
+    protected CubaTreeState getState() {
+        return (CubaTreeState) super.getState();
+    }
+
+    @Override
+    protected CubaTreeState getState(boolean markAsDirty) {
+        return (CubaTreeState) super.getState(markAsDirty);
+    }
+
+    public void setDoubleClickMode(boolean doubleClickMode) {
+        if (getState(false).doubleClickMode != doubleClickMode) {
+            getState().doubleClickMode = doubleClickMode;
+        }
+    }
+
+    public boolean isDoubleClickMode() {
+        return getState(false).doubleClickMode;
+    }
 
     @Override
     public void changeVariables(Object source, Map<String, Object> variables) {
@@ -58,5 +79,4 @@ public class CubaTree extends Tree {
         super.removeShortcutListener(listener);
         shortcutsManager.removeAction(listener);
     }
-
 }
