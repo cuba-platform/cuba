@@ -217,25 +217,28 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
             V result = null;
             try {
-                result = runnableTask.run(new TaskLifeCycle<T>() {
+                if (!isInterrupted()) {
+                    // do not run any activity if canceled before start
+                    result = runnableTask.run(new TaskLifeCycle<T>() {
 
-                    @SafeVarargs
-                    @Override
-                    public final void publish(T... changes) {
-                        handleProgress(changes);
-                    }
+                        @SafeVarargs
+                        @Override
+                        public final void publish(T... changes) {
+                            handleProgress(changes);
+                        }
 
-                    @Override
-                    public boolean isInterrupted() {
-                        return WebTaskExecutor.this.isInterrupted();
-                    }
+                        @Override
+                        public boolean isInterrupted() {
+                            return WebTaskExecutor.this.isInterrupted();
+                        }
 
-                    @Override
-                    @Nonnull
-                    public Map<String, Object> getParams() {
-                        return params;
-                    }
-                });
+                        @Override
+                        @Nonnull
+                        public Map<String, Object> getParams() {
+                            return params;
+                        }
+                    });
+                }
             } catch (Exception ex) {
                 if (!(ex instanceof InterruptedException) && !canceled)
                     this.taskException = ex;

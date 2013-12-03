@@ -86,27 +86,28 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
 
         @Override
         protected final V doInBackground() throws Exception {
-            // assign thread local handler
-            this.isInterrupted = false;
             try {
-                result = runnableTask.run(new TaskLifeCycle<T>() {
-                    @SafeVarargs
-                    @Override
-                    public final void publish(T... changes) {
-                        handleProgress(changes);
-                    }
+                if (!isInterrupted) {
+                    // do not run any activity if canceled before start
+                    result = runnableTask.run(new TaskLifeCycle<T>() {
+                        @SafeVarargs
+                        @Override
+                        public final void publish(T... changes) {
+                            handleProgress(changes);
+                        }
 
-                    @Override
-                    public boolean isInterrupted() {
-                        return DesktopTaskExecutor.this.isInterrupted;
-                    }
+                        @Override
+                        public boolean isInterrupted() {
+                            return DesktopTaskExecutor.this.isInterrupted;
+                        }
 
-                    @Override
-                    @Nonnull
-                    public Map<String, Object> getParams() {
-                        return params;
-                    }
-                });
+                        @Override
+                        @Nonnull
+                        public Map<String, Object> getParams() {
+                            return params;
+                        }
+                    });
+                }
             } catch (Exception ex) {
                 if (!(ex instanceof InterruptedException) && !isCancelled())
                     taskException = ex;
