@@ -17,7 +17,7 @@ public interface Timer extends Component.HasXmlDescriptor, Component.BelongToFra
     void setDelay(int delay);
 
     /**
-     * Starts timer. If timer is already started call will be ingored.
+     * Starts timer. If timer is already started call will be ignored.
      */
     void start();
 
