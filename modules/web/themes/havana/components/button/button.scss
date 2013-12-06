@@ -46,6 +46,24 @@
     }
   }
 
+  .#{$primaryStyleName}:focus {
+    outline: none;
+    border-color: $theme_buttonFocucedBorderColor;
+  }
+
+  .v-disabled.#{$primaryStyleName}:focus {
+    border-color: $theme_buttonBorderColor;
+  }
+
+  .#{$primaryStyleName}-link:focus {
+    outline: none;
+    border: 1px dashed #4d7ab2;
+  }
+
+  .v-disabled.#{$primaryStyleName}-link:focus {
+    border: 1px solid transparent;
+  }
+
   .#{$primaryStyleName}-empty-caption {
 
     .#{$primaryStyleName}-wrap {

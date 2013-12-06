@@ -365,6 +365,12 @@
     }
   }
 
+  .#{$primaryStyleName}-focus > .#{$primaryStyleName}-tabcontainer {
+    .#{$primaryStyleName}-tabitem.#{$primaryStyleName}-tabitem-selected .v-caption .v-captiontext {
+      border-bottom: 1px dotted $theme_fieldFocusedBorderColor;
+    }
+  }
+
   .v-window-contents {
     @include havana-tabsheet-second($primaryStyleName);
   }

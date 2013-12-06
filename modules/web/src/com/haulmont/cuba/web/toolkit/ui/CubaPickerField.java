@@ -124,6 +124,7 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
 
     public void addButton(Button button) {
         button.setTabIndex(-1);
+
         buttons.add(button);
         container.addComponent(button);
         container.setComponentAlignment(button, Alignment.BOTTOM_LEFT);

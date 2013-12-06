@@ -17,6 +17,7 @@ import com.haulmont.cuba.security.entity.SearchFolder;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
+import com.haulmont.cuba.web.toolkit.ui.CubaCheckBox;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.BooleanUtils;
@@ -116,12 +117,12 @@ public class FolderEditWindow extends Window {
         if (userSessionSource.getUserSession().isSpecificPermitted("cuba.gui.searchFolder.global")
                 && folder instanceof SearchFolder
                 && BooleanUtils.isNotTrue(((SearchFolder) folder).getIsSet())) {
-            globalCb = new CheckBox(getMessage("folders.folderEditWindow.global"));
+            globalCb = new CubaCheckBox(getMessage("folders.folderEditWindow.global"));
             globalCb.setValue(((SearchFolder) folder).getUser() == null);
             layout.addComponent(globalCb);
         }
 
-        applyDefaultCb = new CheckBox(getMessage("folders.folderEditWindow.applyDefault"));
+        applyDefaultCb = new CubaCheckBox(getMessage("folders.folderEditWindow.applyDefault"));
         applyDefaultCb.setValue(BooleanUtils.isTrue(((AbstractSearchFolder)folder).getApplyDefault()));
         applyDefaultCb.setVisible(clientConfig.getGenericFilterManualApplyRequired()
                 && folder instanceof SearchFolder

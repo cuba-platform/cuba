@@ -254,7 +254,8 @@
     outline: none;
   }
 
-  .#{$primaryStyleName} > div:focus {
+  .#{$primaryStyleName} > div:focus,
+  .#{$primaryStyleName}.#{$primaryStyleName}-body-focus .#{$primaryStyleName}-body.#{$primaryStyleName}-body-wrapper {
     border-color: $theme_fieldFocusedBorderColor;
   }
 }

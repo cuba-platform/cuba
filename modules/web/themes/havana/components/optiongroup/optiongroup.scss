@@ -8,7 +8,12 @@
 @mixin havana-optiongroup($primaryStyleName: v-select-optiongroup) {
   .#{$primaryStyleName} {
     .v-select-option {
+      outline: none;
       line-height: 16px;
+
+      input:focus {
+        outline: 1px dashed $theme_fieldFocusedBorderColor;
+      }
     }
   }
 

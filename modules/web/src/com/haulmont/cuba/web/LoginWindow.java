@@ -13,6 +13,7 @@ import com.haulmont.cuba.web.auth.ActiveDirectoryHelper;
 import com.haulmont.cuba.web.auth.DomainAliasesResolver;
 import com.haulmont.cuba.web.sys.Browser;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
+import com.haulmont.cuba.web.toolkit.ui.CubaCheckBox;
 import com.vaadin.data.Property;
 import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
@@ -129,8 +130,9 @@ public class LoginWindow extends UIView implements Action.Handler {
         rememberMeAllowed = !ActiveDirectoryHelper.useActiveDirectory() ||
                 !ActiveDirectoryHelper.activeDirectorySupportedBySession();
 
-        if (rememberMeAllowed)
-            rememberMe = new CheckBox();
+        if (rememberMeAllowed) {
+            rememberMe = new CubaCheckBox();
+        }
 
         setSizeFull();
         setBaseStyle("cuba-login");

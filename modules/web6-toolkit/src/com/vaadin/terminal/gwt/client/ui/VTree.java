@@ -1664,6 +1664,8 @@ public class VTree extends FocusElementPanel implements Paintable, VHasDropHandl
         } else if (lastSelection != null && selectable) {
             setFocusedNode(lastSelection, false);
         }
+
+        addStyleDependentName("focus");
     }
 
     /*
@@ -1678,6 +1680,8 @@ public class VTree extends FocusElementPanel implements Paintable, VHasDropHandl
         if (focusedNode != null) {
             focusedNode.setFocused(false);
         }
+
+        removeStyleDependentName("focus");
     }
 
     /*

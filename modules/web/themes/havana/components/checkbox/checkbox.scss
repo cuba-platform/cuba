@@ -38,6 +38,10 @@
   }
 
   .#{$primaryStyleName}-focus {
-    border: 1px dotted #4d7ab2;
+    border: 1px dotted $theme_fieldFocusedBorderColor;
+  }
+
+  .v-disabled.#{$primaryStyleName}-focus {
+    border: 1px transparent solid;
   }
 }

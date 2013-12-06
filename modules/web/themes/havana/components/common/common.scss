@@ -58,6 +58,10 @@
   .cuba-fieldgrouplayout {
     font-size: 0px;
   }
+
+  .v-select-select:focus {
+    outline: 1px dotted $theme_fieldFocusedBorderColor;
+  }
 }
 
 @mixin box-defaults {

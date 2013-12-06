@@ -8,10 +8,7 @@ package com.haulmont.cuba.web.toolkit.ui.client.treetable;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.TableCellElement;
-import com.google.gwt.event.dom.client.ContextMenuEvent;
-import com.google.gwt.event.dom.client.FocusEvent;
-import com.google.gwt.event.dom.client.FocusHandler;
-import com.google.gwt.event.dom.client.HasFocusHandlers;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.user.client.DOM;
@@ -65,6 +62,20 @@ public class CubaTreeTableWidget extends VTreeTable {
         }
 
         return (int) Math.round(totalRows * scrollBody.getRowHeight(true));
+    }
+
+    @Override
+    public void onFocus(FocusEvent event) {
+        super.onFocus(event);
+
+        addStyleDependentName("body-focus");
+    }
+
+    @Override
+    public void onBlur(BlurEvent event) {
+        super.onBlur(event);
+
+        removeStyleDependentName("body-focus");
     }
 
     @Override

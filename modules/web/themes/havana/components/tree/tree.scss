@@ -71,6 +71,7 @@
     padding: 5px;
   }
 
+  .#{$primaryStyleName}-focus,
   .#{$primaryStyleName}:focus {
     border-color: $theme_fieldFocusedBorderColor;
   }

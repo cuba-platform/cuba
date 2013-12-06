@@ -46,6 +46,7 @@ import com.haulmont.cuba.web.app.folders.FolderEditWindow;
 import com.haulmont.cuba.web.app.folders.FoldersPane;
 import com.haulmont.cuba.web.gui.components.filter.*;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
+import com.haulmont.cuba.web.toolkit.ui.CubaCheckBox;
 import com.haulmont.cuba.web.toolkit.ui.CubaComboBox;
 import com.haulmont.cuba.web.toolkit.ui.CubaGroupBox;
 import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
@@ -289,7 +290,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
     protected void initMaxResultsLayout() {
         maxResultsLayout = new HorizontalLayout();
         maxResultsLayout.setSpacing(true);
-        maxResultsCb = new CheckBox(messages.getMainMessage("filter.maxResults.label1"));
+        maxResultsCb = new CubaCheckBox(messages.getMainMessage("filter.maxResults.label1"));
         maxResultsCb.setImmediate(true);
         maxResultsCb.setValue(true);
         maxResultsCb.addValueChangeListener(

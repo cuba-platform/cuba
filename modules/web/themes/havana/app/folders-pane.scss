@@ -10,7 +10,7 @@
     background: #fff url(images/folders-pane-bg.png) top repeat-x;
 
     .v-tree {
-      border: 0;
+      border-color: transparent;
       overflow: auto;
 
       .v-tree-node-cuba-clickable-folder .v-tree-node-caption span {
@@ -25,6 +25,11 @@
       .v-tree-node-cuba-nonclickable-folder .v-tree-node-caption span:hover {
         background: transparent none;
       }
+    }
+
+    .v-tree:focus,
+    .v-tree-focus {
+      border-color: $theme_fieldFocusedBorderColor;
     }
   }
 

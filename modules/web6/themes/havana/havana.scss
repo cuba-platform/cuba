@@ -407,8 +407,12 @@
 }
 
 .v-verticallayout-folderspane .v-tree {
-  border: 0;
+  border-color: transparent;
   overflow: auto;
+}
+
+.v-verticallayout-folderspane .v-tree-focus {
+  border-color: #4d7ab2;
 }
 
 .v-app .v-label-folderspane-caption {
@@ -847,7 +851,7 @@
   height: 13px;
 }
 
-.v-webkit textarea {
+textarea {
   resize: none;
 }
 

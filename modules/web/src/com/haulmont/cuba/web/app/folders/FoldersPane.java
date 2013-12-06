@@ -29,6 +29,7 @@ import com.haulmont.cuba.web.app.UserSettingsTools;
 import com.haulmont.cuba.web.filestorage.WebExportDisplay;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.ui.CubaTimer;
+import com.haulmont.cuba.web.toolkit.ui.CubaTree;
 import com.vaadin.event.Action;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.Resource;
@@ -38,8 +39,6 @@ import com.vaadin.ui.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import java.io.IOException;
 import java.util.*;
@@ -53,8 +52,6 @@ import java.util.*;
 public class FoldersPane extends VerticalLayout {
 
     private static final long serialVersionUID = 6666603397626574763L;
-
-    private static Log log = LogFactory.getLog(FoldersPane.class);
 
     protected boolean visible;
 
@@ -411,7 +408,7 @@ public class FoldersPane extends VerticalLayout {
         if (appFolders.isEmpty())
             return null;
 
-        appFoldersTree = new Tree();
+        appFoldersTree = new CubaTree();
         appFoldersTree.setItemStyleGenerator(new FolderTreeStyleProvider());
 
         appFoldersRoot = messages.getMainMessage("folders.appFoldersRoot");
@@ -427,7 +424,7 @@ public class FoldersPane extends VerticalLayout {
     }
 
     protected Component createSearchFoldersPane() {
-        searchFoldersTree = new Tree();
+        searchFoldersTree = new CubaTree();
         searchFoldersTree.setItemStyleGenerator(new FolderTreeStyleProvider());
 
         List<SearchFolder> searchFolders = foldersService.loadSearchFolders();

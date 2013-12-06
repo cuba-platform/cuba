@@ -14,6 +14,7 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
+import com.haulmont.cuba.web.toolkit.ui.CubaTabSheet;
 import com.vaadin.ui.Layout;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -337,7 +338,7 @@ public class WebTabSheet
         }
     }
 
-    protected static class TabSheetEx extends com.vaadin.ui.TabSheet implements WebComponentEx {
+    protected static class TabSheetEx extends CubaTabSheet implements WebComponentEx {
         private Component component;
 
         private TabSheetEx(Component component) {

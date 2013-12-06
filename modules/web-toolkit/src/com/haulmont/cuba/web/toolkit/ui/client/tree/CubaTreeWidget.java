@@ -6,6 +6,8 @@
 package com.haulmont.cuba.web.toolkit.ui.client.tree;
 
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.vaadin.client.ui.ShortcutActionHandler;
@@ -151,5 +153,19 @@ public class CubaTreeWidget extends VTree implements ShortcutActionHandler.Short
 
     public boolean isSelected(TreeNode treeNode) {
         return selectedIds.contains(treeNode.key) && !contextMenuHandling;
+    }
+
+    @Override
+    public void onFocus(FocusEvent event) {
+        super.onFocus(event);
+
+        addStyleDependentName("focus");
+    }
+
+    @Override
+    public void onBlur(BlurEvent event) {
+        super.onBlur(event);
+
+        removeStyleDependentName("focus");
     }
 }

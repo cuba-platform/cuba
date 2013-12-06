@@ -14,6 +14,13 @@ import com.vaadin.ui.CheckBox;
  */
 public class CubaCheckBox extends CheckBox {
 
+    public CubaCheckBox() {
+    }
+
+    public CubaCheckBox(String caption) {
+        super(caption);
+    }
+
     @Override
     protected CubaCheckBoxState getState() {
         return (CubaCheckBoxState) super.getState();

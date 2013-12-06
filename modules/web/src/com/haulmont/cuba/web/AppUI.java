@@ -71,6 +71,9 @@ public class AppUI extends UI implements ErrorHandler {
             app = App.getInstance();
         }
 
+        // do not grab focus
+        setTabIndex(-1);
+
         initJsLibraries();
     }
 

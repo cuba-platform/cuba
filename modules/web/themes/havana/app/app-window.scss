@@ -31,9 +31,13 @@
     }
   }
 
+  .v-button.cuba-buttons-white-border:focus {
+    border-color: $theme_appMenuHighlightColor;
+  }
+
   .v-button.cuba-buttons-white-border:hover {
     background: none;
-    border: solid 2px $theme_appMenuHighlightColor;
+    border-color: $theme_appMenuHighlightColor;
     .v-button-caption {
       text-shadow: black 1px 1px;
     }

@@ -8,10 +8,7 @@ package com.haulmont.cuba.web.toolkit.ui.client.table;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.TableCellElement;
-import com.google.gwt.event.dom.client.ContextMenuEvent;
-import com.google.gwt.event.dom.client.FocusEvent;
-import com.google.gwt.event.dom.client.FocusHandler;
-import com.google.gwt.event.dom.client.HasFocusHandlers;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.user.client.DOM;
@@ -28,7 +25,6 @@ import com.haulmont.cuba.web.toolkit.ui.client.logging.ClientLoggerFactory;
 import com.vaadin.client.Focusable;
 import com.vaadin.client.UIDL;
 import com.vaadin.client.Util;
-import com.vaadin.client.VConsole;
 import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.VOverlay;
 import com.vaadin.client.ui.VScrollTable;
@@ -127,6 +123,20 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
         if (allowPopupMenu) {
             super.handleBodyContextMenu(event);
         }
+    }
+
+    @Override
+    public void onFocus(FocusEvent event) {
+        super.onFocus(event);
+
+        addStyleDependentName("body-focus");
+    }
+
+    @Override
+    public void onBlur(BlurEvent event) {
+        super.onBlur(event);
+
+        removeStyleDependentName("body-focus");
     }
 
     @Override

@@ -5,6 +5,9 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.menubar;
 
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
+import com.google.gwt.event.dom.client.FocusEvent;
 import com.vaadin.client.UIDL;
 import com.vaadin.client.Util;
 import com.vaadin.client.ui.Icon;
@@ -14,7 +17,11 @@ import com.vaadin.client.ui.VMenuBar;
  * @author artamonov
  * @version $Id$
  */
-public class CubaMenuBarWidget extends VMenuBar {
+public class CubaMenuBarWidget extends VMenuBar implements BlurHandler {
+
+    public CubaMenuBarWidget() {
+        addBlurHandler(this);
+    }
 
     @Override
     public String buildItemHTML(UIDL item) {
@@ -66,5 +73,17 @@ public class CubaMenuBarWidget extends VMenuBar {
             }
         }
         return itemHTML.toString();
+    }
+
+    @Override
+    public void onFocus(FocusEvent event) {
+        super.onFocus(event);
+
+        addStyleDependentName("focus");
+    }
+
+    @Override
+    public void onBlur(BlurEvent event) {
+        removeStyleDependentName("focus");
     }
 }

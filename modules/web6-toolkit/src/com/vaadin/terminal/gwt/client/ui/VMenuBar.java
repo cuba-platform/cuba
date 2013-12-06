@@ -44,7 +44,7 @@ import java.util.Stack;
  */
 public class VMenuBar extends SimpleFocusablePanel implements Paintable,
         CloseHandler<PopupPanel>, ContainerResizedListener, KeyPressHandler,
-        KeyDownHandler, FocusHandler, SubPartAware {
+        KeyDownHandler, FocusHandler, BlurHandler, SubPartAware {
 
     // The hierarchy of VMenuBar is a bit weird as VMenuBar is the Paintable,
     // used for the root menu but also used for the sub menus.
@@ -1604,6 +1604,12 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
      */
     @Override
     public void onFocus(FocusEvent event) {
+        addStyleDependentName("focus");
+    }
+
+    @Override
+    public void onBlur(BlurEvent event) {
+        removeStyleDependentName("focus");
     }
 
     private final String SUBPART_PREFIX = "item";
