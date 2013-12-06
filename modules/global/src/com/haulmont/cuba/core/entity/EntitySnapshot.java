@@ -10,7 +10,8 @@ import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.DateTimeDatatype;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.entity.User;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.persistence.Persistent;
@@ -22,9 +23,9 @@ import java.util.UUID;
 
 /**
  * Snapshot for system entity
- * <p>$Id$</p>
  *
  * @author artamonov
+ * @version $Id$
  */
 @Entity(name = "sys$EntitySnapshot")
 @Table(name = "SYS_ENTITY_SNAPSHOT")
@@ -96,13 +97,18 @@ public class EntitySnapshot extends BaseUuidEntity {
     @MetaProperty
     public String getLabel() {
         String name = "";
-        if (StringUtils.isNotEmpty(this.author.getCaption()))
+        if (author != null && StringUtils.isNotEmpty(this.author.getCaption())) {
            name += this.author.getCaption() + " ";
+        }
 
         Datatype<Date> datatype = Datatypes.get(DateTimeDatatype.NAME);
-        name += datatype.format(snapshotDate, UserSessionProvider.getLocale());
 
-        return name;
+        UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
+        if (userSessionSource != null && userSessionSource.checkCurrentUserSession()) {
+            name += datatype.format(snapshotDate, userSessionSource.getLocale());
+        }
+
+        return StringUtils.trim(name);
     }
 
     @MetaProperty
