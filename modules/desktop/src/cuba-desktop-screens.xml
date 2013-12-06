@@ -8,4 +8,7 @@
 
     <include file="/com/haulmont/cuba/gui/cuba-screens.xml"/>
 
+    <screen id="sec$User.changePasswordLauncher"
+            class="com.haulmont.cuba.desktop.app.security.user.ChangePasswordLauncher"/>
+
 </screen-config>

@@ -23,6 +23,7 @@
 
     <menu id="help">
         <item id="aboutWindow" openType="DIALOG"/>
+        <item id="sec$User.changePasswordLauncher" openType="DIALOG"/>
     </menu>
 
 </menu-config>
