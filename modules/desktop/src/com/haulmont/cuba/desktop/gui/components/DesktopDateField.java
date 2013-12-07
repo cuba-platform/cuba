@@ -234,7 +234,7 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
                     public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
                         if (updatingInstance)
                             return;
-                        Date value = InstanceUtils.getValueEx(item, metaPropertyPath.getPath());
+                        Date value = getEntityValue(item);
                         updateComponent(value);
                         fireChangeListeners(value);
                     }
@@ -253,13 +253,17 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
 
         if (datasource.getState() == Datasource.State.VALID && datasource.getItem() != null) {
             if (property.equals(metaPropertyPath.toString())) {
-                Date value = InstanceUtils.getValueEx(datasource.getItem(), metaPropertyPath.getPath());
+                Date value = getEntityValue(datasource.getItem());
                 updateComponent(value);
                 fireChangeListeners(value);
             }
         }
 
         setRequired(metaProperty.isMandatory());
+    }
+
+    protected Date getEntityValue(Entity item) {
+        return InstanceUtils.getValueEx(item, metaPropertyPath.getPath());
     }
 
     private void updateComponent(Date value) {
@@ -362,7 +366,7 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
         }
     }
 
-    private Date constructDate() {
+    protected Date constructDate() {
         final Date datePickerDate = datePicker.getDate();
         if (datePickerDate == null) {
             return null;

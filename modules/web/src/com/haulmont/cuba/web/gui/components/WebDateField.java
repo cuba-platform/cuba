@@ -11,7 +11,10 @@ import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.DateField;
+import com.haulmont.cuba.gui.components.Field;
+import com.haulmont.cuba.gui.components.RequiredValueMissingException;
+import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
@@ -261,7 +264,7 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
                         if (updatingInstance) {
                             return;
                         }
-                        Date value = InstanceUtils.getValueEx(item, metaPropertyPath.getPath());
+                        Date value = getEntityValue(item);
                         setValueFromDs(value);
                         fireValueChanged(value);
                     }
@@ -281,13 +284,17 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
 
         if (datasource.getState() == Datasource.State.VALID && datasource.getItem() != null) {
             if (property.equals(metaPropertyPath.toString())) {
-                Date value = InstanceUtils.getValueEx(datasource.getItem(), metaPropertyPath.getPath());
+                Date value = getEntityValue(datasource.getItem());
                 setValueFromDs(value);
                 fireValueChanged(value);
             }
         }
 
         setRequired(metaProperty.isMandatory());
+    }
+
+    protected Date getEntityValue(Entity item) {
+        return InstanceUtils.getValueEx(item, metaPropertyPath.getPath());
     }
 
     protected void fireValueChanged(Object value) {
