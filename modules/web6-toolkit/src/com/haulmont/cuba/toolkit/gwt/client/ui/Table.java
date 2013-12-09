@@ -4024,8 +4024,8 @@ public abstract class Table
             // Focus a row if no row is in focus
             if (focusedRow == null) {
                 focusRowFromBody();
-                selectFocusedRow(false,false);
-                sendSelectedRows();
+//                selectFocusedRow(false,false);
+//                sendSelectedRows();
             } else {
                 setRowFocus(focusedRow);
             }
