@@ -266,7 +266,7 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
         return InstanceUtils.getValueEx(item, metaPropertyPath.getPath());
     }
 
-    private void updateComponent(Date value) {
+    protected void updateComponent(Date value) {
         updatingInstance = true;
         try {
             setDateParts(value);
