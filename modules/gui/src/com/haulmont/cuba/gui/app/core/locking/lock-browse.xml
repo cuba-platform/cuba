@@ -48,7 +48,7 @@
                 </table>
             </tab>
             <tab expand="setupTable" margin="true" id="setupTab" caption="msg://setup">
-                <groupTable id="setupTable" height="100%" width="100%">
+                <table id="setupTable" height="100%" width="100%">
                     <actions>
                         <action id="create"/>
                         <action id="edit"/>
@@ -68,7 +68,7 @@
                         <column id="timeoutSec" caption="msg://timeout"/>
                     </columns>
                     <rows datasource="lockDescriptorDs"/>
-                </groupTable>
+                </table>
             </tab>
         </tabSheet>
     </layout>
