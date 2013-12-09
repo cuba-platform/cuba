@@ -62,6 +62,10 @@ public interface IFrame
     /** For internal use only. Don't call from application code. */
     void registerComponent(Component component);
 
+    /** For internal use only. Don't call from application code. */
+    @Nullable
+    Component getRegisteredComponent(String id);
+
     /**
      * Check validity by invoking validators on all components which support them.
      * @return true if all components are in valid state

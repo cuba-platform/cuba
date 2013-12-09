@@ -37,6 +37,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
@@ -412,6 +413,12 @@ public class DesktopWindow implements Window, Component.Disposable,
             allComponents.put(component.getId(), component);
     }
 
+    @Nullable
+    @Override
+    public Component getRegisteredComponent(String id) {
+        return allComponents.get(id);
+    }
+
     @Override
     public boolean isValid() {
         return delegate.isValid();
@@ -619,30 +626,17 @@ public class DesktopWindow implements Window, Component.Disposable,
 
     @Override
     public <T extends Component> T getComponent(String id) {
-        final String[] elements = ValuePathHelper.parse(id);
-        if (elements.length == 1) {
-            //noinspection unchecked
-            T component = (T) allComponents.get(id);
-            if (component != null)
-                return component;
-            else
-                //noinspection unchecked
-                return (T) getTimer(id);
-        } else {
-            Component innerComponent = allComponents.get(elements[0]);
-            if (innerComponent != null && innerComponent instanceof Container) {
-                final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
-                String subPath = ValuePathHelper.format(subList.toArray(new String[subList.size()]));
-                return ((Container) innerComponent).getComponent(subPath);
-            } else if (innerComponent instanceof FieldGroup) {
-                final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
-                String subPath = ValuePathHelper.format(subList.toArray(new String[subList.size()]));
+        return ComponentsHelper.getWindowComponent(this, id);
+    }
 
-                //noinspection unchecked
-                return (T) ((FieldGroup) innerComponent).getFieldComponent(subPath);
-            }
-            return null;
+    @Nonnull
+    @Override
+    public <T extends Component> T getComponentNN(String id) {
+        T component = getComponent(id);
+        if (component == null) {
+            throw new IllegalArgumentException(String.format("Not found component with id '%s'", id));
         }
+        return component;
     }
 
     @Override

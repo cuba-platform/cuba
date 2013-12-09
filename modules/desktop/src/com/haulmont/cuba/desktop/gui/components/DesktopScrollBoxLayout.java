@@ -9,6 +9,8 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ScrollBoxLayout;
 import org.apache.commons.lang.ObjectUtils;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
@@ -114,9 +116,20 @@ public class DesktopScrollBoxLayout extends DesktopAbstractComponent<JScrollPane
         return content.getOwnComponent(id);
     }
 
+    @Nullable
     @Override
     public <T extends Component> T getComponent(String id) {
         return content.getComponent(id);
+    }
+
+    @Nonnull
+    @Override
+    public <T extends Component> T getComponentNN(String id) {
+        T component = getComponent(id);
+        if (component == null) {
+            throw new IllegalArgumentException(String.format("Not found component with id '%s'", id));
+        }
+        return component;
     }
 
     @Override

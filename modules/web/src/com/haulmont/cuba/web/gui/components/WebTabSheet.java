@@ -19,6 +19,7 @@ import com.vaadin.ui.Layout;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
@@ -80,6 +81,16 @@ public class WebTabSheet
     @Override
     public <T extends Component> T getComponent(String id) {
         return ComponentsHelper.getComponent(this, id);
+    }
+
+    @Nonnull
+    @Override
+    public <T extends Component> T getComponentNN(String id) {
+        T component = getComponent(id);
+        if (component == null) {
+            throw new IllegalArgumentException(String.format("Not found component with id '%s'", id));
+        }
+        return component;
     }
 
     @Override

@@ -21,6 +21,8 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.dom4j.Element;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -111,14 +113,20 @@ public class WebGroupBox extends WebAbstractComponent<GroupBox> implements Group
         return null;
     }
 
+    @Nullable
     @Override
     public <T extends Component> T getComponent(String id) {
-        for (Component component : getComponents()) {
-            if (ObjectUtils.equals(component.getId(), id)) {
-                return (T) component;
-            }
+        return ComponentsHelper.getComponent(this, id);
+    }
+
+    @Nonnull
+    @Override
+    public <T extends Component> T getComponentNN(String id) {
+        T component = getComponent(id);
+        if (component == null) {
+            throw new IllegalArgumentException(String.format("Not found component with id '%s'", id));
         }
-        return null;
+        return component;
     }
 
     @Override

@@ -10,6 +10,7 @@ import com.haulmont.cuba.gui.components.FlowBoxLayout;
 import com.haulmont.cuba.web.toolkit.ui.CubaFlowLayout;
 import com.vaadin.shared.ui.MarginInfo;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
@@ -66,6 +67,16 @@ public class WebFlowBoxLayout extends WebAbstractComponent<CubaFlowLayout> imple
     @Override
     public <T extends Component> T getComponent(String id) {
         return ComponentsHelper.getComponent(this, id);
+    }
+
+    @Nonnull
+    @Override
+    public <T extends Component> T getComponentNN(String id) {
+        T component = getComponent(id);
+        if (component == null) {
+            throw new IllegalArgumentException(String.format("Not found component with id '%s'", id));
+        }
+        return component;
     }
 
     @Override

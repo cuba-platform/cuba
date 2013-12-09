@@ -11,6 +11,8 @@ import com.haulmont.cuba.gui.components.SplitPanel;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.*;
 import java.util.*;
 
@@ -100,9 +102,20 @@ public class DesktopSplitPanel
         return (T) componentByIds.get(id);
     }
 
+    @Nullable
     @Override
     public <T extends Component> T getComponent(String id) {
         return ComponentsHelper.getComponent(this, id);
+    }
+
+    @Nonnull
+    @Override
+    public <T extends Component> T getComponentNN(String id) {
+        T component = getComponent(id);
+        if (component == null) {
+            throw new IllegalArgumentException(String.format("Not found component with id '%s'", id));
+        }
+        return component;
     }
 
     @Override

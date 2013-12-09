@@ -9,8 +9,8 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.GridLayout;
 import com.haulmont.cuba.web.toolkit.ui.CubaGridLayout;
 import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.ui.Layout;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
@@ -128,6 +128,16 @@ public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implemen
     @Override
     public <T extends Component> T getComponent(String id) {
         return ComponentsHelper.getComponent(this, id);
+    }
+
+    @Nonnull
+    @Override
+    public <T extends Component> T getComponentNN(String id) {
+        T component = getComponent(id);
+        if (component == null) {
+            throw new IllegalArgumentException(String.format("Not found component with id '%s'", id));
+        }
+        return component;
     }
 
     @Override

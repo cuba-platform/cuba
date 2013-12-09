@@ -8,9 +8,8 @@ package com.haulmont.cuba.desktop.gui.components;
 import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class DesktopVBox extends DesktopAbstractBox implements AutoExpanding {
 

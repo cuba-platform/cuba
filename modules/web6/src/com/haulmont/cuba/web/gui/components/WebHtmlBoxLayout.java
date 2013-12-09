@@ -9,6 +9,7 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.HtmlBoxLayout;
 import com.vaadin.ui.CustomLayout;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
@@ -74,6 +75,16 @@ public class WebHtmlBoxLayout extends WebAbstractComponent<CustomLayout> impleme
     @Override
     public <T extends Component> T getComponent(String id) {
         return ComponentsHelper.getComponent(this, id);
+    }
+
+    @Nonnull
+    @Override
+    public <T extends Component> T getComponentNN(String id) {
+        T component = getComponent(id);
+        if (component == null) {
+            throw new IllegalArgumentException(String.format("Not found component with id '%s'", id));
+        }
+        return component;
     }
 
     @Override

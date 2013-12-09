@@ -55,6 +55,8 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Attribute;
 import org.dom4j.Element;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
@@ -1055,13 +1057,25 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         return null;
     }
 
+    @Nullable
     @Override
     public <T extends Component> T getComponent(String id) {
         String[] elements = ValuePathHelper.parse(id);
-        if (elements.length == 1)
-            return (T) getOwnComponent(id);
-        else
+        if (elements.length == 1) {
+            return getOwnComponent(id);
+        } else {
             throw new UnsupportedOperationException("Filter contains only one level of subcomponents");
+        }
+    }
+
+    @Nonnull
+    @Override
+    public <T extends Component> T getComponentNN(String id) {
+        T component = getComponent(id);
+        if (component == null) {
+            throw new IllegalArgumentException(String.format("Not found component with id '%s'", id));
+        }
+        return component;
     }
 
     @Override

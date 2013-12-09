@@ -34,6 +34,7 @@ import java.util.*;
 public class DesktopFrame
         extends DesktopVBox
         implements DetachableFrame, WrappedFrame, Component.HasXmlDescriptor {
+
     private String messagePack;
     private WindowContext context;
     private DsContext dsContext;
@@ -89,6 +90,12 @@ public class DesktopFrame
     public void registerComponent(Component component) {
         if (component.getId() != null)
             allComponents.put(component.getId(), component);
+    }
+
+    @Nullable
+    @Override
+    public Component getRegisteredComponent(String id) {
+        return allComponents.get(id);
     }
 
     @Override
@@ -324,29 +331,7 @@ public class DesktopFrame
 
     @Override
     public <T extends Component> T getComponent(String id) {
-        final String[] elements = ValuePathHelper.parse(id);
-        if (elements.length == 1) {
-            //noinspection unchecked
-            T result = (T) allComponents.get(id);
-            if (result == null && getFrame() != null) {
-                result = getFrame().getComponent(id);
-            }
-            return result;
-        } else {
-            Component innerComponent = allComponents.get(elements[0]);
-            if (innerComponent != null && innerComponent instanceof Container) {
-                final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
-                String subPath = ValuePathHelper.format(subList.toArray(new String[subList.size()]));
-                return ((Container) innerComponent).getComponent(subPath);
-            } else if (innerComponent instanceof FieldGroup) {
-                final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
-                String subPath = ValuePathHelper.format(subList.toArray(new String[subList.size()]));
-
-                //noinspection unchecked
-                return (T) ((FieldGroup) innerComponent).getFieldComponent(subPath);
-            }
-            return null;
-        }
+        return ComponentsHelper.getFrameComponent(this, id);
     }
 
     @Override

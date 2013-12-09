@@ -21,7 +21,9 @@ import org.dom4j.Element;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author abramov
@@ -98,30 +100,10 @@ public class WebFrame extends WebAbstractBox implements IFrame, WrappedFrame {
         return (T) componentByIds.get(id);
     }
 
+    @Nullable
     @Override
     public <T extends com.haulmont.cuba.gui.components.Component> T getComponent(String id) {
-        final String[] elements = ValuePathHelper.parse(id);
-        if (elements.length == 1) {
-            T result = (T) allComponents.get(id);
-            if (result == null && getFrame() != null) {
-                result = getFrame().getComponent(id);
-            }
-            return result;
-        } else {
-            Component innerComponent = allComponents.get(elements[0]);
-            if (innerComponent != null && innerComponent instanceof Container) {
-                final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
-                String subPath = ValuePathHelper.format(subList.toArray(new String[subList.size()]));
-                return ((Container) innerComponent).getComponent(subPath);
-            } else if (innerComponent instanceof FieldGroup) {
-                final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
-                String subPath = ValuePathHelper.format(subList.toArray(new String[subList.size()]));
-
-                //noinspection unchecked
-                return (T) ((FieldGroup) innerComponent).getFieldComponent(subPath);
-            }
-            return null;
-        }
+        return ComponentsHelper.getFrameComponent(this, id);
     }
 
     @Override
@@ -159,6 +141,12 @@ public class WebFrame extends WebAbstractBox implements IFrame, WrappedFrame {
         if (component.getId() != null) {
             allComponents.put(component.getId(), component);
         }
+    }
+
+    @Nullable
+    @Override
+    public Component getRegisteredComponent(String id) {
+        return allComponents.get(id);
     }
 
     @Override

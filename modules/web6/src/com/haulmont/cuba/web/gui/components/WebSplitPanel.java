@@ -13,6 +13,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -83,9 +85,20 @@ public class WebSplitPanel extends WebAbstractComponent<com.vaadin.ui.SplitPanel
         return (T) componentByIds.get(id);
     }
 
+    @Nullable
     @Override
     public <T extends Component> T getComponent(String id) {
         return ComponentsHelper.getComponent(this, id);
+    }
+
+    @Nonnull
+    @Override
+    public <T extends Component> T getComponentNN(String id) {
+        T component = getComponent(id);
+        if (component == null) {
+            throw new IllegalArgumentException(String.format("Not found component with id '%s'", id));
+        }
+        return component;
     }
 
     @Override

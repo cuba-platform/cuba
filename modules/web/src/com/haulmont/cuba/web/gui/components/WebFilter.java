@@ -65,6 +65,8 @@ import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.*;
 import org.dom4j.*;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.text.ParseException;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -1210,13 +1212,25 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         return null;
     }
 
+    @Nullable
     @Override
     public <T extends Component> T getComponent(String id) {
         String[] elements = ValuePathHelper.parse(id);
-        if (elements.length == 1)
+        if (elements.length == 1) {
             return getOwnComponent(id);
-        else
+        } else {
             throw new UnsupportedOperationException("Filter contains only one level of subcomponents");
+        }
+    }
+
+    @Nonnull
+    @Override
+    public <T extends Component> T getComponentNN(String id) {
+        T component = getComponent(id);
+        if (component == null) {
+            throw new IllegalArgumentException(String.format("Not found component with id '%s'", id));
+        }
+        return component;
     }
 
     @Override

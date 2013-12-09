@@ -12,6 +12,7 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.Collection;
@@ -151,9 +152,19 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
         return frame.getOwnComponent(id);
     }
 
+    @Nullable
     @Override
     public <T extends Component> T getComponent(String id) {
         return frame.getComponent(id);
+    }
+
+    @Nonnull
+    @Override
+    public <T extends Component> T getComponentNN(String id) {
+        T component = getComponent(id);
+        if (component == null)
+            throw new IllegalArgumentException(String.format("Not found component with id '%s'", id));
+        return component;
     }
 
     @Override
@@ -250,6 +261,12 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
     @Override
     public void registerComponent(Component component) {
         frame.registerComponent(component);
+    }
+
+    @Nullable
+    @Override
+    public Component getRegisteredComponent(String id) {
+        return frame.getRegisteredComponent(id);
     }
 
     @Override
