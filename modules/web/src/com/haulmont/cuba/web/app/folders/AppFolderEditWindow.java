@@ -49,8 +49,24 @@ public class AppFolderEditWindow extends FolderEditWindow {
             } else {
                 return new AppFolderEditWindow(adding, folder, presentations, commitHandler);
             }
-        } else
-            return new FolderEditWindow(adding, folder, presentations, commitHandler);
+        } else {
+            GlobalConfig globalConfig = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class);
+            String className = globalConfig.getFolderEditWindowClassName();
+            if (className != null) {
+                Class<FolderEditWindow> aClass = ReflectionHelper.getClass(className);
+                try {
+                    Constructor constructor = aClass.
+                            getConstructor(boolean.class, Folder.class, Presentations.class, Runnable.class);
+                    FolderEditWindow folderEditWindow = (FolderEditWindow) constructor.
+                            newInstance(adding, folder, presentations, commitHandler);
+                    return folderEditWindow;
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                return new FolderEditWindow(adding, folder, presentations, commitHandler);
+            }
+        }
     }
 
     public AppFolderEditWindow(boolean adding, Folder folder, Presentations presentations, Runnable commitHandler) {

@@ -137,6 +137,12 @@ public interface GlobalConfig extends Config {
     String getAppFolderEditWindowClassName();
 
     /**
+     * @return Overriden FolderEditWindow class name
+     */
+    @Property("cuba.web.folderEditWindow")
+    String getFolderEditWindowClassName();
+
+    /**
      * @return Allows to aplly a filter to previously selected rows
      */
     @Property("cuba.allowQueryFromSelected")
