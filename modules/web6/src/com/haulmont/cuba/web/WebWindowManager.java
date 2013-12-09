@@ -746,13 +746,15 @@ public class WebWindowManager extends WindowManager {
                 component.setSizeFull();
 
                 layout.removeComponent(WebComponentsHelper.getComposition(window));
-                layout.addComponent(component);
-                layout.setExpandRatio(component, 1);
+                if (app.getConnection().isConnected()) {
+                    layout.addComponent(component);
+                    layout.setExpandRatio(component, 1);
 
-                if (AppWindow.Mode.TABBED.equals(appWindow.getMode())) {
-                    TabSheet tabSheet = appWindow.getTabSheet();
-                    TabSheet.Tab tab = tabSheet.getTab(layout);
-                    tab.setCaption(formatTabCaption(currentWindow.getCaption(), currentWindow.getDescription()));
+                    if (AppWindow.Mode.TABBED.equals(appWindow.getMode())) {
+                        TabSheet tabSheet = appWindow.getTabSheet();
+                        TabSheet.Tab tab = tabSheet.getTab(layout);
+                        tab.setCaption(formatTabCaption(currentWindow.getCaption(), currentWindow.getDescription()));
+                    }
                 }
                 fireListeners(window, getTabs().size() != 0);
                 if (tabs.isEmpty() && app.getConnection().isConnected()) {

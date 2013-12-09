@@ -648,22 +648,27 @@ public class DesktopWindowManager extends WindowManager {
                     });
                 }
                 layout.remove(DesktopComponentsHelper.getComposition(window));
-                layout.add(component);
-                if (isMainWindowManager) {
-                    // If user clicked on close button maybe selectedIndex != tabsPane.getSelectedIndex()
-                    // Refs #1117
-                    int selectedIndex = 0;
-                    while ((selectedIndex < tabs.size()) &&
-                            (tabsPane.getComponentAt(selectedIndex) != layout))
-                        selectedIndex++;
-                    if (selectedIndex == tabs.size())
-                        selectedIndex = tabsPane.getSelectedIndex();
 
-                    setWindowCaption(currentWindow.getCaption(), currentWindow.getDescription(), selectedIndex);
-                } else {
-                    setTopLevelWindowCaption(currentWindow.getCaption());
-                    component.revalidate();
-                    component.repaint();
+                if (App.getInstance().getConnection().isConnected()) {
+                    layout.add(component);
+                    if (isMainWindowManager) {
+                        // If user clicked on close button maybe selectedIndex != tabsPane.getSelectedIndex()
+                        // Refs #1117
+                        int selectedIndex = 0;
+                        while ((selectedIndex < tabs.size()) &&
+                                (tabsPane.getComponentAt(selectedIndex) != layout)) {
+                            selectedIndex++;
+                        }
+                        if (selectedIndex == tabs.size()) {
+                            selectedIndex = tabsPane.getSelectedIndex();
+                        }
+
+                        setWindowCaption(currentWindow.getCaption(), currentWindow.getDescription(), selectedIndex);
+                    } else {
+                        setTopLevelWindowCaption(currentWindow.getCaption());
+                        component.revalidate();
+                        component.repaint();
+                    }
                 }
 
                 fireListeners(window, tabs.size() != 0);
