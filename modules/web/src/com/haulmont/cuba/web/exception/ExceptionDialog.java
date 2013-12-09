@@ -10,6 +10,7 @@ import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.WebConfig;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.shared.ui.window.WindowMode;
 import com.vaadin.ui.*;
@@ -58,6 +59,7 @@ public class ExceptionDialog extends Window {
         final String stackTrace = getStackTrace(throwable);
 
         mainLayout = new VerticalLayout();
+        mainLayout.setMargin(new MarginInfo(true, false, false, false));
         mainLayout.setSpacing(true);
 
         TextArea textArea = new TextArea();
