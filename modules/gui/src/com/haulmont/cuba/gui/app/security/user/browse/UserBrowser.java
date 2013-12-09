@@ -145,16 +145,14 @@ public class UserBrowser extends AbstractLookup {
     }
 
     public void copySettings() {
-        getComponentNN("OMG");
-
-//        Set<User> selected = usersTable.getSelected();
-//        if (!selected.isEmpty()) {
-//            openWindow(
-//                    "sec$User.copySettings",
-//                    WindowManager.OpenType.DIALOG,
-//                    new SingletonMap("users", selected)
-//            );
-//        }
+        Set<User> selected = usersTable.getSelected();
+        if (!selected.isEmpty()) {
+            openWindow(
+                    "sec$User.copySettings",
+                    WindowManager.OpenType.DIALOG,
+                    new SingletonMap("users", selected)
+            );
+        }
     }
 
     public void changePassword() {
