@@ -16,19 +16,16 @@ import org.antlr.runtime.tree.TreeVisitorAction;
 import java.util.*;
 
 /**
- * User: Alex Chevelev
- * Date: 15.10.2010
- * Time: 23:10:59
- *
+ * @author chevelev
  * @version $Id$
  */
 public class IdVarSelector implements TreeVisitorAction {
     private QueryVariableContext root;
 
-    private List<ErrorRec> invalidIdVarNodes = new ArrayList<ErrorRec>();
-    private List<CommonErrorNode> errorNodes = new ArrayList<CommonErrorNode>();
+    private List<ErrorRec> invalidIdVarNodes = new ArrayList<>();
+    private List<CommonErrorNode> errorNodes = new ArrayList<>();
     private DomainModel model;
-    private Deque<QueryVariableContext> stack = new ArrayDeque<QueryVariableContext>();
+    private Deque<QueryVariableContext> stack = new ArrayDeque<>();
 
     public IdVarSelector(DomainModel model) {
         this.model = model;
@@ -38,6 +35,7 @@ public class IdVarSelector implements TreeVisitorAction {
         return root;
     }
 
+    @Override
     public Object pre(Object t) {
         if (!(t instanceof CommonTree))
             return t;
@@ -63,6 +61,7 @@ public class IdVarSelector implements TreeVisitorAction {
         return t;
     }
 
+    @Override
     public Object post(Object t) {
         if (!(t instanceof CommonTree))
             return t;
@@ -100,7 +99,6 @@ public class IdVarSelector implements TreeVisitorAction {
     private boolean isInWhereSubquery(CommonTree node) {
         return node.getParent() != null && node.getParent() instanceof SimpleConditionNode;
     }
-
 
     public List<ErrorRec> getInvalidIdVarNodes() {
         return Collections.unmodifiableList(invalidIdVarNodes);

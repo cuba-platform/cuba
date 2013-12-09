@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * @author Abramov
+ * @author abramov
  * @version $Id$
  */
 public abstract class AbstractInstance implements Instance {
@@ -43,16 +43,19 @@ public abstract class AbstractInstance implements Instance {
         }
     }
 
+    @Override
     public String getInstanceName() {
         return InstanceUtils.getInstanceName(this);
     }
 
+    @Override
     public void addListener(ValueListener valuelistener) {
         if (__valueListeners == null)
             __valueListeners = new ArrayList<>();
         __valueListeners.add(new WeakReference<>(valuelistener));
     }
 
+    @Override
     public void removeListener(ValueListener valuelistener) {
         if (__valueListeners != null) {
             for (Iterator<WeakReference<ValueListener>> it = __valueListeners.iterator(); it.hasNext(); ) {
@@ -63,11 +66,13 @@ public abstract class AbstractInstance implements Instance {
         }
     }
 
+    @Override
     public void removeAllListeners() {
         if (__valueListeners != null)
             __valueListeners.clear();
     }
 
+    @Override
     public <T> T getValue(String s) {
         return (T) getMethodsCache().invokeGetter(this, s);
     }
@@ -102,10 +107,12 @@ public abstract class AbstractInstance implements Instance {
         }
     }
 
+    @Override
     public <T> T getValueEx(String s) {
         return InstanceUtils.<T>getValueEx(this, s);
     }
 
+    @Override
     public void setValueEx(String s, Object obj) {
         InstanceUtils.setValueEx(this, s, obj);
     }

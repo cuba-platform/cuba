@@ -36,7 +36,7 @@ public class InstanceUtils {
      * @return value path as array
      */
     public static String[] parseValuePath(String path) {
-        List<String> elements = new ArrayList<String>();
+        List<String> elements = new ArrayList<>();
 
         int bracketCount = 0;
 
@@ -54,7 +54,7 @@ public class InstanceUtils {
 
             if ('.' == c && bracketCount == 0) {
                 String element = buffer.toString();
-                if (element != null && !"".equals(element)) {
+                if (!"".equals(element)) {
                     elements.add(element);
                 } else {
                     throw new IllegalStateException("Wrong value path format");
@@ -97,7 +97,7 @@ public class InstanceUtils {
     public static <T> T getValueEx(Instance instance, String propertyPath) {
         String[] properties = parseValuePath(propertyPath);
         //noinspection unchecked
-        return (T) getValueEx(instance, properties);
+        return getValueEx(instance, properties);
     }
 
     /**
