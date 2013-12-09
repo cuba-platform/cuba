@@ -53,6 +53,8 @@ import org.apache.commons.logging.LogFactory;
 import java.io.IOException;
 import java.util.*;
 
+import com.haulmont.cuba.web.toolkit.Timer;
+
 /**
  * Left panel containing application and search folders.
  *
@@ -958,10 +960,10 @@ public class FoldersPane extends VerticalLayout {
         }
     }
 
-    private class ImportAction extends FolderAction {
+    protected class ImportAction extends FolderAction {
         private static final long serialVersionUID = 5466565178242730937L;
 
-        protected ImportAction() {
+        public ImportAction() {
             super(messages.getMainMessage("folders.importFolderAction"));
         }
 
