@@ -38,7 +38,7 @@ public class CubaTreeTableWidget extends VTreeTable {
 
     protected VOverlay presentationsEditorPopup;
 
-    private Widget presentationsMenu;
+    protected Widget presentationsMenu;
 
     protected ClientLogger logger = ClientLoggerFactory.getLogger("CubaTreeTableWidget");
 
@@ -410,6 +410,18 @@ public class CubaTreeTableWidget extends VTreeTable {
                 if (isWidget) {
                     container.addClassName(WIDGET_CELL_CLASSNAME);
                 }
+            }
+
+            @Override
+            public void updateSelectionStartIfNeeded(VScrollTableRow startRow) {
+                // Support select first N rows by Shift+Click
+                selectionRangeStart = startRow;
+            }
+
+            @Override
+            protected boolean isNeedToSetRowFocus() {
+                // Support select first N rows by Shift+Click
+                return focusedRow != null;
             }
         }
     }
