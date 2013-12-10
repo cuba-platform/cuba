@@ -11,7 +11,6 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.components.Field;
@@ -357,6 +356,8 @@ public class WebDateField extends WebAbstractField<DateFieldWrapper> implements 
             for (ValueListener listener : listeners) {
                 listener.valueChanged(this, "value", prevValue, value);
             }
+
+            prevValue = value;
         }
     }
 
@@ -365,7 +366,10 @@ public class WebDateField extends WebAbstractField<DateFieldWrapper> implements 
         if (datePickerDate == null) {
             return null;
         }
-        Calendar c = Calendar.getInstance(UserSessionProvider.getLocale());
+
+        Locale locale = AppBeans.get(UserSessionSource.class).getLocale();
+
+        Calendar c = Calendar.getInstance(locale);
         c.setTime(datePickerDate);
         if (timeField.getValue() == null) {
             c.set(Calendar.HOUR_OF_DAY, 0);
@@ -373,7 +377,7 @@ public class WebDateField extends WebAbstractField<DateFieldWrapper> implements 
             c.set(Calendar.SECOND, 0);
 
         } else {
-            Calendar c2 = Calendar.getInstance(UserSessionProvider.getLocale());
+            Calendar c2 = Calendar.getInstance(locale);
             c2.setTime(timeField.<Date>getValue());
 
             c.set(Calendar.HOUR_OF_DAY, c2.get(Calendar.HOUR_OF_DAY));

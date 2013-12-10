@@ -302,6 +302,8 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
             for (ValueListener listener : listeners) {
                 listener.valueChanged(this, "value", prevValue, value);
             }
+
+            prevValue = value;
         }
     }
 
@@ -311,16 +313,16 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
             return null;
         }
 
-        UserSessionSource uss = AppBeans.get(UserSessionSource.class);
+        Locale locale = AppBeans.get(UserSessionSource.class).getLocale();
 
-        Calendar c = Calendar.getInstance(uss.getLocale());
+        Calendar c = Calendar.getInstance(locale);
         c.setTime(datePickerDate);
         if (timeField.getValue() == null) {
             c.set(Calendar.HOUR_OF_DAY, 0);
             c.set(Calendar.MINUTE, 0);
             c.set(Calendar.SECOND, 0);
         } else {
-            Calendar c2 = Calendar.getInstance(uss.getLocale());
+            Calendar c2 = Calendar.getInstance(locale);
             c2.setTime(timeField.<Date>getValue());
 
             c.set(Calendar.HOUR_OF_DAY, c2.get(Calendar.HOUR_OF_DAY));
