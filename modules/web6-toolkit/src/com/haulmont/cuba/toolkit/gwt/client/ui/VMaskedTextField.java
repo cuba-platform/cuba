@@ -485,9 +485,13 @@ public class VMaskedTextField extends VTextField {
                 event.preventDefault();
             } else if (event.getNativeKeyCode() == KeyCodes.KEY_RIGHT) {
                 if (getCursorPosSelection() <= shiftPressPos) {
-                    setCursorPos(getNextPos(getCursorPos()));
+                    int nextPos = getNextPos(getCursorPos());
+                    if (nextPos < getText().length())
+                        setCursorPos(nextPos);
                 } else {
-                    setCursorPos(getNextPos(getCursorPosSelection()));
+                    int nextPos = getNextPos(getCursorPosSelection());
+                    if (nextPos < getText().length())
+                        setCursorPos(nextPos);
                 }
                 updateSelectionRange();
                 event.preventDefault();

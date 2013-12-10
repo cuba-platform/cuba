@@ -420,9 +420,13 @@ public class CubaMaskedFieldWidget extends VTextField {
                 event.preventDefault();
             } else if (event.getNativeKeyCode() == KeyCodes.KEY_RIGHT) {
                 if (getCursorPosSelection() <= shiftPressPos) {
-                    setCursorPos(getNextPos(getCursorPos()));
+                    int nextPos = getNextPos(getCursorPos());
+                    if (nextPos < getText().length())
+                        setCursorPos(nextPos);
                 } else {
-                    setCursorPos(getNextPos(getCursorPosSelection()));
+                    int nextPos = getNextPos(getCursorPosSelection());
+                    if (nextPos < getText().length())
+                        setCursorPos(nextPos);
                 }
                 updateSelectionRange();
                 event.preventDefault();
@@ -467,6 +471,13 @@ public class CubaMaskedFieldWidget extends VTextField {
         public void onKeyPress(KeyPressEvent e) {
             if (isReadOnly())
                 return;
+
+            if (e.getNativeEvent().getKeyCode() == KeyCodes.KEY_ENTER
+                    && !e.getNativeEvent().getAltKey()
+                    && !e.getNativeEvent().getCtrlKey()
+                    && !e.getNativeEvent().getShiftKey()) {
+                valueChange(false);
+            }
 
             if (e.getNativeEvent().getKeyCode() == KeyCodes.KEY_BACKSPACE
                     || e.getNativeEvent().getKeyCode() == KeyCodes.KEY_DELETE

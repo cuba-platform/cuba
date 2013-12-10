@@ -45,7 +45,7 @@ public class CubaDateFieldWidget extends VPopupCalendar {
 
     @Override
     protected CubaMaskedFieldWidget createImpl() {
-        return new CubaMaskedFieldWidget() {
+        CubaMaskedFieldWidget cubaMaskedFieldWidget = new CubaMaskedFieldWidget() {
 
             @Override
             protected boolean validateText(String text) {
@@ -66,6 +66,7 @@ public class CubaDateFieldWidget extends VPopupCalendar {
                 return validMask;
             }
 
+            @Override
             public void valueChange(boolean blurred) {
                 String newText = getText();
                 if (!prompting && newText != null
@@ -83,5 +84,8 @@ public class CubaDateFieldWidget extends VPopupCalendar {
                 }
             }
         };
+        cubaMaskedFieldWidget.setImmediate(isImmediate());
+
+        return cubaMaskedFieldWidget;
     }
 }
