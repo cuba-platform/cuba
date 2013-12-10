@@ -68,7 +68,7 @@ public class DesktopLookupField
 
     public DesktopLookupField() {
         composition = new JPanel();
-        composition.setLayout(new BoxLayout(composition, BoxLayout.Y_AXIS));
+        composition.setLayout(new BorderLayout());
         composition.setFocusable(false);
 
         comboBox = new ExtendedComboBox();
@@ -143,7 +143,7 @@ public class DesktopLookupField
         textField.setEditable(false);
         valueFormatter = new DefaultValueFormatter(AppBeans.get(UserSessionSource.class).getLocale());
 
-        composition.add(comboBox);
+        composition.add(comboBox, BorderLayout.CENTER);
         impl = comboBox;
 
         DesktopComponentsHelper.adjustSize(comboBox);
@@ -335,13 +335,13 @@ public class DesktopLookupField
     public void setEditable(boolean editable) {
         if (this.editable && !editable) {
             composition.remove(comboBox);
-            composition.add(textField);
+            composition.add(textField, BorderLayout.CENTER);
             impl = textField;
 
             updateTextField();
         } else if (!this.editable && editable) {
             composition.remove(textField);
-            composition.add(comboBox);
+            composition.add(comboBox, BorderLayout.CENTER);
 
             impl = comboBox;
         }
