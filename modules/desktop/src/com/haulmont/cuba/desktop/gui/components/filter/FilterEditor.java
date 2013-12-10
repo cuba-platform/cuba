@@ -177,7 +177,7 @@ public class FilterEditor extends AbstractFilterEditor {
         globalCb.setSelected(filterEntity.getUser() == null);
         globalCb.setEnabled(userSession.isSpecificPermitted("cuba.gui.filter.global"));
 
-        checkBoxes.add(globalCb);
+        checkBoxes.add(globalCb, new CC().hideMode(3));
 
         defaultCb = new JCheckBox(getMessage("FilterEditor.isDefault"));
         defaultCb.addActionListener(new ActionListener() {
@@ -186,7 +186,7 @@ public class FilterEditor extends AbstractFilterEditor {
                 updateApplyDefaultCb();
             }
         });
-        checkBoxes.add(defaultCb);
+        checkBoxes.add(defaultCb, new CC().hideMode(3));
 
         applyDefaultCb = new JCheckBox(getMessage("FilterEditor.applyDefault"));
         applyDefaultCb.setEnabled(false);
@@ -198,7 +198,7 @@ public class FilterEditor extends AbstractFilterEditor {
                 }
             }
         });
-        checkBoxes.add(applyDefaultCb);
+        checkBoxes.add(applyDefaultCb, new CC().hideMode(3).newline());
 
         JLabel label = new JLabel(getMessage("FilterEditor.nameLab"));
 
