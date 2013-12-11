@@ -30,4 +30,13 @@
   .#{$primaryStyleName}-slot > .v-caption .v-captiontext {
     padding-bottom: 0px;
   }
+
+  // set line-height 25px for all captions exclude captions for CheckBox and Label
+  .#{$primaryStyleName}-slot.cuba-full-height-widget .v-caption {
+    height: 25px;
+  }
+
+  .#{$primaryStyleName}-slot.cuba-full-height-widget .v-caption .v-captiontext {
+    line-height: 25px;
+  }
 }
