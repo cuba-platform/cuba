@@ -57,6 +57,8 @@ import java.awt.event.*;
 import java.util.*;
 import java.util.List;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 /**
  * @author krivopustov
  * @version $Id$
@@ -958,14 +960,23 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     @Override
     public void addGeneratedColumn(String columnId, ColumnGenerator generator,
                                    Class<? extends com.haulmont.cuba.gui.components.Component> componentClass) {
-        if (columnId == null)
-            throw new IllegalArgumentException("columnId is null");
-        if (generator == null)
-            throw new IllegalArgumentException("generator is null");
+        checkArgument(columnId == null, "columnId is null");
+        checkArgument(generator == null, "generator is null for columnId: " + columnId);
 
         Column col = getColumn(columnId);
-        tableModel.addGeneratedColumn(col);
+        if (col == null) {
+            // if column with columnId does not exists then add new to model
+            col = new Column(columnId, columnId);
+
+            columns.put(col.getId(), col);
+            if (tableModel != null) {
+                tableModel.addColumn(col);
+            }
+
+            setColumnIdentifiers();
+        }
         col.setEditable(false); // generated column must be non-editable, see TableModelAdapter.setValueAt()
+        tableModel.addGeneratedColumn(col);
         TableColumn tableColumn = getColumn(col);
         DesktopTableCellEditor cellEditor = new DesktopTableCellEditor(this, generator, componentClass);
         tableColumn.setCellEditor(cellEditor);
@@ -974,6 +985,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         generatedColumnsCount++;
 
         packRows();
+        impl.repaint();
     }
 
     @Override

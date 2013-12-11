@@ -6,7 +6,8 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.desktop.DesktopConfig;
 import com.haulmont.cuba.gui.components.Table;
 import org.apache.commons.lang.BooleanUtils;
@@ -25,16 +26,15 @@ import java.util.*;
 import java.util.List;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class SwingXTableSettings implements TableSettings {
 
-    private JXTable table;
-    private List<Table.Column> columns;
-
     private Log log = LogFactory.getLog(getClass());
+
+    protected JXTable table;
+    protected List<Table.Column> columns;
 
     public SwingXTableSettings(JXTable table, List<Table.Column> columns) {
         this.table = table;
@@ -106,8 +106,9 @@ public class SwingXTableSettings implements TableSettings {
         if (columnsElem == null)
             return;
 
-        List<Object> sequence = new ArrayList<Object>();
-        List<TableColumnExt> invisible = new ArrayList<TableColumnExt>();
+        // do not allow dublicates
+        Collection<Object> sequence = new LinkedHashSet<>();
+        List<TableColumnExt> invisible = new ArrayList<>();
         for (Element colElem : Dom4j.elements(columnsElem, "column")) {
             String id = colElem.attributeValue("id");
             Table.Column column = getColumn(id);
@@ -140,7 +141,7 @@ public class SwingXTableSettings implements TableSettings {
         }
     }
 
-    private void saveFontPreferences(Element element) {
+    protected void saveFontPreferences(Element element) {
         if (table.getFont() != null) {
             Font font = table.getFont();
             Map<TextAttribute, ?> attributes = font.getAttributes();
@@ -153,7 +154,7 @@ public class SwingXTableSettings implements TableSettings {
         }
     }
 
-    private void loadFontPreferences(Element element) {
+    protected void loadFontPreferences(Element element) {
         // load font preferences
         String fontFamily = element.attributeValue("fontFamily");
         String fontSize = element.attributeValue("fontSize");
@@ -176,7 +177,7 @@ public class SwingXTableSettings implements TableSettings {
                     return;
                 }
 
-                DesktopConfig desktopConfig = ConfigProvider.getConfig(DesktopConfig.class);
+                DesktopConfig desktopConfig = AppBeans.get(Configuration.class).getConfig(DesktopConfig.class);
                 int sizeIndex = desktopConfig.getAvailableFontSizes().indexOf(size);
 
                 if (sizeIndex < 0) {
@@ -189,9 +190,10 @@ public class SwingXTableSettings implements TableSettings {
                     log.debug("Broken underline property in font definition, skip");
                 }
 
+                @SuppressWarnings("MagicConstant")
                 Font font = new Font(fontFamily, style, size);
                 if (underline != null && Boolean.TRUE.equals(underline)) {
-                    Map<TextAttribute, Integer> attributes = new HashMap<TextAttribute, Integer>();
+                    Map<TextAttribute, Integer> attributes = new HashMap<>();
                     attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
                     font = font.deriveFont(attributes);
                 }
@@ -202,7 +204,7 @@ public class SwingXTableSettings implements TableSettings {
         }
     }
 
-    private Table.Column getColumn(String id) {
+    protected Table.Column getColumn(String id) {
         for (Table.Column column : columns) {
             if (column.getId().toString().equals(id))
                 return column;
