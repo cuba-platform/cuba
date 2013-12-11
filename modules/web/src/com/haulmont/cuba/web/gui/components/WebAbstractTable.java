@@ -61,6 +61,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 /**
  * @param <T>
  * @author abramov
@@ -1058,13 +1060,19 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
     @Override
     public void addGeneratedColumn(String columnId, ColumnGenerator generator) {
-        if (columnId == null)
-            throw new IllegalArgumentException("columnId is null");
-        if (generator == null)
-            throw new IllegalArgumentException("generator is null");
+        checkArgument(columnId != null, "columnId is null");
+        checkArgument(generator != null, "generator is null for column id '%s'", columnId);
 
         MetaPropertyPath targetCol = getDatasource().getMetaClass().getPropertyPath(columnId);
         Object generatedColumnId = targetCol != null ? targetCol : columnId;
+
+        Column column = getColumn(columnId);
+        if (column == null) {
+            Column newColumn = new Column(columnId);
+
+            columns.put(newColumn.getId(), newColumn);
+            columnsOrder.add(newColumn);
+        }
 
         // replace generator for column if exist
         if (component.getColumnGenerator(generatedColumnId) != null)
@@ -1106,6 +1114,28 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     public void removeGeneratedColumn(String columnId) {
         MetaPropertyPath targetCol = getDatasource().getMetaClass().getPropertyPath(columnId);
         removeGeneratedColumn(targetCol == null ? columnId : targetCol);
+    }
+
+    @Override
+    public void setColumnCaption(String columnId, String caption) {
+        Column column = getColumn(columnId);
+        if (column == null) {
+            throw new IllegalStateException(String.format("Column with id '%s' not found", columnId));
+        }
+
+        column.setCaption(caption);
+        component.setColumnHeader(column.getId(), caption);
+    }
+
+    @Override
+    public void setColumnCollapsed(String columnId, boolean collapsed) {
+        Column column = getColumn(columnId);
+        if (column == null) {
+            throw new IllegalStateException(String.format("Column with id '%s' not found", columnId));
+        }
+
+        column.setCollapsed(collapsed);
+        component.setColumnCollapsed(column.getId(), collapsed);
     }
 
     /**
@@ -1273,6 +1303,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                 @Override
                 public void buttonClick(Button.ClickEvent event) {
                     final Element element = column.getXmlDescriptor();
+                    if (element == null)
+                        return;
 
                     // todo move it to TableLoader
                     final String clickAction = element.attributeValue("clickAction");
@@ -1561,7 +1593,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
             final DsContext dsContext = datasource.getDsContext();
 
-            String optDsName = columnConf.getXmlDescriptor().attributeValue("optionsDatasource");
+            String optDsName = columnConf.getXmlDescriptor() != null ?
+                    columnConf.getXmlDescriptor().attributeValue("optionsDatasource") : "";
 
             if (StringUtils.isBlank(optDsName)) {
                 MetaPropertyPath propertyPath = fieldDatasource.getMetaClass().getPropertyPath(propertyId);

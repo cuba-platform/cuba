@@ -42,6 +42,7 @@ import org.dom4j.Element;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.table.ColumnControlButton;
 import org.jdesktop.swingx.table.TableColumnExt;
+import org.jdesktop.swingx.table.TableColumnModelExt;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
 
@@ -960,8 +961,8 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     @Override
     public void addGeneratedColumn(String columnId, ColumnGenerator generator,
                                    Class<? extends com.haulmont.cuba.gui.components.Component> componentClass) {
-        checkArgument(columnId == null, "columnId is null");
-        checkArgument(generator == null, "generator is null for columnId: " + columnId);
+        checkArgument(columnId != null, "columnId is null");
+        checkArgument(generator != null, "generator is null for column id '%s'", columnId);
 
         Column col = getColumn(columnId);
         if (col == null) {
@@ -969,10 +970,12 @@ public abstract class DesktopAbstractTable<C extends JXTable>
             col = new Column(columnId, columnId);
 
             columns.put(col.getId(), col);
+            // do not touch columnsOrder, it will be synced from table model
             if (tableModel != null) {
                 tableModel.addColumn(col);
             }
 
+            // reassign column identifiers
             setColumnIdentifiers();
         }
         col.setEditable(false); // generated column must be non-editable, see TableModelAdapter.setValueAt()
@@ -990,13 +993,42 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
     @Override
     public void removeGeneratedColumn(String columnId) {
-        if (id == null)
-            throw new IllegalArgumentException("columnId is null");
+        checkArgument(columnId != null, "columnId is null");
 
         Column col = getColumn(columnId);
         if (col != null) {
             tableModel.removeGeneratedColumn(col);
             generatedColumnsCount--;
+        }
+    }
+
+    @Override
+    public void setColumnCaption(String columnId, String caption) {
+        checkArgument(columnId != null, "columnId is null");
+
+        Column column = getColumn(columnId);
+        if (column == null) {
+            throw new IllegalStateException(String.format("Column with id '%s' not found", columnId));
+        }
+
+        column.setCaption(caption);
+        getColumn(column).setHeaderValue(caption);
+    }
+
+    @Override
+    public void setColumnCollapsed(String columnId, boolean collapsed) {
+        checkArgument(columnId != null, "columnId is null");
+
+        Column column = getColumn(columnId);
+        if (column == null) {
+            throw new IllegalStateException(String.format("Column with id '%s' not found", columnId));
+        }
+
+        column.setCollapsed(collapsed);
+
+        TableColumn tableColumn = getColumn(column);
+        if (tableColumn instanceof TableColumnExt) {
+            ((TableColumnExt) tableColumn).setVisible(!collapsed);
         }
     }
 
@@ -1013,12 +1045,16 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     @Override
     @Nullable
     public Printable getPrintable(Column column) {
+        checkArgument(column != null, "column is null");
+
         return getPrintable(String.valueOf(column.getId()));
     }
 
     @Nullable
     @Override
     public Printable getPrintable(String columnId) {
+        checkArgument(columnId != null, "columnId is null");
+
         Printable printable = printables.get(columnId);
         if (printable != null) {
             return printable;
@@ -1338,7 +1374,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         sw.stop();
     }
 
-    private boolean allColumnsAreInline() {
+    protected boolean allColumnsAreInline() {
         if (generatedColumnsCount <= 0) {
             return true;
         }
@@ -1360,14 +1396,29 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         return true;
     }
 
-    private TableColumn getColumn(Column column) {
-        Enumeration<TableColumn> enumeration = impl.getColumnModel().getColumns();
-        TableColumn aColumn;
+    protected TableColumn getColumn(Column column) {
+        TableColumnModel cm = impl.getColumnModel();
 
-        while (enumeration.hasMoreElements()) {
-            aColumn = enumeration.nextElement();
-            if (column.equals(aColumn.getIdentifier()))
-                return aColumn;
+        if (cm instanceof TableColumnModelExt) {
+            List<TableColumn> tableColumns = ((TableColumnModelExt) cm).getColumns(true);
+            Iterator<TableColumn> columnIterator = tableColumns.iterator();
+            TableColumn aColumn;
+
+            while (columnIterator.hasNext()) {
+                aColumn = columnIterator.next();
+                if (column.equals(aColumn.getIdentifier()))
+                    return aColumn;
+            }
+        } else {
+            // should never happens
+            Enumeration<TableColumn> enumeration = cm.getColumns();
+            TableColumn aColumn;
+
+            while (enumeration.hasMoreElements()) {
+                aColumn = enumeration.nextElement();
+                if (column.equals(aColumn.getIdentifier()))
+                    return aColumn;
+            }
         }
         return null;
     }

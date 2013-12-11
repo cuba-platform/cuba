@@ -20,6 +20,7 @@ public interface Table
         extends
             ListComponent, Component.Editable, Component.HasSettings,
             Component.HasButtonsPanel, Component.HasPresentations {
+
     String NAME = "table";
 
     String INSERT_SHORTCUT_ID = "INSERT_SHORTCUT";
@@ -39,6 +40,16 @@ public interface Table
 
     void addValidator(Column column, com.haulmont.cuba.gui.components.Field.Validator validator);
     void addValidator(com.haulmont.cuba.gui.components.Field.Validator validator);
+
+    /**
+     * Assign caption for column in runtime.
+     */
+    void setColumnCaption(String columnId, String caption);
+
+    /**
+     * Show/hide column in runtime. Hidden column will be available in column control.
+     */
+    void setColumnCollapsed(String columnId, boolean collapsed);
 
     void setItemClickAction(Action action);
     Action getItemClickAction();
