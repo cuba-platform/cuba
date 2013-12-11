@@ -12,14 +12,15 @@
   border: 0;
 }
 
-.fieldgroup {
+.fieldgroup > fieldset {
+  padding: 0;
 }
 
 .fieldgroup.fieldgroup-nocollapsable.fieldgroup-nocaption {
   padding-top: 0;
 }
 
-.fieldgroup.fieldgroup-nocollapsable.fieldgroup-nocaption fieldset {
+.fieldgroup.fieldgroup-nocollapsable.fieldgroup-nocaption.fieldgroup-border fieldset {
   padding-top: 5px;
 }
 
