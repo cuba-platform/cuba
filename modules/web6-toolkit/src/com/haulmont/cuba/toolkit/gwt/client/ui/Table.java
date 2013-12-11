@@ -2675,6 +2675,8 @@ public abstract class Table
                             VConsole.log("onFocus: Focus widget in column: " + childWidgets.indexOf(topWidget));
 
                             if (!isSelected()) {
+                                VConsole.log(">>> OMG!!");
+
                                 deselectAll();
 
                                 toggleSelection();
@@ -2788,6 +2790,27 @@ public abstract class Table
             @Override
             public void onBrowserEvent(Event event) {
                 final Element targetElement = DOM.eventGetTarget(event);
+
+                Widget targetWidget = Util.findWidget(targetElement, null);
+                if (targetWidget != this) {
+                    /*
+                     * This is a workaround to make Labels, read only TextFields
+                     * and Embedded in a Table clickable (see #2688). It is
+                     * really not a fix as it does not work with a custom read
+                     * only components (not extending VLabel/VEmbedded).
+                     */
+                    while (targetWidget != null && targetWidget.getParent() != this) {
+                        targetWidget = targetWidget.getParent();
+                    }
+
+                    if (!(targetWidget instanceof VLabel)
+                            && !(targetWidget instanceof VEmbedded)
+                            && !(targetWidget instanceof VTextField && ((VTextField) targetWidget)
+                            .isReadOnly())) {
+                        return;
+                    }
+                }
+
                 final int type = event.getTypeInt();
                 final Element targetTdOrTr = getEventTargetTdOrTr(event);
                 if (Tools.isCheckbox(targetElement) || Tools.isRadio(targetElement))
@@ -3132,7 +3155,7 @@ public abstract class Table
                             if (widget instanceof VLabel
                                     || widget instanceof VEmbedded
                                     || (widget instanceof VTextField && ((VTextField) widget)
-                                            .isReadOnly())) {
+                                    .isReadOnly())) {
                                 Element tdElement = eventTargetParent;
                                 while (DOM.getParent(tdElement) != thisTrElement) {
                                     tdElement = DOM.getParent(tdElement);
