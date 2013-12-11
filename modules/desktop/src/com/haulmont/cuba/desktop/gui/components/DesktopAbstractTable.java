@@ -299,6 +299,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         int summaryWidth = 0;
         int componentWidth = impl.getParent().getWidth();
 
+        // take into account only visible columns
         Enumeration<TableColumn> columnEnumeration = impl.getColumnModel().getColumns();
         int i = 0;
         while (columnEnumeration.hasMoreElements()) {
@@ -369,15 +370,16 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         }
 
         TableColumn tableColumn = null;
-        Enumeration<TableColumn> columnEnumeration = impl.getColumnModel().getColumns();
-        while (columnEnumeration.hasMoreElements() && (tableColumn == null)) {
-            TableColumn xColumn = columnEnumeration.nextElement();
+
+        Iterator<TableColumn> columnIterator = getAllColumns().iterator();
+        while (columnIterator.hasNext() && (tableColumn == null)) {
+            TableColumn xColumn = columnIterator.next();
             Object identifier = xColumn.getIdentifier();
-            if (identifier instanceof String) {
-                if (identifier.equals(name))
-                    tableColumn = xColumn;
-            } else if (column.equals(identifier))
+            if (identifier instanceof String && identifier.equals(name)) {
                 tableColumn = xColumn;
+            } else if (column.equals(identifier)) {
+                tableColumn = xColumn;
+            }
         }
 
         if (tableColumn != null) {
@@ -575,27 +577,27 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         }
     }
 
-    private String getColumnCaption(Object columnId) {
+    protected String getColumnCaption(Object columnId) {
         if (columnId instanceof MetaPropertyPath)
             return ((MetaPropertyPath) columnId).getMetaProperty().getName();
         else
             return columnId.toString();
     }
 
-    private void setColumnIdentifiers() {
-        Enumeration<TableColumn> columnEnumeration = impl.getColumnModel().getColumns();
+    protected void setColumnIdentifiers() {
         int i = 0;
-        while (columnEnumeration.hasMoreElements()) {
-            TableColumn tableColumn = columnEnumeration.nextElement();
+        for (TableColumn tableColumn : getAllColumns()) {
             Column column = columnsOrder.get(i++);
             tableColumn.setIdentifier(column);
         }
     }
 
+    protected List<TableColumn> getAllColumns() {
+        return ((TableColumnModelExt)impl.getColumnModel()).getColumns(true);
+    }
+
     protected void onDataChange() {
-        Enumeration<TableColumn> columnEnumeration = impl.getColumnModel().getColumns();
-        while (columnEnumeration.hasMoreElements()) {
-            TableColumn tableColumn = columnEnumeration.nextElement();
+        for (TableColumn tableColumn : getAllColumns()) {
             TableCellEditor cellEditor = tableColumn.getCellEditor();
             if (cellEditor instanceof DesktopTableCellEditor) {
                 ((DesktopTableCellEditor) cellEditor).clearCache();
@@ -716,12 +718,12 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     }
 
     protected void setVisibleColumns(List<?> columnsOrder) {
-        Enumeration<TableColumn> columnEnumeration = impl.getColumnModel().getColumns();
-        while (columnEnumeration.hasMoreElements()) {
-            TableColumn tableColumn = columnEnumeration.nextElement();
+        for (TableColumn tableColumn : getAllColumns()) {
             Column columnIdentifier = (Column) tableColumn.getIdentifier();
             if (!columnsOrder.contains(columnIdentifier.getId()))
-                impl.removeColumn(tableColumn);
+                ((TableColumnExt)tableColumn).setVisible(false);
+            else
+                ((TableColumnExt)tableColumn).setVisible(true);
         }
     }
 
@@ -1397,29 +1399,14 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     }
 
     protected TableColumn getColumn(Column column) {
-        TableColumnModel cm = impl.getColumnModel();
+        List<TableColumn> tableColumns = getAllColumns();
 
-        if (cm instanceof TableColumnModelExt) {
-            List<TableColumn> tableColumns = ((TableColumnModelExt) cm).getColumns(true);
-            Iterator<TableColumn> columnIterator = tableColumns.iterator();
-            TableColumn aColumn;
-
-            while (columnIterator.hasNext()) {
-                aColumn = columnIterator.next();
-                if (column.equals(aColumn.getIdentifier()))
-                    return aColumn;
-            }
-        } else {
-            // should never happens
-            Enumeration<TableColumn> enumeration = cm.getColumns();
-            TableColumn aColumn;
-
-            while (enumeration.hasMoreElements()) {
-                aColumn = enumeration.nextElement();
-                if (column.equals(aColumn.getIdentifier()))
-                    return aColumn;
+        for (TableColumn tableColumn : tableColumns) {
+            if (column.equals(tableColumn.getIdentifier())) {
+                return tableColumn;
             }
         }
+
         return null;
     }
 
