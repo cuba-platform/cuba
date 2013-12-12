@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.gui.data.GroupInfo;
 import com.haulmont.cuba.toolkit.gwt.client.ui.IScrollGroupTable;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
@@ -695,7 +696,8 @@ public class GroupTable extends Table implements GroupTableContainer {
             if (!columnGenerators.isEmpty()) {
                 List<Object> notGeneratedProperties = new ArrayList<>();
                 for (Object id : newGroupProperties) {
-                    if (!columnGenerators.containsKey(id)) {
+                    // todo support grouping by generated columns with Printable
+                    if (!columnGenerators.containsKey(id) || (id instanceof MetaPropertyPath)) {
                         notGeneratedProperties.add(id);
                     }
                 }
@@ -862,7 +864,7 @@ public class GroupTable extends Table implements GroupTableContainer {
         if (!columnGenerators.isEmpty()) {
             List<Object> notGeneratedGroupProps = new ArrayList<>();
             for (Object id : groupProperties) {
-                if (!columnGenerators.containsKey(id))
+                if (!columnGenerators.containsKey(id) || (id instanceof MetaPropertyPath))
                     notGeneratedGroupProps.add(id);
             }
             return notGeneratedGroupProps;
