@@ -72,7 +72,7 @@ public abstract class ComponentsHelper {
         if (elements.length == 1) {
             //noinspection unchecked
             T component = (T) frame.getRegisteredComponent(id);
-            if (component == null && frame.getFrame() != null) {
+            if (component == null && frame.getFrame() != null && frame.getFrame() != frame) {
                 component = frame.getFrame().getComponent(id);
             }
             return component;

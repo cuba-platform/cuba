@@ -20,8 +20,6 @@ import java.util.List;
  */
 public class FrameContext implements WindowContext {
 
-    private static final long serialVersionUID = -6616685746440637906L;
-
     private final IFrame frame;
     private Map<String, Object> params;
 
@@ -33,7 +31,7 @@ public class FrameContext implements WindowContext {
     }
 
     public Collection<String> getParameterNames() {
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
         for (String s : params.keySet()) {
             names.add(s.substring("param$".length()));
         }
@@ -76,8 +74,8 @@ public class FrameContext implements WindowContext {
                 || ((component instanceof Component.Wrapper) && ((Component.Wrapper) component).getComponent() == frame))
         {
             // if component not found or found the frame itself, try to search in parent frame
-            if (frame.getFrame() != null)
-                return frame.getFrame().getContext().<T>getValue(property);
+            if (frame.getFrame() != null && frame.getFrame() != frame)
+                return frame.getFrame().getContext().getValue(property);
             else
                 return null;
         }
