@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.core.sys;
 
+import com.haulmont.bali.db.DbUtils;
 import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.bali.db.ResultSetHandler;
 import com.haulmont.cuba.core.global.DbDialect;
@@ -30,10 +31,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URI;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.*;
 
 /**
@@ -311,6 +309,17 @@ public class DbUpdaterEngine implements DbUpdater {
         }
     }
 
+    protected boolean isEmpty(String sql) {
+        String[] lines = sql.split("\\r?\\n");
+        for (String line : lines) {
+            line = line.trim();
+            if (!line.startsWith(SQL_COMMENT_PREFIX) && !StringUtils.isBlank(line)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     protected void executeSqlScript(File file) {
         String script;
         try {
@@ -322,24 +331,21 @@ public class DbUpdaterEngine implements DbUpdater {
                 StrMatcher.charSetMatcher(SQL_DELIMITER),
                 StrMatcher.singleQuoteMatcher()
         );
-        QueryRunner runner = new QueryRunner(getDataSource());
         while (tokenizer.hasNext()) {
             String sql = tokenizer.nextToken().trim();
-            if (!StringUtils.isEmpty(sql)) {
+            if (!isEmpty(sql)) {
                 log.debug("Executing SQL:\n" + sql);
+                Connection connection = null;
+                Statement statement = null;
                 try {
-                    if (isLikelySelect(sql)) {
-                        runner.query(sql, new ResultSetHandler<Object>() {
-                            @Override
-                            public Object handle(ResultSet rs) throws SQLException {
-                                return null;
-                            }
-                        });
-                    } else {
-                        runner.update(sql);
-                    }
+                    connection = getDataSource().getConnection();
+                    statement = connection.createStatement();
+                    statement.execute(sql);
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
+                } finally {
+                    DbUtils.closeQuietly(statement);
+                    DbUtils.closeQuietly(connection);
                 }
             }
         }
