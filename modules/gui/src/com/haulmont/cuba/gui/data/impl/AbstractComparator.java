@@ -8,6 +8,11 @@ import com.haulmont.chile.core.model.Instance;
 
 import java.util.Comparator;
 
+/**
+ * @param <T>
+ * @author gorodnov
+ * @version $Id$
+ */
 public abstract class AbstractComparator<T> implements Comparator<T> {
     protected boolean asc;
 

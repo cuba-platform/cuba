@@ -6,11 +6,16 @@ package com.haulmont.cuba.gui.data.impl;
 
 import com.haulmont.cuba.gui.data.GroupInfo;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 public class GroupInfoComparator extends AbstractComparator<GroupInfo> {
     public GroupInfoComparator(boolean asc) {
         super(asc);
     }
 
+    @Override
     public int compare(GroupInfo o1, GroupInfo o2) {
         return __compare(o1.getValue(), o2.getValue());
     }

@@ -16,7 +16,12 @@ import java.util.*;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.collections.map.LinkedMap;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 public abstract class GroupDelegate<T extends Entity<K>, K> {
+
     protected Object[] groupProperties = null;
 
     protected Map<GroupInfo, GroupInfo> parent;
@@ -78,15 +83,14 @@ public abstract class GroupDelegate<T extends Entity<K>, K> {
     protected void doGroup() {
         final Collection<K> itemIds = datasource.getItemIds();
 
-        roots = new LinkedList<GroupInfo>();
-        parent = new LinkedHashMap<GroupInfo, GroupInfo>();
-        children = new HashMap<GroupInfo, List<GroupInfo>>();
-        groupItems = new HashMap<GroupInfo, List<K>>();
+        roots = new LinkedList<>();
+        parent = new LinkedHashMap<>();
+        children = new HashMap<>();
+        groupItems = new HashMap<>();
 
         for (final K id : itemIds) {
             final T item = datasource.getItem(id);
-            if (item != null)
-            {
+            if (item != null) {
                 GroupInfo<MetaPropertyPath> itemGroup;
 
                 final LinkedMap itemValues = new LinkedMap();
@@ -99,7 +103,7 @@ public abstract class GroupDelegate<T extends Entity<K>, K> {
 
                 List<K> groupItemIds = groupItems.get(itemGroup);
                 if (groupItemIds == null) {
-                    groupItemIds = new LinkedList<K>();
+                    groupItemIds = new LinkedList<>();
                     groupItems.put(itemGroup, groupItemIds);
                 }
                 groupItemIds.add(id);
@@ -118,7 +122,7 @@ public abstract class GroupDelegate<T extends Entity<K>, K> {
 
         itemValues.put(property, getItemValue((MetaPropertyPath) property, item.getId()));
 
-        GroupInfo<MetaPropertyPath> itemGroup = new GroupInfo<MetaPropertyPath>(itemValues);
+        GroupInfo<MetaPropertyPath> itemGroup = new GroupInfo<>(itemValues);
 
         if (!this.parent.containsKey(itemGroup)) {
             this.parent.put(itemGroup, parent);
@@ -130,7 +134,7 @@ public abstract class GroupDelegate<T extends Entity<K>, K> {
 
         List<GroupInfo> groupChildren = this.children.get(itemGroup);
         if (groupChildren == null) {
-            groupChildren = new LinkedList<GroupInfo>();
+            groupChildren = new LinkedList<>();
             this.children.put(itemGroup, groupChildren);
         }
 
@@ -165,7 +169,7 @@ public abstract class GroupDelegate<T extends Entity<K>, K> {
                 for (final GroupInfo groupInfo : groups) {
                     if (groupItems.get(groupInfo) != null) {
                         Collections.sort(groupItems.get(groupInfo),
-                                new EntityByIdComparator<T, K>(propertyPath, datasource, asc));
+                                new EntityByIdComparator<>(propertyPath, datasource, asc));
                     }
                 }
             }
@@ -210,7 +214,7 @@ public abstract class GroupDelegate<T extends Entity<K>, K> {
         if (containsGroup(groupId)) {
             List<K> itemIds;
             if ((itemIds = groupItems.get(groupId)) == null) {
-                itemIds = new LinkedList<K>();
+                itemIds = new LinkedList<>();
                 final List<GroupInfo> children = getChildren(groupId);
                 for (final GroupInfo child : children) {
                     itemIds.addAll(getGroupItemIds(child));
@@ -252,6 +256,10 @@ public abstract class GroupDelegate<T extends Entity<K>, K> {
 
     protected Object getItemValue(MetaPropertyPath property, K itemId) {
         Instance instance = datasource.getItem(itemId);
+        if (instance == null) {
+            throw new IllegalStateException("Unable to get instance for groouping");
+        }
+
         if (property.getMetaProperties().length == 1) {
             return instance.getValue(property.getMetaProperty().getName());
         } else {
