@@ -63,7 +63,7 @@ public class View implements Serializable {
 
     public View(Class<? extends Entity> entityClass, String name, boolean includeSystemProperties) {
         this.entityClass = entityClass;
-        this.name = name;
+        this.name = name != null ? name : "";
         this.includeSystemProperties = includeSystemProperties;
     }
 
@@ -73,7 +73,7 @@ public class View implements Serializable {
 
     public View(View src, @Nullable Class<? extends Entity> entityClass, String name, boolean includeSystemProperties) {
         this.entityClass = entityClass == null ? src.entityClass : entityClass;
-        this.name = name;
+        this.name = name != null ? name : "";
         this.includeSystemProperties = includeSystemProperties;
         this.properties.putAll(src.properties);
     }
