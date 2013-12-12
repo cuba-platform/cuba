@@ -173,14 +173,14 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
                 apply(false);
             }
         });
-        impl.add(applyBtn);
+        impl.add(applyBtn, new CC().hideMode(3));
 
         actionsButton = new DesktopPopupButton();
         actionsButton.setVisible(isEditFiltersPermitted());
         actionsButton.setPopupVisible(true);
 
         actionsButton.setCaption(messages.getMessage(MESSAGES_PACK, "actionsCaption"));
-        impl.add(actionsButton.<java.awt.Component>getComponent());
+        impl.add(actionsButton.<java.awt.Component>getComponent(), new CC().hideMode(3));
 
         initMaxResultsPanel();
         impl.add(maxResultsPanel, new CC().wrap().hideMode(0));
