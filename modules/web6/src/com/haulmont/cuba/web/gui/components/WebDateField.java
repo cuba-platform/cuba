@@ -207,8 +207,6 @@ public class WebDateField extends WebAbstractField<DateFieldWrapper> implements 
             return;
         }
 
-        prevValue = getValue();
-
         updatingInstance = true;
         try {
             dateField.setValue(value);
@@ -220,7 +218,7 @@ public class WebDateField extends WebAbstractField<DateFieldWrapper> implements 
         updateInstance();
     }
 
-    private void setValueFromDs(Object value) {
+    protected void setValueFromDs(Object value) {
         boolean isEditable = editable;
         if (!editable)
             setEditable(true);
@@ -234,11 +232,11 @@ public class WebDateField extends WebAbstractField<DateFieldWrapper> implements 
         setEditable(isEditable);
     }
 
-    private boolean isHourUsed() {
+    protected boolean isHourUsed() {
         return resolution != null && resolution.ordinal() <= Resolution.HOUR.ordinal();
     }
 
-    private boolean isMinUsed() {
+    protected boolean isMinUsed() {
         return resolution != null && resolution.ordinal() <= Resolution.MIN.ordinal();
     }
 
@@ -353,15 +351,17 @@ public class WebDateField extends WebAbstractField<DateFieldWrapper> implements 
 
     protected void fireValueChanged(Object value) {
         if (!ObjectUtils.equals(prevValue, value)) {
-            for (ValueListener listener : listeners) {
-                listener.valueChanged(this, "value", prevValue, value);
-            }
+            Object oldValue = prevValue;
 
             prevValue = value;
+
+            for (ValueListener listener : listeners) {
+                listener.valueChanged(this, "value", oldValue, value);
+            }
         }
     }
 
-    private Date constructDate() {
+    protected Date constructDate() {
         final Date datePickerDate = (Date) dateField.getValue();
         if (datePickerDate == null) {
             return null;

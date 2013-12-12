@@ -12,7 +12,9 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
 import com.haulmont.cuba.desktop.sys.layout.MigBoxLayoutAdapter;
@@ -35,6 +37,7 @@ import java.beans.PropertyChangeListener;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * @author krivopustov
@@ -42,25 +45,24 @@ import java.util.Date;
  */
 public class DesktopDateField extends DesktopAbstractField<JPanel> implements DateField {
 
-    private Resolution resolution;
-    private Datasource datasource;
-    private MetaPropertyPath metaPropertyPath;
-    private MetaProperty metaProperty;
+    protected Resolution resolution;
+    protected Datasource datasource;
+    protected MetaPropertyPath metaPropertyPath;
+    protected MetaProperty metaProperty;
 
-    private String dateTimeFormat;
-    private String dateFormat;
-    private String timeFormat;
+    protected String dateTimeFormat;
+    protected String dateFormat;
+    protected String timeFormat;
 
-    private boolean updatingInstance;
+    protected boolean updatingInstance;
 
-    private JXDatePicker datePicker;
-    private DesktopTimeField timeField;
-    private boolean valid = true;
-    private String caption;
-    private String description;
+    protected JXDatePicker datePicker;
+    protected DesktopTimeField timeField;
+    protected boolean valid = true;
+    protected String caption;
 
-    private Object prevValue = null;
-    private boolean editable = true;
+    protected Object prevValue = null;
+    protected boolean editable = true;
 
     public DesktopDateField() {
         impl = new FocusableComposition();
@@ -71,7 +73,7 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
         DesktopComponentsHelper.adjustDateFieldSize(impl);
     }
 
-    private void initComponentParts() {
+    protected void initComponentParts() {
         BoxLayoutAdapter adapter = new MigBoxLayoutAdapter(impl);
         adapter.setSpacing(false);
         adapter.setFlowDirection(BoxLayoutAdapter.FlowDirection.X);
@@ -106,7 +108,7 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
         );
     }
 
-    private void updateLayout() {
+    protected void updateLayout() {
         impl.removeAll();
         impl.add(datePicker, "growx, w 100%");
         if (resolution.ordinal() < Resolution.DAY.ordinal()) {
@@ -125,7 +127,7 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
         updateLayout();
     }
 
-    private void _setResolution(Resolution resolution) {
+    protected void _setResolution(Resolution resolution) {
         this.resolution = resolution;
         if (resolution.ordinal() < Resolution.DAY.ordinal()) {
             timeField.setResolution(resolution);
@@ -232,8 +234,9 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
                 new DsListenerAdapter() {
                     @Override
                     public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
-                        if (updatingInstance)
+                        if (updatingInstance) {
                             return;
+                        }
                         Date value = getEntityValue(item);
                         updateComponent(value);
                         fireChangeListeners(value);
@@ -241,8 +244,9 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
 
                     @Override
                     public void valueChanged(Entity source, String property, Object prevValue, Object value) {
-                        if (updatingInstance)
+                        if (updatingInstance) {
                             return;
+                        }
                         if (property.equals(metaPropertyPath.toString())) {
                             updateComponent((Date) value);
                             fireChangeListeners(value);
@@ -277,13 +281,17 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
         updateMissingValueState();
     }
 
-    private void fireChangeListeners(Object newValue) {
-        if (!ObjectUtils.equals(prevValue, newValue))
-            fireValueChanged(prevValue, newValue);
-        prevValue = newValue;
+    protected void fireChangeListeners(Object newValue) {
+        if (!ObjectUtils.equals(prevValue, newValue)) {
+            Object oldValue = prevValue;
+
+            prevValue = newValue;
+
+            fireValueChanged(oldValue, newValue);
+        }
     }
 
-    private void setDateParts(Date value) {
+    protected void setDateParts(Date value) {
         datePicker.setDate(value);
         timeField.setValue(value);
     }
@@ -293,10 +301,12 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
         return datePicker.isEditable();
     }
 
+    @Override
     public boolean isEnabled() {
         return datePicker.isEnabled();
     }
 
+    @Override
     public void setEnabled(boolean enabled) {
         datePicker.setEnabled(enabled);
         timeField.setEnabled(enabled);
@@ -332,9 +342,10 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
         DesktopToolTipManager.getInstance().registerTooltip(datePicker.getEditor());
     }
 
-    private void updateInstance() {
-        if (updatingInstance)
+    protected void updateInstance() {
+        if (updatingInstance) {
             return;
+        }
 
         updatingInstance = true;
         try {
@@ -371,7 +382,9 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
         if (datePickerDate == null) {
             return null;
         }
-        Calendar c = Calendar.getInstance(UserSessionProvider.getLocale());
+        Locale locale = AppBeans.get(UserSessionSource.class).getLocale();
+
+        Calendar c = Calendar.getInstance(locale);
         c.setTime(datePickerDate);
         if (timeField.getValue() == null) {
             c.set(Calendar.HOUR_OF_DAY, 0);
@@ -379,7 +392,7 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
             c.set(Calendar.SECOND, 0);
 
         } else {
-            Calendar c2 = Calendar.getInstance(UserSessionProvider.getLocale());
+            Calendar c2 = Calendar.getInstance(locale);
             c2.setTime(timeField.<Date>getValue());
 
             c.set(Calendar.HOUR_OF_DAY, c2.get(Calendar.HOUR_OF_DAY));
@@ -391,11 +404,11 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
         return time;
     }
 
-    private boolean isHourUsed() {
+    protected boolean isHourUsed() {
         return resolution != null && resolution.ordinal() <= Resolution.HOUR.ordinal();
     }
 
-    private boolean isMinUsed() {
+    protected boolean isMinUsed() {
         return resolution != null && resolution.ordinal() <= Resolution.MIN.ordinal();
     }
 

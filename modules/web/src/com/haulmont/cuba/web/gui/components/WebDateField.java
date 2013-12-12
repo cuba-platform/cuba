@@ -180,8 +180,6 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
             return;
         }
 
-        prevValue = getValue();
-
         updatingInstance = true;
         try {
             dateField.setValue((Date) value);
@@ -299,11 +297,13 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
 
     protected void fireValueChanged(Object value) {
         if (!ObjectUtils.equals(prevValue, value)) {
-            for (ValueListener listener : listeners) {
-                listener.valueChanged(this, "value", prevValue, value);
-            }
+            Object oldValue = prevValue;
 
             prevValue = value;
+
+            for (ValueListener listener : listeners) {
+                listener.valueChanged(this, "value", oldValue, value);
+            }
         }
     }
 
