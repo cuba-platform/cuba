@@ -21,6 +21,8 @@ package com.haulmont.cuba.core.config;
 import java.lang.annotation.*;
 
 /**
+ * DEPRECATED. Always specify full property name in {@link Property} annotation.
+ * <p/>
  * Annotation specifying the prefix for all configuration fields in an interface.
  *
  * @author Merlin Hughes
