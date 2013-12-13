@@ -18,6 +18,7 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.TextInputField;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import org.apache.commons.lang.ObjectUtils;
@@ -218,6 +219,11 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
             Object value = InstanceUtils.getValueEx(datasource.getItem(), metaPropertyPath.getPath());
             updateComponent(value);
             fireChangeListeners();
+        }
+
+        Integer maxLength = (Integer) metaProperty.getAnnotations().get("length");
+        if (maxLength != null && this instanceof TextInputField.MaxLengthLimited) {
+            ((TextInputField.MaxLengthLimited)this).setMaxLength(maxLength);
         }
     }
 

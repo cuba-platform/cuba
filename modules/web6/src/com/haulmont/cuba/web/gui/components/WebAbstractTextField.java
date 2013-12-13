@@ -162,9 +162,10 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
     @Override
     public void setDatasource(Datasource datasource, String property) {
         super.setDatasource(datasource, property);
-        Integer len = (Integer) metaProperty.getAnnotations().get("length");
-        if (len != null) {
-            component.setMaxLength(len);
+
+        Integer maxLength = (Integer) metaProperty.getAnnotations().get("length");
+        if (maxLength != null && this instanceof TextInputField.MaxLengthLimited) {
+            ((TextInputField.MaxLengthLimited)this).setMaxLength(maxLength);
         }
     }
 
