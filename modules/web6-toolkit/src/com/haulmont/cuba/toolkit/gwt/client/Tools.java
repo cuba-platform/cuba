@@ -145,10 +145,10 @@ public class Tools {
         return s;
     }
 
-    public static void fixFlashTitleIE8() {
+    public static void fixFlashTitleIE() {
         // if url has '#' then title changed in ie8 after flash loaded. This fix changed set normal title
-        if (BrowserInfo.get().isIE8()) {
-            impl.fixFlashTitleIE8JS();
+        if (BrowserInfo.get().isIE()) {
+            impl.fixFlashTitleIEJS();
         }
     }
 }

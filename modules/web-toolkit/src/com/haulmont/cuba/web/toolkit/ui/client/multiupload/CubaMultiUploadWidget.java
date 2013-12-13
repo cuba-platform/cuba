@@ -160,7 +160,7 @@ public class CubaMultiUploadWidget extends FormPanel {
 
     public void initializeSwfUpload() {
 
-        Tools.fixFlashTitleIE8();
+        Tools.fixFlashTitleIE();
 
         Options opts = Options.create();
 

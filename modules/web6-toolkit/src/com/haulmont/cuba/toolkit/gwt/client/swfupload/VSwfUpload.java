@@ -111,7 +111,7 @@ public class VSwfUpload
 
         SwfUploadAPI.onReady(new Runnable() {
             public void run() {
-                Tools.fixFlashTitleIE8();
+                Tools.fixFlashTitleIE();
                 initSwfUploadObjects();
                 String appUri = client.getAppUri();
                 appUri = appUri + (appUri.endsWith("/") ? "" : "/");
