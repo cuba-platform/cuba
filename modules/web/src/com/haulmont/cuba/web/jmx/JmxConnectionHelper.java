@@ -26,9 +26,12 @@ import java.util.Set;
  * @author artamonov
  * @version $Id$
  */
-public abstract class JmxConnectionHelper {
+public final class JmxConnectionHelper {
 
     protected final static JmxInstance LOCAL_JMX_INSTANCE = new JmxInstance("Local");
+
+    private JmxConnectionHelper() {
+    }
 
     protected static MBeanServerConnection getConnection(JmxInstance instance) {
         if (ObjectUtils.equals(instance, LOCAL_JMX_INSTANCE)) {
