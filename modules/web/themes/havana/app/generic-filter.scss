@@ -8,11 +8,15 @@
 @mixin cuba-generic-filter {
   .cuba-generic-filter .remove-applied-filter,
   .filter-param-list-edit-del {
-    height: 18px;
+    height: auto;
     border: 0;
   }
 
   .cuba-generic-filter-editorlayout .v-table-cuba-filter-conditions .v-treetable-treespacer {
     top: 6px;
+  }
+
+  .v-button.v-button-link.remove-applied-filter .v-icon {
+    border: 0;
   }
 }
