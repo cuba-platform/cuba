@@ -13,8 +13,15 @@ public interface Timer extends Component.HasXmlDescriptor, Component.BelongToFra
     boolean isRepeating();
     void setRepeating(boolean repeating);
 
+    /**
+     * @return delay in milliseconds.
+     */
     int getDelay();
-    void setDelay(int delay);
+
+    /**
+     * @param delayMs delay in milliseconds.
+     */
+    void setDelay(int delayMs);
 
     /**
      * Starts timer. If timer is already started call will be ignored.
