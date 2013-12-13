@@ -392,6 +392,9 @@ class ConditionsContainer implements Container.Hierarchical, Container.Sortable,
                 return new ObjectProperty<>(createHiddenCheckbox(condition));
 
             } else if (id.equals(REQUIRED_PROP_ID)) {
+                if (condition instanceof GroupCondition)
+                    return null;
+
                 return new ObjectProperty<>(createRequiredCheckbox(condition));
 
             } else if (id.equals(CONTROL_PROP_ID)) {

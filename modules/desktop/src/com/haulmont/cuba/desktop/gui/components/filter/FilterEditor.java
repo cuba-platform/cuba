@@ -8,10 +8,7 @@ package com.haulmont.cuba.desktop.gui.components.filter;
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.CategorizedEntity;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.Security;
-import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
@@ -214,7 +211,9 @@ public class FilterEditor extends AbstractFilterEditor {
 
         JPanel addPanel = new JPanel(new MigLayout(new LC().insetsAll("0")));
 
-        if (ConfigProvider.getConfig(ClientConfig.class).getGenericFilterTreeConditionSelect()) {
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+
+        if (configuration.getConfig(ClientConfig.class).getGenericFilterTreeConditionSelect()) {
             initAddDialog(addPanel);
         } else {
             initAddSelect(addPanel);
@@ -271,8 +270,7 @@ public class FilterEditor extends AbstractFilterEditor {
 
         addSelect.addItem(null);
         for (AbstractConditionDescriptor descriptor : descriptors) {
-            addSelect.addItem(new ItemWrapper<AbstractConditionDescriptor>(descriptor, descriptor.getLocCaption()));
-
+            addSelect.addItem(new ItemWrapper<>(descriptor, descriptor.getLocCaption()));
         }
 
         if (CategorizedEntity.class.isAssignableFrom(metaClass.getJavaClass())) {
@@ -368,7 +366,7 @@ public class FilterEditor extends AbstractFilterEditor {
 
     protected void addCondition(AbstractConditionDescriptor descriptor) {
         AbstractCondition condition = descriptor.createCondition();
-        Node<AbstractCondition> node = new Node<AbstractCondition>(condition);
+        Node<AbstractCondition> node = new Node<>(condition);
 
         Node<AbstractCondition> parentNode = null;
         if (table.getSelectedRow() > -1) {
@@ -477,8 +475,8 @@ public class FilterEditor extends AbstractFilterEditor {
         protected EventListenerList listenerList = new EventListenerList();
         protected ChangeEvent changeEvent;
 
-        protected Map<Object, JComponent> components = new HashMap<Object, JComponent>();
-        protected Map<Object, JPanel> wrappers = new HashMap<Object, JPanel>();
+        protected Map<Object, JComponent> components = new HashMap<>();
+        protected Map<Object, JPanel> wrappers = new HashMap<>();
 
         protected JComponent activeComponent;
 

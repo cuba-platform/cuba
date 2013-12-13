@@ -121,7 +121,9 @@ class ConditionsTableModel extends AbstractTableModel {
 
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-        return true;
+        Pair<Node<AbstractCondition>, Integer> nodeWithLevel = getNodeWithLevel(rowIndex);
+        AbstractCondition condition = nodeWithLevel.getFirst().getData();
+        return !(condition instanceof GroupCondition && columnIndex == 4);
     }
 
     public void addNode(Node<AbstractCondition> node) {
@@ -138,10 +140,11 @@ class ConditionsTableModel extends AbstractTableModel {
 
         int idx = conditions.toList().indexOf(node);
 
-        if (node.getParent() == null)
+        if (node.getParent() == null) {
             conditions.getRootNodes().remove(node);
-        else
+        } else {
             node.getParent().getChildren().remove(node);
+        }
 
         fireTableRowsDeleted(idx, idx);
     }
@@ -191,7 +194,7 @@ class ConditionsTableModel extends AbstractTableModel {
         Pair<Node<AbstractCondition>, Integer> result;
         for (Node<AbstractCondition> node : nodes) {
             if (count.intValue() == plainIdx) {
-                return new Pair<Node<AbstractCondition>, Integer>(node, level);
+                return new Pair<>(node, level);
             } else {
                 count.increment();
                 if (!node.getChildren().isEmpty()) {
