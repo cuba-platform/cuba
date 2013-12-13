@@ -140,7 +140,7 @@ public class LinkHandler {
             app.getWindowManager().showOptionDialog(
                     messages.getMessage(getClass(), "toSubstitutedUser.title"),
                     getDialogMessage(substitutedUser),
-                    IFrame.MessageType.CONFIRMATION,
+                    IFrame.MessageType.CONFIRMATION_HTML,
                     new Action[]{
                             new ChangeSubstUserAction(substitutedUser) {
                                 @Override
