@@ -22,6 +22,7 @@ import com.haulmont.cuba.desktop.gui.components.*;
 import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
 import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
 import com.haulmont.cuba.desktop.sys.layout.MigLayoutHelper;
+import com.haulmont.cuba.desktop.sys.vcl.CollapsiblePanel;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowParams;
@@ -58,7 +59,7 @@ import org.dom4j.Element;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.*;
-import javax.swing.border.TitledBorder;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -495,14 +496,13 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         for (Node<AbstractCondition> node : visibleConditionNodes) {
             AbstractCondition condition = node.getData();
             if (condition.isGroup()) {
-                JPanel groupBox = createParamsGroupBox(condition.getLocCaption());
+                CollapsiblePanel groupBox = createParamsGroupBox(condition.getLocCaption());
 
                 if (!node.getChildren().isEmpty()) {
                     recursivelyCreateParamsPanel(
-                            focusOnConditions && !focusSet, node.getChildren(), groupBox, level++);
+                            focusOnConditions && !focusSet, node.getChildren(), groupBox.getComposition(), level++);
                 }
                 parentComponent.add(groupBox);
-
             } else {
                 JPanel paramPanel = new JPanel();
 
@@ -527,11 +527,13 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         }
     }
 
-    protected JPanel createParamsGroupBox(String caption) {
-        JPanel groupBox = new JPanel();
-        TitledBorder border = BorderFactory.createTitledBorder(" " + caption + " ");
-        border.setTitlePosition(TitledBorder.CENTER);
-        groupBox.setBorder(border);
+    protected CollapsiblePanel createParamsGroupBox(String caption) {
+        JPanel composition = new JPanel();
+        composition.setBorder(new EmptyBorder(0,0,0,0));
+
+        CollapsiblePanel groupBox = new CollapsiblePanel(composition);
+        groupBox.setCaption(caption);
+        groupBox.setBorderVisible(true);
         return groupBox;
     }
 
