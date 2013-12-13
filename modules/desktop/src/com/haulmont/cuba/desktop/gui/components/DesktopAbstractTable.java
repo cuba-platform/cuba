@@ -151,8 +151,9 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                             ListSelectionModel model = impl.getSelectionModel();
                             model.setSelectionInterval(rowNumber, rowNumber);
                             // show popup menu
-                            if (allowPopupMenu)
+                            if (allowPopupMenu) {
                                 createPopupMenu().show(e.getComponent(), e.getX(), e.getY());
+                            }
                         }
                     }
                 }
@@ -215,8 +216,9 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         scrollPane.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                if (!columnsInitialized)
+                if (!columnsInitialized) {
                     adjustColumnHeaders();
+                }
                 columnsInitialized = true;
             }
         });
@@ -254,8 +256,9 @@ public abstract class DesktopAbstractTable<C extends JXTable>
             @Override
             public void actionPerformed(ActionEvent e) {
                 Action action = getAction(actionId);
-                if ((action != null) && (action.isEnabled()))
+                if ((action != null) && (action.isEnabled())) {
                     action.actionPerform(DesktopAbstractTable.this);
+                }
             }
         });
     }
@@ -267,8 +270,9 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         }
         if (action != null && action.isEnabled()) {
             Window window = ComponentsHelper.getWindow(DesktopAbstractTable.this);
-            if (window instanceof Window.Wrapper)
+            if (window instanceof Window.Wrapper) {
                 window = ((Window.Wrapper) window).getWrappedWindow();
+            }
 
             if (!(window instanceof Window.Lookup)) {
                 action.actionPerform(DesktopAbstractTable.this);
@@ -276,9 +280,9 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                 Window.Lookup lookup = (Window.Lookup) window;
 
                 com.haulmont.cuba.gui.components.Component lookupComponent = lookup.getLookupComponent();
-                if (lookupComponent != this)
+                if (lookupComponent != this) {
                     action.actionPerform(DesktopAbstractTable.this);
-                else if (action.getId().equals(WindowDelegate.LOOKUP_ITEM_CLICK_ACTION_ID)) {
+                } else if (action.getId().equals(WindowDelegate.LOOKUP_ITEM_CLICK_ACTION_ID)) {
                     action.actionPerform(DesktopAbstractTable.this);
                 }
             }
@@ -311,8 +315,9 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                 tableColumn.setPreferredWidth(width);
                 tableColumn.setWidth(width);
                 summaryWidth += width;
-            } else
+            } else {
                 notInited.add(tableColumn);
+            }
         }
 
         if (notInited.size() != impl.getColumnCount()) {
@@ -320,8 +325,9 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
             if (!notInited.isEmpty() && (componentWidth > summaryWidth)) {
                 int defaultWidth = (componentWidth - summaryWidth) / notInited.size();
-                for (TableColumn column : notInited)
+                for (TableColumn column : notInited) {
                     column.setPreferredWidth(Math.max(defaultWidth, column.getWidth()));
+                }
             }
         }
     }
@@ -341,8 +347,9 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     @Override
     public Column getColumn(String id) {
         for (Table.Column column : columnsOrder) {
-            if (column.getId().toString().equals(id))
+            if (column.getId().toString().equals(id)) {
                 return column;
+            }
         }
         return null;
     }
@@ -352,8 +359,9 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         columns.put(column.getId(), column);
         columnsOrder.add(column);
 
-        if (tableModel != null)
+        if (tableModel != null) {
             tableModel.addColumn(column);
+        }
 
         setColumnIdentifiers();
         refresh();
@@ -389,8 +397,9 @@ public abstract class DesktopAbstractTable<C extends JXTable>
             columns.remove(column.getId());
             columnsOrder.remove(column);
 
-            if (tableModel != null)
+            if (tableModel != null) {
                 tableModel.removeColumn(column);
+            }
 
             setColumnIdentifiers();
         }
@@ -448,8 +457,9 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
         setColumnIdentifiers();
 
-        if (isSortable())
+        if (isSortable()) {
             impl.setRowSorter(new RowSorterImpl(tableModel));
+        }
 
         initSelectionListener(datasource);
 
@@ -547,13 +557,15 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                             Object columnId = columns.get(i).getId();
                             if (columnId instanceof MetaPropertyPath) {
                                 String propertyName = ((MetaPropertyPath) columnId).getMetaProperty().getName();
-                                if (propertyName.equals(property))
+                                if (propertyName.equals(property)) {
                                     find = true;
+                                }
                             }
                             i++;
                         }
-                        if (find)
+                        if (find) {
                             onDataChange();
+                        }
                         packRows();
                     }
 
@@ -567,8 +579,9 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                 }
         );
 
-        if (rowsCount != null)
+        if (rowsCount != null) {
             rowsCount.setDatasource(datasource);
+        }
 
         datasource.addListener(new CollectionDsActionsNotifier(this));
 
@@ -578,10 +591,11 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     }
 
     protected String getColumnCaption(Object columnId) {
-        if (columnId instanceof MetaPropertyPath)
+        if (columnId instanceof MetaPropertyPath) {
             return ((MetaPropertyPath) columnId).getMetaProperty().getName();
-        else
+        } else {
             return columnId.toString();
+        }
     }
 
     protected void setColumnIdentifiers() {
@@ -593,7 +607,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     }
 
     protected List<TableColumn> getAllColumns() {
-        return ((TableColumnModelExt)impl.getColumnModel()).getColumns(true);
+        return ((TableColumnModelExt) impl.getColumnModel()).getColumns(true);
     }
 
     protected void onDataChange() {
@@ -648,16 +662,18 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
                         int entityIndex = 0;
                         while (itemId != null && minimalSelectionRowIndex == Integer.MAX_VALUE) {
-                            if (selection.contains(datasource.getItem(itemId)))
+                            if (selection.contains(datasource.getItem(itemId))) {
                                 minimalSelectionRowIndex = entityIndex;
+                            }
                             itemId = orderedDs.nextItemId(itemId);
                             entityIndex++;
                         }
                     } else {
                         for (Entity entity : selection) {
                             int rowIndex = tableModel.getRowIndex(entity);
-                            if (rowIndex < minimalSelectionRowIndex && rowIndex >= 0)
+                            if (rowIndex < minimalSelectionRowIndex && rowIndex >= 0) {
                                 minimalSelectionRowIndex = rowIndex;
+                            }
                         }
                     }
 
@@ -666,8 +682,9 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                         focusManager.focusSelectedRow(minimalSelectionRowIndex);
                     }
                 } else if (impl.getCellEditor() != null) {
-                    if (!impl.getCellEditor().stopCellEditing())
+                    if (!impl.getCellEditor().stopCellEditing()) {
                         impl.getCellEditor().cancelCellEditing();
+                    }
                 }
 
                 setSelected(selection);
@@ -699,8 +716,9 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                     @Override
                     @SuppressWarnings("unchecked")
                     public void valueChanged(ListSelectionEvent e) {
-                        if (e.getValueIsAdjusting() || datasource == null)
+                        if (e.getValueIsAdjusting() || datasource == null) {
                             return;
+                        }
 
                         selectedItems = getSelected();
 //                        disabled for #PL-2035
@@ -720,10 +738,11 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     protected void setVisibleColumns(List<?> columnsOrder) {
         for (TableColumn tableColumn : getAllColumns()) {
             Column columnIdentifier = (Column) tableColumn.getIdentifier();
-            if (!columnsOrder.contains(columnIdentifier.getId()))
-                ((TableColumnExt)tableColumn).setVisible(false);
-            else
-                ((TableColumnExt)tableColumn).setVisible(true);
+            if (!columnsOrder.contains(columnIdentifier.getId())) {
+                ((TableColumnExt) tableColumn).setVisible(false);
+            } else {
+                ((TableColumnExt) tableColumn).setVisible(true);
+            }
         }
     }
 
@@ -786,8 +805,9 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         List<Column> visibleColumns = new LinkedList<>();
         for (Column column : columnsOrder) {
             TableColumnExt columnExt = impl.getColumnExt(column);
-            if (columnExt != null && columnExt.isVisible())
+            if (columnExt != null && columnExt.isVisible()) {
                 visibleColumns.add(column);
+            }
         }
         return visibleColumns;
     }
@@ -796,8 +816,9 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     public void setSortable(boolean sortable) {
         this.sortable = sortable;
         if (sortable) {
-            if (tableModel != null && impl.getRowSorter() == null)
+            if (tableModel != null && impl.getRowSorter() == null) {
                 impl.setRowSorter(new RowSorterImpl(tableModel));
+            }
         } else {
             impl.setRowSorter(null);
         }
@@ -867,8 +888,9 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     @Override
     public void selectAll() {
         if (isMultiSelect()) {
-            if (impl.getRowCount() > 0)
+            if (impl.getRowCount() > 0) {
                 impl.setRowSelectionInterval(0, impl.getModel().getRowCount() - 1);
+            }
         }
     }
 
@@ -946,7 +968,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                     .setViewName("_local")
                     .buildDatasource();
 
-            ((DatasourceImplementation)fieldDatasource).valid();
+            ((DatasourceImplementation) fieldDatasource).valid();
 
             fieldDatasource.setItem(item);
             fieldDatasources.put(item, fieldDatasource);
@@ -968,18 +990,9 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
         Column col = getColumn(columnId);
         if (col == null) {
-            // if column with columnId does not exists then add new to model
-            col = new Column(columnId, columnId);
-
-            columns.put(col.getId(), col);
-            // do not touch columnsOrder, it will be synced from table model
-            if (tableModel != null) {
-                tableModel.addColumn(col);
-            }
-
-            // reassign column identifiers
-            setColumnIdentifiers();
+            col = addRuntimeGeneratedColumn(columnId);
         }
+
         col.setEditable(false); // generated column must be non-editable, see TableModelAdapter.setValueAt()
         tableModel.addGeneratedColumn(col);
         TableColumn tableColumn = getColumn(col);
@@ -991,6 +1004,50 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
         packRows();
         impl.repaint();
+    }
+
+    protected Column addRuntimeGeneratedColumn(String columnId) {
+        // store old cell editors / renderers
+        TableCellEditor[] cellEditors = new TableCellEditor[tableModel.getColumnCount() + 1];
+        TableCellRenderer[] cellRenderers = new TableCellRenderer[tableModel.getColumnCount() + 1];
+
+        for (int i = 0; i < tableModel.getColumnCount(); i++) {
+            Column tableModelColumn = tableModel.getColumn(i);
+
+            if (tableModel.isGeneratedColumn(tableModelColumn)) {
+                TableColumn tableColumn = getColumn(tableModelColumn);
+                cellEditors[i] = tableColumn.getCellEditor();
+                cellRenderers[i] = tableColumn.getCellRenderer();
+            }
+        }
+
+        // if column with columnId does not exists then add new to model
+        Column col = new Column(columnId, columnId);
+
+        columns.put(col.getId(), col);
+        // do not touch columnsOrder, it will be synced from table model
+        if (tableModel != null) {
+            tableModel.addColumn(col);
+        }
+
+        // reassign column identifiers
+        setColumnIdentifiers();
+
+        // reattach old generated columns
+        for (int i = 0; i < tableModel.getColumnCount(); i++) {
+            Column tableModelColumn = tableModel.getColumn(i);
+
+            if (tableModel.isGeneratedColumn(tableModelColumn)) {
+                TableColumn tableColumn = getColumn(tableModelColumn);
+                if (cellEditors[i] != null) {
+                    tableColumn.setCellEditor(cellEditors[i]);
+                }
+                if (cellRenderers[i] != null) {
+                    tableColumn.setCellRenderer(cellRenderers[i]);
+                }
+            }
+        }
+        return col;
     }
 
     @Override
@@ -1067,8 +1124,9 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                 TableCellEditor cellEditor = tableColumn.getCellEditor();
                 if (cellEditor instanceof DesktopTableCellEditor) {
                     ColumnGenerator columnGenerator = ((DesktopTableCellEditor) cellEditor).getColumnGenerator();
-                    if (columnGenerator instanceof Printable)
+                    if (columnGenerator instanceof Printable) {
                         return (Printable) columnGenerator;
+                    }
                 }
             }
             return null;
@@ -1177,10 +1235,11 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
     @Override
     public void setMultiSelect(boolean multiselect) {
-        if (multiselect)
+        if (multiselect) {
             impl.getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        else
+        } else {
             impl.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        }
     }
 
     @Override
@@ -1196,8 +1255,9 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         for (int row : rows) {
             int modelRow = impl.convertRowIndexToModel(row);
             Object item = tableModel.getItem(modelRow);
-            if (item != null)
+            if (item != null) {
                 set.add((T) item);
+            }
         }
         return set;
     }
@@ -1213,8 +1273,9 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
     @Override
     public void setSelected(Collection<Entity> items) {
-        if (items == null)
+        if (items == null) {
             items = Collections.emptyList();
+        }
         for (Entity item : items) {
             // noinspection unchecked
             if (!datasource.containsItem(item.getId())) {
@@ -1349,8 +1410,9 @@ public abstract class DesktopAbstractTable<C extends JXTable>
             FontMetrics metrics = graphics.getFontMetrics(font);
             defaultRowHeight = metrics.getHeight() + DEFAULT_ROW_MARGIN;
             fontInitialized = true;
-            if (impl != null)
+            if (impl != null) {
                 packRows();
+            }
         }
     }
 
@@ -1430,8 +1492,9 @@ public abstract class DesktopAbstractTable<C extends JXTable>
      * @return table cell editor
      */
     public DesktopTableCellEditor getCellEditor(String columnId) {
-        if (columnId == null)
+        if (columnId == null) {
             throw new IllegalArgumentException("columnId is null");
+        }
 
         Column col = getColumn(columnId);
         TableColumnModel columnModel = impl.getColumnModel();
