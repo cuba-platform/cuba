@@ -6,7 +6,6 @@
 package com.haulmont.cuba.core.sys.encryption;
 
 import com.haulmont.cuba.core.global.HashDescriptor;
-import com.haulmont.cuba.core.global.HashMethod;
 import com.haulmont.cuba.security.entity.User;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.StringUtils;
@@ -27,20 +26,20 @@ import java.util.UUID;
 @ManagedBean("cuba_Sha1EncryptionModule")
 public class Sha1EncryptionModule implements EncryptionModule {
 
-    private static final String ALGORITHM = "PBKDF2WithHmacSHA1";
+    protected static final String ALGORITHM = "PBKDF2WithHmacSHA1";
 
-    private static final String RANDOMIZE_ALGORITHM = "SHA1PRNG";
-    private static final int DERIVED_KEY_LENGTH_BITS = 160;
+    protected static final String RANDOMIZE_ALGORITHM = "SHA1PRNG";
+    protected static final int DERIVED_KEY_LENGTH_BITS = 160;
 
-    private static final int SALT_LENGTH_BYTES = 8;
+    protected static final int SALT_LENGTH_BYTES = 8;
 
-    private static final int ITERATIONS = 20000;
+    protected static final int ITERATIONS = 20000;
 
-    private static final String STATIC_SALT = "bae5b072f23b2417";
+    protected static final String STATIC_SALT = "bae5b072f23b2417";
 
     @Override
-    public HashMethod getHashMethod() {
-        return HashMethod.SHA1;
+    public String getHashMethod() {
+        return "sha1";
     }
 
     @Override
@@ -64,7 +63,7 @@ public class Sha1EncryptionModule implements EncryptionModule {
 
     @Override
     public String getHash(String content, String salt) {
-        if (salt == null)
+        if (StringUtils.isEmpty(salt))
             salt = STATIC_SALT;
         String result;
         try {
@@ -86,18 +85,18 @@ public class Sha1EncryptionModule implements EncryptionModule {
         return StringUtils.equals(hashedPassword, user.getPassword());
     }
 
-    private String generateSalt() throws NoSuchAlgorithmException {
+    protected String generateSalt() throws NoSuchAlgorithmException {
         SecureRandom random = SecureRandom.getInstance(RANDOMIZE_ALGORITHM);
         byte[] salt = new byte[SALT_LENGTH_BYTES];
         random.nextBytes(salt);
         return new String(Hex.encodeHex(salt));
     }
 
-    private KeySpec getKeySpec(String content, byte[] salt) {
+    protected KeySpec getKeySpec(String content, byte[] salt) {
         return new PBEKeySpec(content.toCharArray(), salt, ITERATIONS, DERIVED_KEY_LENGTH_BITS);
     }
 
-    private String apply(String content, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    protected String apply(String content, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
         KeySpec keySpec = getKeySpec(content, salt);
 
         SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(ALGORITHM);

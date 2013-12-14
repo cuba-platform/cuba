@@ -6,7 +6,6 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.global.HashDescriptor;
-import com.haulmont.cuba.core.global.HashMethod;
 import com.haulmont.cuba.core.global.PasswordEncryption;
 import com.haulmont.cuba.core.sys.encryption.EncryptionModule;
 import com.haulmont.cuba.security.entity.User;
@@ -44,7 +43,7 @@ public class PasswordEncryptionImpl implements PasswordEncryption {
     }
 
     @Override
-    public HashMethod getHashMethod() {
+    public String getHashMethod() {
         return encryptionModule.getHashMethod();
     }
 

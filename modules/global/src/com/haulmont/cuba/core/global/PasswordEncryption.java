@@ -27,7 +27,7 @@ public interface PasswordEncryption {
     /**
      * @return a hashing method in use
      */
-    HashMethod getHashMethod();
+    String getHashMethod();
 
     /**
      * Hashing string with salt.

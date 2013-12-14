@@ -6,7 +6,6 @@
 package com.haulmont.cuba.core.jmx;
 
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.HashMethod;
 import com.haulmont.cuba.core.global.PasswordEncryption;
 import com.haulmont.cuba.core.sys.encryption.EncryptionModule;
 import com.haulmont.cuba.core.sys.encryption.UnsupportedHashMethodException;
@@ -35,15 +34,16 @@ public class PasswordEncryptionSupport implements PasswordEncryptionSupportMBean
 
     @Override
     public String getPasswordHashMethod() {
-        return passwordEncryption.getHashMethod().getId();
+        return passwordEncryption.getHashMethod();
     }
 
     @Override
     public String getSupportedHashMethods() {
         Map<String, EncryptionModule> encryptionModules = AppBeans.getAll(EncryptionModule.class);
         Set<String> methods = new HashSet<>();
-        for (EncryptionModule module : encryptionModules.values())
-            methods.add(module.getHashMethod().getId());
+        for (EncryptionModule module : encryptionModules.values()) {
+            methods.add(module.getHashMethod());
+        }
 
         return StringUtils.join(methods, ", ");
     }
@@ -82,10 +82,12 @@ public class PasswordEncryptionSupport implements PasswordEncryptionSupportMBean
 
     @Override
     public String getSpecificHash(String content, String method) {
-        HashMethod hashMethod = HashMethod.fromId(method);
-        if (hashMethod == null)
+        EncryptionModule module;
+        try {
+            module = getEncryptionModule(method);
+        } catch (UnsupportedHashMethodException ex) {
             return UNSUPPORTED_HASH_METHOD;
-        EncryptionModule module = getEncryptionModule(hashMethod);
+        }
         return module.getHash(content).toString();
     }
 
@@ -98,36 +100,43 @@ public class PasswordEncryptionSupport implements PasswordEncryptionSupportMBean
             return "Invalid user Id";
         }
 
-        HashMethod hashMethod = HashMethod.fromId(method);
-        if (hashMethod == null)
+        EncryptionModule module;
+        try {
+            module = getEncryptionModule(method);
+        } catch (UnsupportedHashMethodException ex) {
             return UNSUPPORTED_HASH_METHOD;
-        EncryptionModule module = getEncryptionModule(hashMethod);
+        }
         return module.getPasswordHash(userUUID, password);
     }
 
     @Override
     public String getSpecificHash(String content, String salt, String method) {
-        HashMethod hashMethod = HashMethod.fromId(method);
-        if (hashMethod == null)
+        EncryptionModule module;
+        try {
+            module = getEncryptionModule(method);
+        } catch (UnsupportedHashMethodException ex) {
             return UNSUPPORTED_HASH_METHOD;
-        EncryptionModule module = getEncryptionModule(hashMethod);
+        }
         return module.getHash(content, salt);
     }
 
     @Override
     public String getSpecificPlainHash(String content, String method) {
-        HashMethod hashMethod = HashMethod.fromId(method);
-        if (hashMethod == null)
+        EncryptionModule module;
+        try {
+            module = getEncryptionModule(method);
+        } catch (UnsupportedHashMethodException ex) {
             return UNSUPPORTED_HASH_METHOD;
-        EncryptionModule module = getEncryptionModule(hashMethod);
+        }
         return module.getPlainHash(content);
     }
 
-    private EncryptionModule getEncryptionModule(HashMethod hashMethod) {
+    protected EncryptionModule getEncryptionModule(String hashMethod) {
         Map<String, EncryptionModule> encryptionModules = AppBeans.getAll(EncryptionModule.class);
         for (EncryptionModule module : encryptionModules.values()) {
-            if (hashMethod == module.getHashMethod())
+            if (StringUtils.equals(hashMethod, module.getHashMethod())) {
                 return module;
+            }
         }
         throw new UnsupportedHashMethodException();
     }
