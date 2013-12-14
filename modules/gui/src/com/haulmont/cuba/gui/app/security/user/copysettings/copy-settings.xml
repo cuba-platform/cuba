@@ -3,34 +3,30 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<window
-    xmlns="http://schemas.haulmont.com/cuba/3.3/window.xsd"
-    datasource="users"
-    caption="msg://copySettings"
-    class="com.haulmont.cuba.gui.app.security.user.copysettings.CopySettings"
-    messagesPack="com.haulmont.cuba.gui.app.security.user.copysettings"
-    focusComponent="user"
->
+<window xmlns="http://schemas.haulmont.com/cuba/5.0/window.xsd"
+        caption="msg://copySettings"
+        class="com.haulmont.cuba.gui.app.security.user.copysettings.CopySettings"
+        messagesPack="com.haulmont.cuba.gui.app.security.user.copysettings"
+        focusComponent="user">
+
     <dsContext>
         <collectionDatasource id="usersDs"
-                    class="com.haulmont.cuba.security.entity.User"
-                    view="user.copySettings">
+                              class="com.haulmont.cuba.security.entity.User"
+                              view="user.copySettings">
             <query>select u from sec$User u</query>
         </collectionDatasource>
     </dsContext>
 
-    <layout>
-        <vbox spacing="true">
-            <label id="label" value="msg://copyFromUser" width="400px"/>
-            <lookupField width="200px" id="user"
-                         optionsDatasource="usersDs"
-                         required="true"
-                         requiredMessage="msg://selectUser"/>
-            <buttonsPanel id="panel">
-                <button id="copyBtn" caption="msg://copy" icon="icons/ok.png" />
-                <button id="cancelBtn" caption="msg://cancel" icon="icons/cancel.png" />
-            </buttonsPanel>
-        </vbox>
+    <layout spacing="true">
+        <label id="label" value="msg://copyFromUser"/>
+        <lookupField width="350px" id="user"
+                     optionsDatasource="usersDs"
+                     required="true"
+                     requiredMessage="msg://selectUser"/>
+        <buttonsPanel id="panel">
+            <button id="copyBtn" caption="msg://copy" icon="icons/ok.png"/>
+            <button id="cancelBtn" caption="msg://cancel" icon="icons/cancel.png"/>
+        </buttonsPanel>
     </layout>
 </window>
 

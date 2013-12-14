@@ -39,10 +39,12 @@ public class UserSettingServiceBean implements UserSettingService {
     @Inject
     protected Metadata metadata;
 
+    @Override
     public String loadSetting(String name) {
         return loadSetting(null, name);
     }
 
+    @Override
     public String loadSetting(ClientType clientType, String name) {
         String value;
         Transaction tx = persistence.createTransaction();
@@ -69,10 +71,12 @@ public class UserSettingServiceBean implements UserSettingService {
         return value;
     }
 
+    @Override
     public void saveSetting(String name, String value) {
         saveSetting(null, name, value);
     }
 
+    @Override
     public void saveSetting(ClientType clientType, String name, String value) {
         Transaction tx = persistence.createTransaction();
         try {
@@ -104,6 +108,7 @@ public class UserSettingServiceBean implements UserSettingService {
         }
     }
 
+    @Override
     public void copySettings(User fromUser, User toUser) {
         if (!userSessionSource.getUserSession().isEntityOpPermitted(metadata.getClassNN(UserSetting.class), EntityOp.CREATE))
             throw new AccessDeniedException(PermissionType.ENTITY_OP, metadata.getClassNN(UserSetting.class).getName());
@@ -169,9 +174,8 @@ public class UserSettingServiceBean implements UserSettingService {
         }
     }
 
-
     protected Map<UUID, Presentation> copyPresentations(User fromUser, User toUser) {
-        Map<UUID, Presentation> presentationMap = new HashMap<UUID, Presentation>();
+        Map<UUID, Presentation> presentationMap = new HashMap<>();
         Transaction tx = persistence.createTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
@@ -213,7 +217,7 @@ public class UserSettingServiceBean implements UserSettingService {
             Query q = em.createQuery("select s from " + effectiveMetaClass.getName() + " s where s.user.id = ?1");
             q.setParameter(1, fromUser);
             List<SearchFolder> fromUserFolders = q.getResultList();
-            Map<SearchFolder, SearchFolder> copiedFolders = new HashMap<SearchFolder, SearchFolder>();
+            Map<SearchFolder, SearchFolder> copiedFolders = new HashMap<>();
             for (SearchFolder searchFolder : fromUserFolders) {
                 copyFolder(searchFolder, toUser, copiedFolders, presentationsMap);
             }
@@ -306,6 +310,5 @@ public class UserSettingServiceBean implements UserSettingService {
         } finally {
             tx.end();
         }
-
     }
 }

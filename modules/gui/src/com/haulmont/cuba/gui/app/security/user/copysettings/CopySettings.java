@@ -5,7 +5,8 @@
 
 package com.haulmont.cuba.gui.app.security.user.copysettings;
 
-import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.security.app.UserSettingService;
@@ -27,11 +28,15 @@ public class CopySettings extends AbstractWindow {
     @Inject
     protected Button copyBtn;
 
+    @Inject
+    protected Button cancelBtn;
+
+    @WindowParam(required = true)
     protected Set<User> users;
 
     @Override
     public void init(Map<String, Object> params) {
-        users = (Set<User>) params.get("users");
+        super.init(params);
 
         copyBtn.setAction(new AbstractAction("deployBtn") {
             @Override
@@ -40,7 +45,6 @@ public class CopySettings extends AbstractWindow {
                     showNotification(
                             getMessage("selectUser"), NotificationType.HUMANIZED);
                 } else {
-
                     showOptionDialog(
                             getMessage("confirmCopy.title"),
                             getMessage("confirmCopy.msg"),
@@ -58,7 +62,6 @@ public class CopySettings extends AbstractWindow {
             }
         });
 
-        Button cancelBtn = getComponent("cancelBtn");
         cancelBtn.setAction(new AbstractAction("cancelBtn") {
             @Override
             public void actionPerform(Component component) {
@@ -67,12 +70,13 @@ public class CopySettings extends AbstractWindow {
         });
     }
 
-    private void copySettings() {
-        UserSettingService settingsService = ServiceLocator.lookup(UserSettingService.NAME);
+    protected void copySettings() {
+        UserSettingService settingsService = AppBeans.get(UserSettingService.NAME);
         User fromUser = usersDs.getItem();
         for (User user : users) {
-            if (!user.equals(fromUser))
+            if (!user.equals(fromUser)) {
                 settingsService.copySettings(fromUser, user);
+            }
         }
         close("ok");
     }
