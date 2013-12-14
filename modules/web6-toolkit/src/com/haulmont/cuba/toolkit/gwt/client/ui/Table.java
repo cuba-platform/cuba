@@ -199,7 +199,8 @@ public abstract class Table
      */
     protected boolean recalcWidths = false;
 
-    protected int scrollbarWidthReservedInColumn = -1;
+    protected String scrollbarWidthReservedInColumnKey = null;
+
     protected int scrollbarWidthReserved = -1;
     protected boolean relativeWidth = false;
 
@@ -1071,7 +1072,10 @@ public abstract class Table
     }
 
     protected String getColKeyByIndex(int index) {
-        return tHead.getHeaderCell(index).getColKey();
+        HeaderCell headerCell = tHead.getHeaderCell(index);
+        if (headerCell == null)
+            return null;
+        return headerCell.getColKey();
     }
 
     protected void setColWidth(int colIndex, int w) {
@@ -1227,7 +1231,8 @@ public abstract class Table
                         totalWidthR += scrollbarWidthReserved;
                     }
                     extraSpace -= scrollbarWidthReserved;
-                    scrollbarWidthReservedInColumn = columnindex;
+
+                    scrollbarWidthReservedInColumnKey = headerCell.getColKey();
                 }
 
                 calculatedWidth = 0;
@@ -3449,13 +3454,17 @@ public abstract class Table
             super.setWidth(width);
             int newWidth = getOffsetWidth();
 
-            if (scrollbarWidthReservedInColumn != -1 && oldWidth > newWidth
+            if (scrollbarWidthReservedInColumnKey != null && oldWidth > newWidth
                     && (oldWidth - newWidth) < scrollbarWidthReserved) {
-                int col = scrollbarWidthReservedInColumn;
-                String colKey = getColKeyByIndex(col);
-                setColWidth(scrollbarWidthReservedInColumn, getColWidth(colKey)
-                        - (oldWidth - newWidth));
-                scrollbarWidthReservedInColumn = -1;
+
+                String colKey = scrollbarWidthReservedInColumnKey;
+                int colIndex = getColIndexByKey(colKey);
+
+                if (colIndex > 0) {
+                    setColWidth(colIndex, getColWidth(colKey)
+                            - (oldWidth - newWidth));
+                    scrollbarWidthReservedInColumnKey = null;
+                }
             }
 
             int innerPixels = getOffsetWidth() - getBorderWidth();
