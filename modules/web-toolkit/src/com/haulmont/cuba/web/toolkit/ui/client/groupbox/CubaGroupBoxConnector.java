@@ -9,10 +9,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.haulmont.cuba.web.toolkit.ui.CubaGroupBox;
 import com.haulmont.cuba.web.toolkit.ui.client.Tools;
-import com.vaadin.client.ApplicationConnection;
-import com.vaadin.client.LayoutManager;
-import com.vaadin.client.Profiler;
-import com.vaadin.client.UIDL;
+import com.vaadin.client.*;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.VPanel;
 import com.vaadin.client.ui.panel.PanelConnector;
@@ -92,15 +89,25 @@ public class CubaGroupBoxConnector extends PanelConnector {
     public void layout() {
         CubaGroupBoxWidget panel = getWidget();
 
-        if (isUndefinedWidth()) {
-            // do not set width: 100% for captionEndDeco in CSS
-            // it brokes layout with width: AUTO
-            panel.captionWrap.getStyle().setWidth(getWidget().contentNode.getOffsetWidth(), Style.Unit.PX);
-        } else {
-            panel.captionWrap.getStyle().setWidth(100, Style.Unit.PCT);
-        }
+        boolean bordersVisible = panel.captionStartDeco.getOffsetWidth() > 0 || panel.captionEndDeco.getOffsetWidth() > 0;
 
-        panel.captionEndDeco.getStyle().setWidth(100, Style.Unit.PCT);
+        if (bordersVisible) {
+            if (isUndefinedWidth()) {
+                // do not set width: 100% for captionEndDeco in CSS
+                // it brokes layout with width: AUTO
+                panel.captionWrap.getStyle().setWidth(Util.getRequiredWidth(getWidget().contentNode), Style.Unit.PX);
+            } else {
+                panel.captionWrap.getStyle().setWidth(100, Style.Unit.PCT);
+            }
+
+            panel.captionEndDeco.getStyle().setWidth(100, Style.Unit.PCT);
+
+            int captionWidth = Util.getRequiredWidth(getWidget().captionNode);
+            int captionStartWidth = Util.getRequiredWidth(getWidget().captionStartDeco);
+
+            panel.captionWrap.getStyle().setPaddingLeft(captionWidth + captionStartWidth, Style.Unit.PX);
+            panel.captionStartDeco.getStyle().setMarginLeft(-captionStartWidth - captionWidth, Style.Unit.PX);
+        }
 
         LayoutManager layoutManager = getLayoutManager();
         Profiler.enter("PanelConnector.layout getHeights");

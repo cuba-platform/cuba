@@ -18,11 +18,12 @@
   }
 
   .#{$primaryStyleName}-captionwrap {
-    display: table;
+    display: block;
+    font-size: 0;
   }
 
   .#{$primaryStyleName}-caption-start-deco {
-    display: table-cell;
+    display: inline-block;
     height: 20px;
     padding-top: 10px;
 
@@ -35,15 +36,16 @@
   }
 
   .#{$primaryStyleName}-caption {
-    display: table-cell;
+    display: inline-block;
     height: 20px;
     vertical-align: top;
     padding: 0 5px;
     font-weight: normal;
+    font-size: 12px;
   }
 
   .#{$primaryStyleName}-caption-end-deco {
-    display: table-cell;
+    display: inline-block;
     height: 20px;
     border: 0;
     padding-top: 10px;
