@@ -328,6 +328,9 @@ public class DesktopTreeTable
 
     @Override
     public void packRows() {
+        if (!contentRepaintEnabled)
+            return;
+
         impl.setRowHeight(defaultRowHeight);
     }
 

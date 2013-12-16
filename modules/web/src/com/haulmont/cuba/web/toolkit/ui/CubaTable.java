@@ -74,8 +74,8 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
     }
 
     @Override
-    public void disableContentBufferRefreshing() {
-        disableContentRefreshing();
+    public boolean disableContentBufferRefreshing() {
+        return disableContentRefreshing();
     }
 
     @Override

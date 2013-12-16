@@ -20,13 +20,11 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
-import java.awt.event.FocusEvent;
 import java.util.*;
 
 /**
- * <p>$Id$</p>
- *
  * @author Alexander Budarov
+ * @version $Id$
  */
 public class DesktopTableCellEditor extends AbstractCellEditor implements TableCellEditor, TableCellRenderer {
 
@@ -34,7 +32,10 @@ public class DesktopTableCellEditor extends AbstractCellEditor implements TableC
 
     private Table.ColumnGenerator columnGenerator;
     private Component activeComponent;
-    private Map<Integer, Component> cache = new HashMap<Integer, Component>();
+    private Map<Integer, Component> cache = new HashMap<>();
+
+    // Used for properly removing column from table
+    private Table.Column associatedRuntimeColumn;
 
     /*
      * true, if cells of this column hold editable content.
@@ -120,6 +121,14 @@ public class DesktopTableCellEditor extends AbstractCellEditor implements TableC
             comp = DesktopComponentsHelper.getComposition(component);
         cache.put(row, comp);
         return comp;
+    }
+
+    public Table.Column getAssociatedRuntimeColumn() {
+        return associatedRuntimeColumn;
+    }
+
+    public void setAssociatedRuntimeColumn(Table.Column associatedRuntimeColumn) {
+        this.associatedRuntimeColumn = associatedRuntimeColumn;
     }
 
     @Override

@@ -71,8 +71,8 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
     }
 
     @Override
-    public void disableContentBufferRefreshing() {
-        disableContentRefreshing();
+    public boolean disableContentBufferRefreshing() {
+        return disableContentRefreshing();
     }
 
     @Override

@@ -151,8 +151,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     @Override
     public void removeColumn(Table.Column column) {
         component.removeContainerProperty(column.getId());
-        //noinspection RedundantCast
-        columns.remove((MetaPropertyPath) column.getId());
+        columns.remove(column.getId());
         columnsOrder.remove(column);
     }
 
@@ -182,7 +181,18 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     }
 
     protected void removeGeneratedColumn(Object id) {
+        boolean wasEnabled = component.disableContentRefreshing();
+
+        com.vaadin.ui.Table.ColumnGenerator columnGenerator = component.getColumnGenerator(id);
+        if (columnGenerator instanceof CustomColumnGenerator) {
+            CustomColumnGenerator tableGenerator = (CustomColumnGenerator) columnGenerator;
+            if (tableGenerator.getAssociatedRuntimeColumn() != null) {
+                removeColumn(tableGenerator.getAssociatedRuntimeColumn());
+            }
+        }
         component.removeGeneratedColumn(id);
+
+        component.enableContentRefreshing(wasEnabled);
     }
 
     @Override
@@ -1090,11 +1100,14 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         Object generatedColumnId = targetCol != null ? targetCol : columnId;
 
         Column column = getColumn(columnId);
+        Column associatedRuntimeColumn = null;
         if (column == null) {
             Column newColumn = new Column(columnId);
 
             columns.put(newColumn.getId(), newColumn);
             columnsOrder.add(newColumn);
+
+            associatedRuntimeColumn = newColumn;
         }
 
         // replace generator for column if exist
@@ -1103,7 +1116,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
         component.addGeneratedColumn(
                 generatedColumnId,
-                new CustomColumnGenerator(generator) {
+                new CustomColumnGenerator(generator, associatedRuntimeColumn) {
                     @Override
                     public Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
                         Entity entity = getDatasource().getItem(itemId);
@@ -1299,10 +1312,22 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
     protected static abstract class CustomColumnGenerator implements com.vaadin.ui.Table.ColumnGenerator {
 
-        private ColumnGenerator columnGenerator;
+        protected ColumnGenerator columnGenerator;
+
+        // Used for properly removing column from table
+        protected Column associatedRuntimeColumn;
 
         protected CustomColumnGenerator(ColumnGenerator columnGenerator) {
             this.columnGenerator = columnGenerator;
+        }
+
+        protected CustomColumnGenerator(ColumnGenerator columnGenerator, @Nullable Column associatedRuntimeColumn) {
+            this.columnGenerator = columnGenerator;
+            this.associatedRuntimeColumn = associatedRuntimeColumn;
+        }
+
+        public Column getAssociatedRuntimeColumn() {
+            return associatedRuntimeColumn;
         }
 
         public ColumnGenerator getColumnGenerator() {

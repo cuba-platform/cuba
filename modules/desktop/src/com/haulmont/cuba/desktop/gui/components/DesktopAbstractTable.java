@@ -109,6 +109,8 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
     protected Map<Entity, Datasource> fieldDatasources = new WeakHashMap<>();
 
+    protected boolean contentRepaintEnabled = true;
+
     protected void initComponent() {
         layout = new MigLayout("flowy, fill, insets 0", "", "[min!][fill]");
         panel = new JPanel(layout);
@@ -391,6 +393,21 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         }
 
         if (tableColumn != null) {
+            // store old cell editors / renderers
+            Map<Object, TableCellEditor> cellEditors = new HashMap<>();
+            Map<Object, TableCellRenderer> cellRenderers = new HashMap<>();
+
+            for (int i = 0; i < tableModel.getColumnCount(); i++) {
+                Column tableModelColumn = tableModel.getColumn(i);
+
+                if (tableModel.isGeneratedColumn(tableModelColumn)) {
+                    TableColumn oldColumn = getColumn(tableModelColumn);
+
+                    cellEditors.put(tableModelColumn.getId(), oldColumn.getCellEditor());
+                    cellRenderers.put(tableModelColumn.getId(), oldColumn.getCellRenderer());
+                }
+            }
+
             impl.getColumnModel().removeColumn(tableColumn);
             impl.removeColumn(tableColumn);
 
@@ -401,7 +418,26 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                 tableModel.removeColumn(column);
             }
 
+            // reassign column identifiers
             setColumnIdentifiers();
+
+            // reattach old generated columns
+            for (int i = 0; i < tableModel.getColumnCount(); i++) {
+                Column tableModelColumn = tableModel.getColumn(i);
+
+                if (tableModel.isGeneratedColumn(tableModelColumn)) {
+                    TableColumn oldColumn = getColumn(tableModelColumn);
+                    if (cellEditors.containsKey(tableModelColumn.getId())) {
+                        oldColumn.setCellEditor(cellEditors.get(tableModelColumn.getId()));
+                    }
+                    if (cellRenderers.containsKey(tableModelColumn.getId())) {
+                        oldColumn.setCellRenderer(cellRenderers.get(tableModelColumn.getId()));
+                    }
+                }
+            }
+
+            packRows();
+            repaintImplIfNeeded();
         }
     }
 
@@ -617,7 +653,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                 ((DesktopTableCellEditor) cellEditor).clearCache();
             }
         }
-        impl.repaint();
+        repaintImplIfNeeded();
     }
 
     protected void initChangeListener() {
@@ -989,8 +1025,10 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         checkArgument(generator != null, "generator is null for column id '%s'", columnId);
 
         Column col = getColumn(columnId);
+        Column associatedRuntimeColumn = null;
         if (col == null) {
             col = addRuntimeGeneratedColumn(columnId);
+            associatedRuntimeColumn = col;
         }
 
         col.setEditable(false); // generated column must be non-editable, see TableModelAdapter.setValueAt()
@@ -1000,10 +1038,12 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         tableColumn.setCellEditor(cellEditor);
         tableColumn.setCellRenderer(cellEditor);
 
+        cellEditor.setAssociatedRuntimeColumn(associatedRuntimeColumn);
+
         generatedColumnsCount++;
 
         packRows();
-        impl.repaint();
+        repaintImplIfNeeded();
     }
 
     protected Column addRuntimeGeneratedColumn(String columnId) {
@@ -1053,11 +1093,25 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     @Override
     public void removeGeneratedColumn(String columnId) {
         checkArgument(columnId != null, "columnId is null");
-
         Column col = getColumn(columnId);
         if (col != null) {
+            boolean oldContentRepaintEnabled = isContentRepaintEnabled();
+            setContentRepaintEnabled(false);
+
+            TableColumn targetTableColumn = getColumn(col);
+            TableCellEditor cellEditor = targetTableColumn.getCellEditor();
+            if (cellEditor instanceof DesktopTableCellEditor) {
+                Column associatedRuntimeColumn = ((DesktopTableCellEditor) cellEditor).getAssociatedRuntimeColumn();
+
+                removeColumn(associatedRuntimeColumn);
+            }
+
             tableModel.removeGeneratedColumn(col);
             generatedColumnsCount--;
+
+            packRows();
+            repaintImplIfNeeded();
+            setContentRepaintEnabled(oldContentRepaintEnabled);
         }
     }
 
@@ -1149,7 +1203,13 @@ public abstract class DesktopAbstractTable<C extends JXTable>
             }
         }
         packRows();
-        impl.repaint();
+        repaintImplIfNeeded();
+    }
+
+    protected void repaintImplIfNeeded() {
+        if (contentRepaintEnabled) {
+            impl.repaint();
+        }
     }
 
     @Override
@@ -1351,7 +1411,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         if (datasource != null) {
             datasource.refresh();
             packRows();
-            impl.repaint();
+            repaintImplIfNeeded();
         }
     }
 
@@ -1421,6 +1481,9 @@ public abstract class DesktopAbstractTable<C extends JXTable>
      * tallest cell in that row.
      */
     public void packRows() {
+        if (!contentRepaintEnabled)
+            return;
+
         impl.setRowHeight(defaultRowHeight);
 
         if (allColumnsAreInline()) {
@@ -1482,6 +1545,19 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
     public AnyTableModelAdapter getTableModel() {
         return tableModel;
+    }
+
+    public boolean isContentRepaintEnabled() {
+        return contentRepaintEnabled;
+    }
+
+    public void setContentRepaintEnabled(boolean contentRepaintEnabled) {
+        if (this.contentRepaintEnabled != contentRepaintEnabled) {
+            this.contentRepaintEnabled = contentRepaintEnabled;
+
+            packRows();
+            repaintImplIfNeeded();
+        }
     }
 
     /**
