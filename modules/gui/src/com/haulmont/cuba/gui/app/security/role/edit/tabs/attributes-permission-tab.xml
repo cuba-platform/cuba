@@ -34,7 +34,7 @@
             <label width="20"/>
             <label value="msg://entityFilter" align="MIDDLE_RIGHT"/>
             <textField id="entityFilter" width="300"/>
-            <button id="applyFilterBtn" caption="msg://action.apply" invoke="applyFilter"/>
+            <button id="applyFilterBtn" caption="msg://actions.Apply" invoke="applyFilter"/>
             <label id="spacer"/>
         </hbox>
 

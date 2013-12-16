@@ -38,25 +38,25 @@ public class ScreenPermissionsFrame extends AbstractFrame {
     }
 
     @Inject
-    private Datasource<Role> roleDs;
+    protected Datasource<Role> roleDs;
 
     @Inject
-    private CollectionDatasource<Permission, UUID> screenPermissionsDs;
+    protected CollectionDatasource<Permission, UUID> screenPermissionsDs;
 
     @Inject
-    private TreeTable screenPermissionsTree;
+    protected TreeTable screenPermissionsTree;
 
     @Inject
-    private ScreenPermissionTreeDatasource screenPermissionsTreeDs;
+    protected ScreenPermissionTreeDatasource screenPermissionsTreeDs;
 
     @Inject
-    private BoxLayout selectedScreenPanel;
+    protected BoxLayout selectedScreenPanel;
 
     @Inject
-    private CheckBox allowCheckBox;
+    protected CheckBox allowCheckBox;
 
     @Inject
-    private CheckBox disallowCheckBox;
+    protected CheckBox disallowCheckBox;
 
     @Inject
     protected Security security;
@@ -64,7 +64,7 @@ public class ScreenPermissionsFrame extends AbstractFrame {
     @Inject
     protected Metadata metadata;
 
-    private boolean itemChanging = false;
+    protected boolean itemChanging = false;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -164,10 +164,13 @@ public class ScreenPermissionsFrame extends AbstractFrame {
             }
         });
 
-        boolean hasPermissionsToCreatePermission = security.isEntityOpPermitted(Permission.class, EntityOp.CREATE);
+        boolean isCreatePermitted = security.isEntityOpPermitted(Permission.class, EntityOp.CREATE);
+        boolean isDeletePermitted = security.isEntityOpPermitted(Permission.class, EntityOp.DELETE);
 
-        allowCheckBox.setEditable(hasPermissionsToCreatePermission);
-        disallowCheckBox.setEditable(hasPermissionsToCreatePermission);
+        boolean hasPermissionsToModifyPermission = isCreatePermitted && isDeletePermitted;
+
+        allowCheckBox.setEditable(hasPermissionsToModifyPermission);
+        disallowCheckBox.setEditable(hasPermissionsToModifyPermission);
     }
 
     public void loadPermissions() {

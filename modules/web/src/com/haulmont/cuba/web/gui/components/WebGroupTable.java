@@ -12,7 +12,6 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.GroupTable;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.data.*;
@@ -154,6 +153,26 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
     @Override
     public void expand(GroupInfo groupId) {
         component.expand(groupId);
+    }
+
+    @Override
+    public void expandPath(Entity item) {
+        if (component.hasGroups()) {
+            expandGroupsFor((Collection<GroupInfo>) component.rootGroups(), item.getId());
+        }
+    }
+
+    protected void expandGroupsFor(Collection<GroupInfo> groupSlice, Object itemId) {
+        for (GroupInfo g: groupSlice) {
+            if (component.getGroupItemIds(g).contains(itemId)) {
+                component.expand(g);
+
+                if (component.hasChildren(g)) {
+                    expandGroupsFor((Collection<GroupInfo>) component.getChildren(g), itemId);
+                }
+                return;
+            }
+        }
     }
 
     @Override
@@ -687,7 +706,7 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
         component.setAllowPopupMenu(value);
     }
 
-    private class GroupAggregationCells {
+    protected class GroupAggregationCells {
         private Map<Object, com.vaadin.ui.Label> cells = new HashMap<>();
 
         public void addCell(Object groupId, com.vaadin.ui.Label cell) {
@@ -699,7 +718,7 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
         }
     }
 
-    private class GroupAggregationDatasourceListener extends AggregationDatasourceListener {
+    protected class GroupAggregationDatasourceListener extends AggregationDatasourceListener {
         @Override
         public void valueChanged(Entity source, String property, Object prevValue, Object value) {
             super.valueChanged(source, property, prevValue, value);

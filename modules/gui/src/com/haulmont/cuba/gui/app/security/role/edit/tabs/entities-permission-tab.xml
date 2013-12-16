@@ -35,7 +35,7 @@
             <label width="20"/>
             <label value="msg://entityFilter" align="MIDDLE_RIGHT"/>
             <textField id="entityFilter" width="300"/>
-            <button id="applyFilterBtn" caption="msg://action.apply" invoke="applyFilter"/>
+            <button id="applyFilterBtn" caption="msg://actions.Apply" invoke="applyFilter"/>
             <label id="spacer"/>
         </hbox>
         <hbox id="contentPane" expand="contentSplit" spacing="true" margin="true" width="100%">
@@ -112,7 +112,7 @@
                         <hbox id="applyPermissionPane" width="100%" expand="horizontalSpacer" margin="true"
                               visible="false">
                             <label id="horizontalSpacer"/>
-                            <button id="applyPermissionMaskBtn" caption="msg://action.apply" icon="icons/ok.png"
+                            <button id="applyPermissionMaskBtn" caption="msg://actions.Apply" icon="icons/ok.png"
                                     invoke="applyPermissionMask"/>
                         </hbox>
                     </vbox>

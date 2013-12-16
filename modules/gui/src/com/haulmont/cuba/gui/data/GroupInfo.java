@@ -6,7 +6,10 @@ package com.haulmont.cuba.gui.data;
 
 import org.apache.commons.collections.map.LinkedMap;
 
-@SuppressWarnings("unchecked")
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 public class GroupInfo<P> {
 
     private LinkedMap group;
@@ -14,6 +17,7 @@ public class GroupInfo<P> {
     
     public GroupInfo(LinkedMap group) {
         this.group = new LinkedMap(group);
+        //noinspection unchecked
         groupProperty = (P) group.get(group.size() - 1);
     }
 

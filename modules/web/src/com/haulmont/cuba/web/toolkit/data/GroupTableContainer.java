@@ -4,8 +4,6 @@
  */
 package com.haulmont.cuba.web.toolkit.data;
 
-import com.vaadin.data.Container;
-
 import java.util.Collection;
 
 /**

@@ -18,18 +18,17 @@ import org.apache.commons.lang.StringUtils;
 import javax.annotation.Nullable;
 
 /**
- * <p>$Id$</p>
- *
  * @author artamonov
+ * @version $Id$
  */
 public class EntityNameFilter<T extends AssignableTarget> implements Predicate<T> {
 
-    private Metadata metadata;
-    private final CheckBox assignedOnlyCheckBox;
+    protected Metadata metadata;
+    protected final CheckBox assignedOnlyCheckBox;
 
-    private final CheckBox systemLevelCheckBox;
+    protected final CheckBox systemLevelCheckBox;
 
-    private final TextField entityFilter;
+    protected final TextField entityFilter;
 
     public EntityNameFilter(Metadata metadata, CheckBox assignedOnlyCheckBox, CheckBox systemLevelCheckBox,
                             TextField entityFilter) {

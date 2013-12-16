@@ -6,6 +6,7 @@
 package com.haulmont.cuba.gui.app.security.role.edit.tabs;
 
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.app.security.role.edit.PermissionUiHelper;
 import com.haulmont.cuba.gui.components.*;
@@ -34,20 +35,20 @@ import java.util.*;
  */
 public class AttributePermissionsFrame extends AbstractFrame {
 
-    private static final String CHECKER_COLUMN_WIDTH = "75px";
+    protected static final String CHECKER_COLUMN_WIDTH = "75px";
 
     public interface Companion {
         void initPermissionColoredColumn(Table propertyPermissionsTable);
     }
 
     @Inject
-    private Datasource<Role> roleDs;
+    protected Datasource<Role> roleDs;
 
     @Inject
-    private RestorablePermissionDatasource propertyPermissionsDs;
+    protected RestorablePermissionDatasource propertyPermissionsDs;
 
     @Inject
-    private MultiplePermissionTargetsDatasource attributeTargetsDs;
+    protected MultiplePermissionTargetsDatasource attributeTargetsDs;
 
     @Inject
     protected UserSession userSession;
@@ -55,60 +56,63 @@ public class AttributePermissionsFrame extends AbstractFrame {
     @Inject
     protected Metadata metadata;
 
+    @Inject
+    protected Security security;
+
     /* Selection */
 
     @Inject
-    private Table propertyPermissionsTable;
+    protected Table propertyPermissionsTable;
 
     @Inject
-    private Label selectedTargetCaption;
+    protected Label selectedTargetCaption;
 
     /* Panels */
 
     @Inject
-    private BoxLayout selectedEntityPanel;
+    protected BoxLayout selectedEntityPanel;
 
     @Inject
-    private ScrollBoxLayout editGridContainer;
+    protected ScrollBoxLayout editGridContainer;
 
     /* Filter */
 
     @Inject
-    private TextField entityFilter;
+    protected TextField entityFilter;
 
     @Inject
-    private CheckBox assignedOnlyCheckBox;
+    protected CheckBox assignedOnlyCheckBox;
 
     @Inject
-    private CheckBox systemLevelCheckBox;
+    protected CheckBox systemLevelCheckBox;
 
     /* Checkboxes */
 
-    private CheckBox allModifyCheck;
+    protected CheckBox allModifyCheck;
 
-    private CheckBox allReadOnlyCheck;
+    protected CheckBox allReadOnlyCheck;
 
-    private CheckBox allHideCheck;
+    protected CheckBox allHideCheck;
 
     /* */
 
-    private boolean itemChanging = false;
+    protected boolean itemChanging = false;
 
-    private boolean hasPermissionsToCreatePermission;
+    protected boolean hasPermissionsToModifyPermission;
 
-    private ComponentsFactory uiFactory = AppConfig.getFactory();
+    protected ComponentsFactory uiFactory = AppConfig.getFactory();
 
-    private class AttributePermissionControl {
+    protected class AttributePermissionControl {
 
-        private Label attributeLabel;
-        private CheckBox modifyCheckBox;
-        private CheckBox readOnlyCheckBox;
-        private CheckBox hideCheckBox;
+        protected Label attributeLabel;
+        protected CheckBox modifyCheckBox;
+        protected CheckBox readOnlyCheckBox;
+        protected CheckBox hideCheckBox;
 
-        private MultiplePermissionTarget item;
-        private String attributeName;
+        protected MultiplePermissionTarget item;
+        protected String attributeName;
 
-        private AttributePermissionControl(MultiplePermissionTarget item, String attributeName) {
+        public AttributePermissionControl(MultiplePermissionTarget item, String attributeName) {
             this.item = item;
             this.attributeName = attributeName;
 
@@ -156,13 +160,13 @@ public class AttributePermissionsFrame extends AbstractFrame {
             return hideCheckBox;
         }
 
-        private void updateCheckers(AttributePermissionVariant permissionVariant) {
+        protected void updateCheckers(AttributePermissionVariant permissionVariant) {
             modifyCheckBox.setValue(permissionVariant == AttributePermissionVariant.MODIFY);
             readOnlyCheckBox.setValue(permissionVariant == AttributePermissionVariant.READ_ONLY);
             hideCheckBox.setValue(permissionVariant == AttributePermissionVariant.HIDE);
         }
 
-        private void attachListener(CheckBox checkBox, final AttributePermissionVariant activeVariant) {
+        protected void attachListener(CheckBox checkBox, final AttributePermissionVariant activeVariant) {
             checkBox.addListener(new ValueListener<CheckBox>() {
                 @Override
                 public void valueChanged(CheckBox source, String property, Object prevValue, Object value) {
@@ -223,7 +227,7 @@ public class AttributePermissionsFrame extends AbstractFrame {
         }
     }
 
-    private final List<AttributePermissionControl> permissionControls = new LinkedList<>();
+    protected final List<AttributePermissionControl> permissionControls = new LinkedList<>();
 
     @Override
     public void init(Map<String, Object> params) {
@@ -262,8 +266,9 @@ public class AttributePermissionsFrame extends AbstractFrame {
 
         attributeTargetsDs.refresh();
 
-        hasPermissionsToCreatePermission = userSession.isEntityOpPermitted(
-                metadata.getSession().getClass(Permission.class), EntityOp.CREATE);
+        boolean isCreatePermitted = security.isEntityOpPermitted(Permission.class, EntityOp.CREATE);
+        boolean isDeletePermitted = security.isEntityOpPermitted(Permission.class, EntityOp.DELETE);
+        hasPermissionsToModifyPermission = isCreatePermitted && isDeletePermitted;
     }
 
     public void applyFilter() {
@@ -279,7 +284,7 @@ public class AttributePermissionsFrame extends AbstractFrame {
         }
     }
 
-    private void attachAllCheckboxListener(CheckBox checkBox, final AttributePermissionVariant activeVariant) {
+    protected void attachAllCheckboxListener(CheckBox checkBox, final AttributePermissionVariant activeVariant) {
         checkBox.addListener(new ValueListener<CheckBox>() {
             @Override
             public void valueChanged(CheckBox source, String property, Object prevValue, Object value) {
@@ -312,7 +317,7 @@ public class AttributePermissionsFrame extends AbstractFrame {
         });
     }
 
-    private void setEditable(boolean editable) {
+    protected void applyPermissions(boolean editable) {
         allHideCheck.setEditable(editable);
         allModifyCheck.setEditable(editable);
         allReadOnlyCheck.setEditable(editable);
@@ -323,14 +328,14 @@ public class AttributePermissionsFrame extends AbstractFrame {
         }
     }
 
-    private void clearEditGrid() {
+    protected void clearEditGrid() {
         Collection<Component> components = new ArrayList<>(editGridContainer.getComponents());
         for (Component component : components)
             editGridContainer.remove(component);
         permissionControls.clear();
     }
 
-    private void compileEditPane(MultiplePermissionTarget item) {
+    protected void compileEditPane(MultiplePermissionTarget item) {
         GridLayout editGrid = uiFactory.createComponent(GridLayout.NAME);
         editGrid.setFrame(this);
         editGrid.setId("editGrid");
@@ -414,6 +419,6 @@ public class AttributePermissionsFrame extends AbstractFrame {
 
         editGridContainer.add(editGrid);
 
-        setEditable(hasPermissionsToCreatePermission);
+        applyPermissions(hasPermissionsToModifyPermission);
     }
 }

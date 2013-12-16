@@ -161,6 +161,26 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
     }
 
     @Override
+    public void expandPath(Entity item) {
+        if (component.hasGroups()) {
+            expandGroupsFor((Collection<GroupInfo>) component.rootGroups(), item.getId());
+        }
+    }
+
+    protected void expandGroupsFor(Collection<GroupInfo> groupSlice, Object itemId) {
+        for (GroupInfo g: groupSlice) {
+            if (component.getGroupItemIds(g).contains(itemId)) {
+                component.expand(g);
+
+                if (component.hasChildren(g)) {
+                    expandGroupsFor((Collection<GroupInfo>) component.getChildren(g), itemId);
+                }
+                return;
+            }
+        }
+    }
+
+    @Override
     public void collapseAll() {
         component.collapseAll();
     }
@@ -675,7 +695,7 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
         return columns;
     }
 
-    private class GroupAggregationCells {
+    protected class GroupAggregationCells {
         private Map<Object, com.vaadin.ui.Label> cells = new HashMap<Object, Label>();
 
         public void addCell(Object groupId, com.vaadin.ui.Label cell) {
@@ -687,7 +707,7 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
         }
     }
 
-    private class GroupAggregationDatasourceListener extends AggregationDatasourceListener {
+    protected class GroupAggregationDatasourceListener extends AggregationDatasourceListener {
         @Override
         public void valueChanged(Entity source, String property, Object prevValue, Object value) {
             super.valueChanged(source, property, prevValue, value);

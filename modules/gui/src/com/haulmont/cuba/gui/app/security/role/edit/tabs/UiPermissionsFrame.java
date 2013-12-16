@@ -7,9 +7,11 @@ package com.haulmont.cuba.gui.app.security.role.edit.tabs;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.app.security.role.edit.PermissionUiHelper;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -28,7 +30,10 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.inject.Inject;
-import java.util.*;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author artamonov
@@ -41,42 +46,51 @@ public class UiPermissionsFrame extends AbstractFrame {
     }
 
     @Inject
-    private Datasource<Role> roleDs;
+    protected Datasource<Role> roleDs;
 
     @Inject
-    private LookupField screenFilter;
+    protected LookupField screenFilter;
 
     @Inject
-    private TextField componentTextField;
+    protected TextField componentTextField;
 
     @Inject
-    private RestorablePermissionDatasource uiPermissionsDs;
+    protected RestorablePermissionDatasource uiPermissionsDs;
 
     @Inject
-    private UiPermissionsDatasource uiPermissionTargetsDs;
+    protected UiPermissionsDatasource uiPermissionTargetsDs;
 
     @Inject
     protected UserSession userSession;
 
     @Inject
+    protected Security security;
+
+    @Inject
     protected Metadata metadata;
 
     @Inject
-    private BoxLayout selectedComponentPanel;
+    protected BoxLayout selectedComponentPanel;
 
     @Inject
-    private CheckBox readOnlyCheckBox;
+    protected CheckBox readOnlyCheckBox;
 
     @Inject
-    private CheckBox hideCheckBox;
+    protected CheckBox hideCheckBox;
 
     @Inject
-    private CheckBox showCheckBox;
+    protected CheckBox showCheckBox;
 
     @Inject
-    private GroupTable uiPermissionsTable;
+    protected GroupTable uiPermissionsTable;
 
-    private boolean itemChanging = false;
+    @Inject
+    protected Button removePermissionBtn;
+
+    @Inject
+    protected Button addPermissionBtn;
+
+    protected boolean itemChanging = false;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -125,24 +139,44 @@ public class UiPermissionsFrame extends AbstractFrame {
         uiPermissionsDs.refresh();
         uiPermissionTargetsDs.refresh();
 
+        boolean isCreatePermitted = security.isEntityOpPermitted(Permission.class, EntityOp.CREATE);
+        boolean isDeletePermitted = security.isEntityOpPermitted(Permission.class, EntityOp.DELETE);
 
-        boolean hasPermissionsToCreatePermission = userSession.isEntityOpPermitted(
-                metadata.getSession().getClass(Permission.class), EntityOp.CREATE);
+        final boolean hasPermissionsToModifyPermission = isCreatePermitted && isDeletePermitted;
 
-        setEditable(hasPermissionsToCreatePermission);
+        RemoveAction removeAction = new RemoveAction(uiPermissionsTable, false) {
+            @Override
+            protected void afterRemove(Set selected) {
+                if (!selected.isEmpty()) {
+                    markItemPermission(UiPermissionVariant.NOTSET, (UiPermissionTarget) selected.iterator().next());
+                }
+            }
+
+            @Override
+            protected boolean isRemovePermitted() {
+                return hasPermissionsToModifyPermission && super.isRemovePermitted();
+            }
+        };
+        removeAction.setIcon(null);
+        removeAction.setCaption(getMessage("actions.RemoveSelected"));
+
+        removePermissionBtn.setAction(removeAction);
+        uiPermissionsTable.addAction(removeAction);
+
+        applyPermissions(hasPermissionsToModifyPermission);
     }
 
-    private void setEditable(boolean editable) {
-        hideCheckBox.setEditable(editable);
-        showCheckBox.setEditable(editable);
-        readOnlyCheckBox.setEditable(editable);
-        Button addPermissionBtn = getComponent("addPermissionBtn");
-        if (addPermissionBtn != null) {
+    protected void applyPermissions(boolean editable) {
+        if (!editable) {
+            hideCheckBox.setEditable(editable);
+            showCheckBox.setEditable(editable);
+            readOnlyCheckBox.setEditable(editable);
+
             addPermissionBtn.setEnabled(editable);
         }
     }
 
-    private void attachCheckBoxListener(CheckBox checkBox, final UiPermissionVariant activeVariant) {
+    protected void attachCheckBoxListener(CheckBox checkBox, final UiPermissionVariant activeVariant) {
         checkBox.addListener(new ValueListener<CheckBox>() {
             @Override
             public void valueChanged(CheckBox source, String property, Object prevValue, Object value) {
@@ -165,7 +199,7 @@ public class UiPermissionsFrame extends AbstractFrame {
         });
     }
 
-    private void markItemPermission(UiPermissionVariant permissionVariant,
+    protected void markItemPermission(UiPermissionVariant permissionVariant,
                                     UiPermissionTarget target) {
         if (target != null) {
             target.setPermissionVariant(permissionVariant);
@@ -190,7 +224,7 @@ public class UiPermissionsFrame extends AbstractFrame {
         }
     }
 
-    private void updateCheckBoxes(UiPermissionTarget item) {
+    protected void updateCheckBoxes(UiPermissionTarget item) {
         itemChanging = true;
 
         if (item != null) {
@@ -202,7 +236,6 @@ public class UiPermissionsFrame extends AbstractFrame {
         itemChanging = false;
     }
 
-    @SuppressWarnings({"UnusedDeclaration"})
     public void addUiPermission() {
         String screen = screenFilter.getValue();
         String component = componentTextField.getValue();
@@ -212,6 +245,9 @@ public class UiPermissionsFrame extends AbstractFrame {
             target.setScreen(screen);
             target.setComponent(component);
             uiPermissionTargetsDs.addItem(target);
+
+            uiPermissionsTable.expandPath(target);
+            uiPermissionsTable.setSelected(target);
         }
     }
 }

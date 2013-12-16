@@ -35,11 +35,12 @@
             <label width="20"/>
             <label value="msg://component" align="MIDDLE_RIGHT"/>
             <textField id="componentTextField" width="250"/>
-            <button id="addPermissionBtn" caption="msg://action.add" invoke="addUiPermission"/>
+            <button id="addPermissionBtn" caption="msg://actions.Add" invoke="addUiPermission"/>
+            <button id="removePermissionBtn"/>
             <label id="spacer"/>
         </hbox>
         <hbox id="contentPane" expand="contentSplit" spacing="true" margin="true" width="100%">
-            <split id="contentSplit" height="100%" orientation="horizontal" pos="80" width="100%">
+            <split id="contentSplit" height="100%" orientation="horizontal" pos="80">
                 <!-- Table -->
                 <groupTable id="uiPermissionsTable" height="100%" width="100%">
                     <columns>

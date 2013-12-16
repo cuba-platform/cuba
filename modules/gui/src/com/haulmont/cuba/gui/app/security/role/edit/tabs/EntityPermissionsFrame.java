@@ -7,6 +7,7 @@ package com.haulmont.cuba.gui.app.security.role.edit.tabs;
 
 import com.haulmont.cuba.core.entity.Updatable;
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.app.security.role.edit.PermissionUiHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -26,7 +27,6 @@ import org.apache.commons.lang.ObjectUtils;
 import javax.inject.Inject;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * @author artamonov
@@ -39,22 +39,25 @@ public class EntityPermissionsFrame extends AbstractFrame {
     }
 
     @Inject
-    private Datasource<Role> roleDs;
+    protected Datasource<Role> roleDs;
 
     @Inject
-    private RestorablePermissionDatasource entityPermissionsDs;
+    protected RestorablePermissionDatasource entityPermissionsDs;
 
     @Inject
-    private EntityPermissionTargetsDatasource entityTargetsDs;
+    protected EntityPermissionTargetsDatasource entityTargetsDs;
 
     @Inject
-    private Table entityPermissionsTable;
+    protected Table entityPermissionsTable;
 
     @Inject
-    private Label selectedTargetCaption;
+    protected Label selectedTargetCaption;
 
     @Inject
     protected UserSession userSession;
+
+    @Inject
+    protected Security security;
 
     @Inject
     protected Metadata metadata;
@@ -62,47 +65,47 @@ public class EntityPermissionsFrame extends AbstractFrame {
     /* Filter */
 
     @Inject
-    private TextField entityFilter;
+    protected TextField entityFilter;
 
     @Inject
-    private CheckBox assignedOnlyCheckBox;
+    protected CheckBox assignedOnlyCheckBox;
 
     @Inject
-    private CheckBox systemLevelCheckBox;
+    protected CheckBox systemLevelCheckBox;
 
     /* Panels */
 
     @Inject
-    private BoxLayout applyPermissionPane;
+    protected BoxLayout applyPermissionPane;
 
     @Inject
-    private BoxLayout selectedEntityPanel;
+    protected BoxLayout selectedEntityPanel;
 
     /* Checkboxes */
 
     @Inject
-    private CheckBox allAllowCheck;
+    protected CheckBox allAllowCheck;
 
     @Inject
-    private CheckBox allDenyCheck;
+    protected CheckBox allDenyCheck;
 
     /* Checkbox operations controls */
 
-    private class EntityOperationControl {
+    protected class EntityOperationControl {
 
-        private CheckBox allowChecker;
+        protected CheckBox allowChecker;
 
-        private CheckBox denyChecker;
+        protected CheckBox denyChecker;
 
-        private Label operationLabel;
+        protected Label operationLabel;
 
-        private String metaProperty;
+        protected String metaProperty;
 
-        private EntityOp operation;
+        protected EntityOp operation;
 
-        private boolean controlVisible = true;
+        protected boolean controlVisible = true;
 
-        private EntityOperationControl(EntityOp operation, String metaProperty, String operationLabel,
+        public EntityOperationControl(EntityOp operation, String metaProperty, String operationLabel,
                                        String allowChecker, String denyChecker) {
             this.operation = operation;
             this.metaProperty = metaProperty;
@@ -155,9 +158,9 @@ public class EntityPermissionsFrame extends AbstractFrame {
         }
     }
 
-    private EntityOperationControl[] operationControls;
+    protected EntityOperationControl[] operationControls;
 
-    private boolean itemChanging = false;
+    protected boolean itemChanging = false;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -211,10 +214,11 @@ public class EntityPermissionsFrame extends AbstractFrame {
 
         entityTargetsDs.refresh();
 
-        boolean hasPermissionsToCreatePermission = userSession.isEntityOpPermitted(
-                metadata.getSession().getClass(Permission.class), EntityOp.CREATE);
+        boolean isCreatePermitted = security.isEntityOpPermitted(Permission.class, EntityOp.CREATE);
+        boolean isDeletePermitted = security.isEntityOpPermitted(Permission.class, EntityOp.DELETE);
+        boolean hasPermissionsToModifyePermission = isCreatePermitted && isDeletePermitted;
 
-        setEditable(hasPermissionsToCreatePermission);
+        applyPermissions(hasPermissionsToModifyePermission);
     }
 
     @SuppressWarnings("unused")
@@ -257,7 +261,7 @@ public class EntityPermissionsFrame extends AbstractFrame {
         }
     }
 
-    private void setEditable(boolean editable) {
+    protected void applyPermissions(boolean editable) {
         allAllowCheck.setEditable(editable);
         allDenyCheck.setEditable(editable);
         for(EntityOperationControl entityOperationControl : operationControls) {
@@ -266,7 +270,7 @@ public class EntityPermissionsFrame extends AbstractFrame {
         }
     }
 
-    private void initCheckBoxesControls() {
+    protected void initCheckBoxesControls() {
         operationControls = new EntityOperationControl[]{
                 new EntityOperationControl(EntityOp.CREATE, "createPermissionVariant", "createOpLabel",
                         "createAllowCheck", "createDenyCheck") {
@@ -312,7 +316,7 @@ public class EntityPermissionsFrame extends AbstractFrame {
      * @param item     Target ds item
      * @param selected Selected set in table
      */
-    private void updateEditPane(OperationPermissionTarget item, Set selected) {
+    protected void updateEditPane(OperationPermissionTarget item, Set selected) {
         if (item != null) {
             if (selected.size() == 1) {
                 selectedTargetCaption.setVisible(true);
@@ -346,7 +350,7 @@ public class EntityPermissionsFrame extends AbstractFrame {
         }
     }
 
-    private void updateCheckBoxes(PermissionVariant permissionVariant,
+    protected void updateCheckBoxes(PermissionVariant permissionVariant,
                                   CheckBox allowCheckBox, CheckBox denyCheckBox) {
         if (permissionVariant == PermissionVariant.ALLOWED) {
             allowCheckBox.setValue(true);
@@ -360,7 +364,7 @@ public class EntityPermissionsFrame extends AbstractFrame {
         }
     }
 
-    private void updateCheckBoxes(OperationPermissionTarget item) {
+    protected void updateCheckBoxes(OperationPermissionTarget item) {
 
         itemChanging = true;
 
@@ -383,7 +387,7 @@ public class EntityPermissionsFrame extends AbstractFrame {
         itemChanging = false;
     }
 
-    private void deselectAllCheckers() {
+    protected void deselectAllCheckers() {
         for (EntityOperationControl control : operationControls) {
             control.getAllowChecker().setValue(false);
             control.getDenyChecker().setValue(false);
@@ -393,11 +397,11 @@ public class EntityPermissionsFrame extends AbstractFrame {
         allDenyCheck.setValue(false);
     }
 
-    private boolean isSingleSelection() {
+    protected boolean isSingleSelection() {
         return entityPermissionsTable.getSelected().size() == 1;
     }
 
-    private EntityOperationControl getOperationControl(CheckBox checkBox) {
+    protected EntityOperationControl getOperationControl(CheckBox checkBox) {
         for (EntityOperationControl control : operationControls) {
             if ((control.getAllowChecker() == checkBox) || (control.getDenyChecker() == checkBox))
                 return control;
@@ -405,7 +409,7 @@ public class EntityPermissionsFrame extends AbstractFrame {
         return null;
     }
 
-    private void attachAllCheckBoxListener(CheckBox checkBox, final PermissionVariant activeVariant) {
+    protected void attachAllCheckBoxListener(CheckBox checkBox, final PermissionVariant activeVariant) {
         checkBox.addListener(new ValueListener<CheckBox>() {
             @Override
             public void valueChanged(CheckBox source, String property, Object prevValue, Object value) {
@@ -443,7 +447,7 @@ public class EntityPermissionsFrame extends AbstractFrame {
         });
     }
 
-    private void attachCheckBoxListener(final CheckBox checkBox, final String metaProperty,
+    protected void attachCheckBoxListener(final CheckBox checkBox, final String metaProperty,
                                         final EntityOp operation, final PermissionVariant activeVariant) {
 
         checkBox.addListener(new ValueListener<CheckBox>() {
@@ -488,12 +492,12 @@ public class EntityPermissionsFrame extends AbstractFrame {
         });
     }
 
-    private void markItemPermission(String property, EntityOp operation, PermissionVariant permissionVariant) {
+    protected void markItemPermission(String property, EntityOp operation, PermissionVariant permissionVariant) {
         OperationPermissionTarget target = entityPermissionsTable.getSingleSelected();
         markTargetPermission(target, property, operation, permissionVariant);
     }
 
-    private void markTargetPermission(OperationPermissionTarget target,
+    protected void markTargetPermission(OperationPermissionTarget target,
                                       String property, EntityOp operation, PermissionVariant permissionVariant) {
         if (target != null) {
             target.setValue(property, permissionVariant);

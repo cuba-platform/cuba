@@ -495,31 +495,33 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         componentComposition.setWidth("-1px");
         component.setSizeFull();
         componentComposition.setExpandRatio(component, 1);
+    }
 
-        ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+    @Override
+    public void addAction(Action action) {
+        super.addAction(action);
+        if (action.getShortcut() != null) {
+            addShortcutActionBridge(action.getId(), action.getShortcut());
+        }
 
-        addShortcutActionBridge(INSERT_SHORTCUT_ID, clientConfig.getTableInsertShortcut(), ListActionType.CREATE);
-        addShortcutActionBridge(REMOVE_SHORTCUT_ID, clientConfig.getTableRemoveShortcut(), ListActionType.REMOVE);
+        action.refreshState();
     }
 
     /**
      * Connect shortcut action to default list action
-     * @param shortcutActionId Shortcut action id
-     * @param keyCombination Keys
-     * @param defaultAction List action
+     *
+     * @param actionId Shortcut action id
+     * @param keyCombination   KeyCombination object
      */
-    protected void addShortcutActionBridge(String shortcutActionId, String keyCombination,
-                                           final ListActionType defaultAction) {
-
-        KeyCombination actionKeyCombination = KeyCombination.create(keyCombination);
-        component.addShortcutListener(new ShortcutListener(shortcutActionId, actionKeyCombination.getKey().getCode(),
-                KeyCombination.Modifier.codes(actionKeyCombination.getModifiers())) {
+    protected void addShortcutActionBridge(final String actionId, KeyCombination keyCombination) {
+        component.addShortcutListener(new ShortcutListener(actionId, keyCombination.getKey().getCode(),
+                KeyCombination.Modifier.codes(keyCombination.getModifiers())) {
             @Override
             public void handleAction(Object sender, Object target) {
                 if (target == component) {
-                    Action listAction = getAction(defaultAction.getId());
-                    if (listAction != null && listAction.isEnabled())
-                        listAction.actionPerform(WebAbstractTable.this);
+                    Action action = getAction(actionId);
+                    if (action != null && action.isEnabled())
+                        action.actionPerform(WebAbstractTable.this);
                 }
             }
         });

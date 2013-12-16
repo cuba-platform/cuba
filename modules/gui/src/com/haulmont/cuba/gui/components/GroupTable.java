@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.data.GroupInfo;
 
 /**
@@ -18,6 +19,11 @@ public interface GroupTable extends Table {
 
     void expandAll();
     void expand(GroupInfo groupId);
+
+    /**
+     * Expand all groups for specified item.
+     */
+    void expandPath(Entity item);
 
     void collapseAll();
     void collapse(GroupInfo groupId);

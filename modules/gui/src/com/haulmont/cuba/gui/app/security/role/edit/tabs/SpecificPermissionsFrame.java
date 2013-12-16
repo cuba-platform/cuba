@@ -6,6 +6,7 @@
 package com.haulmont.cuba.gui.app.security.role.edit.tabs;
 
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.app.security.role.edit.BasicPermissionTreeStyleProvider;
 import com.haulmont.cuba.gui.app.security.role.edit.PermissionUiHelper;
 import com.haulmont.cuba.gui.components.AbstractFrame;
@@ -42,16 +43,16 @@ public class SpecificPermissionsFrame extends AbstractFrame {
     }
 
     @Inject
-    private Datasource<Role> roleDs;
+    protected Datasource<Role> roleDs;
 
     @Inject
-    private CollectionDatasource<Permission, UUID> specificPermissionsDs;
+    protected CollectionDatasource<Permission, UUID> specificPermissionsDs;
 
     @Inject
-    private TreeTable specificPermissionsTree;
+    protected TreeTable specificPermissionsTree;
 
     @Inject
-    private SpecificPermissionTreeDatasource specificPermissionsTreeDs;
+    protected SpecificPermissionTreeDatasource specificPermissionsTreeDs;
 
     @Inject
     protected UserSession userSession;
@@ -60,15 +61,18 @@ public class SpecificPermissionsFrame extends AbstractFrame {
     protected Metadata metadata;
 
     @Inject
-    private BoxLayout selectedPermissionPanel;
+    protected Security security;
 
     @Inject
-    private CheckBox allowCheckBox;
+    protected BoxLayout selectedPermissionPanel;
 
     @Inject
-    private CheckBox disallowCheckBox;
+    protected CheckBox allowCheckBox;
 
-    private boolean itemChanging = false;
+    @Inject
+    protected CheckBox disallowCheckBox;
+
+    protected boolean itemChanging = false;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -151,18 +155,21 @@ public class SpecificPermissionsFrame extends AbstractFrame {
         specificPermissionsTreeDs.refresh();
         specificPermissionsTree.expandAll();
 
-        boolean hasPermissionsToCreatePermission = userSession.isEntityOpPermitted(
-                metadata.getSession().getClass(Permission.class), EntityOp.CREATE);
+        boolean isCreatePermitted = security.isEntityOpPermitted(Permission.class, EntityOp.CREATE);
+        boolean isDeletePermitted = security.isEntityOpPermitted(Permission.class, EntityOp.DELETE);
+        boolean hasPermissionsToModifyPermission = isCreatePermitted && isDeletePermitted;
 
-        setEditable(hasPermissionsToCreatePermission);
+        applyPermissions(hasPermissionsToModifyPermission);
     }
 
-    private void setEditable(boolean editable) {
-        allowCheckBox.setEditable(editable);
-        disallowCheckBox.setEditable(editable);
+    protected void applyPermissions(boolean editable) {
+        if (!editable) {
+            allowCheckBox.setEditable(editable);
+            disallowCheckBox.setEditable(editable);
+        }
     }
 
-    private void markItemPermission(PermissionVariant permissionVariant) {
+    protected void markItemPermission(PermissionVariant permissionVariant) {
         BasicPermissionTarget target = specificPermissionsTree.getSingleSelected();
         if (target != null) {
             target.setPermissionVariant(permissionVariant);

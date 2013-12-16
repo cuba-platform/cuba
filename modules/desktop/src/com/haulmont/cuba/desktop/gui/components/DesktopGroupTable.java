@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.desktop.gui.data.TableModelAdapter;
 import com.haulmont.cuba.desktop.sys.vcl.JXTableExt;
 import com.haulmont.cuba.gui.components.GroupTable;
@@ -51,6 +52,10 @@ public class DesktopGroupTable extends DesktopAbstractTable<JXTable> implements 
 
     @Override
     public void expand(GroupInfo groupId) {
+    }
+
+    @Override
+    public void expandPath(Entity item) {
     }
 
     @Override
