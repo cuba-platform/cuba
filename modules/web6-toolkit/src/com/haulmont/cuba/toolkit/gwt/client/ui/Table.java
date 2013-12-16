@@ -2809,6 +2809,7 @@ public abstract class Table
                     }
 
                     if (!(targetWidget instanceof VLabel)
+                            && !(targetWidget instanceof VButton)
                             && !(targetWidget instanceof VEmbedded)
                             && !(targetWidget instanceof VTextField && ((VTextField) targetWidget)
                             .isReadOnly())) {
@@ -3158,6 +3159,7 @@ public abstract class Table
                         if (widget != null) {
                             // widget is now the closest widget to this row
                             if (widget instanceof VLabel
+                                    || widget instanceof VButton
                                     || widget instanceof VEmbedded
                                     || (widget instanceof VTextField && ((VTextField) widget)
                                     .isReadOnly())) {
