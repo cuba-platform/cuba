@@ -44,6 +44,9 @@ public class EditAction extends ItemTrackingAction {
 
     protected boolean permissionFlag = false;
 
+    // Set default caption only once
+    protected boolean captionInitialized = false;
+
     /**
      * The simplest constructor. The action has default name and opens the editor screen in THIS tab.
      * @param owner    component containing this action
@@ -88,22 +91,43 @@ public class EditAction extends ItemTrackingAction {
         return permissionFlag && super.isEnabled();
     }
 
+    protected void setEnabledInternal(boolean enabled) {
+        super.setEnabled(enabled);
+    }
+
+    @Override
+    public void setCaption(String caption) {
+        super.setCaption(caption);
+
+        captionInitialized = true;
+    }
+
     @Override
     public void refreshState() {
-        if (owner.getDatasource() == null) {
-            permissionFlag = false;
-        } else {
-            permissionFlag = userSession.isEntityOpPermitted(owner.getDatasource().getMetaClass(), EntityOp.READ);
+        permissionFlag = isReadPermitted();
 
+        setEnabledInternal(permissionFlag);
+
+        CollectionDatasource ds = owner.getDatasource();
+
+        if (ds != null && !captionInitialized) {
             final String messagesPackage = AppConfig.getMessagesPack();
-            if (userSession.isEntityOpPermitted(owner.getDatasource().getMetaClass(), EntityOp.UPDATE)) {
+            if (userSession.isEntityOpPermitted(ds.getMetaClass(), EntityOp.UPDATE)) {
                 setCaption(messages.getMessage(messagesPackage, "actions.Edit"));
             } else {
                 setCaption(messages.getMessage(messagesPackage, "actions.View"));
             }
         }
 
-        super.setEnabled(permissionFlag);
+        if (permissionFlag && ds != null) {
+            updateApplicableTo(isApplicableTo(ds.getState(),
+                    ds.getState() == Datasource.State.VALID ? ds.getItem() : null));
+        }
+    }
+
+    protected boolean isReadPermitted() {
+        return owner.getDatasource() != null &&
+                userSession.isEntityOpPermitted(owner.getDatasource().getMetaClass(), EntityOp.READ);
     }
 
     @Override

@@ -91,19 +91,35 @@ public class RemoveAction extends ItemTrackingAction {
 
     @Override
     public void refreshState() {
-        if (owner.getDatasource() == null) {
-            permissionFlag = false;
-        } else {
-            permissionFlag = userSession.isEntityOpPermitted(owner.getDatasource().getMetaClass(), EntityOp.DELETE);
+        permissionFlag = isRemovePermitted();
 
-            if (permissionFlag && owner.getDatasource() instanceof PropertyDatasource) {
-                MetaProperty metaProperty = ((PropertyDatasource) owner.getDatasource()).getProperty();
-                permissionFlag = userSession.isEntityAttrPermitted(
+        setEnabledInternal(permissionFlag);
+
+        CollectionDatasource ds = owner.getDatasource();
+
+        if (permissionFlag && ds != null) {
+            updateApplicableTo(isApplicableTo(ds.getState(),
+                    ds.getState() == Datasource.State.VALID ? ds.getItem() : null));
+        }
+    }
+
+    protected boolean isRemovePermitted() {
+        CollectionDatasource ds = owner.getDatasource();
+
+        boolean removePermitted;
+        if (ds == null) {
+            removePermitted = false;
+        } else {
+            removePermitted = userSession.isEntityOpPermitted(ds.getMetaClass(), EntityOp.DELETE);
+
+            if (removePermitted && ds instanceof PropertyDatasource) {
+                MetaProperty metaProperty = ((PropertyDatasource) ds).getProperty();
+                removePermitted = userSession.isEntityAttrPermitted(
                         metaProperty.getDomain(), metaProperty.getName(), EntityAttrAccess.MODIFY);
             }
         }
 
-        super.setEnabled(permissionFlag);
+        return removePermitted;
     }
 
     /**

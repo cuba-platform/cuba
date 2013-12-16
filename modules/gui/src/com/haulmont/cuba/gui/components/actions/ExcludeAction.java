@@ -62,16 +62,17 @@ public class ExcludeAction extends RemoveAction {
     }
 
     @Override
-    public void refreshState() {
-        permissionFlag = true;
+    protected boolean isRemovePermitted() {
+        boolean removePermitted = true;
 
-        if (owner.getDatasource() instanceof PropertyDatasource) {
-            MetaProperty metaProperty = ((PropertyDatasource) owner.getDatasource()).getProperty();
-            permissionFlag = userSession.isEntityAttrPermitted(
+        CollectionDatasource ds = owner.getDatasource();
+        if (ds instanceof PropertyDatasource) {
+            MetaProperty metaProperty = ((PropertyDatasource) ds).getProperty();
+            removePermitted = userSession.isEntityAttrPermitted(
                     metaProperty.getDomain(), metaProperty.getName(), EntityAttrAccess.MODIFY);
         }
 
-        setEnabledInternal(permissionFlag);
+        return removePermitted;
     }
 
     @Override
