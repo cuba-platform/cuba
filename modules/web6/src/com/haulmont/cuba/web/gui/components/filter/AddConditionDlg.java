@@ -6,11 +6,14 @@
 package com.haulmont.cuba.web.gui.components.filter;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.CategorizedEntity;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.gui.components.filter.AbstractConditionDescriptor;
 import com.haulmont.cuba.gui.components.filter.AbstractCustomConditionDescriptor;
 import com.haulmont.cuba.gui.components.filter.AbstractFilterEditor;
@@ -139,9 +142,14 @@ public class AddConditionDlg extends Window {
     }
 
     protected void initShortcuts() {
-        ShortcutAction closeAction = new ShortcutAction("Close", ShortcutAction.KeyCode.ESCAPE, null);
-        ShortcutAction commitAction = new ShortcutAction("Commit", ShortcutAction.KeyCode.ENTER,
-                new int[]{ShortcutAction.ModifierKey.CTRL});
+        ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+        KeyCombination close = KeyCombination.create(clientConfig.getCloseShortcut());
+        KeyCombination commit = KeyCombination.create(clientConfig.getCommitShortcut());
+
+        ShortcutAction closeAction = new ShortcutAction("Close", close.getKey().getCode(),
+                KeyCombination.Modifier.codes(close.getModifiers()));
+        ShortcutAction commitAction = new ShortcutAction("Commit", commit.getKey().getCode(),
+                KeyCombination.Modifier.codes(commit.getModifiers()));
 
         Map<Action, Runnable> actionsMap = new HashMap<>();
         actionsMap.put(closeAction, new Runnable() {

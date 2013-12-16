@@ -5,8 +5,12 @@
 
 package com.haulmont.cuba.web.gui.components.filter;
 
+import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.gui.components.filter.AbstractRuntimePropConditionEditDlg;
 import com.haulmont.cuba.gui.components.filter.ParamFactory;
 import com.haulmont.cuba.web.App;
@@ -19,9 +23,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * <p>$Id$</p>
- *
  * @author devyatkin
+ * @version $Id$
  */
 public class RuntimePropConditionEditDlg extends AbstractRuntimePropConditionEditDlg<Window> {
     protected Editor impl;
@@ -36,11 +39,17 @@ public class RuntimePropConditionEditDlg extends AbstractRuntimePropConditionEdi
     }
 
     protected void initShortcuts() {
-        ShortcutAction closeAction = new ShortcutAction("close", ShortcutAction.KeyCode.ESCAPE, new int[0]);
-        ShortcutAction commitAction = new ShortcutAction("commit", ShortcutAction.KeyCode.ENTER,
-                new int[]{ShortcutAction.ModifierKey.CTRL});
+        ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+        KeyCombination close = KeyCombination.create(clientConfig.getCloseShortcut());
+        KeyCombination commit = KeyCombination.create(clientConfig.getCommitShortcut());
 
-        Map<Action, Runnable> actions = new HashMap<Action, Runnable>();
+        ShortcutAction closeAction = new ShortcutAction("Close", close.getKey().getCode(),
+                KeyCombination.Modifier.codes(close.getModifiers()));
+        ShortcutAction commitAction = new ShortcutAction("Commit", commit.getKey().getCode(),
+                KeyCombination.Modifier.codes(commit.getModifiers()));
+
+
+        Map<Action, Runnable> actions = new HashMap<>();
         actions.put(closeAction, new Runnable() {
             @Override
             public void run() {
@@ -56,7 +65,6 @@ public class RuntimePropConditionEditDlg extends AbstractRuntimePropConditionEdi
         });
         WebComponentsHelper.setActions(impl, actions);
     }
-
 
     @Override
     public Window getImpl() {

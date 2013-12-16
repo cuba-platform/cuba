@@ -182,7 +182,7 @@ public class AddConditionDlg extends Window {
         ShortcutAction commitAction = new ShortcutAction("Commit", commit.getKey().getCode(),
                 KeyCombination.Modifier.codes(commit.getModifiers()));
 
-        Map<Action, Runnable> actionsMap = new HashMap<Action, Runnable>();
+        Map<Action, Runnable> actionsMap = new HashMap<>();
         actionsMap.put(closeAction, new Runnable() {
             @Override
             public void run() {
