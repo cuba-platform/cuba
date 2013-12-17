@@ -2797,6 +2797,7 @@ public abstract class Table
                 final Element targetElement = DOM.eventGetTarget(event);
 
                 Widget targetWidget = Util.findWidget(targetElement, null);
+                int eventType = DOM.eventGetType(event);
                 if (targetWidget != this) {
                     /*
                      * This is a workaround to make Labels, read only TextFields
@@ -2809,7 +2810,10 @@ public abstract class Table
                     }
 
                     if (!(targetWidget instanceof VLabel)
-                            && !(targetWidget instanceof VButton)
+                            && !(targetWidget instanceof VButton &&
+                                (Event.ONMOUSEOVER == eventType ||
+                                Event.ONMOUSEOUT == eventType ||
+                                Event.ONMOUSEMOVE == eventType))
                             && !(targetWidget instanceof VEmbedded)
                             && !(targetWidget instanceof VTextField && ((VTextField) targetWidget)
                             .isReadOnly())) {
@@ -3158,8 +3162,12 @@ public abstract class Table
                         }
                         if (widget != null) {
                             // widget is now the closest widget to this row
+                            int eventType = DOM.eventGetType(event);
                             if (widget instanceof VLabel
-                                    || widget instanceof VButton
+                                    || (widget instanceof VButton
+                                        && (Event.ONMOUSEOVER == eventType
+                                        || Event.ONMOUSEOUT == eventType
+                                        || Event.ONMOUSEMOVE == eventType))
                                     || widget instanceof VEmbedded
                                     || (widget instanceof VTextField && ((VTextField) widget)
                                     .isReadOnly())) {
