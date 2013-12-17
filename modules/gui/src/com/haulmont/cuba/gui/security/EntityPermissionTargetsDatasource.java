@@ -7,15 +7,15 @@ package com.haulmont.cuba.gui.security;
 
 import com.google.common.base.Predicate;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.app.security.role.edit.PermissionValue;
 import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
-import com.haulmont.cuba.security.entity.EntityOp;
-import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.gui.security.entity.OperationPermissionTarget;
 import com.haulmont.cuba.gui.security.entity.PermissionVariant;
+import com.haulmont.cuba.security.entity.EntityOp;
+import com.haulmont.cuba.security.entity.Permission;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
@@ -29,11 +29,17 @@ import java.util.UUID;
  */
 public class EntityPermissionTargetsDatasource extends CollectionDatasourceImpl<OperationPermissionTarget, String> {
 
-    private List<OperationPermissionTarget> targets;
+    protected List<OperationPermissionTarget> targets;
 
-    private Predicate<OperationPermissionTarget> filter;
+    protected Predicate<OperationPermissionTarget> filter;
 
-    private CollectionDatasource<Permission, UUID> permissionDs;
+    protected CollectionDatasource<Permission, UUID> permissionDs;
+
+    protected UserSessionSource userSessionSource;
+
+    public EntityPermissionTargetsDatasource() {
+        userSessionSource = AppBeans.get(UserSessionSource.NAME);
+    }
 
     @Override
     public boolean isModified() {
@@ -46,9 +52,9 @@ public class EntityPermissionTargetsDatasource extends CollectionDatasourceImpl<
             return;
 
         if (targets == null) {
-            targets = new ArrayList<OperationPermissionTarget>();
+            targets = new ArrayList<>();
             PermissionConfig permissionConfig = AppBeans.get(PermissionConfig.class);
-            List<OperationPermissionTarget> entities = permissionConfig.getEntities(UserSessionProvider.getLocale());
+            List<OperationPermissionTarget> entities = permissionConfig.getEntities(userSessionSource.getLocale());
             for (OperationPermissionTarget target : entities) {
                 try {
                     OperationPermissionTarget cloneTarget = target.clone();

@@ -30,10 +30,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.inject.Inject;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author artamonov
@@ -97,7 +94,7 @@ public class UiPermissionsFrame extends AbstractFrame {
         super.init(params);
 
         WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
-        Collection<WindowInfo> windows = windowConfig.getWindows();
+        Collection<WindowInfo> windows = sortWindowInfos(windowConfig.getWindows());
         Map<String, Object> screens = new LinkedHashMap<>();
         for (WindowInfo windowInfo : windows) {
             String id = windowInfo.getId();
@@ -164,6 +161,27 @@ public class UiPermissionsFrame extends AbstractFrame {
         uiPermissionsTable.addAction(removeAction);
 
         applyPermissions(hasPermissionsToModifyPermission);
+    }
+
+    protected Collection<WindowInfo> sortWindowInfos(Collection<WindowInfo> infos) {
+        List<WindowInfo> infosContainer = new ArrayList<>(infos);
+
+        Collections.sort(infosContainer, new Comparator<WindowInfo>() {
+            @Override
+            public int compare(WindowInfo o1, WindowInfo o2) {
+                if (o1.getId().contains("$") != o2.getId().contains("$")) {
+                    if (o1.getId().contains("$")) {
+                        return -1;
+                    } else {
+                        return 1;
+                    }
+                } else {
+                    return o1.getId().compareTo(o2.getId());
+                }
+            }
+        });
+
+        return infosContainer;
     }
 
     protected void applyPermissions(boolean editable) {
