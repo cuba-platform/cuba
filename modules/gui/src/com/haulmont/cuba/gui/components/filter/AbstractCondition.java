@@ -6,13 +6,11 @@
 package com.haulmont.cuba.gui.components.filter;
 
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.cuba.core.global.ScriptingProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.sys.SetValueEntity;
 import com.haulmont.cuba.gui.data.Datasource;
-import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.RandomStringUtils;
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.*;
 import org.dom4j.Element;
 
 import java.util.ArrayList;
@@ -23,6 +21,9 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
  * Class that encapsulates common filter condition behaviour.
+ *
+ * @author devyatkin
+ * @version $Id$
  */
 public abstract class AbstractCondition<T extends AbstractParam> {
 
@@ -54,7 +55,7 @@ public abstract class AbstractCondition<T extends AbstractParam> {
     protected UUID categoryAttrId;
     protected ParamFactory<T> paramFactory = getParamFactory();
 
-    protected List<Listener> listeners = new ArrayList<Listener>();
+    protected List<Listener> listeners = new ArrayList<>();
 
     protected AbstractCondition() {
         throw new UnsupportedOperationException();
@@ -64,6 +65,9 @@ public abstract class AbstractCondition<T extends AbstractParam> {
         this.filterComponentName = filterComponentName;
         name = element.attributeValue("name");
         text = StringEscapeUtils.unescapeXml(element.getText());
+        if (text == null)
+            text = "";
+
         caption = element.attributeValue("caption");
         unary = Boolean.valueOf(element.attributeValue("unary"));
         inExpr = Boolean.valueOf(element.attributeValue("inExpr"));
@@ -73,9 +77,11 @@ public abstract class AbstractCondition<T extends AbstractParam> {
         entityParamView = element.attributeValue("paramView");
         this.datasource = datasource;
 
+        Scripting scripting = AppBeans.get(Scripting.NAME);
+
         String aclass = element.attributeValue("class");
         if (!isBlank(aclass))
-            javaClass = ScriptingProvider.loadClass(aclass);
+            javaClass = scripting.loadClass(aclass);
 
         List<Element> paramElements = Dom4j.elements(element, "param");
         if (!paramElements.isEmpty()) {
@@ -87,7 +93,7 @@ public abstract class AbstractCondition<T extends AbstractParam> {
             String paramName = paramElem.attributeValue("name");
 
             if (!isBlank(paramElem.attributeValue("javaClass"))) {
-                paramClass = ScriptingProvider.loadClass(paramElem.attributeValue("javaClass"));
+                paramClass = scripting.loadClass(paramElem.attributeValue("javaClass"));
                 if (SetValueEntity.class.isAssignableFrom(paramClass)) {
                     categoryAttrId = UUID.fromString(paramElem.attributeValue("categoryAttrId"));
                 }
@@ -118,9 +124,11 @@ public abstract class AbstractCondition<T extends AbstractParam> {
 
     protected T createParam(String paramName) {
         if (categoryAttrId != null) {
-            return paramFactory.createParam(paramName, paramClass, entityParamWhere, entityParamView, datasource, inExpr, categoryAttrId, required);
+            return paramFactory.createParam(paramName, paramClass, entityParamWhere,
+                    entityParamView, datasource, inExpr, categoryAttrId, required);
         } else
-            return paramFactory.createParam(paramName, paramClass == null ? javaClass : paramClass, entityParamWhere, entityParamView, datasource, inExpr, required);
+            return paramFactory.createParam(paramName, paramClass == null ? javaClass : paramClass,
+                    entityParamWhere, entityParamView, datasource, inExpr, required);
     }
 
     public void addListener(Listener listener) {
@@ -199,7 +207,7 @@ public abstract class AbstractCondition<T extends AbstractParam> {
 
     public void toXml(Element element) {
         String text = getText();
-        if (text != null)
+        if (StringUtils.isNotBlank(text))
             element.setText(text);
 
         element.addAttribute("name", name);
