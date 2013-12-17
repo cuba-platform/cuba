@@ -153,8 +153,8 @@ public class UiPermissionsFrame extends AbstractFrame {
             }
 
             @Override
-            protected boolean isRemovePermitted() {
-                return hasPermissionsToModifyPermission && super.isRemovePermitted();
+            protected boolean isPermitted() {
+                return hasPermissionsToModifyPermission && super.isPermitted();
             }
         };
         removeAction.setIcon(null);

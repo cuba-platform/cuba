@@ -87,21 +87,36 @@ public class CreateAction extends AbstractAction {
         return permissionFlag && super.isEnabled();
     }
 
+    protected void setEnabledInternal(boolean enabled) {
+        super.setEnabled(enabled);
+    }
+
     @Override
     public void refreshState() {
-        if (owner.getDatasource() == null) {
-            permissionFlag = false;
-        } else {
-            permissionFlag = userSession.isEntityOpPermitted(owner.getDatasource().getMetaClass(), EntityOp.CREATE);
+        permissionFlag = isPermitted();
 
-            if (permissionFlag && owner.getDatasource() instanceof PropertyDatasource) {
+        super.setEnabled(permissionFlag);
+    }
+
+    /**
+     * Check permissions for Action
+     */
+    protected boolean isPermitted() {
+        boolean createPermitted;
+
+        if (owner.getDatasource() == null) {
+            createPermitted = false;
+        } else {
+            createPermitted = userSession.isEntityOpPermitted(owner.getDatasource().getMetaClass(), EntityOp.CREATE);
+
+            if (createPermitted && owner.getDatasource() instanceof PropertyDatasource) {
                 MetaProperty metaProperty = ((PropertyDatasource) owner.getDatasource()).getProperty();
-                permissionFlag = userSession.isEntityAttrPermitted(
+                createPermitted = userSession.isEntityAttrPermitted(
                         metaProperty.getDomain(), metaProperty.getName(), EntityAttrAccess.MODIFY);
             }
         }
 
-        super.setEnabled(permissionFlag);
+        return createPermitted;
     }
 
     /**

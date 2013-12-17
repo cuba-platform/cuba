@@ -62,7 +62,7 @@ public class ExcludeAction extends RemoveAction {
     }
 
     @Override
-    protected boolean isRemovePermitted() {
+    protected boolean isPermitted() {
         boolean removePermitted = true;
 
         CollectionDatasource ds = owner.getDatasource();

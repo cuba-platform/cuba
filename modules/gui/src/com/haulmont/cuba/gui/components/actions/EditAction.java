@@ -104,7 +104,7 @@ public class EditAction extends ItemTrackingAction {
 
     @Override
     public void refreshState() {
-        permissionFlag = isReadPermitted();
+        permissionFlag = isPermitted();
 
         setEnabledInternal(permissionFlag);
 
@@ -125,7 +125,10 @@ public class EditAction extends ItemTrackingAction {
         }
     }
 
-    protected boolean isReadPermitted() {
+    /**
+     * Check permissions for Action
+     */
+    protected boolean isPermitted() {
         return owner.getDatasource() != null &&
                 userSession.isEntityOpPermitted(owner.getDatasource().getMetaClass(), EntityOp.READ);
     }

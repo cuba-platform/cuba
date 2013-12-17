@@ -91,7 +91,7 @@ public class RemoveAction extends ItemTrackingAction {
 
     @Override
     public void refreshState() {
-        permissionFlag = isRemovePermitted();
+        permissionFlag = isPermitted();
 
         setEnabledInternal(permissionFlag);
 
@@ -103,7 +103,10 @@ public class RemoveAction extends ItemTrackingAction {
         }
     }
 
-    protected boolean isRemovePermitted() {
+    /**
+     * Check permissions for Action
+     */
+    protected boolean isPermitted() {
         CollectionDatasource ds = owner.getDatasource();
 
         boolean removePermitted;
@@ -144,13 +147,14 @@ public class RemoveAction extends ItemTrackingAction {
                 IFrame.MessageType.CONFIRMATION,
                 new Action[]{
                         new DialogAction(DialogAction.Type.OK) {
-
+                            @Override
                             public void actionPerform(Component component) {
                                 doRemove(selected, autocommit);
                                 afterRemove(selected);
                             }
-                        }, new DialogAction(DialogAction.Type.CANCEL) {
-
+                        },
+                        new DialogAction(DialogAction.Type.CANCEL) {
+                            @Override
                             public void actionPerform(Component component) {
                             }
                         }
