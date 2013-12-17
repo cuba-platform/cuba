@@ -134,7 +134,7 @@ public class TableFocusManager {
     }
 
     /**
-     * Navigate to next active control or cell in table
+     * Navigate to prev active control or cell in table
      */
     public void prevFocusElement() {
         int selectedColumn = getActiveColumn();
@@ -233,6 +233,9 @@ public class TableFocusManager {
                 impl.getSelectedRow(),
                 impl.getSelectedColumn()
         );
+
+        // Commit value change if needed
+        impl.getSelectionModel().setValueIsAdjusting(false);
     }
 
     protected void moveToStart(int row, int col) {
