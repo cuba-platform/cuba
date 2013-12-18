@@ -786,16 +786,15 @@
         <xs:sequence>
             <xs:element name="formatter" minOccurs="0" maxOccurs="1" type="formatterType"/>
             <xs:element name="editable" minOccurs="0" maxOccurs="1"/>
-            <xs:element name="calculatable" minOccurs="0" maxOccurs="1"/>
-            <xs:element name="required" minOccurs="0" maxOccurs="1"/>
-            <xs:element name="aggregation" minOccurs="0" maxOccurs="1">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element name="formatter" minOccurs="0" maxOccurs="1" type="formatterType"/>
-                    </xs:sequence>
-                    <xs:attribute name="type" type="aggregation" use="required"/>
-                </xs:complexType>
-            </xs:element>
+            <!--<xs:element name="calculatable" minOccurs="0" maxOccurs="1"/>-->
+            <!--<xs:element name="aggregation" minOccurs="0" maxOccurs="1">-->
+                <!--<xs:complexType>-->
+                    <!--<xs:sequence>-->
+                        <!--<xs:element name="formatter" minOccurs="0" maxOccurs="1" type="formatterType"/>-->
+                    <!--</xs:sequence>-->
+                    <!--<xs:attribute name="type" type="aggregation" use="required"/>-->
+                <!--</xs:complexType>-->
+            <!--</xs:element>-->
             <xs:element name="visible" minOccurs="0" maxOccurs="1"/>
         </xs:sequence>
 
@@ -805,7 +804,6 @@
         <xs:attributeGroup ref="hasEditable"/>
         <xs:attributeGroup ref="hasCaptionSource"/>
         <xs:attributeGroup ref="hasVisibility"/>
-        <xs:attributeGroup ref="hasRequirements"/>
 
         <xs:attribute name="clickAction" type="xs:string" use="optional"/>
         <xs:attribute name="collapsed" type="xs:boolean" use="optional"/>
