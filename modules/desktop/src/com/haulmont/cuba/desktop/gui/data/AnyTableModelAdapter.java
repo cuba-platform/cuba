@@ -41,9 +41,9 @@ public interface AnyTableModelAdapter extends TableModel {
     void removeChangeListener(DataChangeListener changeListener);
 
     interface DataChangeListener {
-        void beforeChange();
+        void beforeChange(boolean structureChanged);
 
-        void afterChange();
+        void afterChange(boolean structureChanged);
 
         void dataSorted();
     }

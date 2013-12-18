@@ -29,14 +29,13 @@ import java.util.Set;
  */
 public class TableFocusManager {
 
-    private JTable impl;
+    protected JTable impl;
 
     public TableFocusManager(JTable impl) {
         this.impl = impl;
     }
 
     public boolean processKeyBinding(KeyStroke ks, KeyEvent e, int condition, boolean pressed) {
-
         Set<AWTKeyStroke> forwardKeys = KeyboardFocusManager.getCurrentKeyboardFocusManager().getDefaultFocusTraversalKeys(
                 KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS);
         Set<AWTKeyStroke> backwardKeys = KeyboardFocusManager.getCurrentKeyboardFocusManager().getDefaultFocusTraversalKeys(
@@ -54,6 +53,10 @@ public class TableFocusManager {
                 prevFocusElement();
             return true;
         } else if (e.getModifiers() == 0) {
+//            if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_UP ) {
+//                impl.getSelectionModel().setValueIsAdjusting(pressed);
+//            }
+
             return processExtraKeyBinding(ks, e, condition, pressed);
         }
 
@@ -87,7 +90,11 @@ public class TableFocusManager {
             if (e instanceof CausedFocusEvent) {
                 if (((CausedFocusEvent) e).getCause() == CausedFocusEvent.Cause.TRAVERSAL_FORWARD) {
                     if (impl.getModel().getRowCount() > 0) {
-                        moveToStart(0, 0);
+                        if (e.getSource() == impl && impl.getSelectedRow() >= 0 && impl.getSelectedColumn() >= 0)
+                            // if focus from cell editor
+                            focusTo(impl.getSelectedRow(), impl.getSelectedColumn());
+                        else
+                            moveToStart(0, 0);
                     } else
                         impl.transferFocus();
 
@@ -211,7 +218,7 @@ public class TableFocusManager {
      */
     public void focusSelectedRow(int selectedRow) {
         if (impl.getModel().getRowCount() > 0) {
-            moveToStart(selectedRow, 0);
+            focusTo(selectedRow, 0);
         } else
             moveFocusToNextControl();
     }
@@ -233,9 +240,21 @@ public class TableFocusManager {
                 impl.getSelectedRow(),
                 impl.getSelectedColumn()
         );
+    }
 
-        // Commit value change if needed
-        impl.getSelectionModel().setValueIsAdjusting(false);
+    protected void focusTo(int row, int col) {
+        Component editorComp = impl.getEditorComponent();
+
+        if (editorComp != null) {
+            editorComp.dispatchEvent(new FocusEvent(editorComp, FocusEvent.FOCUS_LOST, false, impl));
+        }
+        impl.scrollRectToVisible(impl.getCellRect(row, col, true));
+
+        if (row >= 0 && col >= 0)
+            impl.requestFocus();
+
+        impl.getSelectionModel().setSelectionInterval(row, row);
+        impl.getColumnModel().getSelectionModel().setSelectionInterval(col, col);
     }
 
     protected void moveToStart(int row, int col) {

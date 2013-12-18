@@ -57,6 +57,10 @@ public class DesktopTreeTable
             public TableCellEditor getCellEditor(int row, int column) {
                 TableCellRenderer cellRenderer = cellRenderers.get(column);
                 if (cellRenderer instanceof TableCellEditor) {
+                    TableCellEditor tableCellEditor = DesktopTreeTable.this.getCellEditor(row, column);
+                    if (tableCellEditor != null)
+                        return tableCellEditor;
+
                     return (TableCellEditor) cellRenderer;
                 } else {
                     return super.getCellEditor(row, column);

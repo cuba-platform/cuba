@@ -53,7 +53,7 @@ public class TreeTableModelAdapter extends AbstractTreeTableModel implements Any
                         impl.setAutoCreateColumnsFromModel(false);
 
                         for (DataChangeListener changeListener : changeListeners)
-                            changeListener.beforeChange();
+                            changeListener.beforeChange(true);
 
                         impl.backupExpandedNodes();
 
@@ -62,7 +62,7 @@ public class TreeTableModelAdapter extends AbstractTreeTableModel implements Any
                         impl.restoreExpandedNodes();
 
                         for (DataChangeListener changeListener : changeListeners)
-                            changeListener.afterChange();
+                            changeListener.afterChange(true);
                     }
                 }
         );

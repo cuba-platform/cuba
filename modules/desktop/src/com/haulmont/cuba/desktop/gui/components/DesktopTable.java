@@ -36,13 +36,25 @@ public class DesktopTable extends DesktopAbstractTable<JXTable> {
                     DesktopTable tableComponent = DesktopTable.this;
                     if (editingColumn >= 0) {
                         Column editColumn = tableComponent.getColumns().get(editingColumn);
-                        if (tableComponent.isEditable() && editColumn.isEditable() &&
-                                !tableModel.isGeneratedColumn(editColumn)) {
-                            setValueAt(value, editingRow, editingColumn);
+
+                        if (!(editor instanceof DesktopAbstractTable.EditableColumnTableCellEditor)) {
+                            if (tableComponent.isEditable() && editColumn.isEditable() &&
+                                    !tableModel.isGeneratedColumn(editColumn)) {
+                                setValueAt(value, editingRow, editingColumn);
+                            }
                         }
                         removeEditor();
                     }
                 }
+            }
+
+            @Override
+            public TableCellEditor getCellEditor(int row, int column) {
+                TableCellEditor tableCellEditor = DesktopTable.this.getCellEditor(row, column);
+                if (tableCellEditor != null)
+                    return tableCellEditor;
+
+                return super.getCellEditor(row, column);
             }
         };
 

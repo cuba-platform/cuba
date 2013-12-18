@@ -39,10 +39,8 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
 
     protected MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
 
-    public TableModelAdapter(
-            CollectionDatasource datasource,
-            List<Table.Column> columns,
-            boolean autoRefresh) {
+    public TableModelAdapter(CollectionDatasource datasource, List<Table.Column> columns, boolean autoRefresh) {
+
         this.datasource = datasource;
         this.columns = columns;
         this.autoRefresh = autoRefresh;
@@ -65,29 +63,29 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
                     public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
                         switch (operation) {
                             case ADD:
-                                fireBeforeChangeListeners();
+                                fireBeforeChangeListeners(false);
                                 for (Entity e : items) {
                                     int rowIndex = getRowIndex(e);
                                     fireTableRowsInserted(rowIndex, rowIndex);
                                 }
-                                fireAfterChangeListeners();
+                                fireAfterChangeListeners(true);
                                 break;
 
                             case UPDATE:
-                                fireBeforeChangeListeners();
+                                fireBeforeChangeListeners(false);
                                 for (Entity e : items) {
                                     int rowIndex = getRowIndex(e);
                                     fireTableRowsUpdated(rowIndex, rowIndex);
                                 }
-                                fireAfterChangeListeners();
+                                fireAfterChangeListeners(false);
                                 break;
 
                             case REMOVE:
                             case CLEAR:
                             case REFRESH:
-                                fireBeforeChangeListeners();
+                                fireBeforeChangeListeners(true);
                                 fireTableDataChanged();
-                                fireAfterChangeListeners();
+                                fireAfterChangeListeners(true);
                                 break;
                         }
                     }
@@ -96,22 +94,22 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
                     public void valueChanged(Entity source, String property, Object prevValue, Object value) {
                         int rowIndex = getRowIndex(source);
 
-                        fireBeforeChangeListeners();
+                        fireBeforeChangeListeners(false);
                         fireTableRowsUpdated(rowIndex, rowIndex);
-                        fireAfterChangeListeners();
+                        fireAfterChangeListeners(false);
                     }
                 }
         );
     }
 
-    private void fireBeforeChangeListeners() {
+    protected void fireBeforeChangeListeners(boolean structureChanged) {
         for (DataChangeListener changeListener : changeListeners)
-            changeListener.beforeChange();
+            changeListener.beforeChange(structureChanged);
     }
 
-    private void fireAfterChangeListeners() {
+    protected void fireAfterChangeListeners(boolean structureChanged) {
         for (DataChangeListener changeListener : changeListeners)
-            changeListener.afterChange();
+            changeListener.afterChange(structureChanged);
     }
 
     protected void createProperties(View view, MetaClass metaClass) {
@@ -301,11 +299,11 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
         if (!(datasource instanceof CollectionDatasource.Sortable) || sortKeys == null)
             return;
 
-        List<CollectionDatasource.Sortable.SortInfo> sortInfos = new ArrayList<CollectionDatasource.Sortable.SortInfo>();
+        List<CollectionDatasource.Sortable.SortInfo> sortInfos = new ArrayList<>();
         for (RowSorter.SortKey sortKey : sortKeys) {
             if (!sortKey.getSortOrder().equals(SortOrder.UNSORTED)) {
                 Table.Column c = columns.get(sortKey.getColumn());
-                CollectionDatasource.Sortable.SortInfo<Object> sortInfo = new CollectionDatasource.Sortable.SortInfo<Object>();
+                CollectionDatasource.Sortable.SortInfo<Object> sortInfo = new CollectionDatasource.Sortable.SortInfo<>();
                 sortInfo.setPropertyPath(c.getId());
                 sortInfo.setOrder(sortKey.getSortOrder().equals(SortOrder.ASCENDING)
                         ? CollectionDatasource.Sortable.Order.ASC
@@ -316,7 +314,9 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
         ((CollectionDatasource.Sortable) datasource).sort(
                 sortInfos.toArray(new CollectionDatasource.Sortable.SortInfo[sortInfos.size()]));
 
+        fireBeforeChangeListeners(true);
         fireTableDataChanged();
+        fireAfterChangeListeners(true);
 
         for (DataChangeListener changeListener : changeListeners) {
             changeListener.dataSorted();

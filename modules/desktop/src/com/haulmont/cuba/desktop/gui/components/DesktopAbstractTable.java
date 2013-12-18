@@ -24,9 +24,7 @@ import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.actions.EditAction;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.DsBuilder;
+import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
@@ -96,12 +94,20 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     // Indicates that model is being changed.
     protected boolean isAdjusting = false;
 
+    protected DesktopTableFieldFactory tableFieldFactory = new DesktopTableFieldFactory();
+
+    protected List<MetaPropertyPath> editableColumns = new LinkedList<>();
+
+    protected Security security = AppBeans.get(Security.class);
+
 //    disable for #PL-2035
     // Disable listener that points selection model to folow ds item.
 //    protected boolean disableItemListener = false;
 
     protected boolean fontInitialized = false;
+
     protected int defaultRowHeight = 24;
+    protected int defaultEditableRowHeight = 28;
 
     protected Set<Entity> selectedItems = Collections.emptySet();
 
@@ -109,6 +115,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
     protected Map<Entity, Datasource> fieldDatasources = new WeakHashMap<>();
 
+    // Manual control for content repaint process
     protected boolean contentRepaintEnabled = true;
 
     protected void initComponent() {
@@ -145,7 +152,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                         showPopup(e);
                     }
 
-                    private void showPopup(MouseEvent e) {
+                    protected void showPopup(MouseEvent e) {
                         if (e.isPopupTrigger()) {
                             // select row
                             Point p = e.getPoint();
@@ -163,29 +170,12 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
         impl.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "enter");
         impl.getActionMap().put("enter", new AbstractAction() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (enterPressAction != null) {
                     enterPressAction.actionPerform(DesktopAbstractTable.this);
                 } else {
                     handleClickAction();
-                }
-            }
-        });
-
-        impl.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyReleased(KeyEvent e) {
-                if ((e.getKeyCode() == KeyEvent.VK_DOWN) || (e.getKeyCode() == KeyEvent.VK_UP)) {
-                    impl.getSelectionModel().setValueIsAdjusting(false);
-                }
-            }
-
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if ((e.getKeyCode() == KeyEvent.VK_DOWN) || (e.getKeyCode() == KeyEvent.VK_UP)) {
-                    impl.getSelectionModel().setValueIsAdjusting(true);
                 }
             }
         });
@@ -213,7 +203,6 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                         fontDialog.open();
                     }
                 });
-
 
         scrollPane.addComponentListener(new ComponentAdapter() {
             @Override
@@ -365,6 +354,12 @@ public abstract class DesktopAbstractTable<C extends JXTable>
             tableModel.addColumn(column);
         }
 
+        if (datasource != null && column.isEditable() && column.getId() instanceof MetaPropertyPath) {
+            if (!editableColumns.contains(column.getId())) {
+                editableColumns.add((MetaPropertyPath) column.getId());
+            }
+        }
+
         setColumnIdentifiers();
         refresh();
     }
@@ -375,6 +370,8 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         if (column.getId() instanceof MetaPropertyPath) {
             MetaPropertyPath metaPropertyPath = (MetaPropertyPath) column.getId();
             name = metaPropertyPath.getMetaProperty().getName();
+
+            editableColumns.remove(metaPropertyPath);
         } else {
             name = column.getId().toString();
         }
@@ -663,14 +660,20 @@ public abstract class DesktopAbstractTable<C extends JXTable>
             private ThreadLocal<Set<Entity>> selectionBackup = new ThreadLocal<>();
 
             @Override
-            public void beforeChange() {
+            public void beforeChange(boolean structureChanged) {
+                if (!structureChanged)
+                    return;
+
                 isAdjusting = true;
                 focused = impl.isFocusOwner();
                 selectionBackup.set(selectedItems);
             }
 
             @Override
-            public void afterChange() {
+            public void afterChange(boolean structureChanged) {
+                if (!structureChanged)
+                    return;
+
                 isAdjusting = false;
                 applySelection(filterSelection(selectionBackup.get()));
                 selectionBackup.remove();
@@ -746,6 +749,153 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         }
     }
 
+    // Get cell editor for editable column
+    protected TableCellEditor getCellEditor(int row, int column) {
+
+        TableColumn tableColumn = impl.getColumnModel().getColumn(column);
+        if (tableColumn.getIdentifier() instanceof Column) {
+            Column columnConf = (Column) tableColumn.getIdentifier();
+
+            if (editableColumns != null
+                    && columnConf.getId() instanceof MetaPropertyPath
+                    && editableColumns.contains(columnConf.getId())) {
+                return tableFieldFactory.createEditComponent(row, columnConf);
+            }
+        }
+
+        return null;
+    }
+
+    protected class EditableColumnTableCellEditor extends AbstractCellEditor implements TableCellEditor {
+        private com.haulmont.cuba.gui.components.Component cellComponent;
+
+        public EditableColumnTableCellEditor(com.haulmont.cuba.gui.components.Component cellComponent) {
+            this.cellComponent = cellComponent;
+        }
+
+        @Override
+        public Component getTableCellEditorComponent(JTable table, Object value,
+                                                     boolean isSelected, int row, int column) {
+            return DesktopComponentsHelper.getComposition(cellComponent);
+        }
+
+        @Override
+        public boolean isCellEditable(EventObject e) {
+            return cellComponent instanceof Editable && ((Editable) cellComponent).isEditable();
+        }
+
+        @Override
+        public Object getCellEditorValue() {
+            if (cellComponent instanceof HasValue) {
+                return ((Field) cellComponent).getValue();
+            }
+            return null;
+        }
+    }
+
+    protected class DesktopTableFieldFactory extends AbstractFieldFactory {
+
+        protected Map<MetaClass, CollectionDatasource> optionsDatasources = new HashMap<>();
+
+        public TableCellEditor createEditComponent(int row, Column columnConf) {
+            MetaPropertyPath mpp = (MetaPropertyPath) columnConf.getId();
+
+            Datasource fieldDatasource = getItemDatasource(tableModel.getItem(row));
+            // create lookup
+            final com.haulmont.cuba.gui.components.Component columnComponent = createField(fieldDatasource,
+                    mpp.getMetaProperty().getName(), columnConf.getXmlDescriptor());
+
+            if (columnComponent instanceof Field) {
+                Field cubaField = (Field) columnComponent;
+
+                if (columnConf.getDescription() != null) {
+                    cubaField.setDescription(columnConf.getDescription());
+                }
+//                    todo implement required columns
+//                        if (requiredColumns.containsKey(columnConf)) {
+//                            cubaField.setRequired(true);
+//                            cubaField.setRequiredMessage(requiredColumns.get(columnConf));
+//                        }
+            }
+
+            if (columnConf.getWidth() != null) {
+                columnComponent.setWidth(columnConf.getWidth() + "px");
+            } else {
+                columnComponent.setWidth("100%");
+            }
+
+            if (columnComponent instanceof BelongToFrame) {
+                BelongToFrame belongToFrame = (BelongToFrame) columnComponent;
+                if (belongToFrame.getFrame() == null) {
+                    belongToFrame.setFrame(getFrame());
+                }
+            }
+
+            applyPermissions(columnComponent);
+
+            return new EditableColumnTableCellEditor(columnComponent);
+        }
+
+        protected void applyPermissions(com.haulmont.cuba.gui.components.Component columnComponent) {
+            if (columnComponent instanceof DatasourceComponent) {
+                DatasourceComponent dsComponent = (DatasourceComponent) columnComponent;
+                MetaProperty metaProperty = dsComponent.getMetaProperty();
+
+                if (metaProperty != null) {
+                    MetaClass metaClass = dsComponent.getDatasource().getMetaClass();
+                    dsComponent.setEditable(security.isEntityAttrModificationPermitted(metaClass, metaProperty.getName())
+                            && dsComponent.isEditable());
+                }
+            }
+        }
+
+        @Override
+        protected CollectionDatasource getOptionsDatasource(Datasource fieldDatasource, String propertyId) {
+            if (datasource == null)
+                throw new IllegalStateException("Table datasource is null");
+
+            Column columnConf = columns.get(datasource.getMetaClass().getPropertyPath(propertyId));
+
+            final DsContext dsContext = datasource.getDsContext();
+
+            String optDsName = columnConf.getXmlDescriptor() != null ?
+                    columnConf.getXmlDescriptor().attributeValue("optionsDatasource") : "";
+
+            if (StringUtils.isBlank(optDsName)) {
+                MetaPropertyPath propertyPath = fieldDatasource.getMetaClass().getPropertyPath(propertyId);
+                MetaClass metaClass = propertyPath.getRange().asClass();
+
+                CollectionDatasource ds = optionsDatasources.get(metaClass);
+                if (ds != null)
+                    return ds;
+
+                final DataSupplier dataSupplier = fieldDatasource.getDataSupplier();
+
+                final String id = metaClass.getName();
+                final String viewName = null; //metaClass.getName() + ".lookup";
+
+                ds = new DsBuilder(dsContext)
+                        .setDataSupplier(dataSupplier)
+                        .setId(id)
+                        .setMetaClass(metaClass)
+                        .setViewName(viewName)
+                        .buildCollectionDatasource();
+
+                ds.refresh();
+
+                optionsDatasources.put(metaClass, ds);
+
+                return ds;
+            } else {
+                CollectionDatasource ds = dsContext.get(optDsName);
+                if (ds == null)
+                    throw new IllegalStateException("Options datasource not found: " + optDsName);
+
+                return ds;
+            }
+        }
+    }
+
     protected void initSelectionListener(final CollectionDatasource datasource) {
         impl.getSelectionModel().addListSelectionListener(
                 new ListSelectionListener() {
@@ -793,6 +943,8 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     }
 
     protected void setEditableColumns(List<MetaPropertyPath> editableColumns) {
+        this.editableColumns.clear();
+        this.editableColumns.addAll(editableColumns);
     }
 
     protected void setColumnHeader(Object propertyPath, String caption) {
@@ -1351,7 +1503,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         }
     }
 
-    private void applySelectionIndexes(List<Integer> indexes) {
+    protected void applySelectionIndexes(List<Integer> indexes) {
         Collections.sort(indexes);
         ListSelectionModel model = impl.getSelectionModel();
         model.setValueIsAdjusting(true);
@@ -1368,7 +1520,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         model.setValueIsAdjusting(false);
     }
 
-    private List<Integer> getSelectionIndexes(Collection<Entity> items) {
+    protected List<Integer> getSelectionIndexes(Collection<Entity> items) {
         if (items.isEmpty()) {
             return Collections.emptyList();
         }
@@ -1481,10 +1633,18 @@ public abstract class DesktopAbstractTable<C extends JXTable>
      * tallest cell in that row.
      */
     public void packRows() {
-        if (!contentRepaintEnabled)
+        if (!contentRepaintEnabled) {
             return;
+        }
 
         impl.setRowHeight(defaultRowHeight);
+
+        for (Column column : columnsOrder) {
+            if (column.isEditable()) {
+                impl.setRowHeight(defaultEditableRowHeight);
+                break;
+            }
+        }
 
         if (allColumnsAreInline()) {
             return;
@@ -1558,26 +1718,6 @@ public abstract class DesktopAbstractTable<C extends JXTable>
             packRows();
             repaintImplIfNeeded();
         }
-    }
-
-    /**
-     * Obtain table cell editor for additional desktop UI tweaking.
-     * Column must be custom-generated.
-     *
-     * @param columnId column ID
-     * @return table cell editor
-     */
-    public DesktopTableCellEditor getCellEditor(String columnId) {
-        if (columnId == null) {
-            throw new IllegalArgumentException("columnId is null");
-        }
-
-        Column col = getColumn(columnId);
-        TableColumnModel columnModel = impl.getColumnModel();
-        TableColumn tableColumn = columnModel.getColumn(columnModel.getColumnIndex(col));
-        DesktopTableCellEditor res = (DesktopTableCellEditor) tableColumn.getCellEditor();
-
-        return res;
     }
 
     protected void applyStylename(boolean isSelected, boolean hasFocus, Component component, String style) {
