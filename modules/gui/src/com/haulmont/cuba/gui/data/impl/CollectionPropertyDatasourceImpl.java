@@ -446,13 +446,14 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         Collection<T> collection = __getCollection();
         for (T t : collection) {
             if (t.equals(item)) {
-                collection.remove(item);
+                detachListener(t);
+                collection.remove(t);
                 collection.add(item);
+                attachListener(item);
 
                 if (item.equals(this.item)) {
                     this.item = item;
                 }
-
                 break;
             }
         }
