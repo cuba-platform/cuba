@@ -921,7 +921,14 @@ public class DesktopWindow implements Window, Component.Disposable,
                     c = jComponent;
                     while (c != null) {
                         if (c.isFocusable()) {
-                            c.requestFocus();
+                            final java.awt.Component focusComponent = c;
+                            SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    focusComponent.requestFocusInWindow();
+                                    focusComponent.requestFocus();
+                                }
+                            });
                             break;
                         }
                         c = c.getParent();
