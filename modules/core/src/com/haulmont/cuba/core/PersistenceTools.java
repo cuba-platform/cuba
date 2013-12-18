@@ -58,9 +58,9 @@ public class PersistenceTools {
         if (stateManager == null)
             return Collections.emptySet();
 
-        Set<String> set = new HashSet<String>();
+        Set<String> set = new HashSet<>();
         BitSet dirtySet = stateManager.getDirty();
-        for (int i = 0; i < dirtySet.size() - 1; i++) {
+        for (int i = 0; i < dirtySet.size(); i++) {
             if (dirtySet.get(i)) {
                 FieldMetaData field = stateManager.getMetaData().getField(i);
                 set.add(field.getName());

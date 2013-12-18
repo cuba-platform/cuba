@@ -11,6 +11,7 @@ import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public class PersistenceTest extends CubaTestCase {
@@ -281,5 +282,32 @@ public class PersistenceTest extends CubaTestCase {
         assertEquals("testUser1", user.getName());
         assertEquals("testLogin", user.getLogin());
         assertNotNull(group);
+    }
+
+    public void testDirtyFields() throws Exception {
+        Transaction tx = persistence.createTransaction();
+        try {
+            EntityManager em = persistence.getEntityManager();
+            assertNotNull(em);
+            Server server = new Server();
+            UUID id = server.getId();
+            server.setName("localhost");
+            server.setRunning(true);
+            em.persist(server);
+
+            tx.commitRetaining();
+
+            em = persistence.getEntityManager();
+            server = em.find(Server.class, id);
+            assertNotNull(server);
+            server.setData("testData");
+
+            Set<String> dirtyFields = persistence.getTools().getDirtyFields(server);
+            assertTrue(dirtyFields.contains("data"));
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
     }
 }
