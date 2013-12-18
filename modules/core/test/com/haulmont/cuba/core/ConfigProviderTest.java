@@ -9,9 +9,14 @@ import com.haulmont.cuba.core.entity.Config;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.security.entity.RoleType;
 import com.haulmont.cuba.security.entity.User;
 
 import java.lang.reflect.Method;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -103,6 +108,26 @@ public class ConfigProviderTest extends CubaTestCase
         User adminUser = config.getAdminUser();
         assertNotNull(adminUser);
         assertEquals("admin", adminUser.getLogin());
+
+        // Enum property
+        RoleType roleType = config.getRoleTypeProp();
+        assertTrue(roleType == RoleType.STANDARD);
+
+        // Date property
+        Date date = config.getDateProp();
+        try {
+            assertEquals(new SimpleDateFormat("yyyy-MM-dd").parse("2013-12-12"), date);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+
+        // List of Integer
+        List<Integer> integerList = config.getIntegerListProp();
+        assertEquals(Arrays.asList(1, 2, 3), integerList);
+
+        // List of String
+        List<String> stringList = config.getStringListProp();
+        assertEquals(Arrays.asList("aaa", "bbb", "ccc"), stringList);
     }
 
     public void testDatabaseProperties() throws Exception {

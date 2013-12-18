@@ -24,10 +24,9 @@ public class LoadContext implements Serializable {
     protected Query query;
     protected View view;
     protected Object id;
-    protected Collection<Object> ids;
     protected boolean softDeletion = true;
     protected boolean useSecurityConstraints = true;
-    protected List<Query> prevQueries = new ArrayList<Query>();
+    protected List<Query> prevQueries = new ArrayList<>();
     protected int queryKey;
 
     /**
@@ -175,7 +174,6 @@ public class LoadContext implements Serializable {
                 ", query=" + query +
                 ", view=" + view +
                 ", id=" + id +
-                ", ids=" + ids +
                 ", softDeletion=" + softDeletion +
                 ", useSecurityConstraints=" + useSecurityConstraints +
                 '}';
@@ -188,7 +186,7 @@ public class LoadContext implements Serializable {
 
         private static final long serialVersionUID = 3819951144050635838L;
 
-        private Map<String, Object> parameters = new HashMap<String, Object>();
+        private Map<String, Object> parameters = new HashMap<>();
         private String queryString;
         private int firstResult;
         private int maxResults;

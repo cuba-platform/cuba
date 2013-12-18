@@ -78,14 +78,14 @@ public class DatasourceImpl<T extends Entity>
         if (!allowCommit)
             return;
 
-        if (Datasource.CommitMode.DATASTORE.equals(getCommitMode())) {
+        if (getCommitMode() == CommitMode.DATASTORE) {
             final DataSupplier supplier = getDataSupplier();
             item = supplier.commit(item, getView());
 
             clearCommitLists();
             modified = false;
 
-        } else if (Datasource.CommitMode.PARENT.equals(getCommitMode())) {
+        } else if (getCommitMode() == CommitMode.PARENT) {
             if (parentDs == null)
                 throw new IllegalStateException("parentDs is null while commitMode=PARENT");
 
@@ -104,7 +104,7 @@ public class DatasourceImpl<T extends Entity>
             modified = false;
 
         } else {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("Unsupported commitMode: " + getCommitMode());
         }
     }
 
@@ -122,7 +122,6 @@ public class DatasourceImpl<T extends Entity>
         return view;
     }
 
-
     @Override
     public State getState() {
         return state;
@@ -130,7 +129,7 @@ public class DatasourceImpl<T extends Entity>
 
     @Override
     public T getItem() {
-        return State.VALID.equals(state) ? item : null;
+        return state == State.VALID ? item : null;
     }
 
     @Override
@@ -140,7 +139,7 @@ public class DatasourceImpl<T extends Entity>
 
     @Override
     public void setItem(T item) {
-        if (State.NOT_INITIALIZED.equals(this.state)) {
+        if (this.state == State.NOT_INITIALIZED) {
             __setItem(item);
         } else {
             Object prevItem = this.item;
@@ -179,7 +178,7 @@ public class DatasourceImpl<T extends Entity>
 
     @Override
     public void invalidate() {
-        if (State.NOT_INITIALIZED != state && State.INVALID != state) {
+        if (state != State.NOT_INITIALIZED && state != State.INVALID) {
             State prevState = state;
             state = State.INVALID;
             fireStateChanged(prevState);

@@ -97,7 +97,11 @@ public interface Window extends IFrame, Component.HasCaption {
     void closeAndRun(String actionId, Runnable runnable);
 
     /**
-     * Add a {@link Timer} component to this window.
+     * Add a {@link Timer} component to this screen.
+     * <p/> This method is called when a timer is created from XML descriptor. It should also be called from an
+     * application code if the timer is created programmatically by {@link com.haulmont.cuba.gui.xml.layout.ComponentsFactory#createTimer()} method.
+     * <p/> The timer added to the window is stopped when the window is closed.
+     *
      * @param timer Timer instance
      */
     void addTimer(Timer timer);

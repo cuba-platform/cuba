@@ -45,6 +45,9 @@ public class CategoryAttrsFrame extends AbstractFrame {
     protected MessageTools messageTools;
 
     @Inject
+    protected UserSessionSource userSessionSource;
+
+    @Inject
     protected ComponentsFactory factory;
 
     @Inject
@@ -67,7 +70,7 @@ public class CategoryAttrsFrame extends AbstractFrame {
         categoryAttrsTable.addAction(new RemoveAction(categoryAttrsTable,false));
         categoryAttrsTable.addAction(new RefreshAction(categoryAttrsTable));
 
-        categoryAttrsDs.addListener(new DsListenerAdapter() {
+        categoryAttrsDs.addListener(new DsListenerAdapter<CategoryAttribute>() {
             @Override
             public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
                 if (state != Datasource.State.VALID) return;
@@ -80,7 +83,7 @@ public class CategoryAttrsFrame extends AbstractFrame {
     }
 
     private void initMoveButtons() {
-        ((Button)getComponent("moveUp")).setAction(new AbstractAction("moveUp") {
+        ((Button)getComponentNN("moveUp")).setAction(new AbstractAction("moveUp") {
             @Override
             public void actionPerform(Component component) {
                 Set<CategoryAttribute> selected = categoryAttrsTable.getSelected();
@@ -132,7 +135,7 @@ public class CategoryAttrsFrame extends AbstractFrame {
             }
 
         };
-        ((Button)getComponent("moveDown")).setAction(action);
+        ((Button)getComponentNN("moveDown")).setAction(action);
     }
 
     private void sortTableByOrderNo() {
@@ -175,7 +178,7 @@ public class CategoryAttrsFrame extends AbstractFrame {
                         case DATE:
                             Date date = attribute.getDefaultDate();
                             if (date != null) {
-                                String dateTimeFormat = Datatypes.getFormatStrings(UserSessionProvider.getLocale()).getDateTimeFormat();
+                                String dateTimeFormat = Datatypes.getFormatStrings(userSessionSource.getLocale()).getDateTimeFormat();
                                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateTimeFormat);
                                 defaultValue = simpleDateFormat.format(date);
                             } else if (BooleanUtils.isTrue(attribute.getDefaultDateIsCurrent())) {
@@ -195,7 +198,7 @@ public class CategoryAttrsFrame extends AbstractFrame {
                     try {
                         Class clazz = Class.forName(attribute.getDataType());
                         LoadContext entitiesContext = new LoadContext(clazz);
-                        String entityClassName = MetadataProvider.getSession().getClass(clazz).getName();
+                        String entityClassName = metadata.getClassNN(clazz).getName();
                         if (attribute.getDefaultEntityId() != null) {
                             LoadContext.Query query = entitiesContext.setQueryString("select a from " + entityClassName + " a where a.id =:e");
                             query.setParameter("e", attribute.getDefaultEntityId());

@@ -18,7 +18,7 @@ import java.util.List;
 public class StringListTypeFactory extends TypeFactory{
     @Override
     public Object build(String string) {
-        List<String> stringList = new ArrayList<String>();
+        List<String> stringList = new ArrayList<>();
         if (StringUtils.isNotEmpty(string)){
             String[] elements = string.split("\\|");
             for (String element : elements) {

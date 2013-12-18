@@ -8,10 +8,12 @@ import com.haulmont.cuba.core.config.defaults.Default;
 import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
 import com.haulmont.cuba.core.config.defaults.DefaultInt;
 import com.haulmont.cuba.core.config.defaults.DefaultInteger;
-import com.haulmont.cuba.core.config.type.Factory;
-import com.haulmont.cuba.core.config.type.UuidTypeFactory;
+import com.haulmont.cuba.core.config.type.*;
+import com.haulmont.cuba.security.entity.RoleType;
 import com.haulmont.cuba.security.entity.User;
 
+import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Source(type = SourceType.APP)
@@ -73,4 +75,23 @@ public interface TestConfig extends Config
     @Property("cuba.test.adminUser")
     @Default("sec$User-60885987-1b61-4247-94c7-dff348347f93")
     User getAdminUser();
+
+    @Property("cuba.test.roleTypeProp")
+    @Default("STANDARD")
+    RoleType getRoleTypeProp();
+
+    @Property("cuba.test.dateProp")
+    @Default("2013-12-12 00:00:00.000")
+    @Factory(factory = DateFactory.class)
+    Date getDateProp();
+
+    @Property("cuba.test.integerListProp")
+    @Default("1 2 3")
+    @Factory(factory = IntegerListTypeFactory.class)
+    List<Integer> getIntegerListProp();
+
+    @Property("cuba.test.stringListProp")
+    @Default("aaa|bbb|ccc")
+    @Factory(factory = StringListTypeFactory.class)
+    List<String> getStringListProp();
 }

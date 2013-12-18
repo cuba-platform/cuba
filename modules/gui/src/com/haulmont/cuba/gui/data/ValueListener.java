@@ -14,5 +14,14 @@ import javax.annotation.Nullable;
  * @version $Id$
  */
 public interface ValueListener<T> {
+
+    /**
+     * Called when an attribute value changed.
+     *
+     * @param source    changed object
+     * @param property  changed attribute name
+     * @param prevValue previous value
+     * @param value     current value
+     */
     void valueChanged(T source, String property, @Nullable Object prevValue, @Nullable Object value);
 }
