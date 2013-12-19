@@ -6,6 +6,8 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.datatypes.Enumeration;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -15,6 +17,7 @@ import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.ObjectContainer;
 import com.vaadin.data.Property;
 import com.vaadin.ui.AbstractSelect;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 
@@ -61,6 +64,10 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
         final Property itemProperty = wrapper.getItemProperty(metaPropertyPath);
 
         setRequired(metaProperty.isMandatory());
+        if (StringUtils.isEmpty(getRequiredMessage())) {
+            MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+            setRequiredMessage(messageTools.getDefaultRequiredMessage(metaProperty));
+        }
 
         if (metaProperty.getRange().isEnum()) {
             Enumeration enumeration = metaProperty.getRange().asEnumeration();

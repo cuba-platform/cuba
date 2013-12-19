@@ -9,6 +9,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.components.Action;
@@ -162,6 +163,8 @@ public class WebPickerField
             throw new RuntimeException(String.format("Property '%s' not found in class %s", property, metaClass));
         }
 
+        this.metaClass = metaProperty.getRange().asClass();
+
         final ItemWrapper wrapper = createDatasourceWrapper(datasource, Collections.singleton(metaPropertyPath));
         final Property itemProperty = wrapper.getItemProperty(metaPropertyPath);
 
@@ -197,8 +200,10 @@ public class WebPickerField
             }
         }
         setRequired(metaProperty.isMandatory());
-
-        this.metaClass = metaProperty.getRange().asClass();
+        if (StringUtils.isEmpty(getRequiredMessage())) {
+            MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+            setRequiredMessage(messageTools.getDefaultRequiredMessage(metaProperty));
+        }
     }
 
     @Override

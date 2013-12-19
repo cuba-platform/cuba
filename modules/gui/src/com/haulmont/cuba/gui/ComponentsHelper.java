@@ -5,7 +5,6 @@
 package com.haulmont.cuba.gui;
 
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.actions.*;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;

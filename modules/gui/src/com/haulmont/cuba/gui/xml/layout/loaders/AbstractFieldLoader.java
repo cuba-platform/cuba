@@ -69,11 +69,7 @@ public class AbstractFieldLoader extends AbstractDatasourceComponentLoader {
             component.setRequiredMessage(loadResourceString(msg));
         } else if (component.isRequired() && component.getDatasource() != null) {
             component.setRequiredMessage(
-                    messages.formatMessage(
-                            messages.getMainMessagePack(),
-                            "validation.required.defaultMsg",
-                            messages.getTools().getPropertyCaption(component.getMetaProperty())
-                    )
+                    messageTools.getDefaultRequiredMessage(component.getMetaProperty())
             );
         }
     }

@@ -13,6 +13,7 @@ import com.haulmont.chile.core.model.Range;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
@@ -215,6 +216,11 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
         );
 
         setRequired(metaProperty.isMandatory());
+        if (StringUtils.isEmpty(getRequiredMessage())) {
+            MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+            setRequiredMessage(messageTools.getDefaultRequiredMessage(metaProperty));
+        }
+
         if ((datasource.getState() == Datasource.State.VALID) && (datasource.getItem() != null)) {
             Object value = InstanceUtils.getValueEx(datasource.getItem(), metaPropertyPath.getPath());
             updateComponent(value);

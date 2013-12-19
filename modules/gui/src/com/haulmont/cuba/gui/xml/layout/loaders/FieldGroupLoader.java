@@ -7,7 +7,6 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Field;
@@ -242,20 +241,19 @@ public class FieldGroupLoader extends AbstractFieldLoader {
 
         Element element = field.getXmlDescriptor();
         final String required = element.attributeValue("required");
-        if (isMandatory || !StringUtils.isEmpty(required)) {
-            String requiredMsg = element.attributeValue("requiredMessage");
-            if (StringUtils.isEmpty(requiredMsg)) {
-                if (metaClass != null) {
-                    MetaProperty metaProperty = metaClass.getPropertyPath(field.getId()).getMetaProperty();
-                    requiredMsg = messages.formatMessage(
-                            AppConfig.getMessagesPack(),
-                            "validation.required.defaultMsg",
-                            messageTools.getPropertyCaption(metaProperty)
-                    );
-                }
-            }
-            component.setRequired(field, isMandatory || BooleanUtils.toBoolean(required), loadResourceString(requiredMsg));
+
+        if (StringUtils.isNotEmpty(required)) {
+            isMandatory = BooleanUtils.toBoolean(required);
         }
+
+        String requiredMsg = element.attributeValue("requiredMessage");
+        if (StringUtils.isEmpty(requiredMsg)) {
+            if (metaClass != null) {
+                MetaProperty metaProperty = metaClass.getPropertyPath(field.getId()).getMetaProperty();
+                requiredMsg = messageTools.getDefaultRequiredMessage(metaProperty);
+            }
+        }
+        component.setRequired(field, isMandatory, loadResourceString(requiredMsg));
     }
 
     @Override

@@ -13,6 +13,7 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.OptionsField;
@@ -156,6 +157,10 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
         );
 
         setRequired(metaProperty.isMandatory());
+        if (StringUtils.isEmpty(getRequiredMessage())) {
+            MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+            setRequiredMessage(messageTools.getDefaultRequiredMessage(metaProperty));
+        }
 
         if (metaProperty.getRange().isEnum()) {
             final Enumeration enumeration = metaProperty.getRange().asEnumeration();

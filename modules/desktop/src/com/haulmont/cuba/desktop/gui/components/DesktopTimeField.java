@@ -11,9 +11,10 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.UserSessionProvider;
-import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.DateField;
@@ -36,9 +37,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> implements TimeField {
 
@@ -204,6 +204,10 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
         }
 
         setRequired(metaProperty.isMandatory());
+        if (StringUtils.isEmpty(getRequiredMessage())) {
+            MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+            setRequiredMessage(messageTools.getDefaultRequiredMessage(metaProperty));
+        }
     }
 
     public void setFormat(String timeFormat) {

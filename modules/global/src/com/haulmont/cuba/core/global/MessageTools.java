@@ -163,6 +163,14 @@ public class MessageTools {
     }
 
     /**
+     * @return default required message for specified property.
+     */
+    public String getDefaultRequiredMessage(MetaProperty metaProperty) {
+        return messages.formatMessage(messages.getMainMessagePack(),
+                "validation.required.defaultMsg", getPropertyCaption(metaProperty));
+    }
+
+    /**
      * Get message reference of an entity property.
      * Messages pack part of the reference corresponds to the entity's package.
      * @param metaClass     MetaClass containing the property

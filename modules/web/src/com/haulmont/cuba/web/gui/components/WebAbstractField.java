@@ -8,6 +8,8 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueChangingListener;
@@ -16,6 +18,7 @@ import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.vaadin.data.Property;
 import com.vaadin.ui.AbstractComponent;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 import java.util.List;
@@ -71,6 +74,10 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
         component.setPropertyDataSource(wrapper.getItemProperty(metaPropertyPath));
 
         setRequired(metaProperty.isMandatory());
+        if (StringUtils.isEmpty(getRequiredMessage())) {
+            MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+            setRequiredMessage(messageTools.getDefaultRequiredMessage(metaProperty));
+        }
     }
 
     protected void initFieldConverter() {
