@@ -5,8 +5,10 @@
 
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
-import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.LookupPickerField;
@@ -32,7 +34,7 @@ public class LookupPickerFieldLoader extends LookupFieldLoader {
 
         final String metaClass = element.attributeValue("metaClass");
         if (!StringUtils.isEmpty(metaClass)) {
-            component.setMetaClass(MetadataProvider.getSession().getClass(metaClass));
+            component.setMetaClass(AppBeans.get(Metadata.class).getSession().getClass(metaClass));
         }
 
         loadActions(component, element);
@@ -47,14 +49,38 @@ public class LookupPickerFieldLoader extends LookupFieldLoader {
     @Override
     protected Action loadDeclarativeAction(Component.ActionsHolder actionsHolder, Element element) {
         String id = element.attributeValue("id");
-        if (id == null)
-            throw new GuiDevelopmentException("No action ID provided", context.getFullFrameId());
+        if (id == null) {
+            throw new GuiDevelopmentException("No action ID provided for " + element.getName(), context.getFullFrameId());
+        }
 
         if (StringUtils.isBlank(element.attributeValue("invoke"))) {
             // Try to create a standard picker action
             for (PickerField.ActionType type : PickerField.ActionType.values()) {
                 if (type.getId().equals(id)) {
-                    return type.createAction((PickerField) actionsHolder);
+                    Action action = type.createAction((PickerField) actionsHolder);
+                    if (type != PickerField.ActionType.LOOKUP && type != PickerField.ActionType.OPEN) {
+                        return action;
+                    }
+
+                    String openTypeString = element.attributeValue("openType");
+                    if (openTypeString == null) {
+                        return action;
+                    }
+
+                    WindowManager.OpenType openType;
+                    try {
+                        openType = WindowManager.OpenType.valueOf(openTypeString);
+                    } catch (IllegalArgumentException e) {
+                        throw new GuiDevelopmentException(
+                                "Unknown open type: '" + openTypeString + "' for action: '" + id + "'", context.getFullFrameId());
+                    }
+
+                    if (action instanceof PickerField.LookupAction) {
+                        ((PickerField.LookupAction) action).setLookupScreenOpenType(openType);
+                    } else if (action instanceof PickerField.OpenAction) {
+                        ((PickerField.OpenAction) action).setEditScreenOpenType(openType);
+                    }
+                    return action;
                 }
             }
         }

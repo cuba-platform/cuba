@@ -30,7 +30,6 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * @param <T>
  * @author abramov
  * @version $Id$
  */
@@ -412,23 +411,28 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
                     if (type != ListActionType.CREATE && type != ListActionType.EDIT) {
                         return instance;
                     }
-                    String openType = element.attributeValue("openType");
-                    if (openType == null) {
+
+                    String openTypeString = element.attributeValue("openType");
+                    if (openTypeString == null) {
                         return instance;
                     }
+
+                    WindowManager.OpenType openType;
                     try {
-                        WindowManager.OpenType open = WindowManager.OpenType.valueOf(openType);
-                        if (type == ListActionType.CREATE) {
-                            CreateAction create = (CreateAction) instance;
-                            create.setOpenType(open);
-                        } else {
-                            EditAction edit = (EditAction) instance;
-                            edit.setOpenType(open);
-                        }
+                        openType = WindowManager.OpenType.valueOf(openTypeString);
                     } catch (IllegalArgumentException e) {
                         throw new GuiDevelopmentException(
-                                "Unknown open type: '" + openType + "'", context.getFullFrameId());
+                                "Unknown open type: '" + openTypeString + "' for action: '" + id + "'", context.getFullFrameId());
                     }
+
+                    if (type == ListActionType.CREATE) {
+                        CreateAction create = (CreateAction) instance;
+                        create.setOpenType(openType);
+                    } else {
+                        EditAction edit = (EditAction) instance;
+                        edit.setOpenType(openType);
+                    }
+
                     return instance;
                 }
             }

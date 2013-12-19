@@ -7,6 +7,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.Component;
@@ -95,12 +96,13 @@ public class PickerFieldLoader extends AbstractFieldLoader {
         if (id == null) {
             Element component = element;
             for (int i = 0; i < 2; i++) {
-                if (component.getParent() != null)
+                if (component.getParent() != null) {
                     component = component.getParent();
-                else
-                    throw new GuiDevelopmentException("No action ID provided", context.getFullFrameId());
+                } else {
+                    throw new GuiDevelopmentException("No action ID provided for " + element.getName(), context.getFullFrameId());
+                }
             }
-            throw new GuiDevelopmentException("No action ID provided", context.getFullFrameId(),
+            throw new GuiDevelopmentException("No action ID provided for " + element.getName(), context.getFullFrameId(),
                     "PickerField ID", component.attributeValue("id"));
         }
 
@@ -108,7 +110,30 @@ public class PickerFieldLoader extends AbstractFieldLoader {
             // Try to create a standard picker action
             for (PickerField.ActionType type : PickerField.ActionType.values()) {
                 if (type.getId().equals(id)) {
-                    return type.createAction((PickerField) actionsHolder);
+                    Action action = type.createAction((PickerField) actionsHolder);
+                    if (type != PickerField.ActionType.LOOKUP && type != PickerField.ActionType.OPEN) {
+                        return action;
+                    }
+
+                    String openTypeString = element.attributeValue("openType");
+                    if (openTypeString == null) {
+                        return action;
+                    }
+
+                    WindowManager.OpenType openType;
+                    try {
+                        openType = WindowManager.OpenType.valueOf(openTypeString);
+                    } catch (IllegalArgumentException e) {
+                        throw new GuiDevelopmentException(
+                                "Unknown open type: '" + openTypeString + "' for action: '" + id + "'", context.getFullFrameId());
+                    }
+
+                    if (action instanceof PickerField.LookupAction) {
+                        ((PickerField.LookupAction) action).setLookupScreenOpenType(openType);
+                    } else if (action instanceof PickerField.OpenAction) {
+                        ((PickerField.OpenAction) action).setEditScreenOpenType(openType);
+                    }
+                    return action;
                 }
             }
         }
