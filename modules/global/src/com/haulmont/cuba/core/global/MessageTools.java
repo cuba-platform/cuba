@@ -75,8 +75,9 @@ public class MessageTools {
      * </ul>
      * @return localized message or input string itself if it doesn't begin with <code>msg://</code>
      */
-    public String loadString(@Nullable String messagesPack, String ref) {
-        if (ref.startsWith(MARK)) {
+    @Nullable
+    public String loadString(@Nullable String messagesPack, @Nullable String ref) {
+        if (ref != null && ref.startsWith(MARK)) {
             String path = ref.substring(6);
             final String[] strings = path.split("/");
             if (strings.length == 1 && messagesPack != null) {
