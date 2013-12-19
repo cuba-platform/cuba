@@ -107,8 +107,11 @@ public class DesktopTreeTable
                     Object value = editor.getCellEditorValue();
                     DesktopTreeTable tableComponent = DesktopTreeTable.this;
                     Column editColumn = tableComponent.getColumns().get(editingColumn);
-                    if (tableComponent.isEditable() && editColumn.isEditable() && !tableModel.isGeneratedColumn(editColumn)) {
-                        setValueAt(value, editingRow, editingColumn);
+
+                    if (!(editor instanceof DesktopAbstractTable.EditableColumnTableCellEditor)) {
+                        if (tableComponent.isEditable() && editColumn.isEditable() && !tableModel.isGeneratedColumn(editColumn)) {
+                            setValueAt(value, editingRow, editingColumn);
+                        }
                     }
                     removeEditor();
                 }
