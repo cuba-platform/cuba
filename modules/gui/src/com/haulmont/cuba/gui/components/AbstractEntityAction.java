@@ -14,6 +14,8 @@ import com.haulmont.cuba.gui.data.Datasource;
 import java.util.*;
 
 /**
+ * DEPRECATED. Will be removed in 5.1.
+ * <p/>
  * Generic action for entities. One Action for table, datasource and entity.
  * Selected entity and multiselect will be checked automatically.
  * <p>
@@ -23,6 +25,7 @@ import java.util.*;
  * @author Zaharchenko
  * @version $Id$
  */
+@Deprecated
 public abstract class AbstractEntityAction<T extends Entity> extends AbstractAction {
 
     private static final long serialVersionUID = 4263878244286411498L;
