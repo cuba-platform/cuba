@@ -46,22 +46,22 @@ public class User extends StandardEntity {
     protected String password;
 
     @Column(name = "NAME", length = 100)
-    protected String name = "";
+    protected String name;
 
     @Column(name = "FIRST_NAME", length = 255)
-    protected String firstName = "";
+    protected String firstName;
 
     @Column(name = "LAST_NAME", length = 255)
-    protected String lastName = "";
+    protected String lastName;
 
     @Column(name = "MIDDLE_NAME", length = 255)
-    protected String middleName = "";
+    protected String middleName;
 
     @Column(name = "POSITION_", length = 255)
-    protected String position = "";
+    protected String position;
 
     @Column(name = "EMAIL", length = 100)
-    protected String email = "";
+    protected String email;
 
     @Column(name = "LANGUAGE_", length = 20)
     protected String language;
