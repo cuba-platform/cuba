@@ -51,7 +51,7 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
 
     protected String lookupScreen;
     protected WindowManager.OpenType lookupOpenMode = WindowManager.OpenType.THIS_TAB;
-    protected Map<String, Object> lookupScreenParams = null;
+    protected Map<String, Object> lookupScreenParams;
 
     protected TokenStyleGenerator tokenStyleGenerator;
 

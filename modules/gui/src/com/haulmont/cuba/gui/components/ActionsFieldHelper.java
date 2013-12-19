@@ -90,7 +90,7 @@ public class ActionsFieldHelper {
                 
                 if (entity instanceof SoftDelete && ((SoftDelete) entity).isDeleted()) {
                     component.getFrame().showNotification(
-                            MessageProvider.getMessage(ActionsFieldHelper.class,"ActionsFieldHelper.openMsg"),
+                            MessageProvider.getMessage(ActionsFieldHelper.class, "OpenAction.objectIsDeleted"),
                             IFrame.NotificationType.HUMANIZED);
                     return;
                 }

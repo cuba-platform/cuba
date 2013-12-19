@@ -23,7 +23,13 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * PickerField component generic interface.
+ * Generic UI component to select and display an entity instance. Consists of the text field and the set of buttons
+ * defined by actions.
+ *
+ * @see LookupAction
+ * @see OpenAction
+ * @see ClearAction
+ *
  * @see LookupPickerField
  *
  * @author abramov
@@ -119,6 +125,9 @@ public interface PickerField extends Field, Component.ActionsHolder {
         }
     }
 
+    /**
+     * Action to select an entity instance through the entity lookup screen.
+     */
     public static class LookupAction extends StandardAction {
 
         public static final String NAME = ActionType.LOOKUP.getId();
@@ -140,6 +149,12 @@ public interface PickerField extends Field, Component.ActionsHolder {
             return lookupScreen;
         }
 
+        /**
+         * Set the lookup screen ID explicitly. By default a lookup screen ID is inferred from the entity metaclass
+         * name by adding suffix <code>.lookup</code> to it.
+         *
+         * @param lookupScreen  lookup screen ID, e.g. <code>sec$User.lookup</code>
+         */
         public void setLookupScreen(@Nullable String lookupScreen) {
             this.lookupScreen = lookupScreen;
         }
@@ -148,14 +163,25 @@ public interface PickerField extends Field, Component.ActionsHolder {
             return lookupScreenOpenType;
         }
 
+        /**
+         * How to open the lookup screen. By default it is opened in {@link WindowManager.OpenType#THIS_TAB} mode.
+         *
+         * @param lookupScreenOpenType  open type
+         */
         public void setLookupScreenOpenType(WindowManager.OpenType lookupScreenOpenType) {
             this.lookupScreenOpenType = lookupScreenOpenType;
         }
 
+        @Nullable
         public Map<String, Object> getLookupScreenParams() {
             return lookupScreenParams;
         }
 
+        /**
+         * Parameters to pass to the lookup screen. By default the empty map is passed.
+         *
+         * @param lookupScreenParams    map of parameters
+         */
         public void setLookupScreenParams(Map<String, Object> lookupScreenParams) {
             this.lookupScreenParams = lookupScreenParams;
         }
@@ -196,13 +222,32 @@ public interface PickerField extends Field, Component.ActionsHolder {
             }
         }
 
+        /**
+         * Hook to be implemented in subclasses. Called by the action when the user is selected some items in the
+         * lookup screen and the PickerField value is set.
+         *
+         * @param items collection of entity instances selected by user, never null
+         */
         public void afterSelect(Collection items) {
         }
 
+        /**
+         * Hook to be implemented in subclasses. Called by the action when the lookup screen is closed.
+         *
+         * @param actionId  ID of action that closed the screen. The following values are possible:
+         *                  <ul>
+         *                  <li/>select - user selected some items
+         *                  <li/>cancel - user pressed Cancel button
+         *                  <li/>close - user closed the lookup screen by other means
+         *                  </ul>
+         */
         public void afterCloseLookup(String actionId) {
         }
     }
 
+    /**
+     * Action to clear the PickerField content.
+     */
     public static class ClearAction extends StandardAction {
 
         public static final String NAME = ActionType.CLEAR.getId();
@@ -222,6 +267,9 @@ public interface PickerField extends Field, Component.ActionsHolder {
         }
     }
 
+    /**
+     * Action to open an edit screen for entity instance which is currently set in the PickerField.
+     */
     public static class OpenAction extends StandardAction {
 
         public static final String NAME = ActionType.OPEN.getId();
@@ -243,6 +291,12 @@ public interface PickerField extends Field, Component.ActionsHolder {
             return editScreen;
         }
 
+        /**
+         * Set the edit screen ID explicitly. By default an edit screen ID is inferred from the entity metaclass
+         * name by adding suffix <code>.edit</code> to it.
+         *
+         * @param editScreen  edit screen ID, e.g. <code>sec$User.edit</code>
+         */
         public void setEditScreen(String editScreen) {
             this.editScreen = editScreen;
         }
@@ -251,14 +305,25 @@ public interface PickerField extends Field, Component.ActionsHolder {
             return editScreenOpenType;
         }
 
+        /**
+         * How to open the edit screen. By default it is opened in {@link WindowManager.OpenType#THIS_TAB} mode.
+         *
+         * @param editScreenOpenType  open type
+         */
         public void setEditScreenOpenType(WindowManager.OpenType editScreenOpenType) {
             this.editScreenOpenType = editScreenOpenType;
         }
 
+        @Nullable
         public Map<String, Object> getEditScreenParams() {
             return editScreenParams;
         }
 
+        /**
+         * Parameters to pass to the edit screen. By default the empty map is passed.
+         *
+         * @param editScreenParams    map of parameters
+         */
         public void setEditScreenParams(Map<String, Object> editScreenParams) {
             this.editScreenParams = editScreenParams;
         }
@@ -272,7 +337,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
             WindowManager wm = AppBeans.get(WindowManagerProvider.class).get();
             if (entity instanceof SoftDelete && ((SoftDelete) entity).isDeleted()) {
                 wm.showNotification(
-                        messages.getMessage(ActionsFieldHelper.class, "ActionsFieldHelper.openMsg"),
+                        messages.getMessage(getClass(), "OpenAction.objectIsDeleted"),
                         IFrame.NotificationType.HUMANIZED);
                 return;
             }

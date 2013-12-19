@@ -57,7 +57,7 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
 
     private WindowManager.OpenType lookupOpenMode = WindowManager.OpenType.THIS_TAB;
 
-    private Map<String, Object> lookupScreenParams = null;
+    private Map<String, Object> lookupScreenParams;
 
     private boolean lookup;
 

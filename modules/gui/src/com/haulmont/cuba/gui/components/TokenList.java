@@ -7,6 +7,7 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 
 /**
@@ -52,6 +53,7 @@ public interface TokenList extends Field, Component.BelongToFrame,
     void setLookupScreen(String lookupScreen);
 
     void setLookupScreenParams(Map<String, Object> params);
+    @Nullable
     Map<String, Object> getLookupScreenParams();
 
     boolean isMultiSelect();

@@ -16,8 +16,9 @@ import java.util.*;
 /**
  * Generic action for entities. One Action for table, datasource and entity.
  * Selected entity and multiselect will be checked automatically.
- * <p> Example of usage:
- * Create one action class both for table and editor screen, entity will be reloaded automatically after action perform
+ * <p>
+ * Create one action class both for table and editor screen, entity will be reloaded automatically after the action is
+ * performed.
  *
  * @author Zaharchenko
  * @version $Id$
@@ -32,7 +33,7 @@ public abstract class AbstractEntityAction<T extends Entity> extends AbstractAct
 
 
     /**
-     * Constructor for entity
+     * Constructor for entity.
      *
      * @param id     action ID
      * @param entity selected entity
@@ -45,7 +46,7 @@ public abstract class AbstractEntityAction<T extends Entity> extends AbstractAct
     }
 
     /**
-     * Constructor for table
+     * Constructor for table.
      *
      * @param id    action ID
      * @param table table contains action
@@ -57,7 +58,7 @@ public abstract class AbstractEntityAction<T extends Entity> extends AbstractAct
     }
 
     /**
-     * Constructor for table
+     * Constructor for table.
      *
      * @param id         action ID
      * @param datasource datasource with entity
@@ -74,9 +75,10 @@ public abstract class AbstractEntityAction<T extends Entity> extends AbstractAct
     }
 
     /**
-     * Whether the action is support multiselect. Override to provide specific behaviour. If multiselect is supoported use {@link com.haulmont.cuba.gui.components.AbstractEntityAction#getEntities()}
+     * Whether the action supports multiselect. Override to provide specific behaviour.
+     * If multiselect is supoported use {@link #getEntities()}.
      *
-     * @return true if multiselect supported
+     * @return true if multiselect is supported
      */
     protected Boolean isSupportMultiselect() {
         return false;
@@ -84,7 +86,7 @@ public abstract class AbstractEntityAction<T extends Entity> extends AbstractAct
 
     /**
      * Whether the action asks for confirmation before action perform.
-     * In message pack with action there should be 'confirmation.{@link com.haulmont.cuba.gui.components.AbstractEntityAction#getId()}' messages property.
+     * In message pack with action there should be 'confirmation.{@link #getId()}' messages property.
      * Override to provide specific behaviour.
      *
      * @return true if action asks for confirmation
@@ -105,7 +107,7 @@ public abstract class AbstractEntityAction<T extends Entity> extends AbstractAct
 
     /**
      * Show after action notification action.
-     * In message pack with action there should be 'notification.{@link com.haulmont.cuba.gui.components.AbstractEntityAction#getId()}' messages property.
+     * In message pack with action there should be 'notification.{@link #getId()}' messages property.
      * Override to provide specific behaviour.
      *
      * @return true if notification will show after action perform.
@@ -115,7 +117,7 @@ public abstract class AbstractEntityAction<T extends Entity> extends AbstractAct
     }
 
     /**
-     * Set entity to action or datasource
+     * Set entity to action or datasource.
      *
      * @param newEntity
      */
@@ -136,7 +138,7 @@ public abstract class AbstractEntityAction<T extends Entity> extends AbstractAct
     }
 
     /**
-     * @return Return List of selected entities from table or List with one entity from datasource
+     * @return List of selected entities from table or List with one entity from datasource
      */
     protected List<T> getEntities() {
         List<T> entities = new ArrayList<>();
