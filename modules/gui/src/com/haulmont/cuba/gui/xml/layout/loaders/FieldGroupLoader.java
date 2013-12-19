@@ -7,7 +7,6 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Component;
@@ -197,6 +196,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
 
     protected void loadValidators(FieldGroup component, FieldGroup.FieldConfig field) {
         Element descriptor = field.getXmlDescriptor();
+        @SuppressWarnings("unchecked")
         final List<Element> validatorElements = (descriptor == null) ? null : descriptor.elements("validator");
         if (validatorElements != null) {
             if (!validatorElements.isEmpty()) {
@@ -250,7 +250,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
                     requiredMsg = messages.formatMessage(
                             AppConfig.getMessagesPack(),
                             "validation.required.defaultMsg",
-                            AppBeans.get(MessageTools.class).getPropertyCaption(metaProperty)
+                            messageTools.getPropertyCaption(metaProperty)
                     );
                 }
             }
@@ -263,7 +263,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         FieldGroup fieldGroup = (FieldGroup) component;
         if (fieldGroup.getDatasource() != null) {
             MetaClass metaClass = fieldGroup.getDatasource().getMetaClass();
-            UserSession userSession = AppBeans.get(UserSessionSource.class).getUserSession();
+            UserSession userSession = userSessionSource.getUserSession();
             boolean editable = (userSession.isEntityOpPermitted(metaClass, EntityOp.CREATE)
                     || userSession.isEntityOpPermitted(metaClass, EntityOp.UPDATE));
             if (!editable) {
@@ -289,7 +289,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
                 MetaClass metaClass = metaClass(component, field);
                 MetaProperty metaProperty = metaClass.getPropertyPath(field.getId()).getMetaProperty();
 
-                UserSession userSession = AppBeans.get(UserSessionSource.class).getUserSession();
+                UserSession userSession = userSessionSource.getUserSession();
                 boolean editableFromPermissions = (userSession.isEntityOpPermitted(metaClass, EntityOp.CREATE)
                         || userSession.isEntityOpPermitted(metaClass, EntityOp.UPDATE))
                         && userSession.isEntityAttrPermitted(metaClass, metaProperty.getName(), EntityAttrAccess.MODIFY);
@@ -311,7 +311,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         }
     }
 
-    private MetaClass metaClass(FieldGroup component, FieldGroup.FieldConfig field) {
+    protected MetaClass metaClass(FieldGroup component, FieldGroup.FieldConfig field) {
         if (field.isCustom()) return null;
         Datasource datasource;
         if (field.getDatasource() != null) {
@@ -341,7 +341,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         }
     }
 
-    private void loadCaptionAlignment(FieldGroup component, Element element) {
+    protected void loadCaptionAlignment(FieldGroup component, Element element) {
         String captionAlignment = element.attributeValue("captionAlignment");
         if (!StringUtils.isEmpty(captionAlignment)) {
             component.setCaptionAlignment(FieldGroup.FieldCaptionAlignment.valueOf(captionAlignment));

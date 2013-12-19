@@ -37,22 +37,23 @@ import java.util.Locale;
  * @version $Id$
  */
 public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layout.ComponentLoader {
+
     protected Locale locale;
     protected String messagesPack;
     protected Context context;
 
-    protected Security security;
+    protected Security security = AppBeans.get(Security.NAME);
 
-    protected Messages messages = AppBeans.get(Messages.class);
-    protected Scripting scripting = AppBeans.get(Scripting.class);
-    protected Resources resources = AppBeans.get(Resources.class);
-    protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.class);
+    protected Messages messages = AppBeans.get(Messages.NAME);
+    protected MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+    protected Scripting scripting = AppBeans.get(Scripting.NAME);
+    protected Resources resources = AppBeans.get(Resources.NAME);
+    protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
 
     private static Log log = LogFactory.getLog(ComponentLoader.class);
 
     protected ComponentLoader(Context context) {
         this.context = context;
-        this.security = AppBeans.get(Security.NAME);
     }
 
     @Override
@@ -195,14 +196,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
     }
 
     protected String loadResourceString(String caption) {
-        if (!StringUtils.isEmpty(caption)) {
-            if (caption.startsWith("icon://")) {
-                caption = caption.substring("icon://".length());
-            } else {
-                caption = AppBeans.get(MessageTools.class).loadString(messagesPack, caption);
-            }
-        }
-        return caption;
+        return messageTools.loadString(messagesPack, caption);
     }
 
     protected void loadAlign(final Component component, Element element) {

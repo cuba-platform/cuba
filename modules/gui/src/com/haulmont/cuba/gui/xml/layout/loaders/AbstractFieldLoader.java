@@ -5,8 +5,6 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -70,7 +68,6 @@ public class AbstractFieldLoader extends AbstractDatasourceComponentLoader {
         if (msg != null) {
             component.setRequiredMessage(loadResourceString(msg));
         } else if (component.isRequired() && component.getDatasource() != null) {
-            Messages messages = AppBeans.get(Messages.class);
             component.setRequiredMessage(
                     messages.formatMessage(
                             messages.getMainMessagePack(),
