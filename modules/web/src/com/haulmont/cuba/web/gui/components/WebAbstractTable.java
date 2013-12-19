@@ -1612,6 +1612,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         }
 
         @Override
+        @Nullable
         protected CollectionDatasource getOptionsDatasource(Datasource fieldDatasource, String propertyId) {
             if (datasource == null)
                 throw new IllegalStateException("Table datasource is null");
@@ -1624,34 +1625,11 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                     columnConf.getXmlDescriptor().attributeValue("optionsDatasource") : "";
 
             if (StringUtils.isBlank(optDsName)) {
-                MetaPropertyPath propertyPath = fieldDatasource.getMetaClass().getPropertyPath(propertyId);
-                MetaClass metaClass = propertyPath.getRange().asClass();
-
-                CollectionDatasource ds = optionsDatasources.get(metaClass);
-                if (ds != null)
-                    return ds;
-
-                final DataSupplier dataSupplier = fieldDatasource.getDataSupplier();
-
-                final String id = metaClass.getName();
-                final String viewName = null; //metaClass.getName() + ".lookup";
-
-                ds = new DsBuilder(dsContext)
-                            .setDataSupplier(dataSupplier)
-                            .setId(id)
-                            .setMetaClass(metaClass)
-                            .setViewName(viewName)
-                            .buildCollectionDatasource();
-
-                ds.refresh();
-
-                optionsDatasources.put(metaClass, ds);
-
-                return ds;
+                return null;
             } else {
                 CollectionDatasource ds = dsContext.get(optDsName);
                 if (ds == null)
-                    throw new IllegalStateException("Options datasource not found: " + optDsName);
+                    throw new IllegalStateException("Options datasource for table column '" + propertyId + "' not found: " + optDsName);
 
                 return ds;
             }

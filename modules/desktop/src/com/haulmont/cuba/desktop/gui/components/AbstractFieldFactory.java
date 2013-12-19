@@ -19,6 +19,7 @@ import com.haulmont.cuba.gui.data.Datasource;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
+import javax.annotation.Nullable;
 import javax.persistence.TemporalType;
 
 /**
@@ -202,5 +203,6 @@ public abstract class AbstractFieldFactory implements FieldFactory {
         return label;
     }
 
+    @Nullable
     protected abstract CollectionDatasource getOptionsDatasource(Datasource datasource, String property);
 }

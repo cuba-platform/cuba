@@ -12,7 +12,6 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
@@ -22,7 +21,6 @@ import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.components.actions.ListActionType;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
@@ -68,7 +66,6 @@ import java.util.*;
 import static com.google.common.base.Preconditions.checkArgument;
 
 /**
- * @param <T>
  * @author abramov
  * @version $Id$
  */
@@ -1643,6 +1640,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         }
 
         @Override
+        @Nullable
         protected CollectionDatasource getOptionsDatasource(Datasource fieldDatasource, String propertyId) {
             if (datasource == null)
                 throw new IllegalStateException("Table datasource is null");
@@ -1654,30 +1652,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             String optDsName = columnConf.getXmlDescriptor().attributeValue("optionsDatasource");
 
             if (StringUtils.isBlank(optDsName)) {
-                MetaPropertyPath propertyPath = fieldDatasource.getMetaClass().getPropertyPath(propertyId);
-                MetaClass metaClass = propertyPath.getRange().asClass();
-
-                CollectionDatasource ds = optionsDatasources.get(metaClass);
-                if (ds != null)
-                    return ds;
-
-                final DataSupplier dataSupplier = fieldDatasource.getDataSupplier();
-
-                final String id = metaClass.getName();
-                final String viewName = null; //metaClass.getName() + ".lookup";
-
-                ds = new DsBuilder(dsContext)
-                            .setDataSupplier(dataSupplier)
-                            .setId(id)
-                            .setMetaClass(metaClass)
-                            .setViewName(viewName)
-                            .buildCollectionDatasource();
-
-                ds.refresh();
-
-                optionsDatasources.put(metaClass, ds);
-
-                return ds;
+                return null;
             } else {
                 CollectionDatasource ds = dsContext.get(optDsName);
                 if (ds == null)
