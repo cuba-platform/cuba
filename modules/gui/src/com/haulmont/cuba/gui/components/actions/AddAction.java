@@ -17,6 +17,7 @@ import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.PropertyDatasource;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
@@ -168,8 +169,13 @@ public class AddAction extends AbstractAction {
     public String getWindowId() {
         if (windowId != null)
             return windowId;
-        else
-            return owner.getDatasource().getMetaClass().getName() + ".browse";
+        else {
+            WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
+            String id = owner.getDatasource().getMetaClass().getName() + ".lookup";
+            if (!windowConfig.hasWindow(id))
+                id = owner.getDatasource().getMetaClass().getName() + ".browse";
+            return id;
+        }
     }
 
     /**
