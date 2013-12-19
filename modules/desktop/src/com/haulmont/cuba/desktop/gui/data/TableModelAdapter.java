@@ -63,7 +63,7 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
                     public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
                         switch (operation) {
                             case ADD:
-                                fireBeforeChangeListeners(false);
+                                fireBeforeChangeListeners(true);
                                 for (Entity e : items) {
                                     int rowIndex = getRowIndex(e);
                                     fireTableRowsInserted(rowIndex, rowIndex);

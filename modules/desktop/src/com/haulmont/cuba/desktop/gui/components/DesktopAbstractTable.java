@@ -16,6 +16,7 @@ import com.haulmont.cuba.desktop.gui.data.AnyTableModelAdapter;
 import com.haulmont.cuba.desktop.gui.data.RowSorterImpl;
 import com.haulmont.cuba.desktop.sys.FontDialog;
 import com.haulmont.cuba.desktop.sys.layout.MigLayoutHelper;
+import com.haulmont.cuba.desktop.sys.vcl.Flushable;
 import com.haulmont.cuba.desktop.sys.vcl.FocusableTable;
 import com.haulmont.cuba.desktop.sys.vcl.TableFocusManager;
 import com.haulmont.cuba.desktop.theme.DesktopTheme;
@@ -681,6 +682,9 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
             @SuppressWarnings("unchecked")
             private Set<Entity> filterSelection(Set<Entity> selection) {
+                if (selection == null)
+                    return Collections.emptySet();
+
                 Set<Entity> newSelection = new HashSet<>(2 * selection.size());
                 for (Entity item : selection) {
                     if (datasource.containsItem(item.getId())) {
@@ -767,7 +771,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     }
 
     protected class EditableColumnTableCellEditor extends AbstractCellEditor implements TableCellEditor {
-        private com.haulmont.cuba.gui.components.Component cellComponent;
+        protected com.haulmont.cuba.gui.components.Component cellComponent;
 
         public EditableColumnTableCellEditor(com.haulmont.cuba.gui.components.Component cellComponent) {
             this.cellComponent = cellComponent;
@@ -786,10 +790,22 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
         @Override
         public Object getCellEditorValue() {
+            flush(DesktopComponentsHelper.getComposition(cellComponent));
+            impl.requestFocus();
             if (cellComponent instanceof HasValue) {
                 return ((Field) cellComponent).getValue();
             }
             return null;
+        }
+
+        protected void flush(Component component) {
+            if (component instanceof Flushable) {
+                ((Flushable) component).flushValue();
+            } else if (component instanceof java.awt.Container) {
+                for(Component child : ((java.awt.Container) component).getComponents()){
+                    flush(child);
+                }
+            }
         }
     }
 
