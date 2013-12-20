@@ -12,6 +12,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.RequiredValueMissingException;
@@ -20,6 +21,7 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
+import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.toolkit.ui.CubaDateField;
 import com.haulmont.cuba.web.toolkit.ui.CubaDateFieldWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaMaskedTextField;
@@ -190,6 +192,17 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
         }
 
         updateInstance();
+    }
+
+    @Override
+    public void setDebugId(String id) {
+        super.setDebugId(id);
+
+        if (getDebugId() != null) {
+            TestIdManager testIdManager = AppUI.getCurrent().getTestIdManager();
+            timeField.setDebugId(testIdManager.getTestId(id + "_time"));
+            dateField.setId(testIdManager.getTestId(id + "_date"));
+        }
     }
 
     protected void setValueFromDs(Object value) {

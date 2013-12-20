@@ -68,8 +68,6 @@ public abstract class App {
 
     protected boolean themeInitialized = false;
 
-    protected boolean testModeRequest = false;
-
     protected String webResourceTimestamp = "null";
 
     protected String clientAddress;
@@ -303,10 +301,6 @@ public abstract class App {
 
     public void reinitializeAppearanceProperties() {
         themeInitialized = false;
-    }
-
-    public boolean isTestModeRequest() {
-        return testModeRequest;
     }
 
     public String getWebResourceTimestamp() {

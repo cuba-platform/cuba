@@ -64,7 +64,12 @@ public class DefaultApp extends App implements ConnectionListener {
         } else {
             cleanupBackgroundTasks();
             closeAllWindows();
+
             for (AppUI ui : getAppUIs()) {
+                if (ui.isTestMode()) {
+                    ui.getTestIdManager().reset();
+                }
+
                 UIView window = createLoginWindow(ui);
                 ui.showView(window);
             }

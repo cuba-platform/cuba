@@ -321,7 +321,6 @@ public abstract class WindowManager {
         if (template != null) {
             //noinspection unchecked
             window = createWindow(windowInfo, params, LayoutLoaderConfig.getWindowLoaders());
-            window.setId(windowInfo.getId());
             String caption = loadCaption(window, params);
             String description = loadDescription(window, params);
             if (openType == OpenType.NEW_TAB) {
@@ -489,7 +488,7 @@ public abstract class WindowManager {
                 throw new IllegalStateException("Invalid WindowInfo: " + windowInfo);
             }
         }
-        window.setId(windowInfo.getId());
+
         ((Window.Lookup) window).setLookupHandler(handler);
 
         final String caption = loadCaption(window, params);

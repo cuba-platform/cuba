@@ -216,7 +216,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
         clientManager.extend(rootLayout);
 
         workerTimer = new CubaTimer();
-        workerTimer.setId("backgroundWorkerTimer");
+        workerTimer.setId(ui.getTestIdManager().reserveId("backgroundWorkerTimer"));
         rootLayout.addComponent(workerTimer);
 
         workerTimer.setRepeating(true);
@@ -499,6 +499,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
         if (AppWindow.Mode.TABBED.equals(getMode())) {
             if (tabSheet == null) {
                 tabSheet = new AppWindow.AppTabSheet();
+                tabSheet.setId(ui.getTestIdManager().reserveId("appTabSheet"));
                 tabSheet.setSizeFull();
                 mainLayout.addComponent(tabSheet);
                 mainLayout.setExpandRatio(tabSheet, 1);
@@ -622,9 +623,8 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
         menuBar.setWidth("100%");
         menuBar.setMoreMenuItem(null); // force usage more item menu
 
-        if (globalConfig.getTestMode()) {
-//            vaadin7 test mode
-//            AppUI.getInstance().getWindowManager().setDebugId(menuBar, "appMenu");
+        if (ui.isTestMode()) {
+            menuBar.setId(ui.getTestIdManager().reserveId("appMenu"));
         }
 
         MenuBuilder menuBuilder = new MenuBuilder(this, connection.getSession(), menuBar);
@@ -780,8 +780,8 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
             logoutBtn.addStyleName("nocaption");
 
         logoutBtn.setIcon(new VersionedThemeResource("app/images/exit.png"));
-//        vaadin7 Debug ids disabled
-//        AppUI.getInstance().getWindowManager().setDebugId(logoutBtn, "logoutBtn");
+        logoutBtn.setId(ui.getTestIdManager().reserveId("logoutBtn"));
+
         return logoutBtn;
     }
 

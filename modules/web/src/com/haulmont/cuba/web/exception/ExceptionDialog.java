@@ -9,6 +9,7 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -56,7 +57,10 @@ public class ExceptionDialog extends Window {
     }
 
     public ExceptionDialog(Throwable throwable, @Nullable String caption, @Nullable String message) {
-        super();
+        if (AppUI.getCurrent().isTestMode()) {
+            setId(AppUI.getCurrent().getTestIdManager().getTestId("exceptionDialog"));
+        }
+
         setCaption(caption != null ? caption : messages.getMessage(getClass(), "exceptionDialog.caption"));
         setWidth(600, Unit.PIXELS);
         center();

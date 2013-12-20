@@ -12,11 +12,14 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.MetadataTools;
+import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.CaptionMode;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.PickerField;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
+import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.ui.CubaPickerField;
@@ -238,6 +241,29 @@ public class WebPickerField
         // apply Editable after action owner is set
         if (action instanceof StandardAction) {
             ((StandardAction) action).setEditable(isEditable());
+        }
+
+        if (StringUtils.isNotEmpty(getDebugId())) {
+            pButton.setDebugId(AppUI.getCurrent().getTestIdManager().getTestId(getDebugId() + "_" + action.getId()));
+        }
+    }
+
+    @Override
+    public void setDebugId(String id) {
+        super.setDebugId(id);
+
+        String debugId = getDebugId();
+        if (debugId != null) {
+            TestIdManager testIdManager = AppUI.getCurrent().getTestIdManager();
+
+            for (Action action : actions) {
+                if (action.getOwner() != null && action.getOwner() instanceof WebButton) {
+                    WebButton button = (WebButton) action.getOwner();
+                    if (StringUtils.isEmpty(button.getDebugId())) {
+                        button.setDebugId(testIdManager.getTestId(debugId + "_" + action.getId()));
+                    }
+                }
+            }
         }
     }
 

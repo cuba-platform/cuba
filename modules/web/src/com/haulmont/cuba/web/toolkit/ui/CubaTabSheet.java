@@ -10,6 +10,8 @@ import com.haulmont.cuba.web.toolkit.ui.client.tabsheet.CubaTabSheetServerRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.tabsheet.CubaTabSheetState;
 import com.vaadin.event.Action;
 import com.vaadin.server.KeyMapper;
+import com.vaadin.server.PaintException;
+import com.vaadin.server.PaintTarget;
 import com.vaadin.ui.Component;
 
 import java.util.*;
@@ -27,6 +29,8 @@ public class CubaTabSheet extends com.vaadin.ui.TabSheet implements Action.Conta
     protected HashSet<Action.Handler> actionHandlers = new HashSet<>();
 
     protected KeyMapper<Action> actionMapper = null;
+
+    protected Map<Tab, String> testIds = new HashMap<>();
 
     protected CubaTabSheetServerRpc rpc = new CubaTabSheetServerRpc() {
         @Override
@@ -140,6 +144,19 @@ public class CubaTabSheet extends com.vaadin.ui.TabSheet implements Action.Conta
                     openedComponents.removeElement(tab);
         if (closeHandler != null) {
             closeHandler.onTabClose(this, tab);
+        }
+    }
+
+    public void setTestId(Tab tab, String testId) {
+        testIds.put(tab, testId);
+    }
+
+    @Override
+    protected void paintAdditionalTabAttributes(PaintTarget target, Tab tab) throws PaintException {
+        super.paintAdditionalTabAttributes(target, tab);
+
+        if (testIds.containsKey(tab)) {
+            target.addAttribute("testId", testIds.get(tab));
         }
     }
 

@@ -12,6 +12,7 @@ import com.haulmont.cuba.web.auth.ActiveDirectoryConnection;
 import com.haulmont.cuba.web.auth.ActiveDirectoryHelper;
 import com.haulmont.cuba.web.auth.DomainAliasesResolver;
 import com.haulmont.cuba.web.sys.Browser;
+import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.ui.CubaCheckBox;
 import com.vaadin.data.Property;
@@ -138,16 +139,18 @@ public class LoginWindow extends UIView implements Action.Handler {
         setBaseStyle("cuba-login");
 
         initUI();
-//        vaadin7 commented
-//        if (globalConfig.getTestMode()) {
-//            WebWindowManager windowManager = app.getWindowManager();
-//            windowManager.setDebugId(loginField, "loginField");
-//            windowManager.setDebugId(passwordField, "pwdField");
-//            windowManager.setDebugId(localesSelect, "localesField");
-//            if (okButton != null) {
-//                windowManager.setDebugId(okButton, "loginSubmitButton");
-//            }
-//        }
+
+        if (ui.isTestMode()) {
+            TestIdManager testIdManager = ui.getTestIdManager();
+
+            loginField.setId(testIdManager.reserveId("loginField"));
+            passwordField.setId(testIdManager.reserveId("pwdField"));
+            localesSelect.setId(testIdManager.reserveId("localesField"));
+
+            if (okButton != null) {
+                okButton.setId(testIdManager.reserveId("loginSubmitButton"));
+            }
+        }
 
         addActionHandler(this);
     }

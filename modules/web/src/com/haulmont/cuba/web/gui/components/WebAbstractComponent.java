@@ -4,10 +4,13 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.web.AppUI;
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Layout;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import java.util.Arrays;
@@ -45,6 +48,17 @@ public class WebAbstractComponent<T extends com.vaadin.ui.Component>
     public void setFrame(IFrame frame) {
         this.frame = frame;
         frame.registerComponent(this);
+
+        assignAutoDebugId(frame);
+    }
+
+    protected void assignAutoDebugId(IFrame frame) {
+        if (frame.getId() == null)
+            return;
+
+        if (AppUI.getCurrent().isTestMode() && StringUtils.isEmpty(getDebugId()) && StringUtils.isNotEmpty(id)) {
+            setDebugId(AppUI.getCurrent().getTestIdManager().getTestId(ComponentsHelper.getFullFrameId(frame) + "." + id));
+        }
     }
 
     @Override

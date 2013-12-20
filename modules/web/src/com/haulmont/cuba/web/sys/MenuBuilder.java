@@ -8,6 +8,7 @@ package com.haulmont.cuba.web.sys;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.gui.NoSuchScreenException;
+import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.config.*;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.AppWindow;
@@ -54,7 +55,7 @@ public class MenuBuilder {
         removeExtraSeparators(menuBar);
     }
 
-    private void removeExtraSeparators(MenuBar menuBar) {
+    protected void removeExtraSeparators(MenuBar menuBar) {
         for (MenuBar.MenuItem item : new ArrayList<>(menuBar.getItems())) {
             removeExtraSeparators(item);
             if (isMenuItemEmpty(item))
@@ -62,7 +63,7 @@ public class MenuBuilder {
         }
     }
 
-    private void removeExtraSeparators(MenuBar.MenuItem item) {
+    protected void removeExtraSeparators(MenuBar.MenuItem item) {
         if (!item.hasChildren())
             return;
 
@@ -83,33 +84,33 @@ public class MenuBuilder {
         } while (!done);
     }
 
-    private void createMenuBarItem(MenuBar menuBar, MenuItem item) {
+    protected void createMenuBarItem(MenuBar menuBar, MenuItem item) {
         if (item.isPermitted(session)) {
             MenuBar.MenuItem menuItem = menuBar.addItem(MenuConfig.getMenuItemCaption(item.getId()), createMenuBarCommand(item));
             assignShortcut(menuItem, item);
             createSubMenu(menuItem, item, session);
-            assignDebugIds(menuItem, item);
+            assignTestId(menuItem, item);
             if (isMenuItemEmpty(menuItem)) {
                 menuBar.removeItem(menuItem);
             }
         }
     }
 
-    private void createSubMenu(MenuBar.MenuItem vItem, MenuItem item, UserSession session) {
+    protected void createSubMenu(MenuBar.MenuItem vItem, MenuItem item, UserSession session) {
         if (item.isPermitted(session) && !item.getChildren().isEmpty()) {
             for (MenuItem child : item.getChildren()) {
                 if (child.getChildren().isEmpty()) {
                     if (child.isPermitted(session)) {
                         MenuBar.MenuItem menuItem = (child.isSeparator()) ? vItem.addSeparator() : vItem.addItem(MenuConfig.getMenuItemCaption(child.getId()), createMenuBarCommand(child));
                         assignShortcut(menuItem, child);
-                        assignDebugIds(menuItem, child);
+                        assignTestId(menuItem, child);
                     }
                 } else {
                     if (child.isPermitted(session)) {
                         MenuBar.MenuItem menuItem = vItem.addItem(MenuConfig.getMenuItemCaption(child.getId()), null);
                         assignShortcut(menuItem, child);
                         createSubMenu(menuItem, child, session);
-                        assignDebugIds(menuItem, child);
+                        assignTestId(menuItem, child);
                         if (isMenuItemEmpty(menuItem)) {
                             vItem.removeChild(menuItem);
                         }
@@ -119,7 +120,7 @@ public class MenuBuilder {
         }
     }
 
-    private MenuBar.Command createMenuBarCommand(final MenuItem item) {
+    protected MenuBar.Command createMenuBarCommand(final MenuItem item) {
         if (!item.getChildren().isEmpty())     //check item is menu
             return null;
 
@@ -143,15 +144,19 @@ public class MenuBuilder {
             public void menuSelected(com.vaadin.ui.MenuBar.MenuItem selectedItem) {
                 if (command != null) {
                     command.execute();
-                } else if (item.getParent() != null) {
-                    throw new DevelopmentException("Invalid screen ID for menu item: " + item.getId(),
-                            "Parent menu ID", item.getParent().getId());
+                } else {
+                    if (item.getParent() != null) {
+                        throw new DevelopmentException("Invalid screen ID for menu item: " + item.getId(),
+                                "Parent menu ID", item.getParent().getId());
+                    } else {
+                        throw new DevelopmentException("Invalid screen ID for menu item: " + item.getId());
+                    }
                 }
             }
         };
     }
 
-    private boolean isMenuItemEmpty(MenuBar.MenuItem menuItem) {
+    protected boolean isMenuItemEmpty(MenuBar.MenuItem menuItem) {
         return !menuItem.hasChildren() && menuItem.getCommand() == null;
     }
 
@@ -163,10 +168,14 @@ public class MenuBuilder {
         }
     }
 
-    protected void assignDebugIds(MenuBar.MenuItem menuItem, MenuItem conf) {
+    protected void assignTestId(MenuBar.MenuItem menuItem, MenuItem conf) {
         if (menuBar.getId() != null && !conf.isSeparator()) {
-//            vaadin7
-//            menuBar.setId(menuItem, menuBar.getDebugId() + ":" + conf.getId());
+            TestIdManager testIdManager = appWindow.getAppUI().getTestIdManager();
+
+            String id = testIdManager.normalize(conf.getId());
+            testIdManager.reserveId(id);
+
+            menuBar.setTestId(menuItem, menuBar.getId() + "_" + id);
         }
     }
 }

@@ -7,6 +7,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentVisitor;
 import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.TabSheet;
@@ -14,6 +15,7 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
+import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.toolkit.ui.CubaTabSheet;
 import com.vaadin.ui.Layout;
 import org.apache.commons.lang.StringUtils;
@@ -29,7 +31,7 @@ import java.util.*;
  */
 public class WebTabSheet
         extends
-            WebAbstractComponent<com.vaadin.ui.TabSheet>
+            WebAbstractComponent<CubaTabSheet>
         implements
             TabSheet, Component.Container {
 
@@ -211,18 +213,41 @@ public class WebTabSheet
     }
 
     @Override
-    public TabSheet.Tab addTab(String name, Component component) {
-        final Tab tab = new Tab(name, component);
+    public TabSheet.Tab addTab(String name, Component childComponent) {
+        final Tab tab = new Tab(name, childComponent);
 
         this.tabs.put(name, tab);
 
-        final com.vaadin.ui.Component tabComponent = WebComponentsHelper.unwrap(component);
+        final com.vaadin.ui.Component tabComponent = WebComponentsHelper.unwrap(childComponent);
         tabComponent.setSizeFull();
 
-        this.components.put(tabComponent, new ComponentDescriptor(name, component));
-        this.component.addTab(tabComponent);
+        this.components.put(tabComponent, new ComponentDescriptor(name, childComponent));
+        com.vaadin.ui.TabSheet.Tab tabControl = this.component.addTab(tabComponent);
+
+        if (getDebugId() != null) {
+            this.component.setTestId(tabControl,
+                    AppUI.getCurrent().getTestIdManager().getTestId(getDebugId() + "." + name));
+        }
 
         return tab;
+    }
+
+    @Override
+    public void setDebugId(String id) {
+        super.setDebugId(id);
+
+        String debugId = getDebugId();
+        if (debugId != null) {
+            TestIdManager testIdManager = AppUI.getCurrent().getTestIdManager();
+
+            for (com.vaadin.ui.Component tabComponent : components.keySet()) {
+                com.vaadin.ui.TabSheet.Tab tab = component.getTab(tabComponent);
+                ComponentDescriptor componentDescriptor = components.get(tabComponent);
+                String name = componentDescriptor.name;
+
+                component.setTestId(tab, testIdManager.getTestId(debugId + "." + name));
+            }
+        }
     }
 
     @Override
@@ -242,7 +267,7 @@ public class WebTabSheet
         tabComponent.setSizeFull();
 
         this.components.put(tabComponent, new ComponentDescriptor(name, tabContent));
-        this.component.addTab(tabComponent);
+        com.vaadin.ui.TabSheet.Tab tabControl = this.component.addTab(tabComponent);
         lazyTabs.add(tabComponent);
 
         this.component.addSelectedTabChangeListener(new LazyTabChangeListener(tabContent, descriptor, loader));
@@ -256,6 +281,11 @@ public class WebTabSheet
                 }
             });
             postInitTaskAdded = true;
+        }
+
+        if (getDebugId() != null) {
+            this.component.setTestId(tabControl,
+                    AppUI.getCurrent().getTestIdManager().getTestId(getDebugId() + "." + name));
         }
 
         return tab;

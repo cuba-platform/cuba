@@ -52,7 +52,16 @@ public class CubaMenuBarConnector extends MenuBarConnector {
     }
 
     @Override
-    public boolean isUseMoreMenuItem() {
+    protected boolean isUseMoreMenuItem() {
         return !getState().vertical;
+    }
+
+    @Override
+    protected String getItemId(UIDL uidl) {
+        if (uidl.hasAttribute("testId")) {
+            return uidl.getStringAttribute("testId");
+        }
+
+        return null;
     }
 }

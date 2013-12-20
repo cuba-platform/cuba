@@ -19,6 +19,7 @@ import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.*;
@@ -40,6 +41,7 @@ import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.security.entity.SearchFolder;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.app.folders.AppFolderEditWindow;
 import com.haulmont.cuba.web.app.folders.FolderEditWindow;
@@ -178,7 +180,6 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         select.addValueChangeListener(new SelectListener());
         select.setTextInputAllowed(false);
 
-        App.getInstance().getWindowManager().setDebugId(select, "genericFilterSelect");
         topLayout.addComponent(select);
 
         applyBtn = WebComponentsHelper.createButton("icons/search.png");
@@ -189,7 +190,6 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
                 apply(false);
             }
         });
-        App.getInstance().getWindowManager().setDebugId(applyBtn, "genericFilterApplyBtn");
         topLayout.addComponent(applyBtn);
 
         if (globalConfig.getAllowQueryFromSelected()) {
@@ -1091,6 +1091,36 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
                 apply(false);
             }
         });
+    }
+
+    @Override
+    public void setDebugId(String id) {
+        super.setDebugId(id);
+
+        String debugId = getDebugId();
+        if (debugId != null) {
+            WebWindowManager wm = App.getInstance().getWindowManager();
+            TestIdManager testIdManager = AppUI.getCurrent().getTestIdManager();
+
+            select.setId(testIdManager.getTestId(debugId + "_filterSelect"));
+
+            if (applyBtn != null) {
+                applyBtn.setId(testIdManager.getTestId(debugId + "_applyBtn"));
+            }
+
+            if (maxResultsLayout != null) {
+                maxResultsField.setId(testIdManager.getTestId(debugId + "_maxResultsField"));
+                maxResultsCb.setId(testIdManager.getTestId(debugId + "_maxResultsCheckBox"));
+            }
+
+            if (actionsButton != null) {
+                actionsButton.setDebugId(testIdManager.getTestId(debugId + "_actionsBtn"));
+            }
+
+            if (pinAppliedFilterBtn != null) {
+                wm.setDebugId(pinAppliedFilterBtn, debugId + "_pinAppliedBtn");
+            }
+        }
     }
 
     @Override

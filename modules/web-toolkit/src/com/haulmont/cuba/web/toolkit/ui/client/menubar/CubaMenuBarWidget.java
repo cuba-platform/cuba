@@ -31,7 +31,6 @@ public class CubaMenuBarWidget extends VMenuBar implements BlurHandler {
         if (item.hasAttribute("separator")) {
             itemHTML.append("<span>---</span><span>---</span>");
         } else {
-
             itemHTML.append("<span class=\"")
                     .append(getStylePrimaryName())
                     .append("-menuitem-caption\">");

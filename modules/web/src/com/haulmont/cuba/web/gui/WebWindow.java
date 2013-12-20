@@ -10,7 +10,6 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.*;
@@ -620,6 +619,10 @@ public class WebWindow implements Window, Component.Wrapper,
     @Override
     public void setId(String id) {
         this.id = id;
+
+        if (AppUI.getCurrent().isTestMode() && StringUtils.isEmpty(debugId)) {
+            setDebugId(id);
+        }
     }
 
     @Override
@@ -630,6 +633,10 @@ public class WebWindow implements Window, Component.Wrapper,
     @Override
     public void setDebugId(String debugId) {
         this.debugId = debugId;
+
+        if (debugId != null) {
+            component.setId(AppUI.getCurrent().getTestIdManager().getTestId("window_" + debugId));
+        }
     }
 
     @Override
@@ -1179,12 +1186,10 @@ public class WebWindow implements Window, Component.Wrapper,
         public void setId(String id) {
             super.setId(id);
 
-            Configuration configuration = AppBeans.get(Configuration.NAME);
-
-            if (configuration.getConfig(GlobalConfig.class).getTestMode()) {
-                WebWindowManager windowManager = getWindowManager();
-                windowManager.setDebugId(selectButton, id + ".selectButton");
-                windowManager.setDebugId(cancelButton, id + ".cancelButton");
+            if (debugId != null) {
+                TestIdManager testIdManager = AppUI.getCurrent().getTestIdManager();
+                selectButton.setId(testIdManager.getTestId(debugId + "_selectButton"));
+                cancelButton.setId(testIdManager.getTestId(debugId + "_cancelButton"));
             }
         }
     }

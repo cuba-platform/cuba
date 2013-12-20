@@ -20,6 +20,7 @@ import java.util.Map;
 public class CubaMenuBar extends com.vaadin.ui.MenuBar {
 
     protected final Map<MenuItem, String> shortcuts = new HashMap<>();
+    protected final Map<MenuItem, String> testIds = new HashMap<>();
 
     @Override
     protected CubaMenuBarState getState() {
@@ -56,6 +57,10 @@ public class CubaMenuBar extends com.vaadin.ui.MenuBar {
         shortcuts.remove(item);
     }
 
+    public void setTestId(MenuItem item, String id) {
+        testIds.put(item, id);
+    }
+
     @Override
     protected void paintAdditionalItemParams(PaintTarget target, MenuItem item) throws PaintException {
         if (shortcuts.containsKey(item)) {
@@ -63,6 +68,9 @@ public class CubaMenuBar extends com.vaadin.ui.MenuBar {
             if (shortcut != null) {
                 target.addAttribute("shortcut", shortcut);
             }
+        }
+        if (testIds.containsKey(item)) {
+            target.addAttribute("testId", testIds.get(item));
         }
     }
 }

@@ -6,8 +6,11 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Button;
+import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.vaadin.ui.NativeButton;
@@ -106,6 +109,18 @@ public class WebButton
                     }
                 }
         );
+
+        AppUI ui = AppUI.getCurrent();
+        if (ui.isTestMode() && StringUtils.isEmpty(getDebugId()) && frame != null) {
+            String id = getId();
+
+            if (StringUtils.isEmpty(id))
+                id = action.getId();
+
+            if (StringUtils.isNotEmpty(id)) {
+                setDebugId(ui.getTestIdManager().getTestId(ComponentsHelper.getFullFrameId(frame) + "." + id));
+            }
+        }
     }
 
     @Override
@@ -129,6 +144,25 @@ public class WebButton
         } else {
             component.setIcon(null);
             component.removeStyleName(ICON_STYLE);
+        }
+    }
+
+    @Override
+    protected void assignAutoDebugId(IFrame frame) {
+        if (frame.getId() == null)
+            return;
+
+        AppUI ui = AppUI.getCurrent();
+
+        if (ui.isTestMode() && StringUtils.isEmpty(getDebugId())) {
+            String id = getId();
+
+            if (StringUtils.isEmpty(id) && action != null)
+                id = action.getId();
+
+            if (StringUtils.isNotEmpty(id)) {
+                setDebugId(ui.getTestIdManager().getTestId(ComponentsHelper.getFullFrameId(frame) + "." + id));
+            }
         }
     }
 }

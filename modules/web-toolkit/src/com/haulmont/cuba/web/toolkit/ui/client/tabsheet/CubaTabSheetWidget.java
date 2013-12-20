@@ -8,6 +8,7 @@ package com.haulmont.cuba.web.toolkit.ui.client.tabsheet;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.ContextMenuEvent;
 import com.google.gwt.event.dom.client.FocusEvent;
+import com.vaadin.client.UIDL;
 import com.vaadin.client.ui.VTabsheet;
 
 /**
@@ -40,5 +41,14 @@ public class CubaTabSheetWidget extends VTabsheet {
         super.onBlur(event);
 
         removeStyleDependentName("focus");
+    }
+
+    @Override
+    protected void updateAdditionalProperties(UIDL tabUidl, Tab tab) {
+        super.updateAdditionalProperties(tabUidl, tab);
+
+        if (tabUidl.hasAttribute("testId")) {
+            tab.getElement().setId(tabUidl.getStringAttribute("testId"));
+        }
     }
 }

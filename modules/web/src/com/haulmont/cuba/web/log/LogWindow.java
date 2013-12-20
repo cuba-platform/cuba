@@ -7,6 +7,7 @@ package com.haulmont.cuba.web.log;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.AppUI;
 import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.shared.ui.MarginInfo;
@@ -28,6 +29,11 @@ public class LogWindow extends Window {
 
     public LogWindow() {
         super(AppBeans.get(Messages.class).getMessage(LogWindow.class, "logWindow.caption"));
+
+        if (AppUI.getCurrent().isTestMode()) {
+            setId(AppUI.getCurrent().getTestIdManager().getTestId("logWindow"));
+        }
+
         setHeight("80%");
         setWidth("80%");
         center();

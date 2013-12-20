@@ -4,9 +4,11 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.KeyCombination;
+import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
@@ -144,6 +146,28 @@ public class WebPopupButton
             ((com.vaadin.ui.Layout) vPopupComponent).addComponent(vButton);
             component.markAsDirty();
             actionOrder.add(action);
+
+            String debugId = getDebugId();
+            if (debugId != null) {
+                button.setDebugId(AppUI.getCurrent().getTestIdManager().getTestId(debugId + "_" + action.getId()));
+            }
+        }
+    }
+
+    @Override
+    public void setDebugId(String id) {
+        super.setDebugId(id);
+
+        String debugId = getDebugId();
+        if (debugId != null) {
+            TestIdManager testIdManager = AppUI.getCurrent().getTestIdManager();
+
+            for (Action action : getActions()) {
+                WebButton button = (WebButton) action.getOwner();
+                if (StringUtils.isEmpty(button.getDebugId())) {
+                    button.setDebugId(testIdManager.getTestId(debugId + "_" + action.getId()));
+                }
+            }
         }
     }
 
@@ -177,6 +201,10 @@ public class WebPopupButton
 
         private PopupActionWrapper(Action action) {
             this.action = action;
+        }
+
+        private Action getAction() {
+            return action;
         }
 
         @Override

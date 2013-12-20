@@ -7,8 +7,10 @@ package com.haulmont.cuba.web;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.web.sys.LinkHandler;
+import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.web.toolkit.ui.CubaJQueryIntegration;
 import com.haulmont.cuba.web.toolkit.ui.CubaSWFObjectIntegration;
 import com.vaadin.annotations.PreserveOnRefresh;
@@ -41,6 +43,10 @@ public class AppUI extends UI implements ErrorHandler {
 
     protected boolean applicationInitRequired = false;
 
+    protected TestIdManager testIdManager = new TestIdManager();
+
+    protected boolean testMode = false;
+
     public AppUI() {
         log.trace("Creating UI " + this);
         if (!App.isBound()) {
@@ -66,10 +72,11 @@ public class AppUI extends UI implements ErrorHandler {
             });
 
             applicationInitRequired = true;
-
         } else {
             app = App.getInstance();
         }
+
+        testMode = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class).getTestMode();
 
         // do not grab focus
         setTabIndex(-1);
@@ -154,6 +161,14 @@ public class AppUI extends UI implements ErrorHandler {
         } else {
             return null;
         }
+    }
+
+    public TestIdManager getTestIdManager() {
+        return testIdManager;
+    }
+
+    public boolean isTestMode() {
+        return testMode;
     }
 
     @Override

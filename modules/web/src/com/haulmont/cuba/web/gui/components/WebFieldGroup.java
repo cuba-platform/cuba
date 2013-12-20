@@ -15,6 +15,7 @@ import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.toolkit.ui.CubaCheckBox;
 import com.haulmont.cuba.web.toolkit.ui.CubaFieldGroup;
 import com.haulmont.cuba.web.toolkit.ui.CubaFieldGroupLayout;
@@ -80,11 +81,12 @@ public class WebFieldGroup
     @Override
     public void setDebugId(String id) {
         super.setDebugId(id);
+
         final List<FieldConfig> fieldConfs = getFields();
         for (final FieldConfig fieldConf : fieldConfs) {
             com.vaadin.ui.Field field = component.getField(fieldConf.getId());
             if (field != null) {
-                field.setId(id + ":" + fieldConf.getId());
+                field.setId(AppUI.getCurrent().getTestIdManager().getTestId(id + "_" + fieldConf.getId()));
             }
         }
     }
@@ -197,6 +199,10 @@ public class WebFieldGroup
                 com.vaadin.ui.Field fieldImpl = getFieldImplementation(fieldComponent);
                 if (fieldComponent instanceof WebCheckBox) {
                     ((CubaCheckBox) fieldImpl).setCaptionManagedByLayout(true);
+                }
+
+                if (StringUtils.isEmpty(fieldComponent.getId())) {
+                    fieldComponent.setId(fieldConf.getId());
                 }
 
                 assignTypicalAttributes(fieldComponent);

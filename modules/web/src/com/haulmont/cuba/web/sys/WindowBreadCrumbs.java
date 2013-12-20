@@ -4,8 +4,10 @@
  */
 package com.haulmont.cuba.web.sys;
 
+import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.AppWindow;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -58,6 +60,9 @@ public class WindowBreadCrumbs extends HorizontalLayout {
         linksLayout.setStyleName("cuba-breadcrumbs");
         linksLayout.setSizeUndefined();
 
+        TestIdManager testIdManager = AppUI.getCurrent().getTestIdManager();
+        linksLayout.setId(testIdManager.getTestId("breadCrumbs"));
+
         if (!tabbedMode) {
             closeBtn = new Button("", new Button.ClickListener() {
                 @Override
@@ -68,9 +73,7 @@ public class WindowBreadCrumbs extends HorizontalLayout {
             });
             closeBtn.setIcon(new VersionedThemeResource("icons/close.png"));
             closeBtn.setStyleName("cuba-closetab-button");
-//            vaadin7 Test ids
-//            AppUI.getInstance().getWindowManager()
-//                    .setDebugId(closeBtn, "closeBtn");
+            closeBtn.setId(testIdManager.reserveId("closeBtn"));
         }
 
         HorizontalLayout enclosingLayout = new HorizontalLayout();

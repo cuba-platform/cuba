@@ -51,6 +51,7 @@ public class WebWindowManager extends WindowManager {
     private static Log log = LogFactory.getLog(WebWindowManager.class);
 
     protected App app;
+    protected AppUI ui;
     protected AppWindow appWindow;
 
     protected final WebConfig webConfig;
@@ -62,12 +63,11 @@ public class WebWindowManager extends WindowManager {
     protected final Map<Window, Integer> windows = new HashMap<>();
     protected final Map<ComponentContainer, WindowBreadCrumbs> fakeTabs = new HashMap<>();
 
-    protected Map<String, Integer> debugIds = new HashMap<>();
-
     protected boolean disableSavingScreenHistory;
     protected ScreenHistorySupport screenHistorySupport;
 
     public WebWindowManager(final App app, AppWindow appWindow) {
+        this.ui = app.getAppUI();
         this.app = app;
         this.appWindow = appWindow;
 
@@ -343,6 +343,12 @@ public class WebWindowManager extends WindowManager {
                 newTab = tabSheet.getTab(layout);
             } else {
                 newTab = tabSheet.addTab(layout);
+
+                if (ui.isTestMode() && tabSheet instanceof CubaTabSheet) {
+                    CubaTabSheet mainTabsheet = (CubaTabSheet) tabSheet;
+                    mainTabsheet.setTestId(newTab, ui.getTestIdManager().getTestId("tab_" + window.getId()));
+                }
+
                 tabs.put(layout, (WindowBreadCrumbs) components[0]);
             }
             newTab.setCaption(formatTabCaption(caption, description));
@@ -485,10 +491,8 @@ public class WebWindowManager extends WindowManager {
 
     protected Component showWindowDialog(final Window window, final String caption, final String description,
                                          boolean forciblyDialog) {
-
         final com.vaadin.ui.Window win = createDialogWindow(window);
-        win.setId(window.getId());
-        setDebugId(win, window.getId());
+        setDebugId(win, "dialog_" + window.getId());
 
         Layout layout = (Layout) WebComponentsHelper.getComposition(window);
 
@@ -554,7 +558,7 @@ public class WebWindowManager extends WindowManager {
         }
         win.setModal(true);
 
-        appWindow.getAppUI().addWindow(win);
+        ui.addWindow(win);
         win.center();
 
         return win;
@@ -568,7 +572,7 @@ public class WebWindowManager extends WindowManager {
 
     protected com.vaadin.ui.Window createDialogWindow(Window window) {
         com.vaadin.ui.Window vWindow = new com.vaadin.ui.Window(window.getCaption());
-        vWindow.setErrorHandler(app.getAppUI());
+        vWindow.setErrorHandler(ui);
         return vWindow;
     }
 
@@ -676,7 +680,7 @@ public class WebWindowManager extends WindowManager {
             case DIALOG: {
                 final com.vaadin.ui.Window win = (com.vaadin.ui.Window) openMode.getData();
                 removeCloseListeners(win);
-                appWindow.getAppUI().removeWindow(win);
+                ui.removeWindow(win);
                 fireListeners(window, tabs.size() != 0);
                 break;
             }
@@ -804,7 +808,8 @@ public class WebWindowManager extends WindowManager {
     public void showMessageDialog(String title, String message, IFrame.MessageType messageType) {
         final com.vaadin.ui.Window window = new com.vaadin.ui.Window(title);
         window.setId("cuba-message-dialog");
-        setDebugId(window, "cuba-message-dialog");
+
+        setDebugId(window, "cubaMessageDialog");
 
         window.addAction(new ShortcutListener("Esc", ShortcutAction.KeyCode.ESCAPE, null) {
             @Override
@@ -823,7 +828,7 @@ public class WebWindowManager extends WindowManager {
         window.addCloseListener(new com.vaadin.ui.Window.CloseListener() {
             @Override
             public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
-                appWindow.getAppUI().removeWindow(window);
+                ui.removeWindow(window);
             }
         });
 
@@ -849,7 +854,7 @@ public class WebWindowManager extends WindowManager {
         window.setResizable(false);
         window.setModal(true);
 
-        appWindow.getAppUI().addWindow(window);
+        ui.addWindow(window);
         window.center();
         window.focus();
     }
@@ -864,7 +869,7 @@ public class WebWindowManager extends WindowManager {
         window.addCloseListener(new com.vaadin.ui.Window.CloseListener() {
             @Override
             public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
-                app.getAppUI().removeWindow(window);
+                ui.removeWindow(window);
             }
         });
 
@@ -902,7 +907,7 @@ public class WebWindowManager extends WindowManager {
                 @Override
                 public void buttonClick(Button.ClickEvent event) {
                     action.actionPerform(null);
-                    app.getAppUI().removeWindow(window);
+                    ui.removeWindow(window);
                 }
             });
 
@@ -940,7 +945,7 @@ public class WebWindowManager extends WindowManager {
         layout.setExpandRatio(messageLab, 1);
         layout.setComponentAlignment(actionsBar, com.vaadin.ui.Alignment.BOTTOM_RIGHT);
 
-        appWindow.getAppUI().addWindow(window);
+        ui.addWindow(window);
         window.center();
     }
 
@@ -961,29 +966,30 @@ public class WebWindowManager extends WindowManager {
         if (target == null)
             target = "_blank";
         if (width != null && height != null && border != null) {
-            appWindow.getAppUI().getPage().open(url, target, width, height, BorderStyle.valueOf(border));
+            ui.getPage().open(url, target, width, height, BorderStyle.valueOf(border));
         } else if (tryToOpenAsPopup != null) {
-            appWindow.getAppUI().getPage().open(url, target, tryToOpenAsPopup);
+            ui.getPage().open(url, target, tryToOpenAsPopup);
         } else {
-            appWindow.getAppUI().getPage().open(url, target, false);
+            ui.getPage().open(url, target, false);
         }
     }
 
     @Override
     protected void initDebugIds(final Window window) {
-        if (app.isTestModeRequest()) {
+        if (ui.isTestMode()) {
             com.haulmont.cuba.gui.ComponentsHelper.walkComponents(window, new ComponentVisitor() {
                 @Override
                 public void visit(com.haulmont.cuba.gui.components.Component component, String name) {
-                    final String id = window.getId() + "." + name;
-                    if (webConfig.getAllowIdSuffix()) {
-                        component.setDebugId(generateDebugId(id));
-                    } else {
+                    if (component.getDebugId() == null) {
+                        final String id;
+                        String fullFrameId = ComponentsHelper.getFullFrameId(window);
+
                         if (component.getId() != null) {
-                            component.setDebugId(id);
+                            id = fullFrameId + "_" + component.getId();
                         } else {
-                            component.setDebugId(generateDebugId(id));
+                            id = fullFrameId + "_" + name;
                         }
+                        component.setDebugId(ui.getTestIdManager().getTestId(id));
                     }
                 }
             });
@@ -1037,21 +1043,8 @@ public class WebWindowManager extends WindowManager {
     }
 
     public void setDebugId(Component component, String id) {
-        if (app.isTestModeRequest()) {
-            if (webConfig.getAllowIdSuffix()) {
-                component.setId(generateDebugId(id));
-            } else {
-                component.setId(id);
-            }
+        if (ui.isTestMode()) {
+            component.setId(ui.getTestIdManager().getTestId(id));
         }
-    }
-
-    protected String generateDebugId(String id) {
-        Integer count = debugIds.get(id);
-        if (count == null) {
-            count = 0;
-        }
-        debugIds.put(id, ++count);
-        return id + "." + count;
     }
 }
