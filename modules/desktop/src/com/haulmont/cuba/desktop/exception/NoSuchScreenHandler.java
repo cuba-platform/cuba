@@ -5,7 +5,8 @@
 
 package com.haulmont.cuba.desktop.exception;
 
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.gui.NoSuchScreenException;
 import com.haulmont.cuba.gui.components.IFrame;
@@ -27,7 +28,8 @@ public class NoSuchScreenHandler extends AbstractExceptionHandler {
 
     @Override
     protected void doHandle(Thread thread, String className, String message, @Nullable Throwable throwable) {
-        String msg = MessageProvider.getMessage(getClass(), "noSuchScreen.message");
-        App.getInstance().getMainFrame().showNotification(msg, IFrame.NotificationType.ERROR);
+        String msg = AppBeans.get(Messages.class).getMessage(getClass(), "noSuchScreen.message");
+        App.getInstance().getMainFrame().showNotification(msg, throwable != null ? throwable.getMessage() : null,
+                IFrame.NotificationType.ERROR);
     }
 }

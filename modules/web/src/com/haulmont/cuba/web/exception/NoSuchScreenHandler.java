@@ -27,7 +27,8 @@ public class NoSuchScreenHandler extends AbstractExceptionHandler {
     @Override
     protected void doHandle(App app, String className, String message, @Nullable Throwable throwable) {
         String msg = AppBeans.get(Messages.class).getMessage(getClass(), "noSuchScreen.message");
-        app.getWindowManager().showNotification(msg, IFrame.NotificationType.ERROR);
+        app.getWindowManager().showNotification(msg, throwable != null ? throwable.getMessage() : null,
+                IFrame.NotificationType.ERROR);
     }
 
     public void handle(NoSuchScreenException e, App app) {
