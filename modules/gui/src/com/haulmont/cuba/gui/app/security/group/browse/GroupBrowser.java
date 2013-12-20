@@ -20,6 +20,7 @@ import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.UserSession;
+import org.apache.commons.lang.StringUtils;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -196,7 +197,7 @@ public class GroupBrowser extends AbstractWindow {
         if (constraintsTabInitialized)
             return;
 
-        final Table constraintsTable = getComponent("constraintsTable");
+        final Table constraintsTable = getComponentNN("constraintsTable");
         constraintCreateAction = new GroupPropertyCreateAction(constraintsTable);
         constraintsTable.addAction(constraintCreateAction);
 
@@ -205,6 +206,10 @@ public class GroupBrowser extends AbstractWindow {
                 new Table.ColumnGenerator<Constraint>() {
                     @Override
                     public Component generateCell(Constraint constraint) {
+                        if (StringUtils.isEmpty(constraint.getEntityName())) {
+                            return componentsFactory.createComponent(Label.NAME);
+                        }
+
                         MetaClass effectiveMetaClass = metadata.getExtendedEntities().getEffectiveMetaClass(
                                 metadata.getClassNN(constraint.getEntityName()));
                         Label label = componentsFactory.createComponent(Label.NAME);
@@ -222,7 +227,7 @@ public class GroupBrowser extends AbstractWindow {
         if (attributesTabInitialized)
             return;
 
-        final Table attributesTable = getComponent("attributesTable");
+        final Table attributesTable = getComponentNN("attributesTable");
         attributeCreateAction = new GroupPropertyCreateAction(attributesTable);
         attributesTable.addAction(attributeCreateAction);
 

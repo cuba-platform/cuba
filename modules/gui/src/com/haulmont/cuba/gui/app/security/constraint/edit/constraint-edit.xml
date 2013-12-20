@@ -7,8 +7,7 @@
         class="com.haulmont.cuba.gui.app.security.constraint.edit.ConstraintEditor"
         datasource="constraint"
         messagesPack="com.haulmont.cuba.gui.app.security.constraint"
-        focusComponent="entityName"
-        >
+        focusComponent="entityName">
 
     <dsContext>
         <datasource id="constraint" class="com.haulmont.cuba.security.entity.Constraint" view="edit"/>
@@ -20,7 +19,7 @@
             <rows>
                 <row>
                     <label value="msg://entityName"/>
-                    <lookupField id="entityName" datasource="constraint" property="entityName"
+                    <lookupField id="entityName" datasource="constraint" property="entityName" required="true"
                                  width="500px"/>
                 </row>
                 <row>
