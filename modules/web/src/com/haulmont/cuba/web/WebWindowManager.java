@@ -987,7 +987,7 @@ public class WebWindowManager extends WindowManager {
                         if (component.getId() != null) {
                             id = fullFrameId + "_" + component.getId();
                         } else {
-                            id = fullFrameId + "_" + name;
+                            id = fullFrameId + "_" + component.getClass().getSimpleName();
                         }
                         component.setDebugId(ui.getTestIdManager().getTestId(id));
                     }
