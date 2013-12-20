@@ -253,7 +253,7 @@ public abstract class ComponentsHelper {
     public static String getFullFrameId(IFrame frame) {
         LinkedList<String> frameIds = new LinkedList<>();
         frameIds.addFirst(frame.getId());
-        while (frame != null && !(frame instanceof Window)) {
+        while (frame != null && !(frame instanceof Window) && frame != frame.getFrame()) {
             frame = frame.getFrame();
             if (frame != null)
                 frameIds.addFirst(frame.getId());
