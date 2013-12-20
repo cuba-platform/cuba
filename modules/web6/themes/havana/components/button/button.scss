@@ -280,6 +280,20 @@ zoom: 1;
     outline: none;
 }
 
+.v-disabled.v-checkbox-focus,
+.v-checkbox.v-checkbox-empty-caption,
+.v-checkbox.v-checkbox-focus.v-checkbox-empty-caption {
+  border: transparent 1px solid;
+}
+
+.v-checkbox-focus.v-checkbox-empty-caption > input {
+  outline: 1px dotted #4d7ab2 !important;
+}
+
+.v-disabled.v-checkbox-focus.v-checkbox-empty-caption > input {
+  outline: none;
+}
+
 /* Disabled by default
 .v-checkbox-error {
 background: #ffe0e0;

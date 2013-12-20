@@ -41,7 +41,17 @@
     border: 1px dotted $theme_fieldFocusedBorderColor;
   }
 
-  .v-disabled.#{$primaryStyleName}-focus {
-    border: 1px transparent solid;
+  .v-disabled.#{$primaryStyleName}-focus,
+  .#{$primaryStyleName}.#{$primaryStyleName}-empty-caption,
+  .#{$primaryStyleName}.#{$primaryStyleName}-focus.#{$primaryStyleName}-empty-caption {
+    border: transparent 1px solid;
+  }
+
+  .#{$primaryStyleName}-focus.#{$primaryStyleName}-empty-caption > input {
+    outline: 1px dotted $theme_fieldFocusedBorderColor;
+  }
+
+  .v-disabled.#{$primaryStyleName}-focus.#{$primaryStyleName}-empty-caption > input {
+    outline: none;
   }
 }

@@ -23,12 +23,16 @@ public class CubaCheckBoxWidget extends VCheckBox implements FocusHandler, BlurH
     public CubaCheckBoxWidget() {
         addBlurHandler(this);
         addFocusHandler(this);
+
+        updateCaptionStyle();
     }
 
     @Override
     public void setText(String text) {
         if (!captionManagedByLayout) {
             super.setText(text);
+
+            updateCaptionStyle();
         }
     }
 
@@ -36,6 +40,8 @@ public class CubaCheckBoxWidget extends VCheckBox implements FocusHandler, BlurH
     public void setText(String text, HasDirection.Direction dir) {
         if (!captionManagedByLayout) {
             super.setText(text, dir);
+
+            updateCaptionStyle();
         }
     }
 
@@ -47,5 +53,13 @@ public class CubaCheckBoxWidget extends VCheckBox implements FocusHandler, BlurH
     @Override
     public void onBlur(BlurEvent arg) {
         removeStyleDependentName("focus");
+    }
+
+    protected void updateCaptionStyle() {
+        if (getText() == null || "".equals(getText())) {
+            addStyleDependentName("empty-caption");
+        } else {
+            removeStyleDependentName("empty-caption");
+        }
     }
 }

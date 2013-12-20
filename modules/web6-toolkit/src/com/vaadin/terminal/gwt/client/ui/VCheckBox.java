@@ -22,6 +22,7 @@ import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.i18n.client.HasDirection;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
@@ -66,7 +67,6 @@ public class VCheckBox extends com.google.gwt.user.client.ui.CheckBox implements
                         false);
                 client.updateVariable(id, "state", getValue(), immediate);
             }
-
         });
 
         addFocusHandler(this);
@@ -79,6 +79,8 @@ public class VCheckBox extends com.google.gwt.user.client.ui.CheckBox implements
             DOM.sinkEvents(el, (DOM.getEventsSunk(el) | VTooltip.TOOLTIP_EVENTS));
             el = DOM.getNextSibling(el);
         }
+
+        updateCaptionStyle();
     }
 
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
@@ -168,6 +170,23 @@ public class VCheckBox extends com.google.gwt.user.client.ui.CheckBox implements
                 }
             }
         }
+
+        updateCaptionStyle();
+    }
+
+    @Override
+    public void setText(String text, HasDirection.Direction dir) {
+        super.setText(text, dir);
+
+        updateCaptionStyle();
+    }
+
+    protected void updateCaptionStyle() {
+        if (getText() == null || "".equals(getText())) {
+            addStyleDependentName("empty-caption");
+        } else {
+            removeStyleDependentName("empty-caption");
+        }
     }
 
     @Override
@@ -195,6 +214,7 @@ public class VCheckBox extends com.google.gwt.user.client.ui.CheckBox implements
         super.setHeight(height);
     }
 
+    @Override
     public void onFocus(FocusEvent arg0) {
         addStyleDependentName("focus");
 
@@ -203,6 +223,7 @@ public class VCheckBox extends com.google.gwt.user.client.ui.CheckBox implements
         }
     }
 
+    @Override
     public void onBlur(BlurEvent arg0) {
         removeStyleDependentName("focus");
 
