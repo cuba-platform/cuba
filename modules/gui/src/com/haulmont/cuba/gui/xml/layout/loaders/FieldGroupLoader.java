@@ -190,6 +190,17 @@ public class FieldGroupLoader extends AbstractFieldLoader {
 
         field.setCustom(customField);
 
+        String required = element.attributeValue("required");
+        if (StringUtils.isNotEmpty(required)) {
+            field.setRequired(BooleanUtils.toBoolean(required));
+        }
+
+        String requiredMsg = element.attributeValue("requiredMessage");
+        if (requiredMsg != null) {
+            requiredMsg = loadResourceString(requiredMsg);
+            field.setRequiredError(requiredMsg);
+        }
+
         return field;
     }
 
@@ -232,28 +243,41 @@ public class FieldGroupLoader extends AbstractFieldLoader {
     }
 
     protected void loadRequired(FieldGroup component, FieldGroup.FieldConfig field) {
-        boolean isMandatory = false;
-        MetaClass metaClass = metaClass(component, field);
-        if (metaClass != null) {
-            MetaProperty metaProperty = metaClass.getPropertyPath(field.getId()).getMetaProperty();
-            isMandatory = metaProperty.isMandatory();
-        }
-
-        Element element = field.getXmlDescriptor();
-        final String required = element.attributeValue("required");
-
-        if (StringUtils.isNotEmpty(required)) {
-            isMandatory = BooleanUtils.toBoolean(required);
-        }
-
-        String requiredMsg = element.attributeValue("requiredMessage");
-        if (StringUtils.isEmpty(requiredMsg)) {
+        if (!field.isCustom()) {
+            boolean isMandatory = false;
+            MetaClass metaClass = metaClass(component, field);
             if (metaClass != null) {
+                MetaProperty metaProperty = metaClass.getPropertyPath(field.getId()).getMetaProperty();
+                isMandatory = metaProperty.isMandatory();
+            }
+
+            Element element = field.getXmlDescriptor();
+            final String required = element.attributeValue("required");
+
+            if (StringUtils.isNotEmpty(required)) {
+                isMandatory = BooleanUtils.toBoolean(required);
+            }
+
+            String requiredMsg = element.attributeValue("requiredMessage");
+            if (StringUtils.isEmpty(requiredMsg) && metaClass != null) {
                 MetaProperty metaProperty = metaClass.getPropertyPath(field.getId()).getMetaProperty();
                 requiredMsg = messageTools.getDefaultRequiredMessage(metaProperty);
             }
+
+            String requiredError = loadResourceString(requiredMsg);
+            component.setRequired(field, isMandatory, requiredError);
+        } else {
+            Element element = field.getXmlDescriptor();
+            if (element == null)
+                return;
+
+            String required = element.attributeValue("required");
+
+            if (StringUtils.isNotEmpty(required)) {
+                component.setRequired(field, BooleanUtils.toBoolean(required),
+                        loadResourceString(element.attributeValue("requiredMessage")));
+            }
         }
-        component.setRequired(field, isMandatory, loadResourceString(requiredMsg));
     }
 
     @Override

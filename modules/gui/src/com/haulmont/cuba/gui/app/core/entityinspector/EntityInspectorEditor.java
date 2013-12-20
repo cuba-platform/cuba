@@ -38,7 +38,6 @@ import java.util.*;
  */
 public class EntityInspectorEditor extends AbstractWindow {
 
-    public static final String SCREEN_NAME = "entityInspector.edit";
     public static final String DEFAULT_FIELD_WIDTH = "300";
     public static final int CAPTION_MAX_LENGTH = 100;
 
@@ -509,8 +508,10 @@ public class EntityInspectorEditor extends AbstractWindow {
         field.setWidth(DEFAULT_FIELD_WIDTH);
         field.setCustom(custom);
         field.setRequired(required);
-        if (required)
-            field.setRequiredError("Field " + caption + " is required");
+        if (required) {
+            MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+            field.setRequiredError(messageTools.getDefaultRequiredMessage(metaProperty));
+        }
         fieldGroup.addField(field);
         if (custom)
             customFields.add(field);

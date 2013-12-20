@@ -76,7 +76,9 @@ public abstract class AbstractFieldFactory implements FieldFactory {
     protected Component createMaskedField(Datasource datasource, String property, Element xmlDescriptor) {
         WebMaskedField maskedField = new WebMaskedField();
         maskedField.setDatasource(datasource, property);
-        maskedField.setMask(xmlDescriptor.attributeValue("mask"));
+        if (xmlDescriptor != null) {
+            maskedField.setMask(xmlDescriptor.attributeValue("mask"));
+        }
         return maskedField;
     }
 
@@ -169,9 +171,11 @@ public abstract class AbstractFieldFactory implements FieldFactory {
     protected Component createTimeField(Datasource datasource, String property, Element xmlDescriptor) {
         WebTimeField timeField = new WebTimeField();
         timeField.setDatasource(datasource, property);
-        String showSeconds = xmlDescriptor.attributeValue("showSeconds");
-        if (Boolean.valueOf(showSeconds)) {
-            timeField.setShowSeconds(true);
+        if (xmlDescriptor != null) {
+            String showSeconds = xmlDescriptor.attributeValue("showSeconds");
+            if (Boolean.valueOf(showSeconds)) {
+                timeField.setShowSeconds(true);
+            }
         }
         return timeField;
     }
