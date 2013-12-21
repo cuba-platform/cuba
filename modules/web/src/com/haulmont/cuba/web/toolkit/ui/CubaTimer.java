@@ -9,6 +9,8 @@ import com.haulmont.cuba.web.toolkit.ui.client.timer.CubaTimerClientRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.timer.CubaTimerServerRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.timer.CubaTimerState;
 import com.vaadin.ui.AbstractComponent;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -19,6 +21,8 @@ import java.util.List;
  * @version $Id$
  */
 public class CubaTimer extends AbstractComponent implements CubaTimerServerRpc {
+
+    private Log log = LogFactory.getLog(CubaTimer.class);
 
     protected final List<TimerListener> listeners = new LinkedList<>();
 
@@ -82,9 +86,21 @@ public class CubaTimer extends AbstractComponent implements CubaTimerServerRpc {
     @Override
     public void onTimer() {
         try {
+            long startTime = System.currentTimeMillis();
+
             for (TimerListener listener : new ArrayList<>(listeners)) {
                 listener.onTimer(this);
             }
+
+            long endTime = System.currentTimeMillis();
+            if (System.currentTimeMillis() - startTime > 2000) {
+                log.warn("Too long timer processing: " + (endTime - startTime) + " ms " +
+                        (getState(false).timerId != null ? "'" + getState(false).timerId + "'": "<noid>"));
+            }
+        } catch (Exception e) {
+            log.warn("Exception in timer, timer will be stopped");
+
+            running = false;
         } finally {
             getRpcProxy(CubaTimerClientRpc.class).requestCompleted();
         }
