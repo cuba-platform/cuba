@@ -18,6 +18,7 @@ import com.vaadin.Application;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.terminal.VariableOwner;
+import com.vaadin.terminal.gwt.server.ChangeVariablesErrorEvent;
 import com.vaadin.terminal.gwt.server.CommunicationManager;
 import com.vaadin.terminal.gwt.server.JsonPaintTarget;
 import com.vaadin.ui.Component;
@@ -105,7 +106,7 @@ public class CubaCommunicationManager extends CommunicationManager {
                 }
                 timer.paintTimer(paintTarget, timerId);
                 if (timer.isStopped()) {
-                    fireTimerStop(timer);
+                    fireTimerStop(application, timer);
                 }
             }
         }
@@ -115,7 +116,7 @@ public class CubaCommunicationManager extends CommunicationManager {
         writer.print("]");
     }
 
-    private void paintDeadTimer(PaintTarget target, String timerId) throws PaintException {
+    protected void paintDeadTimer(PaintTarget target, String timerId) throws PaintException {
         target.startTag("timer");
         target.addAttribute("id", timerId);
         target.addAttribute("stopped", true);
@@ -195,7 +196,7 @@ public class CubaCommunicationManager extends CommunicationManager {
             } else {
                 Timer timer;
                 if ((timer = id2Timer.get(variable[VAR_PID])) != null && !timer.isStopped()) {
-                    fireTimer(timer);
+                    fireTimer(app, timer);
                 } else {
                     // Handle special case where window-close is called
                     // after the window has been removed from the
@@ -232,28 +233,47 @@ public class CubaCommunicationManager extends CommunicationManager {
         return success;
     }
 
-    private String timerId() {
+    protected String timerId() {
         return TIMER_ID_PREFIX + ++timerIdSequence;
     }
 
-    private void fireTimer(Timer timer) {
-        long startStamp = new Date().getTime();
+    protected void fireTimer(Application app, Timer timer) {
+        try {
+            long startStamp = System.currentTimeMillis();
 
-        final List<Timer.Listener> listeners = timer.getListeners();
-        for (final Timer.Listener listener : listeners) {
-            listener.onTimer(timer);
+            final List<Timer.Listener> listeners = timer.getListeners();
+            for (final Timer.Listener listener : listeners) {
+                listener.onTimer(timer);
+            }
+
+            long endStamp = System.currentTimeMillis();
+            if (endStamp - startStamp > 2000) {
+                log.warn("Too long timer processing: " + (endStamp - startStamp) + " ms");
+            }
+        } catch (Exception e) {
+            log.warn("Exception in timer, timer will be stopped");
+
+            timer.stop();
+
+            ChangeVariablesErrorEvent errorEvent =
+                    new ChangeVariablesErrorEvent(timer, e, Collections.<String, Object>emptyMap());
+
+            app.getErrorHandler().terminalError(errorEvent);
         }
-
-        long endStamp = new Date().getTime();
-        if (endStamp - startStamp > 2000)
-            log.warn("Too long timer processing: " + (endStamp - startStamp) + " ms");
     }
 
-    private void fireTimerStop(Timer timer) {
-        final List<Timer.Listener> listeners = new ArrayList<Timer.Listener>(timer.getListeners());
-        for (final Timer.Listener listener : listeners) {
-            listener.onStopTimer(timer);
-            timer.removeListener(listener);
+    protected void fireTimerStop(Application app, Timer timer) {
+        try {
+            final List<Timer.Listener> listeners = new ArrayList<>(timer.getListeners());
+            for (final Timer.Listener listener : listeners) {
+                listener.onStopTimer(timer);
+                timer.removeListener(listener);
+            }
+        } catch (Exception e) {
+            ChangeVariablesErrorEvent errorEvent =
+                    new ChangeVariablesErrorEvent(timer, e, Collections.<String, Object>emptyMap());
+
+            app.getErrorHandler().terminalError(errorEvent);
         }
     }
 

@@ -523,7 +523,12 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
 
     @Override
     public Timer getTimer(String id) {
-        return (Timer) App.getInstance().getTimers().getTimer(id);
+        com.haulmont.cuba.web.toolkit.Timer timer = App.getInstance().getTimers().getTimer(id);
+        if (timer instanceof WebTimer.WebTimerImpl) {
+            return ((WebTimer.WebTimerImpl) timer).getTimerComponent();
+        }
+
+        return null;
     }
 
     @Override

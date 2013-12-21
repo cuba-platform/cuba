@@ -20,11 +20,11 @@ public class WebTimer extends WebAbstractComponent<Timer> implements com.haulmon
     protected final Map<TimerListener, Timer.Listener> listeners = new HashMap<>();
 
     public WebTimer() {
-        component = new WebTimerImpl(500, false);
+        component = new WebTimerImpl(this, 500, false);
     }
 
     public WebTimer(int delay, boolean repeat) {
-        component = new WebTimerImpl(delay, repeat);
+        component = new WebTimerImpl(this, delay, repeat);
     }
 
     @Override
@@ -117,8 +117,16 @@ public class WebTimer extends WebAbstractComponent<Timer> implements com.haulmon
 
     public static class WebTimerImpl extends Timer {
 
-        public WebTimerImpl(int delay, boolean repeating) {
+        protected WebTimer timerComponent;
+
+        protected WebTimer getTimerComponent() {
+            return timerComponent;
+        }
+
+        public WebTimerImpl(WebTimer timerComponent, int delay, boolean repeating) {
             super(delay, repeating);
+
+            this.timerComponent = timerComponent;
         }
     }
 }
