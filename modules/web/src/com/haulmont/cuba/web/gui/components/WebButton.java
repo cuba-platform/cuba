@@ -111,7 +111,7 @@ public class WebButton
         );
 
         AppUI ui = AppUI.getCurrent();
-        if (ui.isTestMode() && StringUtils.isEmpty(getDebugId()) && frame != null) {
+        if (ui.isTestMode() && StringUtils.isEmpty(getDebugId()) && frame != null && frame.getId() != null) {
             String id = getId();
 
             if (StringUtils.isEmpty(id))

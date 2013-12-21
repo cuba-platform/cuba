@@ -1022,7 +1022,7 @@ public class WebWindowManager extends WindowManager {
     }
 
     @Override
-    protected void initDebugIds(final Window window) {
+    protected void initDebugIds(final IFrame window) {
         if (app.isTestModeRequest()) {
             com.haulmont.cuba.gui.ComponentsHelper.walkComponents(window, new ComponentVisitor() {
                 @Override

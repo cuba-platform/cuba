@@ -975,14 +975,24 @@ public class WebWindowManager extends WindowManager {
     }
 
     @Override
-    protected void initDebugIds(final Window window) {
+    public void initDebugIds(final IFrame frame) {
         if (ui.isTestMode()) {
-            com.haulmont.cuba.gui.ComponentsHelper.walkComponents(window, new ComponentVisitor() {
+            com.haulmont.cuba.gui.ComponentsHelper.walkComponents(frame, new ComponentVisitor() {
                 @Override
                 public void visit(com.haulmont.cuba.gui.components.Component component, String name) {
                     if (component.getDebugId() == null) {
                         final String id;
-                        String fullFrameId = ComponentsHelper.getFullFrameId(window);
+
+                        IFrame componentFrame = null;
+                        if (component instanceof com.haulmont.cuba.gui.components.Component.BelongToFrame) {
+                            componentFrame = ((com.haulmont.cuba.gui.components.Component.BelongToFrame) component).getFrame();
+                        }
+                        if (componentFrame == null) {
+                            log.warn("Frame for component " + component.getClass() + " is not assigned");
+                            componentFrame = frame;
+                        }
+
+                        String fullFrameId = ComponentsHelper.getFullFrameId(componentFrame);
 
                         if (component.getId() != null) {
                             id = fullFrameId + "_" + component.getId();

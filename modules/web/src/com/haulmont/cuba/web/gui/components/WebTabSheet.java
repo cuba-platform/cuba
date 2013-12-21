@@ -16,6 +16,7 @@ import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.web.AppUI;
+import com.haulmont.cuba.web.AppWindow;
 import com.haulmont.cuba.web.toolkit.ui.CubaTabSheet;
 import com.vaadin.ui.Layout;
 import org.apache.commons.lang.StringUtils;
@@ -254,8 +255,8 @@ public class WebTabSheet
     public TabSheet.Tab addLazyTab(String name,
                                    Element descriptor,
                                    ComponentLoader loader) {
-
         WebVBoxLayout tabContent = new WebVBoxLayout();
+
         Layout layout = tabContent.getComponent();
         layout.setSizeFull();
 
@@ -287,6 +288,8 @@ public class WebTabSheet
             this.component.setTestId(tabControl,
                     AppUI.getCurrent().getTestIdManager().getTestId(getDebugId() + "." + name));
         }
+
+        tabContent.setFrame(context.getFrame());
 
         return tab;
     }
@@ -432,6 +435,9 @@ public class WebTabSheet
                                 }
                             }
                     );
+
+                    AppWindow appWindow = AppUI.getCurrent().getAppWindow();
+                    appWindow.getWindowManager().initDebugIds(window);
 
                     ((DsContextImplementation) window.getDsContext()).resumeSuspended();
                 }

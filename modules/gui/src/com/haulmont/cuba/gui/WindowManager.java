@@ -174,11 +174,11 @@ public abstract class WindowManager {
         }
     }
 
-    protected void initDebugIds(final Window window) {
-        ComponentsHelper.walkComponents(window, new ComponentVisitor() {
+    protected void initDebugIds(final IFrame frame) {
+        ComponentsHelper.walkComponents(frame, new ComponentVisitor() {
             @Override
             public void visit(Component component, String name) {
-                component.setDebugId(window.getId() + "." + name);
+                component.setDebugId(frame.getId() + "." + name);
             }
         });
     }
@@ -555,6 +555,8 @@ public abstract class WindowManager {
 
         if (parent != null)
             showFrame(parent, component);
+
+        initDebugIds(component);
 
         return (T) component;
     }
