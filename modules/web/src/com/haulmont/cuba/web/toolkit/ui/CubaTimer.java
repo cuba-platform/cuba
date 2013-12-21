@@ -62,8 +62,9 @@ public class CubaTimer extends AbstractComponent implements CubaTimerServerRpc {
     }
 
     public void start() {
-        if (getDelay() <= 0)
+        if (getDelay() <= 0) {
             throw new IllegalStateException("Undefined delay for timer");
+        }
 
         if (!running) {
             getRpcProxy(CubaTimerClientRpc.class).setRunning(true);
@@ -94,16 +95,25 @@ public class CubaTimer extends AbstractComponent implements CubaTimerServerRpc {
 
             long endTime = System.currentTimeMillis();
             if (System.currentTimeMillis() - startTime > 2000) {
-                log.warn("Too long timer processing: " + (endTime - startTime) + " ms " +
-                        (getState(false).timerId != null ? "'" + getState(false).timerId + "'": "<noid>"));
+                log.warn("Too long timer '" + getLoggingTimerId() + "' processing: " + (endTime - startTime) + " ms ");
             }
         } catch (Exception e) {
-            log.warn("Exception in timer, timer will be stopped");
+            log.warn("Exception in timer '" + getLoggingTimerId() + "', timer will be stopped");
 
             running = false;
+
+            throw e;
         } finally {
             getRpcProxy(CubaTimerClientRpc.class).requestCompleted();
         }
+    }
+
+    protected String getLoggingTimerId() {
+        String timerId = "<noid>";
+        if (getState(false).timerId != null) {
+            timerId = getState(false).timerId;
+        }
+        return timerId;
     }
 
     @Override
