@@ -500,8 +500,6 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         if (action.getShortcut() != null) {
             addShortcutActionBridge(action.getId(), action.getShortcut());
         }
-
-        action.refreshState();
     }
 
     /**

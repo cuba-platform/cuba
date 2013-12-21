@@ -488,8 +488,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         if (action.getShortcut() != null) {
             addShortcutActionBridge(action.getId(), action.getShortcut());
         }
-
-        action.refreshState();
     }
 
     /**

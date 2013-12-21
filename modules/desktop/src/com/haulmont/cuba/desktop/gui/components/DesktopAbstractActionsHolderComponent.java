@@ -30,6 +30,8 @@ public class DesktopAbstractActionsHolderComponent<C extends JComponent> extends
             }
         }
         actionList.add(action);
+
+        action.refreshState();
     }
 
     public void removeAction(Action action) {

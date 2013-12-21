@@ -35,6 +35,8 @@ public class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.Component
             }
         }
         actionList.add(action);
+
+        action.refreshState();
     }
 
     public void removeAction(Action action) {
