@@ -5,10 +5,13 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.haulmont.cuba.core.global.RemoteException;
+import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.web.toolkit.ui.client.timer.CubaTimerClientRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.timer.CubaTimerServerRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.timer.CubaTimerState;
 import com.vaadin.ui.AbstractComponent;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -97,15 +100,29 @@ public class CubaTimer extends AbstractComponent implements CubaTimerServerRpc {
             if (System.currentTimeMillis() - startTime > 2000) {
                 log.warn("Too long timer '" + getLoggingTimerId() + "' processing: " + (endTime - startTime) + " ms ");
             }
-        } catch (Exception e) {
-            log.warn("Exception in timer '" + getLoggingTimerId() + "', timer will be stopped");
-
-            running = false;
-
-            throw e;
+        } catch (RuntimeException e) {
+            handleOnTimerException(e);
         } finally {
             getRpcProxy(CubaTimerClientRpc.class).requestCompleted();
         }
+    }
+
+    protected void handleOnTimerException(RuntimeException e) {
+        log.warn("Exception in timer '" + getLoggingTimerId() + "', timer will be stopped");
+
+        int reIdx = ExceptionUtils.indexOfType(e, RemoteException.class);
+        if (reIdx > -1) {
+            RemoteException re = (RemoteException) ExceptionUtils.getThrowableList(e).get(reIdx);
+            for (RemoteException.Cause cause : re.getCauses()) {
+                //noinspection ThrowableResultOfMethodCallIgnored
+                if (cause.getThrowable() instanceof NoUserSessionException) {
+                    running = false;
+                    break;
+                }
+            }
+        }
+
+        throw e;
     }
 
     protected String getLoggingTimerId() {

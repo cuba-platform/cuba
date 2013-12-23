@@ -6,8 +6,10 @@ package com.haulmont.cuba.web.sys;
 
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.RemoteException;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
+import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppWindow;
@@ -25,6 +27,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Window;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -250,16 +253,30 @@ public class CubaCommunicationManager extends CommunicationManager {
             if (endStamp - startStamp > 2000) {
                 log.warn("Too long timer processing: " + (endStamp - startStamp) + " ms");
             }
-        } catch (Exception e) {
-            log.warn("Exception in timer, timer will be stopped");
-
-            timer.stop();
-
-            ChangeVariablesErrorEvent errorEvent =
-                    new ChangeVariablesErrorEvent(timer, e, Collections.<String, Object>emptyMap());
-
-            app.getErrorHandler().terminalError(errorEvent);
+        } catch (RuntimeException e) {
+            handleOnTimerException(app, timer, e);
         }
+    }
+
+    protected void handleOnTimerException(Application app, Timer timer, RuntimeException e) {
+        log.warn("Exception in timer, timer will be stopped");
+
+        int reIdx = ExceptionUtils.indexOfType(e, RemoteException.class);
+        if (reIdx > -1) {
+            RemoteException re = (RemoteException) ExceptionUtils.getThrowableList(e).get(reIdx);
+            for (RemoteException.Cause cause : re.getCauses()) {
+                //noinspection ThrowableResultOfMethodCallIgnored
+                if (cause.getThrowable() instanceof NoUserSessionException) {
+                    timer.stop();
+                    break;
+                }
+            }
+        }
+
+        ChangeVariablesErrorEvent errorEvent =
+                new ChangeVariablesErrorEvent(timer, e, Collections.<String, Object>emptyMap());
+
+        app.getErrorHandler().terminalError(errorEvent);
     }
 
     protected void fireTimerStop(Application app, Timer timer) {
