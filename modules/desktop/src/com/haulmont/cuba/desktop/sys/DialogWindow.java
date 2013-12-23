@@ -8,6 +8,8 @@ package com.haulmont.cuba.desktop.sys;
 import javax.annotation.Nullable;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 /**
  * Dialog that can be enabled/disabled like the main frame.
@@ -18,7 +20,8 @@ import java.awt.*;
  */
 public class DialogWindow extends JDialog {
 
-    private DisabledGlassPane glassPane;
+    protected DisabledGlassPane glassPane;
+    protected Integer fixedHeight;
 
     public DialogWindow(Frame frame, String title) {
         super(frame, title, false);
@@ -35,5 +38,29 @@ public class DialogWindow extends JDialog {
         glassPane.deactivate();
         requestFocus();
         toFront();
+    }
+
+    public Integer getFixedHeight() {
+        return fixedHeight;
+    }
+
+    public void setFixedHeight(Integer fixedHeight) {
+        this.fixedHeight = fixedHeight;
+
+        if (fixedHeight != null) {
+            // Hack to prevent dialog resizing
+            addComponentListener(new ComponentAdapter() {
+
+                @Override
+                public void componentResized(ComponentEvent e) {
+                    Rectangle b = getBounds();
+                    if (b.height != DialogWindow.this.fixedHeight) {
+                        b.height = DialogWindow.this.fixedHeight;
+                        setBounds(b);
+                    }
+                    super.componentResized(e);
+                }
+            });
+        }
     }
 }

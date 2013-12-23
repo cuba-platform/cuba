@@ -284,8 +284,8 @@ public class DesktopWindowManager extends WindowManager {
         });
     }
 
-    private JDialog showWindowDialog(final Window window, String caption, String description, boolean forciblyDialog) {
-        final JDialog dialog = new DialogWindow(frame, caption);
+    protected JDialog showWindowDialog(final Window window, String caption, String description, boolean forciblyDialog) {
+        final DialogWindow dialog = new DialogWindow(frame, caption);
         dialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
         final DialogParams dialogParams = getDialogParams();
@@ -319,10 +319,15 @@ public class DesktopWindowManager extends WindowManager {
             else
                 dim.width = 600;
 
+            boolean resizable = BooleanUtils.isTrue(dialogParams.getResizable());
             if (dialogParams.getHeight() != null) {
                 dim.height = dialogParams.getHeight();
+
+                if (!resizable) {
+                    dialog.setFixedHeight(dim.height);
+                }
             }
-            dialog.setResizable(BooleanUtils.isTrue(dialogParams.getResizable()));
+            dialog.setResizable(resizable);
         }
 
         if (dialogParams.getCloseable() != null) {
