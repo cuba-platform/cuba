@@ -4,13 +4,11 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<xs:schema
-        targetNamespace="http://schemas.haulmont.com/cuba/5.0/window.xsd"
+<xs:schema targetNamespace="http://schemas.haulmont.com/cuba/5.0/window.xsd"
         xmlns:xs="http://www.w3.org/2001/XMLSchema"
         xmlns="http://schemas.haulmont.com/cuba/5.0/window.xsd"
         elementFormDefault="qualified"
-        attributeFormDefault="unqualified"
-        >
+        attributeFormDefault="unqualified">
 
     <xs:include schemaLocation="http://schemas.haulmont.com/cuba/5.0/view.xsd"/>
 
@@ -446,6 +444,19 @@
 
         <xs:attributeGroup ref="hasDatasource"/>
         <xs:attributeGroup ref="hasValue"/>
+    </xs:complexType>
+
+    <!-- Link -->
+    <xs:complexType name="linkComponent">
+        <xs:attributeGroup ref="hasId"/>
+        <xs:attributeGroup ref="hasVisibility"/>
+        <xs:attributeGroup ref="hasSize"/>
+        <xs:attributeGroup ref="hasAlign"/>
+        <xs:attributeGroup ref="hasStyle"/>
+        <xs:attributeGroup ref="hasCaption"/>
+
+        <xs:attribute name="url" type="xs:anyURI" use="optional"/>
+        <xs:attribute name="target" type="xs:string" use="optional"/>
     </xs:complexType>
 
     <!-- CheckBox -->
@@ -1394,6 +1405,7 @@
                 <xs:element name="popupButton" type="popupButtonComponent"/>
 
                 <xs:element name="label" type="labelComponent"/>
+                <xs:element name="link" type="linkComponent"/>
                 <xs:element name="checkBox" type="checkBoxComponent"/>
 
                 <xs:element name="textArea" type="textAreaComponent"/>

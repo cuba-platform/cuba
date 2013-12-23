@@ -37,6 +37,7 @@ public class WebComponentsFactory implements ComponentsFactory {
         classes.put(Button.NAME, WebButton.class);
         classes.put(LinkButton.NAME, WebLinkButton.class);
         classes.put(Label.NAME, WebLabel.class);
+        classes.put(Link.NAME, WebLink.class);
         classes.put(CheckBox.NAME, WebCheckBox.class);
         classes.put(GroupBoxLayout.NAME, WebGroupBox.class);
         classes.put(SourceCodeEditor.NAME, WebSourceCodeEditor.class);

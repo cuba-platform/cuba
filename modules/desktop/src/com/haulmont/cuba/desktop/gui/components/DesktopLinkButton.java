@@ -11,9 +11,8 @@ import org.jdesktop.swingx.JXHyperlink;
 import javax.swing.*;
 
 /**
- * <p>$Id$</p>
- *
- * @author Alexander Budarov
+ * @author budarov
+ * @version $Id$
  */
 public class DesktopLinkButton extends DesktopButton implements LinkButton {
     @Override

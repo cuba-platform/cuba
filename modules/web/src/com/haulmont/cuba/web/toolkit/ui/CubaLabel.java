@@ -8,7 +8,7 @@ package com.haulmont.cuba.web.toolkit.ui;
 import com.vaadin.ui.Label;
 
 /**
- * Label widget which supports multiline strings in {@link com.vaadin.shared.ui.label.ContentMode.TEXT} mode
+ * Label widget which supports multiline strings in {@link com.vaadin.shared.ui.label.ContentMode#TEXT} mode
  *
  * @author artamonov
  * @version $Id$

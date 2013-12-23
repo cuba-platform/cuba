@@ -59,6 +59,7 @@ public class LayoutLoaderConfig {
         config.register(LinkButton.NAME, ButtonLoader.class);
         config.register(CheckBox.NAME, AbstractFieldLoader.class);
         config.register(Label.NAME, LabelLoader.class);
+        config.register(Link.NAME, LinkLoader.class);
 
         config.register(TextField.NAME, TextFieldLoader.class);
         config.register(MaskedField.NAME, MaskedFieldLoader.class);

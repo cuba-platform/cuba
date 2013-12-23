@@ -18,9 +18,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class DesktopButton extends DesktopAbstractComponent<JButton> implements Button {
 
@@ -31,6 +30,7 @@ public class DesktopButton extends DesktopAbstractComponent<JButton> implements 
         impl = createImplementation();
         impl.addActionListener(
                 new ActionListener() {
+                    @Override
                     public void actionPerformed(ActionEvent e) {
                         if (action != null) {
                             action.actionPerform(DesktopButton.this);
@@ -45,10 +45,12 @@ public class DesktopButton extends DesktopAbstractComponent<JButton> implements 
         return new JButton();
     }
 
+    @Override
     public com.haulmont.cuba.gui.components.Action getAction() {
         return action;
     }
 
+    @Override
     public void setAction(Action action) {
         this.action = action;
 
@@ -84,27 +86,33 @@ public class DesktopButton extends DesktopAbstractComponent<JButton> implements 
         );
     }
 
+    @Override
     public String getCaption() {
         return impl.getText();
     }
 
+    @Override
     public void setCaption(String caption) {
         impl.setText(caption);
     }
 
+    @Override
     public String getDescription() {
         return impl.getToolTipText();
     }
 
+    @Override
     public void setDescription(String description) {
         impl.setToolTipText(description);
         DesktopToolTipManager.getInstance().registerTooltip(impl);
     }
 
+    @Override
     public String getIcon() {
         return icon;
     }
 
+    @Override
     public void setIcon(String icon) {
         this.icon = icon;
         if (icon != null)

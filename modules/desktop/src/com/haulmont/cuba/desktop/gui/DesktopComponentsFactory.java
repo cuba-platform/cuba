@@ -40,6 +40,7 @@ public class DesktopComponentsFactory implements ComponentsFactory {
         classes.put(LinkButton.NAME, DesktopLinkButton.class);
         classes.put(Label.NAME, DesktopLabel.class);
         classes.put(CheckBox.NAME, DesktopCheckBox.class);
+        classes.put(Link.NAME, DesktopLink.class);
 
         //Use resizable text area instead of text field
         classes.put(ResizableTextArea.NAME, DesktopResizableTextArea.class);
