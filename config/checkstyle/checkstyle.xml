@@ -255,9 +255,6 @@
         <!--<module name="AvoidInlineConditionals">-->
             <!--<property name="severity" value="warning"/>-->
         <!--</module>-->
-        <module name="DoubleCheckedLocking">
-            <property name="severity" value="warning"/>
-        </module>    <!-- MY FAVOURITE -->
         <module name="EmptyStatement">
             <property name="severity" value="warning"/>
         </module>
