@@ -98,8 +98,12 @@ public class EntityInspectorBrowse extends AbstractLookup {
         Map<String, Object> options = new TreeMap<>();
 
         for (MetaClass metaClass : metadata.getTools().getAllPersistentMetaClasses()) {
-            if (readPermitted(metaClass))
-                options.put(messages.getTools().getEntityCaption(metaClass) + " (" + metaClass.getName() + ")", metaClass);
+            if (readPermitted(metaClass)) {
+                Class javaClass = metaClass.getJavaClass();
+                if (Entity.class.isAssignableFrom(javaClass)) {
+                    options.put(messages.getTools().getEntityCaption(metaClass) + " (" + metaClass.getName() + ")", metaClass);
+                }
+            }
         }
 
         return options;
