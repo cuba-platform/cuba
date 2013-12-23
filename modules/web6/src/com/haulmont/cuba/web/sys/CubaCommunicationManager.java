@@ -259,14 +259,13 @@ public class CubaCommunicationManager extends CommunicationManager {
     }
 
     protected void handleOnTimerException(Application app, Timer timer, RuntimeException e) {
-        log.warn("Exception in timer, timer will be stopped");
-
         int reIdx = ExceptionUtils.indexOfType(e, RemoteException.class);
         if (reIdx > -1) {
             RemoteException re = (RemoteException) ExceptionUtils.getThrowableList(e).get(reIdx);
             for (RemoteException.Cause cause : re.getCauses()) {
                 //noinspection ThrowableResultOfMethodCallIgnored
                 if (cause.getThrowable() instanceof NoUserSessionException) {
+                    log.warn("NoUserSessionException in timer, timer will be stopped");
                     timer.stop();
                     break;
                 }

@@ -108,14 +108,13 @@ public class CubaTimer extends AbstractComponent implements CubaTimerServerRpc {
     }
 
     protected void handleOnTimerException(RuntimeException e) {
-        log.warn("Exception in timer '" + getLoggingTimerId() + "', timer will be stopped");
-
         int reIdx = ExceptionUtils.indexOfType(e, RemoteException.class);
         if (reIdx > -1) {
             RemoteException re = (RemoteException) ExceptionUtils.getThrowableList(e).get(reIdx);
             for (RemoteException.Cause cause : re.getCauses()) {
                 //noinspection ThrowableResultOfMethodCallIgnored
                 if (cause.getThrowable() instanceof NoUserSessionException) {
+                    log.warn("NoUserSessionException in timer '" + getLoggingTimerId() + "', timer will be stopped");
                     running = false;
                     break;
                 }
