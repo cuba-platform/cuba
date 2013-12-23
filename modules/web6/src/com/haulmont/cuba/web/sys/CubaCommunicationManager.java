@@ -283,13 +283,9 @@ public class CubaCommunicationManager extends CommunicationManager {
             final List<Timer.Listener> listeners = new ArrayList<>(timer.getListeners());
             for (final Timer.Listener listener : listeners) {
                 listener.onStopTimer(timer);
-                timer.removeListener(listener);
             }
-        } catch (Exception e) {
-            ChangeVariablesErrorEvent errorEvent =
-                    new ChangeVariablesErrorEvent(timer, e, Collections.<String, Object>emptyMap());
-
-            app.getErrorHandler().terminalError(errorEvent);
+        } catch (RuntimeException e) {
+            handleOnTimerException(app, timer, e);
         }
     }
 

@@ -4,6 +4,8 @@
  */
 package com.haulmont.cuba.web.toolkit;
 
+import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.web.App;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.ui.AbstractComponent;
@@ -26,6 +28,8 @@ public class Timer extends AbstractComponent {
     protected List<Listener> listeners = null;
 
     protected boolean dirty = true;
+
+    protected Window owner = null;
 
     public Timer(int delay, boolean repeating) {
         if (delay < 500)  {
@@ -58,6 +62,11 @@ public class Timer extends AbstractComponent {
 
     public void start() {
         if (isStopped()) {
+            if (owner != null) {
+                // add timer on restart
+                App.getInstance().addTimer(this, owner);
+            }
+
             stopped = false;
             dirty = true;
         }
@@ -114,6 +123,14 @@ public class Timer extends AbstractComponent {
 
     public boolean isDirty() {
         return dirty;
+    }
+
+    public Window getOwner() {
+        return owner;
+    }
+
+    public void setOwner(Window owner) {
+        this.owner = owner;
     }
 
     public interface Listener {

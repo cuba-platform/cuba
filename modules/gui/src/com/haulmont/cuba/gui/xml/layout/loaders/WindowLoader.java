@@ -16,6 +16,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
@@ -101,9 +102,11 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
         timer.setXmlDescriptor(element);
         timer.setId(element.attributeValue("id"));
         String delay = element.attributeValue("delay");
-        if (StringUtils.isEmpty(delay))
+        if (StringUtils.isEmpty(delay)) {
             throw new GuiDevelopmentException("Timer 'delay' can't be empty", context.getCurrentIFrameId(),
                     "Timer ID", timer.getId());
+        }
+
         int value;
         try {
             value = Integer.parseInt(delay);
@@ -113,44 +116,31 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
             info.put("Timer ID", timer.getId());
             throw new GuiDevelopmentException("Timer 'delay' must be numeric", context.getFullFrameId(), info);
         }
-        if (value <= 0)
+
+        if (value <= 0) {
             throw new GuiDevelopmentException("Timer 'delay' must be greater than 0", context.getFullFrameId(),
                     "Timer ID", timer.getId());
+        }
+
         timer.setDelay(value);
         timer.setRepeating(BooleanUtils.toBoolean(element.attributeValue("repeating")));
 
-        boolean autostart = "true".equals(element.attributeValue("autostart"));
-        addAssignTimerFrameTask(timer, autostart);
-
         final String onTimer = element.attributeValue("onTimer");
         if (!StringUtils.isEmpty(onTimer)) {
-            timer.addTimerListener(new Timer.TimerListener() {
-                private Method timerMethod;
+            String timerMethodName = onTimer;
+            if (StringUtils.startsWith(onTimer, "invoke:")) {
+                timerMethodName = StringUtils.substring(onTimer, "invoke:".length());
+            }
+            timerMethodName = StringUtils.trim(timerMethodName);
 
-                @Override
-                public void onTimer(Timer timer) {
-                    Window window = timer.getFrame();
-                    try {
-                        if (timerMethod == null) {
-                            String methodName = onTimer;
-                            // legacy syntax support
-                            if (onTimer.startsWith("invoke:")) {
-                                methodName = onTimer.substring("invoke:".length()).trim();
-                            }
-                            timerMethod = window.getClass().getMethod(methodName, Timer.class);
-                        }
-                        timerMethod.invoke(window, timer);
-                    } catch (Throwable e) {
-                        throw new RuntimeException("Unable to invoke onTimer", e);
-                    }
-                }
-
-                @Override
-                public void onStopTimer(Timer timer) {
-                    //do nothing
-                }
-            });
+            addInitTimerMethodTask(timer, timerMethodName);
         }
+
+        boolean autostart = "true".equals(element.attributeValue("autostart"));
+        if (autostart) {
+            addAutoStartTimerTask(timer);
+        }
+        timer.setFrame(context.getFrame());
 
         component.addTimer(timer);
     }
@@ -160,14 +150,48 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
         window.setFocusComponent(componentId);
     }
 
-    protected void addAssignTimerFrameTask(final Timer timer, final boolean autostart) {
+    protected void addInitTimerMethodTask(final Timer timer, final String timerMethodName) {
+        context.addPostInitTask(new PostInitTask() {
+            @Override
+            public void execute(Context context, final IFrame window) {
+                Method timerMethod;
+                try {
+                    timerMethod = window.getClass().getMethod(timerMethodName, Timer.class);
+                } catch (NoSuchMethodException e) {
+                    Map<String, Object> params = new HashMap<>(2);
+                    params.put("Timer Id", timer.getId());
+                    params.put("Method name", timerMethodName);
+
+                    throw new GuiDevelopmentException("Unable to find invoke method for timer",
+                            context.getFullFrameId(), params);
+                }
+
+                final Method timerInvokeMethod = timerMethod;
+
+                timer.addTimerListener(new Timer.TimerListener() {
+                    @Override
+                    public void onTimer(Timer timer) {
+                        try {
+                            timerInvokeMethod.invoke(window, timer);
+                        } catch (IllegalAccessException | InvocationTargetException e) {
+                            throw new RuntimeException("Unable to invoke onTimer", e);
+                        }
+                    }
+
+                    @Override
+                    public void onStopTimer(Timer timer) {
+                        //do nothing
+                    }
+                });
+            }
+        });
+    }
+
+    protected void addAutoStartTimerTask(final Timer timer) {
         context.addPostInitTask(new PostInitTask() {
             @Override
             public void execute(Context context, IFrame window) {
-                timer.setFrame(window);
-                if (autostart) {
-                    timer.start();
-                }
+                timer.start();
             }
         });
     }

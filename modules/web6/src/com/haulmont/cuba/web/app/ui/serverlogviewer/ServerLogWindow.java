@@ -30,6 +30,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Level;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -80,6 +81,9 @@ public class ServerLogWindow extends AbstractWindow {
     @Inject
     protected CheckBox autoRefreshCheck;
 
+    @Inject
+    protected Timer updateLogTailTimer;
+
     protected JmxInstance localJmxInstance;
 
     protected final com.vaadin.ui.Label logTailLabel = new com.vaadin.ui.Label();
@@ -108,6 +112,17 @@ public class ServerLogWindow extends AbstractWindow {
                     if (jmxInstance != localJmxInstance) {
                         jmxConnectionField.setValue(localJmxInstance);
                     }
+                }
+            }
+        });
+
+        autoRefreshCheck.addListener(new ValueListener() {
+            @Override
+            public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
+                if (Boolean.TRUE.equals(value)) {
+                    updateLogTailTimer.start();
+                } else {
+                    updateLogTailTimer.stop();
                 }
             }
         });
@@ -359,9 +374,7 @@ public class ServerLogWindow extends AbstractWindow {
 
     // action method
     public void updateLogTail(@SuppressWarnings("unused") Timer timer) {
-        boolean autoRefresh = (Boolean.parseBoolean(autoRefreshCheck.getValue().toString()));
-        if (autoRefresh)
-            updateLogTail(true);
+        updateLogTail(true);
     }
 
     // action method

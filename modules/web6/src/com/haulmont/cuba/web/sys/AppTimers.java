@@ -70,9 +70,11 @@ public class AppTimers {
             timerWindow.put(timer, mainWindow);
 
             timer.addListener(new Timer.Listener() {
+                @Override
                 public void onTimer(Timer timer) {
                 }
 
+                @Override
                 public void onStopTimer(Timer timer) {
                     Window window = timerWindow.remove(timer);
                     if (window != null) {
@@ -84,11 +86,17 @@ public class AppTimers {
                             }
                         }
                     }
+
+                    timer.removeListener(this);
                 }
             });
+
             if (timer instanceof WebTimer.WebTimerImpl) {
-                if (owner != null) {
+                // do not add new timer listener if timer already has owner
+                if (owner != null && timer.getOwner() == null) {
+                    timer.setOwner(owner);
                     owner.addListener(new com.haulmont.cuba.gui.components.Window.CloseListener() {
+                        @Override
                         public void windowClosed(String actionId) {
                             timer.stop();
                         }
