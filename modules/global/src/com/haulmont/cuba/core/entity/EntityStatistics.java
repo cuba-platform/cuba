@@ -5,12 +5,17 @@
 package com.haulmont.cuba.core.entity;
 
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
+import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.Entity;
 import javax.persistence.Column;
 import javax.persistence.Table;
 import java.util.Date;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 @Entity(name = "sys$EntityStatistics")
 @Table(name = "SYS_ENTITY_STATISTICS")
 @SystemLevel
@@ -42,18 +47,22 @@ public class EntityStatistics extends BaseUuidEntity implements Updatable {
     @Column(name = "LOOKUP_SCREEN_THRESHOLD")
     private Integer lookupScreenThreshold;
 
+    @Override
     public String getUpdatedBy() {
         return updatedBy;
     }
 
+    @Override
     public void setUpdatedBy(String updatedBy) {
         this.updatedBy = updatedBy;
     }
 
+    @Override
     public Date getUpdateTs() {
         return updateTs;
     }
 
+    @Override
     public void setUpdateTs(Date updateTs) {
         this.updateTs = updateTs;
     }
@@ -108,8 +117,8 @@ public class EntityStatistics extends BaseUuidEntity implements Updatable {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder(name);
-        sb.append(": instanceCount=").append(instanceCount);
+        StringBuilder sb = new StringBuilder(StringUtils.trimToEmpty(name));
+        sb.append(": instanceCount=").append(instanceCount != null ? instanceCount : 0);
         if (lazyCollectionThreshold != null)
             sb.append(", lazyCollectionThreshold=").append(lazyCollectionThreshold);
         if (maxFetchUI != null)
