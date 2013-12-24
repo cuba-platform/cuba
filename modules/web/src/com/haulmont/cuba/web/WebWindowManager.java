@@ -930,7 +930,7 @@ public class WebWindowManager extends WindowManager {
                 button.setIcon(new VersionedThemeResource(action.getIcon()));
                 button.addStyleName(WebButton.ICON_STYLE);
             }
-            setDebugId(button, action.getId());
+            setDebugId(button, "optionDialog_" + action.getId());
             buttonsContainer.addComponent(button);
         }
         if (buttonsContainer.getComponentCount() > 0)
