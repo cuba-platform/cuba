@@ -15,6 +15,8 @@ import org.apache.commons.codec.net.QCodec;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.perf4j.StopWatch;
+import org.perf4j.log4j.Log4JStopWatch;
 import org.springframework.mail.javamail.JavaMailSender;
 
 import javax.activation.DataHandler;
@@ -54,7 +56,11 @@ public class EmailSender implements EmailSenderAPI {
 
     public void sendEmail(SendingMessage sendingMessage) throws MessagingException {
         MimeMessage msg = createMimeMessage(sendingMessage);
+
+        StopWatch sw = new Log4JStopWatch("EmailSender.send");
         mailSender.send(msg);
+        sw.stop();
+
         log.info("Email '" + msg.getSubject() + "' to '" + sendingMessage.getAddress() + "' has been sent successfully");
     }
 
