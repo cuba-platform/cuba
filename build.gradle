@@ -90,6 +90,7 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
     apply(plugin: 'idea')
     apply(plugin: 'maven')
     apply(plugin: 'checkstyle')
+    apply(plugin: 'findbugs')
     apply(plugin: 'cuba')
 
     dependencies {
@@ -149,6 +150,16 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
         ant.xslt('in': "$checkstyleDir/main.xml",
                 out: "$checkstyleDir/$project.name-checkstyle.html",
                 style: "$checkstyleConfigDir/checkstyle.xsl")
+    }
+
+    findbugsMain {
+        reports {
+            xml.enabled = false
+            html {
+                enabled = true
+                destination "${project.buildDir}/$project.name-findbugs.html"
+            }
+        }
     }
 }
 
