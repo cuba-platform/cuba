@@ -3,13 +3,12 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<window
-        xmlns="http://schemas.haulmont.com/cuba/5.0/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/5.0/window.xsd"
         messagesPack="com.haulmont.cuba.gui.app.security.group"
         class="com.haulmont.cuba.gui.app.security.group.browse.GroupBrowser"
         caption="msg://browser.caption"
-        focusComponent="groupsTree"
-        >
+        focusComponent="groupsTree">
+
     <dsContext>
         <hierarchicalDatasource
                 id="groupsDs"
@@ -44,9 +43,9 @@
         </collectionDatasource>
     </dsContext>
 
-    <layout>
-        <split id="split" orientation="horizontal" pos="30" height="100%" width="100%">
-            <vbox spacing="true" margin="false;true;false;false" height="100%" width="100%" expand="groupsTree">
+    <layout expand="split">
+        <split id="split" orientation="horizontal" pos="30" width="100%">
+            <vbox spacing="true" margin="false;true;false;false" height="100%" expand="groupsTree">
                 <buttonsPanel>
                     <popupButton id="groupCreateButton" caption="msg://create.caption" icon="icons/create.png"/>
                     <button action="groupsTree.edit"/>
@@ -64,75 +63,71 @@
                     <treechildren datasource="groupsDs" captionProperty="name" hierarchyProperty="parent"/>
                 </tree>
             </vbox>
-            <vbox margin="false;false;false;true" height="100%" width="100%">
+            <vbox margin="false;false;false;true" height="100%">
                 <tabSheet id="tabsheet" height="100%" width="100%">
-                    <tab id="usersTab" caption="msg://tabsheet.users">
-                        <vbox expand="usersTable" spacing="true" margin="true" height="100%" width="100%">
+                    <tab id="usersTab" caption="msg://tabsheet.users" margin="true" expand="usersTable">
+                        <table id="usersTable" multiselect="true" width="100%">
                             <buttonsPanel>
                                 <button action="usersTable.create"/>
                                 <button action="usersTable.edit"/>
                                 <button action="usersTable.moveToGroup"/>
                             </buttonsPanel>
-                            <table id="usersTable" multiselect="true" width="100%">
-                                <actions>
-                                    <action id="create"/>
-                                    <action id="edit"/>
-                                    <action id="moveToGroup"/>
-                                    <action id="refresh"/>
-                                </actions>
-                                <columns>
-                                    <column id="name"/>
-                                    <column id="login"/>
-                                </columns>
-                                <rows datasource="usersDs"/>
-                            </table>
-                        </vbox>
+                            <actions>
+                                <action id="create"/>
+                                <action id="edit"/>
+                                <action id="moveToGroup"/>
+                                <action id="refresh"/>
+                            </actions>
+                            <columns>
+                                <column id="name"/>
+                                <column id="login"/>
+                            </columns>
+                            <rows datasource="usersDs"/>
+                        </table>
                     </tab>
-                    <tab id="constraintsTab" caption="msg://tabsheet.constraints" lazy="true">
-                        <vbox expand="constraintsTable" spacing="true" margin="true" height="100%" width="100%">
+                    <tab id="constraintsTab" caption="msg://tabsheet.constraints"
+                         lazy="true" expand="constraintsTable" margin="true">
+                        <table id="constraintsTable" width="100%">
                             <buttonsPanel>
                                 <button action="constraintsTable.create"/>
                                 <button action="constraintsTable.edit"/>
                                 <button action="constraintsTable.remove"/>
                             </buttonsPanel>
-                            <table id="constraintsTable" width="100%">
-                                <actions>
-                                    <action id="create"/>
-                                    <action id="edit"/>
-                                    <action id="remove"/>
-                                    <action id="refresh"/>
-                                </actions>
-                                <columns>
-                                    <column id="entityName" caption="msg://entity"/>
-                                    <column id="joinClause" caption="msg://join"/>
-                                    <column id="whereClause" caption="msg://where"/>
-                                </columns>
-                                <rows datasource="constraintsDs"/>
-                            </table>
-                        </vbox>
+                            <actions>
+                                <action id="create"/>
+                                <action id="edit"/>
+                                <action id="remove"/>
+                                <action id="refresh"/>
+                            </actions>
+                            <columns>
+                                <column id="entityName" caption="msg://entity"/>
+                                <column id="joinClause" caption="msg://join"/>
+                                <column id="whereClause" caption="msg://where"/>
+                            </columns>
+                            <rows datasource="constraintsDs"/>
+                        </table>
                     </tab>
-                    <tab id="attributesTab" caption="msg://tabsheet.attributes" lazy="true">
-                        <vbox expand="attributesTable" spacing="true" margin="true" height="100%" width="100%">
+                    <tab id="attributesTab" caption="msg://tabsheet.attributes"
+                         lazy="true" expand="attributesTable" margin="true">
+                        <table id="attributesTable" width="100%">
                             <buttonsPanel>
                                 <button action="attributesTable.create"/>
                                 <button action="attributesTable.edit"/>
                                 <button action="attributesTable.remove"/>
                             </buttonsPanel>
-                            <table id="attributesTable" width="100%">
-                                <actions>
-                                    <action id="create"/>
-                                    <action id="edit"/>
-                                    <action id="remove"/>
-                                    <action id="refresh"/>
-                                </actions>
-                                <columns>
-                                    <column id="name"/>
-                                    <column id="datatypeCaption"/>
-                                    <column id="stringValue"/>
-                                </columns>
-                                <rows datasource="attributesDs"/>
-                            </table>
-                        </vbox>
+                            <actions>
+                                <action id="create"/>
+                                <action id="edit"/>
+                                <action id="remove"/>
+                                <action id="refresh"/>
+                            </actions>
+                            <columns>
+                                <column id="name"/>
+                                <column id="datatypeCaption"/>
+                                <column id="stringValue"/>
+                            </columns>
+                            <rows datasource="attributesDs"/>
+                        </table>
                     </tab>
                 </tabSheet>
             </vbox>
