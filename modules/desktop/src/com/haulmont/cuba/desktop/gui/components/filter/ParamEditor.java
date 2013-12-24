@@ -5,7 +5,10 @@
 
 package com.haulmont.cuba.desktop.gui.components.filter;
 
+import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
 import com.haulmont.cuba.gui.components.filter.AbstractCondition;
+import net.miginfocom.layout.CC;
+import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -22,9 +25,10 @@ public class ParamEditor extends JPanel implements AbstractCondition.Listener {
     protected AbstractCondition<Param> condition;
     protected JComponent field;
     protected boolean applyRequired;
+    protected String fieldWidth;
 
     public ParamEditor(final AbstractCondition<Param> condition, boolean showOperation, boolean applyRequired) {
-        super(new MigLayout("insets 0 0 0 0, align left"));
+        super(new MigLayout("insets 0 0 0 0, align left" + (LayoutAdapter.isDebug() ? ", debug" : "")));
         this.condition = condition;
 
         if (condition.getParam() != null) {
@@ -59,6 +63,18 @@ public class ParamEditor extends JPanel implements AbstractCondition.Listener {
         }
     }
 
+    public void setFieldWidth(String fieldWidth) {
+        this.fieldWidth = fieldWidth;
+        if (field != null) {
+            MigLayout layout = (MigLayout) getLayout();
+            layout.setComponentConstraints(field, new CC().width(fieldWidth));
+
+            if (fieldWidth.contains("%")){
+                layout.setLayoutConstraints(new LC().width("100%").insets("0 0 0 0"));
+            }
+        }
+    }
+
     @Override
     public void captionChanged() {
     }
@@ -74,6 +90,11 @@ public class ParamEditor extends JPanel implements AbstractCondition.Listener {
         field = editComponent.getComponent();
         updateBackground();
         add(field);
+
+        if (fieldWidth != null && field != null) {
+            MigLayout layout = (MigLayout) getLayout();
+            layout.setComponentConstraints(field, new CC().width(fieldWidth));
+        }
     }
 
     @Override

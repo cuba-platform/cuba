@@ -33,22 +33,18 @@ import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.TemporalType;
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.text.ParseException;
 import java.util.*;
-import java.util.List;
 
 /**
  * @author devyatkin
  * @version $Id$
  */
 public class Param extends AbstractParam<ParamEditorComponent> {
-
-    public static final Dimension TEXT_COMPONENT_DIM = new Dimension(120, Integer.MAX_VALUE);
 
     public Param(String name, Class javaClass, String entityWhere, String entityView, Datasource datasource,
                  boolean inExpr, boolean required) {
@@ -159,8 +155,6 @@ public class Param extends AbstractParam<ParamEditorComponent> {
         } else
             field.setValue(value);
 
-        JComponent component = field.getComponent();
-        component.setMaximumSize(TEXT_COMPONENT_DIM);
         return new FieldParamEditorComponent(field);
     }
 
@@ -359,8 +353,6 @@ public class Param extends AbstractParam<ParamEditorComponent> {
                 );
                 picker.setValue(value);
 
-                JComponent component = picker.getComponent();
-                component.setMaximumSize(TEXT_COMPONENT_DIM);
                 return new FieldParamEditorComponent(picker);
             }
         } else {
@@ -420,8 +412,6 @@ public class Param extends AbstractParam<ParamEditorComponent> {
                 });
 
                 lookup.setValue(value);
-                JComponent component = lookup.getComponent();
-                component.setMaximumSize(TEXT_COMPONENT_DIM);
                 return new FieldParamEditorComponent(lookup);
             }
         }

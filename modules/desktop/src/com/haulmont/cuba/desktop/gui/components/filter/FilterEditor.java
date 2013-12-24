@@ -625,8 +625,8 @@ public class FilterEditor extends AbstractFilterEditor {
 
         @Override
         protected JComponent getComponent(Object value) {
-            JPanel component = new ParamEditor((AbstractCondition<Param>) value, false, false);
-            setComponentWidth(component, PARAM_COLUMN_WIDTH);
+            ParamEditor component = new ParamEditor((AbstractCondition<Param>) value, false, false);
+            component.setFieldWidth("100%");
             return component;
         }
 
