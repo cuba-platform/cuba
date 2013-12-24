@@ -4,22 +4,22 @@
  */
 package com.haulmont.cuba.web.gui.components.filter;
 
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.filter.AbstractConditionDescriptor;
 import org.apache.commons.lang.RandomStringUtils;
 import com.haulmont.cuba.core.global.MessageProvider;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class NewCustomCondition extends CustomCondition {
 
     public NewCustomCondition(AbstractConditionDescriptor descriptor, String where, String join, String entityAlias) {
         super(descriptor, where, join, entityAlias);
 
         name = RandomStringUtils.randomAlphabetic(10);
-        locCaption = MessageProvider.getMessage(MESSAGES_PACK, "newCustomCondition");
+        locCaption = AppBeans.get(Messages.class).getMessage(MESSAGES_PACK, "newCustomCondition");
     }
-
-//    @Override
-//    public OperationEditor createOperationEditor() {
-//        return new CustomOperationEditor(this);
-//    }
-
 }

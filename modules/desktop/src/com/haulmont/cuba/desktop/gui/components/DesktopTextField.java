@@ -8,7 +8,6 @@ package com.haulmont.cuba.desktop.gui.components;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.desktop.sys.vcl.Flushable;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.TextField;
 

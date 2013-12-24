@@ -5,14 +5,14 @@
 
 package com.haulmont.cuba.desktop.gui.components.filter;
 
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.filter.AbstractConditionDescriptor;
 import org.apache.commons.lang.RandomStringUtils;
 
 /**
- * <p>$Id$</p>
- *
  * @author devyatkin
+ * @version $Id$
  */
 public class NewCustomCondition extends CustomCondition {
 
@@ -20,11 +20,6 @@ public class NewCustomCondition extends CustomCondition {
         super(descriptor, where, join, entityAlias);
 
         name = RandomStringUtils.randomAlphabetic(10);
-        locCaption = MessageProvider.getMessage(MESSAGES_PACK, "newCustomCondition");
-    }
-
-    @Override
-    public OperationEditor createOperationEditor() {
-        return new CustomOperationEditor(this);
+        locCaption = AppBeans.get(Messages.class).getMessage(MESSAGES_PACK, "newCustomCondition");
     }
 }

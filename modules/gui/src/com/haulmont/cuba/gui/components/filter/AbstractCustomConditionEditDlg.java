@@ -252,10 +252,9 @@ public abstract class AbstractCustomConditionEditDlg<T> {
 
         condition.setJoin(joinText.<String>getValue());
 
-        String paramName = null;
+        String paramName = condition.createParamName();
         String where = whereText.getValue();
         if (where != null) {
-            paramName = condition.createParamName();
             where = where.replace("?", ":" + paramName);
         }
 
@@ -263,21 +262,19 @@ public abstract class AbstractCustomConditionEditDlg<T> {
         condition.setUnary(ParamType.UNARY.equals(type));
         condition.setInExpr(BooleanUtils.isTrue((Boolean) typeCheckBox.getValue()));
 
-        if (paramName != null || ParamType.UNARY.equals(type)) {
-            Class javaClass = getParamJavaClass(type);
-            condition.setJavaClass(javaClass);
+        Class javaClass = getParamJavaClass(type);
+        condition.setJavaClass(javaClass);
 
-            String entityParamWhere = entityParamWhereText.getValue();
-            condition.setEntityParamWhere(entityParamWhere);
+        String entityParamWhere = entityParamWhereText.getValue();
+        condition.setEntityParamWhere(entityParamWhere);
 
-            String entityParamView = entityParamViewText.getValue();
-            condition.setEntityParamView(entityParamView);
+        String entityParamView = entityParamViewText.getValue();
+        condition.setEntityParamView(entityParamView);
 
-            AbstractParam param = paramFactory.createParam(
-                    paramName, javaClass, entityParamWhere, entityParamView, condition.getDatasource(),
-                    condition.isInExpr(), condition.isRequired());
-            condition.setParam(param);
-        }
+        AbstractParam param = paramFactory.createParam(
+                paramName, javaClass, entityParamWhere, entityParamView, condition.getDatasource(),
+                condition.isInExpr(), condition.isRequired());
+        condition.setParam(param);
 
         return true;
     }

@@ -21,9 +21,4 @@ public class NewCustomCondition extends CustomCondition {
         name = RandomStringUtils.randomAlphabetic(10);
         locCaption = AppBeans.get(Messages.class).getMessage(MESSAGES_PACK, "newCustomCondition");
     }
-
-//    @Override
-//    public OperationEditor createOperationEditor() {
-//        return new CustomOperationEditor(this);
-//    }
 }

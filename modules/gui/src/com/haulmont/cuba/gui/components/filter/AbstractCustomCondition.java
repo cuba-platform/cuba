@@ -6,18 +6,18 @@
 package com.haulmont.cuba.gui.components.filter;
 
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MessageTools;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.data.Datasource;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
- * <p>$Id$</p>
- *
  * @author devyatkin
+ * @version $Id$
  */
 public abstract class AbstractCustomCondition<T extends AbstractParam> extends AbstractCondition<T> {
 
@@ -48,7 +48,7 @@ public abstract class AbstractCustomCondition<T extends AbstractParam> extends A
         this.join = join;
         this.text = where;
         if (param != null)
-            text = text.replace("?", ":" + param.getName());
+            text = StringUtils.replace(text, "?", ":" + param.getName());
         String operatorName;
         operatorName = descriptor.getOperatorType();
         if (operatorName != null) {
@@ -83,7 +83,7 @@ public abstract class AbstractCustomCondition<T extends AbstractParam> extends A
             return res;
 
         if (param == null)
-            return locCaption + ": " + MessageProvider.getMessage(MESSAGES_PACK, "CustomCondition.paramNotDefined");
+            return locCaption + ": " + AppBeans.get(Messages.class).getMessage(MESSAGES_PACK, "CustomCondition.paramNotDefined");
         else
             return null;
     }

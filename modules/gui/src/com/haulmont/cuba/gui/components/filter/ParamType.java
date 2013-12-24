@@ -5,12 +5,12 @@
 
 package com.haulmont.cuba.gui.components.filter;
 
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 
 /**
- * <p>$Id$</p>
- *
  * @author devyatkin
+ * @version $Id$
  */
 public enum ParamType {
     STRING,
@@ -26,7 +26,8 @@ public enum ParamType {
     ENTITY,
     UNARY;
 
+    @Override
     public String toString() {
-        return MessageProvider.getMessage(this);
+        return AppBeans.get(Messages.class).getMessage(this);
     }
 }

@@ -8,6 +8,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.filter.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.AbstractConditionDescriptor;
+import com.haulmont.cuba.gui.components.filter.AbstractParam;
 import com.haulmont.cuba.gui.components.filter.ParamFactory;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
@@ -25,7 +26,17 @@ public class ConditionCreator extends AbstractConditionDescriptor {
 
     @Override
     public AbstractCondition createCondition() {
-        return new NewCustomCondition(this, "", null, entityAlias);
+        NewCustomCondition newCustomCondition = new NewCustomCondition(this, null, null, entityAlias);
+        // default editor - text
+        newCustomCondition.setJavaClass(String.class);
+
+        AbstractParam param = paramFactory.createParam(
+                newCustomCondition.getName(), newCustomCondition.getJavaClass(),
+                newCustomCondition.getWhere(), newCustomCondition.getJoin(), newCustomCondition.getDatasource(),
+                newCustomCondition.isInExpr(), newCustomCondition.isRequired());
+        newCustomCondition.setParam((Param) param);
+
+        return newCustomCondition;
     }
 
     @Override
