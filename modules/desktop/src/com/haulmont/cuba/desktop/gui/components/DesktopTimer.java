@@ -118,11 +118,16 @@ public class DesktopTimer extends DesktopAbstractComponent<JLabel> implements co
                 RemoteException re = (RemoteException) ExceptionUtils.getThrowableList(ex).get(reIdx);
                 for (RemoteException.Cause cause : re.getCauses()) {
                     if (cause.getThrowable() instanceof NoUserSessionException) {
+                        log.warn("NoUserSessionException in timer, timer will be stopped");
                         disposeTimer();
-                        throw ex;
+                        break;
                     }
                 }
+            } else if (ExceptionUtils.indexOfThrowable(ex, NoUserSessionException.class) > -1) {
+                log.warn("NoUserSessionException in timer, timer will be stopped");
+                disposeTimer();
             }
+
             throw ex;
         }
     }

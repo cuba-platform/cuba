@@ -119,6 +119,9 @@ public class CubaTimer extends AbstractComponent implements CubaTimerServerRpc {
                     break;
                 }
             }
+        } else if (ExceptionUtils.indexOfThrowable(e, NoUserSessionException.class) > -1) {
+            log.warn("NoUserSessionException in timer '" + getLoggingTimerId() + "', timer will be stopped");
+            running = false;
         }
 
         throw e;

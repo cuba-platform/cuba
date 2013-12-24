@@ -270,6 +270,9 @@ public class CubaCommunicationManager extends CommunicationManager {
                     break;
                 }
             }
+        } else if (ExceptionUtils.indexOfThrowable(e, NoUserSessionException.class) > -1) {
+            log.warn("NoUserSessionException in timer, timer will be stopped");
+            timer.stop();
         }
 
         ChangeVariablesErrorEvent errorEvent =
