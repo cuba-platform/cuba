@@ -11,6 +11,7 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.SilentException;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.web.gui.WebWindow;
@@ -981,8 +982,6 @@ public class WebWindowManager extends WindowManager {
                 @Override
                 public void visit(com.haulmont.cuba.gui.components.Component component, String name) {
                     if (component.getDebugId() == null) {
-                        final String id;
-
                         IFrame componentFrame = null;
                         if (component instanceof com.haulmont.cuba.gui.components.Component.BelongToFrame) {
                             componentFrame = ((com.haulmont.cuba.gui.components.Component.BelongToFrame) component).getFrame();
@@ -994,13 +993,36 @@ public class WebWindowManager extends WindowManager {
 
                         String fullFrameId = ComponentsHelper.getFullFrameId(componentFrame);
 
-                        if (component.getId() != null) {
-                            id = fullFrameId + "_" + component.getId();
-                        } else {
-                            id = fullFrameId + "_" + component.getClass().getSimpleName();
-                        }
+                        String id = getComponentId(component, fullFrameId);
                         component.setDebugId(ui.getTestIdManager().getTestId(id));
+
+                        if (component instanceof Table) {
+                            ButtonsPanel buttonsPanel = ((Table) component).getButtonsPanel();
+                            if (buttonsPanel != null) {
+                                for (com.haulmont.cuba.gui.components.Component button : buttonsPanel.getComponents()) {
+                                    if (button.getDebugId() == null) {
+                                        String buttonId = getComponentId(button, fullFrameId);
+                                        button.setDebugId(ui.getTestIdManager().getTestId(buttonId));
+                                    }
+                                }
+                            }
+                        }
                     }
+                }
+
+                protected String getComponentId(com.haulmont.cuba.gui.components.Component component, String fullFrameId) {
+                    String id = null;
+                    if (component.getId() != null) {
+                        id = fullFrameId + "_" + component.getId();
+                    } else if (component instanceof com.haulmont.cuba.gui.components.Button) {
+                        com.haulmont.cuba.gui.components.Button button = (com.haulmont.cuba.gui.components.Button) component;
+                        if (button.getAction() != null && StringUtils.isNotEmpty(button.getAction().getId())) {
+                            id = fullFrameId + "_" + button.getAction().getId();
+                        }
+                    }
+                    if (StringUtils.isEmpty(id))
+                        id = fullFrameId + "_" + component.getClass().getSimpleName();
+                    return id;
                 }
             });
         }
