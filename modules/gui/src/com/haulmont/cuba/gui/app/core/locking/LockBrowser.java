@@ -15,6 +15,10 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.Map;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class LockBrowser extends AbstractWindow {
 
     @Inject
@@ -32,6 +36,7 @@ public class LockBrowser extends AbstractWindow {
     @Inject
     protected Table setupTable;
 
+    @Override
     public void init(Map<String, Object> params) {
         createAction.setOpenType(WindowManager.OpenType.DIALOG);
         editAction.setOpenType(WindowManager.OpenType.DIALOG);
