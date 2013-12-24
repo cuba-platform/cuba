@@ -41,17 +41,17 @@ import java.util.Map;
 public class BackgroundWorkProgressWindow<T extends Number, V> extends AbstractWindow {
 
     @Inject
-    private Label text;
+    protected Label text;
     @Inject
-    private Label progressText;
+    protected Label progressText;
     @Inject
-    private Button cancelButton;
+    protected Button cancelButton;
     @Inject
-    private BackgroundWorker backgroundWorker;
+    protected BackgroundWorker backgroundWorker;
     @Inject
-    private ProgressBar taskProgress;
+    protected ProgressBar taskProgress;
 
-    private BackgroundTaskHandler<V> taskHandler;
+    protected BackgroundTaskHandler<V> taskHandler;
 
     /**
      * Show modal window with message which will last until task completes.
@@ -67,6 +67,9 @@ public class BackgroundWorkProgressWindow<T extends Number, V> extends AbstractW
      */
     public static <T extends Number, V> void show(BackgroundTask<T, V> task, @Nullable String title, @Nullable String message,
                                                   Number total, boolean cancelAllowed, boolean percentProgress) {
+        if (task.getOwnerFrame() == null)
+            throw new IllegalArgumentException("Task without owner cannot be run");
+
         Map<String, Object> params = new HashMap<>();
         params.put("task", task);
         params.put("title", title);
@@ -74,6 +77,7 @@ public class BackgroundWorkProgressWindow<T extends Number, V> extends AbstractW
         params.put("total", total);
         params.put("cancelAllowed", cancelAllowed);
         params.put("percentProgress", percentProgress);
+
         task.getOwnerFrame().openWindow("backgroundWorkProgressWindow", WindowManager.OpenType.DIALOG, params);
     }
 
@@ -170,12 +174,12 @@ public class BackgroundWorkProgressWindow<T extends Number, V> extends AbstractW
             close(Window.CLOSE_ACTION_ID);
     }
 
-    private class WrapperTask<T extends Number, V> extends LocalizedTaskWrapper<T, V> {
+    protected class WrapperTask<T extends Number, V> extends LocalizedTaskWrapper<T, V> {
 
-        private Number total;
-        private boolean percentProgress = false;
+        protected Number total;
+        protected boolean percentProgress = false;
 
-        private WrapperTask(BackgroundTask<T, V> wrappedTask, Number total, boolean percentProgress) {
+        public WrapperTask(BackgroundTask<T, V> wrappedTask, Number total, boolean percentProgress) {
             super(wrappedTask, BackgroundWorkProgressWindow.this);
             this.total = total;
             this.percentProgress = percentProgress;
@@ -183,7 +187,7 @@ public class BackgroundWorkProgressWindow<T extends Number, V> extends AbstractW
             showProgressText(0, 0);
         }
 
-        private void showProgressText(Number last, float progressValue) {
+        protected void showProgressText(Number last, float progressValue) {
             if (!percentProgress)
                 progressText.setValue(formatMessage("backgroundWorkProgress.progressTextFormat", last, total));
             else {

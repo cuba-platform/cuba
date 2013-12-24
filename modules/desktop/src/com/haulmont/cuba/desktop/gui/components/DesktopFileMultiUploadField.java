@@ -6,13 +6,13 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.DesktopResources;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.WindowManagerProvider;
 import com.haulmont.cuba.gui.components.FileMultiUploadField;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
@@ -29,17 +29,15 @@ import java.util.*;
  */
 public class DesktopFileMultiUploadField extends DesktopAbstractComponent<JButton> implements FileMultiUploadField {
 
-    private static final int BYTES_IN_MEGABYTE = 1048576;
+    protected static final int BYTES_IN_MEGABYTE = 1048576;
 
-    private static final String DEFAULT_ICON = "/components/multiupload/multiupload-button.png";
+    protected static final String DEFAULT_ICON = "/components/multiupload/multiupload-button.png";
 
     protected FileUploadingAPI fileUploading;
 
-    private List<UploadListener> listeners = new ArrayList<>();
+    protected List<UploadListener> listeners = new ArrayList<>();
 
-    private Map<UUID, String> filesMap = new HashMap<>();
-
-    private String description = "";
+    protected Map<UUID, String> filesMap = new HashMap<>();
 
     public DesktopFileMultiUploadField() {
         fileUploading = AppBeans.get(FileUploadingAPI.NAME);
@@ -128,9 +126,10 @@ public class DesktopFileMultiUploadField extends DesktopAbstractComponent<JButto
         ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
         final Integer maxUploadSizeMb = clientConfig.getMaxUploadSizeMb();
 
-        String warningMsg = messages.formatMessage(AppConfig.getMessagesPack(), "upload.fileTooBig.message", file.getName(), maxUploadSizeMb);
-        WindowManager wm = AppBeans.get(WindowManagerProvider.class).get();
-        wm.showNotification(warningMsg, IFrame.NotificationType.WARNING);
+        String warningMsg = messages.formatMessage(AppConfig.getMessagesPack(),
+                "upload.fileTooBig.message", file.getName(), maxUploadSizeMb);
+
+        getFrame().showNotification(warningMsg, IFrame.NotificationType.WARNING);
     }
 
     @Override

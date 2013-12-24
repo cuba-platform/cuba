@@ -40,15 +40,15 @@ import java.util.Map;
 public class BackgroundWorkWindow<T, V> extends AbstractWindow {
 
     @Inject
-    private Label text;
+    protected Label text;
 
     @Inject
-    private Button cancelButton;
+    protected Button cancelButton;
 
     @Inject
-    private BackgroundWorker backgroundWorker;
+    protected BackgroundWorker backgroundWorker;
 
-    private BackgroundTaskHandler<V> taskHandler;
+    protected BackgroundTaskHandler<V> taskHandler;
 
     /**
      * Show modal window with message which will last until task completes.
@@ -63,11 +63,15 @@ public class BackgroundWorkWindow<T, V> extends AbstractWindow {
      */
     public static <T, V> void show(BackgroundTask<T, V> task, @Nullable String title, @Nullable String message,
                                    boolean cancelAllowed) {
+        if (task.getOwnerFrame() == null)
+            throw new IllegalArgumentException("Task without owner cannot be run");
+
         Map<String, Object> params = new HashMap<>();
         params.put("task", task);
         params.put("title", title);
         params.put("message", message);
         params.put("cancelAllowed", cancelAllowed);
+
         task.getOwnerFrame().openWindow("backgroundWorkWindow", WindowManager.OpenType.DIALOG, params);
     }
 

@@ -5,15 +5,16 @@
 
 package com.haulmont.cuba.desktop;
 
-import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowManagerProvider;
 
 import javax.annotation.ManagedBean;
 import javax.swing.*;
-import java.awt.*;
 
 /**
+ * Naive implmentation of WindowManagerProvider. <br/>
+ * Always returns WindowManager of main application frame.
+ *
  * @author artamonov
  * @version $Id$
  */
@@ -25,17 +26,7 @@ public class DesktopWindowManagerProvider implements WindowManagerProvider {
         if (!SwingUtilities.isEventDispatchThread())
             throw new IllegalStateException("Could not access to WindowManager outside Event Dispath Thread");
 
-        AWTEvent event = EventQueue.getCurrentEvent();
-        if (event == null)
-            throw new IllegalStateException("Could not access to WindowManager without Event");
-
-        Object eventSource = event.getSource();
-        if (!(eventSource instanceof Component))
-            throw new IllegalStateException("Could not access to WindowManager without valid Event source");
-
-        Component sourceComponent = (Component) eventSource;
-
-        TopLevelFrame topFrame = DesktopComponentsHelper.getTopLevelFrame(sourceComponent);
+        TopLevelFrame topFrame = App.getInstance().getMainFrame();
 
         return topFrame.getWindowManager();
     }
