@@ -186,9 +186,12 @@ public class ObjectsCache implements ObjectsCacheInstance, ObjectsCacheControlle
     public int count(Predicate... selectors) {
         cacheLock.readLock().lock();
 
-        int count = cacheSet.countConjunction(selectors);
-
-        cacheLock.readLock().unlock();
+        int count;
+        try {
+            count = cacheSet.countConjunction(selectors);
+        } finally {
+            cacheLock.readLock().unlock();
+        }
 
         return count;
     }
@@ -212,12 +215,12 @@ public class ObjectsCache implements ObjectsCacheInstance, ObjectsCacheControlle
                 cacheLock.readLock().lock();
 
                 temporaryCacheSet = (CacheSet) cacheSet.clone();
-
-                cacheLock.readLock().unlock();
             } catch (CloneNotSupportedException e) {
                 log.error(String.format("Update data for cache %s failed", name), e);
                 this.cacheSet = new CacheSet(Collections.emptyList());
                 return;
+            } finally {
+                cacheLock.readLock().unlock();
             }
 
             try {
@@ -230,10 +233,12 @@ public class ObjectsCache implements ObjectsCacheInstance, ObjectsCacheControlle
 
             cacheLock.writeLock().lock();
 
-            // Modify cache set
-            this.cacheSet = temporaryCacheSet;
-
-            cacheLock.writeLock().unlock();
+            try {
+                // Modify cache set
+                this.cacheSet = temporaryCacheSet;
+            } finally {
+                cacheLock.writeLock().unlock();
+            }
         }
     }
 }
