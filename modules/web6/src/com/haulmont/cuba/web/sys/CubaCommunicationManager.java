@@ -244,7 +244,7 @@ public class CubaCommunicationManager extends CommunicationManager {
         try {
             long startStamp = System.currentTimeMillis();
 
-            final List<Timer.Listener> listeners = timer.getListeners();
+            final List<Timer.Listener> listeners = new ArrayList<>(timer.getListeners());
             for (final Timer.Listener listener : listeners) {
                 listener.onTimer(timer);
             }
