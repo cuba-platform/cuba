@@ -7,6 +7,7 @@ package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.web.toolkit.ui.client.downloader.CubaFileDownloaderClientRPC;
 import com.vaadin.server.*;
+import org.apache.commons.lang.StringUtils;
 
 import javax.mail.internet.MimeUtility;
 import java.io.IOException;
@@ -119,6 +120,12 @@ public class CubaFileDownloader extends AbstractExtension {
                 // file
                 if (isOverrideContentType() && !isViewDocumentRequest) {
                     stream.setContentType("application/octet-stream;charset=UTF-8");
+                } else {
+                    if (StringUtils.isNotEmpty(stream.getContentType())) {
+                        stream.setContentType(stream.getContentType() + ";charset=UTF-8\"");
+                    } else {
+                        stream.setContentType(";charset=UTF-8\"");
+                    }
                 }
                 stream.writeResponse(request, response);
                 return true;
