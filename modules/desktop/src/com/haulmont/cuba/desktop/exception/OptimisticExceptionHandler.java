@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 
 /**
  * Handles a JPA optimistic lock exception.
- *
+ * <p/>
  * <p>$Id$</p>
  *
  * @author artamonov
@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 public class OptimisticExceptionHandler extends AbstractExceptionHandler {
 
     public OptimisticExceptionHandler() {
-        super("org.springframework.orm.jpa.JpaOptimisticLockingFailureException");
+        super("org.springframework.orm.jpa.JpaOptimisticLockingFailureException", "org.apache.openjpa.persistence.OptimisticLockException");
     }
 
     @Override

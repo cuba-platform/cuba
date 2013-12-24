@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 public class OptimisticExceptionHandler extends AbstractExceptionHandler {
 
     public OptimisticExceptionHandler() {
-        super("org.springframework.orm.jpa.JpaOptimisticLockingFailureException");
+        super("org.springframework.orm.jpa.JpaOptimisticLockingFailureException", "org.apache.openjpa.persistence.OptimisticLockException");
     }
 
     @Override
