@@ -60,6 +60,8 @@ public class ButtonsPanelLoader extends ContainerLoader {
             }
         }
 
+        assignFrame(component);
+
         return component;
     }
 
