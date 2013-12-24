@@ -436,8 +436,14 @@ public class WebTabSheet
                             }
                     );
 
-                    AppWindow appWindow = AppUI.getCurrent().getAppWindow();
-                    appWindow.getWindowManager().initDebugIds(window);
+                    // init debug ids after all
+                    context.addPostInitTask(new ComponentLoader.PostInitTask() {
+                        @Override
+                        public void execute(ComponentLoader.Context context, IFrame window) {
+                            AppWindow appWindow = AppUI.getCurrent().getAppWindow();
+                            appWindow.getWindowManager().initDebugIds(window);
+                        }
+                    });
 
                     ((DsContextImplementation) window.getDsContext()).resumeSuspended();
                 }

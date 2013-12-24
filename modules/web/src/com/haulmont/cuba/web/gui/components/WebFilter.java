@@ -617,6 +617,15 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
 
         boolean focusSet = false;
 
+        // Test support
+        boolean useTestIds = (parentContainer == null && getDebugId() != null) || (parentContainer != null && parentContainer.getId() != null);
+        String baseTestId = null;
+        TestIdManager testIdManager = null;
+        if (useTestIds) {
+            baseTestId = parentContainer == null ? getDebugId() : parentContainer.getId();
+            testIdManager = AppUI.getCurrent().getTestIdManager();
+        }
+
         for (int i = 0; i < visibleConditionNodes.size(); i++) {
             Node<AbstractCondition> node = visibleConditionNodes.get(i);
             AbstractCondition condition = node.getData();
@@ -630,6 +639,11 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
                     recursivelyCreateParamsLayout(
                             focusOnConditions && !focusSet, node.getChildren(), groupBox, level++);
                 }
+
+                if (useTestIds) {
+                    groupBox.setId(testIdManager.getTestId(baseTestId + "_group_" + i));
+                }
+
                 cellContent = groupBox;
             } else {
                 if (condition.getParam().getJavaClass() != null) {
@@ -637,6 +651,10 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
                     if (focusOnConditions && !focusSet) {
                         paramEditor.setFocused();
                         focusSet = true;
+                    }
+
+                    if (useTestIds) {
+                        paramEditor.setId(testIdManager.getTestId(baseTestId + "_param_" + i));
                     }
 
                     cellContent = paramEditor;

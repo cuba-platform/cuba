@@ -4,7 +4,9 @@
  */
 package com.haulmont.cuba.web.gui.components.filter;
 
+import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.filter.AbstractCondition;
+import com.haulmont.cuba.web.AppUI;
 import com.vaadin.ui.*;
 
 /**
@@ -50,6 +52,16 @@ public class ParamEditor extends HorizontalLayout implements AbstractCondition.L
         condition.addListener(this);
     }
 
+    @Override
+    public void setId(String id) {
+        super.setId(id);
+
+        if (id != null && field != null) {
+            TestIdManager testIdManager = AppUI.getCurrent().getTestIdManager();
+            field.setId(testIdManager.getTestId(id + "_field"));
+        }
+    }
+
     public void setFieldWidth(String fieldWidth) {
         this.fieldWidth = fieldWidth;
         if (field != null) {
@@ -67,6 +79,12 @@ public class ParamEditor extends HorizontalLayout implements AbstractCondition.L
             ((Field) field).setRequired(condition.isRequired());
         }
         field.setWidth(fieldWidth);
+
+        // Test mode
+        if (getId() != null) {
+            TestIdManager testIdManager = AppUI.getCurrent().getTestIdManager();
+            field.setId(testIdManager.getTestId(getId() + "_field"));
+        }
         addComponent(field);
     }
 

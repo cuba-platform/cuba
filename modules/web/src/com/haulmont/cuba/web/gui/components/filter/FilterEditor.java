@@ -8,6 +8,7 @@ import com.haulmont.bali.datastruct.Node;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.CategorizedEntity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.filter.*;
 import com.haulmont.cuba.gui.components.filter.addcondition.SelectionHandler;
@@ -16,6 +17,7 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebFilter;
 import com.haulmont.cuba.web.toolkit.ui.CubaTreeTable;
@@ -231,6 +233,19 @@ public class FilterEditor extends AbstractFilterEditor {
         hlayLayout.setComponentAlignment(upDownLayout, Alignment.MIDDLE_CENTER);
         layout.addComponent(hlayLayout);
 
+        if (filter.getDebugId() != null) {
+            TestIdManager testIdManager = AppUI.getCurrent().getTestIdManager();
+
+            String baseId = filter.getDebugId();
+
+            nameField.setId(testIdManager.getTestId(baseId + "_filterNameField"));
+            defaultCb.setId(testIdManager.getTestId(baseId + "_defaultCb"));
+            applyDefaultCb.setId(testIdManager.getTestId(baseId + "_applyDefaultCb"));
+            globalCb.setId(testIdManager.getTestId(baseId + "_globalCb"));
+            saveBtn.setId(testIdManager.getTestId(baseId + "_saveBtn"));
+            table.setId(testIdManager.getTestId(baseId + "_conditionsTable"));
+        }
+
         updateControls();
     }
 
@@ -247,6 +262,13 @@ public class FilterEditor extends AbstractFilterEditor {
         Button addBtn = new Button(getMessage("FilterEditor.addCondition"));
         addBtn.addClickListener(new AddConditionClickListener());
         addLayout.addComponent(addBtn);
+
+        if (filter.getDebugId() != null) {
+            TestIdManager testIdManager = AppUI.getCurrent().getTestIdManager();
+
+            String baseId = filter.getDebugId();
+            addBtn.setId(testIdManager.getTestId(baseId + "_addConditionBtn"));
+        }
     }
 
     protected void initAddSelect(AbstractOrderedLayout layout) {
@@ -298,6 +320,14 @@ public class FilterEditor extends AbstractFilterEditor {
         Button addBtn = new Button(getMessage("FilterEditor.addMoreConditions"));
         addBtn.addClickListener(new AddConditionClickListener());
         layout.addComponent(addBtn);
+
+        if (filter.getDebugId() != null) {
+            TestIdManager testIdManager = AppUI.getCurrent().getTestIdManager();
+
+            String baseId = filter.getDebugId();
+            addBtn.setId(testIdManager.getTestId(baseId + "_addConditionBtn"));
+            addSelect.setId(testIdManager.getTestId(baseId + "_addConditionSelect"));
+        }
     }
 
     protected void initTable(AbstractLayout layout) {

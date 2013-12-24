@@ -813,6 +813,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
 
         if (webConfig.getUseLightHeader())
             newWindowBtn.addStyleName("nocaption");
+        newWindowBtn.setId(ui.getTestIdManager().reserveId("newAppWindowBtn"));
 
         newWindowBtn.setIcon(new VersionedThemeResource("app/images/new-window.png"));
         return newWindowBtn;
