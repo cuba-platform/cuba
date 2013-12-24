@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.web.gui.components;
 
+import com.google.gwt.thirdparty.guava.common.base.Strings;
 import com.haulmont.cuba.gui.autocomplete.AutoCompleteSupport;
 import com.haulmont.cuba.gui.autocomplete.Suggester;
 import com.haulmont.cuba.gui.components.SourceCodeEditor;
@@ -127,6 +128,12 @@ public class WebSourceCodeEditor extends WebAbstractField<CubaSourceCodeEditor> 
     @Override
     public boolean isHighlightActiveLine() {
         return component.isHighlightActiveLine();
+    }
+
+    @Override
+    public <T> T getValue() {
+        String value = super.getValue();
+        return (T) Strings.emptyToNull(value);
     }
 
     protected class SourceCodeEditorSuggester implements org.vaadin.aceeditor.Suggester {
