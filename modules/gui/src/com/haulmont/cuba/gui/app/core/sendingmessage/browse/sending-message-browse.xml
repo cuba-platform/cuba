@@ -41,21 +41,23 @@
                     <rows datasource="sendingMessageDs"/>
                 </table>
             </vbox>
-            <fieldGroup id="fg" datasource="sendingMessageDs" editable="false" border="visible" width="500px">
-                <column width="100%">
-                    <field id="address"/>
-                    <field id="from"/>
-                    <field id="caption"/>
-                    <field id="contentText" custom="true"/>
-                    <field id="status"/>
-                    <field id="attachmentsName"/>
-                    <field id="dateSent"/>
-                    <field id="updateTs"/>
-                    <field id="deadline"/>
-                    <field id="attemptsCount"/>
-                    <field id="attemptsMade"/>
-                </column>
-            </fieldGroup>
+            <scrollBox width="500px" height="100%">
+                <fieldGroup id="fg" datasource="sendingMessageDs" editable="false" border="visible" width="100%">
+                    <column width="100%">
+                        <field id="address"/>
+                        <field id="from"/>
+                        <field id="caption"/>
+                        <field id="contentText" custom="true"/>
+                        <field id="status"/>
+                        <field id="attachmentsName"/>
+                        <field id="dateSent"/>
+                        <field id="updateTs"/>
+                        <field id="deadline"/>
+                        <field id="attemptsCount"/>
+                        <field id="attemptsMade"/>
+                    </column>
+                </fieldGroup>
+            </scrollBox>
         </hbox>
     </layout>
 </window>
