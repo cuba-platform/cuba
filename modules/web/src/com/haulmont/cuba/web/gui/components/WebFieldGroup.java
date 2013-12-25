@@ -9,6 +9,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Field;
@@ -247,6 +248,12 @@ public class WebFieldGroup
 
                 registerFieldComponent(fieldConf, fieldComponent);
 
+                String debugId = getDebugId();
+                if (debugId != null) {
+                    TestIdManager testIdManager = AppUI.getCurrent().getTestIdManager();
+                    fieldImpl.setId(testIdManager.getTestId(debugId + "_" + fieldConf.getId()));
+                }
+
                 return fieldImpl;
             }
         });
@@ -328,6 +335,8 @@ public class WebFieldGroup
             }
         }
 
+        assignAutoDebugId();
+
         createFields(datasource);
     }
 
@@ -347,6 +356,15 @@ public class WebFieldGroup
 
                 FieldBasket fieldBasket = createField(fieldDatasource, fieldConf);
                 registerFieldComponent(fieldConf, fieldBasket.getField());
+
+                String debugId = getDebugId();
+                if (debugId != null) {
+                    if (fieldBasket.getComposition() != null) {
+                        TestIdManager testIdManager = AppUI.getCurrent().getTestIdManager();
+                        fieldBasket.getComposition().setId(testIdManager.getTestId(debugId + "_" + fieldConf.getId()));
+                    }
+                }
+
                 component.addField(fieldConf.getId(), fieldBasket.getComposition());
             }
         }
@@ -777,6 +795,18 @@ public class WebFieldGroup
                 break;
             }
         }
+    }
+
+    @Override
+    protected String getAlternativeDebugId() {
+        if (id != null) {
+            return id;
+        }
+        if (datasource != null && StringUtils.isNotEmpty(datasource.getId())) {
+            return "fieldGroup_" + datasource.getId();
+        }
+
+        return getClass().getSimpleName();
     }
 
     protected boolean isEmpty(Object value) {

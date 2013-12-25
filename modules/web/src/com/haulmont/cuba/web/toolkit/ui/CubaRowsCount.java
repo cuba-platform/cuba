@@ -39,10 +39,12 @@ public class CubaRowsCount extends CustomComponent {
         prevButton = new Button("<");
         prevButton.setWidth("-1px");
         prevButton.setStyleName("cuba-paging-change-page");
+        prevButton.addStyleName("cuba-paging-prev");
         contentLayout.addComponent(prevButton);
 
         label = new Label();
         label.setWidth("-1px");
+        label.setStyleName("cuba-paging-status");
         contentLayout.addComponent(label);
 
         countButton = new Button("[?]");
@@ -55,6 +57,7 @@ public class CubaRowsCount extends CustomComponent {
         nextButton = new Button(">");
         nextButton.setWidth("-1px");
         nextButton.setStyleName("cuba-paging-change-page");
+        nextButton.addStyleName("cuba-paging-next");
         contentLayout.addComponent(nextButton);
 
         layout.addComponent(contentLayout);

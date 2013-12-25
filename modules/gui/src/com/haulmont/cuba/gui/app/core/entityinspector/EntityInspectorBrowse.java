@@ -77,17 +77,22 @@ public class EntityInspectorBrowse extends AbstractLookup {
             Session session = metadata.getSession();
             selectedMeta = session.getClass(entityName);
             createEntitiesTable(selectedMeta);
-            if (frame instanceof Lookup)
+            if (frame instanceof Lookup) {
                 setLookupComponent(entitiesTable);
+            }
         } else {
             entities = componentsFactory.createComponent(LookupField.NAME);
             entities.setWidth(DEFAULT_FIELD_WIDTH);
             entities.setOptionsMap(getEntitiesLookupFieldOptions());
+            entities.setId("entitiesLookup");
+            entities.setFrame(frame);
 
             showButton = componentsFactory.createComponent(Button.NAME);
             showButton.setIcon("icons/refresh.png");
             showButton.setAction(new ShowButtonAction("show"));
             showButton.setCaption(messages.getMessage(EntityInspectorBrowse.class, "show"));
+            showButton.setId("showButton");
+            showButton.setFrame(frame);
 
             lookupBox.add(entities);
             lookupBox.add(showButton);
@@ -199,6 +204,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
         createButton.setCaption(messages.getMessage(EntityInspectorBrowse.class, "create"));
         createButton.setAction(new CreateAction());
         createButton.setIcon("icons/create.png");
+        createButton.setFrame(frame);
 
         editButton = componentsFactory.createComponent(Button.NAME);
         editButton.setCaption(messages.getMessage(EntityInspectorBrowse.class, "edit"));
@@ -206,6 +212,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
         editButton.setAction(editAction);
         entitiesDs.addListener(editAction);
         editButton.setIcon("icons/edit.png");
+        editButton.setFrame(frame);
 
         removeButton = componentsFactory.createComponent(Button.NAME);
         removeButton.setCaption(messages.getMessage(EntityInspectorBrowse.class, "remove"));
@@ -213,16 +220,19 @@ public class EntityInspectorBrowse extends AbstractLookup {
         entitiesDs.addListener(removeAction);
         removeButton.setAction(removeAction);
         removeButton.setIcon("icons/remove.png");
+        removeButton.setFrame(frame);
 
         excelButton = componentsFactory.createComponent(Button.NAME);
         excelButton.setCaption(messages.getMessage(EntityInspectorBrowse.class, "excel"));
         excelButton.setAction(new ExcelAction(entitiesTable));
         excelButton.setIcon("icons/excel.png");
+        excelButton.setFrame(frame);
 
         refreshButton = componentsFactory.createComponent(Button.NAME);
         refreshButton.setCaption(messages.getMessage(EntityInspectorBrowse.class, "refresh"));
         refreshButton.setAction(new RefreshAction(entitiesTable));
         refreshButton.setIcon("icons/refresh.png");
+        refreshButton.setFrame(frame);
 
         buttonsPanel.addButton(createButton);
         buttonsPanel.addButton(editButton);
@@ -231,7 +241,6 @@ public class EntityInspectorBrowse extends AbstractLookup {
         buttonsPanel.addButton(refreshButton);
         return buttonsPanel;
     }
-
 
     private View createView(MetaClass meta) {
         View view = new View(meta.getJavaClass(), false);

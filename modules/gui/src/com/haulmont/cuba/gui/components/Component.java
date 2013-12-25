@@ -44,6 +44,7 @@ public interface Component {
     void setId(String id);
 
     String getDebugId();
+    /** For internal use only. Managed by debug Id system. */
     void setDebugId(String id);
 
     /** Is component in enabled state? */

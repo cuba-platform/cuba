@@ -5,12 +5,14 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.web.AppUI;
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Layout;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.dom4j.Element;
 
 import java.util.Arrays;
@@ -49,16 +51,39 @@ public class WebAbstractComponent<T extends com.vaadin.ui.Component>
         this.frame = frame;
         frame.registerComponent(this);
 
-        assignAutoDebugId(frame);
+        assignAutoDebugId();
     }
 
-    protected void assignAutoDebugId(IFrame frame) {
-        if (frame.getId() == null)
+    public void assignAutoDebugId() {
+        if (frame == null || StringUtils.isEmpty(frame.getId()))
             return;
 
-        if (AppUI.getCurrent().isTestMode() && StringUtils.isEmpty(getDebugId()) && StringUtils.isNotEmpty(id)) {
-            setDebugId(AppUI.getCurrent().getTestIdManager().getTestId(ComponentsHelper.getFullFrameId(frame) + "." + id));
+        AppUI ui = AppUI.getCurrent();
+        if (ui.isTestMode()) {
+            String fullFrameId = ComponentsHelper.getFullFrameId(frame);
+            TestIdManager testIdManager = ui.getTestIdManager();
+
+            String candidateId = fullFrameId + "." + getAlternativeDebugId();
+            if (getDebugId() != null) {
+                String postfix = StringUtils.replace(getDebugId(), testIdManager.normalize(candidateId), "");
+                if (StringUtils.isEmpty(postfix) || NumberUtils.isDigits(postfix)) {
+                    // do not assign new Id
+                    return;
+                }
+            }
+            setDebugId(testIdManager.getTestId(candidateId));
         }
+    }
+
+    /**
+     * @return id that is suitable for auto debug id
+     */
+    protected String getAlternativeDebugId() {
+        if (id != null) {
+            return id;
+        }
+
+        return getClass().getSimpleName();
     }
 
     @Override

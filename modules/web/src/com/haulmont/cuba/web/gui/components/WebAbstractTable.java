@@ -30,6 +30,7 @@ import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Presentation;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.CompositionLayout;
 import com.haulmont.cuba.web.gui.components.presentations.TablePresentations;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
@@ -770,6 +771,42 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         for (Action action : getActions()) {
             action.refreshState();
         }
+
+        assignAutoDebugId();
+    }
+
+    @Override
+    public void setDebugId(String id) {
+        super.setDebugId(id);
+
+        if (id != null) {
+            componentComposition.setId(AppUI.getCurrent().getTestIdManager().getTestId(id + "_composition"));
+        }
+    }
+
+    @Override
+    public void assignAutoDebugId() {
+        super.assignAutoDebugId();
+
+        if (buttonsPanel != null) {
+            for (com.haulmont.cuba.gui.components.Component subComponent : buttonsPanel.getComponents()) {
+                if (subComponent instanceof WebAbstractComponent) {
+                    ((WebAbstractComponent) subComponent).assignAutoDebugId();
+                }
+            }
+        }
+    }
+
+    @Override
+    protected String getAlternativeDebugId() {
+        if (id != null) {
+            return id;
+        }
+        if (datasource != null && StringUtils.isNotEmpty(datasource.getId())) {
+            return "table_" + datasource.getId();
+        }
+
+        return getClass().getSimpleName();
     }
 
     private String getColumnCaption(Object columnId) {

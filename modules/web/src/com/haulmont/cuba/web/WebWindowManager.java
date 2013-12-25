@@ -11,10 +11,10 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.SilentException;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.web.gui.WebWindow;
+import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.sys.WindowBreadCrumbs;
@@ -808,7 +808,7 @@ public class WebWindowManager extends WindowManager {
     @Override
     public void showMessageDialog(String title, String message, IFrame.MessageType messageType) {
         final com.vaadin.ui.Window window = new com.vaadin.ui.Window(title);
-        window.setId("cuba-message-dialog");
+        window.setId(ui.getTestIdManager().getTestId("messageDialog"));
 
         setDebugId(window, "cubaMessageDialog");
 
@@ -863,7 +863,7 @@ public class WebWindowManager extends WindowManager {
     @Override
     public void showOptionDialog(String title, String message, IFrame.MessageType messageType, Action[] actions) {
         final com.vaadin.ui.Window window = new com.vaadin.ui.Window(title);
-        window.setId("cuba-option-dialog");
+        window.setId(ui.getTestIdManager().getTestId("optionDialog"));
         setDebugId(window, "cuba-option-dialog");
         window.setClosable(false);
 
@@ -988,41 +988,13 @@ public class WebWindowManager extends WindowManager {
                         }
                         if (componentFrame == null) {
                             log.warn("Frame for component " + component.getClass() + " is not assigned");
-                            componentFrame = frame;
-                        }
-
-                        String fullFrameId = ComponentsHelper.getFullFrameId(componentFrame);
-
-                        String id = getComponentId(component, fullFrameId);
-                        component.setDebugId(ui.getTestIdManager().getTestId(id));
-
-                        if (component instanceof Table) {
-                            ButtonsPanel buttonsPanel = ((Table) component).getButtonsPanel();
-                            if (buttonsPanel != null) {
-                                for (com.haulmont.cuba.gui.components.Component button : buttonsPanel.getComponents()) {
-                                    if (button.getDebugId() == null) {
-                                        String buttonId = getComponentId(button, fullFrameId);
-                                        button.setDebugId(ui.getTestIdManager().getTestId(buttonId));
-                                    }
-                                }
+                        } else {
+                            if (component instanceof WebAbstractComponent) {
+                                WebAbstractComponent webComponent = (WebAbstractComponent) component;
+                                webComponent.assignAutoDebugId();
                             }
                         }
                     }
-                }
-
-                protected String getComponentId(com.haulmont.cuba.gui.components.Component component, String fullFrameId) {
-                    String id = null;
-                    if (component.getId() != null) {
-                        id = fullFrameId + "_" + component.getId();
-                    } else if (component instanceof com.haulmont.cuba.gui.components.Button) {
-                        com.haulmont.cuba.gui.components.Button button = (com.haulmont.cuba.gui.components.Button) component;
-                        if (button.getAction() != null && StringUtils.isNotEmpty(button.getAction().getId())) {
-                            id = fullFrameId + "_" + button.getAction().getId();
-                        }
-                    }
-                    if (StringUtils.isEmpty(id))
-                        id = fullFrameId + "_" + component.getClass().getSimpleName();
-                    return id;
                 }
             });
         }

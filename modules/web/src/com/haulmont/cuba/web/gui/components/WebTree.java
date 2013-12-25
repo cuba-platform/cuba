@@ -16,6 +16,7 @@ import com.haulmont.cuba.web.toolkit.ui.CubaTree;
 import com.vaadin.data.Property;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.AbstractSelect;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.Set;
 
@@ -191,6 +192,8 @@ public class WebTree extends WebAbstractList<CubaTree> implements Tree {
         for (Action action : getActions()) {
             action.refreshState();
         }
+
+        assignAutoDebugId();
     }
 
     @Override
@@ -201,5 +204,17 @@ public class WebTree extends WebAbstractList<CubaTree> implements Tree {
     @Override
     public void setEditable(boolean editable) {
         component.setReadOnly(!editable);
+    }
+
+    @Override
+    protected String getAlternativeDebugId() {
+        if (id != null) {
+            return id;
+        }
+        if (datasource != null && StringUtils.isNotEmpty(datasource.getId())) {
+            return "tree_" + datasource.getId();
+        }
+
+        return getClass().getSimpleName();
     }
 }

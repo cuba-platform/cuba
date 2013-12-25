@@ -151,8 +151,11 @@ public class WebTwinColumn extends WebAbstractOptionsField<CubaTwinColSelect> im
     public void setDatasource(Datasource datasource, String property) {
         super.setDatasource(datasource, property);
         component.setConverter(new ObjectToObjectConverter());
+
+        assignAutoDebugId();
     }
 
+    @Override
     public void setStyleProvider(final StyleProvider styleProvider) {
         this.styleProvider = styleProvider;
         if (styleProvider != null) {

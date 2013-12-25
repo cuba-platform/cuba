@@ -6,9 +6,12 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.data.EnumerationContainer;
 import com.haulmont.cuba.web.gui.data.OptionsDsWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaComboBox;
@@ -17,6 +20,7 @@ import com.vaadin.data.Property;
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.ui.AbstractSelect;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -235,6 +239,23 @@ public class WebLookupField
         if (nullOption != null) {
             initNullEntity();
         }
+
+        assignAutoDebugId();
+    }
+
+    @Override
+    protected String getAlternativeDebugId() {
+        if (id != null) {
+            return id;
+        }
+        if (datasource != null && StringUtils.isNotEmpty(datasource.getId()) && metaPropertyPath != null) {
+            return "lookupField_" + datasource.getId() + "_" + metaPropertyPath.toString();
+        }
+        if (optionsDatasource != null &&  StringUtils.isNotEmpty(optionsDatasource.getId())) {
+            return "lookupField_" + optionsDatasource.getId();
+        }
+
+        return getClass().getSimpleName();
     }
 
     @Override
