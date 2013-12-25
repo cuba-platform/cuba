@@ -3,17 +3,15 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<window
-        xmlns="http://schemas.haulmont.com/cuba/5.0/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/5.0/window.xsd"
         class="com.haulmont.cuba.gui.app.security.session.browse.SessionMessageWindow"
         caption="msg://messageWindow.caption"
         messagesPack="com.haulmont.cuba.gui.app.security.session.browse"
         focusComponent="messageField">
 
-    <dsContext/>
-
     <layout spacing="true">
         <optionsGroup id="whomOptionsGroup" multiselect="false"/>
+        <label id="sendToAllLabel" visible="false"/>
         <textArea id="messageField" caption="msg://messageWindow.textField" rows="5" width="100%"/>
         <hbox spacing="true">
             <button id="sendBtn" caption="msg://messageWindow.send" invoke="send"/>

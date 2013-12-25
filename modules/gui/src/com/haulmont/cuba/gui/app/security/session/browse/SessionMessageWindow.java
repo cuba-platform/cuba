@@ -5,7 +5,6 @@
 
 package com.haulmont.cuba.gui.app.security.session.browse;
 
-import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.entity.UserSessionEntity;
@@ -21,24 +20,24 @@ import java.util.*;
 public class SessionMessageWindow extends AbstractWindow {
 
     @Inject
-    private TextArea messageField;
+    protected TextArea messageField;
 
     @Inject
-    private OptionsGroup whomOptionsGroup;
+    protected OptionsGroup whomOptionsGroup;
 
     @Inject
-    private UserSessionService uss;
+    protected UserSessionService uss;
 
     @Inject
-    protected Messages messages;
+    protected Label sendToAllLabel;
 
-    private String result;
+    protected String result;
 
-    private Set<UserSessionEntity> allSessions;
-    private Set<UserSessionEntity> selectedSessions;
+    protected Set<UserSessionEntity> allSessions;
+    protected Set<UserSessionEntity> selectedSessions;
 
-    private String TO_ALL;
-    private String TO_SELECTED;
+    protected String TO_ALL;
+    protected String TO_SELECTED;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -49,6 +48,7 @@ public class SessionMessageWindow extends AbstractWindow {
 
         allSessions = (Set) params.get("allSessions");
         selectedSessions = (Set) params.get("selectedSessions");
+
         Objects.requireNonNull(allSessions, "allSessions window parameter is not set");
         Objects.requireNonNull(selectedSessions, "selectedSessions window parameter is not set");
 
@@ -57,12 +57,18 @@ public class SessionMessageWindow extends AbstractWindow {
             whomOptions.add(TO_SELECTED);
         }
         whomOptions.add(TO_ALL);
+
         whomOptionsGroup.setOptionsList(whomOptions);
+        if (whomOptions.size() == 1) {
+            whomOptionsGroup.setVisible(false);
+            sendToAllLabel.setValue(TO_ALL);
+            sendToAllLabel.setVisible(true);
+        }
         whomOptionsGroup.setValue(whomOptions.get(0));
     }
 
     public void send() {
-        String text = (String) messageField.getValue();
+        String text = messageField.getValue();
         Set<UserSessionEntity> sessions = TO_ALL.equals(whomOptionsGroup.getValue()) ? allSessions : selectedSessions;
 
         if (!sessions.isEmpty() && !StringUtils.isBlank(text)) {
