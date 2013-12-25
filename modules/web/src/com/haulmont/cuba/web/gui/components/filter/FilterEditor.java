@@ -49,10 +49,13 @@ public class FilterEditor extends AbstractFilterEditor {
     protected CheckBox applyDefaultCb;
     protected CheckBox globalCb;
     protected Button saveBtn;
+    protected Button cancelBtn;
 
     protected ConditionsContainer container;
 
     protected Security security = AppBeans.get(Security.class);
+    private Button upBtn;
+    private Button downBtn;
 
     public FilterEditor(final WebFilter webFilter, FilterEntity filterEntity,
                         Element filterDescriptor, List<String> existingNames) {
@@ -90,7 +93,7 @@ public class FilterEditor extends AbstractFilterEditor {
         controlLayout.setSpacing(true);
 
         // Move up button
-        Button upBtn = WebComponentsHelper.createButton("icons/up.png");
+        upBtn = WebComponentsHelper.createButton("icons/up.png");
         upBtn.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
@@ -103,7 +106,7 @@ public class FilterEditor extends AbstractFilterEditor {
         upBtn.setEnabled(true);
 
         // Move down button
-        Button downBtn = WebComponentsHelper.createButton("icons/down.png");
+        downBtn = WebComponentsHelper.createButton("icons/down.png");
         downBtn.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
@@ -129,7 +132,7 @@ public class FilterEditor extends AbstractFilterEditor {
         controlLayout.addComponent(saveBtn);
 
         // Cancel button
-        Button cancelBtn = WebComponentsHelper.createButton("icons/cancel.png");
+        cancelBtn = WebComponentsHelper.createButton("icons/cancel.png");
         cancelBtn.setCaption(messages.getMainMessage("actions.Cancel"));
         cancelBtn.addClickListener(new Button.ClickListener() {
             @Override
@@ -243,7 +246,11 @@ public class FilterEditor extends AbstractFilterEditor {
             applyDefaultCb.setId(testIdManager.getTestId(baseId + "_applyDefaultCb"));
             globalCb.setId(testIdManager.getTestId(baseId + "_globalCb"));
             saveBtn.setId(testIdManager.getTestId(baseId + "_saveBtn"));
+            cancelBtn.setId(testIdManager.getTestId(baseId + "_cancelBtn"));
             table.setId(testIdManager.getTestId(baseId + "_conditionsTable"));
+
+            upBtn.setId(testIdManager.getTestId(baseId + "_upBtn"));
+            downBtn.setId(testIdManager.getTestId(baseId + "_downBtn"));
         }
 
         updateControls();

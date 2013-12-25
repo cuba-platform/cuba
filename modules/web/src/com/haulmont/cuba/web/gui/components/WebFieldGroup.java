@@ -83,11 +83,13 @@ public class WebFieldGroup
     public void setDebugId(String id) {
         super.setDebugId(id);
 
-        final List<FieldConfig> fieldConfs = getFields();
-        for (final FieldConfig fieldConf : fieldConfs) {
-            com.vaadin.ui.Field field = component.getField(fieldConf.getId());
-            if (field != null) {
-                field.setId(AppUI.getCurrent().getTestIdManager().getTestId(id + "_" + fieldConf.getId()));
+        if (id != null) {
+            final List<FieldConfig> fieldConfs = getFields();
+            for (final FieldConfig fieldConf : fieldConfs) {
+                com.vaadin.ui.Field field = component.getField(fieldConf.getId());
+                if (field != null) {
+                    field.setId(AppUI.getCurrent().getTestIdManager().getTestId(id + "_" + fieldConf.getId()));
+                }
             }
         }
     }

@@ -252,8 +252,9 @@ public class WebPickerField
     public void setDebugId(String id) {
         super.setDebugId(id);
 
-        String debugId = getDebugId();
-        if (debugId != null) {
+        if (id != null) {
+            String debugId = getDebugId();
+
             TestIdManager testIdManager = AppUI.getCurrent().getTestIdManager();
 
             for (Action action : actions) {

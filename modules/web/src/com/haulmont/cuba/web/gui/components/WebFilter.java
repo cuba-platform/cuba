@@ -1115,28 +1115,26 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
     public void setDebugId(String id) {
         super.setDebugId(id);
 
-        String debugId = getDebugId();
-        if (debugId != null) {
-            WebWindowManager wm = App.getInstance().getWindowManager();
+        if (id != null) {
             TestIdManager testIdManager = AppUI.getCurrent().getTestIdManager();
 
-            select.setId(testIdManager.getTestId(debugId + "_filterSelect"));
+            select.setId(testIdManager.getTestId(id + "_filterSelect"));
 
             if (applyBtn != null) {
-                applyBtn.setId(testIdManager.getTestId(debugId + "_applyBtn"));
+                applyBtn.setId(testIdManager.getTestId(id + "_applyBtn"));
             }
 
             if (maxResultsLayout != null) {
-                maxResultsField.setId(testIdManager.getTestId(debugId + "_maxResultsField"));
-                maxResultsCb.setId(testIdManager.getTestId(debugId + "_maxResultsCheckBox"));
+                maxResultsField.setId(testIdManager.getTestId(id + "_maxResultsField"));
+                maxResultsCb.setId(testIdManager.getTestId(id + "_maxResultsCheckBox"));
             }
 
             if (actionsButton != null) {
-                actionsButton.setDebugId(testIdManager.getTestId(debugId + "_actionsBtn"));
+                actionsButton.setDebugId(testIdManager.getTestId(id + "_actionsBtn"));
             }
 
             if (pinAppliedFilterBtn != null) {
-                wm.setDebugId(pinAppliedFilterBtn, debugId + "_pinAppliedBtn");
+                pinAppliedFilterBtn.setId(testIdManager.getTestId(id + "_pinAppliedBtn"));
             }
         }
     }

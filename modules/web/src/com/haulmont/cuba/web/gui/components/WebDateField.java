@@ -198,7 +198,7 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
     public void setDebugId(String id) {
         super.setDebugId(id);
 
-        if (getDebugId() != null) {
+        if (id != null) {
             TestIdManager testIdManager = AppUI.getCurrent().getTestIdManager();
             timeField.setDebugId(testIdManager.getTestId(id + "_time"));
             dateField.setId(testIdManager.getTestId(id + "_date"));

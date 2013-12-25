@@ -158,14 +158,13 @@ public class WebPopupButton
     public void setDebugId(String id) {
         super.setDebugId(id);
 
-        String debugId = getDebugId();
-        if (debugId != null) {
+        if (id != null) {
             TestIdManager testIdManager = AppUI.getCurrent().getTestIdManager();
 
             for (Action action : getActions()) {
                 WebButton button = (WebButton) action.getOwner();
                 if (StringUtils.isEmpty(button.getDebugId())) {
-                    button.setDebugId(testIdManager.getTestId(debugId + "_" + action.getId()));
+                    button.setDebugId(testIdManager.getTestId(id + "_" + action.getId()));
                 }
             }
         }
