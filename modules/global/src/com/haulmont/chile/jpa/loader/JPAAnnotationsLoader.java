@@ -41,6 +41,7 @@ public class JPAAnnotationsLoader extends ChileAnnotationsLoader implements Clas
         super(session);
     }
 
+    @Override
     protected List<Class<?>> getClasses(Resource[] resources) {
         List<Class<?>> result = super.getClasses(resources);
 
@@ -74,6 +75,7 @@ public class JPAAnnotationsLoader extends ChileAnnotationsLoader implements Clas
         return result;
     }
 
+    @Override
     protected boolean isMetaPropertyField(Field field) {
         return field.isAnnotationPresent(Column.class)
                 || field.isAnnotationPresent(OneToOne.class)
@@ -84,6 +86,7 @@ public class JPAAnnotationsLoader extends ChileAnnotationsLoader implements Clas
                 || super.isMetaPropertyField(field);
     }
 
+    @Override
     protected Class getFieldTypeAccordingAnnotations(Field field) {
         OneToOne oneToOneAnnotation = field.getAnnotation(OneToOne.class);
         OneToMany oneToManyAnnotation = field.getAnnotation(OneToMany.class);
@@ -103,6 +106,7 @@ public class JPAAnnotationsLoader extends ChileAnnotationsLoader implements Clas
         return result;
     }
 
+    @Override
     protected Class getTypeOverride(AnnotatedElement element) {
         Temporal temporal = element.getAnnotation(Temporal.class);
         if (temporal != null && temporal.value().equals(TemporalType.DATE))
@@ -113,6 +117,7 @@ public class JPAAnnotationsLoader extends ChileAnnotationsLoader implements Clas
             return null;
     }
 
+    @Override
     protected boolean isMandatory(Field field) {
         Column columnAnnotation = field.getAnnotation(Column.class);
         OneToOne oneToOneAnnotation = field.getAnnotation(OneToOne.class);
@@ -135,6 +140,7 @@ public class JPAAnnotationsLoader extends ChileAnnotationsLoader implements Clas
         }
     }
 
+    @Override
     protected Range.Cardinality getCardinality(Field field) {
         if (field.isAnnotationPresent(Column.class)) {
             return Range.Cardinality.NONE;
@@ -166,6 +172,7 @@ public class JPAAnnotationsLoader extends ChileAnnotationsLoader implements Clas
         return null;
     }
 
+    @Override
     protected MetaClassImpl __createClass(Class<?> clazz, String modelName) {
         if (Object.class.equals(clazz)) return null;
 
@@ -202,6 +209,9 @@ public class JPAAnnotationsLoader extends ChileAnnotationsLoader implements Clas
         if (isPersistent(field))
             metaProperty.getAnnotations().put("persistent", true);
 
+        if (isEmbedded(field))
+            metaProperty.getAnnotations().put("embedded", true);
+
         Column column = field.getAnnotation(Column.class);
         if (column != null && column.length() != 0) {
             metaProperty.getAnnotations().put("length", column.length());
@@ -211,6 +221,10 @@ public class JPAAnnotationsLoader extends ChileAnnotationsLoader implements Clas
         if (temporal != null) {
             metaProperty.getAnnotations().put("temporal", temporal.value());
         }
+    }
+
+    protected boolean isEmbedded(Field field) {
+        return field.isAnnotationPresent(Embedded.class);
     }
 
     protected boolean isPersistent(Field field) {

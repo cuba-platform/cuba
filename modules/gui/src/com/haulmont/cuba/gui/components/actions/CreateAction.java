@@ -122,13 +122,26 @@ public class CreateAction extends AbstractAction {
     /**
      * This method is invoked by action owner component. Don't override it, there are special methods to
      * customize behaviour below.
+     *
      * @param component component invoking action
      */
+    @Override
     public void actionPerform(Component component) {
         final CollectionDatasource datasource = owner.getDatasource();
         final DataSupplier dataservice = datasource.getDataSupplier();
 
         final Entity item = dataservice.newInstance(datasource.getMetaClass());
+
+        // instantiate embedded fields
+        Collection<MetaProperty> properties = datasource.getMetaClass().getProperties();
+        for (MetaProperty property : properties) {
+            if (!property.isReadOnly() && property.getAnnotations().containsKey("embedded")) {
+                if (item.getValue(property.getName()) == null) {
+                    Entity defaultEmbeddedInstance = dataservice.newInstance(property.getRange().asClass());
+                    item.setValue(property.getName(), defaultEmbeddedInstance);
+                }
+            }
+        }
 
         if (owner instanceof Tree) {
             String hierarchyProperty = ((Tree) owner).getHierarchyProperty();
