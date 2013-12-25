@@ -337,7 +337,7 @@ public class WebLookupField
                 itemIds.add(valueKey);
                 modifiable = true;
             } else if (previousValue != null && !itemIds.contains(previousValue)) {
-                itemIds = new HashSet<>();
+                itemIds = new HashSet<>(itemIds);
                 itemIds.add(previousValue);
                 modifiable = true;
             }
