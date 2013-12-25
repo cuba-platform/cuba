@@ -209,7 +209,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         clearComponents();
         if (RuntimePropsDatasource.PropertyType.STRING.equals(dataType)) {
             TextField textField = factory.createComponent(TextField.NAME);
-            textField.setId("defaultValue");
+            textField.setId("stringDefaultValueField");
             textField.setCaption(getMessage("defaultValue"));
             textField.setDatatype(Datatypes.getNN(String.class));
             textField.setWidth(FIELD_WIDTH);
@@ -233,7 +233,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             checkBox.setId("defaultDateIsCurrent");
             checkBox.setCaption(getMessage("currentDate"));
             final DateField dateField = factory.createComponent(DateField.NAME);
-            dateField.setId("defaultValue");
+            dateField.setId("dateDefaultValueField");
             dateField.setCaption(getMessage("defaultValue"));
             dateField.setFrame(frame);
             boxLayout.add(checkBox);
@@ -266,7 +266,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
                 dateField.setValue(attribute.getDefaultDate());
         } else if (RuntimePropsDatasource.PropertyType.INTEGER.equals(dataType)) {
             TextField textField = factory.createComponent(TextField.NAME);
-            textField.setId("defaultValue");
+            textField.setId("intDefaultValueField");
             textField.setCaption(getMessage("defaultValue"));
             textField.addValidator(new IntegerValidator(messages.getMessage(AppConfig.getMessagesPack(),
                     "validation.invalidNumber")));
@@ -284,7 +284,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             fieldsContainer.add(textField);
         } else if (RuntimePropsDatasource.PropertyType.DOUBLE.equals(dataType)) {
             TextField textField = factory.createComponent(TextField.NAME);
-            textField.setId("defaultValue");
+            textField.setId("doubleDefaultValueField");
             textField.setCaption(getMessage("defaultValue"));
             textField.setDatatype(Datatypes.get(Double.class));
             textField.setWidth(FIELD_WIDTH);
@@ -304,7 +304,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             fieldsContainer.add(textField);
         } else if (RuntimePropsDatasource.PropertyType.BOOLEAN.equals(dataType)) {
             CheckBox checkBox = factory.createComponent(CheckBox.NAME);
-            checkBox.setId("defaultValue");
+            checkBox.setId("booleanDefaultValueField");
             checkBox.setCaption(getMessage("defaultValue"));
             checkBox.setFrame(frame);
             checkBox.addListener(new ValueListener() {
@@ -343,7 +343,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         fieldsContainer.add(textField);
 
         final TextField defaultValueField = factory.createComponent(TextField.NAME);
-        defaultValueField.setId("defaultValue");
+        defaultValueField.setId("enumDefaultValueField");
         defaultValueField.setCaption(getMessage("defaultValue"));
         defaultValueField.setWidth(FIELD_WIDTH);
         defaultValueField.setFrame(frame);
@@ -385,9 +385,10 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         fieldsContainer.add(entityTypeField);
 
         final LookupField entityField = factory.createComponent(LookupField.NAME);
-        entityField.setId("entityField");
+        entityField.setId("entityDefaultValueField");
         entityField.setCaption(getMessage("defaultValue"));
         entityField.setWidth(FIELD_WIDTH);
+        entityField.setFrame(frame);
         fieldsContainer.add(entityField);
 
         entityTypeField.addListener(new ValueListener() {
