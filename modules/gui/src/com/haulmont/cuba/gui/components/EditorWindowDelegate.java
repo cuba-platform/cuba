@@ -157,7 +157,7 @@ public class EditorWindowDelegate extends WindowDelegate {
 
         this.item = item;
         ds.setItem(item);
-        if (ds instanceof DatasourceImplementation)
+        if (!PersistenceHelper.isNew(item) && ds instanceof DatasourceImplementation)
             ((DatasourceImplementation) ds).setModified(false);
 
         if (userSessionSource.getUserSession().isEntityOpPermitted(ds.getMetaClass(), EntityOp.UPDATE)) {
