@@ -43,7 +43,7 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
         this.component = createTextFieldImpl();
         this.component.setValidationVisible(false);
 
-        component.setConverter(new StringToDatatypeConverter(Datatypes.getNN(String.class)));
+        component.setConverter(new TextFieldStringToDatatypeConverter(Datatypes.getNN(String.class)));
 
         attachListener(component);
         component.setImmediate(true);
