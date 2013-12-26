@@ -4,7 +4,7 @@
   -->
 
 <window xmlns="http://schemas.haulmont.com/cuba/5.0/window.xsd"
-        class="com.haulmont.cuba.gui.app.security.usersubst.edit.UsersubstEditor"
+        class="com.haulmont.cuba.gui.app.security.usersubst.edit.UserSubstitutionEditor"
         messagesPack="com.haulmont.cuba.gui.app.security.usersubst"
         caption="msg://userSubstitution.caption"
         datasource="subst"
@@ -47,11 +47,11 @@
                 </row>
                 <row id="startDateRow">
                     <label value="msg://startDate"/>
-                    <dateField id="startDate" datasource="subst" property="startDate" resolution="DAY"/>
+                    <dateField id="startDateField" datasource="subst" property="startDate" resolution="DAY"/>
                 </row>
                 <row id="endDateRow">
                     <label value="msg://endDate"/>
-                    <dateField id="endDate" datasource="subst" property="endDate" resolution="DAY"/>
+                    <dateField id="endDateField" datasource="subst" property="endDate" resolution="DAY"/>
                 </row>
             </rows>
         </grid>
