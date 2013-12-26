@@ -5,9 +5,12 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.app.ClusterManagerAPI;
+import com.haulmont.cuba.core.sys.persistence.DbmsType;
 import com.haulmont.cuba.core.sys.persistence.PersistenceConfigProcessor;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * {@link AppContext} loader of the middleware web application.
@@ -19,8 +22,12 @@ public class AppContextLoader extends AbstractWebAppContextLoader {
 
     public static final String PERSISTENCE_CONFIG = "cuba.persistenceConfig";
 
+    private Log log = LogFactory.getLog(getClass());
+
     @Override
     protected void beforeInitAppContext() {
+        log.info("DbmsType is set to " + DbmsType.getCurrent());
+
         // Init persistence.xml
         String configProperty = AppContext.getProperty(PERSISTENCE_CONFIG);
         if (StringUtils.isBlank(configProperty)) {
