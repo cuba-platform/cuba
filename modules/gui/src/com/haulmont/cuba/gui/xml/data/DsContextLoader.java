@@ -40,11 +40,14 @@ public class DsContextLoader {
         this.metadata = AppBeans.get(Metadata.class);
     }
 
-    public DsContext loadDatasources(Element element, DsContext parent) {
+    public DsContext loadDatasources(@Nullable Element element,@Nullable DsContext parent) {
         if (element == null) {
             context = new DsContextImpl(dataservice);
+            if (parent != null)
+                context.setParent(parent);
             return context;
         }
+
         String contextClass = element.attributeValue("class");
         if (StringUtils.isEmpty(contextClass)) {
             final Element contextClassElement = element.element("class");

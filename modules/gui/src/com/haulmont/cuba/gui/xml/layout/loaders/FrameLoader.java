@@ -5,7 +5,6 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.bali.util.ReflectionHelper;
-import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -23,12 +22,7 @@ import org.dom4j.Element;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @author abramov
@@ -47,30 +41,22 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
         XmlInheritanceProcessor processor = new XmlInheritanceProcessor(element.getDocument(), params);
         element = processor.getResultRoot();
 
-        ComponentLoaderContext parentContext = (ComponentLoaderContext) getContext();
-
         IFrame component = factory.createComponent("iframe");
 
         WindowCreationHelper.deployViews(element);
 
         final Element dsContextElement = element.element("dsContext");
-        final DsContext dsContext;
+        final DsContextLoader contextLoader = new DsContextLoader(context.getDsContext().getDataSupplier());
 
-        if (dsContextElement != null) {
-            final DsContextLoader contextLoader =
-                    new DsContextLoader(context.getDsContext().getDataSupplier());
+        final DsContext dsContext = contextLoader.loadDatasources(dsContextElement, context.getDsContext());
 
-            dsContext = contextLoader.loadDatasources(dsContextElement, parentContext.getDsContext());
-        } else {
-            dsContext = null;
-        }
-        ComponentLoaderContext newContext = new ComponentLoaderContext(
-                dsContext == null ? parentContext.getDsContext() : dsContext,
-                params);
+        ComponentLoaderContext parentContext = (ComponentLoaderContext) getContext();
 
         String frameId = parentContext.getCurrentIFrameId();
         if (parentContext.getFullFrameId() != null)
             frameId = parentContext.getFullFrameId() + "." + frameId;
+
+        ComponentLoaderContext newContext = new ComponentLoaderContext(dsContext, params);
 
         newContext.setFullFrameId(frameId);
         newContext.setFrame(component);
@@ -185,37 +171,6 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
         }
     }
 
-    protected <T> T invokeMethod(IFrame frame, String name, Object... params)
-            throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-
-        List<Class> paramClasses = new ArrayList<>();
-        for (Object param : params) {
-            if (param == null) throw new IllegalStateException("Null parameter");
-
-            final Class aClass = param.getClass();
-            if (List.class.isAssignableFrom(aClass)) {
-                paramClasses.add(List.class);
-            } else if (Set.class.isAssignableFrom(aClass)) {
-                paramClasses.add(Set.class);
-            } else if (Map.class.isAssignableFrom(aClass)) {
-                paramClasses.add(Map.class);
-            } else {
-                paramClasses.add(aClass);
-            }
-        }
-
-        final Class<? extends IFrame> aClass = frame.getClass();
-        Method method;
-        try {
-            method = aClass.getDeclaredMethod(name, paramClasses.toArray(new Class<?>[paramClasses.size()]));
-        } catch (NoSuchMethodException e) {
-            method = aClass.getMethod(name, paramClasses.toArray(new Class<?>[paramClasses.size()]));
-        }
-        method.setAccessible(true);
-        //noinspection unchecked
-        return (T) method.invoke(frame, params);
-    }
-
     protected void loadMessagesPack(IFrame frame, Element element) {
         String msgPack = element.attributeValue("messagesPack");
         if (msgPack != null) {
@@ -227,7 +182,7 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
         }
     }
 
-    private class FrameLoaderPostInitTask implements PostInitTask {
+    protected class FrameLoaderPostInitTask implements PostInitTask {
 
         private IFrame frame;
         private Map<String, Object> params;
