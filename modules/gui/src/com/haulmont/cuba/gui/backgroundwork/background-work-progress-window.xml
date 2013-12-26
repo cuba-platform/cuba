@@ -7,11 +7,9 @@
         caption="msg://backgroundWorkProgress.caption"
         class="com.haulmont.cuba.gui.backgroundwork.BackgroundWorkProgressWindow"
         messagesPack="com.haulmont.cuba.gui.backgroundwork">
-    <dsContext>
 
-    </dsContext>
     <layout margin="true" spacing="true">
-        <label id="text" value="msg://backgroundWorkProgress.defaultText"/>
+        <label id="text" value="msg://backgroundWorkProgress.defaultText" width="100%"/>
         <progressBar id="taskProgress" width="100%"/>
         <label id="progressText"/>
         <hbox align="MIDDLE_RIGHT">

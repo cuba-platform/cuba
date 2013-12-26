@@ -7,11 +7,9 @@
         caption="msg://backgroundWork.caption"
         class="com.haulmont.cuba.gui.backgroundwork.BackgroundWorkWindow"
         messagesPack="com.haulmont.cuba.gui.backgroundwork">
-    <dsContext>
 
-    </dsContext>
-    <layout expandLayout="true" margin="true" spacing="true">
-        <label id="text" value="msg://backgroundWork.defaultText"/>
+    <layout margin="true" spacing="true">
+        <label id="text" value="msg://backgroundWork.defaultText" width="100%"/>
         <progressBar id="taskProgress" width="100%" indeterminate="true"/>
         <hbox align="MIDDLE_RIGHT">
             <button id="cancelButton" invoke="cancel" icon="icons/cancel.png" caption="msg://actions.Cancel"/>
