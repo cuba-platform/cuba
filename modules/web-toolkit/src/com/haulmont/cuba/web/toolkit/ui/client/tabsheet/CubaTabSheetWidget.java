@@ -51,4 +51,13 @@ public class CubaTabSheetWidget extends VTabsheet {
             tab.getElement().setId(tabUidl.getStringAttribute("testId"));
         }
     }
+
+
+    @Override
+    protected boolean onTabSelected(int tabIndex) {
+        boolean result = super.onTabSelected(tabIndex);
+        if (waitingForResponse)
+            addStyleName("adjusting");
+        return result;
+    }
 }

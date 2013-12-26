@@ -5,9 +5,12 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.menubar;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Event;
 import com.vaadin.client.UIDL;
 import com.vaadin.client.Util;
 import com.vaadin.client.ui.Icon;
@@ -19,8 +22,12 @@ import com.vaadin.client.ui.VMenuBar;
  */
 public class CubaMenuBarWidget extends VMenuBar implements BlurHandler {
 
+    protected boolean mouseEvent = false;
+
     public CubaMenuBarWidget() {
         addBlurHandler(this);
+
+        DOM.sinkEvents(getElement(), DOM.getEventsSunk(getElement()) | Event.ONMOUSEDOWN);
     }
 
     @Override
@@ -75,8 +82,38 @@ public class CubaMenuBarWidget extends VMenuBar implements BlurHandler {
     }
 
     @Override
+    public void onBrowserEvent(Event e) {
+        // select first item only on keyboard focus events
+        if (e.getTypeInt() == Event.ONMOUSEDOWN) {
+            mouseEvent = true;
+        }
+
+        super.onBrowserEvent(e);
+    }
+
+    protected void selectFirstItem() {
+        for (CustomMenuItem item : items) {
+            if (item.isSelectable()) {
+                setSelected(item);
+                break;
+            }
+        }
+    }
+
+    @Override
     public void onFocus(FocusEvent event) {
         super.onFocus(event);
+
+        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+            @Override
+            public void execute() {
+                // select first item only on keyboard focus events
+                if (getSelected() == null && !mouseEvent) {
+                    selectFirstItem();
+                }
+                mouseEvent = false;
+            }
+        });
 
         addStyleDependentName("focus");
     }
@@ -84,5 +121,11 @@ public class CubaMenuBarWidget extends VMenuBar implements BlurHandler {
     @Override
     public void onBlur(BlurEvent event) {
         removeStyleDependentName("focus");
+
+        mouseEvent = false;
+
+        if (!menuVisible) {
+            setSelected(null);
+        }
     }
 }

@@ -71,13 +71,10 @@
     }
   }
 
+  // focused menubar styles
   .#{$primaryStyleName}-focus .#{$primaryStyleName}-menuitem {
-    background: linear-gradient(to bottom, $theme_appHeaderBackgroundColor, #3d6497);
-    background: -moz-linear-gradient(to bottom, $theme_appHeaderBackgroundColor, #3d6497);
   }
-
   .#{$primaryStyleName}-focus .#{$primaryStyleName}-menuitem-selected {
-    background: $theme_appMenuHighlightColor;
   }
 
   .#{$primaryStyleName}-separator {
