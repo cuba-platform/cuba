@@ -732,6 +732,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
 
             substUserSelect.setNullSelectionAllowed(false);
             substUserSelect.setImmediate(true);
+            substUserSelect.setId(ui.getTestIdManager().reserveId("substitutedUserSelect"));
             substUserSelect.setStyleName("cuba-user-select-combobox");
             substUserSelect.addItem(session.getUser());
             substUserSelect.setItemCaption(session.getUser(), getSubstitutedUserCaption(session.getUser()));
