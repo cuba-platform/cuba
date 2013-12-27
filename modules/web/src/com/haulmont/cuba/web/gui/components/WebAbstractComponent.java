@@ -75,7 +75,7 @@ public class WebAbstractComponent<T extends com.vaadin.ui.Component>
             setDebugId(testIdManager.getTestId(candidateId));
 
             // always change cuba id, do not assign auto id for components
-            if (getId() == null) {
+            if (getId() == null && component != null) {
                 component.setCubaId(alternativeDebugId);
             }
         }
@@ -100,7 +100,9 @@ public class WebAbstractComponent<T extends com.vaadin.ui.Component>
     @Override
     public void setId(String id) {
         this.id = id;
-        this.component.setCubaId(id);
+        if (this.component != null) {
+            this.component.setCubaId(id);
+        }
     }
 
     @Override

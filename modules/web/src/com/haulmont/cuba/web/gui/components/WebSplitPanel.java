@@ -63,6 +63,11 @@ public class WebSplitPanel
                 };
             }
         }
+        if (getId() != null) {
+            component.setCubaId(getId());
+        } else {
+            component.setCubaId(getAlternativeDebugId());
+        }
 
         final com.vaadin.ui.Component vComponent = WebComponentsHelper.getComposition(childComponent);
 
