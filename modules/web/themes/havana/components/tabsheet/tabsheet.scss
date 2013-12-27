@@ -278,7 +278,7 @@
       }
 
       .#{$primaryStyleName}-tabitem .v-caption .v-captiontext {
-        border-bottom: 1px solid transparent;
+        border: 1px solid transparent;
         color: $theme_tabsheetCaptionInactiveColor;
       }
 
@@ -368,14 +368,14 @@
 
   .#{$primaryStyleName}-focus > .#{$primaryStyleName}-tabcontainer {
     .#{$primaryStyleName}-tabitem.#{$primaryStyleName}-tabitem-selected .v-caption .v-captiontext {
-      border-bottom: 1px dotted $theme_fieldFocusedBorderColor;
+      border: 1px dashed #a5c4e0;
     }
   }
 
   // hide focus while tab updating content
   .#{$primaryStyleName}-focus.adjusting > .#{$primaryStyleName}-tabcontainer {
     .#{$primaryStyleName}-tabitem.#{$primaryStyleName}-tabitem-selected .v-caption .v-captiontext {
-      border-bottom: 1px solid transparent;
+      border: 1px solid transparent;
     }
   }
 

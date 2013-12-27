@@ -101,6 +101,13 @@ public class CubaMenuBarWidget extends VMenuBar implements BlurHandler {
     }
 
     @Override
+    public void onMenuClick(int clickedItemId) {
+        super.onMenuClick(clickedItemId);
+
+        mouseEvent = true;
+    }
+
+    @Override
     public void onFocus(FocusEvent event) {
         super.onFocus(event);
 
