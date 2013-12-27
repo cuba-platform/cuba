@@ -236,7 +236,7 @@ public class FilterEditor extends AbstractFilterEditor {
         hlayLayout.setComponentAlignment(upDownLayout, Alignment.MIDDLE_CENTER);
         layout.addComponent(hlayLayout);
 
-        if (filter.getDebugId() != null) {
+        if (filter.getDebugId() != null & AppUI.getCurrent().isTestMode()) {
             TestIdManager testIdManager = AppUI.getCurrent().getTestIdManager();
 
             String baseId = filter.getDebugId();
@@ -251,6 +251,18 @@ public class FilterEditor extends AbstractFilterEditor {
 
             upBtn.setId(testIdManager.getTestId(baseId + "_upBtn"));
             downBtn.setId(testIdManager.getTestId(baseId + "_downBtn"));
+
+
+            nameField.setCubaId("filterNameField");
+            defaultCb.setCubaId("defaultCb");
+            applyDefaultCb.setCubaId("applyDefaultCb");
+            globalCb.setCubaId("globalCb");
+            saveBtn.setCubaId("saveBtn");
+            cancelBtn.setCubaId("cancelBtn");
+            table.setCubaId("conditionsTable");
+
+            upBtn.setCubaId("upBtn");
+            downBtn.setCubaId("downBtn");
         }
 
         updateControls();
@@ -270,11 +282,13 @@ public class FilterEditor extends AbstractFilterEditor {
         addBtn.addClickListener(new AddConditionClickListener());
         addLayout.addComponent(addBtn);
 
-        if (filter.getDebugId() != null) {
+        if (filter.getDebugId() != null && AppUI.getCurrent().isTestMode()) {
             TestIdManager testIdManager = AppUI.getCurrent().getTestIdManager();
 
             String baseId = filter.getDebugId();
             addBtn.setId(testIdManager.getTestId(baseId + "_addConditionBtn"));
+
+            addBtn.setCubaId("addConditionBtn");
         }
     }
 
@@ -334,6 +348,9 @@ public class FilterEditor extends AbstractFilterEditor {
             String baseId = filter.getDebugId();
             addBtn.setId(testIdManager.getTestId(baseId + "_addConditionBtn"));
             addSelect.setId(testIdManager.getTestId(baseId + "_addConditionSelect"));
+
+            addBtn.setCubaId("addConditionBtn");
+            addSelect.setCubaId("addConditionSelect");
         }
     }
 

@@ -205,6 +205,16 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
         }
     }
 
+    @Override
+    public void setId(String id) {
+        super.setId(id);
+
+        if (id != null && AppUI.getCurrent().isTestMode()) {
+            timeField.setId("timepart");
+            dateField.setCubaId("datepart");
+        }
+    }
+
     protected void setValueFromDs(Object value) {
         boolean isEditable = editable;
         if (!editable) {

@@ -59,6 +59,7 @@ public class ParamEditor extends HorizontalLayout implements AbstractCondition.L
         if (id != null && field != null) {
             TestIdManager testIdManager = AppUI.getCurrent().getTestIdManager();
             field.setId(testIdManager.getTestId(id + "_field"));
+            field.setCubaId("field");
         }
     }
 
@@ -84,6 +85,7 @@ public class ParamEditor extends HorizontalLayout implements AbstractCondition.L
         if (getId() != null) {
             TestIdManager testIdManager = AppUI.getCurrent().getTestIdManager();
             field.setId(testIdManager.getTestId(getId() + "_field"));
+            field.setCubaId("field");
         }
         addComponent(field);
     }

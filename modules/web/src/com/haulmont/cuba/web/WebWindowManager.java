@@ -348,6 +348,7 @@ public class WebWindowManager extends WindowManager {
                 if (ui.isTestMode() && tabSheet instanceof CubaTabSheet) {
                     CubaTabSheet mainTabsheet = (CubaTabSheet) tabSheet;
                     mainTabsheet.setTestId(newTab, ui.getTestIdManager().getTestId("tab_" + window.getId()));
+                    mainTabsheet.setCubaId(newTab, "tab_" + window.getId());
                 }
 
                 tabs.put(layout, (WindowBreadCrumbs) components[0]);
@@ -493,7 +494,11 @@ public class WebWindowManager extends WindowManager {
     protected Component showWindowDialog(final Window window, final String caption, final String description,
                                          boolean forciblyDialog) {
         final com.vaadin.ui.Window win = createDialogWindow(window);
-        setDebugId(win, "dialog_" + window.getId());
+
+        if (ui.isTestMode()) {
+            win.setCubaId("dialog_" + window.getId());
+            win.setId(ui.getTestIdManager().getTestId("dialog_" + window.getId()));
+        }
 
         Layout layout = (Layout) WebComponentsHelper.getComposition(window);
 
@@ -808,9 +813,11 @@ public class WebWindowManager extends WindowManager {
     @Override
     public void showMessageDialog(String title, String message, IFrame.MessageType messageType) {
         final com.vaadin.ui.Window window = new com.vaadin.ui.Window(title);
-        window.setId(ui.getTestIdManager().getTestId("messageDialog"));
 
-        setDebugId(window, "cubaMessageDialog");
+        if (ui.isTestMode()) {
+            window.setCubaId("messageDialog");
+            window.setId(ui.getTestIdManager().getTestId("messageDialog"));
+        }
 
         window.addAction(new ShortcutListener("Esc", ShortcutAction.KeyCode.ESCAPE, null) {
             @Override
@@ -863,8 +870,11 @@ public class WebWindowManager extends WindowManager {
     @Override
     public void showOptionDialog(String title, String message, IFrame.MessageType messageType, Action[] actions) {
         final com.vaadin.ui.Window window = new com.vaadin.ui.Window(title);
-        window.setId(ui.getTestIdManager().getTestId("optionDialog"));
-        setDebugId(window, "cuba-option-dialog");
+
+        if (ui.isTestMode()) {
+            window.setCubaId("optionDialog");
+            window.setId(ui.getTestIdManager().getTestId("optionDialog"));
+        }
         window.setClosable(false);
 
         window.addCloseListener(new com.vaadin.ui.Window.CloseListener() {
@@ -931,7 +941,12 @@ public class WebWindowManager extends WindowManager {
                 button.setIcon(new VersionedThemeResource(action.getIcon()));
                 button.addStyleName(WebButton.ICON_STYLE);
             }
-            setDebugId(button, "optionDialog_" + action.getId());
+
+            if (ui.isTestMode()) {
+                button.setCubaId("optionDialog_" + action.getId());
+                button.setId(ui.getTestIdManager().getTestId("optionDialog_" + action.getId()));
+            }
+
             buttonsContainer.addComponent(button);
         }
         if (buttonsContainer.getComponentCount() > 0)
@@ -1043,12 +1058,6 @@ public class WebWindowManager extends WindowManager {
                     throw new SilentException();
                 }
             }
-        }
-    }
-
-    public void setDebugId(Component component, String id) {
-        if (ui.isTestMode()) {
-            component.setId(ui.getTestIdManager().getTestId(id));
         }
     }
 }

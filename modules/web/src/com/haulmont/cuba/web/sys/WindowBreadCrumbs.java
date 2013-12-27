@@ -60,9 +60,6 @@ public class WindowBreadCrumbs extends HorizontalLayout {
         linksLayout.setStyleName("cuba-breadcrumbs");
         linksLayout.setSizeUndefined();
 
-        TestIdManager testIdManager = AppUI.getCurrent().getTestIdManager();
-        linksLayout.setId(testIdManager.getTestId("breadCrumbs"));
-
         if (!tabbedMode) {
             closeBtn = new Button("", new Button.ClickListener() {
                 @Override
@@ -73,7 +70,18 @@ public class WindowBreadCrumbs extends HorizontalLayout {
             });
             closeBtn.setIcon(new VersionedThemeResource("icons/close.png"));
             closeBtn.setStyleName("cuba-closetab-button");
-            closeBtn.setId(testIdManager.reserveId("closeBtn"));
+        }
+
+        AppUI ui = AppUI.getCurrent();
+        if (ui.isTestMode()) {
+            TestIdManager testIdManager = ui.getTestIdManager();
+            linksLayout.setId(testIdManager.getTestId("breadCrumbs"));
+            linksLayout.setCubaId("breadCrumbs");
+
+            if (closeBtn != null) {
+                closeBtn.setId(testIdManager.reserveId("closeBtn"));
+                closeBtn.setCubaId("closeBtn");
+            }
         }
 
         HorizontalLayout enclosingLayout = new HorizontalLayout();
@@ -137,6 +145,9 @@ public class WindowBreadCrumbs extends HorizontalLayout {
     }
 
     public void update() {
+        AppUI ui = AppUI.getCurrent();
+        boolean isTestMode = ui.isTestMode();
+
         linksLayout.removeAllComponents();
         btn2win.clear();
         for (Iterator<Window> it = windows.iterator(); it.hasNext();) {
@@ -145,6 +156,11 @@ public class WindowBreadCrumbs extends HorizontalLayout {
             button.setSizeUndefined();
             button.setStyleName(BaseTheme.BUTTON_LINK);
             button.setTabIndex(-1);
+
+            if (isTestMode) {
+                button.setCubaId("breadCrubms_Button_" + window.getId());
+                button.setId(ui.getTestIdManager().getTestId("breadCrubms_Button_" + window.getId()));
+            }
 
             btn2win.put(button, window);
 

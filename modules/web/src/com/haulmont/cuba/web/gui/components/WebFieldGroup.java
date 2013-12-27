@@ -95,6 +95,21 @@ public class WebFieldGroup
     }
 
     @Override
+    public void setId(String id) {
+        super.setId(id);
+
+        if (id != null && AppUI.getCurrent().isTestMode()) {
+            final List<FieldConfig> fieldConfs = getFields();
+            for (final FieldConfig fieldConf : fieldConfs) {
+                com.vaadin.ui.Field field = component.getField(fieldConf.getId());
+                if (field != null) {
+                    field.setCubaId(fieldConf.getId());
+                }
+            }
+        }
+    }
+
+    @Override
     public List<FieldConfig> getFields() {
         return new ArrayList<>(fields.values());
     }
@@ -249,11 +264,14 @@ public class WebFieldGroup
                 applyPermissions(fieldComponent);
 
                 registerFieldComponent(fieldConf, fieldComponent);
+                if (AppUI.getCurrent().isTestMode()) {
+                    String debugId = getDebugId();
+                    if (debugId != null) {
+                        TestIdManager testIdManager = AppUI.getCurrent().getTestIdManager();
+                        fieldImpl.setId(testIdManager.getTestId(debugId + "_" + fieldConf.getId()));
+                    }
 
-                String debugId = getDebugId();
-                if (debugId != null) {
-                    TestIdManager testIdManager = AppUI.getCurrent().getTestIdManager();
-                    fieldImpl.setId(testIdManager.getTestId(debugId + "_" + fieldConf.getId()));
+                    fieldImpl.setCubaId(fieldConf.getId());
                 }
 
                 return fieldImpl;
@@ -359,15 +377,19 @@ public class WebFieldGroup
                 FieldBasket fieldBasket = createField(fieldDatasource, fieldConf);
                 registerFieldComponent(fieldConf, fieldBasket.getField());
 
-                String debugId = getDebugId();
-                if (debugId != null) {
-                    if (fieldBasket.getComposition() != null) {
-                        TestIdManager testIdManager = AppUI.getCurrent().getTestIdManager();
-                        fieldBasket.getComposition().setId(testIdManager.getTestId(debugId + "_" + fieldConf.getId()));
+                com.vaadin.ui.Field composition = fieldBasket.getComposition();
+                if (AppUI.getCurrent().isTestMode()) {
+                    String debugId = getDebugId();
+                    if (composition != null) {
+                        if (debugId != null) {
+                            TestIdManager testIdManager = AppUI.getCurrent().getTestIdManager();
+                            composition.setId(testIdManager.getTestId(debugId + "_" + fieldConf.getId()));
+                        }
+                        composition.setCubaId(fieldConf.getId());
                     }
                 }
 
-                component.addField(fieldConf.getId(), fieldBasket.getComposition());
+                component.addField(fieldConf.getId(), composition);
             }
         }
     }

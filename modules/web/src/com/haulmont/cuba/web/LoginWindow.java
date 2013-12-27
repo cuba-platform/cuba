@@ -143,6 +143,15 @@ public class LoginWindow extends UIView implements Action.Handler {
         if (ui.isTestMode()) {
             TestIdManager testIdManager = ui.getTestIdManager();
 
+            loginField.setCubaId("loginField");
+            passwordField.setCubaId("passwordField");
+            localesSelect.setCubaId("localesField");
+            okButton.setCubaId("loginSubmitButton");
+
+            if (rememberMe != null) {
+                rememberMe.setCubaId("rememberMeCheckBox");
+            }
+
             loginField.setId(testIdManager.reserveId("loginField"));
             passwordField.setId(testIdManager.reserveId("passwordField"));
             localesSelect.setId(testIdManager.reserveId("localesField"));

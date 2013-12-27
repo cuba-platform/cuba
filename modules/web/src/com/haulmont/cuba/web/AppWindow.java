@@ -216,7 +216,12 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
         clientManager.extend(rootLayout);
 
         workerTimer = new CubaTimer();
-        workerTimer.setId(ui.getTestIdManager().reserveId("backgroundWorkerTimer"));
+        workerTimer.setTimerId("backgroundWorkerTimer");
+
+        if (ui.isTestMode()) {
+            workerTimer.setCubaId("backgroundWorkerTimer");
+            workerTimer.setId(ui.getTestIdManager().reserveId("backgroundWorkerTimer"));
+        }
         rootLayout.addComponent(workerTimer);
 
         workerTimer.setRepeating(true);
@@ -499,7 +504,10 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
         if (AppWindow.Mode.TABBED.equals(getMode())) {
             if (tabSheet == null) {
                 tabSheet = new AppWindow.AppTabSheet();
-                tabSheet.setId(ui.getTestIdManager().reserveId("appTabSheet"));
+                if (ui.isTestMode()) {
+                    tabSheet.setCubaId("appTabSheet");
+                    tabSheet.setId(ui.getTestIdManager().reserveId("appTabSheet"));
+                }
                 tabSheet.setSizeFull();
                 mainLayout.addComponent(tabSheet);
                 mainLayout.setExpandRatio(tabSheet, 1);
@@ -565,7 +573,11 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
 
             final TextField searchField = new CubaTextField();
             searchField.setWidth(120, Unit.PIXELS);
-            searchField.setId("ftsField." + (int) (Math.random() * 1000000));
+
+            if (ui.isTestMode()) {
+                searchField.setCubaId("ftsField");
+                searchField.setId(ui.getTestIdManager().reserveId("ftsField"));
+            }
             searchField.addShortcutListener(new ShortcutListener("fts", com.vaadin.event.ShortcutAction.KeyCode.ENTER, null) {
                 @Override
                 public void handleAction(Object sender, Object target) {
@@ -624,6 +636,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
         menuBar.setMoreMenuItem(null); // force usage more item menu
 
         if (ui.isTestMode()) {
+            menuBar.setCubaId("appMenu");
             menuBar.setId(ui.getTestIdManager().reserveId("appMenu"));
         }
 
@@ -732,7 +745,10 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
 
             substUserSelect.setNullSelectionAllowed(false);
             substUserSelect.setImmediate(true);
-            substUserSelect.setId(ui.getTestIdManager().reserveId("substitutedUserSelect"));
+            if (ui.isTestMode()) {
+                substUserSelect.setCubaId("substitutedUserSelect");
+                substUserSelect.setId(ui.getTestIdManager().reserveId("substitutedUserSelect"));
+            }
             substUserSelect.setStyleName("cuba-user-select-combobox");
             substUserSelect.addItem(session.getUser());
             substUserSelect.setItemCaption(session.getUser(), getSubstitutedUserCaption(session.getUser()));
@@ -781,7 +797,11 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
             logoutBtn.addStyleName("nocaption");
 
         logoutBtn.setIcon(new VersionedThemeResource("app/images/exit.png"));
-        logoutBtn.setId(ui.getTestIdManager().reserveId("logoutBtn"));
+
+        if (ui.isTestMode()) {
+            logoutBtn.setCubaId("logoutBtn");
+            logoutBtn.setId(ui.getTestIdManager().reserveId("logoutBtn"));
+        }
 
         return logoutBtn;
     }
@@ -814,7 +834,11 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
 
         if (webConfig.getUseLightHeader())
             newWindowBtn.addStyleName("nocaption");
-        newWindowBtn.setId(ui.getTestIdManager().reserveId("newAppWindowBtn"));
+
+        if (ui.isTestMode()) {
+            newWindowBtn.setCubaId("newAppWindowBtn");
+            newWindowBtn.setId(ui.getTestIdManager().reserveId("newAppWindowBtn"));
+        }
 
         newWindowBtn.setIcon(new VersionedThemeResource("app/images/new-window.png"));
         return newWindowBtn;

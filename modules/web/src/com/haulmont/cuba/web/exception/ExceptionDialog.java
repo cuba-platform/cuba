@@ -57,8 +57,10 @@ public class ExceptionDialog extends Window {
     }
 
     public ExceptionDialog(Throwable throwable, @Nullable String caption, @Nullable String message) {
-        if (AppUI.getCurrent().isTestMode()) {
-            setId(AppUI.getCurrent().getTestIdManager().getTestId("exceptionDialog"));
+        AppUI ui = AppUI.getCurrent();
+        if (ui.isTestMode()) {
+            setId(ui.getTestIdManager().getTestId("exceptionDialog"));
+            setCubaId("exceptionDialog");
         }
 
         setCaption(caption != null ? caption : messages.getMessage(getClass(), "exceptionDialog.caption"));

@@ -30,8 +30,10 @@ public class LogWindow extends Window {
     public LogWindow() {
         super(AppBeans.get(Messages.class).getMessage(LogWindow.class, "logWindow.caption"));
 
-        if (AppUI.getCurrent().isTestMode()) {
-            setId(AppUI.getCurrent().getTestIdManager().getTestId("logWindow"));
+        AppUI ui = AppUI.getCurrent();
+        if (ui.isTestMode()) {
+            setId(ui.getTestIdManager().getTestId("logWindow"));
+            setCubaId("logWindow");
         }
 
         setHeight("80%");

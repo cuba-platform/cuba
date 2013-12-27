@@ -785,6 +785,15 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     }
 
     @Override
+    public void setId(String id) {
+        super.setId(id);
+
+        if (id != null && AppUI.getCurrent().isTestMode()) {
+            componentComposition.setCubaId(id + "_composition");
+        }
+    }
+
+    @Override
     public void assignAutoDebugId() {
         super.assignAutoDebugId();
 

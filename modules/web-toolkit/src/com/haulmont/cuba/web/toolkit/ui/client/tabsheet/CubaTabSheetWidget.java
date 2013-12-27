@@ -50,6 +50,9 @@ public class CubaTabSheetWidget extends VTabsheet {
         if (tabUidl.hasAttribute("testId")) {
             tab.getElement().setId(tabUidl.getStringAttribute("testId"));
         }
+        if (tabUidl.hasAttribute("cubaId")) {
+            tab.getElement().setAttribute("cuba-id", tabUidl.getStringAttribute("cubaId"));
+        }
     }
 
 

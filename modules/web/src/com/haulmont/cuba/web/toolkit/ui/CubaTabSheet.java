@@ -31,6 +31,7 @@ public class CubaTabSheet extends com.vaadin.ui.TabSheet implements Action.Conta
     protected KeyMapper<Action> actionMapper = null;
 
     protected Map<Tab, String> testIds = new HashMap<>();
+    protected Map<Tab, String> cubaIds = new HashMap<>();
 
     protected CubaTabSheetServerRpc rpc = new CubaTabSheetServerRpc() {
         @Override
@@ -65,8 +66,9 @@ public class CubaTabSheet extends com.vaadin.ui.TabSheet implements Action.Conta
                 if (actionMapper != null) {
                     Action action = actionMapper.get(actionKey);
                     Action.Handler[] handlers = actionHandlers.toArray(new Action.Handler[actionHandlers.size()]);
-                    for (Action.Handler handler : handlers)
+                    for (Action.Handler handler : handlers) {
                         handler.handleAction(action, this, actionTarget);
+                    }
 
                     // forget all painted actions after perform one
                     actionMapper = null;
@@ -105,12 +107,14 @@ public class CubaTabSheet extends com.vaadin.ui.TabSheet implements Action.Conta
     }
 
     public void closeTabAndSelectPrevious(Component tab) {
-        while (openedComponents.removeElement(tab))
+        while (openedComponents.removeElement(tab)) {
             openedComponents.removeElement(tab);
+        }
         if ((!openedComponents.empty()) && (getSelectedTab().equals(tab))) {
             Component c = openedComponents.pop();
-            while (!components.contains(c) && !openedComponents.isEmpty())
+            while (!components.contains(c) && !openedComponents.isEmpty()) {
                 c = openedComponents.pop();
+            }
             setSelectedTab(c);
         }
         closeHandler.onTabClose(this, tab);
@@ -118,12 +122,14 @@ public class CubaTabSheet extends com.vaadin.ui.TabSheet implements Action.Conta
     }
 
     public void silentCloseTabAndSelectPrevious(Component tab) {
-        while (openedComponents.removeElement(tab))
+        while (openedComponents.removeElement(tab)) {
             openedComponents.removeElement(tab);
+        }
         if ((!openedComponents.empty()) && (selected.equals(tab))) {
             Component c = openedComponents.pop();
-            while (!components.contains(c) && !openedComponents.isEmpty())
+            while (!components.contains(c) && !openedComponents.isEmpty()) {
                 c = openedComponents.pop();
+            }
             setSelectedTab(c);
         }
     }
@@ -140,8 +146,9 @@ public class CubaTabSheet extends com.vaadin.ui.TabSheet implements Action.Conta
     }
 
     protected void closeTab(Component tab) {
-        while (openedComponents.removeElement(tab))
-                    openedComponents.removeElement(tab);
+        while (openedComponents.removeElement(tab)) {
+            openedComponents.removeElement(tab);
+        }
         if (closeHandler != null) {
             closeHandler.onTabClose(this, tab);
         }
@@ -151,12 +158,19 @@ public class CubaTabSheet extends com.vaadin.ui.TabSheet implements Action.Conta
         testIds.put(tab, testId);
     }
 
+    public void setCubaId(Tab tab, String id) {
+        cubaIds.put(tab, id);
+    }
+
     @Override
     protected void paintAdditionalTabAttributes(PaintTarget target, Tab tab) throws PaintException {
         super.paintAdditionalTabAttributes(target, tab);
 
         if (testIds.containsKey(tab)) {
             target.addAttribute("testId", testIds.get(tab));
+        }
+        if (cubaIds.containsKey(tab)) {
+            target.addAttribute("cubaId", cubaIds.get(tab));
         }
     }
 

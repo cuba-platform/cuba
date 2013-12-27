@@ -1141,6 +1141,8 @@ public class WebWindow implements Window, Component.Wrapper,
 
             container = new VerticalLayout();
 
+            boolean isTestMode = AppUI.getCurrent().isTestMode();
+
             HorizontalLayout okbar = new HorizontalLayout();
             okbar.setHeight(-1, Sizeable.Unit.PIXELS);
             okbar.setStyleName("cuba-window-actions-pane");
@@ -1156,6 +1158,9 @@ public class WebWindow implements Window, Component.Wrapper,
             selectButton.setIcon(new VersionedThemeResource("icons/ok.png"));
             selectButton.addClickListener(selectAction);
             selectButton.setStyleName("cuba-window-action-button");
+            if (isTestMode) {
+                selectButton.setCubaId("selectButton");
+            }
 
             cancelButton = WebComponentsHelper.createButton();
             cancelButton.setCaption(messages.getMessage(messagesPackage, "actions.Cancel"));
@@ -1167,6 +1172,9 @@ public class WebWindow implements Window, Component.Wrapper,
             });
             cancelButton.setStyleName("cuba-window-action-button");
             cancelButton.setIcon(new VersionedThemeResource("icons/cancel.png"));
+            if (isTestMode) {
+                cancelButton.setCubaId("cancelButton");
+            }
 
             okbar.addComponent(selectButton);
             okbar.addComponent(cancelButton);
@@ -1186,10 +1194,13 @@ public class WebWindow implements Window, Component.Wrapper,
         public void setId(String id) {
             super.setId(id);
 
-            if (debugId != null) {
-                TestIdManager testIdManager = AppUI.getCurrent().getTestIdManager();
-                selectButton.setId(testIdManager.getTestId(debugId + "_selectButton"));
-                cancelButton.setId(testIdManager.getTestId(debugId + "_cancelButton"));
+            AppUI ui = AppUI.getCurrent();
+            if (ui.isTestMode()) {
+                if (debugId != null) {
+                    TestIdManager testIdManager = ui.getTestIdManager();
+                    selectButton.setId(testIdManager.getTestId(debugId + "_selectButton"));
+                    cancelButton.setId(testIdManager.getTestId(debugId + "_cancelButton"));
+                }
             }
         }
     }

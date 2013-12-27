@@ -152,10 +152,15 @@ public class AddConditionDlg extends Window {
 
             String dialogId = testIdManager.getTestId("addFilterConditionsDialog");
             setId(dialogId);
+            setCubaId("addFilterConditionsDialog");
 
             okBtn.setId(testIdManager.getTestId(dialogId +  "_okBtn"));
             cancelBtn.setId(testIdManager.getTestId(dialogId + "_cancelBtn"));
             tree.setId(testIdManager.getTestId(dialogId + "_conditionsTree"));
+
+            okBtn.setCubaId("okBtn");
+            cancelBtn.setCubaId("cancelBtn");
+            tree.setCubaId("conditionsTree");
         }
     }
 

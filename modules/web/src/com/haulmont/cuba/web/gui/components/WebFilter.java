@@ -642,6 +642,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
 
                 if (useTestIds) {
                     groupBox.setId(testIdManager.getTestId(baseTestId + "_group_" + i));
+                    groupBox.setCubaId("group_" + i);
                 }
 
                 cellContent = groupBox;
@@ -655,6 +656,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
 
                     if (useTestIds) {
                         paramEditor.setId(testIdManager.getTestId(baseTestId + "_param_" + i));
+                        paramEditor.setCubaId("param_" + i);
                     }
 
                     cellContent = paramEditor;
@@ -1115,7 +1117,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
     public void setDebugId(String id) {
         super.setDebugId(id);
 
-        if (id != null) {
+        if (id != null && AppUI.getCurrent().isTestMode()) {
             TestIdManager testIdManager = AppUI.getCurrent().getTestIdManager();
 
             select.setId(testIdManager.getTestId(id + "_filterSelect"));
@@ -1135,6 +1137,32 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
 
             if (pinAppliedFilterBtn != null) {
                 pinAppliedFilterBtn.setId(testIdManager.getTestId(id + "_pinAppliedBtn"));
+            }
+        }
+    }
+
+    @Override
+    public void setId(String id) {
+        super.setId(id);
+
+        if (AppUI.getCurrent().isTestMode()) {
+            select.setCubaId("filterSelect");
+
+            if (applyBtn != null) {
+                applyBtn.setCubaId("applyBtn");
+            }
+
+            if (maxResultsLayout != null) {
+                maxResultsField.setCubaId("maxResultsField");
+                maxResultsCb.setCubaId("maxResultsCheckBox");
+            }
+
+            if (actionsButton != null) {
+                actionsButton.setId("actionsBtn");
+            }
+
+            if (pinAppliedFilterBtn != null) {
+                pinAppliedFilterBtn.setCubaId("pinAppliedBtn");
             }
         }
     }

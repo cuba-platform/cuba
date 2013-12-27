@@ -63,7 +63,8 @@ public class WebAbstractComponent<T extends com.vaadin.ui.Component>
             String fullFrameId = ComponentsHelper.getFullFrameId(frame);
             TestIdManager testIdManager = ui.getTestIdManager();
 
-            String candidateId = fullFrameId + "." + getAlternativeDebugId();
+            String alternativeDebugId = getAlternativeDebugId();
+            String candidateId = fullFrameId + "." + alternativeDebugId;
             if (getDebugId() != null) {
                 String postfix = StringUtils.replace(getDebugId(), testIdManager.normalize(candidateId), "");
                 if (StringUtils.isEmpty(postfix) || NumberUtils.isDigits(postfix)) {
@@ -72,6 +73,11 @@ public class WebAbstractComponent<T extends com.vaadin.ui.Component>
                 }
             }
             setDebugId(testIdManager.getTestId(candidateId));
+
+            // always change cuba id, do not assign auto id for components
+            if (getId() == null) {
+                component.setCubaId(alternativeDebugId);
+            }
         }
     }
 
@@ -94,6 +100,7 @@ public class WebAbstractComponent<T extends com.vaadin.ui.Component>
     @Override
     public void setId(String id) {
         this.id = id;
+        this.component.setCubaId(id);
     }
 
     @Override
