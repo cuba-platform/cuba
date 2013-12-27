@@ -21,6 +21,7 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
+import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.toolkit.ui.DateFieldWrapper;
 import com.haulmont.cuba.web.toolkit.ui.MaskedTextField;
 import com.vaadin.data.Property;
@@ -122,6 +123,16 @@ public class WebDateField extends WebAbstractField<DateFieldWrapper> implements 
 
     public WebTimeField getTimeField() {
         return timeField;
+    }
+
+    @Override
+    public void setId(String id) {
+        super.setId(id);
+
+        if (id != null && App.getInstance().isTestMode()) {
+            timeField.setId("timepart");
+            dateField.setCubaId("datepart");
+        }
     }
 
     @Override

@@ -8,6 +8,7 @@ package com.haulmont.cuba.web.sys;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.gui.NoSuchScreenException;
+import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.config.*;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.AppWindow;
@@ -163,9 +164,10 @@ public class MenuBuilder {
     }
 
     protected void assignDebugIds(MenuBar.MenuItem menuItem, MenuItem conf) {
-//        if (menuBar.getId() != null && !conf.isSeparator()) {
-//            vaadin7
-//            menuBar.setId(menuItem, menuBar.getDebugId() + ":" + conf.getId());
-//        }
+        TestIdManager testIdManager = new TestIdManager();
+
+        if (menuBar.getDebugId() != null && !conf.isSeparator()) {
+            menuBar.setDebugId(menuItem, testIdManager.normalize(menuBar.getDebugId() + "_" + conf.getId()));
+        }
     }
 }

@@ -31,6 +31,7 @@ import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Presentation;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.CompositionLayout;
 import com.haulmont.cuba.web.gui.components.presentations.TablePresentations;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
@@ -120,6 +121,15 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     protected Security security = AppBeans.get(Security.class);
 
     protected static final int MAX_TEXT_LENGTH_GAP = 10;
+
+    @Override
+    public void setId(String id) {
+        super.setId(id);
+
+        if (id != null && App.getInstance().isTestMode()) {
+            componentComposition.setCubaId(id + "_composition");
+        }
+    }
 
     @Override
     public java.util.List<Table.Column> getColumns() {
@@ -786,6 +796,8 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         for (Action action : getActions()) {
             action.refreshState();
         }
+
+        assignAutoDebugId();
     }
 
     private String getColumnCaption(Object columnId) {
@@ -1784,5 +1796,17 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     @Override
     public void removeColumnCollapseListener(ColumnCollapseListener columnCollapseListener) {
         columnCollapseListeners.remove(columnCollapseListener);
+    }
+
+    @Override
+    protected String getAlternativeDebugId() {
+        if (id != null) {
+            return id;
+        }
+        if (datasource != null && StringUtils.isNotEmpty(datasource.getId())) {
+            return "table_" + datasource.getId();
+        }
+
+        return getClass().getSimpleName();
     }
 }

@@ -9,6 +9,7 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -54,6 +55,10 @@ public class ExceptionDialog extends Window {
         setWidth(600, UNITS_PIXELS);
         setHeight(175, UNITS_PIXELS);
         center();
+
+        if (App.getInstance().isTestMode()) {
+            setCubaId("exceptionDialog");
+        }
 
         final String text = getText(throwable);
         final String stackTrace = getStackTrace(throwable);

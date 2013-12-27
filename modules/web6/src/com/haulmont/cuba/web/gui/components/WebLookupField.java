@@ -18,6 +18,7 @@ import com.vaadin.data.Property;
 import com.vaadin.terminal.ErrorMessage;
 import com.vaadin.ui.AbstractSelect;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -263,6 +264,8 @@ public class WebLookupField
         if (nullOption != null) {
             initNullEntity();
         }
+
+        assignAutoDebugId();
     }
 
     @Override
@@ -302,6 +305,21 @@ public class WebLookupField
     @Override
     public void disablePaging() {
         component.disablePaging();
+    }
+
+    @Override
+    protected String getAlternativeDebugId() {
+        if (id != null) {
+            return id;
+        }
+        if (datasource != null && StringUtils.isNotEmpty(datasource.getId()) && metaPropertyPath != null) {
+            return "lookupField_" + datasource.getId() + "_" + metaPropertyPath.toString();
+        }
+        if (optionsDatasource != null &&  StringUtils.isNotEmpty(optionsDatasource.getId())) {
+            return "lookupField_" + optionsDatasource.getId();
+        }
+
+        return getClass().getSimpleName();
     }
 
     protected abstract class LookupPropertyAdapter extends PropertyAdapter {

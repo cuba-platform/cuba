@@ -13,6 +13,7 @@ import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
 import com.haulmont.cuba.web.gui.data.HierarchicalDsWrapper;
 import com.vaadin.data.Property;
 import com.vaadin.ui.AbstractSelect;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.Set;
 
@@ -159,6 +160,8 @@ public class WebTree extends WebAbstractList<com.haulmont.cuba.web.toolkit.ui.Tr
         for (Action action : getActions()) {
             action.refreshState();
         }
+
+        assignAutoDebugId();
     }
 
     @Override
@@ -169,5 +172,17 @@ public class WebTree extends WebAbstractList<com.haulmont.cuba.web.toolkit.ui.Tr
     @Override
     public void setEditable(boolean editable) {
         component.setReadOnly(!editable);
+    }
+
+    @Override
+    protected String getAlternativeDebugId() {
+        if (id != null) {
+            return id;
+        }
+        if (datasource != null && StringUtils.isNotEmpty(datasource.getId())) {
+            return getClass().getSimpleName() + datasource.getId();
+        }
+
+        return getClass().getSimpleName();
     }
 }

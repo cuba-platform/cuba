@@ -11,6 +11,7 @@ import com.haulmont.cuba.gui.components.WidgetsTree;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.web.gui.data.HierarchicalDsWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaWidgetsTree;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * @author gorodnov
@@ -132,5 +133,17 @@ public class WebWidgetsTree
     @Override
     public void setEditable(boolean editable) {
         component.setReadOnly(!editable);
+    }
+
+    @Override
+    protected String getAlternativeDebugId() {
+        if (id != null) {
+            return id;
+        }
+        if (datasource != null && StringUtils.isNotEmpty(datasource.getId())) {
+            return getClass().getSimpleName() + "_" + datasource.getId();
+        }
+
+        return getClass().getSimpleName();
     }
 }

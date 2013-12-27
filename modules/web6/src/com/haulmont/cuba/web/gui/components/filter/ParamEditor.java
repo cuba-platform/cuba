@@ -5,6 +5,7 @@
 package com.haulmont.cuba.web.gui.components.filter;
 
 import com.haulmont.cuba.gui.components.filter.AbstractCondition;
+import com.haulmont.cuba.web.App;
 import com.vaadin.ui.*;
 
 /**
@@ -38,6 +39,9 @@ public class ParamEditor extends HorizontalLayout implements AbstractCondition.L
                 setComponentAlignment(opLab, Alignment.MIDDLE_LEFT);
             }
             field = condition.getParam().createEditComponent();
+            if (field instanceof AbstractComponent) {
+                ((AbstractComponent) field).setCubaId("field");
+            }
 
             this.applyRequired = applyRequired;
             if (applyRequired && field instanceof Field) {
@@ -66,6 +70,9 @@ public class ParamEditor extends HorizontalLayout implements AbstractCondition.L
             ((Field) field).setRequired(condition.isRequired());
         }
         field.setWidth(fieldWidth);
+        if (App.getInstance().isTestMode() && field instanceof AbstractComponent) {
+            ((AbstractComponent) field).setCubaId(getCubaId() + "field");
+        }
         addComponent(field);
     }
 

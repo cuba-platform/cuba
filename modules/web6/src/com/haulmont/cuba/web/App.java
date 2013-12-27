@@ -110,6 +110,8 @@ public abstract class App extends Application
 
     protected String webResourceTimestamp = "null";
 
+    protected boolean testMode = false;
+
     protected App() {
         log.trace("Creating application " + this);
         try {
@@ -117,6 +119,8 @@ public abstract class App extends Application
             webConfig = configuration.getConfig(WebConfig.class);
             globalConfig = configuration.getConfig(GlobalConfig.class);
             webAuthConfig = configuration.getConfig(WebAuthConfig.class);
+
+            testMode = globalConfig.getTestMode();
 
             appLog = new AppLog();
             connection = createConnection();
@@ -168,7 +172,7 @@ public abstract class App extends Application
             themeInitialized = true;
         }
 
-        if (globalConfig.getTestMode()) {
+        if (testMode) {
             String paramName = webConfig.getTestModeParamName();
             testModeRequest = (paramName == null || request.getParameter(paramName) != null);
         }
@@ -350,7 +354,7 @@ public abstract class App extends Application
 
     @Override
     public void terminalError(Terminal.ErrorEvent event) {
-        if (globalConfig.getTestMode()) {
+        if (testMode) {
             String fileName = AppContext.getProperty("cuba.testModeExceptionLog");
             if (!StringUtils.isBlank(fileName)) {
                 try {
@@ -689,5 +693,9 @@ public abstract class App extends Application
         } catch (Throwable e) {
             log.error("Error closing all windows", e);
         }
+    }
+
+    public boolean isTestMode() {
+        return testMode;
     }
 }

@@ -41,6 +41,9 @@ public class ParamEditor extends HorizontalLayout implements AbstractCondition.L
                 setComponentAlignment(opLab, Alignment.MIDDLE_LEFT);
             }
             field = condition.getParam().createEditComponent();
+            if (field != null && AppUI.getCurrent().isTestMode()) {
+                field.setCubaId("field");
+            }
 
             this.applyRequired = applyRequired;
             if (applyRequired && field instanceof Field) {
@@ -59,7 +62,6 @@ public class ParamEditor extends HorizontalLayout implements AbstractCondition.L
         if (id != null && field != null) {
             TestIdManager testIdManager = AppUI.getCurrent().getTestIdManager();
             field.setId(testIdManager.getTestId(id + "_field"));
-            field.setCubaId("field");
         }
     }
 

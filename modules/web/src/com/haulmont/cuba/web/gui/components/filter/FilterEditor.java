@@ -282,11 +282,13 @@ public class FilterEditor extends AbstractFilterEditor {
         addBtn.addClickListener(new AddConditionClickListener());
         addLayout.addComponent(addBtn);
 
-        if (filter.getDebugId() != null && AppUI.getCurrent().isTestMode()) {
-            TestIdManager testIdManager = AppUI.getCurrent().getTestIdManager();
+        if (AppUI.getCurrent().isTestMode()) {
+            if (filter.getDebugId() != null) {
+                TestIdManager testIdManager = AppUI.getCurrent().getTestIdManager();
 
-            String baseId = filter.getDebugId();
-            addBtn.setId(testIdManager.getTestId(baseId + "_addConditionBtn"));
+                String baseId = filter.getDebugId();
+                addBtn.setId(testIdManager.getTestId(baseId + "_addConditionBtn"));
+            }
 
             addBtn.setCubaId("addConditionBtn");
         }
@@ -348,7 +350,8 @@ public class FilterEditor extends AbstractFilterEditor {
             String baseId = filter.getDebugId();
             addBtn.setId(testIdManager.getTestId(baseId + "_addConditionBtn"));
             addSelect.setId(testIdManager.getTestId(baseId + "_addConditionSelect"));
-
+        }
+        if (AppUI.getCurrent().isTestMode()) {
             addBtn.setCubaId("addConditionBtn");
             addSelect.setCubaId("addConditionSelect");
         }

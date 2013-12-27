@@ -239,6 +239,27 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         createParamsLayout(false);
         component.addComponent(paramsLayout);
         updateControls();
+
+        if (App.getInstance().isTestMode()) {
+            select.setCubaId("filterSelect");
+
+            if (applyBtn != null) {
+                applyBtn.setCubaId("applyBtn");
+            }
+
+            if (maxResultsLayout != null) {
+                maxResultsField.setCubaId("maxResultsField");
+                maxResultsCb.setCubaId("maxResultsCheckBox");
+            }
+
+            if (actionsButton != null) {
+                actionsButton.setId("actionsBtn");
+            }
+
+            if (pinAppliedFilterBtn != null) {
+                pinAppliedFilterBtn.setCubaId("pinAppliedBtn");
+            }
+        }
     }
 
     protected void addApplied() {
@@ -631,6 +652,8 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
 
         boolean focusSet = false;
 
+        boolean isTestMode = App.getInstance().isTestMode();
+
         for (int i = 0; i < visibleConditionNodes.size(); i++) {
             Node<AbstractCondition> node = visibleConditionNodes.get(i);
             AbstractCondition condition = node.getData();
@@ -639,6 +662,10 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
                 GroupBox groupBox = new GroupBox();
                 groupBox.setWidth("-1");
                 groupBox.setCaption(condition.getLocCaption());
+
+                if (isTestMode) {
+                    groupBox.setCubaId("group_" + i);
+                }
 
                 if (!node.getChildren().isEmpty()) {
                     recursivelyCreateParamsLayout(
@@ -651,6 +678,10 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
                     if (focusOnConditions && !focusSet) {
                         paramEditor.setFocused();
                         focusSet = true;
+                    }
+
+                    if (isTestMode) {
+                        paramEditor.setCubaId("param_" + i);
                     }
 
                     cellContent = paramEditor;

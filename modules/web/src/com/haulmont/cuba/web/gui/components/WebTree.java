@@ -212,7 +212,7 @@ public class WebTree extends WebAbstractList<CubaTree> implements Tree {
             return id;
         }
         if (datasource != null && StringUtils.isNotEmpty(datasource.getId())) {
-            return "tree_" + datasource.getId();
+            return getClass().getSimpleName()  + "_" + datasource.getId();
         }
 
         return getClass().getSimpleName();

@@ -2044,6 +2044,10 @@ public class ApplicationConnection {
 
         updateComponentSize(componentDetail, uidl);
 
+        if (uidl.hasAttribute("cubaId") && component.getElement() != null) {
+            component.getElement().setAttribute("cuba-id", uidl.getStringAttribute("cubaId"));
+        }
+
         return false;
     }
 

@@ -13,6 +13,7 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.gui.components.filter.AbstractConditionDescriptor;
 import com.haulmont.cuba.gui.components.filter.AbstractCustomConditionDescriptor;
@@ -20,6 +21,7 @@ import com.haulmont.cuba.gui.components.filter.AbstractFilterEditor;
 import com.haulmont.cuba.gui.components.filter.GroupType;
 import com.haulmont.cuba.gui.components.filter.addcondition.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
@@ -44,6 +46,7 @@ public class AddConditionDlg extends Window {
     protected Button okBtn;
 
     protected SelectionHandler selectionHandler;
+    private Button cancelBtn;
 
     public AddConditionDlg(MetaClass metaClass,
                            List<AbstractConditionDescriptor> propertyDescriptors,
@@ -115,6 +118,14 @@ public class AddConditionDlg extends Window {
 
         tree.setValue(model.rootItemIds().iterator().next());
         tree.focus();
+
+        if (App.getInstance().isTestMode()) {
+            setCubaId("addFilterConditionsDialog");
+
+            okBtn.setCubaId("okBtn");
+            cancelBtn.setCubaId("cancelBtn");
+            tree.setCubaId("conditionsTree");
+        }
     }
 
     protected void initButtonsLayout(HorizontalLayout buttonsLayout) {
@@ -131,7 +142,7 @@ public class AddConditionDlg extends Window {
         });
         buttonsLayout.addComponent(okBtn);
 
-        Button cancelBtn = new Button(messages.getMessage(AppConfig.getMessagesPack(), "actions.Cancel"));
+        cancelBtn = new Button(messages.getMessage(AppConfig.getMessagesPack(), "actions.Cancel"));
         cancelBtn.addListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {

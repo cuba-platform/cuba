@@ -49,6 +49,10 @@ public class LogWindow extends Window {
             }
         });
 
+        if (App.getInstance().isTestMode()) {
+            setCubaId("logWindow");
+        }
+
         VerticalLayout layout = new VerticalLayout();
         layout.setSpacing(true);
         layout.setSizeFull();

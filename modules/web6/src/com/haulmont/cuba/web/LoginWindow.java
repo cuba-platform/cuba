@@ -118,13 +118,21 @@ public class LoginWindow extends Window implements Action.Handler {
 
         initUI(app);
 
-        if (globalConfig.getTestMode()) {
-            WebWindowManager windowManager = app.getWindowManager();
-            windowManager.setDebugId(loginField, "loginField");
-            windowManager.setDebugId(passwordField, "pwdField");
-            windowManager.setDebugId(localesSelect, "localesField");
+        if (app.isTestMode()) {
+            loginField.setDebugId("loginField");
+            passwordField.setDebugId("pwdField");
+            localesSelect.setDebugId("localesField");
             if (okButton != null) {
-                windowManager.setDebugId(okButton, "loginSubmitButton");
+                okButton.setDebugId("loginSubmitButton");
+            }
+
+            loginField.setCubaId("loginField");
+            passwordField.setCubaId("passwordField");
+            localesSelect.setCubaId("localesField");
+            okButton.setCubaId("loginSubmitButton");
+
+            if (rememberMe != null) {
+                rememberMe.setCubaId("rememberMeCheckBox");
             }
         }
 

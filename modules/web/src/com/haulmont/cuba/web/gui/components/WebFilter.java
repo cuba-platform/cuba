@@ -224,6 +224,27 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
             component.addComponent(paramsLayout);
 
         updateControls();
+
+        if (AppUI.getCurrent().isTestMode()) {
+            select.setCubaId("filterSelect");
+
+            if (applyBtn != null) {
+                applyBtn.setCubaId("applyBtn");
+            }
+
+            if (maxResultsLayout != null) {
+                maxResultsField.setCubaId("maxResultsField");
+                maxResultsCb.setCubaId("maxResultsCheckBox");
+            }
+
+            if (actionsButton != null) {
+                actionsButton.setId("actionsBtn");
+            }
+
+            if (pinAppliedFilterBtn != null) {
+                pinAppliedFilterBtn.setCubaId("pinAppliedBtn");
+            }
+        }
     }
 
     protected void addApplied() {
@@ -1137,32 +1158,6 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
 
             if (pinAppliedFilterBtn != null) {
                 pinAppliedFilterBtn.setId(testIdManager.getTestId(id + "_pinAppliedBtn"));
-            }
-        }
-    }
-
-    @Override
-    public void setId(String id) {
-        super.setId(id);
-
-        if (AppUI.getCurrent().isTestMode()) {
-            select.setCubaId("filterSelect");
-
-            if (applyBtn != null) {
-                applyBtn.setCubaId("applyBtn");
-            }
-
-            if (maxResultsLayout != null) {
-                maxResultsField.setCubaId("maxResultsField");
-                maxResultsCb.setCubaId("maxResultsCheckBox");
-            }
-
-            if (actionsButton != null) {
-                actionsButton.setId("actionsBtn");
-            }
-
-            if (pinAppliedFilterBtn != null) {
-                pinAppliedFilterBtn.setCubaId("pinAppliedBtn");
             }
         }
     }

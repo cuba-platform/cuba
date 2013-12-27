@@ -14,6 +14,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.web.gui.WebWindow;
+import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.sys.WindowBreadCrumbs;
@@ -513,6 +514,10 @@ public class WebWindowManager extends WindowManager {
         win.setName(window.getId());
         setDebugId(win, window.getId());
 
+        if (app.isTestMode()) {
+            win.setCubaId("dialog_" + window.getId());
+        }
+
         Layout layout = (Layout) WebComponentsHelper.getComposition(window);
 
         // surrond window layout with outer layout to prevent double painting
@@ -825,6 +830,10 @@ public class WebWindowManager extends WindowManager {
         window.setName("cuba-message-dialog");
         setDebugId(window, "cuba-message-dialog");
 
+        if (app.isTestMode()) {
+            window.setCubaId("messageDialog");
+        }
+
         window.addAction(new ShortcutListener("Esc", ShortcutAction.KeyCode.ESCAPE, null) {
             @Override
             public void handleAction(Object sender, Object target) {
@@ -879,6 +888,11 @@ public class WebWindowManager extends WindowManager {
         final com.vaadin.ui.Window window = new com.vaadin.ui.Window(title);
         window.setName("cuba-option-dialog");
         setDebugId(window, "cuba-option-dialog");
+
+        if (app.isTestMode()) {
+            window.setCubaId("optionDialog");
+        }
+
         window.setClosable(false);
 
         window.addListener(new com.vaadin.ui.Window.CloseListener() {
@@ -948,6 +962,10 @@ public class WebWindowManager extends WindowManager {
                 button.addStyleName(WebButton.ICON_STYLE);
             }
             setDebugId(button, action.getId());
+
+            if (app.isTestMode()) {
+                button.setCubaId("optionDialog_" + action.getId());
+            }
             buttonsContainer.addComponent(button);
         }
         if (buttonsContainer.getComponentCount() > 0) {
@@ -1037,6 +1055,19 @@ public class WebWindowManager extends WindowManager {
                             component.setDebugId(generateDebugId(id));
                         }
                     }
+
+                    if (component instanceof WebAbstractComponent) {
+                        ((WebAbstractComponent) component).assignAutoDebugId();
+                    }
+                }
+            });
+        } else if (app.isTestMode()) {
+            com.haulmont.cuba.gui.ComponentsHelper.walkComponents(window, new ComponentVisitor() {
+                @Override
+                public void visit(com.haulmont.cuba.gui.components.Component component, String name) {
+                    if (component instanceof WebAbstractComponent) {
+                        ((WebAbstractComponent) component).assignAutoDebugId();
+                    }
                 }
             });
         }
@@ -1088,7 +1119,7 @@ public class WebWindowManager extends WindowManager {
         }
     }
 
-    public void setDebugId(Component component, String id) {
+    public  void setDebugId(Component component, String id) {
         if (app.isTestModeRequest()) {
             if (webConfig.getAllowIdSuffix()) {
                 component.setDebugId(generateDebugId(id));

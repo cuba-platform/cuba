@@ -191,10 +191,10 @@ public class WebOptionsGroup
             return id;
         }
         if (datasource != null && StringUtils.isNotEmpty(datasource.getId()) && metaPropertyPath != null) {
-            return "optionsGroup_" + datasource.getId() + "_" + metaPropertyPath.toString();
+            return getClass().getSimpleName() + datasource.getId() + "_" + metaPropertyPath.toString();
         }
         if (optionsDatasource != null &&  StringUtils.isNotEmpty(optionsDatasource.getId())) {
-            return "optionsGroup_" + optionsDatasource.getId();
+            return getClass().getSimpleName() + optionsDatasource.getId();
         }
 
         return getClass().getSimpleName();

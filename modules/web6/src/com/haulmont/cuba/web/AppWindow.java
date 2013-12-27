@@ -451,6 +451,9 @@ public class AppWindow extends Window implements UserSubstitutionListener,
         if (AppWindow.Mode.TABBED.equals(getMode())) {
             if (tabSheet == null) {
                 tabSheet = new AppWindow.AppTabSheet();
+                if (app.isTestMode()) {
+                    tabSheet.setCubaId("appTabSheet");
+                }
                 tabSheet.setSizeFull();
                 mainLayout.addComponent(tabSheet);
                 mainLayout.setExpandRatio(tabSheet, 1);
@@ -531,6 +534,9 @@ public class AppWindow extends Window implements UserSubstitutionListener,
             final TextField searchField = new com.haulmont.cuba.web.toolkit.ui.TextField();
             searchField.setWidth(120, Sizeable.UNITS_PIXELS);
             searchField.setDebugId("ftsField." + (int) (Math.random() * 1000000));
+            if (app.isTestMode()) {
+                searchField.setCubaId("ftsField");
+            }
             searchField.addShortcutListener(new ShortcutListener("fts", com.vaadin.event.ShortcutAction.KeyCode.ENTER, null) {
                 @Override
                 public void handleAction(Object sender, Object target) {
@@ -593,6 +599,11 @@ public class AppWindow extends Window implements UserSubstitutionListener,
 
         if (globalConfig.getTestMode()) {
             getWindowManager().setDebugId(menuBar, "appMenu");
+        }
+
+        if (app.isTestMode()) {
+            menuBar.setCubaId("appMenu");
+            menuBar.setDebugId("appMenu");
         }
 
         MenuBuilder menuBuilder = new MenuBuilder(this, connection.getSession(), menuBar);
@@ -717,6 +728,10 @@ public class AppWindow extends Window implements UserSubstitutionListener,
 
             parentLayout.addComponent(substUserSelect);
             parentLayout.setComponentAlignment(substUserSelect, Alignment.MIDDLE_RIGHT);
+
+            if (app.isTestMode()) {
+                substUserSelect.setCubaId("substitutedUserSelect");
+            }
         }
     }
 
@@ -745,6 +760,11 @@ public class AppWindow extends Window implements UserSubstitutionListener,
         logoutBtn.setStyleName("white-border");
         logoutBtn.setIcon(new VersionedThemeResource("app/images/exit.png"));
         getWindowManager().setDebugId(logoutBtn, "logoutBtn");
+
+        if (app.isTestMode()) {
+            logoutBtn.setCubaId("logoutBtn");
+        }
+
         return logoutBtn;
     }
 
@@ -766,6 +786,9 @@ public class AppWindow extends Window implements UserSubstitutionListener,
         newWindowBtn.setDescription(messages.getMessage(getMessagesPack(), "newWindowBtnDescription"));
         newWindowBtn.setStyleName("white-border");
         newWindowBtn.setIcon(new VersionedThemeResource("app/images/new-window.png"));
+
+        newWindowBtn.setCubaId("newAppWindowBtn");
+
         return newWindowBtn;
     }
 

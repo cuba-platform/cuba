@@ -6,10 +6,12 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.OptionsGroup;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.toolkit.ui.OptionGroup;
 import com.vaadin.data.Property;
 import com.vaadin.ui.AbstractSelect;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -167,5 +169,34 @@ public class WebOptionsGroup
         else {
             component.removeStyleName(HORIZONTAL_STYLENAME);
         }
+    }
+
+    @Override
+    public void setOptionsDatasource(CollectionDatasource datasource) {
+        super.setOptionsDatasource(datasource);
+
+        assignAutoDebugId();
+    }
+
+    @Override
+    public void setDatasource(Datasource datasource, String property) {
+        super.setDatasource(datasource, property);
+
+        assignAutoDebugId();
+    }
+
+    @Override
+    protected String getAlternativeDebugId() {
+        if (id != null) {
+            return id;
+        }
+        if (datasource != null && StringUtils.isNotEmpty(datasource.getId()) && metaPropertyPath != null) {
+            return getClass().getSimpleName() + datasource.getId() + "_" + metaPropertyPath.toString();
+        }
+        if (optionsDatasource != null &&  StringUtils.isNotEmpty(optionsDatasource.getId())) {
+            return getClass().getSimpleName() + optionsDatasource.getId();
+        }
+
+        return getClass().getSimpleName();
     }
 }

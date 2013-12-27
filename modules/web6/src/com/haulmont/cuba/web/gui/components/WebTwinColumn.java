@@ -7,6 +7,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.TwinColumn;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
@@ -137,18 +138,22 @@ public class WebTwinColumn extends WebAbstractOptionsField<TwinColumnSelect> imp
         component.setNullSelectionItemId(nullOption);
     }
 
+    @Override
     public int getColumns() {
         return component.getColumns();
     }
 
+    @Override
     public void setColumns(int columns) {
         component.setColumns(columns);
     }
 
+    @Override
     public int getRows() {
         return component.getRows();
     }
 
+    @Override
     public void setRows(int rows) {
         component.setRows(rows);
     }
@@ -162,6 +167,7 @@ public class WebTwinColumn extends WebAbstractOptionsField<TwinColumnSelect> imp
         }
     }
 
+    @Override
     public void setStyleProvider(final StyleProvider styleProvider) {
         this.styleProvider = styleProvider;
         if (styleProvider != null) {
@@ -244,5 +250,19 @@ public class WebTwinColumn extends WebAbstractOptionsField<TwinColumnSelect> imp
             t = o;
         }
         return t;
+    }
+
+    @Override
+    public void setDatasource(Datasource datasource, String property) {
+        super.setDatasource(datasource, property);
+
+        assignAutoDebugId();
+    }
+
+    @Override
+    public void setOptionsDatasource(CollectionDatasource datasource) {
+        super.setOptionsDatasource(datasource);
+
+        assignAutoDebugId();
     }
 }

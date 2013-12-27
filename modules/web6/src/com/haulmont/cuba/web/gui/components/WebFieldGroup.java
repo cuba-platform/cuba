@@ -9,12 +9,17 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.DatasourceComponent;
+import com.haulmont.cuba.gui.components.Field;
+import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.toolkit.ui.FieldGroupLayout;
 import com.haulmont.cuba.web.toolkit.ui.FieldWrapper;
+import com.vaadin.ui.AbstractComponent;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -71,6 +76,21 @@ public class WebFieldGroup
                 super.addCustomField(propertyId, fieldGenerator, col, colFields.indexOf(fieldConf));
             }
         };
+    }
+
+    @Override
+    public void setId(String id) {
+        super.setId(id);
+
+        if (id != null && App.getInstance().isTestMode()) {
+            final List<FieldConfig> fieldConfs = getFields();
+            for (final FieldConfig fieldConf : fieldConfs) {
+                com.vaadin.ui.Field field = component.getField(fieldConf.getId());
+                if (field instanceof AbstractComponent) {
+                    ((AbstractComponent)field).setCubaId(fieldConf.getId());
+                }
+            }
+        }
     }
 
     @Override
@@ -235,6 +255,10 @@ public class WebFieldGroup
 
                 registerFieldComponent(fieldConfig, fieldComponent);
 
+                if (App.getInstance().isTestMode() && fieldImpl instanceof AbstractComponent) {
+                    ((AbstractComponent)fieldImpl).setCubaId(fieldConfig.getId());
+                }
+
                 return fieldImpl;
             }
         });
@@ -316,6 +340,8 @@ public class WebFieldGroup
             }
         }
 
+        assignAutoDebugId();
+
         createFields(datasource);
     }
 
@@ -335,6 +361,12 @@ public class WebFieldGroup
 
                 FieldBasket fieldBasket = createField(fieldDatasource, fieldConf);
                 registerFieldComponent(fieldConf, fieldBasket.getField());
+
+                com.vaadin.ui.Field composition = fieldBasket.getComposition();
+                if (composition instanceof AbstractComponent && App.getInstance().isTestMode()) {
+                    ((AbstractComponent)composition).setCubaId(fieldConf.getId());
+                }
+
                 component.addField(fieldConf.getId(), fieldBasket.getComposition());
             }
         }
@@ -824,5 +856,17 @@ public class WebFieldGroup
         public Component getField() {
             return field;
         }
+    }
+
+    @Override
+    protected String getAlternativeDebugId() {
+        if (id != null) {
+            return id;
+        }
+        if (datasource != null && StringUtils.isNotEmpty(datasource.getId())) {
+            return "fieldGroup_" + datasource.getId();
+        }
+
+        return getClass().getSimpleName();
     }
 }

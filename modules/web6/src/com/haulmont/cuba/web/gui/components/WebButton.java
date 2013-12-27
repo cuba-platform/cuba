@@ -103,6 +103,8 @@ public class WebButton extends WebAbstractComponent<com.vaadin.ui.Button> implem
                     }
                 }
         );
+
+        assignAutoDebugId();
     }
 
     @Override
@@ -127,5 +129,17 @@ public class WebButton extends WebAbstractComponent<com.vaadin.ui.Button> implem
             component.setIcon(null);
             component.removeStyleName(ICON_STYLE);
         }
+    }
+
+    @Override
+    protected String getAlternativeDebugId() {
+        if (StringUtils.isNotEmpty(id)) {
+            return id;
+        }
+        if (action != null && StringUtils.isNotEmpty(action.getId())) {
+            return action.getId();
+        }
+
+        return getClass().getSimpleName();
     }
 }

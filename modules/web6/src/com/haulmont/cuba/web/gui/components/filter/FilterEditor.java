@@ -235,6 +235,19 @@ public class FilterEditor extends AbstractFilterEditor {
         hlayLayout.setComponentAlignment(upDownLayout, Alignment.MIDDLE_CENTER);
         layout.addComponent(hlayLayout);
 
+        if (App.getInstance().isTestMode()) {
+            nameField.setCubaId("filterNameField");
+            defaultCb.setCubaId("defaultCb");
+            applyDefaultCb.setCubaId("applyDefaultCb");
+            globalCb.setCubaId("globalCb");
+            saveBtn.setCubaId("saveBtn");
+            cancelBtn.setCubaId("cancelBtn");
+            table.setCubaId("conditionsTable");
+
+            upBtn.setCubaId("upBtn");
+            downBtn.setCubaId("downBtn");
+        }
+
         updateControls();
     }
 
@@ -246,6 +259,10 @@ public class FilterEditor extends AbstractFilterEditor {
         Button addBtn = new Button(getMessage("FilterEditor.addCondition"));
         addBtn.addListener(new AddConditionClickListener());
         addLayout.addComponent(addBtn);
+
+        if (App.getInstance().isTestMode()) {
+            addBtn.setCubaId("addConditionBtn");
+        }
     }
 
     protected void initAddSelect(AbstractOrderedLayout layout) {
@@ -297,6 +314,11 @@ public class FilterEditor extends AbstractFilterEditor {
         Button addBtn = new Button(getMessage("FilterEditor.addMoreConditions"));
         addBtn.addListener(new AddConditionClickListener());
         layout.addComponent(addBtn);
+
+        if (App.getInstance().isTestMode()) {
+            addBtn.setCubaId("addConditionBtn");
+            addSelect.setCubaId("addConditionSelect");
+        }
     }
 
     protected void initTable(AbstractLayout layout) {

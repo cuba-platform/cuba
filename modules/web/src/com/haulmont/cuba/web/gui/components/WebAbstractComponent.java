@@ -100,7 +100,7 @@ public class WebAbstractComponent<T extends com.vaadin.ui.Component>
     @Override
     public void setId(String id) {
         this.id = id;
-        if (this.component != null) {
+        if (this.component != null && AppUI.getCurrent().isTestMode()) {
             this.component.setCubaId(id);
         }
     }

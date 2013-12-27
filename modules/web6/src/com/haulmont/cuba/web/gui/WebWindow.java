@@ -10,7 +10,6 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.*;
@@ -1110,6 +1109,8 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
 
             Messages messages = AppBeans.get(Messages.NAME);
 
+            boolean isTestMode = App.getInstance().isTestMode();
+
             final String messagesPackage = AppConfig.getMessagesPack();
             selectAction = new SelectAction(this);
             selectButton = WebComponentsHelper.createButton();
@@ -1117,6 +1118,9 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
             selectButton.setIcon(new VersionedThemeResource("icons/ok.png"));
             selectButton.addListener(selectAction);
             selectButton.setStyleName("Window-actionButton");
+            if (isTestMode) {
+                selectButton.setCubaId("selectButton");
+            }
 
             cancelButton = WebComponentsHelper.createButton();
             cancelButton.setCaption(messages.getMessage(messagesPackage, "actions.Cancel"));
@@ -1128,6 +1132,9 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
             });
             cancelButton.setStyleName("Window-actionButton");
             cancelButton.setIcon(new VersionedThemeResource("icons/cancel.png"));
+            if (isTestMode) {
+                cancelButton.setCubaId("cancelButton");
+            }
 
             okbar.addComponent(selectButton);
             okbar.addComponent(cancelButton);
@@ -1149,7 +1156,7 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
 
             Configuration configuration = AppBeans.get(Configuration.NAME);
 
-            if (configuration.getConfig(GlobalConfig.class).getTestMode()) {
+            if (App.getInstance().isTestModeRequest()) {
                 WebWindowManager windowManager = getWindowManager();
                 windowManager.setDebugId(selectButton, id + ".selectButton");
                 windowManager.setDebugId(cancelButton, id + ".cancelButton");

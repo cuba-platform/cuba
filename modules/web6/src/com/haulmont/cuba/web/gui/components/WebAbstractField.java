@@ -247,4 +247,16 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
     protected boolean isEmpty(Object value) {
         return value == null;
     }
+
+    @Override
+    protected String getAlternativeDebugId() {
+        if (id != null) {
+            return id;
+        }
+        if (datasource != null && StringUtils.isNotEmpty(datasource.getId()) && metaPropertyPath != null) {
+            return getClass().getSimpleName() + "_" + datasource.getId() + "_" + metaPropertyPath.toString();
+        }
+
+        return getClass().getSimpleName();
+    }
 }

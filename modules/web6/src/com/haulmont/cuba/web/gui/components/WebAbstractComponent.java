@@ -4,10 +4,13 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.web.App;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Layout;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 /**
@@ -37,6 +40,8 @@ public class WebAbstractComponent<T extends com.vaadin.ui.Component>
     public void setFrame(IFrame frame) {
         this.frame = frame;
         frame.registerComponent(this);
+
+        assignAutoDebugId();
     }
 
     @Override
@@ -47,6 +52,32 @@ public class WebAbstractComponent<T extends com.vaadin.ui.Component>
     @Override
     public void setId(String id) {
         this.id = id;
+
+        if (this.component instanceof AbstractComponent && App.getInstance().isTestMode()) {
+            ((AbstractComponent) this.component).setCubaId(id);
+        }
+    }
+
+    public void assignAutoDebugId() {
+        if (App.getInstance().isTestMode()) {
+            String alternativeDebugId = getAlternativeDebugId();
+
+            // always change cuba id, do not assign auto id for components
+            if (getId() == null && component instanceof AbstractComponent) {
+                ((AbstractComponent)component).setCubaId(alternativeDebugId);
+            }
+        }
+    }
+
+    /**
+     * @return id that is suitable for auto debug id
+     */
+    protected String getAlternativeDebugId() {
+        if (id != null) {
+            return id;
+        }
+
+        return getClass().getSimpleName();
     }
 
     @Override

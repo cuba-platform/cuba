@@ -86,6 +86,14 @@ public class WindowBreadCrumbs extends HorizontalLayout {
         setComponentAlignment(enclosingLayout, Alignment.MIDDLE_LEFT);
         linksLayout.setSizeFull();
         setExpandRatio(enclosingLayout, 1);
+
+        if (App.getInstance().isTestMode()) {
+            linksLayout.setCubaId("breadCrumbs");
+
+            if (closeBtn != null) {
+                closeBtn.setCubaId("closeBtn");
+            }
+        }
     }
 
     public Window getCurrentWindow() {
@@ -136,11 +144,16 @@ public class WindowBreadCrumbs extends HorizontalLayout {
     public void update() {
         linksLayout.removeAllComponents();
         btn2win.clear();
+        boolean isTestMode = App.getInstance().isTestMode();
         for (Iterator<Window> it = windows.iterator(); it.hasNext();) {
             Window window = it.next();
             Button button = new Button(window.getCaption().trim(), new BtnClickListener());
             button.setStyleName(BaseTheme.BUTTON_LINK);
             button.setTabIndex(-1);
+
+            if (isTestMode) {
+                button.setCubaId("breadCrubms_Button_" + window.getId());
+            }
 
             btn2win.put(button, window);
 
