@@ -334,7 +334,6 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
                     //
                 }
             if (validator == null) {
-                log.warn("Validator class " + aClass + " has no supported constructors");
                 try {
                     validator = ReflectionHelper.newInstance(aClass, validatorElement);
                 } catch (NoSuchMethodException e) {
@@ -344,6 +343,10 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
                         //
                     }
                 }
+            }
+            if (validator == null) {
+                throw new GuiDevelopmentException("Validator class " + aClass + " has no supported constructors",
+                        context.getFullFrameId());
             }
         }
         return validator;
