@@ -447,13 +447,6 @@ public class WebDateField extends WebAbstractField<DateFieldWrapper> implements 
             throw new RequiredValueMissingException(component.getRequiredError(), this);
         }
 
-        com.vaadin.ui.Component timeComponent = timeField.getComponent();
-        if ((timeComponent.getParent() != null) && timeField.isVisible()) {
-            if (isRequired() && timeField.getValue() == null) {
-                throw new RequiredValueMissingException(getRequiredMessage(), timeField);
-            }
-        }
-
         for (Field.Validator validator : validators) {
             validator.validate(getValue());
         }
