@@ -66,6 +66,8 @@ public abstract class Table
     // For fix bug overflow:auto in webkit
     protected Widget parentOverflowContainer;
 
+    protected final int TABLE_MAX_WIDTH = 30000;
+
     protected int sortClickCounter = 0;
 
     //[6.6]
@@ -1914,8 +1916,7 @@ public abstract class Table
         }
 
         public void disableBrowserIntelligence() {
-            DOM.setStyleAttribute(hTableContainer, "width", 9000
-                    + "px");
+            DOM.setStyleAttribute(hTableContainer, "width", TABLE_MAX_WIDTH + "px");
         }
 
         public void enableBrowserIntelligence() {

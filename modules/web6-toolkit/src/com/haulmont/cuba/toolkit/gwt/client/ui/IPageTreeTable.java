@@ -290,7 +290,7 @@ public class IPageTreeTable extends IPageTable {
 
             public void disableBrowserIntelligence() {
                 if (wrapCell != null) {
-                    DOM.setStyleAttribute(wrapCell, "width", 9000 + "px");
+                    DOM.setStyleAttribute(wrapCell, "width", TABLE_MAX_WIDTH + "px");
                 }
             }
 
