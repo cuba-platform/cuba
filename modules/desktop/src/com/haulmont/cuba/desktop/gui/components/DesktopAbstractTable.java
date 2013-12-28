@@ -25,7 +25,10 @@ import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.actions.EditAction;
-import com.haulmont.cuba.gui.data.*;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.DsBuilder;
+import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
@@ -50,7 +53,10 @@ import javax.swing.AbstractAction;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.*;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.Component;
 import java.awt.event.*;
@@ -98,6 +104,8 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     protected DesktopTableFieldFactory tableFieldFactory = new DesktopTableFieldFactory();
 
     protected List<MetaPropertyPath> editableColumns = new LinkedList<>();
+
+    protected Map<Table.Column, String> requiredColumns = new HashMap<>();
 
     protected Security security = AppBeans.get(Security.class);
 
@@ -763,6 +771,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
             if (editableColumns != null
                     && columnConf.getId() instanceof MetaPropertyPath
                     && editableColumns.contains(columnConf.getId())) {
+
                 return tableFieldFactory.createEditComponent(row, columnConf);
             }
         }
@@ -811,8 +820,6 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
     protected class DesktopTableFieldFactory extends AbstractFieldFactory {
 
-        protected Map<MetaClass, CollectionDatasource> optionsDatasources = new HashMap<>();
-
         public TableCellEditor createEditComponent(int row, Column columnConf) {
             MetaPropertyPath mpp = (MetaPropertyPath) columnConf.getId();
 
@@ -827,12 +834,22 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                 if (columnConf.getDescription() != null) {
                     cubaField.setDescription(columnConf.getDescription());
                 }
-//                    todo implement required columns
-//                        if (requiredColumns.containsKey(columnConf)) {
-//                            cubaField.setRequired(true);
-//                            cubaField.setRequiredMessage(requiredColumns.get(columnConf));
-//                        }
+                if (requiredColumns.containsKey(columnConf)) {
+                    cubaField.setRequired(true);
+                    cubaField.setRequiredMessage(requiredColumns.get(columnConf));
+                }
             }
+
+            if (columnComponent instanceof DesktopCheckBox) {
+                JCheckBox checkboxImpl = ((DesktopCheckBox) columnComponent).getComponent();
+                checkboxImpl.setHorizontalAlignment(SwingConstants.CENTER);
+            }
+
+            JComponent composition = DesktopComponentsHelper.getComposition(columnComponent);
+            Color color = UIManager.getColor("Table:\"Table.cellRenderer\".background");
+            composition.setBackground(new Color(color.getRGB()));
+            composition.setForeground(impl.getForeground());
+            composition.setFont(impl.getFont());
 
             if (columnConf.getWidth() != null) {
                 columnComponent.setWidth(columnConf.getWidth() + "px");
@@ -945,7 +962,11 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     }
 
     @Override
-    public void setRequired(Column column, boolean required, String message) {
+    public void setRequired(Table.Column column, boolean required, String message) {
+        if (required)
+            requiredColumns.put(column, message);
+        else
+            requiredColumns.remove(column);
     }
 
     @Override
@@ -1721,7 +1742,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
         DesktopTheme theme = App.getInstance().getTheme();
         if (theme != null) {
-            HashSet<String> properties = new HashSet<String>();
+            HashSet<String> properties = new HashSet<>();
 
             if (hasFocus) {
                 properties.add("focused");

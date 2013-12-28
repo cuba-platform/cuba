@@ -19,9 +19,8 @@ import javax.swing.*;
 import java.util.*;
 
 /**
- * <p>$Id$</p>
- *
  * @author Alexander Budarov
+ * @version $Id$
  */
 public class DesktopThemeImpl implements DesktopTheme {
 
@@ -53,6 +52,7 @@ public class DesktopThemeImpl implements DesktopTheme {
         this.name = name;
     }
 
+    @Override
     public DesktopResources getResources() {
         return resources;
     }

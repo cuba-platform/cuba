@@ -812,8 +812,6 @@
         <xs:attributeGroup ref="requiresId"/>
         <xs:attributeGroup ref="hasWidthProp"/>
         <xs:attributeGroup ref="hasCaptionProp"/>
-        <xs:attributeGroup ref="hasEditable"/>
-        <xs:attributeGroup ref="hasCaptionSource"/>
         <xs:attributeGroup ref="hasVisibility"/>
 
         <xs:attribute name="clickAction" type="xs:string" use="optional"/>
@@ -822,6 +820,9 @@
 
         <!-- Additional attributes, use only for editable table -->
         <xs:attributeGroup ref="hasOptions"/>
+        <xs:attributeGroup ref="hasEditable"/>
+        <xs:attributeGroup ref="hasRequirements"/>
+        <xs:attributeGroup ref="hasCaptionSource"/>
         <xs:attribute name="resolution" type="xs:string" use="optional"/>
         <xs:attribute name="dateFormat" type="xs:string" use="optional"/>
     </xs:complexType>

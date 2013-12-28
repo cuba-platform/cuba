@@ -30,6 +30,7 @@ public class DesktopComponentsHelper {
     public static final int FIELD_HEIGHT = 28;
 
     public static Color requiredBgColor = (Color) UIManager.get("cubaRequiredBackground");
+    // todo move nimbus constants to theme
     public static Color defaultBgColor = (Color) UIManager.get("nimbusLightBackground");
 
     public static JComponent unwrap(Component component) {

@@ -41,6 +41,14 @@ public class Picker extends JComponent implements FocusableComponent {
         contentPanel.add(actionsPanel, BorderLayout.EAST);
     }
 
+    @Override
+    public void setBackground(Color bg) {
+        super.setBackground(bg);
+
+        contentPanel.setBackground(bg);
+        actionsPanel.setBackground(bg);
+    }
+
     protected void initContentPanel() {
         contentPanel = new JPanel(new BorderLayout());
     }
