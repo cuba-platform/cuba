@@ -14,13 +14,15 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowParams;
-import com.haulmont.cuba.gui.data.*;
-import com.haulmont.cuba.gui.data.impl.*;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.DataSupplier;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.data.impl.CollectionPropertyDatasourceImpl;
+import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.security.entity.EntityOp;
 
-import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 
 /**
  * @author krivopustov
@@ -113,28 +115,24 @@ public class EditorWindowDelegate extends WindowDelegate {
         Datasource ds = getDatasource();
         DataSupplier dataservice = ds.getDataSupplier();
 
-        if (!PersistenceHelper.isNew(item)) {
-            if (ds.getCommitMode().equals(Datasource.CommitMode.PARENT)) {
-                if (ds instanceof DatasourceImplementation
-                        && ((DatasourceImplementation) ds).getParent() instanceof DatasourceImplementation) {
-                    DatasourceImplementation parentDs =
-                            (DatasourceImplementation) ((DatasourceImplementation) ds).getParent();
-                    // We have to reload items in parent datasource because when item in child datasource is committed,
-                    // an item in parent datasource must already have all item fields loaded.
-                    if (parentDs != null) {
-                        Collection<Object> justChangedItems = new HashSet<Object>(parentDs.getItemsToCreate());
-                        justChangedItems.addAll(parentDs.getItemsToUpdate());
+        boolean keepDatasourceUnmodified = true;
 
-                        if (!justChangedItems.contains(item)
-                                && parentDs instanceof CollectionDatasource
-                                && ((CollectionDatasource) parentDs).containsItem(item)) {
-                            item = dataservice.reload(item, ds.getView(), ds.getMetaClass());
-                            if (parentDs instanceof CollectionPropertyDatasourceImpl) {
-                                ((CollectionPropertyDatasourceImpl) parentDs).replaceItem(item);
-                            } else {
-                                ((CollectionDatasource) parentDs).updateItem(item);
-                            }
-                        }
+        DatasourceImplementation parentDs = null;
+        if (ds instanceof DatasourceImplementation
+                && ((DatasourceImplementation) ds).getParent() instanceof DatasourceImplementation) {
+            parentDs = (DatasourceImplementation) ((DatasourceImplementation) ds).getParent();
+        }
+
+        if (!PersistenceHelper.isNew(item)) {
+            if (parentDs != null) {
+                if (!parentDs.getItemsToCreate().contains(item) && !parentDs.getItemsToUpdate().contains(item)
+                        && parentDs instanceof CollectionDatasource
+                        && ((CollectionDatasource) parentDs).containsItem(item)) {
+                    item = dataservice.reload(item, ds.getView(), ds.getMetaClass());
+                    if (parentDs instanceof CollectionPropertyDatasourceImpl) {
+                        ((CollectionPropertyDatasourceImpl) parentDs).replaceItem(item);
+                    } else {
+                        ((CollectionDatasource) parentDs).updateItem(item);
                     }
                 }
                 item = (Entity) InstanceUtils.copy(item);
@@ -142,6 +140,11 @@ public class EditorWindowDelegate extends WindowDelegate {
                 boolean useSecConstraints = !WindowParams.DISABLE_SECURITY_CONSTRAINTS.getBool(window.getContext());
                 item = dataservice.reload(item, ds.getView(), ds.getMetaClass(), useSecConstraints);
             }
+        } else {
+            // Make the datasource modified for new item, but only if CommitMode != PARENT and this item is not edited
+            // right after creation
+            keepDatasourceUnmodified = parentDs != null
+                    && (parentDs.getItemsToCreate().contains(item) || parentDs.getItemsToUpdate().contains(item));
         }
 
         if (item == null) {
@@ -157,7 +160,7 @@ public class EditorWindowDelegate extends WindowDelegate {
 
         this.item = item;
         ds.setItem(item);
-        if (!PersistenceHelper.isNew(item) && ds instanceof DatasourceImplementation)
+        if (ds instanceof DatasourceImplementation && keepDatasourceUnmodified)
             ((DatasourceImplementation) ds).setModified(false);
 
         if (userSessionSource.getUserSession().isEntityOpPermitted(ds.getMetaClass(), EntityOp.UPDATE)) {
