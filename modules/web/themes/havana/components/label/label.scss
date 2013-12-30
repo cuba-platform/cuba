@@ -8,8 +8,8 @@
 @mixin havana-label($primaryStyleName: v-label) {
   .#{$primaryStyleName} {
     line-height: 18px;
-    word-wrap: normal;
-    word-break: break-all;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
 
   .#{$primaryStyleName}-empty {

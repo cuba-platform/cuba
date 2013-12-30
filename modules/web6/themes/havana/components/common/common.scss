@@ -221,8 +221,8 @@ input.v-modified,
 .v-label {
 	padding-top: 1px;
 	padding-bottom: 1px;
-    word-wrap: normal;
-    word-break: break-all;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .v-label-undef-w {
