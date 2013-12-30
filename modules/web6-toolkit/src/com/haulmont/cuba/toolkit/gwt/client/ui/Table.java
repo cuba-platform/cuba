@@ -2681,8 +2681,6 @@ public abstract class Table
                             VConsole.log("onFocus: Focus widget in column: " + childWidgets.indexOf(topWidget));
 
                             if (!isSelected()) {
-                                VConsole.log(">>> OMG!!");
-
                                 deselectAll();
 
                                 toggleSelection();
