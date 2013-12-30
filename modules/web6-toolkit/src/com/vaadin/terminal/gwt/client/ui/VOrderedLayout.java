@@ -26,16 +26,9 @@ import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Widget;
-import com.vaadin.terminal.gwt.client.ApplicationConnection;
-import com.vaadin.terminal.gwt.client.BrowserInfo;
-import com.vaadin.terminal.gwt.client.EventId;
-import com.vaadin.terminal.gwt.client.Paintable;
+import com.vaadin.terminal.gwt.client.*;
 import com.vaadin.terminal.gwt.client.RenderInformation.FloatSize;
 import com.vaadin.terminal.gwt.client.RenderInformation.Size;
-import com.vaadin.terminal.gwt.client.RenderSpace;
-import com.vaadin.terminal.gwt.client.UIDL;
-import com.vaadin.terminal.gwt.client.Util;
-import com.vaadin.terminal.gwt.client.ValueMap;
 import com.vaadin.terminal.gwt.client.ui.layout.CellBasedLayout;
 import com.vaadin.terminal.gwt.client.ui.layout.ChildComponentContainer;
 
@@ -300,7 +293,7 @@ public class VOrderedLayout extends CellBasedLayout {
         sizeHasChangedDuringRendering = false;
     }
 
-    private void layoutSizeMightHaveChanged() {
+    public void layoutSizeMightHaveChanged() {
         Size oldSize = new Size(activeLayoutSize.getWidth(),
                 activeLayoutSize.getHeight());
         calculateLayoutDimensions();
@@ -614,9 +607,7 @@ public class VOrderedLayout extends CellBasedLayout {
 
                 childComponentContainer.setContainerSize(width, height);
             }
-
         }
-
     }
 
     private Size updateLayoutDimensions(int totalComponentWidth,
@@ -823,7 +814,7 @@ public class VOrderedLayout extends CellBasedLayout {
         setRootSize();
     }
 
-    private void setRootSize() {
+    public void setRootSize() {
         root.getStyle().setPropertyPx("width", activeLayoutSize.getWidth());
         root.getStyle().setPropertyPx("height", activeLayoutSize.getHeight());
     }

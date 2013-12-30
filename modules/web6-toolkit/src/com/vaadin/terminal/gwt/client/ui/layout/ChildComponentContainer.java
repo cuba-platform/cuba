@@ -249,6 +249,11 @@ public class ChildComponentContainer extends Panel {
 
     }
 
+    public void updateWidgetSize(int width, int height) {
+        widgetSize.setWidth(width);
+        widgetSize.setHeight(height);
+    }
+
     public void setMarginLeft(int marginLeft) {
         containerMarginLeft = marginLeft;
         containerDIV.getStyle().setPropertyPx("paddingLeft", marginLeft);
