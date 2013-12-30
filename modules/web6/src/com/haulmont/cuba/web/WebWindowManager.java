@@ -904,6 +904,7 @@ public class WebWindowManager extends WindowManager {
 
         Label messageLab = new Label(ComponentsHelper.preprocessHtmlMessage(
                 IFrame.MessageType.isHTML(messageType) ? message : StringEscapeUtils.escapeHtml(message)));
+        messageLab.setWidth("100%");
         messageLab.setContentMode(Label.CONTENT_XHTML);
 
         float width;
@@ -919,7 +920,6 @@ public class WebWindowManager extends WindowManager {
         window.setModal(true);
 
         final VerticalLayout layout = new VerticalLayout();
-        layout.setMargin(true);
         layout.setSpacing(true);
         window.setContent(layout);
 
