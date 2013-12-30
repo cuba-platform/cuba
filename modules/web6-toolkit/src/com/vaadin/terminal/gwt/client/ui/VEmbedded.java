@@ -440,16 +440,19 @@ public class VEmbedded extends HTML implements Paintable {
                     if (self.getParent() instanceof ChildComponentContainer) {
                         ChildComponentContainer childComponentContainer = (ChildComponentContainer) self.getParent();
 
-                        int w = getElement().getFirstChildElement().getOffsetWidth();
-                        int h = getElement().getFirstChildElement().getOffsetHeight();
+                        int w = Util.getRequiredWidth(getElement());
+                        int h = Util.getRequiredHeight(getElement());
 
                         childComponentContainer.updateWidgetSize(w, h);
                         childComponentContainer.setContainerSize(w, h);
                     }
 
                     if (parent instanceof VOrderedLayout) {
-                        ((VOrderedLayout) parent).layoutSizeMightHaveChanged();
-                        ((VOrderedLayout) parent).setRootSize();
+                        VOrderedLayout orderedLayout = (VOrderedLayout) parent;
+
+                        orderedLayout.layoutSizeMightHaveChanged();
+                        orderedLayout.calculateAlignments();
+                        orderedLayout.setRootSize();
                     }
                 } else {
                     Util.notifyParentOfSizeChange(this, true);

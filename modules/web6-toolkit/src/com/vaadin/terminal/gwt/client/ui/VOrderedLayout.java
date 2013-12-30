@@ -486,7 +486,7 @@ public class VOrderedLayout extends CellBasedLayout {
         return widgetWidth;
     }
 
-    private void calculateAlignments() {
+    public void calculateAlignments() {
         int w = 0;
         int h = 0;
 
