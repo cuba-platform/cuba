@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.gui.app.security.user.browse;
 
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.WindowManager;
@@ -44,17 +45,14 @@ public class UserBrowser extends AbstractLookup {
     @Named("usersTable.copySettings")
     protected Action copySettingsAction;
 
+    @Named("usersTable.copy")
+    protected Action copyAction;
+
     @Named("usersTable.changePassw")
     protected Action changePasswAction;
 
     @Named("usersTable.changePasswAtLogon")
     protected Action changePasswAtLogonAction;
-
-    @Inject
-    protected Button userTableCopyButton;
-
-    @Inject
-    protected Button changePasswordButton;
 
     @Inject
     protected UserSession userSession;
@@ -70,12 +68,15 @@ public class UserBrowser extends AbstractLookup {
 
     @Override
     public void init(Map<String, Object> params) {
+        MetaClass userMetaClass = metadata.getClassNN(User.class);
+
         final boolean hasPermissionsToCreateUsers =
-                userSession.isEntityOpPermitted(metadata.getClassNN(User.class), EntityOp.CREATE);
+                userSession.isEntityOpPermitted(userMetaClass, EntityOp.CREATE);
 
         final boolean hasPermissionsToUpdateUsers =
-                userSession.isEntityOpPermitted(metadata.getClassNN(User.class), EntityOp.CREATE);
+                userSession.isEntityOpPermitted(userMetaClass, EntityOp.CREATE);
 
+        copyAction.setEnabled(hasPermissionsToCreateUsers);
         changePasswAction.setEnabled(hasPermissionsToUpdateUsers);
         changePasswAtLogonAction.setEnabled(hasPermissionsToUpdateUsers);
 
@@ -86,11 +87,11 @@ public class UserBrowser extends AbstractLookup {
             @Override
             public void itemChanged(Datasource<User> ds, User prevItem, User item) {
                 if (usersTable.getSelected().size() > 1) {
-                    userTableCopyButton.setEnabled(false);
-                    changePasswordButton.setEnabled(false);
+                    copyAction.setEnabled(false);
+                    changePasswAction.setEnabled(false);
                 } else {
-                    userTableCopyButton.setEnabled(hasPermissionsToCreateUsers && item != null);
-                    changePasswordButton.setEnabled(hasPermissionsToUpdateUsers && item != null);
+                    copyAction.setEnabled(hasPermissionsToCreateUsers && item != null);
+                    changePasswAction.setEnabled(hasPermissionsToUpdateUsers && item != null);
                 }
             }
         });
