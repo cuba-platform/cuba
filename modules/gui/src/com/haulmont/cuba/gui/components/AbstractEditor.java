@@ -138,8 +138,10 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
     protected boolean postCommit(boolean committed, boolean close) {
         if (committed && !close) {
             if (showSaveNotification) {
-                frame.showNotification(messages.formatMessage(AppConfig.getMessagesPack(),
-                        "info.EntitySave", ((Editor) frame).getItem().getInstanceName()),
+                Entity entity = ((Editor) frame).getItem();
+                frame.showNotification(
+                        messages.formatMessage(AppConfig.getMessagesPack(), "info.EntitySave",
+                                messages.getTools().getEntityCaption(entity.getMetaClass()), entity.getInstanceName()),
                         NotificationType.HUMANIZED);
             }
             postInit();
