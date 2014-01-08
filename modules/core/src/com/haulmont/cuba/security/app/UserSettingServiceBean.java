@@ -209,7 +209,7 @@ public class UserSettingServiceBean implements UserSettingService {
     protected void copyUserFolders(User fromUser, User toUser, Map<UUID, Presentation> presentationsMap) {
         Transaction tx = persistence.createTransaction();
         try {
-            MetaClass effectiveMetaClass = metadata.getExtendedEntities().getEffectiveMetaClass(FilterEntity.class);
+            MetaClass effectiveMetaClass = metadata.getExtendedEntities().getEffectiveMetaClass(SearchFolder.class);
             EntityManager em = persistence.getEntityManager();
             Query deleteSettingsQuery = em.createQuery("delete from " + effectiveMetaClass.getName() + " s where s.user.id = ?1");
             deleteSettingsQuery.setParameter(1, toUser);
