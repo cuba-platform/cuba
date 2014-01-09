@@ -7,10 +7,12 @@
 <xs:schema targetNamespace="http://schemas.haulmont.com/cuba/5.0/window.xsd"
         xmlns:xs="http://www.w3.org/2001/XMLSchema"
         xmlns="http://schemas.haulmont.com/cuba/5.0/window.xsd"
+        xmlns:views="http://schemas.haulmont.com/cuba/5.0/view.xsd"
         elementFormDefault="qualified"
         attributeFormDefault="unqualified">
 
-    <xs:include schemaLocation="http://schemas.haulmont.com/cuba/5.0/view.xsd"/>
+    <xs:import namespace="http://schemas.haulmont.com/cuba/5.0/view.xsd"
+               schemaLocation="http://schemas.haulmont.com/cuba/5.0/view.xsd"/>
 
     <!-- Enums -->
 
@@ -261,7 +263,7 @@
     </xs:attributeGroup>
 
     <xs:attributeGroup name="requiresCaption">
-        <xs:attribute name="caption" type="xs:string" use="required" default="msg://"/>
+        <xs:attribute name="caption" type="xs:string" use="required"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="hasCaptionProp">
@@ -552,9 +554,6 @@
     <xs:complexType name="passwordFieldComponent">
         <xs:complexContent>
             <xs:extension base="baseTextComponent">
-                <xs:sequence>
-                    <xs:element name="validator" minOccurs="0" maxOccurs="1" type="validatorType"/>
-                </xs:sequence>
                 <xs:attribute name="maxLength" type="xs:int" use="optional"/>
             </xs:extension>
         </xs:complexContent>
@@ -613,7 +612,6 @@
                 </xs:sequence>
                 <xs:attributeGroup ref="hasOptions"/>
                 <xs:attributeGroup ref="hasCaptionSource"/>
-                <xs:attributeGroup ref="hasAlign"/>
 
                 <xs:attribute name="filterMode" type="filterMode" use="optional"/>
                 <xs:attribute name="nullName" type="xs:string" use="optional"/>
@@ -1479,7 +1477,7 @@
                                     <xs:attribute name="name" type="xs:string"/>
                                 </xs:complexType>
                             </xs:element>
-                            <xs:element name="view" type="viewType" minOccurs="0" maxOccurs="unbounded"/>
+                            <xs:element name="view" type="views:viewType" minOccurs="0" maxOccurs="unbounded"/>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>
