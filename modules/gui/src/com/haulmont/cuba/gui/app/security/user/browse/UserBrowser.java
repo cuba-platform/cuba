@@ -79,7 +79,7 @@ public class UserBrowser extends AbstractLookup {
         final boolean hasPermissionsToUpdateUsers =
                 userSession.isEntityOpPermitted(userMetaClass, EntityOp.CREATE);
 
-        final boolean hasPermissionsToSettingsCreation =
+        final boolean hasPermissionsToCreateSettings =
                 userSession.isEntityOpPermitted(metadata.getClassNN(UserSetting.class), EntityOp.CREATE);
 
         usersDs.addListener(new CollectionDsListenerAdapter<User>() {
@@ -94,7 +94,7 @@ public class UserBrowser extends AbstractLookup {
                 }
 
                 changePasswAtLogonAction.setEnabled(hasPermissionsToUpdateUsers && item != null);
-                copySettingsAction.setEnabled(hasPermissionsToSettingsCreation && item != null);
+                copySettingsAction.setEnabled(hasPermissionsToCreateSettings && item != null);
             }
 
             @Override
@@ -103,7 +103,7 @@ public class UserBrowser extends AbstractLookup {
                     copyAction.setEnabled(hasPermissionsToCreateUsers && ds.getItem() != null);
                     changePasswAction.setEnabled(hasPermissionsToUpdateUsers && ds.getItem() != null);
                     changePasswAtLogonAction.setEnabled(hasPermissionsToUpdateUsers && ds.getItem() != null);
-                    copySettingsAction.setEnabled(hasPermissionsToSettingsCreation && ds.getItem() != null);
+                    copySettingsAction.setEnabled(hasPermissionsToCreateSettings && ds.getItem() != null);
                 }
             }
         });
