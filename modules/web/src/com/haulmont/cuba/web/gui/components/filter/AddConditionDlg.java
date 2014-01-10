@@ -23,6 +23,7 @@ import com.haulmont.cuba.gui.components.filter.addcondition.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.cuba.web.toolkit.ui.CubaTree;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -71,7 +72,7 @@ public class AddConditionDlg extends Window {
 
         Panel treePanel = new Panel();
 
-        tree = new Tree();
+        tree = new CubaTree();
         tree.setWidth("100%");
         tree.setHeight("100%");
         tree.setImmediate(true);
