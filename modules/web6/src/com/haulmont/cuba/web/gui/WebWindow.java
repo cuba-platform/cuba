@@ -452,10 +452,7 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
                 log.error("Can't find focus component: " + componentId);
             }
         } else {
-            com.vaadin.ui.Component.Focusable focusComponent = getComponentToFocus(getContainer());
-            if (focusComponent != null) {
-                focusComponent.focus();
-            }
+            findAndFocusChildComponent();
         }
     }
 
@@ -783,6 +780,8 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
                                     @Override
                                     public void actionPerform(Component component) {
                                         doAfterClose = null;
+                                        // try to move focus back
+                                        findAndFocusChildComponent();
                                     }
                                 }
                         }
@@ -804,6 +803,8 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
                                     @Override
                                     public void actionPerform(Component component) {
                                         doAfterClose = null;
+                                        // try to move focus back
+                                        findAndFocusChildComponent();
                                     }
                                 }
                         }
@@ -827,6 +828,13 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
         }
         closing = res;
         return res;
+    }
+
+    protected void findAndFocusChildComponent() {
+        com.vaadin.ui.Component.Focusable focusComponent = getComponentToFocus(getContainer());
+        if (focusComponent != null) {
+            focusComponent.focus();
+        }
     }
 
     protected boolean isModified() {

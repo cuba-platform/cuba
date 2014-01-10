@@ -84,7 +84,13 @@ public class SettingsWindow extends AbstractWindow {
                 new AbstractAction("changePassw") {
                     @Override
                     public void actionPerform(Component component) {
-                        openEditor("sec$User.changePassw", user, WindowManager.OpenType.DIALOG);
+                        Window passwordDialog = openEditor("sec$User.changePassw", user, WindowManager.OpenType.DIALOG);
+                        passwordDialog.addListener(new CloseListener() {
+                            @Override
+                            public void windowClosed(String actionId) {
+                                changePasswordBtn.requestFocus();
+                            }
+                        });
                     }
                 }
         );
