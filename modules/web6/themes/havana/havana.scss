@@ -715,27 +715,6 @@
 * Correspondence History style
 */
 
-.v-table-cell-content-income,
-.v-collapsed .v-table-cell-content-income .v-table-float,
-.v-expanded .v-table-cell-content-income .v-table-float {
-  background: transparent url(images/income.png) 0 center no-repeat;
-  padding-left: 19px;
-}
-
-.v-table-cell-content-outcome,
-.v-collapsed .v-table-cell-content-outcome .v-table-float,
-.v-expanded .v-table-cell-content-outcome .v-table-float {
-  background: transparent url(images/outcome.png) 0 center no-repeat;
-  padding-left: 19px;
-}
-
-.v-collapsed .v-table-cell-content-income,
-.v-expanded .v-table-cell-content-income,
-.v-collapsed .v-table-cell-content-outcome,
-.v-expanded .v-table-cell-content-outcome {
-  background: transparent;
-  padding-left: 0;
-}
 
 .v-label-form-error, .edit-area .v-label-form-error {
   /*color: red;*/
