@@ -617,6 +617,9 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
                 if (component instanceof HasFormatter) {
                     ((HasFormatter) component).setFormatter(field.getFormatter());
                 }
+                if (component instanceof DesktopCheckBox) {
+                    component.setAlignment(Alignment.MIDDLE_LEFT);
+                }
                 return component;
             }
         };
