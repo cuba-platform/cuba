@@ -8,6 +8,7 @@ package com.haulmont.cuba.web.toolkit.ui;
 import com.google.common.collect.Iterables;
 import com.haulmont.cuba.web.gui.components.presentations.TablePresentations;
 import com.haulmont.cuba.web.gui.data.PropertyValueStringify;
+import com.haulmont.cuba.web.toolkit.ShortcutActionManager;
 import com.haulmont.cuba.web.toolkit.data.TableContainer;
 import com.haulmont.cuba.web.toolkit.ui.client.table.CubaTableClientRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.table.CubaTableState;
@@ -32,7 +33,10 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
 
     protected LinkedList<Object> editableColumns = null;
 
-    protected ActionManager shortcutsManager = new ActionManager();
+    /**
+     * Keeps track of the ShortcutListeners added to this component, and manages the painting and handling as well.
+     */
+    protected ActionManager shortcutActionManager;
 
     protected boolean autowirePropertyDsForFields = false;
 
@@ -137,9 +141,9 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
     @Override
     public void changeVariables(Object source, Map<String, Object> variables) {
         super.changeVariables(source, variables);
-        // Actions
-        if (shortcutsManager != null) {
-            shortcutsManager.handleActions(variables, this);
+
+        if (shortcutActionManager != null) {
+            shortcutActionManager.handleActions(variables, this);
         }
     }
 
@@ -229,9 +233,28 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
     }
 
     @Override
+    public void addShortcutListener(ShortcutListener shortcut) {
+        if (shortcutActionManager == null) {
+            shortcutActionManager = new ShortcutActionManager(this);
+        }
+
+        shortcutActionManager.addAction(shortcut);
+    }
+
+    @Override
+    public void removeShortcutListener(ShortcutListener shortcut) {
+        if (shortcutActionManager != null) {
+            shortcutActionManager.removeAction(shortcut);
+        }
+    }
+
+    @Override
     protected void paintActions(PaintTarget target, Set<Action> actionSet) throws PaintException {
         super.paintActions(target, actionSet);
-        //shortcutsManager.paintActions(null, target);
+
+        if (shortcutActionManager != null) {
+            shortcutActionManager.paintActions(null, target);
+        }
     }
 
     @Override
@@ -245,18 +268,6 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
         }
 
         return clientNeedsContentRefresh;
-    }
-
-    @Override
-    public void addShortcutListener(ShortcutListener listener) {
-        super.addShortcutListener(listener);
-        shortcutsManager.addAction(listener);
-    }
-
-    @Override
-    public void removeShortcutListener(ShortcutListener listener) {
-        super.removeShortcutListener(listener);
-        shortcutsManager.removeAction(listener);
     }
 
     @Override

@@ -105,6 +105,10 @@ public interface ClientConfig extends Config {
     @Property("cuba.gui.tableInsertShortcut")
     String getTableInsertShortcut();
 
+    @DefaultString("CTRL-ALT-INSERT")
+    @Property("cuba.gui.tableAddShortcut")
+    String getTableAddShortcut();
+
     @DefaultString("CTRL-DELETE")
     @Property("cuba.gui.tableRemoveShortcut")
     String getTableRemoveShortcut();

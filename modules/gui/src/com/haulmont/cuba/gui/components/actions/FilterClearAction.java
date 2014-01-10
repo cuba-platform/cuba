@@ -53,6 +53,7 @@ public class FilterClearAction extends AbstractAction {
         Component.Container container = owner.getFrame().getComponent(containerName);
         ComponentsHelper.walkComponents(container,
                 new ComponentVisitor() {
+                    @Override
                     public void visit(Component component, String name) {
                         if (component instanceof Field) {
                             ((Field) component).setValue(null);

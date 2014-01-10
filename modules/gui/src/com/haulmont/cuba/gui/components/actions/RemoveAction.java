@@ -130,6 +130,7 @@ public class RemoveAction extends ItemTrackingAction {
      * customize behaviour below.
      * @param component component invoking action
      */
+    @Override
     public void actionPerform(Component component) {
         if (!isEnabled())
             return;
@@ -150,12 +151,18 @@ public class RemoveAction extends ItemTrackingAction {
                             @Override
                             public void actionPerform(Component component) {
                                 doRemove(selected, autocommit);
+
+                                // move focus to owner
+                                owner.requestFocus();
+
                                 afterRemove(selected);
                             }
                         },
                         new DialogAction(DialogAction.Type.CANCEL) {
                             @Override
                             public void actionPerform(Component component) {
+                                // move focus to owner
+                                owner.requestFocus();
                             }
                         }
                 }

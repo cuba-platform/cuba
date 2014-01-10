@@ -112,6 +112,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     // Map column id to Printable representation
     protected Map<String, Printable> printables = new HashMap<>();
 
+    protected Map<String, ShortcutListener> shortcuts = new HashMap<>();
+
 //  disabled for #PL-2035
     // Disable listener that points component value to follow the ds item.
 //    protected boolean disableItemListener = false;
@@ -486,9 +488,20 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     @Override
     public void addAction(Action action) {
         super.addAction(action);
+
+        // remove old listener if we replace action
+        component.removeShortcutListener(shortcuts.remove(action.getId()));
+
         if (action.getShortcut() != null) {
             addShortcutActionBridge(action.getId(), action.getShortcut());
         }
+    }
+
+    @Override
+    public void removeAction(Action action) {
+        super.removeAction(action);
+
+        component.removeShortcutListener(shortcuts.remove(action.getId()));
     }
 
     /**
@@ -498,8 +511,9 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
      * @param keyCombination   KeyCombination object
      */
     protected void addShortcutActionBridge(final String actionId, KeyCombination keyCombination) {
-        component.addShortcutListener(new ShortcutListener(actionId, keyCombination.getKey().getCode(),
+        ShortcutListener shortcut = new ShortcutListener(actionId, keyCombination.getKey().getCode(),
                 KeyCombination.Modifier.codes(keyCombination.getModifiers())) {
+
             @Override
             public void handleAction(Object sender, Object target) {
                 if (target == component) {
@@ -508,7 +522,9 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                         action.actionPerform(WebAbstractTable.this);
                 }
             }
-        });
+        };
+        shortcuts.put(actionId, shortcut);
+        component.addShortcutListener(shortcut);
     }
 
     protected void handleClickAction() {

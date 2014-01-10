@@ -151,6 +151,7 @@ public class CubaTreeWidget extends VTree implements ShortcutActionHandler.Short
         this.contextMenuHandling = contextMenuHandling;
     }
 
+    @Override
     public boolean isSelected(TreeNode treeNode) {
         return selectedIds.contains(treeNode.key) && !contextMenuHandling;
     }

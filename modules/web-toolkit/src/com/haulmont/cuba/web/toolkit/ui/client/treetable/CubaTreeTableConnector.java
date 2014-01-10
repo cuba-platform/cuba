@@ -7,10 +7,9 @@ package com.haulmont.cuba.web.toolkit.ui.client.treetable;
 
 import com.haulmont.cuba.web.toolkit.ui.CubaTreeTable;
 import com.haulmont.cuba.web.toolkit.ui.client.table.CubaTableClientRpc;
-import com.vaadin.client.ComponentConnector;
-import com.vaadin.client.TooltipInfo;
-import com.vaadin.client.Util;
+import com.vaadin.client.*;
 import com.vaadin.client.communication.StateChangeEvent;
+import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.treetable.TreeTableConnector;
 import com.google.gwt.dom.client.Element;
 import com.vaadin.shared.ui.Connect;
@@ -85,5 +84,24 @@ public class CubaTreeTableConnector extends TreeTableConnector {
         }
 
         return info;
+    }
+
+    @Override
+    public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
+        super.updateFromUIDL(uidl, client);
+
+        // We may have actions attached to this panel
+        if (uidl.getChildCount() > 1) {
+            final int cnt = uidl.getChildCount();
+            for (int i = 1; i < cnt; i++) {
+                UIDL childUidl = uidl.getChildUIDL(i);
+                if (childUidl.getTag().equals("shortcuts")) {
+                    if (getWidget().getShortcutActionHandler() == null) {
+                        getWidget().setShortcutActionHandler(new ShortcutActionHandler(uidl.getId(), client));
+                    }
+                    getWidget().getShortcutActionHandler().updateActionMap(childUidl);
+                }
+            }
+        }
     }
 }

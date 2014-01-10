@@ -143,6 +143,7 @@ public class EditAction extends ItemTrackingAction {
      * customize behaviour below.
      * @param component component invoking action
      */
+    @Override
     public void actionPerform(Component component) {
         final Set selected = owner.getSelected();
         if (selected.size() == 1) {
@@ -165,6 +166,7 @@ public class EditAction extends ItemTrackingAction {
             final Window window = owner.getFrame().openEditor(windowID, datasource.getItem(), openType, params, parentDs);
 
             window.addListener(new Window.CloseListener() {
+                @Override
                 public void windowClosed(String actionId) {
                     if (Window.COMMIT_ACTION_ID.equals(actionId) && window instanceof Window.Editor) {
                         Entity item = ((Window.Editor) window).getItem();
@@ -176,6 +178,10 @@ public class EditAction extends ItemTrackingAction {
                             afterCommit(item);
                         }
                     }
+
+                    // move focus to owner
+                    owner.requestFocus();
+
                     afterWindowClosed(window);
                 }
             });

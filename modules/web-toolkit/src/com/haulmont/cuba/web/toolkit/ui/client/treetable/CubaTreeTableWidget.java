@@ -27,7 +27,7 @@ import com.vaadin.client.ui.*;
  * @author artamonov
  * @version $Id$
  */
-public class CubaTreeTableWidget extends VTreeTable {
+public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHandler.ShortcutActionHandlerOwner {
 
     protected static final String WIDGET_CELL_CLASSNAME = "widget-container";
 
@@ -37,6 +37,8 @@ public class CubaTreeTableWidget extends VTreeTable {
     protected int sortClickCounter = 0;
 
     protected VOverlay presentationsEditorPopup;
+
+    protected ShortcutActionHandler shortcutHandler;
 
     protected Widget presentationsMenu;
 
@@ -76,6 +78,25 @@ public class CubaTreeTableWidget extends VTreeTable {
         super.onBlur(event);
 
         removeStyleDependentName("body-focus");
+    }
+
+    @Override
+    public void onBrowserEvent(Event event) {
+        super.onBrowserEvent(event);
+
+        final int type = DOM.eventGetType(event);
+        if (type == Event.ONKEYDOWN && shortcutHandler != null) {
+            shortcutHandler.handleKeyboardEvent(event);
+        }
+    }
+
+    public void setShortcutActionHandler(ShortcutActionHandler handler) {
+        this.shortcutHandler = handler;
+    }
+
+    @Override
+    public ShortcutActionHandler getShortcutActionHandler() {
+        return shortcutHandler;
     }
 
     @Override

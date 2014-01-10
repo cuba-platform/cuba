@@ -266,11 +266,14 @@ public class UserEditor extends AbstractEditor<User> {
         }
     }
 
-    private class AddRoleAction extends AbstractAction {
+    protected class AddRoleAction extends AbstractAction {
 
         public AddRoleAction() {
             super("add");
             icon = "icons/add.png";
+
+            ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+            setShortcut(clientConfig.getTableAddShortcut());
         }
 
         @Override
@@ -313,12 +316,20 @@ public class UserEditor extends AbstractEditor<User> {
 
             }, WindowManager.OpenType.THIS_TAB, lookupParams);
 
+            roleLookupWindow.addListener(new CloseListener() {
+                @Override
+                public void windowClosed(String actionId) {
+                    rolesTable.requestFocus();
+                }
+            });
+
             Component lookupComponent = roleLookupWindow.getLookupComponent();
             if (lookupComponent instanceof Table) {
                 ((Table) lookupComponent).setMultiSelect(true);
             }
         }
 
+        @Override
         public boolean isEnabled() {
             return super.isEnabled() &&
                     userSession.isEntityOpPermitted(
@@ -331,7 +342,7 @@ public class UserEditor extends AbstractEditor<User> {
         }
     }
 
-    private class EditRoleAction extends ItemTrackingAction {
+    protected class EditRoleAction extends ItemTrackingAction {
 
         public EditRoleAction() {
             super("edit");
@@ -349,6 +360,7 @@ public class UserEditor extends AbstractEditor<User> {
                     if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                         rolesDs.refresh();
                     }
+                    rolesTable.requestFocus();
                 }
             });
         }
@@ -359,7 +371,7 @@ public class UserEditor extends AbstractEditor<User> {
         }
     }
 
-    private class RemoveRoleAction extends RemoveAction {
+    protected class RemoveRoleAction extends RemoveAction {
 
         private boolean hasDefaultRole = false;
 
@@ -390,6 +402,7 @@ public class UserEditor extends AbstractEditor<User> {
             return false;
         }
 
+        @Override
         public boolean isEnabled() {
             return super.isEnabled() &&
                     userSession.isEntityOpPermitted(
@@ -397,11 +410,14 @@ public class UserEditor extends AbstractEditor<User> {
         }
     }
 
-    private class AddSubstitutedAction extends AbstractAction {
+    protected class AddSubstitutedAction extends AbstractAction {
 
         public AddSubstitutedAction() {
             super("add");
             icon = "icons/add.png";
+
+            ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+            setShortcut(clientConfig.getTableAddShortcut());
         }
 
         @Override
@@ -421,12 +437,18 @@ public class UserEditor extends AbstractEditor<User> {
 
             getDialogParams().setWidth(500);
 
-            openEditor("sec$UserSubstitution.edit", substitution,
+            Window substitutionEditor = openEditor("sec$UserSubstitution.edit", substitution,
                     WindowManager.OpenType.DIALOG, params, substitutionsDs);
+            substitutionEditor.addListener(new CloseListener() {
+                @Override
+                public void windowClosed(String actionId) {
+                    substTable.requestFocus();
+                }
+            });
         }
     }
 
-    private class EditSubstitutedAction extends ItemTrackingAction {
+    protected class EditSubstitutedAction extends ItemTrackingAction {
 
         public EditSubstitutedAction() {
             super("edit");
@@ -437,9 +459,16 @@ public class UserEditor extends AbstractEditor<User> {
         public void actionPerform(Component component) {
             getDialogParams().setWidth(500);
 
-            if (substitutionsDs.getItem() != null)
-                openEditor("sec$UserSubstitution.edit", substitutionsDs.getItem(),
+            if (substitutionsDs.getItem() != null) {
+                Window substitutionEditor = openEditor("sec$UserSubstitution.edit", substitutionsDs.getItem(),
                         WindowManager.OpenType.DIALOG, substitutionsDs);
+                substitutionEditor.addListener(new CloseListener() {
+                    @Override
+                    public void windowClosed(String actionId) {
+                        substTable.requestFocus();
+                    }
+                });
+            }
         }
     }
 }

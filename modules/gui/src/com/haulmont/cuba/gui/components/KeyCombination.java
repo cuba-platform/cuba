@@ -32,7 +32,7 @@ public class KeyCombination {
         Key key;
         Modifier[] modifiers = null;
 
-        if (keyString.indexOf("-") > -1) {
+        if (keyString.contains("-")) {
             String[] keys = keyString.split("-", -1);
 
             int modifiersCnt = keys.length;

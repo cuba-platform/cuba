@@ -52,6 +52,7 @@ public class RefreshAction extends AbstractAction {
      * customize behaviour below.
      * @param component component invoking action
      */
+    @Override
     public void actionPerform(Component component) {
         CollectionDatasource datasource = owner.getDatasource();
 

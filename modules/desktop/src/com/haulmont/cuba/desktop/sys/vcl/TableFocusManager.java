@@ -79,7 +79,8 @@ public class TableFocusManager {
         } else if (e.getKeyCode() == KeyEvent.VK_ESCAPE && pressed) {
             impl.requestFocus();
             impl.editingCanceled(new ChangeEvent(this));
-            return true;
+            // allow handle ESCAPE in window
+            return false;
         } else {
             return false;
         }

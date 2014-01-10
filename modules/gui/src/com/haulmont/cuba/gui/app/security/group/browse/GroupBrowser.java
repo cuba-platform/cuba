@@ -91,10 +91,7 @@ public class GroupBrowser extends AbstractWindow {
             }
         };
 
-        groupsTree.addAction(groupCreateAction);
-        groupsTree.addAction(groupCopyAction);
         groupsTree.addAction(new RemoveAction(groupsTree) {
-
             @Override
             public boolean isApplicableTo(Datasource.State state, Entity item) {
                 return super.isApplicableTo(state, item)
@@ -118,7 +115,7 @@ public class GroupBrowser extends AbstractWindow {
                 if (!selected.isEmpty()) {
                     getDialogParams().setResizable(false);
                     getDialogParams().setHeight(400);
-                    openLookup("sec$Group.lookup", new Lookup.Handler() {
+                    Window lookupWindow = openLookup("sec$Group.lookup", new Lookup.Handler() {
                         @Override
                         public void handleLookup(Collection items) {
                             if (items.size() == 1) {
@@ -133,6 +130,13 @@ public class GroupBrowser extends AbstractWindow {
                             }
                         }
                     }, WindowManager.OpenType.DIALOG);
+
+                    lookupWindow.addListener(new CloseListener() {
+                        @Override
+                        public void windowClosed(String actionId) {
+                            usersTable.requestFocus();
+                        }
+                    });
                 }
             }
 

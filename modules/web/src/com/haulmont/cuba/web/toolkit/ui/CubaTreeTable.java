@@ -8,6 +8,7 @@ package com.haulmont.cuba.web.toolkit.ui;
 import com.google.common.collect.Iterables;
 import com.haulmont.cuba.web.gui.components.presentations.TablePresentations;
 import com.haulmont.cuba.web.gui.data.PropertyValueStringify;
+import com.haulmont.cuba.web.toolkit.ShortcutActionManager;
 import com.haulmont.cuba.web.toolkit.data.TableContainer;
 import com.haulmont.cuba.web.toolkit.data.TreeTableContainer;
 import com.haulmont.cuba.web.toolkit.data.util.TreeTableContainerWrapper;
@@ -16,6 +17,11 @@ import com.haulmont.cuba.web.toolkit.ui.client.treetable.CubaTreeTableState;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.HierarchicalContainer;
+import com.vaadin.event.Action;
+import com.vaadin.event.ActionManager;
+import com.vaadin.event.ShortcutListener;
+import com.vaadin.server.PaintException;
+import com.vaadin.server.PaintTarget;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 
@@ -30,6 +36,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableContainer, CubaEnhancedTable {
 
     protected LinkedList<Object> editableColumns = null;
+
+    /**
+     * Keeps track of the ShortcutListeners added to this component, and manages the painting and handling as well.
+     */
+    protected ActionManager shortcutActionManager;
 
     protected boolean autowirePropertyDsForFields = false;
 
@@ -159,6 +170,40 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
     @Override
     public int getLevel(Object itemId) {
         return ((TreeTableContainer) items).getLevel(itemId);
+    }
+
+    @Override
+    public void changeVariables(Object source, Map<String, Object> variables) {
+        super.changeVariables(source, variables);
+
+        if (shortcutActionManager != null) {
+            shortcutActionManager.handleActions(variables, this);
+        }
+    }
+
+    @Override
+    public void addShortcutListener(ShortcutListener shortcut) {
+        if (shortcutActionManager == null) {
+            shortcutActionManager = new ShortcutActionManager(this);
+        }
+
+        shortcutActionManager.addAction(shortcut);
+    }
+
+    @Override
+    public void removeShortcutListener(ShortcutListener shortcut) {
+        if (shortcutActionManager != null) {
+            shortcutActionManager.removeAction(shortcut);
+        }
+    }
+
+    @Override
+    protected void paintActions(PaintTarget target, Set<Action> actionSet) throws PaintException {
+        super.paintActions(target, actionSet);
+
+        if (shortcutActionManager != null) {
+            shortcutActionManager.paintActions(null, target);
+        }
     }
 
     @Override

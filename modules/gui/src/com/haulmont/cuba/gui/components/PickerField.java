@@ -216,6 +216,9 @@ public interface PickerField extends Field, Component.ActionsHolder {
                 lookupWindow.addListener(new Window.CloseListener() {
                     @Override
                     public void windowClosed(String actionId) {
+                        // move focus to owner
+                        pickerField.requestFocus();
+
                         afterCloseLookup(actionId);
                     }
                 });
@@ -365,6 +368,11 @@ public interface PickerField extends Field, Component.ActionsHolder {
                             Entity item = editor.getItem();
                             afterCommitOpenedEntity(item);
                         }
+
+                        // move focus to owner
+                        pickerField.requestFocus();
+
+                        afterWindowClosed(editor);
                     }
                 });
             }
@@ -405,6 +413,9 @@ public interface PickerField extends Field, Component.ActionsHolder {
                 lookupPickerField.setValue(item);
                 ((DatasourceImplementation) lookupPickerField.getDatasource()).setModified(modified);
             }
+        }
+
+        protected void afterWindowClosed(Window window) {
         }
 
         @Override

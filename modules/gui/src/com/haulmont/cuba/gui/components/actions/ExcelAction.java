@@ -6,10 +6,7 @@ package com.haulmont.cuba.gui.components.actions;
 
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.AbstractAction;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.export.ExcelExporter;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 
@@ -85,10 +82,11 @@ public class ExcelAction extends AbstractAction {
      */
     @Override
     public void actionPerform(Component component) {
-        if (parameterized)
+        if (parameterized) {
             parameterizedExport();
-        else
+        } else {
             export();
+        }
     }
 
     /**
@@ -106,6 +104,13 @@ public class ExcelAction extends AbstractAction {
         Map<String, Object> params = new HashMap<>();
         params.put("table", table);
         params.put("exportDisplay", display);
-        table.getFrame().openWindow("excelExport", WindowManager.OpenType.DIALOG, params);
+        Window excelExportDialog = table.getFrame().openWindow("excelExport", WindowManager.OpenType.DIALOG, params);
+        excelExportDialog.addListener(new Window.CloseListener() {
+            @Override
+            public void windowClosed(String actionId) {
+                // move focus to owner
+                table.requestFocus();
+            }
+        });
     }
 }

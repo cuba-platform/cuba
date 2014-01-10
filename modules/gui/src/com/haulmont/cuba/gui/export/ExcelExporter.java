@@ -168,7 +168,7 @@ public class ExcelExporter {
         CollectionDatasource datasource = table.getDatasource();
         if (table instanceof TreeTable) {
             TreeTable treeTable = (TreeTable) table;
-            HierarchicalDatasource ds = (HierarchicalDatasource) treeTable.getDatasource();
+            HierarchicalDatasource ds = treeTable.getDatasource();
             for (Object itemId : ds.getRootItemIds()) {
                 r = createHierarhicalRow(treeTable, columns, exportExpanded, r, itemId);
             }
@@ -207,7 +207,7 @@ public class ExcelExporter {
 
     protected int createHierarhicalRow(TreeTable table, List<Table.Column> columns,
                                        Boolean exportExpanded, int rowNumber, Object itemId) {
-        HierarchicalDatasource hd = (HierarchicalDatasource) table.getDatasource();
+        HierarchicalDatasource hd = table.getDatasource();
         createRow(table, columns, 0, ++rowNumber, itemId);
         if (BooleanUtils.isTrue(exportExpanded) && !table.isExpanded(itemId) && !hd.getChildren(itemId).isEmpty()) {
             return rowNumber;
@@ -227,7 +227,7 @@ public class ExcelExporter {
     }
 
     protected int createGroupRow(GroupTable table, List<Table.Column> columns, int rowNumber, GroupInfo groupInfo, int groupNumber) {
-        GroupDatasource ds = (GroupDatasource) table.getDatasource();
+        GroupDatasource ds = table.getDatasource();
 
         HSSFRow row = sheet.createRow(rowNumber);
         HSSFCell cell = row.createCell(groupNumber);
@@ -342,7 +342,7 @@ public class ExcelExporter {
                 cell.setCellStyle(dateFormatCellStyle);
 
             if (sizers[sizersIndex].isNotificationRequired(notificationReqiured)) {
-                String str = Datatypes.get(Date.class).format((Date) cellValue);
+                String str = Datatypes.getNN(Date.class).format((Date) cellValue);
                 sizers[sizersIndex].notifyCellValue(str, stdFont);
             }
         } else if (cellValue instanceof Boolean) {

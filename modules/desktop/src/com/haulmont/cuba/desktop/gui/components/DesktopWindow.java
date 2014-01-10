@@ -184,6 +184,12 @@ public class DesktopWindow implements Window, Component.Disposable,
             }
         }
         for (java.awt.Component child : component.getComponents()) {
+            if (child instanceof JTabbedPane) {
+                // #PL-3176
+                // we don't know about selected tab after request
+                // may be focused component lays on not selected tab
+                continue;
+            }
             if (child instanceof java.awt.Container) {
                 java.awt.Component result = getComponentToFocus((java.awt.Container) child);
                 if (result != null) {
@@ -260,6 +266,7 @@ public class DesktopWindow implements Window, Component.Disposable,
                         MessageType.WARNING,
                         new Action[]{
                                 new DialogAction(DialogAction.Type.YES) {
+                                    @Override
                                     public void actionPerform(Component component) {
                                         forceClose = true;
                                         close(actionId);
@@ -267,6 +274,7 @@ public class DesktopWindow implements Window, Component.Disposable,
 
                                 },
                                 new DialogAction(DialogAction.Type.NO) {
+                                    @Override
                                     public void actionPerform(Component component) {
                                         doAfterClose = null;
                                     }
@@ -1109,8 +1117,9 @@ public class DesktopWindow implements Window, Component.Disposable,
         }
 
         protected void fireSelectAction() {
-            if (selectListener != null)
+            if (selectListener != null) {
                 selectListener.actionPerformed(null);
+            }
         }
 
         @Override

@@ -202,6 +202,7 @@ public class CreateAction extends AbstractAction {
         final Window window = owner.getFrame().openEditor(getWindowId(), item, openType, params, parentDs);
 
         window.addListener(new Window.CloseListener() {
+            @Override
             public void windowClosed(String actionId) {
                 if (Window.COMMIT_ACTION_ID.equals(actionId) && window instanceof Window.Editor) {
                     Object item = ((Window.Editor) window).getItem();
@@ -215,6 +216,10 @@ public class CreateAction extends AbstractAction {
                         afterCommit((Entity) item);
                     }
                 }
+
+                // move focus to owner
+                owner.requestFocus();
+
                 afterWindowClosed(window);
             }
         });

@@ -271,20 +271,12 @@ public class DesktopTree extends DesktopAbstractActionsHolderComponent<JTree> im
 
     @Override
     public void setSelected(Entity item) {
-        if (!isEditable()) {
-            return;
-        }
-
         TreePath path = model.getTreePath(item);
         impl.setSelectionPath(path);
     }
 
     @Override
     public void setSelected(Collection<Entity> items) {
-        if (!isEditable()) {
-            return;
-        }
-
         TreePath[] paths = new TreePath[items.size()];
         int i = 0;
         for (Entity item : items) {

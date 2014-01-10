@@ -8,8 +8,10 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.chile.core.model.Session;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
@@ -92,6 +94,8 @@ public class AddAction extends AbstractAction {
         this.openType = openType;
         this.caption = messages.getMainMessage("actions.Add");
         this.icon = "icons/add.png";
+        ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+        setShortcut(clientConfig.getTableAddShortcut());
 
         refreshState();
     }
@@ -124,14 +128,22 @@ public class AddAction extends AbstractAction {
      * customize behaviour below.
      * @param component component invoking action
      */
+    @Override
     public void actionPerform(Component component) {
         Map<String, Object> params = getWindowParams();
         if (params == null)
             params = new HashMap<>();
 
-        Window.Lookup.Handler h = handler != null ? handler : new DefaultHandler();
+        Window.Lookup.Handler itemsHandler = handler != null ? handler : new DefaultHandler();
 
-        owner.getFrame().openLookup(getWindowId(), h, openType, params);
+        Window lookupWindow = owner.getFrame().openLookup(getWindowId(), itemsHandler, openType, params);
+        lookupWindow.addListener(new Window.CloseListener() {
+            @Override
+            public void windowClosed(String actionId) {
+                // move focus to owner
+                owner.requestFocus();
+            }
+        });
     }
 
     /**

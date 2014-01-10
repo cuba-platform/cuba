@@ -139,7 +139,10 @@ public class UserBrowser extends AbstractLookup {
             editor.addListener(new CloseListener() {
                 @Override
                 public void windowClosed(String actionId) {
-                    usersDs.refresh();
+                    if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                        usersDs.refresh();
+                    }
+                    usersTable.requestFocus();
                 }
             });
         }
@@ -148,11 +151,17 @@ public class UserBrowser extends AbstractLookup {
     public void copySettings() {
         Set<User> selected = usersTable.getSelected();
         if (!selected.isEmpty()) {
-            openWindow(
+            Window copySettingsWindow = openWindow(
                     "sec$User.copySettings",
                     WindowManager.OpenType.DIALOG,
                     new SingletonMap("users", selected)
             );
+            copySettingsWindow.addListener(new CloseListener() {
+                @Override
+                public void windowClosed(String actionId) {
+                    usersTable.requestFocus();
+                }
+            });
         }
     }
 
@@ -171,6 +180,7 @@ public class UserBrowser extends AbstractLookup {
                         User item = (User) changePasswordDialog.getItem();
                         usersDs.updateItem(dataSupplier.reload(item, "user.browse"));
                     }
+                    usersTable.requestFocus();
                 }
             });
         }
@@ -188,6 +198,7 @@ public class UserBrowser extends AbstractLookup {
                         Set<User> users = usersTable.getSelected();
                         resetPasswordsForUsers(users, sendEmails, generatePasswords);
                     }
+                    usersTable.requestFocus();
                 }
             });
         }
@@ -214,7 +225,13 @@ public class UserBrowser extends AbstractLookup {
                     userPasswords.put(usersDs.getItem(entry.getKey()), entry.getValue());
                 }
                 Map<String, Object> params = Collections.singletonMap("passwords", (Object) userPasswords);
-                openWindow("sec$User.newPasswords", WindowManager.OpenType.DIALOG, params);
+                Window newPasswordsWindow = openWindow("sec$User.newPasswords", WindowManager.OpenType.DIALOG, params);
+                newPasswordsWindow.addListener(new CloseListener() {
+                    @Override
+                    public void windowClosed(String actionId) {
+                        usersTable.requestFocus();
+                    }
+                });
             } else {
                 showNotification(String.format(getMessage("changePasswordAtLogonCompleted"), changedPasswords.size()),
                         NotificationType.HUMANIZED);

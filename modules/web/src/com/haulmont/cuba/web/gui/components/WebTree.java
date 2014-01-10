@@ -18,6 +18,8 @@ import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.AbstractSelect;
 import org.apache.commons.lang.StringUtils;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -29,6 +31,8 @@ public class WebTree extends WebAbstractList<CubaTree> implements Tree {
     protected String hierarchyProperty;
     protected CaptionMode captionMode = CaptionMode.ITEM;
     protected String captionProperty;
+
+    protected Map<String, ShortcutListener> shortcuts = new HashMap<>();
     
     public WebTree() {
         component = new CubaTree();
@@ -58,9 +62,20 @@ public class WebTree extends WebAbstractList<CubaTree> implements Tree {
     @Override
     public void addAction(Action action) {
         super.addAction(action);
+
+        // remove old listener if we replace action
+        component.removeShortcutListener(shortcuts.remove(action.getId()));
+
         if (action.getShortcut() != null) {
             addShortcutActionBridge(action.getId(), action.getShortcut());
         }
+    }
+
+    @Override
+    public void removeAction(Action action) {
+        super.removeAction(action);
+
+        component.removeShortcutListener(shortcuts.remove(action.getId()));
     }
 
     /**
@@ -70,7 +85,7 @@ public class WebTree extends WebAbstractList<CubaTree> implements Tree {
      * @param keyCombination   KeyCombination object
      */
     protected void addShortcutActionBridge(final String actionId, KeyCombination keyCombination) {
-        component.addShortcutListener(new ShortcutListener(actionId, keyCombination.getKey().getCode(),
+        ShortcutListener shortcut = new ShortcutListener(actionId, keyCombination.getKey().getCode(),
                 KeyCombination.Modifier.codes(keyCombination.getModifiers())) {
             @Override
             public void handleAction(Object sender, Object target) {
@@ -80,7 +95,9 @@ public class WebTree extends WebAbstractList<CubaTree> implements Tree {
                         action.actionPerform(WebTree.this);
                 }
             }
-        });
+        };
+        shortcuts.put(actionId, shortcut);
+        component.addShortcutListener(shortcut);
     }
 
     @Override
