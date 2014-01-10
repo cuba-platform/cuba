@@ -8,8 +8,8 @@
         lookupComponent="usersTable"
         caption="msg://caption"
         messagesPack="com.haulmont.cuba.gui.app.security.user.browse"
-        focusComponent="genericFilter"
-        >
+        focusComponent="genericFilter">
+
     <dsContext>
         <groupDatasource
                 id="usersDs"
@@ -42,11 +42,11 @@
                 <action id="copy" caption="msg://copy" icon="icons/copy.png" invoke="copy" enable="false"/>
                 <action id="remove"/>
                 <action id="copySettings" caption="msg://copySettings" icon="icons/copy.png"
-                        trackSelection="true" invoke="copySettings"/>
+                        invoke="copySettings"/>
                 <action id="changePassw" caption="msg://changePassw" icon="icons/change-pass.png"
-                        trackSelection="true" invoke="changePassword"/>
+                        invoke="changePassword"/>
                 <action id="changePasswAtLogon" caption="msg://changePasswAtLogon" icon="icons/change-pass-at-logon.png"
-                        trackSelection="true" invoke="changePasswordAtLogon"/>
+                        invoke="changePasswordAtLogon"/>
                 <action id="excel"/>
             </actions>
             <buttonsPanel>

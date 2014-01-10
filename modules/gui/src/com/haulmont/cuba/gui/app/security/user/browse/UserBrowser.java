@@ -11,12 +11,15 @@ import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.app.security.user.edit.UserEditor;
 import com.haulmont.cuba.gui.app.security.user.resetpasswords.ResetPasswordsDialog;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.AbstractLookup;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
+import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.security.app.UserManagementService;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.UserSession;
@@ -76,14 +79,10 @@ public class UserBrowser extends AbstractLookup {
         final boolean hasPermissionsToUpdateUsers =
                 userSession.isEntityOpPermitted(userMetaClass, EntityOp.CREATE);
 
-        copyAction.setEnabled(hasPermissionsToCreateUsers);
-        changePasswAction.setEnabled(hasPermissionsToUpdateUsers);
-        changePasswAtLogonAction.setEnabled(hasPermissionsToUpdateUsers);
+        final boolean hasPermissionsToSettingsCreation =
+                userSession.isEntityOpPermitted(metadata.getClassNN(UserSetting.class), EntityOp.CREATE);
 
-        copySettingsAction.setEnabled(
-                userSession.isEntityOpPermitted(metadata.getClassNN(UserSetting.class), EntityOp.CREATE));
-
-        usersDs.addListener(new DsListenerAdapter<User>() {
+        usersDs.addListener(new CollectionDsListenerAdapter<User>() {
             @Override
             public void itemChanged(Datasource<User> ds, User prevItem, User item) {
                 if (usersTable.getSelected().size() > 1) {
@@ -92,6 +91,19 @@ public class UserBrowser extends AbstractLookup {
                 } else {
                     copyAction.setEnabled(hasPermissionsToCreateUsers && item != null);
                     changePasswAction.setEnabled(hasPermissionsToUpdateUsers && item != null);
+                }
+
+                changePasswAtLogonAction.setEnabled(hasPermissionsToUpdateUsers && item != null);
+                copySettingsAction.setEnabled(hasPermissionsToSettingsCreation && item != null);
+            }
+
+            @Override
+            public void collectionChanged(CollectionDatasource ds, Operation operation, List<User> items) {
+                if (ds.getState() == Datasource.State.VALID) {
+                    copyAction.setEnabled(hasPermissionsToCreateUsers && ds.getItem() != null);
+                    changePasswAction.setEnabled(hasPermissionsToUpdateUsers && ds.getItem() != null);
+                    changePasswAtLogonAction.setEnabled(hasPermissionsToUpdateUsers && ds.getItem() != null);
+                    copySettingsAction.setEnabled(hasPermissionsToSettingsCreation && ds.getItem() != null);
                 }
             }
         });
