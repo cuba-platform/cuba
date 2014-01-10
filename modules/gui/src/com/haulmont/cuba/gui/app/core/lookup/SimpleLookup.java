@@ -75,6 +75,7 @@ public class SimpleLookup extends AbstractLookup {
                 table.setDatasource(datasource);
 
                 lookupPanel.add(table);
+                table.setFrame(((BelongToFrame)lookupPanel).getFrame());
                 ((ExpandingLayout) lookupPanel).expand(table);
                 setLookupComponent(table);
                 break;
