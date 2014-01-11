@@ -606,7 +606,7 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
 
             Button delItemBtn = new Button();
             delItemBtn.setStyleName(BaseTheme.BUTTON_LINK);
-            delItemBtn.setIcon(new VersionedThemeResource("icons/tab-remove.png"));
+            delItemBtn.setIcon(new VersionedThemeResource("components/tabsheet/images/tab-remove.png"));
             delItemBtn.addStyleName("filter-param-list-edit-del");
             delItemBtn.addListener(
                     new Button.ClickListener() {
