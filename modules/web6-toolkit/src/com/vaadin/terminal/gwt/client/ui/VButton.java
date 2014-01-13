@@ -31,15 +31,7 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Accessibility;
 import com.google.gwt.user.client.ui.FocusWidget;
-import com.vaadin.terminal.gwt.client.ApplicationConnection;
-import com.vaadin.terminal.gwt.client.BrowserInfo;
-import com.vaadin.terminal.gwt.client.EventHelper;
-import com.vaadin.terminal.gwt.client.EventId;
-import com.vaadin.terminal.gwt.client.MouseEventDetails;
-import com.vaadin.terminal.gwt.client.Paintable;
-import com.vaadin.terminal.gwt.client.UIDL;
-import com.vaadin.terminal.gwt.client.Util;
-import com.vaadin.terminal.gwt.client.VTooltip;
+import com.vaadin.terminal.gwt.client.*;
 
 /**
  * VButton
@@ -126,6 +118,7 @@ public class VButton extends FocusWidget implements Paintable, ClickHandler,
         addClickHandler(this);
     }
 
+    @Override
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
 
         // Ensure correct implementation,
@@ -312,6 +305,9 @@ public class VButton extends FocusWidget implements Paintable, ClickHandler,
                 if (event.getKeyCode() == 32 /* space */) {
                     isFocusing = true;
                     event.preventDefault();
+                    event.stopPropagation();
+                } else if (event.getKeyCode() == KeyCodes.KEY_ENTER) {
+                    event.stopPropagation();
                 }
                 break;
             case Event.ONKEYUP:
@@ -326,6 +322,7 @@ public class VButton extends FocusWidget implements Paintable, ClickHandler,
                         onClick();
                     }
 
+                    event.stopPropagation();
                     event.preventDefault();
                 }
                 break;
@@ -340,6 +337,7 @@ public class VButton extends FocusWidget implements Paintable, ClickHandler,
                         onClick();
                     }
 
+                    event.stopPropagation();
                     event.preventDefault();
                 }
                 break;
@@ -364,6 +362,7 @@ public class VButton extends FocusWidget implements Paintable, ClickHandler,
      * com.google.gwt.event.dom.client.ClickHandler#onClick(com.google.gwt.event
      * .dom.client.ClickEvent)
      */
+    @Override
     public void onClick(ClickEvent event) {
         if (id == null || client == null) {
             return;
@@ -528,12 +527,13 @@ public class VButton extends FocusWidget implements Paintable, ClickHandler,
     	return ret;
     }-*/;
 
+    @Override
     public void onFocus(FocusEvent arg0) {
         client.updateVariable(id, EventId.FOCUS, "", true);
     }
 
+    @Override
     public void onBlur(BlurEvent arg0) {
         client.updateVariable(id, EventId.BLUR, "", true);
     }
-
 }
