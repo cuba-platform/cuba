@@ -77,7 +77,12 @@
     background: transparent url(images/button-hover.gif) repeat-x;
   }
 
-  .v-disabled.#{$primaryStyleName}:hover {
+  .#{$primaryStyleName}:active {
+    background: transparent url(images/button-pressed.png) repeat-x;
+  }
+
+  .v-disabled.#{$primaryStyleName}:hover,
+  .v-disabled.#{$primaryStyleName}:active {
     background: transparent url(images/button.gif) repeat-x;
   }
 
@@ -115,7 +120,8 @@
     border: 1px dashed $theme_linkColor;
   }
 
-  .#{$primaryStyleName}-link:hover {
+  .#{$primaryStyleName}-link:hover,
+  .#{$primaryStyleName}-link:active {
     background: transparent;
   }
 }

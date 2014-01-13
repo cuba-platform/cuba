@@ -81,6 +81,10 @@
     background: transparent url(images/bg-button-hover.gif) repeat-x;
 }
 
+.v-button:active {
+  background: transparent url(images/button-pressed.png) repeat-x;
+}
+
 .v-button-wrap:hover,
 .v-button:hover .v-button-wrap {
     /*background: transparent url(img/button-active.png) no-repeat right top;*/
@@ -91,7 +95,8 @@
 }
 
 
-.v-disabled.v-button:hover  {
+.v-disabled.v-button:active,
+.v-disabled.v-button:hover {
     background: transparent url(images/bg-button.gif) repeat-x;
     /*background: transparent url(img/button-left.png) no-repeat left center;*/
 }
@@ -172,6 +177,7 @@
     border: none;
 }
 
+.v-button-link:active,
 .v-button-link:hover,
 .v-nativebutton-link:hover {
     background: transparent;
