@@ -504,6 +504,23 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
             ds = datasource;
         }
 
+        boolean repaintRequired = false;
+
+        // Remove all part of old component from target cell
+        Component oldComponent = fieldComponents.get(fieldConf);
+        if (oldComponent != null) {
+            impl.remove(DesktopComponentsHelper.getComposition(oldComponent));
+            repaintRequired = true;
+        }
+        JLabel oldLabel = fieldLabels.get(fieldConf);
+        if (oldLabel != null) {
+            impl.remove(oldLabel);
+        }
+        ToolTipButton oldTooltip = fieldTooltips.get(fieldConf);
+        if (oldTooltip != null) {
+            impl.remove(oldTooltip);
+        }
+
         String caption = null;
         String description = null;
 
@@ -585,6 +602,11 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
         jComponent.putClientProperty(getSwingPropertyId(), fieldConf.getId());
         impl.add(jComponent, cell);
+
+        if (repaintRequired) {
+            impl.validate();
+            impl.repaint();
+        }
     }
 
     protected void applyPermissions(Component c) {

@@ -5,6 +5,7 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.web.toolkit.ui.client.fieldgroup.CubaFieldGroupState;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Layout;
 
@@ -93,6 +94,11 @@ public class CubaFieldGroup extends CubaGroupBox {
         }
 
         final CubaFieldGroupLayout layout = getLayout();
+        Component oldComponent = layout.getComponent(currentX, currentY);
+        if (oldComponent != null) {
+            layout.removeComponent(oldComponent);
+        }
+
         layout.addComponent(field, currentX, currentY);
 
         fields.put(propertyId, field);

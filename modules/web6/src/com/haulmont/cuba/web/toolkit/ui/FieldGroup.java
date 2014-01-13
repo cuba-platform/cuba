@@ -89,6 +89,11 @@ public class FieldGroup extends GroupBox {
         }
 
         final FieldGroupLayout layout = getContent();
+        Component oldComponent = layout.getComponent(currentX, currentY);
+        if (oldComponent != null) {
+            layout.removeComponent(oldComponent);
+            layout.requestRepaintAll();
+        }
         layout.addComponent(field, currentX, currentY);
 
         fields.put(propertyId, field);
