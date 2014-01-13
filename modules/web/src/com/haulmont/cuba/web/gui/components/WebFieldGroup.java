@@ -693,14 +693,19 @@ public class WebFieldGroup
 
     @Override
     public Object getFieldValue(FieldConfig field) {
-        com.vaadin.ui.Field f = component.getField(field.getId());
-        return f.getValue();
+        Component fieldComponent = fieldComponents.get(field);
+        if (fieldComponent instanceof HasValue) {
+            return ((HasValue) fieldComponent).getValue();
+        }
+        return null;
     }
 
     @Override
     public void setFieldValue(FieldConfig field, Object value) {
-        com.vaadin.ui.Field f = component.getField(field.getId());
-        f.setValue(value);
+        Component fieldComponent = fieldComponents.get(field);
+        if (fieldComponent instanceof HasValue) {
+            ((HasValue) fieldComponent).setValue(value);
+        }
     }
 
     @Override
