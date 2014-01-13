@@ -62,6 +62,11 @@
   .v-select-select:focus {
     outline: 1px dotted $theme_fieldFocusedBorderColor;
   }
+
+  // Disable ie10 clear button
+  ::-ms-clear {
+    display: none;
+  }
 }
 
 @mixin box-defaults {

@@ -150,8 +150,13 @@
       }
     }
 
+    .#{$primaryStyleName}-menuitem:hover,
     .#{$primaryStyleName}-menuitem-selected {
       background-color: $theme_appMenuHighlightColor;
+
+      .#{$primaryStyleName}-menuitem-caption {
+        background-color: $theme_appMenuHighlightColor;
+      }
     }
 
     .#{$primaryStyleName}-menuitem-selected div {
