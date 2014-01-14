@@ -2020,6 +2020,10 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         protected AddToSetAction(Table table) {
             super("addToSet");
             this.table = table;
+
+            if (table.getSelected().isEmpty()) {
+                updateApplicableTo(false);
+            }
         }
 
         @Override
@@ -2054,6 +2058,10 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         protected RemoveFromSetAction(Table table) {
             super("removeFromCurSet");
             this.table = table;
+
+            if (table.getSelected().isEmpty()) {
+                updateApplicableTo(false);
+            }
         }
 
         @Override
