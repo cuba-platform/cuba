@@ -79,9 +79,12 @@ public class AppliedFilter {
 
         if (value instanceof ArrayList){
             ArrayList<String> names = new ArrayList<>();
-            ArrayList list= ((ArrayList) value);
-            for (Object obj : list){
-                names.add(((Instance) obj).getInstanceName());
+            ArrayList list = ((ArrayList) value);
+            for (Object obj : list) {
+                if (obj instanceof Instance)
+                    names.add(((Instance) obj).getInstanceName());
+                else
+                    names.add(String.valueOf(obj));
             }
             return names.toString();
         }
