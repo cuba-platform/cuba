@@ -145,7 +145,13 @@ public class DesktopTableCellEditor extends AbstractCellEditor implements TableC
     public Object getCellEditorValue() {
         if (activeComponent != null) {
             flush(activeComponent);
-            desktopAbstractTable.impl.requestFocus();
+
+            Component focusOwner = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
+
+            if (focusOwner == activeComponent ||
+                    (activeComponent instanceof Container && ((Container) activeComponent).isAncestorOf(focusOwner))) {
+                desktopAbstractTable.impl.requestFocus();
+            }
         }
         return "";
     }
