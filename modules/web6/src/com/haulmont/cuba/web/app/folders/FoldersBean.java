@@ -6,7 +6,6 @@
 package com.haulmont.cuba.web.app.folders;
 
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
-import com.haulmont.cuba.core.entity.AppFolder;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.WindowManager;
@@ -82,13 +81,8 @@ public class FoldersBean implements Folders {
             FilterEntity filterEntity = new FilterEntity();
             filterEntity.setFolder(folder);
             filterEntity.setComponentId(folder.getFilterComponentId());
-            if (folder instanceof AppFolder) {
-                filterEntity.setName(((AppFolder) folder).getLocName());
-                filterEntity.setCode(folder.getName());
-            } else {
-                filterEntity.setName(folder.getName());
-                filterEntity.setCode(folder.getName());
-            }
+            filterEntity.setName(folder.getLocName());
+            filterEntity.setCode(folder.getName());
             filterEntity.setXml(folder.getFilterXml());
             filterEntity.setApplyDefault(BooleanUtils.isNotFalse(folder.getApplyDefault()));
             if (folder instanceof SearchFolder) {

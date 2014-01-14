@@ -5,8 +5,6 @@
 package com.haulmont.cuba.core.entity;
 
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Messages;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
@@ -57,10 +55,6 @@ public class AppFolder extends AbstractSearchFolder {
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
-    }
-
-    public String getLocName() {
-        return AppBeans.get(Messages.class).getMainMessage(name);
     }
 
     @Override

@@ -4,6 +4,9 @@
  */
 package com.haulmont.cuba.core.entity;
 
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
+
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 
@@ -58,4 +61,9 @@ public abstract class AbstractSearchFolder extends Folder {
     public void setApplyDefault(Boolean applyDefault) {
         this.applyDefault = applyDefault;
     }
+
+    public String getLocName() {
+        return AppBeans.get(Messages.class).getMainMessage(name);
+    }
+
 }
