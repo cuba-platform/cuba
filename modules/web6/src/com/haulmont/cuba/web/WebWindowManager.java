@@ -328,8 +328,8 @@ public class WebWindowManager extends WindowManager {
                 getFakeTabs().remove(tab);
                 newTab = tabSheet.getTab(layout);
             } else {
-                newTab = tabSheet.addTab(layout);
                 getTabs().put(layout, (WindowBreadCrumbs) components[0]);
+                newTab = tabSheet.addTab(layout);
             }
             newTab.setCaption(formatTabCaption(caption, description));
             //newTab.setDescription(formatTabDescription(caption, description));
