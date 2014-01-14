@@ -343,6 +343,8 @@ public class WebWindowManager extends WindowManager {
                 fakeTabs.remove(tab);
                 newTab = tabSheet.getTab(layout);
             } else {
+                tabs.put(layout, (WindowBreadCrumbs) components[0]);
+
                 newTab = tabSheet.addTab(layout);
 
                 if (ui.isTestMode() && tabSheet instanceof CubaTabSheet) {
@@ -350,8 +352,6 @@ public class WebWindowManager extends WindowManager {
                     mainTabsheet.setTestId(newTab, ui.getTestIdManager().getTestId("tab_" + window.getId()));
                     mainTabsheet.setCubaId(newTab, "tab_" + window.getId());
                 }
-
-                tabs.put(layout, (WindowBreadCrumbs) components[0]);
             }
             newTab.setCaption(formatTabCaption(caption, description));
             //newTab.setDescription(formatTabDescription(caption, description));
