@@ -358,7 +358,7 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
             public void onBrowserEvent(Event event) {
                 super.onBrowserEvent(event);
 
-                if (event.getTypeInt() == Event.ONMOUSEUP) {
+                if (event.getTypeInt() == Event.ONMOUSEDOWN) {
                     handleFocusForWidget();
                 }
             }

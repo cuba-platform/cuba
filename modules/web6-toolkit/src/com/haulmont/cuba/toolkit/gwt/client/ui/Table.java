@@ -3000,12 +3000,12 @@ public abstract class Table
                         if (targetCellOrRowFound){
                             ensureFocus();
                         }
+                        handleFocusForWidget();
                         break;
                     case Event.ONMOUSEUP:
                         if (targetCellOrRowFound) {
                             mDown = false;
                         }
-                        handleFocusForWidget();
                         break;
                     case Event.ONCONTEXTMENU:
                         if (selectMode > com.vaadin.terminal.gwt.client.ui.Table.SELECT_MODE_NONE) {

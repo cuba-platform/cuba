@@ -21,6 +21,7 @@ import com.haulmont.cuba.web.toolkit.ui.client.logging.ClientLogger;
 import com.haulmont.cuba.web.toolkit.ui.client.logging.ClientLoggerFactory;
 import com.vaadin.client.UIDL;
 import com.vaadin.client.Util;
+import com.vaadin.client.VConsole;
 import com.vaadin.client.ui.*;
 
 /**
@@ -284,6 +285,8 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
             }
 
             protected void recursiveAddFocusHandler(final Widget w, final Widget topWidget) {
+                VConsole.log(">> recursiveAddFocusHandler");
+
                 if (w instanceof HasWidgets) {
                     for (Widget child: (HasWidgets)w) {
                         recursiveAddFocusHandler(child, topWidget);
@@ -299,6 +302,8 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
                             }
 
                             lastFocusedWidget = w;
+
+                            VConsole.log(">> onFocus");
 
                             if (logger.enabled) {
                                 logger.log("onFocus: Focus widget in column: " + childWidgets.indexOf(topWidget));
@@ -347,7 +352,7 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
             public void onBrowserEvent(Event event) {
                 super.onBrowserEvent(event);
 
-                if (event.getTypeInt() == Event.ONMOUSEUP) {
+                if (event.getTypeInt() == Event.ONMOUSEDOWN) {
                     handleFocusForWidget();
                 }
             }
