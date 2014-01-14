@@ -7,11 +7,16 @@ package com.haulmont.cuba.gui.executors;
 
 import com.haulmont.cuba.gui.AppConfig;
 
+import javax.annotation.Nullable;
+import java.util.Objects;
+
 /**
- * Simple wrapper to a {@link BackgroundTask} to support restarting execution of the same task.
+ * Provides simple API for cases when the same type of background task
+ * gets started, restarted and cancelled repetitively.
  *
  * @author artamonov
  * @version $Id$
+ * @see com.haulmont.cuba.gui.executors.BackgroundWorker
  */
 @SuppressWarnings("unused")
 public class BackgroundTaskWrapper<T, V> {
@@ -21,18 +26,47 @@ public class BackgroundTaskWrapper<T, V> {
     private BackgroundTaskHandler<V> taskHandler;
     private BackgroundWorker backgroundWorker;
 
-    public BackgroundTaskWrapper(BackgroundTask<T, V> task) {
+    public BackgroundTaskWrapper(@Nullable BackgroundTask<T, V> task) {
         this.task = task;
         this.backgroundWorker = AppConfig.getBackgroundWorker();
     }
 
+    public BackgroundTaskWrapper() {
+        this(null);
+    }
+
+    /**
+     * Cancel running task if there is at the moment.
+     * Launch it again.
+     */
     public void restart() {
         cancel();
 
+        Objects.requireNonNull(task, "Task must be specified either in constructor or by passing it to restart() method");
         taskHandler = backgroundWorker.handle(task);
         taskHandler.execute();
     }
 
+    /**
+     * Cancel running task if there is at the moment.
+     * Launch new task specified as parameter.
+     *
+     * @param task task to start, also will be saved for future restarts
+     */
+    public void restart(BackgroundTask<T, V> task) {
+        cancel();
+
+        this.task = task;
+        taskHandler = backgroundWorker.handle(task);
+        taskHandler.execute();
+    }
+
+    /**
+     * If there is running task, block until its completion and return result.
+     *
+     * @return last task's result or null if no tasks were run yet
+     */
+    @Nullable
     public V getResult() {
         if (taskHandler != null)
             return taskHandler.getResult();
@@ -40,6 +74,9 @@ public class BackgroundTaskWrapper<T, V> {
             return null;
     }
 
+    /**
+     * Cancel running task if there is any.
+     */
     public void cancel() {
         if (taskHandler != null)
             taskHandler.cancel();
