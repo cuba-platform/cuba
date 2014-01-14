@@ -138,7 +138,7 @@ public class Param extends AbstractParam<ParamEditorComponent> {
                         value = field.getValue();
                     }
                 }
-                setValue(StringUtils.trimToNull((String) value));
+                setValue(value);
             }
         });
         if (value instanceof java.util.List) {
