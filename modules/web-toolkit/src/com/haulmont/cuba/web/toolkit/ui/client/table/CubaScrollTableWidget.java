@@ -24,8 +24,6 @@ import com.vaadin.client.UIDL;
 import com.vaadin.client.Util;
 import com.vaadin.client.ui.*;
 
-import java.util.Iterator;
-
 /**
  * @author devyatkin
  * @version $Id$
@@ -437,22 +435,31 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
                             .size() == 1
                             && selectedRowKeys.contains(getKey());
 
-                    if (!currentlyJustThisRowSelected) {
-                        if (isSingleSelectMode()
-                                || isMultiSelectModeDefault()) {
-                            deselectAll();
+                    boolean selectionChanged = false;
+                    if (!isSelected()) {
+                        if (!currentlyJustThisRowSelected) {
+                            if (isSingleSelectMode()
+                                    || isMultiSelectModeDefault()) {
+                                deselectAll();
+                            }
+                            toggleSelection();
+                        } else if ((isSingleSelectMode() || isMultiSelectModeSimple())
+                                && nullSelectionAllowed) {
+                            if (!isSelected()) {
+                                toggleSelection();
+                            }
                         }
-                        toggleSelection();
-                    } else if ((isSingleSelectMode() || isMultiSelectModeSimple())
-                            && nullSelectionAllowed) {
-                        toggleSelection();
+
+                        selectionChanged = true;
                     }
 
-                    selectionRangeStart = this;
-                    setRowFocus(this);
+                    if (selectionChanged) {
+                        selectionRangeStart = this;
+                        setRowFocus(this);
 
-                    // Queue value change
-                    sendSelectedRows(true);
+                        // Queue value change
+                        sendSelectedRows(true);
+                    }
                 }
                 if (immediate || clickEventSent) {
                     client.sendPendingVariableChanges();

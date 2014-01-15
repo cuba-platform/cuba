@@ -3009,7 +3009,7 @@ public abstract class Table
                         break;
                     case Event.ONCONTEXTMENU:
                         if (selectMode > com.vaadin.terminal.gwt.client.ui.Table.SELECT_MODE_NONE) {
-                            rowClick();
+                            selectRowForContextMenuActions();
                         }
                         handleRowClick(event);
                         showContextMenu(event);
@@ -3046,6 +3046,37 @@ public abstract class Table
 
                 selectionRangeStart = this;
                 setRowFocus(this);
+            }
+
+            protected void selectRowForContextMenuActions() {
+                boolean currentlyJustThisRowSelected = selectedRowKeys
+                        .size() == 1
+                        && selectedRowKeys
+                        .contains(getKey());
+
+                boolean selectionChanged = false;
+                if (!isSelected()) {
+                    if (!currentlyJustThisRowSelected) {
+                        if (multiselectmode == MULTISELECT_MODE_DEFAULT) {
+                            deselectAll();
+                        }
+                        toggleSelection();
+                    } else if (selectMode == SELECT_MODE_SINGLE
+                            && !nullSelectionDisallowed) {
+                        toggleSelection();
+                    }
+
+                    selectionChanged = true;
+                }/*
+                      * else NOP to avoid excessive server
+                      * visits (selection is removed with
+                      * CTRL/META click)
+                      */
+
+                if (selectionChanged) {
+                    selectionRangeStart = this;
+                    setRowFocus(this);
+                }
             }
 
             private void processRowSelection() {
