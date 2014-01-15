@@ -15,19 +15,14 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import com.haulmont.cuba.web.toolkit.ui.client.Tools;
 import com.haulmont.cuba.web.toolkit.ui.client.logging.ClientLogger;
 import com.haulmont.cuba.web.toolkit.ui.client.logging.ClientLoggerFactory;
 import com.vaadin.client.Focusable;
 import com.vaadin.client.UIDL;
 import com.vaadin.client.Util;
-import com.vaadin.client.ui.ShortcutActionHandler;
-import com.vaadin.client.ui.VOverlay;
-import com.vaadin.client.ui.VScrollTable;
+import com.vaadin.client.ui.*;
 
 import java.util.Iterator;
 
@@ -366,22 +361,34 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
             @Override
             protected Element getEventTargetTdOrTr(Event event) {
                 final Element eventTarget = event.getEventTarget().cast();
-                final Element eventTargetParent = DOM.getParent(eventTarget);
                 Widget widget = Util.findWidget(eventTarget, null);
-                final Element thisTrElement = getElement();
+                Widget targetWidget = widget;
 
                 if (widget != this) {
-                    if (event.getTypeInt() == Event.ONMOUSEUP) {
-                        if (widget instanceof Focusable || widget instanceof com.google.gwt.user.client.ui.Focusable) {
+                    if (event.getTypeInt() == Event.ONMOUSEDOWN) {
+                        if (widget instanceof com.vaadin.client.Focusable || widget instanceof com.google.gwt.user.client.ui.Focusable) {
                             lastFocusedWidget = widget;
                         }
                     }
-                    // find cell
-                    Element tdElement = eventTargetParent;
-                    while (DOM.getParent(tdElement) != thisTrElement) {
-                        tdElement = DOM.getParent(tdElement);
+                    /*
+                     * This is a workaround to make Labels, read only TextFields
+                     * and Embedded in a Table clickable (see #2688). It is
+                     * really not a fix as it does not work with a custom read
+                     * only components (not extending VLabel/VEmbedded).
+                     */
+                    while (widget != null && widget.getParent() != this) {
+                        widget = widget.getParent();
                     }
-                    return tdElement;
+
+                    if (!(widget instanceof VLabel)
+                            && !(widget instanceof VEmbedded)
+                            && !(widget instanceof VTextField && ((VTextField) widget).isReadOnly())
+                            && !(targetWidget instanceof VLabel)
+                            && !(targetWidget instanceof Panel)
+                            && !(targetWidget instanceof VEmbedded)
+                            && !(targetWidget instanceof VTextField && ((VTextField) targetWidget).isReadOnly())) {
+                        return null;
+                    }
                 }
                 return getTdOrTr(eventTarget);
             }

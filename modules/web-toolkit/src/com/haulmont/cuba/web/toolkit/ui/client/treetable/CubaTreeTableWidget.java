@@ -16,12 +16,11 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Focusable;
 import com.haulmont.cuba.web.toolkit.ui.client.Tools;
 import com.haulmont.cuba.web.toolkit.ui.client.logging.ClientLogger;
 import com.haulmont.cuba.web.toolkit.ui.client.logging.ClientLoggerFactory;
-import com.vaadin.client.UIDL;
-import com.vaadin.client.Util;
-import com.vaadin.client.VConsole;
+import com.vaadin.client.*;
 import com.vaadin.client.ui.*;
 
 /**
@@ -358,22 +357,17 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
             }
 
             @Override
-            protected void initCellWithText(String text, char align, String style, boolean textIsHTML,
-                                            boolean sorted, String description, TableCellElement td) {
-                super.initCellWithText(text, align, style, textIsHTML, sorted, description, td);
-
-                Element tdElement = td.cast();
-                Tools.textSelectionEnable(tdElement, textSelectionEnabled);
-            }
-
-            @Override
             protected Element getEventTargetTdOrTr(Event event) {
                 final Element eventTarget = event.getEventTarget().cast();
                 Widget widget = Util.findWidget(eventTarget, null);
                 Widget targetWidget = widget;
-                final Element thisTrElement = getElement();
 
                 if (widget != this) {
+                    if (event.getTypeInt() == Event.ONMOUSEDOWN) {
+                        if (widget instanceof com.vaadin.client.Focusable || widget instanceof com.google.gwt.user.client.ui.Focusable) {
+                            lastFocusedWidget = widget;
+                        }
+                    }
                     /*
                      * This is a workaround to make Labels, read only TextFields
                      * and Embedded in a Table clickable (see #2688). It is
@@ -395,6 +389,15 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
                     }
                 }
                 return getTdOrTr(eventTarget);
+            }
+
+            @Override
+            protected void initCellWithText(String text, char align, String style, boolean textIsHTML,
+                                            boolean sorted, String description, TableCellElement td) {
+                super.initCellWithText(text, align, style, textIsHTML, sorted, description, td);
+
+                Element tdElement = td.cast();
+                Tools.textSelectionEnable(tdElement, textSelectionEnabled);
             }
 
             @Override
