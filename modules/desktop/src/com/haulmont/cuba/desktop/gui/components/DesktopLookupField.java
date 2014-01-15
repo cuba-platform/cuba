@@ -56,6 +56,8 @@ public class DesktopLookupField
     protected boolean newOptionAllowed;
     protected boolean settingValue;
 
+    protected boolean disableActionListener = false;
+
     protected Object nullOption;
 
     protected ExtendedComboBox comboBox;
@@ -109,6 +111,7 @@ public class DesktopLookupField
                                 setValue(selectedValue);
                                 updateOptionsDsItem();
                             } else if (selectedItem instanceof String && newOptionAllowed && newOptionHandler != null) {
+                                restorePreviousItemText();
                                 newOptionHandler.addNewOption((String) selectedItem);
                             } else if ((selectedItem != null) && !newOptionAllowed) {
                                 updateComponent(prevValue);
@@ -127,12 +130,15 @@ public class DesktopLookupField
                 new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        if (settingValue)
+                        if (settingValue || disableActionListener)
                             return;
                         Object selectedItem = comboBox.getSelectedItem();
                         if (selectedItem instanceof String && newOptionAllowed && newOptionHandler != null) {
+                            restorePreviousItemText();
                             newOptionHandler.addNewOption((String) selectedItem);
                         }
+
+                        updateMissingValueState();
                     }
                 }
         );
@@ -147,6 +153,29 @@ public class DesktopLookupField
         impl = comboBox;
 
         DesktopComponentsHelper.adjustSize(comboBox);
+    }
+
+    protected void restorePreviousItemText() {
+        disableActionListener = true;
+        try {
+            Object value = null;
+            if (prevValue != null) {
+                for (Object item : items) {
+                    ValueWrapper wrapper = (ValueWrapper) item;
+                    if (wrapper.getValue() == prevValue) {
+                        value = wrapper;
+                        break;
+                    }
+                }
+            }
+
+            if (value == null && nullOption != null)
+                value = new NullOption();
+
+            comboBox.getEditor().setItem(value);
+        } finally {
+            disableActionListener = false;
+        }
     }
 
     protected void updateOptionsDsItem() {
@@ -166,6 +195,7 @@ public class DesktopLookupField
             Object selectedItem = comboBox.getSelectedItem();
             if (selectedItem instanceof ValueWrapper) {
             } else if (selectedItem instanceof String && newOptionAllowed && newOptionHandler != null) {
+                updateComponent(prevValue);
             } else if (selectedItem == null || !newOptionAllowed) {
                 if (isRequired())
                     updateComponent(prevValue);
