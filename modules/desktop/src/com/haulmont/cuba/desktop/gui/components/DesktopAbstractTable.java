@@ -794,7 +794,8 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
         @Override
         public boolean isCellEditable(EventObject e) {
-            return cellComponent instanceof Editable && ((Editable) cellComponent).isEditable();
+            return DesktopAbstractTable.this.isEditable()
+                    && cellComponent instanceof Editable && ((Editable) cellComponent).isEditable();
         }
 
         @Override

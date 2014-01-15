@@ -133,7 +133,6 @@ public class DesktopTreeTable
         });
         impl.setRootVisible(false);
         impl.setColumnControlVisible(true);
-        impl.setEditable(false);
 
         // apply alternate row color
         impl.setHighlighters(new AbstractHighlighter() {
@@ -162,12 +161,6 @@ public class DesktopTreeTable
         initComponent();
 
         tableSettings = new SwingXTableSettings(impl, columnsOrder);
-    }
-
-    @Override
-    public void setEditable(boolean editable) {
-        super.setEditable(editable);
-        impl.setEditable(editable);
     }
 
     @Override
