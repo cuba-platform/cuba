@@ -500,27 +500,42 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     }
 
     protected void clearComponents() {
-        Component component = fieldsContainer.getComponent("defaultValue");
+        Component component = fieldsContainer.getComponent("stringDefaultValueField");
         if (component != null)
             fieldsContainer.remove(component);
-        Component component2 = fieldsContainer.getComponent("entityType");
-        if (component2 != null)
-            fieldsContainer.remove(component2);
-        Component component3 = fieldsContainer.getComponent("entityField");
-        if (component3 != null) {
-            fieldsContainer.remove(component3);
+        component = fieldsContainer.getComponent("intDefaultValueField");
+        if (component != null)
+            fieldsContainer.remove(component);
+        component = fieldsContainer.getComponent("doubleDefaultValueField");
+        if (component != null)
+            fieldsContainer.remove(component);
+        component = fieldsContainer.getComponent("booleanDefaultValueField");
+        if (component != null)
+            fieldsContainer.remove(component);
+        component = fieldsContainer.getComponent("enumDefaultValueField");
+        if (component != null)
+            fieldsContainer.remove(component);
+        component = fieldsContainer.getComponent("entityDefaultValueField");
+        if (component != null)
+            fieldsContainer.remove(component);
+        component = fieldsContainer.getComponent("entityType");
+        if (component != null)
+            fieldsContainer.remove(component);
+        component = fieldsContainer.getComponent("entityField");
+        if (component != null) {
+            fieldsContainer.remove(component);
         }
-        Component component4 = fieldsContainer.getComponent("enumeration");
-        if (component4 != null) {
-            fieldsContainer.remove(component4);
+        component = fieldsContainer.getComponent("enumeration");
+        if (component != null) {
+            fieldsContainer.remove(component);
         }
-        Component component5 = fieldsContainer.getComponent("screenField");
-        if (component5 != null) {
-            fieldsContainer.remove(component5);
+        component = fieldsContainer.getComponent("screenField");
+        if (component != null) {
+            fieldsContainer.remove(component);
         }
-        Component component6 = fieldsContainer.getComponent("defaultDateBox");
-        if (component6 != null) {
-            fieldsContainer.remove(component6);
+        component = fieldsContainer.getComponent("defaultDateBox");
+        if (component != null) {
+            fieldsContainer.remove(component);
         }
     }
 
