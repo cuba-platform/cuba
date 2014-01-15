@@ -183,6 +183,17 @@ public class RuntimePropertiesFrame extends AbstractWindow {
                                     LookupField field = AppConfig.getFactory().createComponent(LookupField.NAME);
                                     field.setFrame(RuntimePropertiesFrame.this);
                                     CollectionDatasource fieldDs = getDsContext().get(propertyId);
+                                    if (fieldDs == null) {
+                                        DsContext parentDsContext = getDsContext().getParent();
+                                        if (parentDsContext != null) {
+                                            for (Datasource ds : parentDsContext.getAll()) {
+                                                if (ds.getId().equals(propertyId)) {
+                                                    fieldDs = (CollectionDatasource) ds;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
                                     field.setOptionsDatasource(fieldDs);
                                     field.setDatasource(rds, propertyId);
                                     //field.setHeight("-1px");
