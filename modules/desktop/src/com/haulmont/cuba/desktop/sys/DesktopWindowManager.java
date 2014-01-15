@@ -100,7 +100,22 @@ public class DesktopWindowManager extends WindowManager {
 
     @Override
     public Collection<Window> getOpenWindows() {
-        return new ArrayList<Window>(windowOpenMode.keySet());
+        return new ArrayList<>(windowOpenMode.keySet());
+    }
+
+    @Override
+    public void selectWindowTab(Window window) {
+        if (isMainWindowManager) {
+            WindowOpenMode openMode = windowOpenMode.get(window);
+            if (openMode != null) {
+                OpenType openType = openMode.getOpenType();
+                if (openType == OpenType.NEW_TAB || openType == OpenType.THIS_TAB) {
+                    // show in tabsheet
+                    JComponent layout = (JComponent) openMode.getData();
+                    tabsPane.setSelectedComponent(layout);
+                }
+            }
+        }
     }
 
     @Nullable

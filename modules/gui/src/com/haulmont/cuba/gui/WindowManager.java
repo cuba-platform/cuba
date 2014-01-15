@@ -95,6 +95,11 @@ public abstract class WindowManager {
 
     public abstract Collection<Window> getOpenWindows();
 
+    /**
+     * Select tab with window in main tabsheet.
+     */
+    public abstract void selectWindowTab(Window window);
+
     protected Integer getHash(WindowInfo windowInfo, Map<String, Object> params) {
         return windowInfo.hashCode() + params.hashCode();
     }

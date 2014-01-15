@@ -99,6 +99,21 @@ public class WebWindowManager extends WindowManager {
         return new ArrayList<>(getWindowOpenMode().keySet());
     }
 
+    @Override
+    public void selectWindowTab(Window window) {
+        WindowOpenMode openMode = windowOpenMode.get(window);
+        if (openMode != null) {
+            OpenType openType = openMode.getOpenType();
+            if (openType == OpenType.NEW_TAB || openType == OpenType.THIS_TAB) {
+                // show in tabsheet
+                Layout layout = (Layout) openMode.getData();
+
+                TabSheet webTabsheet = appWindow.getTabSheet();
+                webTabsheet.setSelectedTab(layout);
+            }
+        }
+    }
+
     protected static class WindowOpenMode {
 
         protected Window window;
