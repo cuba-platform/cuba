@@ -849,6 +849,11 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer, 
         }
     }
 
+    public void refreshRowCache() {
+        resetPageBuffer();
+        refreshRenderedCells();
+    }
+
     @Override
     protected void refreshRenderedCells() {
         if (getParent() == null) {

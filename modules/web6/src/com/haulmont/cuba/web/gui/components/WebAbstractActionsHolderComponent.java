@@ -8,9 +8,12 @@ package com.haulmont.cuba.web.gui.components;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.web.toolkit.ui.Table;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.*;
 
 /**
@@ -23,6 +26,18 @@ public class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.Component
 
     protected List<Action> actionList = new LinkedList<>();
     protected BiMap<Action, com.vaadin.event.Action> actions = HashBiMap.create();
+    protected PropertyChangeListener actionChangeListener = new PropertyChangeListener() {
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+            if (Action.PROP_VISIBLE.equals(evt.getPropertyName())) {
+                // repaint component if action visibility changed
+                component.requestRepaint();
+                if (component instanceof Table) {
+                    ((Table) component).refreshRowCache();
+                }
+            }
+        }
+    };
 
     public void addAction(final Action action) {
         actions.put(action, new WebActionWrapper(action));
@@ -35,6 +50,8 @@ public class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.Component
             }
         }
         actionList.add(action);
+
+        action.addPropertyChangeListener(actionChangeListener);
 
         action.refreshState();
     }
@@ -63,7 +80,7 @@ public class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.Component
         public com.vaadin.event.Action[] getActions(Object target, Object sender) {
             final List<com.vaadin.event.Action> res = new ArrayList<>();
             for (Action action : actionList) {
-                if (StringUtils.isNotBlank(action.getCaption())) {
+                if (StringUtils.isNotBlank(action.getCaption()) && action.isVisible()) {
                     res.add(actions.get(action));
                 }
             }
