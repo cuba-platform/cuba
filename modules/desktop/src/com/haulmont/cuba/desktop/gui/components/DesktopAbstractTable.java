@@ -937,9 +937,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         for (TableColumn tableColumn : getAllColumns()) {
             Column columnIdentifier = (Column) tableColumn.getIdentifier();
             if (!columnsOrder.contains(columnIdentifier.getId())) {
-                ((TableColumnExt) tableColumn).setVisible(false);
-            } else {
-                ((TableColumnExt) tableColumn).setVisible(true);
+                impl.removeColumn(tableColumn);
             }
         }
     }
@@ -1293,7 +1291,12 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         }
 
         column.setCaption(caption);
-        getColumn(column).setHeaderValue(caption);
+        TableColumn tableColumn = getColumn(column);
+
+        // If column is not hidden by security
+        if (tableColumn != null) {
+            tableColumn.setHeaderValue(caption);
+        }
     }
 
     @Override
