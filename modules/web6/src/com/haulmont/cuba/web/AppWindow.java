@@ -603,7 +603,6 @@ public class AppWindow extends Window implements UserSubstitutionListener,
 
         if (app.isTestMode()) {
             menuBar.setCubaId("appMenu");
-            menuBar.setDebugId("appMenu");
         }
 
         MenuBuilder menuBuilder = new MenuBuilder(this, connection.getSession(), menuBar);
