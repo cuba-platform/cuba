@@ -518,8 +518,9 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             public void handleAction(Object sender, Object target) {
                 if (target == component) {
                     Action action = getAction(actionId);
-                    if (action != null && action.isEnabled())
+                    if (action != null && action.isEnabled() && action.isVisible()) {
                         action.actionPerform(WebAbstractTable.this);
+                    }
                 }
             }
         };
@@ -530,9 +531,12 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     protected void handleClickAction() {
         Action action = getItemClickAction();
         if (action == null) {
-            action = getAction("edit");
+            action = getEnterAction();
             if (action == null) {
-                action = getAction("view");
+                action = getAction("edit");
+                if (action == null) {
+                    action = getAction("view");
+                }
             }
         }
         if (action != null && action.isEnabled()) {
@@ -553,6 +557,19 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                 }
             }
         }
+    }
+
+    protected Action getEnterAction() {
+        for (Action action : getActions()) {
+            KeyCombination kc = action.getShortcut();
+            if (kc != null) {
+                if ((kc.getModifiers() == null || kc.getModifiers().length == 0)
+                        && kc.getKey() == KeyCombination.Key.ENTER) {
+                    return action;
+                }
+            }
+        }
+        return null;
     }
 
     protected Collection<MetaPropertyPath> createColumns(com.vaadin.data.Container ds) {

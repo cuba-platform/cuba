@@ -24,7 +24,6 @@ import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
@@ -106,6 +105,8 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     protected List<MetaPropertyPath> editableColumns = new LinkedList<>();
 
     protected Map<Table.Column, String> requiredColumns = new HashMap<>();
+
+    protected Map<String, KeyCombination> shortcuts = new HashMap<>();
 
     protected Security security = AppBeans.get(Security.class);
 
@@ -245,30 +246,63 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     @Override
     public void addAction(Action action) {
         super.addAction(action);
+
+        removeShortcut(action);
+
         if (action.getShortcut() != null) {
             addShortcutActionBridge(action.getId(), action.getShortcut());
         }
     }
 
-    protected void addShortcutActionBridge(final String actionId, KeyCombination keyCombination) {
+    @Override
+    public void removeAction(Action action) {
+        super.removeAction(action);
+
+        removeShortcut(action);
+    }
+
+    protected void removeShortcut(Action action) {
+        String actionId = action.getId();
+        if (shortcuts.containsKey(actionId)) {
+            KeyCombination kc = shortcuts.get(actionId);
+
+            impl.getInputMap().remove(DesktopComponentsHelper.convertKeyCombination(kc));
+            impl.getActionMap().remove(actionId);
+            shortcuts.remove(actionId);
+        }
+    }
+
+    protected void addShortcutActionBridge(final String actionId, final KeyCombination keyCombination) {
+        if ((keyCombination.getModifiers() == null || keyCombination.getModifiers().length == 0)
+                && keyCombination.getKey() == KeyCombination.Key.ENTER) {
+            return;
+        }
+
         impl.getInputMap().put(DesktopComponentsHelper.convertKeyCombination(keyCombination), actionId);
         impl.getActionMap().put(actionId, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Action action = getAction(actionId);
-                if ((action != null) && (action.isEnabled())) {
+                if ((action != null) && (action.isEnabled()) && (action.isVisible())) {
                     action.actionPerform(DesktopAbstractTable.this);
                 }
             }
         });
+        shortcuts.put(actionId, keyCombination);
     }
 
     protected void handleClickAction() {
         Action action = getItemClickAction();
         if (action == null) {
-            action = getAction(EditAction.ACTION_ID);
+            action = getEnterAction();
+            if (action == null) {
+                action = getAction("edit");
+                if (action == null) {
+                    action = getAction("view");
+                }
+            }
         }
-        if (action != null && action.isEnabled()) {
+        if (action != null && action.isEnabled() && action.isVisible()) {
             Window window = ComponentsHelper.getWindow(DesktopAbstractTable.this);
             if (window instanceof Window.Wrapper) {
                 window = ((Window.Wrapper) window).getWrappedWindow();
@@ -287,6 +321,19 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                 }
             }
         }
+    }
+
+    protected Action getEnterAction() {
+        for (Action action : getActions()) {
+            KeyCombination kc = action.getShortcut();
+            if (kc != null) {
+                if ((kc.getModifiers() == null || kc.getModifiers().length == 0)
+                        && kc.getKey() == KeyCombination.Key.ENTER) {
+                    return action;
+                }
+            }
+        }
+        return null;
     }
 
     protected void readjustColumns() {

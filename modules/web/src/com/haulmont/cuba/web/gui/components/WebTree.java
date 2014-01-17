@@ -91,8 +91,9 @@ public class WebTree extends WebAbstractList<CubaTree> implements Tree {
             public void handleAction(Object sender, Object target) {
                 if (target == component) {
                     Action action = getAction(actionId);
-                    if (action != null && action.isEnabled())
+                    if (action != null && action.isEnabled() && action.isVisible()) {
                         action.actionPerform(WebTree.this);
+                    }
                 }
             }
         };
