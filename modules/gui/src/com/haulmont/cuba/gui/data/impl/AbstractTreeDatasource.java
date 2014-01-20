@@ -8,6 +8,7 @@ package com.haulmont.cuba.gui.data.impl;
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.datastruct.Tree;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
 import org.apache.commons.lang.ObjectUtils;
@@ -20,7 +21,6 @@ import java.util.*;
 /**
  * @param <T> Entity
  * @param <K> Key
- *
  * @author abramov
  * @version $Id$
  */
@@ -75,7 +75,9 @@ public abstract class AbstractTreeDatasource<T extends Entity<K>, K>
         if (State.NOT_INITIALIZED.equals(state)) {
             return Collections.emptyList();
         } else {
-            if (tree == null) return Collections.emptyList();
+            if (tree == null) {
+                return Collections.emptyList();
+            }
 
             List ids = new ArrayList();
             for (Node<T> rootNode : tree.getRootNodes()) {
@@ -87,16 +89,24 @@ public abstract class AbstractTreeDatasource<T extends Entity<K>, K>
 
     @Override
     public K getParent(K itemId) {
+        if (nodes == null || tree == null) {
+            return null;
+        }
+
         final Node<T> node = nodes.get(itemId);
         return node == null ? null : node.getParent() == null ? null : node.getParent().getData().getId();
     }
 
     @Override
     public Collection<K> getChildren(K itemId) {
-        final Node<T> node = nodes.get(itemId);
-        if (node == null)
+        if (nodes == null || tree == null) {
             return Collections.emptyList();
-        else {
+        }
+
+        final Node<T> node = nodes.get(itemId);
+        if (node == null) {
+            return Collections.emptyList();
+        } else {
             final List<Node<T>> children = node.getChildren();
 
             final List<K> ids = new ArrayList<>();
@@ -110,6 +120,10 @@ public abstract class AbstractTreeDatasource<T extends Entity<K>, K>
 
     @Override
     public boolean isRoot(K itemId) {
+        if (nodes == null || tree == null) {
+            return false;
+        }
+
         final Node<T> node = nodes.get(itemId);
 
         for (Node<T> tNode : tree.getRootNodes()) {
@@ -122,7 +136,31 @@ public abstract class AbstractTreeDatasource<T extends Entity<K>, K>
     }
 
     @Override
+    public void clear() {
+        // Get items
+        List<Object> collectionItems = new ArrayList<Object>(data.values());
+        // Clear container
+        data.clear();
+
+        tree = null;
+        nodes = null;
+
+        // Notify listeners
+        for (Object obj : collectionItems) {
+            T item = (T) obj;
+            detachListener(item);
+        }
+        if (state == State.VALID) {
+            fireCollectionChanged(CollectionDatasourceListener.Operation.CLEAR, Collections.<Entity>emptyList());
+        }
+    }
+
+    @Override
     public boolean hasChildren(K itemId) {
+        if (nodes == null || tree == null) {
+            return false;
+        }
+
         final Node<T> node = nodes.get(itemId);
         return node != null && !node.getChildren().isEmpty();
     }
