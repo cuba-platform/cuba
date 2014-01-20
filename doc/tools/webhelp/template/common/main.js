@@ -9,24 +9,27 @@
 var noAnimations=false;
 
 $(document).ready(function() {
-	// When you click on a link to an anchor, scroll down 
-	// 105 px to cope with the fact that the banner
-	// hides the top 95px or so of the page.
-	// This code deals with the problem when 
-	// you click on a link within a page.
-	$('a[href*=#]').click(function() {
-		if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'')
-		    && location.hostname == this.hostname) {
-		    var $target = $(this.hash);
-		    $target = $target.length && $target
-			|| $('[name=' + this.hash.slice(1) +']');
-		if (!(this.hash == "#searchDiv" || this.hash == "#treeDiv"  || this.hash == "") && $target.length) {
-			var targetOffset = $target.offset().top - 120;
-			$('#content').animate({scrollTop: targetOffset}, 200);
-			return false;
-		    }
-		}
-	    });
+    // When you click on a link to an anchor, scroll down
+    // 105 px to cope with the fact that the banner
+    // hides the top 95px or so of the page.
+    // This code deals with the problem when
+    // you click on a link within a page.
+    $('a[href*=#]').click(function () {
+        if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '')
+            && location.hostname == this.hostname) {
+            var $target = $(this.hash);
+            $target = $target.length && $target
+                || $('[name=' + this.hash.slice(1) + ']');
+            if (!(this.hash == "#searchDiv" || this.hash == "#treeDiv" || this.hash == "") && $target.length) {
+                var contentBox = $('#content');
+
+                var targetOffset = $target.offset().top - contentBox.offset().top + contentBox.scrollTop();
+                contentBox.animate({scrollTop: targetOffset}, 200);
+
+                return false;
+            }
+        }
+    });
 
     //  $("#showHideHighlight").button(); //add jquery button styling to 'Go' button
     //Generate tabs in nav-pane with JQuery
@@ -79,7 +82,7 @@ $(document).ready(function() {
     // This code deals with the problem when 
     // you click on a link from another page. 
     var hash = window.location.hash;
-    if(hash){ 
+    if(hash){
         // Also escape dot symbols.
         hash = hash.split('.').join('\\.');
         $hash = $(hash);
@@ -123,7 +126,7 @@ function syncToc() {
                     var ulStyle = document.createAttribute("style");
                     ulStyle.nodeValue = "display: block; background-color: #D8D8D8 !important;";
                     ulNode.setAttributeNode(ulStyle);
-            }   }
+                }   }
             //adjust tree's + sign to -
             var divNode = a.getElementsByTagName("div")[0];
             if (divNode != undefined) {
@@ -133,7 +136,7 @@ function syncToc() {
                     var divClass = document.createAttribute("class");
                     divClass.nodeValue = "hitarea collapsable-hitarea";
                     divNode.setAttributeNode(divClass);
-            }   }
+                }   }
             //set persistence cookie when a node is auto expanded
             //     setCookieForExpandedNode("webhelp-currentid");
         }
@@ -167,7 +170,7 @@ function syncToc() {
                 parentNode.firstChild.setAttribute("class", "hitarea collapsable-hitarea ");
             }
             a = parentNode;
-}   }  }
+        }   }  }
 /*
  function setCookieForExpandedNode(nodeName) {
  var tocDiv = document.getElementById("tree"); //get table of contents Div
@@ -178,7 +181,7 @@ function syncToc() {
  var div = divs[i];
  var liNode = div.parentNode;
  }
-//create a new cookie if a treeview does not exist
+ //create a new cookie if a treeview does not exist
  if ($.cookie(treeCookieId) == null || $.cookie(treeCookieId) == "") {
  var branches = $("#tree").find("li");//.prepareBranches(treesettings);
  var data = [];
@@ -211,7 +214,7 @@ function showHideToc() {
     if (showHideButton != undefined && showHideButton.hasClass("pointLeft")) {
         //Hide TOC
         showHideButton.removeClass('pointLeft').addClass('pointRight');
-	
+
         if(noAnimations) {
             leftNavigation.css("display", "none");
             content.css("margin", "125px 0 0 0");
