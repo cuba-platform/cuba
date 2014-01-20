@@ -163,16 +163,18 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                     }
 
                     protected void showPopup(MouseEvent e) {
-                        if (e.isPopupTrigger()) {
+                        if (e.isPopupTrigger() && allowPopupMenu) {
                             // select row
                             Point p = e.getPoint();
                             int rowNumber = impl.convertRowIndexToModel(impl.rowAtPoint(p));
                             ListSelectionModel model = impl.getSelectionModel();
-                            model.setSelectionInterval(rowNumber, rowNumber);
-                            // show popup menu
-                            if (allowPopupMenu) {
-                                createPopupMenu().show(e.getComponent(), e.getX(), e.getY());
+
+                            if (!model.isSelectedIndex(rowNumber)) {
+                                model.setSelectionInterval(rowNumber, rowNumber);
                             }
+
+                            // show popup menu
+                            createPopupMenu().show(e.getComponent(), e.getX(), e.getY());
                         }
                     }
                 }
