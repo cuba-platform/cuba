@@ -307,6 +307,7 @@ public class VButton extends FocusWidget implements Paintable, ClickHandler,
                     event.preventDefault();
                     event.stopPropagation();
                 } else if (event.getKeyCode() == KeyCodes.KEY_ENTER) {
+                    event.preventDefault();
                     event.stopPropagation();
                 }
                 break;
@@ -324,10 +325,7 @@ public class VButton extends FocusWidget implements Paintable, ClickHandler,
 
                     event.stopPropagation();
                     event.preventDefault();
-                }
-                break;
-            case Event.ONKEYPRESS:
-                if (event.getKeyCode() == KeyCodes.KEY_ENTER) {
+                } else if (event.getKeyCode() == KeyCodes.KEY_ENTER) {
 
                     /*
                      * If click shortcut is enter then the shortcut handler will
