@@ -2098,9 +2098,15 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
 
         @Override
         public void actionPerform(Component component) {
-            Set selected = table.getSelected();
-            if (selected.isEmpty())
+            if (filterEntity == null) {
+                // todo add notification 'Filter not selected'
                 return;
+            }
+            Set selected = table.getSelected();
+            if (selected.isEmpty()) {
+                return;
+            }
+
             if (table.getDatasource().getItemIds().size() == 1) {
                 deleteFilterEntity();
                 foldersPane.removeFolder(filterEntity.getFolder());
@@ -2112,14 +2118,14 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
                         break;
                     }
                 }
-                return;
+            } else {
+                String filterXml = filterEntity.getXml();
+                filterEntity.setXml(WebFilter.UserSetHelper.removeEntities(filterXml, selected));
+                filterEntity.getFolder().setFilterXml(filterEntity.getXml());
+                filterEntity.setFolder(saveFolder((SearchFolder) filterEntity.getFolder()));
+                parseFilterXml();
+                apply(false);
             }
-            String filterXml = filterEntity.getXml();
-            filterEntity.setXml(WebFilter.UserSetHelper.removeEntities(filterXml, selected));
-            filterEntity.getFolder().setFilterXml(filterEntity.getXml());
-            filterEntity.setFolder(saveFolder((SearchFolder) filterEntity.getFolder()));
-            parseFilterXml();
-            apply(false);
         }
     }
 
@@ -2136,6 +2142,11 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
 
         @Override
         public void actionPerform(Component component) {
+            if (filterEntity == null) {
+                // todo add notification 'Filter not selected'
+                return;
+            }
+
             IFrame frame = WebFilter.this.getFrame();
             String[] strings = ValuePathHelper.parse(getComponentPath());
             String windowAlias = strings[0];
@@ -2165,6 +2176,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
             Document document = DocumentHelper.createDocument();
             Element root = DocumentHelper.createElement("filter");
             Element or = root.addElement("and");
+
             Element condition = or.addElement("c");
             condition.addAttribute("name", "set");
             condition.addAttribute("inExpr", "true");
@@ -2173,12 +2185,15 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
             condition.addAttribute("entityAlias", entityAlias);
             condition.addAttribute("class", entityClass);
             condition.addAttribute("type", ConditionType.CUSTOM.name());
+
             String listOfId = createIdsString(ids);
             String randomName = RandomStringUtils.randomAlphabetic(10);
             condition.addText(entityAlias + ".id in (:component$" + componentId + "." + randomName + ")");
+
             Element param = condition.addElement("param");
             param.addAttribute("name", "component$" + componentId + "." + randomName);
             param.addText(listOfId);
+
             document.add(root);
             return Dom4j.writeDocument(document, true);
         }
