@@ -65,10 +65,12 @@ public abstract class AbstractAction implements Action {
         return id;
     }
 
+    @Override
     public KeyCombination getShortcut() {
         return shortcut;
     }
 
+    @Override
     public void setShortcut(KeyCombination shortcut) {
         this.shortcut = shortcut;
     }
