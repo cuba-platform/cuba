@@ -533,16 +533,20 @@ public class WebWindowManager extends WindowManager {
             }
         });
 
-        com.vaadin.event.ShortcutAction exitAction =
-                new com.vaadin.event.ShortcutAction(
-                        "escapeAction",
-                        com.vaadin.event.ShortcutAction.KeyCode.ESCAPE,
-                        null);
+        String closeShortcut = clientConfig.getCloseShortcut();
+        KeyCombination closeCombination = KeyCombination.create(closeShortcut);
+
+        com.vaadin.event.ShortcutAction exitAction = new com.vaadin.event.ShortcutAction(
+                "closeShortcutAction",
+                closeCombination.getKey().getCode(),
+                KeyCombination.Modifier.codes(closeCombination.getModifiers())
+        );
+
         Map<com.vaadin.event.Action, Runnable> actions = new HashMap<>();
         actions.put(exitAction, new Runnable() {
             @Override
             public void run() {
-                window.close(Window.CLOSE_ACTION_ID, true);
+                window.close(Window.CLOSE_ACTION_ID);
             }
         });
 
