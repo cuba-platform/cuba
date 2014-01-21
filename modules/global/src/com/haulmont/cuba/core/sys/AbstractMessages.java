@@ -185,6 +185,15 @@ public abstract class AbstractMessages implements Messages {
     }
 
     @Override
+    public String formatMainMessage(String key, Object... params) {
+        try {
+            return String.format(getMainMessage(key), params);
+        } catch (IllegalFormatException e) {
+            return key;
+        }
+    }
+
+    @Override
     public String getMessage(String packs, String key, Locale locale) {
         if (packs == null)
             throw new IllegalArgumentException("Messages pack name is null");

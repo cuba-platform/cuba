@@ -128,6 +128,15 @@ public interface Messages {
     String formatMessage(String pack, String key, Object... params);
 
     /**
+     * Get localized message from main message pack and use it as a format string for parameters provided.<br/>
+     * Locale is determined by the current user session.
+     * @param key       message key
+     * @param params    parameter values
+     * @return          formatted string or the key in case of IllegalFormatException
+     */
+    String formatMainMessage(String key, Object... params);
+
+    /**
      * Returns localized message
      * @param packs     list of whitespace-separated package names. Searching of message is performed in reverse order -
      *                  starts from last name in the list. Each package is searched for the key, if the key is not found
