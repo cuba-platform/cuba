@@ -10,6 +10,7 @@ import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
+import com.vaadin.client.ConnectorMap;
 import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.VTree;
 
@@ -20,8 +21,6 @@ import com.vaadin.client.ui.VTree;
 public class CubaTreeWidget extends VTree implements ShortcutActionHandler.ShortcutActionHandlerOwner {
 
     protected ShortcutActionHandler shortcutHandler;
-
-    protected boolean contextMenuHandling = false;
 
     protected boolean doubleClickHandling = false;
 
@@ -48,19 +47,22 @@ public class CubaTreeWidget extends VTree implements ShortcutActionHandler.Short
         }
     }
 
+    protected CubaTreeConnector getConnector() {
+        return (CubaTreeConnector) ConnectorMap.get(client).getConnector(this);
+    }
+
     public class CubaTreeNode extends TreeNode {
+
         @Override
         public void showContextMenu(Event event) {
-            if (!readonly && !disabled && actionKeys != null) {
-                selectNodeForContextMenu();
+            if (!readonly && !disabled) {
+                if (!isSelected()) {
+                    getConnector().setContextMenuSelection(true);
+
+                    toggleSelection();
+                }
                 super.showContextMenu(event);
             }
-        }
-
-        protected void selectNodeForContextMenu() {
-            client.updateVariable(getPaintableId(), "popupSelection", true, false);
-            contextMenuHandling = true;
-            handleClickSelection(false, false);
         }
 
         @Override
@@ -145,15 +147,6 @@ public class CubaTreeWidget extends VTree implements ShortcutActionHandler.Short
         this.doubleClickHandling = doubleClickHandling;
 
         lastDoubleClickHandled = System.currentTimeMillis();
-    }
-
-    public void setContextMenuHandling(boolean contextMenuHandling) {
-        this.contextMenuHandling = contextMenuHandling;
-    }
-
-    @Override
-    public boolean isSelected(TreeNode treeNode) {
-        return selectedIds.contains(treeNode.key) && !contextMenuHandling;
     }
 
     @Override

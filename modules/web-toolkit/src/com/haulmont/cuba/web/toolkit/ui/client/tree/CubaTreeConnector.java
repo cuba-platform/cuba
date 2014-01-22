@@ -21,6 +21,8 @@ import com.vaadin.shared.ui.Connect;
 @Connect(value = CubaTree.class, loadStyle = Connect.LoadStyle.LAZY)
 public class CubaTreeConnector extends TreeConnector {
 
+    protected boolean contextMenuSelection = false;
+
     @Override
     public CubaTreeWidget getWidget() {
         return (CubaTreeWidget) super.getWidget();
@@ -31,11 +33,14 @@ public class CubaTreeConnector extends TreeConnector {
         return (CubaTreeState) super.getState();
     }
 
+    public void setContextMenuSelection(boolean contextMenuSelection) {
+        this.contextMenuSelection = contextMenuSelection;
+    }
+
     @Override
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
         super.updateFromUIDL(uidl, client);
 
-        getWidget().setContextMenuHandling(false);
         getWidget().setDoubleClickHandling(false);
 
         // We may have actions attached to this tree
@@ -69,7 +74,9 @@ public class CubaTreeConnector extends TreeConnector {
 
     @Override
     protected boolean isPopupSelection(UIDL uidl) {
-        return Boolean.TRUE.equals(uidl.getBooleanAttribute("popupSelection"));
+        boolean selection = contextMenuSelection;
+        contextMenuSelection = false;
+        return selection;
     }
 
     @Override
