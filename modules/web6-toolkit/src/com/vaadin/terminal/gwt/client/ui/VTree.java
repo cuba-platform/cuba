@@ -1150,6 +1150,9 @@ public class VTree extends FocusElementPanel implements Paintable, VHasDropHandl
                     left += Window.getScrollLeft();
                     client.getContextMenu().showAt(this, left, top);
                 }
+                if (!isSelected()) {
+                    toggleSelection();
+                }
                 event.cancelBubble(true);
                 event.preventDefault();
             }
