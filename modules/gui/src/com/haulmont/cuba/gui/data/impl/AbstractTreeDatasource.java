@@ -36,11 +36,11 @@ public abstract class AbstractTreeDatasource<T extends Entity<K>, K>
         String tag = getLoggingTag("TDS");
         StopWatch sw = new Log4JStopWatch(tag, Logger.getLogger(UIPerformanceLogger.class));
 
+        clear();
+
         this.tree = loadTree(params);
 
         Map<K, Node<T>> targetNodes = new HashMap<>();
-
-        clear();
         if (tree != null) {
             for (Node<T> node : tree.toList()) {
                 final T entity = node.getData();
