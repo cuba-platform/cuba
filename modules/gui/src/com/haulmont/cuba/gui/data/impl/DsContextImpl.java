@@ -281,7 +281,7 @@ public class DsContextImpl implements DsContextImplementation {
     }
 
     protected Map<DataSupplier, Collection<Datasource<Entity>>> collectCommitData() {
-        Collection<Datasource> datasources = new ArrayList<Datasource>();
+        Collection<Datasource> datasources = new ArrayList<>();
 
         for (DsContext childDsContext : children) {
             datasources.addAll(childDsContext.getAll());
@@ -292,12 +292,12 @@ public class DsContextImpl implements DsContextImplementation {
 
         for (Datasource datasource : datasources) {
             if (Datasource.CommitMode.DATASTORE.equals(datasource.getCommitMode()) &&
-                    datasource.isModified())
+                    (datasource.isModified() || !((DatasourceImplementation) datasource).getItemsToCreate().isEmpty()))
             {
                 final DataSupplier dataservice = datasource.getDataSupplier();
                 Collection<Datasource<Entity>> collection = commitDatasources.get(dataservice);
                 if (collection == null) {
-                    collection = new ArrayList<Datasource<Entity>>();
+                    collection = new ArrayList<>();
                     commitDatasources.put(dataservice, collection);
                 }
                 collection.add(datasource);

@@ -115,13 +115,7 @@ public class EditorWindowDelegate extends WindowDelegate {
         Datasource ds = getDatasource();
         DataSupplier dataservice = ds.getDataSupplier();
 
-        boolean keepDatasourceUnmodified = true;
-
-        DatasourceImplementation parentDs = null;
-        if (ds instanceof DatasourceImplementation
-                && ((DatasourceImplementation) ds).getParent() instanceof DatasourceImplementation) {
-            parentDs = (DatasourceImplementation) ((DatasourceImplementation) ds).getParent();
-        }
+        DatasourceImplementation parentDs = (DatasourceImplementation) ((DatasourceImplementation) ds).getParent();
 
         if (!PersistenceHelper.isNew(item)) {
             if (parentDs != null) {
@@ -140,11 +134,6 @@ public class EditorWindowDelegate extends WindowDelegate {
                 boolean useSecConstraints = !WindowParams.DISABLE_SECURITY_CONSTRAINTS.getBool(window.getContext());
                 item = dataservice.reload(item, ds.getView(), ds.getMetaClass(), useSecConstraints);
             }
-        } else {
-            // Make the datasource modified for new item, but only if CommitMode != PARENT and this item is not edited
-            // right after creation
-            keepDatasourceUnmodified = parentDs != null
-                    && (parentDs.getItemsToCreate().contains(item) || parentDs.getItemsToUpdate().contains(item));
         }
 
         if (item == null) {
@@ -160,8 +149,7 @@ public class EditorWindowDelegate extends WindowDelegate {
 
         this.item = item;
         ds.setItem(item);
-        if (ds instanceof DatasourceImplementation && keepDatasourceUnmodified)
-            ((DatasourceImplementation) ds).setModified(false);
+        ((DatasourceImplementation) ds).setModified(false);
 
         if (userSessionSource.getUserSession().isEntityOpPermitted(ds.getMetaClass(), EntityOp.UPDATE)) {
             LockInfo lockInfo = lockService.lock(getMetaClassForLocking(ds).getName(), item.getId().toString());
