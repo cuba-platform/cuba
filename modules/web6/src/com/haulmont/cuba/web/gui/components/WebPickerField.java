@@ -109,7 +109,7 @@ public class WebPickerField
     }
 
     protected ItemWrapper createItemWrapper(final Object newValue) {
-        return new ItemWrapper(newValue, metaClass) {
+        return new ItemWrapper(newValue, getMetaClass()) {
             @Override
             public String toString() {
                 if (CaptionMode.PROPERTY.equals(getCaptionMode()) && (value instanceof Instance)) {

@@ -230,13 +230,14 @@ public class EntityLogBrowser extends AbstractWindow {
         filterEntityNameField.addListener(new ValueListener() {
             @Override
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                instancePicker.setValue(null);
                 if (value != null) {
                     instancePicker.setEnabled(true);
                     MetaClass metaClass = metadata.getSession().getClassNN(value.toString());
                     instancePicker.setMetaClass(metaClass);
-                } else
+                } else {
                     instancePicker.setEnabled(false);
+                }
+                instancePicker.setValue(null);
             }
         });
     }
