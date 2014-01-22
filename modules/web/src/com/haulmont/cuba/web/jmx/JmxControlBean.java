@@ -10,7 +10,7 @@ import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.JmxInstance;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.NodeIdentifier;
-import com.haulmont.cuba.core.sys.jmx.JmxNodeIdentifier;
+import com.haulmont.cuba.core.sys.jmx.JmxNodeIdentifierMBean;
 import com.haulmont.cuba.web.jmx.entity.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -90,11 +90,11 @@ public class JmxControlBean implements JmxControlAPI {
 
         final MBeanServerConnection connection = JmxConnectionHelper.getConnection(instance);
         try {
-            ObjectName nodeIdentifierBeanInfo = JmxConnectionHelper.getObjectName(connection, JmxNodeIdentifier.class);
+            ObjectName nodeIdentifierBeanInfo = JmxConnectionHelper.getObjectName(connection, JmxNodeIdentifierMBean.class);
 
             if (nodeIdentifierBeanInfo != null) {
-                JmxNodeIdentifier identifier =
-                        JmxConnectionHelper.getProxy(connection, nodeIdentifierBeanInfo, JmxNodeIdentifier.class);
+                JmxNodeIdentifierMBean identifier =
+                        JmxConnectionHelper.getProxy(connection, nodeIdentifierBeanInfo, JmxNodeIdentifierMBean.class);
 
                 Object nodeName = identifier.getNodeName();
                 if (nodeName != null)
