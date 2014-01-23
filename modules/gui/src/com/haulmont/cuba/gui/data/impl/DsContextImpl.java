@@ -170,7 +170,8 @@ public class DsContextImpl implements DsContextImplementation {
     private boolean commitToParent(Collection<Datasource> datasources) {
         List<Datasource> list = new ArrayList<>();
         for (Datasource datasource : datasources) {
-            if (Datasource.CommitMode.PARENT.equals(datasource.getCommitMode()) && datasource.isModified()) {
+            if (Datasource.CommitMode.PARENT.equals(datasource.getCommitMode())
+                    && (datasource.isModified()  || !((DatasourceImplementation) datasource).getItemsToCreate().isEmpty())) {
                 list.add(datasource);
             }
         }
