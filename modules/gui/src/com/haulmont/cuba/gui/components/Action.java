@@ -16,6 +16,7 @@ import java.util.Collection;
 public interface Action {
 
     public static final String PROP_CAPTION = "caption";
+    public static final String PROP_DESCRIPTION = "description";
     public static final String PROP_ICON = "icon";
     public static final String PROP_ENABLED = "enabled";
     public static final String PROP_VISIBLE = "visible";
@@ -30,6 +31,12 @@ public interface Action {
      */
     String getCaption();
     void setCaption(String caption);
+
+    /**
+     * @return  action's description
+     */
+    String getDescription();
+    void setDescription(String description);
 
     /**
      *

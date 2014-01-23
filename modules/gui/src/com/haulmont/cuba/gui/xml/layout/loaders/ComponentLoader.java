@@ -400,6 +400,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
             return new DeclarativeTrackingAction(
                     id,
                     loadResourceString(element.attributeValue("caption")),
+                    loadResourceString(element.attributeValue("description")),
                     loadResourceString(element.attributeValue("icon")),
                     element.attributeValue("enable"),
                     element.attributeValue("visible"),
@@ -411,6 +412,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
             return new DeclarativeAction(
                     id,
                     loadResourceString(element.attributeValue("caption")),
+                    loadResourceString(element.attributeValue("description")),
                     loadResourceString(element.attributeValue("icon")),
                     element.attributeValue("enable"),
                     element.attributeValue("visible"),

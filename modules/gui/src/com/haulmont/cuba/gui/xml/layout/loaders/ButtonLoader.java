@@ -63,7 +63,7 @@ public class ButtonLoader extends com.haulmont.cuba.gui.xml.layout.loaders.Compo
         }
 
         DeclarativeAction action = new DeclarativeAction(actionBaseId + "_invoke",
-                component.getCaption(), component.getIcon(),
+                component.getCaption(), component.getDescription(), component.getIcon(),
                 enabled, visible,
                 methodName,
                 component.getFrame()

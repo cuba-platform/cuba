@@ -76,9 +76,14 @@ public class WebButton
     public void setAction(Action action) {
         this.action = action;
 
-        final String caption = action.getCaption();
+        String caption = action.getCaption();
         if (!StringUtils.isEmpty(caption) && StringUtils.isEmpty(component.getCaption())) {
             component.setCaption(caption);
+        }
+
+        String description = action.getDescription();
+        if (!StringUtils.isEmpty(description) && StringUtils.isEmpty(component.getDescription())) {
+            component.setDescription(description);
         }
 
         component.setEnabled(action.isEnabled());
@@ -98,6 +103,8 @@ public class WebButton
                             setIcon(WebButton.this.action.getIcon());
                         } else if (Action.PROP_CAPTION.equals(evt.getPropertyName())) {
                             setCaption(WebButton.this.action.getCaption());
+                        } else if (Action.PROP_DESCRIPTION.equals(evt.getPropertyName())) {
+                            setDescription(WebButton.this.action.getDescription());
                         } else if (Action.PROP_ENABLED.equals(evt.getPropertyName())) {
                             setEnabled(WebButton.this.action.isEnabled());
                         } else if (Action.PROP_VISIBLE.equals(evt.getPropertyName())) {

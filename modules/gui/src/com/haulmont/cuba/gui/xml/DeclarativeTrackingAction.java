@@ -22,9 +22,9 @@ public class DeclarativeTrackingAction extends DeclarativeAction implements Coll
 
     protected boolean enabledFlag = true;
 
-    public DeclarativeTrackingAction(String id, String caption, String icon, String enable, String visible,
+    public DeclarativeTrackingAction(String id, String caption, String description, String icon, String enable, String visible,
                                      String methodName, @Nullable String shortcut, Component.ActionsHolder holder) {
-        super(id, caption, icon, enable, visible, methodName, shortcut, holder);
+        super(id, caption, description, icon, enable, visible, methodName, shortcut, holder);
     }
 
     @Override

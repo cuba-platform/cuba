@@ -31,6 +31,8 @@ public abstract class AbstractAction implements Action {
 
     protected String caption;
 
+    protected String description;
+
     protected String icon;
 
     protected boolean enabled = true;
@@ -95,6 +97,20 @@ public abstract class AbstractAction implements Action {
         if (!StringUtils.equals(oldValue, caption)) {
             this.caption = caption;
             firePropertyChange(PROP_CAPTION, oldValue, caption);
+        }
+    }
+
+    @Override
+    public String getDescription() {
+        return description;
+    }
+
+    @Override
+    public void setDescription(String description) {
+        String oldValue = this.description;
+        if (!StringUtils.equals(oldValue, description)) {
+            this.description = description;
+            firePropertyChange(PROP_DESCRIPTION, oldValue, description);
         }
     }
 

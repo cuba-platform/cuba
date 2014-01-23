@@ -54,9 +54,14 @@ public class DesktopButton extends DesktopAbstractComponent<JButton> implements 
     public void setAction(Action action) {
         this.action = action;
 
-        final String caption = action.getCaption();
+        String caption = action.getCaption();
         if (!StringUtils.isEmpty(caption) && StringUtils.isEmpty(impl.getText())) {
             impl.setText(caption);
+        }
+
+        String description = action.getDescription();
+        if (!StringUtils.isEmpty(description) && StringUtils.isEmpty(getDescription())) {
+            setDescription(description);
         }
 
         impl.setEnabled(action.isEnabled());
@@ -76,6 +81,8 @@ public class DesktopButton extends DesktopAbstractComponent<JButton> implements 
                             setIcon(DesktopButton.this.action.getIcon());
                         } else if (Action.PROP_CAPTION.equals(evt.getPropertyName())) {
                             setCaption(DesktopButton.this.action.getCaption());
+                        } else if (Action.PROP_DESCRIPTION.equals(evt.getPropertyName())) {
+                            setDescription(DesktopButton.this.action.getDescription());
                         } else if (Action.PROP_ENABLED.equals(evt.getPropertyName())) {
                             setEnabled(DesktopButton.this.action.isEnabled());
                         } else if (Action.PROP_VISIBLE.equals(evt.getPropertyName())) {

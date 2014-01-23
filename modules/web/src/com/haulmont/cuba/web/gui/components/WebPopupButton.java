@@ -274,6 +274,16 @@ public class WebPopupButton
         }
 
         @Override
+        public String getDescription() {
+            return action.getDescription();
+        }
+
+        @Override
+        public void setDescription(String description) {
+            action.setDescription(description);
+        }
+
+        @Override
         public KeyCombination getShortcut() {
             return null;
         }
