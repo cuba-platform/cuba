@@ -251,7 +251,18 @@ public class DeletePolicyProcessor {
         query.setParameter(1, entity.getId());
         List<BaseEntity> list = query.getResultList();
         for (BaseEntity e : list) {
-            e.setValue(property.getName(), null);
+            if (property.getRange().getCardinality().isMany()) {
+                Collection collection = e.getValue(property.getName());
+                if (collection != null) {
+                    for (Iterator it = collection.iterator(); it.hasNext(); ) {
+                        if (entity.equals(it.next())) {
+                            it.remove();
+                        }
+                    }
+                }
+            } else {
+                e.setValue(property.getName(), null);
+            }
         }
     }
 }
