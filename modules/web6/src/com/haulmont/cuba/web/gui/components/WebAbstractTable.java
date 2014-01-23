@@ -50,9 +50,11 @@ import com.vaadin.terminal.Resource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextArea;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.LogFactory;
@@ -60,6 +62,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import javax.annotation.Nullable;
+import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -113,6 +116,9 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     protected Map<String, Printable> printables = new HashMap<>();
 
     protected Map<String, ShortcutListener> shortcuts = new HashMap<>();
+
+    // Use weak map and references for loyal GC support
+    protected Map<Entity, List<WeakReference<ReadOnlyCheckBox>>> booleanCells = new WeakHashMap<>();
 
 //  disabled for #PL-2035
     // Disable listener that points component value to follow the ds item.
@@ -659,6 +665,22 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         createColumns(ds);
     }
 
+    protected void updateReadonlyBooleanCell(Entity source, String property, Object value) {
+        List<WeakReference<ReadOnlyCheckBox>> booleanProperties = booleanCells.get(source);
+        if (booleanProperties != null) {
+            for (WeakReference<ReadOnlyCheckBox> booleanBox : new LinkedList<>(booleanProperties)) {
+                ReadOnlyCheckBox checkbox = booleanBox.get();
+                if (checkbox != null) {
+                    if (ObjectUtils.equals(property, String.valueOf(checkbox.getColumnId()))) {
+                        checkbox.updateValue((Boolean) value);
+                    }
+                } else {
+                    booleanProperties.remove(booleanBox);
+                }
+            }
+        }
+    }
+
     @Override
     public void setDatasource(CollectionDatasource datasource) {
         UserSessionSource uss = AppBeans.get(UserSessionSource.NAME);
@@ -696,14 +718,23 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                     case CLEAR:
                     case REFRESH:
                         fieldDatasources.clear();
+                        booleanCells.clear();
                         break;
 
                     case UPDATE:
                     case REMOVE:
                         for (Entity entity : items) {
                             fieldDatasources.remove(entity);
+                            booleanCells.remove(entity);
                         }
                         break;
+                }
+            }
+
+            @Override
+            public void valueChanged(Entity source, String property, @Nullable Object prevValue, @Nullable Object value) {
+                if (!booleanCells.isEmpty() && value instanceof Boolean) {
+                    updateReadonlyBooleanCell(source, property, value);
                 }
             }
         });
@@ -832,14 +863,14 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         assignAutoDebugId();
     }
 
-    private String getColumnCaption(Object columnId) {
+    protected String getColumnCaption(Object columnId) {
         if (columnId instanceof MetaPropertyPath)
             return ((MetaPropertyPath) columnId).getMetaProperty().getName();
         else
             return columnId.toString();
     }
 
-    private List<MetaPropertyPath> getPropertyColumns() {
+    protected List<MetaPropertyPath> getPropertyColumns() {
         UserSession userSession = UserSessionProvider.getUserSession();
         List<MetaPropertyPath> result = new ArrayList<>();
         for (Column column : columnsOrder) {
@@ -1470,24 +1501,63 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
     protected class ReadOnlyBooleanDatatypeGenerator implements SystemTableColumnGenerator {
         @Override
-        public Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
+        public com.vaadin.ui.Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
             return generateCell((AbstractSelect) source, itemId, columnId);
         }
 
-        protected Component generateCell(AbstractSelect source, Object itemId, Object columnId) {
-            final Property property = source.getItem(itemId).getItemProperty(columnId);
+        protected com.vaadin.ui.Component generateCell(AbstractSelect source, Object itemId, final Object columnId) {
+            Item item = source.getItem(itemId);
+            final Property property = item.getItemProperty(columnId);
             final Object value = property.getValue();
 
-            com.vaadin.ui.Embedded checkBoxImage;
-            if (BooleanUtils.isTrue((Boolean) value)){
-                checkBoxImage = new com.vaadin.ui.Embedded("", new VersionedThemeResource("components/table/images/checkbox-checked.png"));
+            ReadOnlyCheckBox checkPoxImage = new ReadOnlyCheckBox(columnId);
+            checkPoxImage.setSizeUndefined();
+            checkPoxImage.updateValue((Boolean) value);
+
+            Entity key = ((ItemWrapper) item).getItem();
+
+            List<WeakReference<ReadOnlyCheckBox>> booleanProperties = booleanCells.get(key);
+            if (booleanProperties == null) {
+                booleanProperties = new LinkedList<>();
+                booleanCells.put(key, booleanProperties);
             } else {
-                checkBoxImage = new com.vaadin.ui.Embedded("", new VersionedThemeResource("components/table/images/checkbox-unchecked.png"));
+                for (WeakReference<ReadOnlyCheckBox> checkBoxRef: new LinkedList<>(booleanProperties)) {
+                    ReadOnlyCheckBox readOnlyCheckBox = checkBoxRef.get();
+                    if (readOnlyCheckBox != null) {
+                        // remove old
+                        if (ObjectUtils.equals(columnId, readOnlyCheckBox.getColumnId())) {
+                            booleanProperties.remove(checkBoxRef);
+                        }
+                    } else {
+                        booleanProperties.remove(checkBoxRef);
+                    }
+                }
             }
-            return checkBoxImage;
+            booleanProperties.add(new WeakReference<>(checkPoxImage));
+
+            return checkPoxImage;
         }
     }
 
+    protected static class ReadOnlyCheckBox extends Embedded {
+        public final Object columnId;
+
+        public ReadOnlyCheckBox(Object columnId) {
+            this.columnId = columnId;
+        }
+
+        public void updateValue(Boolean value) {
+            if (BooleanUtils.isTrue(value)) {
+                setSource(new VersionedThemeResource("components/table/images/checkbox-checked.png"));
+            } else {
+                setSource(new VersionedThemeResource("components/table/images/checkbox-unchecked.png"));
+            }
+        }
+
+        public Object getColumnId() {
+            return columnId;
+        }
+    }
 
     protected class AbbreviatedColumnGenerator implements SystemTableColumnGenerator {
 
