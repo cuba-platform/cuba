@@ -506,7 +506,9 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     public void removeAction(Action action) {
         super.removeAction(action);
 
-        component.removeShortcutListener(shortcuts.remove(action.getId()));
+        if (action != null) {
+            component.removeShortcutListener(shortcuts.remove(action.getId()));
+        }
     }
 
     /**

@@ -528,7 +528,9 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     public void removeAction(Action action) {
         super.removeAction(action);
 
-        component.removeShortcutListener(shortcuts.remove(action.getId()));
+        if (action != null) {
+            component.removeShortcutListener(shortcuts.remove(action.getId()));
+        }
     }
 
     /**
