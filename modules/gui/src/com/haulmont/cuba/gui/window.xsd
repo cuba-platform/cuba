@@ -402,7 +402,7 @@
 
     <xs:complexType name="frameAction">
         <xs:attributeGroup ref="requiresId"/>
-        <xs:attributeGroup ref="hasCaptionProp"/>
+        <xs:attributeGroup ref="hasCaption"/>
         <xs:attributeGroup ref="hasEnableProp"/>
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attribute name="icon" type="xs:string" use="optional"/>
@@ -412,7 +412,7 @@
 
     <xs:complexType name="componentAction">
         <xs:attributeGroup ref="requiresId"/>
-        <xs:attributeGroup ref="hasCaptionProp"/>
+        <xs:attributeGroup ref="hasCaption"/>
         <xs:attributeGroup ref="hasEnableProp"/>
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attribute name="openType" type="openType" use="optional"/>
