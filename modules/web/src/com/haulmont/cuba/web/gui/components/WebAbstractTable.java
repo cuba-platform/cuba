@@ -64,7 +64,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
-import static com.google.common.base.Preconditions.checkArgument;
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 /**
  * @param <T>
@@ -114,7 +114,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     // Map column id to Printable representation
     protected Map<String, Printable> printables = new HashMap<>();
 
-    protected Map<String, ShortcutListener> shortcuts = new HashMap<>();
+    protected ShortcutsDelegate<ShortcutListener> shortcutsDelegate;
 
     // Use weak map and references for loyal GC support
     protected Map<Entity, List<WeakReference<ReadOnlyCheckBox>>> booleanCells = new WeakHashMap<>();
@@ -126,6 +126,39 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     protected static final int MAX_TEXT_LENGTH_GAP = 10;
 
     protected Security security = AppBeans.get(Security.class);
+
+    protected WebAbstractTable() {
+        shortcutsDelegate = new ShortcutsDelegate<ShortcutListener>() {
+            @Override
+            protected ShortcutListener attachShortcut(final String actionId, KeyCombination keyCombination) {
+                ShortcutListener shortcut = new ShortcutListener(actionId, keyCombination.getKey().getCode(),
+                        KeyCombination.Modifier.codes(keyCombination.getModifiers())) {
+
+                    @Override
+                    public void handleAction(Object sender, Object target) {
+                        if (target == component) {
+                            Action action = getAction(actionId);
+                            if (action != null && action.isEnabled() && action.isVisible()) {
+                                action.actionPerform(WebAbstractTable.this);
+                            }
+                        }
+                    }
+                };
+                component.addShortcutListener(shortcut);
+                return shortcut;
+            }
+
+            @Override
+            protected void detachShortcut(Action action, ShortcutListener shortcutDescriptor) {
+                component.removeShortcutListener(shortcutDescriptor);
+            }
+
+            @Override
+            protected Collection<Action> getActions() {
+                return WebAbstractTable.this.getActions();
+            }
+        };
+    }
 
     @Override
     public java.util.List<Table.Column> getColumns() {
@@ -492,47 +525,20 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
     @Override
     public void addAction(Action action) {
+        checkNotNullArgument(action, "action must be non null");
+
+        Action oldAction = getAction(action.getId());
+
         super.addAction(action);
 
-        // remove old listener if we replace action
-        component.removeShortcutListener(shortcuts.remove(action.getId()));
-
-        if (action.getShortcut() != null) {
-            addShortcutActionBridge(action.getId(), action.getShortcut());
-        }
+        shortcutsDelegate.addAction(oldAction, action);
     }
 
     @Override
     public void removeAction(Action action) {
         super.removeAction(action);
 
-        if (action != null) {
-            component.removeShortcutListener(shortcuts.remove(action.getId()));
-        }
-    }
-
-    /**
-     * Connect shortcut action to default list action
-     *
-     * @param actionId Shortcut action id
-     * @param keyCombination   KeyCombination object
-     */
-    protected void addShortcutActionBridge(final String actionId, KeyCombination keyCombination) {
-        ShortcutListener shortcut = new ShortcutListener(actionId, keyCombination.getKey().getCode(),
-                KeyCombination.Modifier.codes(keyCombination.getModifiers())) {
-
-            @Override
-            public void handleAction(Object sender, Object target) {
-                if (target == component) {
-                    Action action = getAction(actionId);
-                    if (action != null && action.isEnabled() && action.isVisible()) {
-                        action.actionPerform(WebAbstractTable.this);
-                    }
-                }
-            }
-        };
-        shortcuts.put(actionId, shortcut);
-        component.addShortcutListener(shortcut);
+        shortcutsDelegate.removeAction(action);
     }
 
     protected void handleClickAction() {
@@ -1181,8 +1187,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
     @Override
     public void addGeneratedColumn(String columnId, ColumnGenerator generator) {
-        checkArgument(columnId != null, "columnId is null");
-        checkArgument(generator != null, "generator is null for column id '%s'", columnId);
+        checkNotNullArgument(columnId, "columnId is null");
+        checkNotNullArgument(generator, "generator is null for column id '%s'", columnId);
 
         MetaPropertyPath targetCol = getDatasource().getMetaClass().getPropertyPath(columnId);
         Object generatedColumnId = targetCol != null ? targetCol : columnId;
@@ -1686,8 +1692,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     }
 
     protected class WebTableFieldFactory extends AbstractFieldFactory implements TableFieldFactory {
-
-        protected Map<MetaClass, CollectionDatasource> optionsDatasources = new HashMap<>();
 
         @Override
         public com.vaadin.ui.Field<?> createField(com.vaadin.data.Container container,

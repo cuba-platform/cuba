@@ -5,8 +5,11 @@
 
 package com.haulmont.cuba.gui.components;
 
+import com.google.common.base.Objects;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
+
+import java.util.Arrays;
 
 /**
  * @author devyatkin
@@ -26,7 +29,9 @@ public class KeyCombination {
      * @return new instance
      */
     public static KeyCombination create(String keyString) {
-        if (keyString == null) return null;
+        if (keyString == null) {
+            return null;
+        }
         keyString = keyString.toUpperCase();
 
         Key key;
@@ -87,7 +92,6 @@ public class KeyCombination {
     public Modifier[] getModifiers() {
         return modifiers;
     }
-
 
     public enum Key {
         ENTER(13, '\n'),
@@ -212,5 +216,34 @@ public class KeyCombination {
             res[i] = modifiers[i].getCode();
         }
         return res;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+
+        KeyCombination other = (KeyCombination) obj;
+
+        return this.key == other.key && Arrays.equals(this.modifiers, other.modifiers);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(key, modifiers);
+    }
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                .add("key", key)
+                .add("modifiers", modifiers)
+                .toString();
     }
 }

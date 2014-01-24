@@ -12,6 +12,7 @@ import com.haulmont.cuba.web.toolkit.ui.Table;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
+import javax.annotation.Nullable;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.*;
@@ -65,6 +66,7 @@ public class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.Component
         return Collections.unmodifiableCollection(actionList);
     }
 
+    @Nullable
     public Action getAction(String id) {
         for (Action action : getActions()) {
             if (ObjectUtils.equals(action.getId(), id)) {

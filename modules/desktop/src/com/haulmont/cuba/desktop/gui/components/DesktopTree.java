@@ -28,9 +28,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 /**
  * @author krivopustov
@@ -44,6 +44,8 @@ public class DesktopTree extends DesktopAbstractActionsHolderComponent<JTree> im
     protected CaptionMode captionMode = CaptionMode.ITEM;
     protected String captionProperty;
     protected TreeModelAdapter model;
+
+    protected ShortcutsDelegate<KeyCombination> shortcutsDelegate;
 
     public DesktopTree() {
         impl = new JTree();
@@ -82,6 +84,33 @@ public class DesktopTree extends DesktopAbstractActionsHolderComponent<JTree> im
                 }
         );
 
+        shortcutsDelegate = new ShortcutsDelegate<KeyCombination>() {
+            @Override
+            protected KeyCombination attachShortcut(final String actionId, KeyCombination keyCombination) {
+                impl.getInputMap().put(DesktopComponentsHelper.convertKeyCombination(keyCombination), actionId);
+                impl.getActionMap().put(actionId, new AbstractAction() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        Action action = getAction(actionId);
+                        if ((action != null) && (action.isEnabled())) {
+                            action.actionPerform(DesktopTree.this);
+                        }
+                    }
+                });
+                return keyCombination;
+            }
+
+            @Override
+            protected void detachShortcut(Action action, KeyCombination shortcutDescriptor) {
+                impl.getInputMap().remove(DesktopComponentsHelper.convertKeyCombination(shortcutDescriptor));
+                impl.getActionMap().remove(action.getId());
+            }
+
+            @Override
+            protected Collection<Action> getActions() {
+                return DesktopTree.this.getActions();
+            }
+        };
     }
 
     @Override
@@ -161,23 +190,20 @@ public class DesktopTree extends DesktopAbstractActionsHolderComponent<JTree> im
 
     @Override
     public void addAction(Action action) {
+        checkNotNullArgument(action, "action must be non null");
+
+        Action oldAction = getAction(action.getId());
+
         super.addAction(action);
-        if (action.getShortcut() != null) {
-            addShortcutActionBridge(action.getId(), action.getShortcut());
-        }
+
+        shortcutsDelegate.addAction(oldAction, action);
     }
 
-    protected void addShortcutActionBridge(final String actionId, KeyCombination keyCombination) {
-        impl.getInputMap().put(DesktopComponentsHelper.convertKeyCombination(keyCombination), actionId);
-        impl.getActionMap().put(actionId, new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Action action = getAction(actionId);
-                if ((action != null) && (action.isEnabled())) {
-                    action.actionPerform(DesktopTree.this);
-                }
-            }
-        });
+    @Override
+    public void removeAction(Action action) {
+        super.removeAction(action);
+
+        shortcutsDelegate.removeAction(action);
     }
 
     @Override

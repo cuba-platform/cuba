@@ -63,6 +63,7 @@ import java.util.*;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 /**
  * @author krivopustov
@@ -106,7 +107,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
     protected Map<Table.Column, String> requiredColumns = new HashMap<>();
 
-    protected Map<String, KeyCombination> shortcuts = new HashMap<>();
+    protected ShortcutsDelegate<KeyCombination> shortcutsDelegate;
 
     protected Security security = AppBeans.get(Security.class);
 
@@ -127,6 +128,36 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
     // Manual control for content repaint process
     protected boolean contentRepaintEnabled = true;
+
+    protected DesktopAbstractTable() {
+        shortcutsDelegate = new ShortcutsDelegate<KeyCombination>() {
+            @Override
+            protected KeyCombination attachShortcut(final String actionId, KeyCombination keyCombination) {
+                impl.getInputMap().put(DesktopComponentsHelper.convertKeyCombination(keyCombination), actionId);
+                impl.getActionMap().put(actionId, new AbstractAction() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        Action action = getAction(actionId);
+                        if ((action != null) && (action.isEnabled()) && (action.isVisible())) {
+                            action.actionPerform(DesktopAbstractTable.this);
+                        }
+                    }
+                });
+                return keyCombination;
+            }
+
+            @Override
+            protected void detachShortcut(Action action, KeyCombination shortcutDescriptor) {
+                impl.getInputMap().remove(DesktopComponentsHelper.convertKeyCombination(shortcutDescriptor));
+                impl.getActionMap().remove(action.getId());
+            }
+
+            @Override
+            protected Collection<Action> getActions() {
+                return DesktopAbstractTable.this.getActions();
+            }
+        };
+    }
 
     protected void initComponent() {
         layout = new MigLayout("flowy, fill, insets 0", "", "[min!][fill]");
@@ -247,50 +278,20 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
     @Override
     public void addAction(Action action) {
+        checkNotNullArgument(action, "action must be non null");
+
+        Action oldAction = getAction(action.getId());
+
         super.addAction(action);
 
-        removeShortcut(action);
-
-        if (action.getShortcut() != null) {
-            addShortcutActionBridge(action.getId(), action.getShortcut());
-        }
+        shortcutsDelegate.addAction(oldAction, action);
     }
 
     @Override
     public void removeAction(Action action) {
         super.removeAction(action);
 
-        removeShortcut(action);
-    }
-
-    protected void removeShortcut(Action action) {
-        String actionId = action.getId();
-        if (shortcuts.containsKey(actionId)) {
-            KeyCombination kc = shortcuts.get(actionId);
-
-            impl.getInputMap().remove(DesktopComponentsHelper.convertKeyCombination(kc));
-            impl.getActionMap().remove(actionId);
-            shortcuts.remove(actionId);
-        }
-    }
-
-    protected void addShortcutActionBridge(final String actionId, final KeyCombination keyCombination) {
-        if ((keyCombination.getModifiers() == null || keyCombination.getModifiers().length == 0)
-                && keyCombination.getKey() == KeyCombination.Key.ENTER) {
-            return;
-        }
-
-        impl.getInputMap().put(DesktopComponentsHelper.convertKeyCombination(keyCombination), actionId);
-        impl.getActionMap().put(actionId, new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Action action = getAction(actionId);
-                if ((action != null) && (action.isEnabled()) && (action.isVisible())) {
-                    action.actionPerform(DesktopAbstractTable.this);
-                }
-            }
-        });
-        shortcuts.put(actionId, keyCombination);
+        shortcutsDelegate.removeAction(action);
     }
 
     protected void handleClickAction() {

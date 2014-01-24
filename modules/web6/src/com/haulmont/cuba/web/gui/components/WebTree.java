@@ -12,10 +12,14 @@ import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
 import com.haulmont.cuba.web.gui.data.HierarchicalDsWrapper;
 import com.vaadin.data.Property;
+import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.AbstractSelect;
 import org.apache.commons.lang.StringUtils;
 
+import java.util.Collection;
 import java.util.Set;
+
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 /**
  * @author krivopustov
@@ -27,6 +31,8 @@ public class WebTree extends WebAbstractList<com.haulmont.cuba.web.toolkit.ui.Tr
     protected CaptionMode captionMode = CaptionMode.ITEM;
     protected String captionProperty;
 
+    protected ShortcutsDelegate<ShortcutListener> shortcutsDelegate;
+
     public WebTree() {
         component = new com.haulmont.cuba.web.toolkit.ui.Tree();
         component.setMultiSelect(false);
@@ -35,6 +41,7 @@ public class WebTree extends WebAbstractList<com.haulmont.cuba.web.toolkit.ui.Tr
         component.addActionHandler(new ActionsAdapter());
         component.addListener(
                 new Property.ValueChangeListener() {
+                    @Override
                     public void valueChange(Property.ValueChangeEvent event) {
                         Set items = getSelected();
                         if (items.isEmpty()) {
@@ -49,6 +56,54 @@ public class WebTree extends WebAbstractList<com.haulmont.cuba.web.toolkit.ui.Tr
                     }
                 }
         );
+
+        shortcutsDelegate = new ShortcutsDelegate<ShortcutListener>() {
+            @Override
+            protected ShortcutListener attachShortcut(final String actionId, KeyCombination keyCombination) {
+                ShortcutListener shortcut = new ShortcutListener(actionId, keyCombination.getKey().getCode(),
+                        KeyCombination.Modifier.codes(keyCombination.getModifiers())) {
+                    @Override
+                    public void handleAction(Object sender, Object target) {
+                        if (target == component) {
+                            Action action = getAction(actionId);
+                            if (action != null && action.isEnabled() && action.isVisible()) {
+                                action.actionPerform(WebTree.this);
+                            }
+                        }
+                    }
+                };
+                component.addShortcutListener(shortcut);
+                return shortcut;
+            }
+
+            @Override
+            protected void detachShortcut(Action action, ShortcutListener shortcutDescriptor) {
+                component.removeShortcutListener(shortcutDescriptor);
+            }
+
+            @Override
+            protected Collection<Action> getActions() {
+                return WebTree.this.getActions();
+            }
+        };
+    }
+
+    @Override
+    public void addAction(Action action) {
+        checkNotNullArgument(action, "action must be non null");
+
+        Action oldAction = getAction(action.getId());
+
+        super.addAction(action);
+
+        shortcutsDelegate.addAction(oldAction, action);
+    }
+
+    @Override
+    public void removeAction(Action action) {
+        super.removeAction(action);
+
+        shortcutsDelegate.removeAction(action);
     }
 
     @Override

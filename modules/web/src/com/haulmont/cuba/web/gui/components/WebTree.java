@@ -18,9 +18,10 @@ import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.AbstractSelect;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collection;
 import java.util.Set;
+
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 /**
  * @author krivopustov
@@ -32,7 +33,7 @@ public class WebTree extends WebAbstractList<CubaTree> implements Tree {
     protected CaptionMode captionMode = CaptionMode.ITEM;
     protected String captionProperty;
 
-    protected Map<String, ShortcutListener> shortcuts = new HashMap<>();
+    protected ShortcutsDelegate<ShortcutListener> shortcutsDelegate;
     
     public WebTree() {
         component = new CubaTree();
@@ -57,48 +58,55 @@ public class WebTree extends WebAbstractList<CubaTree> implements Tree {
                     }
                 }
         );
+
+        shortcutsDelegate = new ShortcutsDelegate<ShortcutListener>() {
+            @Override
+            protected ShortcutListener attachShortcut(final String actionId, KeyCombination keyCombination) {
+                ShortcutListener shortcut = new ShortcutListener(actionId, keyCombination.getKey().getCode(),
+                        KeyCombination.Modifier.codes(keyCombination.getModifiers())) {
+
+                    @Override
+                    public void handleAction(Object sender, Object target) {
+                        if (target == component) {
+                            Action action = getAction(actionId);
+                            if (action != null && action.isEnabled() && action.isVisible()) {
+                                action.actionPerform(WebTree.this);
+                            }
+                        }
+                    }
+                };
+                component.addShortcutListener(shortcut);
+                return shortcut;
+            }
+
+            @Override
+            protected void detachShortcut(Action action, ShortcutListener shortcutDescriptor) {
+                component.removeShortcutListener(shortcutDescriptor);
+            }
+
+            @Override
+            protected Collection<Action> getActions() {
+                return WebTree.this.getActions();
+            }
+        };
     }
 
     @Override
     public void addAction(Action action) {
+        checkNotNullArgument(action, "action must be non null");
+
+        Action oldAction = getAction(action.getId());
+
         super.addAction(action);
 
-        // remove old listener if we replace action
-        component.removeShortcutListener(shortcuts.remove(action.getId()));
-
-        if (action.getShortcut() != null) {
-            addShortcutActionBridge(action.getId(), action.getShortcut());
-        }
+        shortcutsDelegate.addAction(oldAction, action);
     }
 
     @Override
     public void removeAction(Action action) {
         super.removeAction(action);
 
-        component.removeShortcutListener(shortcuts.remove(action.getId()));
-    }
-
-    /**
-     * Connect shortcut action to default list action
-     *
-     * @param actionId Shortcut action id
-     * @param keyCombination   KeyCombination object
-     */
-    protected void addShortcutActionBridge(final String actionId, KeyCombination keyCombination) {
-        ShortcutListener shortcut = new ShortcutListener(actionId, keyCombination.getKey().getCode(),
-                KeyCombination.Modifier.codes(keyCombination.getModifiers())) {
-            @Override
-            public void handleAction(Object sender, Object target) {
-                if (target == component) {
-                    Action action = getAction(actionId);
-                    if (action != null && action.isEnabled() && action.isVisible()) {
-                        action.actionPerform(WebTree.this);
-                    }
-                }
-            }
-        };
-        shortcuts.put(actionId, shortcut);
-        component.addShortcutListener(shortcut);
+        shortcutsDelegate.removeAction(action);
     }
 
     @Override
