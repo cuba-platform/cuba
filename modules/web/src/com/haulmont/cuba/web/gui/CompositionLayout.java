@@ -7,12 +7,14 @@ package com.haulmont.cuba.web.gui;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.VerticalLayout;
 
-@SuppressWarnings("serial")
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 public class CompositionLayout extends VerticalLayout {
-    private final Component component;
+    protected final Component component;
 
     public CompositionLayout(Component component) {
-        super();
         this.component = component;
         addComponent(component);
     }
