@@ -108,6 +108,13 @@ public class KeyCombination {
         INSERT(45, 0x9B),
         END(35),
         HOME(36),
+        SPACEBAR(32),
+
+        PLUS(107),
+        MINUS(109),
+        DIVIDE(111),
+        MULTIPLY(106),
+
         F1(112),
         F2(113),
         F3(114),
@@ -120,6 +127,7 @@ public class KeyCombination {
         F10(121),
         F11(122),
         F12(123),
+
         A(65),
         B(66),
         C(67),
@@ -146,17 +154,28 @@ public class KeyCombination {
         X(88),
         Y(89),
         Z(90),
-        NUM0(48),
-        NUM1(49),
-        NUM2(50),
-        NUM3(51),
-        NUM4(52),
-        NUM5(53),
-        NUM6(54),
-        NUM7(55),
-        NUM8(56),
-        NUM9(57),
-        SPACEBAR(32);
+
+        KEY0(48),
+        KEY1(49),
+        KEY2(50),
+        KEY3(51),
+        KEY4(52),
+        KEY5(53),
+        KEY6(54),
+        KEY7(55),
+        KEY8(56),
+        KEY9(57),
+
+        NUM0(96),
+        NUM1(97),
+        NUM2(98),
+        NUM3(99),
+        NUM4(100),
+        NUM5(101),
+        NUM6(102),
+        NUM7(103),
+        NUM8(104),
+        NUM9(105);
 
         private int code;
         private int virtualKey;
