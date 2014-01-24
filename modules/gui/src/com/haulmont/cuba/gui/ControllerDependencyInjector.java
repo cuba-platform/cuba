@@ -22,10 +22,7 @@ import org.apache.commons.logging.LogFactory;
 import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
 import java.util.*;
 
 /**
@@ -121,14 +118,30 @@ public class ControllerDependencyInjector {
                 else
                     name = ((Method) element).getName();
             }
-        } else
+        } else {
             throw new IllegalStateException("Can inject to fields and setter methods only");
+        }
 
         Object instance = getInjectedInstance(type, name, annotationClass);
-        if (required && instance == null)
-            log.warn("CDI - Unable to find an instance of type " + type + " named " + name);
-        else
+        if (required && instance == null) {
+            Class<?> declaringClass = ((Member) element).getDeclaringClass();
+            Class<? extends IFrame> frameClass = frame.getClass();
+
+            String msg;
+            if (frameClass == declaringClass) {
+                msg = String.format(
+                        "CDI - Unable to find an instance of type '%s' named '%s' for instance of '%s'",
+                        type, name, frameClass.getCanonicalName());
+            } else {
+                msg = String.format(
+                        "CDI - Unable to find an instance of type '%s' named '%s' declared in '%s' for instance of '%s'",
+                        type, name, declaringClass.getCanonicalName(), frameClass.getCanonicalName());
+            }
+
+            log.warn(msg);
+        } else {
             assignValue(element, instance);
+        }
     }
 
     private Object getInjectedInstance(Class<?> type, String name, Class annotationClass) {
