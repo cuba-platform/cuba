@@ -14,7 +14,6 @@ import com.haulmont.cuba.gui.components.FileMultiUploadField;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.impl.DatasourceImpl;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 
 import javax.inject.Inject;
@@ -87,7 +86,6 @@ public class MultiUploader extends AbstractEditor {
 
     @Override
     public void commitAndClose() {
-        ((DatasourceImpl) filesDs).setModified(false);
         if (commit()) {
             if (needSave) {
                 saveFiles();

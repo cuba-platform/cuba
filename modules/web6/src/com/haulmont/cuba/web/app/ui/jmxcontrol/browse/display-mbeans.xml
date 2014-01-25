@@ -13,12 +13,14 @@
         <collectionDatasource id="jmxInstancesDs"
                               class="com.haulmont.cuba.core.entity.JmxInstance"
                               view="_local"
+                              allowCommit="false"
                               datasourceClass="com.haulmont.cuba.web.app.ui.jmxcontrol.ds.JmxInstancesDatasource">
         </collectionDatasource>
 
         <collectionDatasource id="mbeanDs"
                               class="com.haulmont.cuba.web.jmx.entity.ManagedBeanInfo"
                               view="_local"
+                              allowCommit="false"
                               datasourceClass="com.haulmont.cuba.web.app.ui.jmxcontrol.ds.ManagedBeanInfoDatasource">
         </collectionDatasource>
     </dsContext>

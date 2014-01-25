@@ -20,11 +20,10 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 /**
- * @author abramov                                                                            1
+ * @author abramov
  * @version $Id$
  */
-public abstract class AbstractDatasource<T extends Entity>
-        implements Datasource<T>, DatasourceImplementation<T> {
+public abstract class AbstractDatasource<T extends Entity> implements Datasource<T>, DatasourceImplementation<T> {
 
     protected Log log = LogFactory.getLog(getClass());
 
@@ -42,7 +41,7 @@ public abstract class AbstractDatasource<T extends Entity>
     protected Collection itemToDelete = new HashSet();
     protected ValueListener listener = new ItemListener();
 
-    protected volatile boolean listenersEnabled = true;
+    protected boolean listenersEnabled = true;
 
     @Override
     public void setup(DsContext dsContext, DataSupplier dataSupplier, String id,
@@ -50,6 +49,7 @@ public abstract class AbstractDatasource<T extends Entity>
         this.id = id;
     }
 
+    @Override
     public String getId() {
         return id;
     }
@@ -59,6 +59,7 @@ public abstract class AbstractDatasource<T extends Entity>
         return allowCommit && modified;
     }
 
+    @Override
     public void setModified(boolean modified) {
         this.modified = modified;
     }

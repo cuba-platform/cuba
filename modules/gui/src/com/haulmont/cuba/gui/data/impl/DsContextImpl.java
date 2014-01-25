@@ -292,9 +292,10 @@ public class DsContextImpl implements DsContextImplementation {
         final Map<DataSupplier,Collection<Datasource<Entity>>> commitDatasources = new HashMap<>();
 
         for (Datasource datasource : datasources) {
-            if (Datasource.CommitMode.DATASTORE.equals(datasource.getCommitMode()) &&
-                    (datasource.isModified() || !((DatasourceImplementation) datasource).getItemsToCreate().isEmpty()))
-            {
+            if (Datasource.CommitMode.DATASTORE == datasource.getCommitMode() &&
+                datasource.isAllowCommit() &&
+                (datasource.isModified() || !((DatasourceImplementation) datasource).getItemsToCreate().isEmpty())) {
+
                 final DataSupplier dataservice = datasource.getDataSupplier();
                 Collection<Datasource<Entity>> collection = commitDatasources.get(dataservice);
                 if (collection == null) {
