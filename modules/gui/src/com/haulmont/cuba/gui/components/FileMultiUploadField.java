@@ -41,5 +41,8 @@ public interface FileMultiUploadField extends Component, Component.HasCaption, C
      */
     Map<UUID, String> getUploadsMap();
 
+    /**
+     * Clear uploads list
+     */
     void clearUploads();
 }

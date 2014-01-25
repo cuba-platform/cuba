@@ -25,10 +25,10 @@
 
         <table id="uploadsTable" editable="true" height="400px" width="100%">
             <columns>
-                <column id="name" caption="msg://name" editable="true" width="170"
+                <column id="name" caption="msg://name" editable="true"
                         required="true" requiredMessage="msg://notNullFileNames"/>
-                <column id="extension" caption="msg://extension" editable="false" width="70"/>
-                <column id="size" caption="msg://size" editable="false" width="100"/>
+                <column id="extension" caption="msg://extension" editable="false"/>
+                <column id="size" caption="msg://size" editable="false"/>
             </columns>
             <rows datasource="filesDs"/>
         </table>

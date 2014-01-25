@@ -67,7 +67,7 @@ public class MultiUploader extends AbstractEditor {
                     descriptors.put(fDesc, upload.getKey());
                     filesDs.addItem(fDesc);
                 }
-                uploads.clear();
+                multiUpload.clearUploads();
                 uploadsTable.refresh();
             }
 

@@ -26,8 +26,8 @@
         </filter>
         <table id="filesTable" editable="false" width="100%">
             <actions>
-                <action id="create"/>
-                <action id="edit"/>
+                <action id="create" openType="DIALOG"/>
+                <action id="edit" openType="DIALOG"/>
                 <action id="remove"/>
                 <action id="excel"/>
             </actions>

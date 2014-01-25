@@ -16,7 +16,6 @@ import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import com.haulmont.cuba.web.toolkit.ui.Upload;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -50,11 +49,8 @@ public class WebFileUploadField extends WebAbstractComponent<Upload> implements 
     public WebFileUploadField() {
         fileUploading = AppBeans.get(FileUploadingAPI.NAME);
         messages = AppBeans.get(Messages.class);
-        String caption = messages.getMessage(AppConfig.getMessagesPack(), "Upload");
         component = new Upload(
-                /* Fixes caption rendering.
-                * If caption == "", the VerticalLayout reserves an empty space */
-                StringUtils.isEmpty(caption) ? null : caption,
+                null,
                 new Upload.Receiver() {
                     @Override
                     public OutputStream receiveUpload(String filename, String MIMEType) {
@@ -161,6 +157,7 @@ public class WebFileUploadField extends WebAbstractComponent<Upload> implements 
      * @return Bytes for uploaded file
      * @deprecated Please use {@link WebFileUploadField#getFileId()} method and {@link FileUploadingAPI}
      */
+    @Override
     @Deprecated
     public byte[] getBytes() {
         byte[] bytes = null;

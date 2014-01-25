@@ -11,7 +11,6 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Resource;
 import javax.inject.Inject;
@@ -64,7 +63,7 @@ public class FileEditor extends AbstractEditor<FileDescriptor> {
             okBtn.setEnabled(false);
             uploadField.addListener(new FileUploadListener());
         } else {
-            uploadField.setEnabled(false);
+            uploadField.setVisible(false);
         }
     }
 
