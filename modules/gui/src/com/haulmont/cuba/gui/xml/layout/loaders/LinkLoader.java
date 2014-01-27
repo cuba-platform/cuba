@@ -31,7 +31,7 @@ public class LinkLoader extends AbstractDatasourceComponentLoader {
         loadAlign(component, element);
         loadStyleName(component, element);
 
-        String caption = element.attributeValue("value");
+        String caption = element.attributeValue("caption");
         if (StringUtils.isNotEmpty(caption)) {
             caption = loadResourceString(caption);
             component.setCaption(caption);
