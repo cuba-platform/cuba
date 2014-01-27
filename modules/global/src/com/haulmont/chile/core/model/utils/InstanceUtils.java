@@ -8,6 +8,7 @@ import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.global.IllegalEntityStateException;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -201,8 +202,13 @@ public class InstanceUtils {
         for (MetaProperty srcProperty : srcClass.getProperties()) {
             String name = srcProperty.getName();
             MetaProperty dstProperty = dstClass.getProperty(name);
-            if (dstProperty != null && !dstProperty.isReadOnly())
-                dest.setValue(name, source.getValue(name));
+            if (dstProperty != null && !dstProperty.isReadOnly()) {
+                try {
+                    dest.setValue(name, source.getValue(name));
+                } catch (IllegalEntityStateException ignored) {
+                    // ignore copy exception for not loaded fields
+                }
+            }
         }
     }
 

@@ -7,6 +7,7 @@ package com.haulmont.cuba.core.entity;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.IllegalEntityStateException;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.UuidProvider;
 import org.apache.openjpa.enhance.PersistenceCapable;
@@ -123,8 +124,10 @@ public abstract class BaseUuidEntity extends AbstractInstance implements BaseEnt
                 && this instanceof PersistenceCapable
                 && ((PersistenceCapable) this).pcGetStateManager() instanceof DetachedStateManager) {
             BitSet loaded = ((DetachedStateManager) ((PersistenceCapable) this).pcGetStateManager()).getLoaded();
-            if (!loaded.get(fieldIndex))
-                throw new IllegalStateException("Property '" + name + "' is not loaded");
+            if (!loaded.get(fieldIndex)) {
+                throw new IllegalEntityStateException("Property '" +
+                        getClass().getCanonicalName() + "." + name + "' is not loaded");
+            }
         }
     }
 
