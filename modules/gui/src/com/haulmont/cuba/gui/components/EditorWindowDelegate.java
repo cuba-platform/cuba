@@ -117,23 +117,23 @@ public class EditorWindowDelegate extends WindowDelegate {
 
         DatasourceImplementation parentDs = (DatasourceImplementation) ((DatasourceImplementation) ds).getParent();
 
-        if (!PersistenceHelper.isNew(item)) {
-            if (parentDs != null) {
-                if (!parentDs.getItemsToCreate().contains(item) && !parentDs.getItemsToUpdate().contains(item)
-                        && parentDs instanceof CollectionDatasource
-                        && ((CollectionDatasource) parentDs).containsItem(item)) {
-                    item = dataservice.reload(item, ds.getView(), ds.getMetaClass());
-                    if (parentDs instanceof CollectionPropertyDatasourceImpl) {
-                        ((CollectionPropertyDatasourceImpl) parentDs).replaceItem(item);
-                    } else {
-                        ((CollectionDatasource) parentDs).updateItem(item);
-                    }
+        if (parentDs != null) {
+            if (!PersistenceHelper.isNew(item)
+                    && !parentDs.getItemsToCreate().contains(item) && !parentDs.getItemsToUpdate().contains(item)
+                    && parentDs instanceof CollectionDatasource
+                    && ((CollectionDatasource) parentDs).containsItem(item)) {
+                item = dataservice.reload(item, ds.getView(), ds.getMetaClass());
+                if (parentDs instanceof CollectionPropertyDatasourceImpl) {
+                    ((CollectionPropertyDatasourceImpl) parentDs).replaceItem(item);
+                } else {
+                    ((CollectionDatasource) parentDs).updateItem(item);
                 }
-                item = (Entity) InstanceUtils.copy(item);
-            } else {
-                boolean useSecConstraints = !WindowParams.DISABLE_SECURITY_CONSTRAINTS.getBool(window.getContext());
-                item = dataservice.reload(item, ds.getView(), ds.getMetaClass(), useSecConstraints);
             }
+            item = (Entity) InstanceUtils.copy(item);
+
+        } else if (!PersistenceHelper.isNew(item)) {
+            boolean useSecConstraints = !WindowParams.DISABLE_SECURITY_CONSTRAINTS.getBool(window.getContext());
+            item = dataservice.reload(item, ds.getView(), ds.getMetaClass(), useSecConstraints);
         }
 
         if (item == null) {
