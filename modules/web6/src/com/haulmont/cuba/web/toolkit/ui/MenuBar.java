@@ -6,8 +6,6 @@ package com.haulmont.cuba.web.toolkit.ui;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.KeyCombination;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
@@ -32,21 +30,7 @@ public class MenuBar extends com.vaadin.ui.MenuBar {
     }
 
     public void setShortcut(MenuItem item, KeyCombination shortcut) {
-        setShortcut(item, makeCaption(shortcut));
-    }
-
-    protected String makeCaption(KeyCombination shortcut) {
-        Messages messages = AppBeans.get(Messages.class);
-
-        StringBuilder sb = new StringBuilder();
-        if (shortcut.getModifiers() != null) {
-            for (KeyCombination.Modifier mod: shortcut.getModifiers()) {
-                sb.append(messages.getMessage(getClass(), "shortcut." + mod.name()))
-                  .append("+");
-            }
-        }
-        sb.append(messages.getMessage(getClass(), "shortcut." + shortcut.getKey().name()));
-        return sb.toString();
+        setShortcut(item, shortcut.format());
     }
 
     public void setShortcut(MenuItem item, String str) {
