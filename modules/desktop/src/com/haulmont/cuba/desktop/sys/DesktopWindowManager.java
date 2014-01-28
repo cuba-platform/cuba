@@ -876,7 +876,7 @@ public class DesktopWindowManager extends WindowManager {
                 setWindowCaption(caption, description, selectedIndex);
             }
         } else {
-            JDialog jDialog = (JDialog) windowOpenMode.get(window).getData();
+            JDialog jDialog = (JDialog) openMode.getData();
             if (jDialog != null) {
                 jDialog.setTitle(formattedCaption);
             }
