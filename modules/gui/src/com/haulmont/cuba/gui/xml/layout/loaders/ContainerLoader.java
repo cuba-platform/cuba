@@ -74,15 +74,17 @@ public abstract class ContainerLoader extends ComponentLoader {
         final String expand = element.attributeValue("expand");
         if (!StringUtils.isEmpty(expand)) {
             final String[] parts = expand.split(";");
-            final Component componentToExpand = layout.getComponent(parts[0]);
+            final String targetId = parts[0];
+            final Component componentToExpand = layout.getOwnComponent(targetId);
 
             if (componentToExpand != null) {
                 String height = find(parts, "height");
                 String width = find(parts, "width");
-                layout.expand(
-                        componentToExpand,
-                        height,
-                        width);
+                layout.expand(componentToExpand, height, width);
+            } else {
+                throw new GuiDevelopmentException(
+                        "Illegal expand target '" + targetId + "' for container",
+                        context.getFullFrameId(), "component", targetId);
             }
         }
     }
