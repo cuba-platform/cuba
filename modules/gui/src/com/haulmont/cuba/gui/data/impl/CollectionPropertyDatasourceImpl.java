@@ -24,6 +24,7 @@ import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.annotation.Nullable;
+import javax.persistence.ManyToMany;
 import java.util.*;
 
 /**
@@ -440,6 +441,15 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         }
         modified = saveModified;
         fireCollectionChanged(CollectionDatasourceListener.Operation.UPDATE, Collections.<Entity>singletonList(item));
+    }
+
+    @Override
+    public void modified(T item) {
+        // Never modify not new objects linked as ManyToMany. CollectionPropertyDatasource should only handle adding
+        // and removing of ManyToMany items.
+        if (!PersistenceHelper.isNew(item) && metaProperty.getAnnotatedElement().getAnnotation(ManyToMany.class) != null)
+            return;
+        super.modified(item);
     }
 
     public void replaceItem(T item) {
