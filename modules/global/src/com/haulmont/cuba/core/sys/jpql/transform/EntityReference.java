@@ -10,9 +10,8 @@ import com.haulmont.cuba.core.sys.jpql.tree.PathNode;
 import org.antlr.runtime.tree.Tree;
 
 /**
- * Author: Alexander Chevelev
- * Date: 06.04.2011
- * Time: 16:43:37
+ * @author chevelev
+ * @version $Id$
  */
 public interface EntityReference {
     String replaceEntries(String queryPart, String replaceablePart);
