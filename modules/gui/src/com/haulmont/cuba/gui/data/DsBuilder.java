@@ -263,9 +263,7 @@ public class DsBuilder {
             throw new RuntimeException(e);
         }
         datasource.setAllowCommit(allowCommit);
-        if (dsContext != null && id != null) {
-            ((DsContextImplementation) dsContext).register(datasource);
-        }
+        registerDatasource(datasource);
         return datasource;
     }
 
@@ -297,9 +295,7 @@ public class DsBuilder {
         }
         datasource.setSoftDeletion(softDeletion);
         datasource.setAllowCommit(allowCommit);
-        if (dsContext != null && id != null) {
-            ((DsContextImplementation) dsContext).register(datasource);
-        }
+        registerDatasource(datasource);
         return (T) datasource;
     }
 
@@ -346,9 +342,7 @@ public class DsBuilder {
         }
         datasource.setSoftDeletion(softDeletion);
         datasource.setAllowCommit(allowCommit);
-        if (dsContext != null && id != null) {
-            ((DsContextImplementation) dsContext).register(datasource);
-        }
+        registerDatasource(datasource);
         return (T) datasource;
     }
 
@@ -379,9 +373,7 @@ public class DsBuilder {
         }
         datasource.setSoftDeletion(softDeletion);
         datasource.setAllowCommit(allowCommit);
-        if (dsContext != null && id != null) {
-            ((DsContextImplementation) dsContext).register(datasource);
-        }
+        registerDatasource(datasource);
         return (T) datasource;
     }
 
@@ -389,9 +381,16 @@ public class DsBuilder {
         init();
         RuntimePropsDatasourceImpl datasource;
         datasource = new RuntimePropsDatasourceImpl(dsContext, dataSupplier, id, mainDsId);
+        registerDatasource(datasource);
+        return (T) datasource;
+    }
+
+    private void registerDatasource(Datasource datasource) {
         if (dsContext != null && id != null) {
+            if (dsContext.get(id) != null) {
+                throw new DevelopmentException("Duplicated datasource id: " + id);
+            }
             ((DsContextImplementation) dsContext).register(datasource);
         }
-        return (T) datasource;
     }
 }
