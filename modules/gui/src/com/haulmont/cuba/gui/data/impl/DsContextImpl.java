@@ -420,6 +420,11 @@ public class DsContextImpl implements DsContextImplementation {
     }
 
     @Override
+    public void unregister(Datasource datasource) {
+        datasourceMap.remove(datasource.getId());
+    }
+
+    @Override
     public void registerListener(ParameterInfo item, Datasource datasource) {
         // TODO implement ContextListeners
 //        if (ParametersHelper.ParameterInfo.Type.PARAM.equals(item.getType())) {

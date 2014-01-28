@@ -8,11 +8,16 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.xml.ParameterInfo;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public interface DsContextImplementation extends DsContext {
 
     void setParent(DsContext parentDsContext);
 
     void register(Datasource datasource);
+    void unregister(Datasource datasource);
     void registerListener(ParameterInfo item, Datasource datasource);
 
     public interface LazyTask {

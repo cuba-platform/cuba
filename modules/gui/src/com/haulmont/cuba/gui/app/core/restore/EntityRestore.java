@@ -16,7 +16,9 @@ import com.haulmont.cuba.core.global.ViewRepository;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.DsBuilder;
+import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.GroupDatasource;
+import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.BooleanUtils;
 import org.dom4j.Element;
@@ -140,7 +142,12 @@ public class EntityRestore extends AbstractWindow {
                     entitiesTable.addColumn(column);
                 }
 
-                entitiesDs = new DsBuilder(getDsContext())
+                DsContext dsContext = getDsContext();
+                if (entitiesDs != null) {
+                    ((DsContextImplementation) dsContext).unregister(entitiesDs);
+                }
+
+                entitiesDs = new DsBuilder(dsContext)
                         .setId("entitiesDs")
                         .setMetaClass(metaClass)
                         .setView(buildView(metaClass, metaProperties))
