@@ -32,9 +32,9 @@ import java.util.*;
  */
 public class WebTabSheet
         extends
-            WebAbstractComponent<CubaTabSheet>
+        WebAbstractComponent<CubaTabSheet>
         implements
-            TabSheet, Component.Container {
+        TabSheet, Component.Container {
 
     protected boolean postInitTaskAdded;
     protected boolean componentTabChangeListenerInitialized;
@@ -48,7 +48,7 @@ public class WebTabSheet
 
     protected Map<String, Tab> tabs = new HashMap<>();
 
-    protected Map<com.vaadin.ui.Component, ComponentDescriptor> components = new HashMap<>();
+    protected Map<com.vaadin.ui.Component, ComponentDescriptor> components = new LinkedHashMap<>();
 
     protected Set<com.vaadin.ui.Component> lazyTabs = new HashSet<>();
 
