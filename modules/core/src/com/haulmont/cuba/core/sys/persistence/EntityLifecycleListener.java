@@ -76,24 +76,20 @@ public class EntityLifecycleListener extends AbstractLifecycleListener {
             entityLog.registerCreate(entity, true);
             manager.fireListener(entity, EntityListenerType.BEFORE_INSERT);
             enqueueForFts(entity, FtsChangeType.INSERT);
+
+        } else if ((entity instanceof SoftDelete) && justDeleted((SoftDelete) entity)) {
+            entityLog.registerDelete(entity, true);
+            processDeletePolicy(entity);
+            manager.fireListener(entity, EntityListenerType.BEFORE_DELETE);
+            enqueueForFts(entity, FtsChangeType.DELETE);
+
         } else {
             if (entity instanceof Updatable) {
                 __beforeUpdate((Updatable) event.getSource());
-                if ((entity instanceof SoftDelete) && justDeleted((SoftDelete) entity)) {
-                    entityLog.registerDelete(entity, true);
-                    processDeletePolicy(entity);
-                    manager.fireListener(entity, EntityListenerType.BEFORE_DELETE);
-                    enqueueForFts(entity, FtsChangeType.DELETE);
-                } else {
-                    entityLog.registerModify(entity, true);
-                    manager.fireListener(entity, EntityListenerType.BEFORE_UPDATE);
-                    enqueueForFts(entity, FtsChangeType.UPDATE);
-                }
-            } else {
-                entityLog.registerModify(entity, true);
-                manager.fireListener(entity, EntityListenerType.BEFORE_UPDATE);
-                enqueueForFts(entity, FtsChangeType.UPDATE);
             }
+            entityLog.registerModify(entity, true);
+            manager.fireListener(entity, EntityListenerType.BEFORE_UPDATE);
+            enqueueForFts(entity, FtsChangeType.UPDATE);
         }
     }
 
@@ -106,17 +102,15 @@ public class EntityLifecycleListener extends AbstractLifecycleListener {
 
         if (((PersistenceCapable) entity).pcIsNew()) {
             manager.fireListener(entity, EntityListenerType.AFTER_INSERT);
+
+        } else if ((entity instanceof SoftDelete) && justDeleted((SoftDelete) entity)) {
+            manager.fireListener(entity, EntityListenerType.AFTER_DELETE);
+
         } else {
             if (entity instanceof Updatable) {
                 __beforeUpdate((Updatable) event.getSource());
-                if ((entity instanceof SoftDelete) && justDeleted((SoftDelete) entity)) {
-                    manager.fireListener(entity, EntityListenerType.AFTER_DELETE);
-                } else {
-                    manager.fireListener(entity, EntityListenerType.AFTER_UPDATE);
-                }
-            } else {
-                manager.fireListener(entity, EntityListenerType.AFTER_UPDATE);
             }
+            manager.fireListener(entity, EntityListenerType.AFTER_UPDATE);
         }
     }
 
@@ -140,12 +134,8 @@ public class EntityLifecycleListener extends AbstractLifecycleListener {
         manager.fireListener(entity, EntityListenerType.AFTER_DELETE);
     }
 
-    protected boolean justDeleted(SoftDelete dd) {
-        if (!dd.isDeleted()) {
-            return false;
-        } else {
-            return persistence.getTools().getDirtyFields((BaseEntity) dd).contains("deleteTs");
-        }
+    protected boolean justDeleted(SoftDelete entity) {
+        return entity.isDeleted() && persistence.getTools().getDirtyFields((BaseEntity) entity).contains("deleteTs");
     }
 
     protected void __beforePersist(BaseEntity entity) {

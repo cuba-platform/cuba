@@ -12,7 +12,7 @@ import java.util.Date;
  * @author krivopustov
  * @version $Id$
  */
-public interface SoftDelete extends Updatable {
+public interface SoftDelete {
 
     String[] PROPERTIES = {"deleteTs", "deletedBy"};
 
