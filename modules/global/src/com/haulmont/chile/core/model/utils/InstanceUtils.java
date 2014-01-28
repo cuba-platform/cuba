@@ -11,6 +11,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.global.IllegalEntityStateException;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -205,8 +206,13 @@ public class InstanceUtils {
             if (dstProperty != null && !dstProperty.isReadOnly()) {
                 try {
                     dest.setValue(name, source.getValue(name));
-                } catch (IllegalEntityStateException ignored) {
-                    // ignore copy exception for not loaded fields
+                } catch (RuntimeException e) {
+                    Throwable cause = ExceptionUtils.getRootCause(e);
+                    if (cause == null)
+                        cause = e;
+                    // ignore exception on copy for not loaded fields
+                    if (!(cause instanceof IllegalEntityStateException))
+                        throw e;
                 }
             }
         }
