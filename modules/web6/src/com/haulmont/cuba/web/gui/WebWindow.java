@@ -427,8 +427,8 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
     }
 
     @Override
-    public void setContext(WindowContext ctx) {
-        this.context = ctx;
+    public void setContext(FrameContext ctx) {
+        this.context = (WindowContext) ctx;
     }
 
     @Override

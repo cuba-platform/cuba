@@ -342,7 +342,7 @@ public class Param extends AbstractParam<Component> {
                 WebPickerField picker = new WebPickerField();
                 picker.setMetaClass(metaClass);
                 picker.setWidth(TEXT_COMPONENT_WIDTH);
-                picker.setFrame(datasource.getDsContext().getWindowContext().getFrame());
+                picker.setFrame(datasource.getDsContext().getFrameContext().getFrame());
                 picker.addLookupAction();
                 picker.addClearAction();
 
@@ -376,7 +376,7 @@ public class Param extends AbstractParam<Component> {
                 ds.setQuery(q);
             }
             
-            if (WindowParams.DISABLE_AUTO_REFRESH.getBool(datasource.getDsContext().getWindowContext())) {
+            if (WindowParams.DISABLE_AUTO_REFRESH.getBool(datasource.getDsContext().getFrameContext())) {
                 if (ds instanceof CollectionDatasource.Suspendable)
                     ((CollectionDatasource.Suspendable) ds).refreshIfNotSuspended();
                 else

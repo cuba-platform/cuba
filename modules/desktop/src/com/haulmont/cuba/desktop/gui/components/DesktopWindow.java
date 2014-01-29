@@ -391,8 +391,8 @@ public class DesktopWindow implements Window, Component.Disposable,
     }
 
     @Override
-    public void setContext(WindowContext ctx) {
-        context = ctx;
+    public void setContext(FrameContext ctx) {
+        context = (WindowContext) ctx;
     }
 
     @Override

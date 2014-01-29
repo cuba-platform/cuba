@@ -126,7 +126,7 @@ public class EntityInspectorEditor extends AbstractWindow {
         View view = createView(meta);
 
         dsContext = new DsContextImpl(dataSupplier);
-        dsContext.setWindowContext(getDsContext().getWindowContext());
+        dsContext.setFrameContext(getDsContext().getFrameContext());
         setDsContext(dsContext);
 
         createRequest = item == null || item.getId() == null;

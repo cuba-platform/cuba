@@ -6,7 +6,7 @@ package com.haulmont.cuba.gui.data;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.CommitContext;
-import com.haulmont.cuba.gui.WindowContext;
+import com.haulmont.cuba.gui.FrameContext;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -24,10 +24,11 @@ import java.util.Set;
 public interface DsContext {
 
     /**
-     * @return context of a window that owns this DsContext
+     * @return context of a frame that owns this DsContext.
+     * If the DsContext belongs to {@code Window}, its {@code WindowContext} is returned.
      */
-    WindowContext getWindowContext();
-    void setWindowContext(WindowContext context);
+    FrameContext getFrameContext();
+    void setFrameContext(FrameContext context);
 
     /**
      * @return a reference to DataSupplier

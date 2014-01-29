@@ -4,157 +4,61 @@
  */
 package com.haulmont.cuba.gui;
 
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.data.ValueListener;
-import com.haulmont.chile.core.model.Instance;
-import com.haulmont.chile.core.model.utils.InstanceUtils;
-import com.haulmont.chile.core.datatypes.impl.EnumClass;
-import org.apache.commons.lang.ArrayUtils;
 
-import java.util.*;
-import java.util.List;
+import java.util.Map;
 
 /**
- * @author abramov
+ * Provides access to frame parameters and component values.
+ *
+ * @author krivopustov
  * @version $Id$
  */
-public class FrameContext implements WindowContext {
+public interface FrameContext {
 
-    private final IFrame frame;
-    private Map<String, Object> params;
+    IFrame getFrame();
 
-    public FrameContext(IFrame window, Map<String, Object> params) {
-        this.frame = window;
-        this.params = params;
+    /**
+     * For a window contains parameters passed to the window on opening.
+     * <p/> For a frame, linked to the window in XML, contains owning window parameters.
+     * <p/> For a frame, opened dynamically by {@code openFrame()} method contains parameters, passed to the method.
+     */
+    Map<String, Object> getParams();
 
-        frame.getComponents();
-    }
+    /**
+     * Value of an external parameters passed to the window on opening.
+     */
+    <T> T getParamValue(String param);
 
-    public Collection<String> getParameterNames() {
-        List<String> names = new ArrayList<>();
-        for (String s : params.keySet()) {
-            names.add(s.substring("param$".length()));
-        }
-        return names;
-    }
+    /**
+     * Retrieves value of a component by complex name, dereferencing path to the component
+     * and possible drill down to the value
+     * @param property path to the value. Parsed by the following rules:
+     * <br>First split by dots taking into account square brackets, and looking for a component from left to right.
+     * <br>If a component not found, return null.
+     * <br>If a component found and it is a {@link com.haulmont.cuba.gui.components.Component.HasValue}
+     * or {@link com.haulmont.cuba.gui.components.ListComponent}, retrieve its value.
+     * <br>If the value is null, return it.
+     * <br>If there is nothing left in the path after the component name, return the value.
+     * <br>Else if the value is {@link com.haulmont.chile.core.model.Instance}, drill down to it and return the value
+     * of the property by remaining property path.
+     * <br>If the value is an {@link com.haulmont.chile.core.datatypes.impl.EnumClass} and remaining
+     * property path is "id", return EnumClass.getId() value.
+     */
+    <T> T getValue(String property);
 
-    public <T> T getParameterValue(String property) {
-        //noinspection unchecked
-        return (T) params.get("param$" + property);
-    }
+    /**
+     * Set value of a component by its path in the window
+     * @param property path to the component (separated by dots, taking into account square brackets)
+     * @param value value to set
+     * @throws UnsupportedOperationException if the component not found or is not a {@link com.haulmont.cuba.gui.components.Component.HasValue}
+     */
+    void setValue(String property, Object value);
 
-    @Override
-    public IFrame getFrame() {
-        return frame;
-    }
+    /** Add the value listener to the specified component */
+    void addValueListener(String componentName, ValueListener listener);
 
-    @Override
-    public Map<String, Object> getParams() {
-        return params;
-    }
-
-    @Override
-    public <T> T getParamValue(String param) {
-        return (T) params.get(param);
-    }
-
-    @Override
-    public <T> T getValue(String property) {
-        final String[] elements = ValuePathHelper.parse(property);
-        String[] path = elements;
-
-        Component component = frame.getComponent(property);
-        while (component == null && path.length > 1) {
-            // in case of property contains a drill-down part
-            path = (String[]) ArrayUtils.subarray(path, 0, path.length - 1);
-            component = frame.getComponent(ValuePathHelper.format(path));
-        }
-
-        if (component == null || component == frame
-                || ((component instanceof Component.Wrapper) && ((Component.Wrapper) component).getComponent() == frame))
-        {
-            // if component not found or found the frame itself, try to search in parent frame
-            if (frame.getFrame() != null && frame.getFrame() != frame)
-                return frame.getFrame().getContext().getValue(property);
-            else
-                return null;
-        }
-
-        final Object value = getValue(component);
-        if (value == null)
-            return null;
-
-        if (path.length == elements.length) {
-            //noinspection unchecked
-            return (T) value;
-        } else {
-            final java.util.List<String> propertyPath = Arrays.asList(elements).subList(path.length, elements.length);
-            final String[] properties = propertyPath.toArray(new String[propertyPath.size()]);
-
-            if (value instanceof Instance) {
-                //noinspection RedundantTypeArguments
-                return InstanceUtils.<T>getValueEx(((Instance) value), properties);
-            } else if (value instanceof EnumClass) {
-                if (properties.length == 1 && "id".equals(properties[0])) {
-                    //noinspection unchecked
-                    return (T) ((EnumClass) value).getId();
-                } else {
-                    throw new UnsupportedOperationException(String.format("Can't get property '%s' of enum %s", propertyPath, value));
-                }
-            } else {
-                return null;
-            }
-        }
-    }
-
-    protected <T> T getValue(Component component) {
-        if (component instanceof Component.HasValue) {
-            //noinspection RedundantTypeArguments
-            return ((Component.HasValue) component).<T>getValue();
-        } else if (component instanceof ListComponent) {
-            ListComponent list = (ListComponent) component;
-            //noinspection unchecked
-            return list.isMultiSelect() ? (T)list.getSelected() : (T)list.getSingleSelected();
-        } else {
-            return null;
-        }
-    }
-
-    @Override
-    public void setValue(String property, Object value) {
-        final Component component = frame.getComponent(property);
-        if (component instanceof Component.HasValue) {
-            ((Component.HasValue) component).setValue(value);
-        } else {
-            throw new UnsupportedOperationException();
-        }
-    }
-
-    @Override
-    public void addValueListener(String componentName, ValueListener listener) {
-        Component component = frame.getComponent(componentName);
-        if (component == null)
-            throw new RuntimeException("Component not found: " + componentName);
-        if (component instanceof Component.HasValue) {
-            ((Component.HasValue) component).addListener(listener);
-        } else if (component instanceof ListComponent) {
-            throw new UnsupportedOperationException("List component is not supported yet");
-        } else {
-            throw new RuntimeException("Unable to add listener to the component " + component);
-        }
-    }
-
-    @Override
-    public void removeValueListener(String componentName, ValueListener listener) {
-        Component component = frame.getComponent(componentName);
-        if (component == null)
-            throw new RuntimeException("Component not found: " + componentName);
-        if (component instanceof Component.HasValue) {
-            ((Component.HasValue) component).removeListener(listener);
-        } else if (component instanceof ListComponent) {
-            throw new UnsupportedOperationException("List component is not supported yet");
-        } else {
-            throw new RuntimeException("Unable to add listener to the component " + component);
-        }
-    }
+    /** Remove the value listener from the specified component */
+    void removeValueListener(String componentName, ValueListener listener);
 }

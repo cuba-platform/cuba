@@ -339,7 +339,7 @@ public class Param extends AbstractParam<ParamEditorComponent> {
             } else {
                 DesktopPickerField picker = new DesktopPickerField();
                 picker.setMetaClass(metaClass);
-                picker.setFrame(datasource.getDsContext().getWindowContext().getFrame());
+                picker.setFrame(datasource.getDsContext().getFrameContext().getFrame());
                 picker.addLookupAction();
                 picker.addClearAction();
 
@@ -364,7 +364,7 @@ public class Param extends AbstractParam<ParamEditorComponent> {
             ds.setRefreshOnComponentValueChange(true);
             ((DatasourceImplementation) ds).initialized();
 
-            if (WindowParams.DISABLE_AUTO_REFRESH.getBool(datasource.getDsContext().getWindowContext())) {
+            if (WindowParams.DISABLE_AUTO_REFRESH.getBool(datasource.getDsContext().getFrameContext())) {
                 if (ds instanceof CollectionDatasource.Suspendable)
                     ((CollectionDatasource.Suspendable) ds).refreshIfNotSuspended();
                 else

@@ -67,7 +67,7 @@ public enum WindowParams {
      * @param context   window context
      * @return          parameter value
      */
-    public boolean getBool(@Nullable WindowContext context) {
+    public boolean getBool(@Nullable FrameContext context) {
         return context != null && BooleanUtils.isTrue((Boolean) context.getParams().get(name()));
     }
 
@@ -76,7 +76,7 @@ public enum WindowParams {
      * @param context   window context
      * @return          parameter value
      */
-    public String getString(@Nullable WindowContext context) {
+    public String getString(@Nullable FrameContext context) {
         if (context == null)
             return null;
         else

@@ -442,8 +442,8 @@ public class WebWindow implements Window, Component.Wrapper,
     }
 
     @Override
-    public void setContext(WindowContext ctx) {
-        this.context = ctx;
+    public void setContext(FrameContext ctx) {
+        this.context = (WindowContext) ctx;
     }
 
     @Override

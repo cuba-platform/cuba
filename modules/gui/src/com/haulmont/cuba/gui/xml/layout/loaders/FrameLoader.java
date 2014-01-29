@@ -81,7 +81,7 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
         loadHeight(component, layoutElement);
         loadStyleName(component, layoutElement);
 
-        FrameContext frameContext = new FrameContext(component, params);
+        FrameContext frameContext = new FrameContextImpl(component, params);
         component.setContext(frameContext);
 
         if (dsContext != null) {
@@ -93,7 +93,7 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
                 }
             }
 
-            dsContext.setWindowContext(frameContext);
+            dsContext.setFrameContext(frameContext);
         }
         component = wrapByCustomClass(component, element, params, parentContext);
 

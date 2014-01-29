@@ -13,7 +13,7 @@ import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.WindowContext;
+import com.haulmont.cuba.gui.FrameContext;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.filter.QueryFilter;
@@ -209,10 +209,10 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
                 }
                 case PARAM: {
                     Object value;
-                    if (dsContext.getWindowContext() == null) {
+                    if (dsContext.getFrameContext() == null) {
                         value = null;
                     } else {
-                        Map<String, Object> windowParams = dsContext.getWindowContext().getParams();
+                        Map<String, Object> windowParams = dsContext.getFrameContext().getParams();
                         value = windowParams.get(path);
                         if (value == null && elements.length > 1) {
                             Instance instance = (Instance) windowParams.get(elements[0]);
@@ -231,8 +231,8 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
                 }
                 case COMPONENT: {
                     Object value = null;
-                    if (dsContext.getWindowContext() != null) {
-                        value = dsContext.getWindowContext().getValue(path);
+                    if (dsContext.getFrameContext() != null) {
+                        value = dsContext.getFrameContext().getValue(path);
                         if (value instanceof String && info.isCaseInsensitive()) {
                             value = makeCaseInsensitive((String) value);
                         }
@@ -241,7 +241,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
                             if (componentValueListener == null)
                                 componentValueListener = new ComponentValueListener();
                             try {
-                                dsContext.getWindowContext().addValueListener(path, componentValueListener);
+                                dsContext.getFrameContext().addValueListener(path, componentValueListener);
                             } catch (Exception e) {
                                 log.error("Unable to add value listener: " + e);
                             }
@@ -339,8 +339,8 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         String compPerfix = ParameterInfo.Type.COMPONENT.getPrefix() + "$";
         for (ParameterInfo info : queryParameters) {
             if (ParameterInfo.Type.COMPONENT.equals(info.getType())) {
-                Object value = dsContext.getWindowContext() == null ?
-                        null : dsContext.getWindowContext().getValue(info.getPath());
+                Object value = dsContext.getFrameContext() == null ?
+                        null : dsContext.getFrameContext().getValue(info.getPath());
                 templateParams.put(compPerfix + info.getPath(), value);
             }
         }
@@ -351,7 +351,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         }
 
         if (dsContext != null) {
-            WindowContext windowContext = dsContext.getWindowContext();
+            FrameContext windowContext = dsContext.getFrameContext();
             if (windowContext != null) {
                 String paramPerfix = ParameterInfo.Type.PARAM.getPrefix() + "$";
                 for (Map.Entry<String, Object> entry : windowContext.getParams().entrySet()) {
@@ -516,7 +516,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
     protected String getLoggingTag(String prefix) {
         String windowId = "";
         if (dsContext != null) {
-            WindowContext windowContext = dsContext.getWindowContext();
+            FrameContext windowContext = dsContext.getFrameContext();
             if (windowContext != null) {
                 IFrame frame = windowContext.getFrame();
                 if (frame != null) {

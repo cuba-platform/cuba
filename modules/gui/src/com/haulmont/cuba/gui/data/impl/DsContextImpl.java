@@ -9,7 +9,7 @@ import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.gui.WindowContext;
+import com.haulmont.cuba.gui.FrameContext;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.data.*;
@@ -24,7 +24,7 @@ import java.util.*;
  */
 public class DsContextImpl implements DsContextImplementation {
 
-    private WindowContext windowContext;
+    private FrameContext windowContext;
     private DataSupplier dataservice;
 
     private DsContext parent;
@@ -94,12 +94,12 @@ public class DsContextImpl implements DsContextImplementation {
     }
 
     @Override
-    public WindowContext getWindowContext() {
+    public FrameContext getFrameContext() {
         return windowContext;
     }
 
     @Override
-    public void setWindowContext(WindowContext windowContext) {
+    public void setFrameContext(FrameContext windowContext) {
         this.windowContext = windowContext;
         // TODO implement ContextListeners
 //        for (Map.Entry<String, Collection<Datasource>> entry : contextListeners.entrySet()) {
@@ -373,7 +373,7 @@ public class DsContextImpl implements DsContextImplementation {
         } else {
             if (windowContext != null) {
                 String nestedFramePath = id.substring(0, id.indexOf("."));
-                Component nestedFrame = getWindowContext().getFrame().getComponent(nestedFramePath);
+                Component nestedFrame = getFrameContext().getFrame().getComponent(nestedFramePath);
                 if ((nestedFrame) != null && (nestedFrame instanceof IFrame)) {
                     String nestedDsId = id.substring(id.indexOf(".") + 1);
                     ds = ((IFrame) nestedFrame).getDsContext().get(nestedDsId);

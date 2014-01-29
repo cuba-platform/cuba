@@ -93,7 +93,7 @@ public class CollectionDsHelper {
         }
         if (autoRefresh && Datasource.State.INVALID.equals(datasource.getState())) {
             DsContext dsContext = datasource.getDsContext();
-            if (dsContext == null || !WindowParams.DISABLE_AUTO_REFRESH.getBool(dsContext.getWindowContext())) {
+            if (dsContext == null || !WindowParams.DISABLE_AUTO_REFRESH.getBool(dsContext.getFrameContext())) {
                 if (datasource instanceof CollectionDatasource.Suspendable)
                     ((CollectionDatasource.Suspendable) datasource).refreshIfNotSuspended();
                 else

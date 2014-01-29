@@ -11,7 +11,7 @@ import com.haulmont.cuba.desktop.DetachedFrame;
 import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.DialogParams;
-import com.haulmont.cuba.gui.WindowContext;
+import com.haulmont.cuba.gui.FrameContext;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowConfig;
@@ -36,7 +36,7 @@ public class DesktopFrame
         implements DetachableFrame, WrappedFrame, Component.HasXmlDescriptor {
 
     private String messagePack;
-    private WindowContext context;
+    private FrameContext context;
     private DsContext dsContext;
     private IFrame wrapper;
     private Map<String, Component> allComponents = new HashMap<>();
@@ -57,12 +57,12 @@ public class DesktopFrame
     }
 
     @Override
-    public WindowContext getContext() {
+    public FrameContext getContext() {
         return context == null ? getFrame().getContext() : context;
     }
 
     @Override
-    public void setContext(WindowContext ctx) {
+    public void setContext(FrameContext ctx) {
         this.context = ctx;
     }
 

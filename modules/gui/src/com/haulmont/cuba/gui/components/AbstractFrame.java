@@ -7,7 +7,7 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.DialogParams;
-import com.haulmont.cuba.gui.WindowContext;
+import com.haulmont.cuba.gui.FrameContext;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -199,12 +199,12 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
     }
 
     @Override
-    public WindowContext getContext() {
+    public FrameContext getContext() {
         return frame.getContext();
     }
 
     @Override
-    public void setContext(WindowContext ctx) {
+    public void setContext(FrameContext ctx) {
         frame.setContext(ctx);
     }
 

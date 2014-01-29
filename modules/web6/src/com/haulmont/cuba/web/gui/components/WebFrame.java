@@ -8,7 +8,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.DialogParams;
-import com.haulmont.cuba.gui.WindowContext;
+import com.haulmont.cuba.gui.FrameContext;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowConfig;
@@ -32,7 +32,7 @@ import java.util.Map;
 public class WebFrame extends WebAbstractBox implements IFrame, WrappedFrame {
 
     protected String messagePack;
-    protected WindowContext context;
+    protected FrameContext context;
     protected DsContext dsContext;
     protected Element element;
 
@@ -107,12 +107,12 @@ public class WebFrame extends WebAbstractBox implements IFrame, WrappedFrame {
     }
 
     @Override
-    public WindowContext getContext() {
+    public FrameContext getContext() {
         return context == null ? getFrame().getContext() : context;
     }
 
     @Override
-    public void setContext(WindowContext ctx) {
+    public void setContext(FrameContext ctx) {
         this.context = ctx;
     }
 

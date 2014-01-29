@@ -104,7 +104,8 @@ public abstract class WindowManager {
         return windowInfo.hashCode() + params.hashCode();
     }
 
-    protected Window createWindow(WindowInfo windowInfo, Map<String, Object> params, LayoutLoaderConfig layoutConfig) {
+    protected Window createWindow(WindowInfo windowInfo, OpenType openType, Map<String, Object> params,
+                                  LayoutLoaderConfig layoutConfig) {
         checkPermission(windowInfo);
 
         StopWatch loadDescriptorWatch = new Log4JStopWatch(windowInfo.getId() + "#" +
@@ -143,9 +144,9 @@ public abstract class WindowManager {
 
         initDatasources(window, dsContext, params);
 
-        FrameContext frameContext = new FrameContext(window, params);
-        window.setContext(frameContext);
-        dsContext.setWindowContext(frameContext);
+        WindowContext windowContext = new WindowContextImpl(window, openType, params);
+        window.setContext(windowContext);
+        dsContext.setFrameContext(windowContext);
 
         window.setWindowManager(this);
 
@@ -325,7 +326,7 @@ public abstract class WindowManager {
 
         if (template != null) {
             //noinspection unchecked
-            window = createWindow(windowInfo, params, LayoutLoaderConfig.getWindowLoaders());
+            window = createWindow(windowInfo, openType, params, LayoutLoaderConfig.getWindowLoaders());
             String caption = loadCaption(window, params);
             String description = loadDescription(window, params);
             if (openType == OpenType.NEW_TAB) {
@@ -430,7 +431,7 @@ public abstract class WindowManager {
         WindowParams.ITEM.set(params, item instanceof Datasource ? ((Datasource) item).getItem() : item);
 
         if (template != null) {
-            window = createWindow(windowInfo, params, LayoutLoaderConfig.getEditorLoaders());
+            window = createWindow(windowInfo, openType, params, LayoutLoaderConfig.getEditorLoaders());
         } else {
             Class windowClass = windowInfo.getScreenClass();
             if (windowClass != null) {
@@ -473,7 +474,7 @@ public abstract class WindowManager {
         Window window;
 
         if (template != null) {
-            window = createWindow(windowInfo, params, LayoutLoaderConfig.getLookupLoaders());
+            window = createWindow(windowInfo, openType, params, LayoutLoaderConfig.getLookupLoaders());
 
             final Element element = ((Component.HasXmlDescriptor) window).getXmlDescriptor();
             final String lookupComponent = element.attributeValue("lookupComponent");

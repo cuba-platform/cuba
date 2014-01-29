@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.cuba.gui.WindowContext;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.settings.Settings;
@@ -31,6 +32,11 @@ public class AbstractWindow extends AbstractFrame
     @Override
     public void setXmlDescriptor(Element element) {
         ((HasXmlDescriptor) frame).setXmlDescriptor(element);
+    }
+
+    @Override
+    public WindowContext getContext() {
+        return (WindowContext) frame.getContext();
     }
 
     @Override

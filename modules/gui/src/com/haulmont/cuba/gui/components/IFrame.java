@@ -6,7 +6,7 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.DialogParams;
-import com.haulmont.cuba.gui.WindowContext;
+import com.haulmont.cuba.gui.FrameContext;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -33,12 +33,12 @@ public interface IFrame
     String NAME = "iframe";
 
     /**
-     * @return {@link WindowContext} of the current frame or window
+     * @return current frame context
      */
-    WindowContext getContext();
+    FrameContext getContext();
 
     /** For internal use only. Don't call from application code. */
-    void setContext(WindowContext ctx);
+    void setContext(FrameContext ctx);
 
     /**
      * @return {@link DsContext} of the current frame or window

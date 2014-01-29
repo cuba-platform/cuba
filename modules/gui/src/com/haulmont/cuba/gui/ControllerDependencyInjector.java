@@ -165,8 +165,8 @@ public class ControllerDependencyInjector {
             // Injecting the DataSupplier
             return frame.getDsContext().getDataSupplier();
 
-        } else if (WindowContext.class.isAssignableFrom(type)) {
-            // Injecting the WindowContext
+        } else if (FrameContext.class.isAssignableFrom(type)) {
+            // Injecting the FrameContext
             return frame.getContext();
 
         } else if (Action.class.isAssignableFrom(type)) {

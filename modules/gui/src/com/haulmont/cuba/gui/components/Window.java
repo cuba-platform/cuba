@@ -5,6 +5,7 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.WindowContext;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.settings.Settings;
@@ -38,6 +39,11 @@ public interface Window extends IFrame, Component.HasCaption {
      * the screen is closed without commit. Propagated to {@link CloseListener#windowClosed}.
      */
     String CLOSE_ACTION_ID = "close";
+
+    /**
+     * @return current window context
+     */
+    WindowContext getContext();
 
     /**
      * Add a listener that will be notified when this screen is closed.
