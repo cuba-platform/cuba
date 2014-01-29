@@ -380,39 +380,40 @@ public class DataWorkerBean implements DataWorker {
     }
 
     protected void checkPermissions(CommitContext context) {
-        Set<MetaClass> checkedCreateRights = new HashSet<MetaClass>();
-        Set<MetaClass> checkedUpdateRights = new HashSet<MetaClass>();
-        Set<MetaClass> checkedDeleteRights = new HashSet<MetaClass>();
+        Set<MetaClass> checkedCreateRights = new HashSet<>();
+        Set<MetaClass> checkedUpdateRights = new HashSet<>();
+        Set<MetaClass> checkedDeleteRights = new HashSet<>();
 
         for (Entity entity : context.getCommitInstances()) {
-            MetaClass metaClass = entity != null ? entity.getMetaClass() : null;
-            if (metaClass == null) continue;
+            if (entity == null)
+                continue;
 
             if (PersistenceHelper.isNew(entity)) {
-                checkPermission(checkedCreateRights, metaClass, EntityOp.CREATE);
+                checkPermission(checkedCreateRights, entity.getMetaClass(), EntityOp.CREATE);
             } else {
-                checkPermission(checkedUpdateRights, metaClass, EntityOp.UPDATE);
+                checkPermission(checkedUpdateRights, entity.getMetaClass(), EntityOp.UPDATE);
             }
         }
 
         for (Entity entity : context.getRemoveInstances()) {
-            MetaClass metaClass = entity != null ? entity.getMetaClass() : null;
-            if (metaClass == null) continue;
-            checkPermission(checkedDeleteRights, metaClass, EntityOp.DELETE);
+            if (entity == null)
+                continue;
 
+            checkPermission(checkedDeleteRights, entity.getMetaClass(), EntityOp.DELETE);
         }
     }
 
     protected void checkPermissionsNotDetached(NotDetachedCommitContext context) {
-        Set<MetaClass> checkedCreateRights = new HashSet<MetaClass>();
-        Set<MetaClass> checkedUpdateRights = new HashSet<MetaClass>();
-        Set<MetaClass> checkedDeleteRights = new HashSet<MetaClass>();
+        Set<MetaClass> checkedCreateRights = new HashSet<>();
+        Set<MetaClass> checkedUpdateRights = new HashSet<>();
+        Set<MetaClass> checkedDeleteRights = new HashSet<>();
 
         Set newInstanceIdSet = new HashSet(context.getNewInstanceIds());
         for (Entity entity : context.getCommitInstances()) {
-            MetaClass metaClass = entity != null ? entity.getMetaClass() : null;
-            if (metaClass == null) continue;
+            if (entity == null)
+                continue;
 
+            MetaClass metaClass = entity.getMetaClass();
             if (newInstanceIdSet.contains(metaClass.getName() + "-" + entity.getId())) {
                 checkPermission(checkedCreateRights, metaClass, EntityOp.CREATE);
             } else {
@@ -421,9 +422,10 @@ public class DataWorkerBean implements DataWorker {
         }
 
         for (Entity entity : context.getRemoveInstances()) {
-            MetaClass metaClass = entity != null ? entity.getMetaClass() : null;
-            if (metaClass == null) continue;
-            checkPermission(checkedDeleteRights, metaClass, EntityOp.DELETE);
+            if (entity == null)
+                continue;
+
+            checkPermission(checkedDeleteRights, entity.getMetaClass(), EntityOp.DELETE);
         }
     }
 

@@ -24,9 +24,8 @@ public interface Instance {
     UUID getUuid();
 
     /**
-     * @return metaclass of this object, if any
+     * @return metaclass of this object. Throws exception if the metaclass is not found.
      */
-    @Nullable
     MetaClass getMetaClass();
     
     /**

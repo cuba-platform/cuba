@@ -4,6 +4,7 @@
  */
 package com.haulmont.chile.core.model.utils;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
@@ -167,7 +168,7 @@ public class InstanceUtils {
      * @return          new instance of the same Java class as source
      */
     public static Instance copy(Instance source) {
-        Objects.requireNonNull(source, "source is null");
+        Preconditions.checkNotNullArgument(source, "source is null");
 
         Instance dest;
         try {
@@ -190,19 +191,12 @@ public class InstanceUtils {
      * @param dest      destination instance
      */
     public static void copy(Instance source, Instance dest) {
-        Objects.requireNonNull(source, "source is null");
-        Objects.requireNonNull(dest, "dest is null");
+        Preconditions.checkNotNullArgument(source, "source is null");
+        Preconditions.checkNotNullArgument(dest, "dest is null");
 
-        MetaClass srcClass = source.getMetaClass();
-        if (srcClass == null)
-            throw new IllegalStateException("Unable to get metaclass for " + source);
-        MetaClass dstClass = dest.getMetaClass();
-        if (dstClass == null)
-            throw new IllegalStateException("Unable to get metaclass for " + dest);
-
-        for (MetaProperty srcProperty : srcClass.getProperties()) {
+        for (MetaProperty srcProperty : source.getMetaClass().getProperties()) {
             String name = srcProperty.getName();
-            MetaProperty dstProperty = dstClass.getProperty(name);
+            MetaProperty dstProperty = dest.getMetaClass().getProperty(name);
             if (dstProperty != null && !dstProperty.isReadOnly()) {
                 try {
                     dest.setValue(name, source.getValue(name));
@@ -224,13 +218,9 @@ public class InstanceUtils {
      * @param instance  instance
      */
     public static String getInstanceName(Instance instance) {
-        Objects.requireNonNull(instance, "instance is null");
+        Preconditions.checkNotNullArgument(instance, "instance is null");
 
-        MetaClass metaClass = instance.getMetaClass();
-        if (metaClass == null)
-            throw new IllegalStateException("Unable to get metaclass for " + instance);
-
-        String pattern = (String) metaClass.getAnnotations().get(NamePattern.class.getName());
+        String pattern = (String) instance.getMetaClass().getAnnotations().get(NamePattern.class.getName());
         if (StringUtils.isBlank(pattern)) {
             return instance.toString();
         } else {
