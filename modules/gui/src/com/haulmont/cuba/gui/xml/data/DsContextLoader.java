@@ -8,6 +8,7 @@ package com.haulmont.cuba.gui.xml.data;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.gui.data.*;
@@ -199,9 +200,9 @@ public class DsContextLoader {
     }
 
     private void initDatasourceAttributes(Element element) {
-        final String id = element.attributeValue("id");
-        final MetaClass metaClass = loadMetaClass(element);
-        final String viewName = element.attributeValue("view");
+        String id = getDatasourceId(element);
+        MetaClass metaClass = loadMetaClass(element);
+        String viewName = element.attributeValue("view");
 
         builder.reset()
                 .setMetaClass(metaClass)
@@ -257,8 +258,7 @@ public class DsContextLoader {
     }
 
     private void initPropertyDatasourceAttributes(Element element, Datasource ds, String property) {
-        String id = element.attributeValue("id");
-
+        String id = getDatasourceId(element);
         MetaClass metaClass = ds.getMetaClass();
         metaClass.getPropertyNN(property); // check property existense
 
@@ -359,8 +359,8 @@ public class DsContextLoader {
     }
 
     private void initCollectionDatasourceAttributes(Element element, MetaClass metaClass) {
-        final String id = element.attributeValue("id");
-        final String viewName = element.attributeValue("view");
+        String id = getDatasourceId(element);
+        String viewName = element.attributeValue("view");
 
         String deletion = element.attributeValue("softDeletion");
         boolean softDeletion = deletion == null || Boolean.valueOf(deletion);
@@ -393,11 +393,10 @@ public class DsContextLoader {
     }
 
     protected RuntimePropsDatasource loadRuntimePropsDataSource(Element element){
-        final String id = element.attributeValue("id");
-        final MetaClass metaClass = loadMetaClass(element);
+        String id = getDatasourceId(element);
+        MetaClass metaClass = loadMetaClass(element);
 
-        final String mainDsId = element.attributeValue("mainDs");
-
+        String mainDsId = element.attributeValue("mainDs");
         if (mainDsId == null) {
             throw new IllegalStateException("RuntimePropsDs attributes not specified");
         }
@@ -408,5 +407,12 @@ public class DsContextLoader {
 
         loadDatasources(element, datasource);
         return datasource;
+    }
+
+    private String getDatasourceId(Element element) {
+        String id = element.attributeValue("id");
+        if (context.get(id) != null)
+            throw new DevelopmentException("Duplicated datasource id: " + id);
+        return id;
     }
 }

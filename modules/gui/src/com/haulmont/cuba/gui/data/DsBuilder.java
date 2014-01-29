@@ -387,9 +387,6 @@ public class DsBuilder {
 
     private void registerDatasource(Datasource datasource) {
         if (dsContext != null && id != null) {
-            if (dsContext.get(id) != null) {
-                throw new DevelopmentException("Duplicated datasource id: " + id);
-            }
             ((DsContextImplementation) dsContext).register(datasource);
         }
     }
