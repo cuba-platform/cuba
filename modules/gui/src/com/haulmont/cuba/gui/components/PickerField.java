@@ -196,6 +196,8 @@ public interface PickerField extends Field, Component.ActionsHolder {
                         throw new DevelopmentException("Neither metaClass nor datasource/property is specified for the PickerField",
                                 "action ID", getId());
                     windowAlias = metaClass.getName() + ".lookup";
+                    if (!windowConfig.hasWindow(windowAlias))
+                        windowAlias = metaClass.getName() + ".browse";
                 }
                 WindowManager wm = AppBeans.get(WindowManagerProvider.class).get();
                 Window lookupWindow = wm.openLookup(
