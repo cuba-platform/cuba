@@ -11,6 +11,10 @@ import java.util.Map;
 import java.util.Collection;
 import java.util.Set;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public interface DatasourceImplementation<T extends Entity> {
     void initialized();
     void valid();
