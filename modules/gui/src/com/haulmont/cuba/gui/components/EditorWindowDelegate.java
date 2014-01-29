@@ -45,6 +45,7 @@ public class EditorWindowDelegate extends WindowDelegate {
         super(window);
     }
 
+    @Override
     public Window wrapBy(Class<Window> wrapperClass) {
         final Window.Editor editor = (Window.Editor) super.wrapBy(wrapperClass);
 
@@ -61,6 +62,7 @@ public class EditorWindowDelegate extends WindowDelegate {
                             return messages.getMainMessage("actions.OkClose");
                         }
 
+                        @Override
                         public void actionPerform(Component component) {
                             editor.commitAndClose();
                         }
@@ -97,6 +99,7 @@ public class EditorWindowDelegate extends WindowDelegate {
                         return messages.getMainMessage("actions.Cancel");
                     }
 
+                    @Override
                     public void actionPerform(Component component) {
                         editor.close(commitActionPerformed ? Window.COMMIT_ACTION_ID : getId());
                     }
