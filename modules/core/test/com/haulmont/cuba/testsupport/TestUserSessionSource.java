@@ -41,7 +41,6 @@ public class TestUserSessionSource extends AbstractUserSessionSource {
             user.setPassword(DigestUtils.md5Hex("test_admin"));
 
             session = new UserSession(UUID.randomUUID(), user, Collections.<Role>emptyList(), Locale.forLanguageTag("en"), false);
-            session.addConstraint("sec$Group", "", "{E}.createdBy = :currentUserLogin");
         }
         return session;
     }

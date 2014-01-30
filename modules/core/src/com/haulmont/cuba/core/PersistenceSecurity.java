@@ -24,11 +24,11 @@ public interface PersistenceSecurity extends Security {
 
     /**
      * Modifies the query depending on current user's security constraints.
+     *
      * @param query         query to modify
-     * @param entityName    name of entity which is quering
      * @return              true if any constraints have been applied
      */
-    boolean applyConstraints(Query query, String entityName);
+    boolean applyConstraints(Query query);
 
     /**
      * Sets the query param to a value provided by user session (see constants above).

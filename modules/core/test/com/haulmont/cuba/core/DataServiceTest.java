@@ -98,7 +98,6 @@ public class DataServiceTest extends CubaTestCase {
         loadContext.setQueryString("select u.group from sec$User u where u.id = :userId")
                 .setParameter("userId", UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"));
 
-        // here should be a warning or something
         List<Server> list = dataService.loadList(loadContext);
         assertTrue(list.size() == 1);
     }

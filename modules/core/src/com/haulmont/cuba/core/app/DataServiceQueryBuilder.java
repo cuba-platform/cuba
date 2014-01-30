@@ -67,7 +67,7 @@ public class DataServiceQueryBuilder {
         Query query = em.createQuery(queryString);
 
         if (useSecurityConstraints) {
-            boolean constraintsApplied = security.applyConstraints(query, entityName);
+            boolean constraintsApplied = security.applyConstraints(query);
             if (constraintsApplied && log.isDebugEnabled())
                 log.debug("Constraints applyed: " + printQuery(query.getQueryString()));
         }

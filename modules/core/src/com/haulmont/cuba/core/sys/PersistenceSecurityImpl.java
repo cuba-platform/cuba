@@ -8,6 +8,7 @@ package com.haulmont.cuba.core.sys;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.PersistenceSecurity;
 import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.global.QueryParser;
 import com.haulmont.cuba.core.global.QueryTransformer;
 import com.haulmont.cuba.core.global.QueryTransformerFactory;
 import com.haulmont.cuba.security.global.UserSession;
@@ -24,7 +25,10 @@ import java.util.UUID;
 public class PersistenceSecurityImpl extends SecurityImpl implements PersistenceSecurity {
 
     @Override
-    public boolean applyConstraints(Query query, String entityName) {
+    public boolean applyConstraints(Query query) {
+        QueryParser parser = QueryTransformerFactory.createParser(query.getQueryString());
+        String entityName = parser.getEntityName();
+
         MetaClass original = metadata.getExtendedEntities().getOriginalMetaClass(metadata.getClassNN(entityName));
 
         List<String[]> constraints = userSessionSource.getUserSession().getConstraints(

@@ -50,7 +50,7 @@ public class QueryParserRegex implements QueryParser {
     }
 
     public Set<String> getParamNames() {
-        Set<String> result = new HashSet<String>();
+        Set<String> result = new HashSet<>();
 
         Matcher matcher = PARAM_PATTERN.matcher(source);
         while (matcher.find()) {
@@ -66,7 +66,7 @@ public class QueryParserRegex implements QueryParser {
         if (entityMatcher.find()) {
             return entityMatcher.group(2);
         }
-        throw new IllegalStateException("Unable to find entity name [" + source + "]");
+        throw new RuntimeException("Unable to find entity name [" + source + "]");
     }
 
     public String getEntityAlias(String targetEntity) {
