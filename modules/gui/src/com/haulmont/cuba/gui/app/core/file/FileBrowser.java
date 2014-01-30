@@ -64,9 +64,12 @@ public class FileBrowser extends AbstractWindow {
                             for (FileDescriptor fdesc : items) {
                                 filesDs.addItem(fdesc);
                             }
-                            if (items.size() > 0)
+                            if (items.size() > 0) {
                                 filesDs.commit();
+                            }
+
                             filesTable.refresh();
+                            filesTable.requestFocus();
                         }
                     }
                 });

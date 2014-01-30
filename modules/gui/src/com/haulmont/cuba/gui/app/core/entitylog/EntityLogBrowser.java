@@ -37,9 +37,9 @@ import java.util.*;
  */
 public class EntityLogBrowser extends AbstractWindow {
 
-    private static final String SELECT_ALL_CHECK_BOX = "selectAllCheckBox";
+    protected static final String SELECT_ALL_CHECK_BOX = "selectAllCheckBox";
 
-    private static final int DEFAULT_SHOW_ROWS = 50;
+    protected static final int DEFAULT_SHOW_ROWS = 50;
 
     @Inject
     protected Metadata metadata;
@@ -107,13 +107,17 @@ public class EntityLogBrowser extends AbstractWindow {
     @Inject
     protected WindowConfig config;
 
-    private TextField showRowField;
+    protected TextField showRowField;
 
-    private TreeMap<String, Object> entityMetaClassesMap;
+    protected TreeMap<String, Object> entityMetaClassesMap;
 
-    private List<String> systemAttrsList;
+    protected List<String> systemAttrsList;
 
-    private boolean canSelectAllCheckboxGenerateEvents = true; // allow or not selectAllCheckBox to change values of other checkboxes
+    // allow or not selectAllCheckBox to change values of other checkboxes
+    protected boolean canSelectAllCheckboxGenerateEvents = true;
+
+    @Inject
+    protected Button cancelBtn;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -127,13 +131,16 @@ public class EntityLogBrowser extends AbstractWindow {
         changeTypeMap.put(messages.getMessage(getClass(),"createField"), "C");
         changeTypeMap.put(messages.getMessage(getClass(),"modifyField"),"M");
         changeTypeMap.put(messages.getMessage(getClass(),"deleteField"), "D");
+
         entityMetaClassesMap = getEntityMetaClasses();
         entityNameField.setOptionsMap(entityMetaClassesMap);
         changeTypeField.setOptionsMap(changeTypeMap);
         filterEntityNameField.setOptionsMap(entityMetaClassesMap);
+
         Action clearAction = instancePicker.getAction("clear");
         instancePicker.removeAction(clearAction);
         instancePicker.removeAction(instancePicker.getAction("lookup"));
+
         addAction(new SaveAction());
         addAction(new CancelAction());
         Label label1 = factory.createComponent(Label.NAME);
@@ -172,7 +179,7 @@ public class EntityLogBrowser extends AbstractWindow {
                         if (!openLookupWindowError) {
                             lookupWindow.openLookup(
                                     currentWindowAlias,
-                                    new Window.Lookup.Handler() {
+                                    new Lookup.Handler() {
                                         @Override
                                         public void handleLookup(Collection items) {
                                             if (!items.isEmpty()) {
@@ -189,7 +196,7 @@ public class EntityLogBrowser extends AbstractWindow {
                             TreeMap<String, Object> treeMap = new TreeMap<>();
                             treeMap.put("entity", metaClass.getName());
                             lookupWindow.openLookup("entityInspector.browse",
-                                    new Window.Lookup.Handler() {
+                                    new Lookup.Handler() {
                                         @Override
                                         public void handleLookup(Collection items) {
                                             if (!items.isEmpty()) {
@@ -203,10 +210,16 @@ public class EntityLogBrowser extends AbstractWindow {
                                     treeMap
                             );
                         }
+
+                        lookupWindow.addListener(new CloseListener() {
+                            @Override
+                            public void windowClosed(String actionId) {
+                                pickerField.requestFocus();
+                            }
+                        });
                     }
                 }
             }
-
         };
 
         instancePicker.addAction(lookupAction);
@@ -254,7 +267,7 @@ public class EntityLogBrowser extends AbstractWindow {
         return options;
     }
 
-    private void enableControls() {
+    protected void enableControls() {
         loggedEntityTable.setEnabled(false);
         entityNameField.setEditable(false);
         autoCheckBox.setEditable(true);
@@ -264,7 +277,7 @@ public class EntityLogBrowser extends AbstractWindow {
         actionsPaneLayout.setVisible(true);
     }
 
-    private void disableControls() {
+    protected void disableControls() {
         entityNameField.setEditable(false);
         loggedEntityTable.setEnabled(true);
         autoCheckBox.setEditable(false);
@@ -274,7 +287,7 @@ public class EntityLogBrowser extends AbstractWindow {
         actionsPaneLayout.setVisible(false);
     }
 
-    private void fillAttributes(String metaClassName, LoggedEntity item, boolean setEditableCheckboxes) {
+    protected void fillAttributes(String metaClassName, LoggedEntity item, boolean setEditableCheckboxes) {
         clearAttributes();
         if (metaClassName != null) {
             MetaClass metaClass = metadata.getClassNN(metaClassName);
@@ -309,14 +322,14 @@ public class EntityLogBrowser extends AbstractWindow {
         }
     }
 
-    private void enableAllCheckBoxes(boolean b) {
+    protected void enableAllCheckBoxes(boolean b) {
         if (canSelectAllCheckboxGenerateEvents) {
             for (Component box : attributesBox.getComponents())
                 ((CheckBox) box).setValue(b);
         }
     }
 
-    private void checkAllCheckboxes() {
+    protected void checkAllCheckboxes() {
         CheckBox selectAllCheckBox = attributesBox.getOwnComponent(SELECT_ALL_CHECK_BOX);
         if (selectAllCheckBox != null) {
             for (Component c : attributesBox.getComponents()) {
@@ -408,8 +421,11 @@ public class EntityLogBrowser extends AbstractWindow {
         loggedEntityDs.addItem(entity);
         loggedEntityTable.setEditable(true);
         loggedEntityTable.setSelected(entity);
+
         enableControls();
+
         entityNameField.setEditable(true);
+        cancelBtn.requestFocus();
     }
 
     public void reloadConfiguration() {
@@ -418,15 +434,18 @@ public class EntityLogBrowser extends AbstractWindow {
 
     public void modify() {
         enableControls();
+
         loggedEntityTable.setEnabled(false);
+        cancelBtn.requestFocus();
     }
 
-    private class SaveAction extends AbstractAction {
+    protected class SaveAction extends AbstractAction {
 
-        protected SaveAction() {
+        public SaveAction() {
             super("save");
         }
 
+        @Override
         public void actionPerform(Component component) {
             LoggedEntity selectedEntity = (LoggedEntity) loggedEntityTable.getSelected().iterator().next();
             Set<LoggedAttribute> enabledAttributes = selectedEntity.getAttributes();
@@ -451,23 +470,26 @@ public class EntityLogBrowser extends AbstractWindow {
                 loggedAttrDs.commit();
             else
                 loggedEntityDs.commit();
+
             loggedEntityDs.refresh();
             disableControls();
             loggedEntityTable.setEnabled(true);
+            loggedEntityTable.requestFocus();
         }
     }
 
-    private class CancelAction extends AbstractAction {
+    protected class CancelAction extends AbstractAction {
 
-        protected CancelAction() {
+        public CancelAction() {
             super("cancel");
         }
 
+        @Override
         public void actionPerform(Component component) {
             loggedEntityDs.refresh();
             disableControls();
             loggedEntityTable.setEnabled(true);
+            loggedEntityTable.requestFocus();
         }
     }
-
 }

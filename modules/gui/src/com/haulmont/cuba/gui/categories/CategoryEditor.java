@@ -25,15 +25,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * <p>$Id$</p>
- *
  * @author devyatkin
+ * @version $Id$
  */
 public class CategoryEditor extends AbstractEditor<Category> {
 
-    private Category category;
-    private CheckBox cb;
-    private DataSupplier dataSupplier;
+    protected Category category;
+    protected CheckBox cb;
+    protected DataSupplier dataSupplier;
 
     @Inject
     protected MetadataTools metadataTools;
@@ -41,10 +40,10 @@ public class CategoryEditor extends AbstractEditor<Category> {
     @Inject
     protected MessageTools messageTools;
 
+    @Override
     public void init(Map<String, Object> params) {
         dataSupplier = getDsContext().getDataSupplier();
         cb = getComponent("isDefault");
-
     }
 
     @Override
@@ -54,12 +53,11 @@ public class CategoryEditor extends AbstractEditor<Category> {
         initCb();
     }
 
-    private void generateEntityTypeField(){
-
-        boolean hasValue = (category.getEntityType() == null) ? (false) : (true);
+    protected void generateEntityTypeField() {
+        boolean hasValue = category.getEntityType() != null;
 
         LookupField categoryEntityTypeField = getComponent("entityType");
-        Map<String,Object> options = new HashMap<String,Object>();
+        Map<String, Object> options = new HashMap<>();
         MetaClass entityType = null;
         for (MetaClass metaClass : metadataTools.getAllPersistentMetaClasses()) {
             if (CategorizedEntity.class.isAssignableFrom(metaClass.getJavaClass())) {
@@ -71,15 +69,15 @@ public class CategoryEditor extends AbstractEditor<Category> {
         }
         categoryEntityTypeField.setOptionsMap(options);
         categoryEntityTypeField.setValue(entityType);
-        categoryEntityTypeField.addListener(new ValueListener(){
+        categoryEntityTypeField.addListener(new ValueListener() {
             @Override
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                category.setEntityType(((MetaClass)value).getName());
+                category.setEntityType(((MetaClass) value).getName());
             }
         });
     }
 
-    private void initCb() {
+    protected void initCb() {
         cb.setValue(BooleanUtils.isTrue(category.getIsDefault()));
         cb.addListener(new ValueListener() {
             @Override
@@ -91,18 +89,16 @@ public class CategoryEditor extends AbstractEditor<Category> {
                     query.setParameter("entityType", category.getEntityType());
                     query.setParameter("id", category.getId());
                     List<Category> categories = dataSupplier.loadList(categoriesContext);
-                    for(Category cat : categories){
+                    for (Category cat : categories) {
                         cat.setIsDefault(false);
                     }
                     CommitContext commitContext = new CommitContext(categories);
                     dataSupplier.commit(commitContext);
                     category.setIsDefault(true);
-                }
-                else if(Boolean.FALSE.equals(value)){
+                } else if (Boolean.FALSE.equals(value)) {
                     category.setIsDefault(false);
                 }
             }
         });
     }
-
 }

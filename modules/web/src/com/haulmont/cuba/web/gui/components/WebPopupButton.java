@@ -134,7 +134,14 @@ public class WebPopupButton
     @Override
     public void addAction(final Action action) {
         if (action != null && vPopupComponent instanceof com.vaadin.ui.Layout) {
-            WebButton button = new WebButton();
+            WebButton button = new WebButton() {
+                @Override
+                protected void beforeActionPerformed() {
+                    super.beforeActionPerformed();
+
+                    WebPopupButton.this.requestFocus();
+                }
+            };
             button.setAction(new PopupActionWrapper(action));
             button.setIcon(null); // don't show icons to look the same as Table actions
 

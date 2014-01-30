@@ -157,6 +157,7 @@ public class WebFileUploadField extends WebAbstractComponent<Upload> implements 
      * @return Bytes for uploaded file
      * @deprecated Please use {@link WebFileUploadField#getFileId()} method and {@link FileUploadingAPI}
      */
+    @Override
     @Deprecated
     public byte[] getBytes() {
         byte[] bytes = null;

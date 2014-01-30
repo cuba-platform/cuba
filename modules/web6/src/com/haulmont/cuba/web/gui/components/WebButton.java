@@ -37,11 +37,19 @@ public class WebButton extends WebAbstractComponent<com.vaadin.ui.Button> implem
         component.addListener(new com.vaadin.ui.Button.ClickListener() {
             @Override
             public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+                beforeActionPerformed();
                 if (action != null) {
                     action.actionPerform(WebButton.this);
                 }
+                afterActionPerformed();
             }
         });
+    }
+
+    protected void beforeActionPerformed() {
+    }
+
+    protected void afterActionPerformed() {
     }
 
     @Override

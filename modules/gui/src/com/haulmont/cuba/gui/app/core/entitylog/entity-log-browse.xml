@@ -46,13 +46,12 @@
 
             <collectionDatasource id="entityLogAttrDs" property="attributes"/>
         </collectionDatasource>
-
     </dsContext>
 
     <layout expand="tabsheet" spacing="true">
         <tabSheet id="tabsheet">
-            <tab id="view" caption="msg://view" expand="split1">
-                <grid id="grid" spacing="true" margin="true">
+            <tab id="view" caption="msg://view" expand="split1" spacing="true">
+                <grid id="grid" spacing="true" margin="true;false;false;true">
                     <columns count="7"/>
                     <rows>
                         <row>
@@ -75,8 +74,9 @@
                         </row>
                     </rows>
                 </grid>
+
                 <split id="split1" orientation="horizontal" pos="70" width="100%">
-                    <vbox width="100%" height="100%" margin="true" expand="entityLogTable" spacing="true">
+                    <vbox width="100%" height="100%" margin="false;true;true;true" expand="entityLogTable" spacing="true">
                         <table id="entityLogTable" width="100%">
                             <buttonsPanel id="logTablePanel">
                                 <button visible="false"/>
@@ -105,8 +105,8 @@
             </tab>
             <tab id="setup" spacing="true"  expand="split2" margin="true"  caption="msg://setup">
                 <split id="split2" orientation="horizontal" pos="50" width="100%">
-                    <vbox width="100%" height="100%" margin="true" expand="loggedEntityTable" spacing="true">
-                        <groupTable  id="loggedEntityTable" width="100%" margin="true">
+                    <vbox width="100%" height="100%" margin="false;true;false;false" expand="loggedEntityTable" spacing="true">
+                        <groupTable  id="loggedEntityTable" width="100%">
                             <actions>
                                 <action id="create" invoke="create" />
                                 <action id="edit" trackSelection="true" invoke="modify" />
@@ -125,7 +125,8 @@
                             <rows datasource="loggedEntityDs"/>
                         </groupTable>
                     </vbox>
-                    <vbox expand="expandableLabel"  width="100%"  margin="true" spacing="true">
+
+                    <vbox expand="expandableLabel" width="100%" margin="false;false;false;true" spacing="true">
                         <label value="msg://name"/>
                         <lookupField width="310px" datasource="loggedEntityDs" id="entityNameField" property="name"/>
                         <hbox width="50%">

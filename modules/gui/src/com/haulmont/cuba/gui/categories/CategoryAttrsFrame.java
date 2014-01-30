@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.RefreshAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.DataSupplier;
@@ -32,9 +33,8 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * <p>$Id$</p>
- *
  * @author gorbunkov
+ * @version $Id$
  */
 public class CategoryAttrsFrame extends AbstractFrame {
 
@@ -82,8 +82,8 @@ public class CategoryAttrsFrame extends AbstractFrame {
         initMoveButtons();
     }
 
-    private void initMoveButtons() {
-        ((Button)getComponentNN("moveUp")).setAction(new AbstractAction("moveUp") {
+    protected void initMoveButtons() {
+        AbstractAction moveUpAction = new ItemTrackingAction("moveUp") {
             @Override
             public void actionPerform(Component component) {
                 Set<CategoryAttribute> selected = categoryAttrsTable.getSelected();
@@ -107,9 +107,10 @@ public class CategoryAttrsFrame extends AbstractFrame {
             public String getCaption() {
                 return "";
             }
-        });
+        };
+        ((Button)getComponentNN("moveUp")).setAction(moveUpAction);
 
-        AbstractAction action = new AbstractAction("moveDown") {
+        AbstractAction moveDownAction = new ItemTrackingAction("moveDown") {
             @Override
             public void actionPerform(Component component) {
                 Set<CategoryAttribute> selected = categoryAttrsTable.getSelected();
@@ -133,16 +134,18 @@ public class CategoryAttrsFrame extends AbstractFrame {
             public String getCaption() {
                 return "";
             }
-
         };
-        ((Button)getComponentNN("moveDown")).setAction(action);
+        ((Button)getComponentNN("moveDown")).setAction(moveDownAction);
+
+        categoryAttrsTable.addAction(moveUpAction);
+        categoryAttrsTable.addAction(moveDownAction);
     }
 
-    private void sortTableByOrderNo() {
+    protected void sortTableByOrderNo() {
         categoryAttrsTable.sortBy(categoryAttrsDs.getMetaClass().getPropertyPath("orderNo"), true);
     }
 
-    private void initDataTypeColumn() {
+    protected void initDataTypeColumn() {
         categoryAttrsTable.removeGeneratedColumn("dataType");
         categoryAttrsTable.addGeneratedColumn("dataType", new Table.ColumnGenerator<CategoryAttribute>() {
             public Component generateCell(CategoryAttribute attribute) {
@@ -166,7 +169,7 @@ public class CategoryAttrsFrame extends AbstractFrame {
         });
     }
 
-    private void initDefaultValueColumn() {
+    protected void initDefaultValueColumn() {
         categoryAttrsTable.addGeneratedColumn("defaultValue", new Table.ColumnGenerator<CategoryAttribute>() {
             @Override
             public Component generateCell(CategoryAttribute attribute) {
@@ -218,7 +221,7 @@ public class CategoryAttrsFrame extends AbstractFrame {
         });
    }
 
-    private void assignNextOrderNo(CategoryAttribute attr) {
+    protected void assignNextOrderNo(CategoryAttribute attr) {
         UUID lastId = categoryAttrsDs.lastItemId();
         if (lastId == null)
             attr.setOrderNo(1);
@@ -232,12 +235,13 @@ public class CategoryAttrsFrame extends AbstractFrame {
         }
     }
 
-    protected class CategoryAttributeEditAction extends AbstractAction {
+    protected class CategoryAttributeEditAction extends ItemTrackingAction {
 
         protected CategoryAttributeEditAction() {
             super("edit");
         }
 
+        @Override
         public String getCaption() {
             return getMessage("categoryAttrsTable.edit");
         }
@@ -255,6 +259,9 @@ public class CategoryAttrsFrame extends AbstractFrame {
                     @Override
                     public void windowClosed(String actionId) {
                         categoryAttrsTable.getDatasource().refresh();
+                        categoryAttrsTable.requestFocus();
+                        // restore selection from ds
+                        categoryAttrsTable.setSelected(categoryAttrsDs.getItem());
                     }
                 });
             }
@@ -267,6 +274,7 @@ public class CategoryAttrsFrame extends AbstractFrame {
             super("create");
         }
 
+        @Override
         public String getCaption() {
             return getMessage("categoryAttrsTable.create");
         }
@@ -285,10 +293,11 @@ public class CategoryAttrsFrame extends AbstractFrame {
                 @Override
                 public void windowClosed(String actionId) {
                     categoryAttrsTable.getDatasource().refresh();
+                    categoryAttrsTable.requestFocus();
+                    // restore selection from ds
+                    categoryAttrsTable.setSelected(categoryAttrsDs.getItem());
                 }
             });
         }
     }
-
-
 }

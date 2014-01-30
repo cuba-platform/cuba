@@ -43,19 +43,19 @@ public class SessionBrowser extends AbstractLookup {
     protected Label lastUpdateTsLab;
 
     @Inject
-    private Label sessionsInfo;
+    protected Label sessionsInfo;
 
     @Inject
-    private TextField userLogin;
+    protected TextField userLogin;
 
     @Inject
-    private TextField userName;
+    protected TextField userName;
 
     @Inject
-    private TextField userAddress;
+    protected TextField userAddress;
 
     @Inject
-    private TextField userInfo;
+    protected TextField userInfo;
 
     @Named("sessionsTable.message")
     protected Action messageAction;
@@ -63,6 +63,7 @@ public class SessionBrowser extends AbstractLookup {
     @Named("sessionsTable.refresh")
     protected Action refreshAction;
 
+    @Override
     public void init(Map<String, Object> params) {
         super.init(params);
         // TODO remove after implementing #1588
@@ -134,6 +135,7 @@ public class SessionBrowser extends AbstractLookup {
                 String result = window.getResult();
                 if (!StringUtils.isBlank(result)) {
                     showNotification(result, NotificationType.TRAY);
+                    sessionsTable.requestFocus();
                 }
             }
         });
@@ -159,6 +161,7 @@ public class SessionBrowser extends AbstractLookup {
                                         showNotification(getMessage("killUnavailable"), NotificationType.WARNING);
                                 }
                                 sessionsTable.getDatasource().refresh();
+                                sessionsTable.requestFocus();
                             }
                         },
                         new DialogAction(DialogAction.Type.CANCEL)

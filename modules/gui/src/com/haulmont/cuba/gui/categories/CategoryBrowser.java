@@ -7,12 +7,12 @@ package com.haulmont.cuba.gui.categories;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Category;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
@@ -21,9 +21,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * <p>$Id$</p>
- *
  * @author devyatkin
+ * @version $Id$
  */
 public class CategoryBrowser extends AbstractLookup {
 
@@ -41,7 +40,7 @@ public class CategoryBrowser extends AbstractLookup {
 
     @Override
     public void init(Map<String, Object> params) {
-        categoriesDs=getDsContext().get("categoriesDs");
+        categoriesDs = getDsContext().get("categoriesDs");
         categoryTable = getComponent("categoryTable");
         categoryTable.addAction(new CreateAction());
         categoryTable.addAction(new EditAction());
@@ -49,7 +48,7 @@ public class CategoryBrowser extends AbstractLookup {
 
         categoryTable.removeGeneratedColumn("entityType");
 
-        categoryTable.addGeneratedColumn("entityType",new Table.ColumnGenerator<Category>(){
+        categoryTable.addGeneratedColumn("entityType", new Table.ColumnGenerator<Category>() {
             @Override
             public Component generateCell(Category entity) {
                 Label dataTypeLabel = AppConfig.getFactory().createComponent(Label.NAME);
@@ -63,10 +62,11 @@ public class CategoryBrowser extends AbstractLookup {
 
     protected class CreateAction extends AbstractAction {
 
-        protected CreateAction() {
+        public CreateAction() {
             super("create");
         }
 
+        @Override
         public String getCaption() {
             return getMessage("categoryTable.create");
         }
@@ -79,17 +79,19 @@ public class CategoryBrowser extends AbstractLookup {
                 @Override
                 public void windowClosed(String actionId) {
                     categoriesDs.refresh();
+                    categoryTable.requestFocus();
                 }
             });
         }
     }
 
-    protected class EditAction extends AbstractAction {
+    protected class EditAction extends ItemTrackingAction {
 
-        protected EditAction() {
+        public EditAction() {
             super("edit");
         }
 
+        @Override
         public String getCaption() {
             return getMessage("categoryTable.edit");
         }
@@ -104,11 +106,10 @@ public class CategoryBrowser extends AbstractLookup {
                     @Override
                     public void windowClosed(String actionId) {
                         categoriesDs.refresh();
+                        categoryTable.requestFocus();
                     }
                 });
             }
         }
     }
-
-
 }

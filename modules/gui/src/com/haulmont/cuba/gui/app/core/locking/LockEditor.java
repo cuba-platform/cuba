@@ -10,9 +10,9 @@ import com.haulmont.cuba.core.entity.LockDescriptor;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.LookupField;
+import com.haulmont.cuba.gui.components.TextField;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -28,7 +28,11 @@ public class LockEditor extends AbstractEditor {
     @Inject
     protected LookupField nameLookupField;
 
-    public void init(Map<String, Object> params){
+    @Inject
+    protected TextField timeoutField;
+
+    @Override
+    public void init(Map<String, Object> params) {
         Map<String, Object> options = new TreeMap<>();
         for (MetaClass metaClass : metadata.getTools().getAllPersistentMetaClasses()) {
             if (metadata.getExtendedEntities().getExtendedClass(metaClass) == null) {
@@ -38,7 +42,9 @@ public class LockEditor extends AbstractEditor {
             }
         }
         nameLookupField.setOptionsMap(options);
-        if (((LockDescriptor)params.get("item".toUpperCase())).getName() != null)
+        if (((LockDescriptor) params.get("item".toUpperCase())).getName() != null) {
             nameLookupField.setEditable(false);
+            timeoutField.requestFocus();
+        }
     }
 }

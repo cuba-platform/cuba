@@ -40,12 +40,21 @@ public class WebButton
         component.addClickListener(new com.vaadin.ui.Button.ClickListener() {
             @Override
             public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+                beforeActionPerformed();
                 if (action != null) {
                     action.actionPerform(WebButton.this);
                 }
+                afterActionPerformed();
             }
         });
     }
+
+    protected void beforeActionPerformed() {
+    }
+
+    protected void afterActionPerformed() {
+    }
+
 
     @Override
     public String getCaption() {

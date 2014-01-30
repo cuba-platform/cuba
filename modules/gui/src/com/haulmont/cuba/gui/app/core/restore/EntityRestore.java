@@ -15,6 +15,7 @@ import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewRepository;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.GroupDatasource;
@@ -24,6 +25,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.dom4j.Element;
 
 import javax.inject.Inject;
+import java.lang.reflect.AnnotatedElement;
 import java.util.*;
 
 /**
@@ -167,7 +169,8 @@ public class EntityRestore extends AbstractWindow {
                 filter.setStyleName(primaryFilter.getStyleName());
                 StringBuilder sb = new StringBuilder("");
                 for (MetaProperty property : metaClass.getProperties()) {
-                    if (property.getAnnotatedElement().getAnnotation(com.haulmont.chile.core.annotations.MetaProperty.class) != null) {
+                    AnnotatedElement annotatedElement = property.getAnnotatedElement();
+                    if (annotatedElement.getAnnotation(com.haulmont.chile.core.annotations.MetaProperty.class) != null) {
                         sb.append(property.getName()).append("|");
                     }
                 }
@@ -185,7 +188,7 @@ public class EntityRestore extends AbstractWindow {
                 entitiesTable.setWidth("100%");
                 entitiesTable.setHeight("100%");
                 entitiesTable.setMultiSelect(true);
-                entitiesTable.addAction(new AbstractAction("restore") {
+                entitiesTable.addAction(new ItemTrackingAction("restore") {
                     @Override
                     public void actionPerform(Component component) {
                         showRestoreDialog();
@@ -242,9 +245,16 @@ public class EntityRestore extends AbstractWindow {
                                         }
                                         entitiesDs.commit();
                                         entitiesTable.refresh();
+
+                                        entitiesTable.requestFocus();
                                     }
                                 },
-                                new DialogAction(DialogAction.Type.CANCEL)
+                                new DialogAction(DialogAction.Type.CANCEL) {
+                                    @Override
+                                    public void actionPerform(Component component) {
+                                        entitiesTable.requestFocus();
+                                    }
+                                }
                         }
                 );
             }

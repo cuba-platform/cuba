@@ -69,7 +69,13 @@ public class MbeansDisplayWindow extends AbstractWindow {
                 if (!selected.isEmpty()) {
                     ManagedBeanInfo mbi = selected.iterator().next();
                     if (mbi.getObjectName() != null) { // otherwise it's a fake root node
-                        openEditor("jmxConsoleInspectMbean", mbi, WindowManager.OpenType.THIS_TAB);
+                        Window editor = openEditor("jmxConsoleInspectMbean", mbi, WindowManager.OpenType.THIS_TAB);
+                        editor.addListener(new CloseListener() {
+                            @Override
+                            public void windowClosed(String actionId) {
+                                mbeansTable.requestFocus();
+                            }
+                        });
                     } else { // expand / collapse fake root node
                         TreeTable treeTable = mbeansTable;
                         UUID itemId = mbi.getId();

@@ -62,8 +62,10 @@ public class FileEditor extends AbstractEditor<FileDescriptor> {
         if (isNew) {
             okBtn.setEnabled(false);
             uploadField.addListener(new FileUploadListener());
+            uploadField.requestFocus();
         } else {
             uploadField.setVisible(false);
+            nameField.requestFocus();
         }
     }
 
@@ -75,7 +77,7 @@ public class FileEditor extends AbstractEditor<FileDescriptor> {
         super.commitAndClose();
     }
 
-    private void saveFile() {
+    protected void saveFile() {
         FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
         try {
             fileUploading.putFileIntoStorage(uploadField.getFileId(), fileDs.getItem());
@@ -84,7 +86,7 @@ public class FileEditor extends AbstractEditor<FileDescriptor> {
         }
     }
 
-    private class FileUploadListener extends FileUploadField.ListenerAdapter {
+    protected class FileUploadListener extends FileUploadField.ListenerAdapter {
         @Override
         public void uploadSucceeded(Event event) {
             getItem().setName(uploadField.getFileName());
@@ -98,6 +100,8 @@ public class FileEditor extends AbstractEditor<FileDescriptor> {
             getItem().setSize(size);
 
             okBtn.setEnabled(true);
+
+            nameField.requestFocus();
 
             needSave = true;
         }

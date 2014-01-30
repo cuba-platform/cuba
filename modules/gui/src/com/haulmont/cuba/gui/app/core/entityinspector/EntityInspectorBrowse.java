@@ -19,6 +19,7 @@ import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.global.UserSession;
@@ -114,7 +115,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
         return options;
     }
 
-    private class ShowButtonAction extends AbstractAction {
+    protected class ShowButtonAction extends AbstractAction {
         protected ShowButtonAction(String id) {
             super(id);
         }
@@ -131,7 +132,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
         }
     }
 
-    private void createEntitiesTable(MetaClass meta) {
+    protected void createEntitiesTable(MetaClass meta) {
         if (entitiesTable != null)
             tableBox.remove(entitiesTable);
 
@@ -163,6 +164,10 @@ public class EntityInspectorBrowse extends AbstractLookup {
         for (Table.Column column : systemPropertyColumns)
             entitiesTable.addColumn(column);
 
+        if (entitiesDs != null) {
+            ((DsContextImplementation) getDsContext()).unregister(entitiesDs);
+        }
+
         entitiesDs = new DsBuilder(getDsContext())
                 .setId("entitiesDs")
                 .setMetaClass(meta)
@@ -193,11 +198,11 @@ public class EntityInspectorBrowse extends AbstractLookup {
         filter.apply(true);
     }
 
-    private boolean isEmbedded(MetaProperty metaProperty) {
+    protected boolean isEmbedded(MetaProperty metaProperty) {
         return metaProperty.getAnnotatedElement().isAnnotationPresent(javax.persistence.Embedded.class);
     }
 
-    private ButtonsPanel createButtonsPanel() {
+    protected ButtonsPanel createButtonsPanel() {
         ButtonsPanel buttonsPanel = componentsFactory.createComponent("buttonsPanel");
 
         createButton = componentsFactory.createComponent(Button.NAME);
@@ -242,7 +247,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
         return buttonsPanel;
     }
 
-    private View createView(MetaClass meta) {
+    protected View createView(MetaClass meta) {
         View view = new View(meta.getJavaClass(), false);
         for (MetaProperty metaProperty : meta.getProperties()) {
             switch (metaProperty.getType()) {
@@ -266,7 +271,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
 
     protected class CreateAction extends AbstractAction {
 
-        protected CreateAction() {
+        public CreateAction() {
             super("create");
         }
 
@@ -279,6 +284,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
                 @Override
                 public void windowClosed(String actionId) {
                     entitiesDs.refresh();
+                    entitiesTable.requestFocus();
                 }
             });
         }
@@ -286,7 +292,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
 
     protected class EditAction extends ItemTrackingAction {
 
-        protected EditAction() {
+        public EditAction() {
             super("edit");
         }
 
@@ -304,22 +310,23 @@ public class EntityInspectorBrowse extends AbstractLookup {
                 @Override
                 public void windowClosed(String actionId) {
                     entitiesDs.refresh();
+                    entitiesTable.requestFocus();
                 }
             });
         }
     }
 
-    private String getPropertyCaption(MetaClass meta, MetaProperty metaProperty) {
+    protected String getPropertyCaption(MetaClass meta, MetaProperty metaProperty) {
         int idx = meta.getName().indexOf('$') + 1;
         return messages.getMessage(meta.getJavaClass(), meta.getName().substring(idx)
                 + "." + metaProperty.getFullName());
     }
 
-    private boolean readPermitted(MetaClass metaClass) {
+    protected boolean readPermitted(MetaClass metaClass) {
         return entityOpPermitted(metaClass, EntityOp.READ);
     }
 
-    private boolean entityOpPermitted(MetaClass metaClass, EntityOp entityOp) {
+    protected boolean entityOpPermitted(MetaClass metaClass, EntityOp entityOp) {
         UserSession session = AppBeans.get(UserSessionSource.class).getUserSession();
         return session.isEntityOpPermitted(metaClass, entityOp);
     }
