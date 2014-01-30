@@ -7,9 +7,11 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.FileDescriptor;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.FileStorageException;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.FileUploadField;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
@@ -46,7 +48,7 @@ public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> im
 
     protected UUID tempFileId;
 
-    private List<Listener> listeners = new ArrayList<>();
+    protected List<Listener> listeners = new ArrayList<>();
 
     public DesktopFileUploadField() {
         fileUploading = AppBeans.get(FileUploadingAPI.NAME);
@@ -65,12 +67,13 @@ public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> im
         });
     }
 
-    private void uploadFile(File file) {
+    protected void uploadFile(File file) {
         final Integer maxUploadSizeMb = AppBeans.get(Configuration.class).getConfig(ClientConfig.class).getMaxUploadSizeMb();
         final long maxSize = maxUploadSizeMb * BYTES_IN_MEGABYTE;
 
         if (file.length() > maxSize) {
-            String warningMsg = messages.getMessage(AppConfig.getMessagesPack(), "upload.fileTooBig.message");
+            String warningMsg = messages.formatMainMessage("upload.fileTooBig.message", file.getName(), maxSize);
+
             getFrame().showNotification(warningMsg, IFrame.NotificationType.WARNING);
         } else {
             boolean succcess = true;
@@ -106,28 +109,28 @@ public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> im
         }
     }
 
-    private void notifyListenersSuccess(File file) {
+    protected void notifyListenersSuccess(File file) {
         final Listener.Event e = new Listener.Event(file.getName());
         for (Listener listener : listeners) {
             listener.uploadSucceeded(e);
         }
     }
 
-    private void notifyListenersFail(File file) {
+    protected void notifyListenersFail(File file) {
         final Listener.Event failedEvent = new Listener.Event(file.getName());
         for (Listener listener : listeners) {
             listener.uploadFailed(failedEvent);
         }
     }
 
-    private void notifyListenersFinish(File file) {
+    protected void notifyListenersFinish(File file) {
         final Listener.Event finishedEvent = new Listener.Event(file.getName());
         for (Listener listener : listeners) {
             listener.uploadFinished(finishedEvent);
         }
     }
 
-    private void notifyListenersStart(File file) {
+    protected void notifyListenersStart(File file) {
         final Listener.Event startedEvent = new Listener.Event(file.getName());
         for (Listener listener : listeners) {
             listener.uploadStarted(startedEvent);

@@ -12,7 +12,6 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.DesktopResources;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.FileMultiUploadField;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
@@ -59,13 +58,13 @@ public class DesktopFileMultiUploadField extends DesktopAbstractComponent<JButto
         DesktopComponentsHelper.adjustSize(impl);
     }
 
-    private void processFiles(File[] files) {
+    protected void processFiles(File[] files) {
         if (checkFiles(files)) {
             uploadFiles(files);
         }
     }
 
-    private void uploadFiles(File[] files) {
+    protected void uploadFiles(File[] files) {
         for (File file : files) {
             try {
                 notifyStartListeners(file);
@@ -86,7 +85,7 @@ public class DesktopFileMultiUploadField extends DesktopAbstractComponent<JButto
         notifyQuerCompleteListeners();
     }
 
-    private boolean checkFiles(File[] files) {
+    protected boolean checkFiles(File[] files) {
         ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
         final Integer maxUploadSizeMb = clientConfig.getMaxUploadSizeMb();
         final long maxSize = maxUploadSizeMb * BYTES_IN_MEGABYTE;
@@ -100,34 +99,33 @@ public class DesktopFileMultiUploadField extends DesktopAbstractComponent<JButto
         return true;
     }
 
-    private void notifyStartListeners(File file) {
+    protected void notifyStartListeners(File file) {
         for (UploadListener uploadListener : listeners)
             uploadListener.fileUploadStart(file.getName());
     }
 
-    private void notifyEndListeners(File file) {
+    protected void notifyEndListeners(File file) {
         for (UploadListener uploadListener : listeners)
             uploadListener.fileUploaded(file.getName());
     }
 
-    private void notifyQuerCompleteListeners() {
+    protected void notifyQuerCompleteListeners() {
         for (UploadListener uploadListener : listeners)
             uploadListener.queueUploadComplete();
     }
 
-    private void notifyErrorListeners(File file, String message) {
+    protected void notifyErrorListeners(File file, String message) {
         for (UploadListener uploadListener : listeners)
             uploadListener.uploadError(file.getName());
     }
 
-    private void notifyFileSizeExceedLimit(File file) {
+    protected void notifyFileSizeExceedLimit(File file) {
         Messages messages = AppBeans.get(Messages.class);
 
         ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
         final Integer maxUploadSizeMb = clientConfig.getMaxUploadSizeMb();
 
-        String warningMsg = messages.formatMessage(AppConfig.getMessagesPack(),
-                "upload.fileTooBig.message", file.getName(), maxUploadSizeMb);
+        String warningMsg = messages.formatMainMessage("upload.fileTooBig.message", file.getName(), maxUploadSizeMb);
 
         getFrame().showNotification(warningMsg, IFrame.NotificationType.WARNING);
     }
