@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.core.sys;
 
+import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.model.MetaClass;
@@ -20,6 +21,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
@@ -71,10 +73,52 @@ public class AbstractViewRepository implements ViewRepository {
     protected void init() {
         String configName = AppContext.getProperty("cuba.viewsConfig");
         if (!StringUtils.isBlank(configName)) {
+            Element rootElem = DocumentHelper.createDocument().addElement("views");
+
             StrTokenizer tokenizer = new StrTokenizer(configName);
             for (String fileName : tokenizer.getTokenArray()) {
-                deployViews(fileName);
+                addFile(rootElem, fileName);
             }
+
+            for (Element viewElem : Dom4j.elements(rootElem, "view")) {
+                deployView(rootElem, viewElem);
+            }
+        }
+    }
+
+    protected void addFile(Element commonRootElem, String fileName) {
+        if (readFileNames.contains(fileName))
+            return;
+
+        log.debug("Deploying views config: " + fileName);
+        readFileNames.add(fileName);
+
+        InputStream stream = null;
+        try {
+            stream = resources.getResourceAsStream(fileName);
+            if (stream == null)
+                throw new IllegalStateException("Resource is not found: " + fileName);
+
+            SAXReader reader = new SAXReader();
+            Document doc;
+            try {
+                doc = reader.read(new InputStreamReader(stream));
+            } catch (DocumentException e) {
+                throw new RuntimeException(e);
+            }
+            Element rootElem = doc.getRootElement();
+
+            for (Element includeElem : Dom4j.elements(rootElem, "include")) {
+                String incFile = includeElem.attributeValue("file");
+                if (!StringUtils.isBlank(incFile))
+                    addFile(commonRootElem, incFile);
+            }
+
+            for (Element viewElem : Dom4j.elements(rootElem, "view")) {
+                commonRootElem.add(viewElem.createCopy());
+            }
+        } finally {
+            IOUtils.closeQuietly(stream);
         }
     }
 
@@ -173,19 +217,12 @@ public class AbstractViewRepository implements ViewRepository {
     }
 
     public void deployViews(String resourceUrl) {
-        if (!readFileNames.contains(resourceUrl)) {
-            log.debug("Deploying views config: " + resourceUrl);
+        Element rootElem = DocumentHelper.createDocument().addElement("views");
 
-            InputStream stream = null;
-            try {
-                stream = resources.getResourceAsStream(resourceUrl);
-                if (stream == null)
-                    throw new IllegalStateException("Resource is not found: " + resourceUrl);
-                deployViews(stream);
-                readFileNames.add(resourceUrl);
-            } finally {
-                IOUtils.closeQuietly(stream);
-            }
+        addFile(rootElem, resourceUrl);
+
+        for (Element viewElem : Dom4j.elements(rootElem, "view")) {
+            deployView(rootElem, viewElem);
         }
     }
 
@@ -203,13 +240,13 @@ public class AbstractViewRepository implements ViewRepository {
         }
         Element rootElem = doc.getRootElement();
 
-        for (Element includeElem : (List<Element>) rootElem.elements("include")) {
+        for (Element includeElem : Dom4j.elements(rootElem, "include")) {
             String file = includeElem.attributeValue("file");
             if (!StringUtils.isBlank(file))
                 deployViews(file);
         }
 
-        for (Element viewElem : (List<Element>) rootElem.elements("view")) {
+        for (Element viewElem : Dom4j.elements(rootElem, "view")) {
             deployView(rootElem, viewElem);
         }
     }
