@@ -491,7 +491,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         }
 
         if (screenField != null) {
-            screenField.setEnabled(!attribute.getLookup());
+            screenField.setEnabled(BooleanUtils.isNotTrue(attribute.getLookup()));
         }
 
         if (dataTypeField.getValue() != null && dataTypeField.getValue().equals(RuntimePropsDatasource.PropertyType.BOOLEAN)) {
