@@ -111,7 +111,6 @@ public abstract class WindowManager {
         StopWatch loadDescriptorWatch = new Log4JStopWatch(windowInfo.getId() + "#" +
                 UIPerformanceLogger.LifeCycle.LOAD_DESCRIPTOR,
                 Logger.getLogger(UIPerformanceLogger.class));
-        loadDescriptorWatch.start();
 
         String templatePath = windowInfo.getTemplate();
 
@@ -120,6 +119,9 @@ public abstract class WindowManager {
             throw new DevelopmentException("Template is not found", "Path", templatePath);
         }
 
+        StopWatch xmlLoadWatch = new Log4JStopWatch(windowInfo.getId() + "#" +
+                UIPerformanceLogger.LifeCycle.XML,
+                Logger.getLogger(UIPerformanceLogger.class));
         Document document = null;
         try {
             document = LayoutLoader.parseDescriptor(stream, params);
@@ -128,6 +130,8 @@ public abstract class WindowManager {
         }
         XmlInheritanceProcessor processor = new XmlInheritanceProcessor(document, params);
         Element element = processor.getResultRoot();
+
+        xmlLoadWatch.stop();
 
         preloadMainScreenClass(element);//try to load main screen class to resolve dynamic compilation dependencies issues
 
@@ -163,7 +167,6 @@ public abstract class WindowManager {
         StopWatch uiPermissionsWatch = new Log4JStopWatch(windowInfo.getId() + "#" +
                 UIPerformanceLogger.LifeCycle.UI_PERMISSIONS,
                 Logger.getLogger(UIPerformanceLogger.class));
-        uiPermissionsWatch.start();
 
         // apply ui permissions
         WindowCreationHelper.applyUiPermissions(window);
@@ -253,7 +256,6 @@ public abstract class WindowManager {
         StopWatch initStopWatch = new Log4JStopWatch(windowInfo.getId() +
                 "#" + UIPerformanceLogger.LifeCycle.INIT,
                 Logger.getLogger(UIPerformanceLogger.class));
-        initStopWatch.start();
 
         try {
             ReflectionHelper.invokeMethod(window, "init", params);
@@ -266,7 +268,6 @@ public abstract class WindowManager {
         StopWatch uiPermissionsWatch = new Log4JStopWatch(windowInfo.getId() + "#" +
                 UIPerformanceLogger.LifeCycle.UI_PERMISSIONS,
                 Logger.getLogger(UIPerformanceLogger.class));
-        uiPermissionsWatch.start();
 
         // apply ui permissions
         WindowCreationHelper.applyUiPermissions(window);
@@ -449,7 +450,6 @@ public abstract class WindowManager {
         StopWatch setItemWatch = new Log4JStopWatch(windowInfo.getId() + "#" +
                 UIPerformanceLogger.LifeCycle.SET_ITEM,
                 Logger.getLogger(UIPerformanceLogger.class));
-        setItemWatch.start();
 
         ((Window.Editor) window).setItem(item);
 
@@ -541,10 +541,10 @@ public abstract class WindowManager {
         StopWatch loadDescriptorWatch = new Log4JStopWatch(windowInfo.getId() + "#" +
                 UIPerformanceLogger.LifeCycle.LOAD_DESCRIPTOR,
                 Logger.getLogger(UIPerformanceLogger.class));
-        loadDescriptorWatch.start();
 
         final IFrame component;
         try {
+            context.setCurrentIFrameId(windowInfo.getId());
             component = (IFrame) loader.loadComponent(stream, parent, context.getParams());
         } finally {
             IOUtils.closeQuietly(stream);
@@ -657,7 +657,6 @@ public abstract class WindowManager {
                     StopWatch companionStopWatch = new Log4JStopWatch(window.getId() + "#" +
                             UIPerformanceLogger.LifeCycle.COMPANION,
                             Logger.getLogger(UIPerformanceLogger.class));
-                    companionStopWatch.start();
 
                     initCompanion(companionsElem, (AbstractWindow) wrappingWindow);
 
@@ -668,7 +667,6 @@ public abstract class WindowManager {
             StopWatch injectStopWatch = new Log4JStopWatch(window.getId() + "#" +
                     UIPerformanceLogger.LifeCycle.INJECTION,
                     Logger.getLogger(UIPerformanceLogger.class));
-            injectStopWatch.start();
 
             ControllerDependencyInjector dependencyInjector = new ControllerDependencyInjector(wrappingWindow, params);
             dependencyInjector.inject();
@@ -678,7 +676,6 @@ public abstract class WindowManager {
             StopWatch initStopWatch = new Log4JStopWatch(window.getId() + "#" +
                     UIPerformanceLogger.LifeCycle.INIT,
                     Logger.getLogger(UIPerformanceLogger.class));
-            initStopWatch.start();
 
             try {
                 ReflectionHelper.invokeMethod(wrappingWindow, "init", params);

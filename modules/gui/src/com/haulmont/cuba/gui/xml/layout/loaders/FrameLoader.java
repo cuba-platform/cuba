@@ -120,7 +120,6 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
                         StopWatch companionStopWatch = new Log4JStopWatch(loggingId + "#" +
                                 UIPerformanceLogger.LifeCycle.COMPANION,
                                 Logger.getLogger(UIPerformanceLogger.class));
-                        companionStopWatch.start();
 
                         initCompanion(companionsElem, (AbstractFrame) wrappingFrame);
 
@@ -132,7 +131,6 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
                 StopWatch injectStopWatch = new Log4JStopWatch(loggingId + "#" +
                         UIPerformanceLogger.LifeCycle.INJECTION,
                         Logger.getLogger(UIPerformanceLogger.class));
-                injectStopWatch.start();
 
                 ControllerDependencyInjector dependencyInjector = new ControllerDependencyInjector(wrappingFrame, params);
                 dependencyInjector.inject();
@@ -201,7 +199,6 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
                 StopWatch initStopWatch = new Log4JStopWatch(loggingId + "#" +
                         UIPerformanceLogger.LifeCycle.INIT,
                         Logger.getLogger(UIPerformanceLogger.class));
-                initStopWatch.start();
 
                 try {
                     ReflectionHelper.invokeMethod(this.frame, "init", params);
@@ -214,7 +211,6 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
                 StopWatch uiPermissionsWatch = new Log4JStopWatch(loggingId + "#" +
                         UIPerformanceLogger.LifeCycle.UI_PERMISSIONS,
                         Logger.getLogger(UIPerformanceLogger.class));
-                uiPermissionsWatch.start();
 
                 // apply ui permissions
                 WindowCreationHelper.applyUiPermissions(window);

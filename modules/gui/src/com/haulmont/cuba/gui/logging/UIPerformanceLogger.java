@@ -16,6 +16,7 @@ public interface UIPerformanceLogger {
 
     enum LifeCycle {
         LOAD_DESCRIPTOR("loadDescriptor"),
+        XML("xml"),
         INIT("init"),
         SET_ITEM("setItem"),
         UI_PERMISSIONS("uiPermissions"),

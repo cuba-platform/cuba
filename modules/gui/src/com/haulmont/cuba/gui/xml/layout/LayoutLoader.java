@@ -8,9 +8,13 @@ import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.core.global.TemplateHelper;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
 import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.perf4j.StopWatch;
+import org.perf4j.log4j.Log4JStopWatch;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -99,8 +103,13 @@ public class LayoutLoader {
     }
 
     public Component loadComponent(InputStream stream, Component parent, Map<String, Object> params) {
+        StopWatch xmlLoadWatch = new Log4JStopWatch(context.getCurrentIFrameId() + "#" +
+                UIPerformanceLogger.LifeCycle.XML,
+                Logger.getLogger(UIPerformanceLogger.class));
+
         Document doc = parseDescriptor(stream, params == null ? Collections.<String, Object>emptyMap() : params);
         Element element = doc.getRootElement();
+        xmlLoadWatch.stop();
 
         return loadComponent(element, parent);
     }
@@ -148,4 +157,3 @@ public class LayoutLoader {
         this.locale = locale;
     }
 }
-

@@ -75,7 +75,6 @@ public class IFrameLoader extends ContainerLoader implements ComponentLoader {
         StopWatch loadDescriptorWatch = new Log4JStopWatch(screenPath + "#" +
                 UIPerformanceLogger.LifeCycle.LOAD_DESCRIPTOR,
                 Logger.getLogger(UIPerformanceLogger.class));
-        loadDescriptorWatch.start();
 
         final IFrame component;
         try {
