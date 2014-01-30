@@ -15,6 +15,7 @@ import com.haulmont.cuba.core.global.ViewProperty;
 import com.haulmont.cuba.gui.data.*;
 import org.apache.commons.lang.ObjectUtils;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
@@ -85,7 +86,13 @@ public class PropertyDatasourceImpl<T extends Entity>
         return getItem(item);
     }
 
-    private T getItem(Instance item) {
+    @Override
+    @Nullable
+    public T getItemIfValid() {
+        return getState() == State.VALID ? getItem() : null;
+    }
+
+    protected T getItem(Instance item) {
         return item == null ? null : (T) item.getValue(metaProperty.getName());
     }
 

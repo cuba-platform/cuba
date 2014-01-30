@@ -281,15 +281,17 @@ public class RuntimePropsDatasourceImpl
         return entity;
     }
 
-
+    @Override
     public DsContext getDsContext() {
         return dsContext;
     }
 
+    @Override
     public DataSupplier getDataSupplier() {
         return dataSupplier;
     }
 
+    @Override
     public void commit() {
         if (!allowCommit)
             return;
@@ -305,11 +307,12 @@ public class RuntimePropsDatasourceImpl
         }
     }
 
-
+    @Override
     public State getState() {
         return state;
     }
 
+    @Override
     public RuntimePropertiesEntity getItem() {
         if (State.VALID.equals(state))
             return item;
@@ -317,10 +320,18 @@ public class RuntimePropsDatasourceImpl
             throw new IllegalStateException("RuntimePropsDataSource state is " + state);
     }
 
+    @Nullable
+    @Override
+    public RuntimePropertiesEntity getItemIfValid() {
+        return getState() == State.VALID ? getItem() : null;
+    }
+
+    @Override
     public void setItem(RuntimePropertiesEntity item) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void invalidate() {
         if (State.NOT_INITIALIZED != this.state) {
             final State prevStatus = this.state;
@@ -331,30 +342,36 @@ public class RuntimePropsDatasourceImpl
         clearCommitLists();
     }
 
+    @Override
     public void refresh() {
         initMetaClass();
     }
 
+    @Override
     public MetaClass getMetaClass() {
         return metaClass;
     }
 
+    @Override
     public View getView() {
         return null; // null is correct
     }
 
+    @Override
     public void initialized() {
         final State prev = state;
         state = State.INVALID;
         fireStateChanged(prev);
     }
 
+    @Override
     public void valid() {
         final State prev = state;
         state = State.VALID;
         fireStateChanged(prev);
     }
 
+    @Override
     public void committed(Set<Entity> entities) {
         for (Entity entity : entities) {
             if (entity.equals(item)) {
@@ -384,6 +401,7 @@ public class RuntimePropsDatasourceImpl
         );
     }
 
+    @Override
     public Datasource getMainDs() {
         return mainDs;
     }

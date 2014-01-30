@@ -4,14 +4,12 @@
  */
 package com.haulmont.cuba.gui.data.impl;
 
-import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataSupplier;
-import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 
 import javax.annotation.Nullable;
@@ -132,6 +130,12 @@ public class DatasourceImpl<T extends Entity>
         return state == State.VALID ? item : null;
     }
 
+    @Nullable
+    @Override
+    public T getItemIfValid() {
+        return state == State.VALID ? item : null;
+    }
+
     @Override
     public void refresh() {
         // Do Nothing
@@ -158,7 +162,7 @@ public class DatasourceImpl<T extends Entity>
             detachListener(this.item);
         }
 
-        if (item instanceof Instance) {
+        if (item != null) {
             final MetaClass aClass = item.getMetaClass();
             if (!aClass.equals(metaClass) && !metaClass.getDescendants().contains(aClass)) {
                 throw new IllegalStateException(String.format("Invalid item MetaClass: " + aClass));

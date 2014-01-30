@@ -15,6 +15,7 @@ import com.haulmont.cuba.core.global.ViewProperty;
 import com.haulmont.cuba.gui.data.*;
 import org.apache.commons.lang.ObjectUtils;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -98,6 +99,12 @@ public class EmbeddedDatasourceImpl<T extends EmbeddableEntity>
     public T getItem() {
         final Instance item = masterDs.getItem();
         return getItem(item);
+    }
+
+    @Nullable
+    @Override
+    public T getItemIfValid() {
+        return getState() == State.VALID ? getItem() : null;
     }
 
     protected T getItem(Instance item) {

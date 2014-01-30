@@ -102,6 +102,12 @@ public interface Datasource<T extends Entity> {
     T getItem();
 
     /**
+     * @return current entity contained in the datasource or null if state is not VALID
+     */
+    @Nullable
+    T getItemIfValid();
+
+    /**
      * Set current entity in the datasource.
      * @param item  entity instance
      */
