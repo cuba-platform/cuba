@@ -842,6 +842,10 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                     }
                 }
 
+                if (ds.getState() == Datasource.State.VALID && ds.getItem() != null) {
+                    newSelection.add(ds.getItem());
+                }
+
                 if (newSelection.isEmpty()) {
                     setSelected((Entity) null);
                 } else {

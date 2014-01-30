@@ -633,6 +633,10 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                             }
                         }
 
+                        if (ds.getState() == Datasource.State.VALID && ds.getItem() != null) {
+                            newSelection.add(ds.getItem());
+                        }
+
                         if (newSelection.isEmpty()) {
                             setSelected((Entity) null);
                         } else {
