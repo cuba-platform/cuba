@@ -116,11 +116,9 @@ public class UserEditor extends AbstractEditor<User> {
     }
 
     @Override
-    protected void initItem(User item) {
-        if (PersistenceHelper.isNew(item)) {
-            addDefaultRoles(item);
-            item.setLanguage(messages.getTools().localeToString(userSession.getLocale()));
-        }
+    protected void initNewItem(User item) {
+        addDefaultRoles(item);
+        item.setLanguage(messages.getTools().localeToString(userSession.getLocale()));
     }
 
     private void addDefaultRoles(User user) {

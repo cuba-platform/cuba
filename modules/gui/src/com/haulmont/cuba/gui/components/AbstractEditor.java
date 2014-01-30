@@ -5,6 +5,7 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.data.Datasource;
 
@@ -34,14 +35,16 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
     /**
      * Called by the framework to set an edited entity after creation of all components and datasources, and after
      * {@link #init(java.util.Map)}.
-     * <p>Don't override this method in subclasses, use hooks {@link #initItem(com.haulmont.cuba.core.entity.Entity)}
+     * <p>Don't override this method in subclasses, use hooks {@link #initNewItem(com.haulmont.cuba.core.entity.Entity)}
      * and {@link #postInit()} instead.</p>
      * @param item  entity instance
      */
     @Override
     public void setItem(Entity item) {
-        //noinspection unchecked
-        initItem((T) item);
+        if (PersistenceHelper.isNew(item)) {
+            //noinspection unchecked
+            initNewItem((T) item);
+        }
         ((Editor) frame).setItem(item);
         postInit();
     }
@@ -91,11 +94,12 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
     }
 
     /**
-     * Hook to be implemented in subclasses. Called by {@link #setItem(com.haulmont.cuba.core.entity.Entity)}.
-     * Allows to additionally initialize the entity instance before setting it into the datasource.
+     * Hook to be implemented in subclasses. Called by {@link #setItem(com.haulmont.cuba.core.entity.Entity)} when
+     * the editor is opened for a new entity instance. Allows to additionally initialize the new entity instance
+     * before setting it into the datasource.
      * @param item  entity instance
      */
-    protected void initItem(T item) {
+    protected void initNewItem(T item) {
     }
 
     /**
