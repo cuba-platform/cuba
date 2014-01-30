@@ -10,6 +10,7 @@ import org.apache.commons.lang.text.StrBuilder;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
+import java.util.UUID;
 
 /**
  * @author krivopustov
@@ -46,5 +47,17 @@ public class UserSessions implements UserSessionsMBean {
     @Override
     public void processEviction() {
         userSessions.processEviction();
+    }
+
+    @Override
+    public String killSession(String id) {
+        UUID sessionId;
+        try {
+            sessionId = UUID.fromString(id);
+        } catch (IllegalArgumentException ex) {
+            return "Invalid session Id format: use UUID";
+        }
+        userSessions.killSession(sessionId);
+        return "OK";
     }
 }

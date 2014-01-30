@@ -29,4 +29,12 @@ public interface UserSessionsMBean {
     String printSessions();
 
     void processEviction();
+
+    /**
+     * Kill specified session
+     *
+     * @param id Session id
+     * @return Result status
+     */
+    String killSession(String id);
 }
