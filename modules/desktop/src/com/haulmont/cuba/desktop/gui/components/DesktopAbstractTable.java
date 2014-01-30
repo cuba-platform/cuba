@@ -41,6 +41,7 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.jdesktop.swingx.JXTable;
+import org.jdesktop.swingx.action.BoundAction;
 import org.jdesktop.swingx.table.ColumnControlButton;
 import org.jdesktop.swingx.table.TableColumnExt;
 import org.jdesktop.swingx.table.TableColumnModelExt;
@@ -223,9 +224,24 @@ public abstract class DesktopAbstractTable<C extends JXTable>
             }
         });
 
+        Messages messages = AppBeans.get(Messages.class);
+        // localize default column control actions
+        for (Object actionKey : impl.getActionMap().allKeys()) {
+            if ("column.packAll".equals(actionKey)) {
+                BoundAction action = (BoundAction) impl.getActionMap().get(actionKey);
+                action.setName(messages.getMessage(DesktopTable.class, "DesktopTable.packAll"));
+            } else if ("column.packSelected".equals(actionKey)) {
+                BoundAction action = (BoundAction) impl.getActionMap().get(actionKey);
+                action.setName(messages.getMessage(DesktopTable.class, "DesktopTable.packSelected"));
+            } else if ("column.horizontalScroll".equals(actionKey)) {
+                BoundAction action = (BoundAction) impl.getActionMap().get(actionKey);
+                action.setName(messages.getMessage(DesktopTable.class, "DesktopTable.horizontalScroll"));
+            }
+        }
+
         // Ability to configure fonts in table
         // Add action to column control
-        String configureFontsLabel = AppBeans.get(Messages.class).getMessage(
+        String configureFontsLabel = messages.getMessage(
                 DesktopTable.class, "DesktopTable.configureFontsLabel");
         impl.getActionMap().put(ColumnControlButton.COLUMN_CONTROL_MARKER + "fonts",
                 new AbstractAction(configureFontsLabel) {
