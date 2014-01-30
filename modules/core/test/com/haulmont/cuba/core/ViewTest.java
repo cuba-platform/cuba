@@ -7,10 +7,7 @@ package com.haulmont.cuba.core;
 import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.bali.db.ResultSetHandler;
 import com.haulmont.cuba.core.entity.EntitySnapshot;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.TimeSource;
-import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.core.global.ViewProperty;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
 
@@ -242,5 +239,14 @@ public class ViewTest extends CubaTestCase {
         View view = metadata.getViewRepository().getView(EntitySnapshot.class, View.LOCAL);
         ViewProperty prop = view.getProperty("label");
         assertNull(prop);
+    }
+
+    public void testViewCopy() throws Exception {
+        ViewRepository viewRepository = metadata.getViewRepository();
+        View view = viewRepository.getView(User.class, View.LOCAL);
+        view.addProperty("group", viewRepository.getView(Group.class, View.MINIMAL));
+
+        assertNotNull(view.getProperty("group"));
+        assertNull(viewRepository.getView(User.class, View.LOCAL).getProperty("group"));
     }
 }

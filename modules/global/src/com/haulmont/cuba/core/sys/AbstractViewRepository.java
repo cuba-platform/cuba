@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.core.sys;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -96,7 +97,7 @@ public class AbstractViewRepository implements ViewRepository {
      */
     @Override
     public View getView(MetaClass metaClass, String name) {
-        Objects.requireNonNull(metaClass, "MetaClass is null");
+        Preconditions.checkNotNullArgument(metaClass, "MetaClass is null");
 
         View view = findView(metaClass, name);
 
@@ -129,7 +130,21 @@ public class AbstractViewRepository implements ViewRepository {
                 view = retrieveView(originalMetaClass, name, false);
             }
         }
+        if (view != null)
+            view = copyView(view);
         return view;
+    }
+
+    protected View copyView(View view) {
+        if (view == null)
+            return null;
+
+        View copy = new View(view.getEntityClass(), view.getName(), view.isIncludeSystemProperties());
+        for (ViewProperty property : view.getProperties()) {
+            copy.addProperty(property.getName(), copyView(property.getView()), property.isLazy());
+        }
+
+        return copy;
     }
 
     protected View deployDefaultView(MetaClass metaClass, String name) {

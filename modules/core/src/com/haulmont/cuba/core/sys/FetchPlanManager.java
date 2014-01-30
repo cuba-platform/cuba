@@ -13,15 +13,16 @@ import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewProperty;
 import org.apache.commons.lang.ClassUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.persistence.FetchPlan;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.lang.reflect.Field;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * Applies {@link View} to OpenJPA's fetch plans.
@@ -34,8 +35,6 @@ public class FetchPlanManager {
 
     @Inject
     private Metadata metadata;
-
-    private Map<View, Set<FetchPlanField>> fetchPlans = new ConcurrentHashMap<View, Set<FetchPlanField>>();
 
     public void setView(FetchPlan fetchPlan, @Nullable View view) {
         if (fetchPlan == null)
@@ -61,20 +60,8 @@ public class FetchPlanManager {
     }
 
     private void addViewToFetchPlan(FetchPlan fetchPlan, View view) {
-        Set<FetchPlanField> fetchPlanFields;
-        if (!StringUtils.isEmpty(view.getName())) {
-            fetchPlanFields = fetchPlans.get(view);
-            if (fetchPlanFields == null) {
-                fetchPlanFields = new HashSet<FetchPlanField>();
-                processView(view, fetchPlanFields);
-                fetchPlans.put(view, fetchPlanFields);
-            }
-        } else {
-            // Don't cache unnamed views, because they are usually created programmatically and may be different
-            // each time
-            fetchPlanFields = new HashSet<FetchPlanField>();
-            processView(view, fetchPlanFields);
-        }
+        Set<FetchPlanField> fetchPlanFields = new HashSet<>();
+        processView(view, fetchPlanFields);
         for (FetchPlanField field : fetchPlanFields) {
             fetchPlan.addField(field.entityClass, field.property);
         }
@@ -166,10 +153,6 @@ public class FetchPlanManager {
                 return true;
         }
         return false;
-    }
-
-    public void clearCache() {
-        fetchPlans.clear();
     }
 
     private static class FetchPlanField {
