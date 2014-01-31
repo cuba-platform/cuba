@@ -358,14 +358,14 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     }
 
     protected void readjustColumns() {
+        if (columnAdjustRequired) {
+            return;
+        }
+
         this.columnAdjustRequired = true;
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                if (!columnAdjustRequired) {
-                    return;
-                }
-
                 adjustColumnHeaders();
 
                 columnAdjustRequired = false;
