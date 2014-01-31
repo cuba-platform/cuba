@@ -145,6 +145,10 @@ public class WebPopupButton
             ((com.vaadin.ui.Layout) vPopupComponent).addComponent(vButton);
             component.setAutoClose(true);
             actionOrder.add(action);
+
+            if (getId() != null) {
+                button.setId(action.getId());
+            }
         }
     }
 

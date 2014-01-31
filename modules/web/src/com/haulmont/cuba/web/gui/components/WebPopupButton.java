@@ -158,6 +158,9 @@ public class WebPopupButton
             if (debugId != null) {
                 button.setDebugId(AppUI.getCurrent().getTestIdManager().getTestId(debugId + "_" + action.getId()));
             }
+            if (AppUI.getCurrent().isTestMode()) {
+                button.setId(action.getId());
+            }
         }
     }
 

@@ -229,6 +229,9 @@ public class WebTabSheet
             this.component.setTestId(tabControl,
                     AppUI.getCurrent().getTestIdManager().getTestId(getDebugId() + "." + name));
         }
+        if (AppUI.getCurrent().isTestMode()) {
+            this.component.setCubaId(tabControl, name);
+        }
 
         return tab;
     }
@@ -287,6 +290,9 @@ public class WebTabSheet
         if (getDebugId() != null) {
             this.component.setTestId(tabControl,
                     AppUI.getCurrent().getTestIdManager().getTestId(getDebugId() + "." + name));
+        }
+        if (AppUI.getCurrent().isTestMode()) {
+            this.component.setCubaId(tabControl, name);
         }
 
         tabContent.setFrame(context.getFrame());
