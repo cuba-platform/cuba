@@ -182,6 +182,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         if (column.getWidth() != null) {
             component.setColumnWidth(column.getId(), column.getWidth());
         }
+        column.setOwner(this);
     }
 
     @Override
@@ -192,6 +193,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
         // todo artamonov remove after fix #VAADIN-12980
         component.refreshRowCache();
+        column.setOwner(null);
     }
 
     @Override
@@ -1206,11 +1208,13 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             columnsOrder.add(newColumn);
 
             associatedRuntimeColumn = newColumn;
+            newColumn.setOwner(this);
         }
 
         // replace generator for column if exist
-        if (component.getColumnGenerator(generatedColumnId) != null)
+        if (component.getColumnGenerator(generatedColumnId) != null) {
             component.removeGeneratedColumn(generatedColumnId);
+        }
 
         component.addGeneratedColumn(
                 generatedColumnId,
@@ -1257,7 +1261,16 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             throw new IllegalStateException(String.format("Column with id '%s' not found", columnId));
         }
 
-        column.setCaption(caption);
+        setColumnCaption(column, caption);
+    }
+
+    @Override
+    public void setColumnCaption(Column column, String caption) {
+        checkNotNullArgument(column, "column must be non null");
+
+        if (!StringUtils.equals(column.getCaption(), caption)) {
+            column.setCaption(caption);
+        }
         component.setColumnHeader(column.getId(), caption);
     }
 
@@ -1268,8 +1281,41 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             throw new IllegalStateException(String.format("Column with id '%s' not found", columnId));
         }
 
-        column.setCollapsed(collapsed);
+        setColumnCollapsed(column, collapsed);
+    }
+
+    @Override
+    public void setColumnCollapsed(Column column, boolean collapsed) {
+        if (!getColumnControlVisible()) {
+            return;
+        }
+
+        checkNotNullArgument(column, "column must be non null");
+
+        if (column.isCollapsed() != collapsed) {
+            column.setCollapsed(collapsed);
+        }
         component.setColumnCollapsed(column.getId(), collapsed);
+    }
+
+    @Override
+    public void setColumnWidth(Column column, int width) {
+        checkNotNullArgument(column, "column must be non null");
+
+        if (column.getWidth() != width) {
+            column.setWidth(width);
+        }
+        component.setColumnWidth(column.getId(), width);
+    }
+
+    @Override
+    public void setColumnWidth(String columnId, int width) {
+        Column column = getColumn(columnId);
+        if (column == null) {
+            throw new IllegalStateException(String.format("Column with id '%s' not found", columnId));
+        }
+
+        setColumnWidth(column, width);
     }
 
     /**

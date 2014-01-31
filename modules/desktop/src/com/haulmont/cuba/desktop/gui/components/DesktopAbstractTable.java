@@ -112,6 +112,8 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
     protected Security security = AppBeans.get(Security.class);
 
+    protected boolean columnAdjustRequired = false;
+
 //    disable for #PL-2035
     // Disable listener that points selection model to folow ds item.
 //    protected boolean disableItemListener = false;
@@ -356,10 +358,17 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     }
 
     protected void readjustColumns() {
+        this.columnAdjustRequired = true;
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
+                if (!columnAdjustRequired) {
+                    return;
+                }
+
                 adjustColumnHeaders();
+
+                columnAdjustRequired = false;
             }
         });
     }
@@ -437,6 +446,8 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
         setColumnIdentifiers();
         refresh();
+
+        column.setOwner(this);
     }
 
     @Override
@@ -511,6 +522,8 @@ public abstract class DesktopAbstractTable<C extends JXTable>
             packRows();
             repaintImplIfNeeded();
         }
+
+        column.setOwner(null);
     }
 
     @Override
@@ -579,14 +592,15 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         for (final Object property : properties) {
             final Table.Column column = this.columns.get(property);
 
-            final String caption;
-            if (column != null) {
-                caption = StringUtils.capitalize(column.getCaption() != null ? column.getCaption() : getColumnCaption(property));
-            } else {
-                caption = StringUtils.capitalize(getColumnCaption(property));
-            }
-
-            setColumnHeader(property, caption);
+//            todo implement setColumnHeader
+//            final String caption;
+//            if (column != null) {
+//                caption = StringUtils.capitalize(column.getCaption() != null ? column.getCaption() : getColumnCaption(property));
+//            } else {
+//                caption = StringUtils.capitalize(getColumnCaption(property));
+//            }
+//
+//            setColumnHeader(property, caption);
 
             if (column != null) {
                 if (editableColumns != null && column.isEditable() && (property instanceof MetaPropertyPath)) {
@@ -1027,8 +1041,8 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         this.editableColumns.addAll(editableColumns);
     }
 
-    protected void setColumnHeader(Object propertyPath, String caption) {
-    }
+//    protected void setColumnHeader(Object propertyPath, String caption) {
+//    }
 
     @Override
     public void setRequired(Table.Column column, boolean required, String message) {
@@ -1353,14 +1367,21 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
     @Override
     public void setColumnCaption(String columnId, String caption) {
-        checkArgument(columnId != null, "columnId is null");
-
         Column column = getColumn(columnId);
         if (column == null) {
             throw new IllegalStateException(String.format("Column with id '%s' not found", columnId));
         }
 
-        column.setCaption(caption);
+        setColumnCaption(column, caption);
+    }
+
+    @Override
+    public void setColumnCaption(Column column, String caption) {
+        checkNotNullArgument(column, "column must be non null");
+
+        if (!StringUtils.equals(column.getCaption(), caption)) {
+            column.setCaption(caption);
+        }
         TableColumn tableColumn = getColumn(column);
 
         // If column is not hidden by security
@@ -1371,19 +1392,50 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
     @Override
     public void setColumnCollapsed(String columnId, boolean collapsed) {
-        checkArgument(columnId != null, "columnId is null");
-
         Column column = getColumn(columnId);
         if (column == null) {
             throw new IllegalStateException(String.format("Column with id '%s' not found", columnId));
         }
 
-        column.setCollapsed(collapsed);
+        setColumnCollapsed(column, collapsed);
+    }
+
+    @Override
+    public void setColumnCollapsed(Column column, boolean collapsed) {
+        if (!getColumnControlVisible()) {
+            return;
+        }
+
+        checkNotNullArgument(column, "column must be non null");
+
+        if (column.isCollapsed() != collapsed) {
+            column.setCollapsed(collapsed);
+        }
 
         TableColumn tableColumn = getColumn(column);
         if (tableColumn instanceof TableColumnExt) {
             ((TableColumnExt) tableColumn).setVisible(!collapsed);
         }
+    }
+
+    @Override
+    public void setColumnWidth(Column column, int width) {
+        checkNotNullArgument(column, "column must be non null");
+
+        if (column.getWidth() != width) {
+            column.setWidth(width);
+        }
+        readjustColumns();
+    }
+
+    @Override
+    public void setColumnWidth(String columnId, int width) {
+        Column column = getColumn(columnId);
+        if (column == null) {
+            throw new IllegalStateException(String.format("Column with id '%s' not found", columnId));
+        }
+
+        setColumnWidth(column, width);
     }
 
     @Override

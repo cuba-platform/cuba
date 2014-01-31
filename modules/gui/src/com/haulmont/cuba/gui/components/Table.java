@@ -7,6 +7,8 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
 import javax.annotation.Nullable;
@@ -22,9 +24,6 @@ public interface Table
             Component.HasButtonsPanel, Component.HasPresentations {
 
     String NAME = "table";
-
-    String INSERT_SHORTCUT_ID = "INSERT_SHORTCUT";
-    String REMOVE_SHORTCUT_ID = "REMOVE_SHORTCUT";
 
     List<Column> getColumns();
 
@@ -45,11 +44,19 @@ public interface Table
      * Assign caption for column in runtime.
      */
     void setColumnCaption(String columnId, String caption);
+    void setColumnCaption(Table.Column column, String caption);
 
     /**
      * Show/hide column in runtime. Hidden column will be available in column control.
      */
     void setColumnCollapsed(String columnId, boolean collapsed);
+    void setColumnCollapsed(Table.Column column, boolean collapsed);
+
+    /**
+     * Set column width in runtime.
+     */
+    void setColumnWidth(String columnId, int width);
+    void setColumnWidth(Table.Column column, int width);
 
     void setItemClickAction(Action action);
     Action getItemClickAction();
@@ -277,6 +284,8 @@ public interface Table
 
     public static class Column implements HasXmlDescriptor, HasCaption, HasFormatter {
 
+        private static final Log log = LogFactory.getLog(Table.class);
+
         protected Object id;
         protected String caption;
         protected boolean editable;
@@ -288,7 +297,9 @@ public interface Table
         protected Integer maxTextLength;
 
         protected Class type;
-        private Element element;
+        protected Element element;
+
+        protected Table owner;
 
         public Column(Object id) {
             this.id = id;
@@ -311,15 +322,20 @@ public interface Table
         @Override
         public void setCaption(String caption) {
             this.caption = caption;
+            if (owner != null) {
+                owner.setColumnCaption(this, caption);
+            }
         }
 
         @Override
         public String getDescription() {
+            log.warn("Description attribute is not supported for table column");
             return null;
         }
 
         @Override
         public void setDescription(String description) {
+            log.warn("Description attribute is not supported for table column");
         }
 
         public Boolean isEditable() {
@@ -328,6 +344,9 @@ public interface Table
 
         public void setEditable(Boolean editable) {
             this.editable = editable;
+            if (owner != null) {
+                log.warn("Changing editable for column in runtime is not supported");
+            }
         }
 
         public Class getType() {
@@ -346,6 +365,9 @@ public interface Table
         @Override
         public void setFormatter(Formatter formatter) {
             this.formatter = formatter;
+            if (owner != null) {
+                log.warn("Changing formatter for column in runtime is not supported");
+            }
         }
 
         public Integer getWidth() {
@@ -354,6 +376,9 @@ public interface Table
 
         public void setWidth(Integer width) {
             this.width = width;
+            if (width != null && owner != null) {
+                owner.setColumnWidth(this, width);
+            }
         }
 
         public boolean isCollapsed() {
@@ -362,6 +387,9 @@ public interface Table
 
         public void setCollapsed(boolean collapsed) {
             this.collapsed = collapsed;
+            if (owner != null) {
+                owner.setColumnCollapsed(this, collapsed);
+            }
         }
 
         public AggregationInfo getAggregation() {
@@ -388,6 +416,14 @@ public interface Table
             this.maxTextLength = maxTextLength;
         }
 
+        public Table getOwner() {
+            return owner;
+        }
+
+        public void setOwner(Table owner) {
+            this.owner = owner;
+        }
+
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
@@ -396,7 +432,6 @@ public interface Table
             Column column = (Column) o;
 
             return id.equals(column.id);
-
         }
 
         @Override
