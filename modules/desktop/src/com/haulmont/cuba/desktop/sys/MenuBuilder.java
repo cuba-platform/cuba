@@ -70,8 +70,6 @@ public class MenuBuilder {
                 public void menuCanceled(MenuEvent e) {
                 }
             });
-
-            assignShortcut(jMenu, item);
             menuBar.add(jMenu);
             createSubMenu(jMenu, item);
         } else {
@@ -128,7 +126,6 @@ public class MenuBuilder {
                 }
             } else {
                 JMenu jChildMenu = new JMenu(MenuConfig.getMenuItemCaption(child.getId()));
-                assignShortcut(jChildMenu, child);
                 createSubMenu(jChildMenu, child);
                 if (!isMenuEmpty(jChildMenu)) {
                     items.add(new MenuItemContainer(jChildMenu));

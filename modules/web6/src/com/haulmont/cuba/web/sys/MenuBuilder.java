@@ -156,7 +156,7 @@ public class MenuBuilder {
     }
 
     protected void assignShortcut(MenuBar.MenuItem menuItem, MenuItem item) {
-        if (item.getShortcut() != null) {
+        if (item.getShortcut() != null && menuItem.getCommand() != null) {
             MenuShortcutAction shortcut = new MenuShortcutAction(menuItem, "shortcut_" + item.getId(), item.getShortcut());
             appWindow.addAction(shortcut);
             menuBar.setShortcut(menuItem, item.getShortcut());
