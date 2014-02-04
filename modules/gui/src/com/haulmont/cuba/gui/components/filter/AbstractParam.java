@@ -12,10 +12,7 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.SetValueEntity;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
@@ -90,7 +87,7 @@ public abstract class AbstractParam<T> {
             this.javaClass = Boolean.class;
         }
         this.entityWhere = entityWhere;
-        this.entityView = entityView;
+        this.entityView = (entityView != null) ? entityView : View.MINIMAL;
         this.datasource = datasource;
         this.property = property;
         this.inExpr = inExpr;
