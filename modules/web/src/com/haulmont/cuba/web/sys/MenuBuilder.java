@@ -173,9 +173,11 @@ public class MenuBuilder {
             TestIdManager testIdManager = appWindow.getAppUI().getTestIdManager();
 
             String id = testIdManager.normalize(conf.getId());
-            testIdManager.reserveId(id);
+            String testId = menuBar.getId() + "_" + id;
+            testIdManager.reserveId(testId);
 
-            menuBar.setTestId(menuItem, menuBar.getId() + "_" + id);
+            menuBar.setTestId(menuItem, testId);
+            menuBar.setCubaId(menuItem, id);
         }
     }
 }

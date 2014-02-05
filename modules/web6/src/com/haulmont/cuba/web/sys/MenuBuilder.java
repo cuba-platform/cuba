@@ -11,6 +11,7 @@ import com.haulmont.cuba.gui.NoSuchScreenException;
 import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.config.*;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppWindow;
 import com.haulmont.cuba.web.toolkit.MenuShortcutAction;
 import com.vaadin.ui.MenuBar;
@@ -168,6 +169,9 @@ public class MenuBuilder {
 
         if (menuBar.getDebugId() != null && !conf.isSeparator()) {
             menuBar.setDebugId(menuItem, testIdManager.normalize(menuBar.getDebugId() + "_" + conf.getId()));
+        }
+        if (App.getInstance().isTestMode() && !conf.isSeparator()) {
+            menuBar.setCubaId(menuItem, conf.getId());
         }
     }
 }

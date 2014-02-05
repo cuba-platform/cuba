@@ -10,6 +10,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.CubaMenuBar;
 import com.vaadin.client.ApplicationConnection;
 import com.vaadin.client.UIDL;
+import com.vaadin.client.ui.VMenuBar;
 import com.vaadin.client.ui.menubar.MenuBarConnector;
 import com.vaadin.shared.ui.Connect;
 
@@ -58,10 +59,17 @@ public class CubaMenuBarConnector extends MenuBarConnector {
 
     @Override
     protected String getItemId(UIDL uidl) {
-        if (uidl.hasAttribute("testId")) {
-            return uidl.getStringAttribute("testId");
+        if (uidl.hasAttribute("tid")) {
+            return uidl.getStringAttribute("tid");
         }
 
         return null;
+    }
+
+    @Override
+    protected void assignAdditionalAttributes(VMenuBar.CustomMenuItem currentItem, UIDL item) {
+        if (item.hasAttribute("cid")) {
+            currentItem.getElement().setAttribute("cuba-id", item.getStringAttribute("cid"));
+        }
     }
 }

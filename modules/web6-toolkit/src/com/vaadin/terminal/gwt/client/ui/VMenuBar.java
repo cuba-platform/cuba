@@ -249,7 +249,7 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
 
         while (itr.hasNext()) {
             UIDL item = (UIDL) itr.next();
-            CustomMenuItem currentItem = null;
+            CustomMenuItem currentItem;
 
             String itemText = item.getStringAttribute("text");
             final int itemId = item.getIntAttribute("id");
@@ -1108,6 +1108,13 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
 
                 VMenuBar root = findRootMenu();
                 client.registerTooltip(root, this, info);
+            }
+
+            if (uidl.hasAttribute("debugId")) {
+                getElement().setId(uidl.getStringAttribute("debugId"));
+            }
+            if (uidl.hasAttribute("cid")) {
+                getElement().setAttribute("cuba-id", uidl.getStringAttribute("cid"));
             }
         }
 

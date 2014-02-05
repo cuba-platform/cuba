@@ -20,13 +20,13 @@ import java.util.Map;
  */
 public class MenuBar extends com.vaadin.ui.MenuBar {
 
-    protected Map<MenuItem, String> shortcuts;
     protected boolean vertical;
 
+    protected Map<MenuItem, String> shortcuts;
     protected BiMap<MenuItem, String> debugIds;
+    protected Map<MenuItem, String> cubaIds;
 
     public MenuBar() {
-        shortcuts = new HashMap<>();
     }
 
     public void setShortcut(MenuItem item, KeyCombination shortcut) {
@@ -34,6 +34,10 @@ public class MenuBar extends com.vaadin.ui.MenuBar {
     }
 
     public void setShortcut(MenuItem item, String str) {
+        if (shortcuts == null) {
+            shortcuts = new HashMap<>();
+        }
+
         if (shortcuts.containsKey(item)) {
             shortcuts.remove(item);
         }
@@ -41,7 +45,9 @@ public class MenuBar extends com.vaadin.ui.MenuBar {
     }
 
     public void clearShortcut(MenuItem item) {
-        shortcuts.remove(item);
+        if (shortcuts != null) {
+            shortcuts.remove(item);
+        }
     }
 
     public void setDebugId(MenuItem item, String id) {
@@ -49,6 +55,13 @@ public class MenuBar extends com.vaadin.ui.MenuBar {
             debugIds = HashBiMap.create();
         }
         debugIds.put(item, id);
+    }
+
+    public void setCubaId(MenuItem item, String id) {
+        if (cubaIds == null) {
+            cubaIds = new HashMap<>();
+        }
+        cubaIds.put(item, id);
     }
 
     public String getDebugId(MenuItem item) {
@@ -60,7 +73,6 @@ public class MenuBar extends com.vaadin.ui.MenuBar {
 
     @Override
     public void changeVariables(Object source, Map<String, Object> variables) {
-
         if (variables.containsKey("clickedDebugId")) {
             MenuItem clickedItem  = debugIds.inverse().get(variables.get("clickedDebugId"));
             if (clickedItem != null && clickedItem.isEnabled()) {
@@ -140,7 +152,7 @@ public class MenuBar extends com.vaadin.ui.MenuBar {
             }
 
             //***************************
-            if (shortcuts.containsKey(item)) {
+            if (shortcuts != null && shortcuts.containsKey(item)) {
                 String shortcut = shortcuts.get(item);
                 if (shortcut != null) {
                     target.addAttribute("shortcut", shortcut);
@@ -152,12 +164,15 @@ public class MenuBar extends com.vaadin.ui.MenuBar {
                 target.addAttribute("debugId", debugIds.get(item));
             }
 
+            if (cubaIds != null && cubaIds.containsKey(item)) {
+                target.addAttribute("cid", cubaIds.get(item));
+            }
+
             if (item.hasChildren()) {
                 for (com.vaadin.ui.MenuBar.MenuItem child : item.getChildren()) {
                     paintItem(target, child);
                 }
             }
-
         }
 
         target.endTag("item");

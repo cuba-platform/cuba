@@ -19,8 +19,9 @@ import java.util.Map;
  */
 public class CubaMenuBar extends com.vaadin.ui.MenuBar {
 
-    protected final Map<MenuItem, String> shortcuts = new HashMap<>();
-    protected final Map<MenuItem, String> testIds = new HashMap<>();
+    protected Map<MenuItem, String> shortcuts = null;
+    protected Map<MenuItem, String> testIds = null;
+    protected Map<MenuItem, String> cubaIds = null;
 
     @Override
     protected CubaMenuBarState getState() {
@@ -47,6 +48,10 @@ public class CubaMenuBar extends com.vaadin.ui.MenuBar {
     }
 
     public void setShortcut(MenuItem item, String str) {
+        if (shortcuts == null) {
+            shortcuts = new HashMap<>();
+        }
+
         if (shortcuts.containsKey(item)) {
             shortcuts.remove(item);
         }
@@ -54,23 +59,38 @@ public class CubaMenuBar extends com.vaadin.ui.MenuBar {
     }
 
     public void clearShortcut(MenuItem item) {
-        shortcuts.remove(item);
+        if (shortcuts != null) {
+            shortcuts.remove(item);
+        }
     }
 
     public void setTestId(MenuItem item, String id) {
+        if (testIds == null) {
+            testIds = new HashMap<>();
+        }
         testIds.put(item, id);
+    }
+
+    public void setCubaId(MenuItem item, String id) {
+        if (cubaIds == null) {
+            cubaIds = new HashMap<>();
+        }
+        cubaIds.put(item, id);
     }
 
     @Override
     protected void paintAdditionalItemParams(PaintTarget target, MenuItem item) throws PaintException {
-        if (shortcuts.containsKey(item)) {
+        if (shortcuts != null && shortcuts.containsKey(item)) {
             String shortcut = shortcuts.get(item);
             if (shortcut != null) {
                 target.addAttribute("shortcut", shortcut);
             }
         }
-        if (testIds.containsKey(item)) {
-            target.addAttribute("testId", testIds.get(item));
+        if (testIds != null && testIds.containsKey(item)) {
+            target.addAttribute("tid", testIds.get(item));
+        }
+        if (cubaIds != null && cubaIds.containsKey(item)) {
+            target.addAttribute("cid", cubaIds.get(item));
         }
     }
 }
