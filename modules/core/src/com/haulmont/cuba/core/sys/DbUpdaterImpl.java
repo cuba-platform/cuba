@@ -17,6 +17,9 @@ import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import javax.sql.DataSource;
 import java.io.File;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author krivopustov
@@ -32,6 +35,8 @@ public class DbUpdaterImpl extends DbUpdaterEngine {
     protected Persistence persistence;
 
     protected PostUpdateScripts postUpdate;
+
+    protected Map<Closure, File> postUpdateScripts = new HashMap<>();
 
     @Inject
     public void setConfigProvider(Configuration configuration) {
@@ -51,13 +56,26 @@ public class DbUpdaterImpl extends DbUpdaterEngine {
     }
 
     @Override
-    protected void executeGroovyScript(File file) {
+    protected boolean executeGroovyScript(final File file) {
         Binding bind = new Binding();
         bind.setProperty("ds", getDataSource());
         bind.setProperty("log", LogFactory.getLog(file.getName()));
-        bind.setProperty("postUpdate", postUpdate);
+        bind.setProperty("postUpdate", new PostUpdateScripts() {
+            @Override
+            public void add(Closure closure) {
+                postUpdateScripts.put(closure, file);
+
+                postUpdate.add(closure);
+            }
+
+            @Override
+            public List<Closure> getUpdates() {
+                return postUpdate.getUpdates();
+            }
+        });
 
         scripting.runGroovyScript(getScriptName(file), bind);
+        return !postUpdateScripts.containsValue(file);
     }
 
     @Override
@@ -70,7 +88,18 @@ public class DbUpdaterImpl extends DbUpdaterEngine {
             log.info(String.format("Execute '%s' post update actions", postUpdate.getUpdates().size()));
 
             for (Closure closure : postUpdate.getUpdates()) {
+                File groovyFile = postUpdateScripts.remove(closure);
+                if (groovyFile != null) {
+                    log.info("Execute post update from " + getScriptName(groovyFile));
+                }
+
                 closure.call();
+
+                if (groovyFile != null && !postUpdateScripts.containsValue(groovyFile)) {
+                    log.info("All post update actions completed for " + getScriptName(groovyFile));
+
+                    markScript(getScriptName(groovyFile), false);
+                }
             }
         }
     }

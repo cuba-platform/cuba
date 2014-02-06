@@ -61,14 +61,14 @@ public class DbUpdaterEngine implements DbUpdater {
     {
         extensionHandlers.put(SQL_EXTENSION, new FileHandler() {
             @Override
-            public void run(File file) {
-                executeSqlScript(file);
+            public boolean run(File file) {
+                return executeSqlScript(file);
             }
         });
         extensionHandlers.put(GROOVY_EXTENSION, new FileHandler() {
             @Override
-            public void run(File file) {
-                executeGroovyScript(file);
+            public boolean run(File file) {
+                return executeGroovyScript(file);
             }
         });
     }
@@ -260,8 +260,9 @@ public class DbUpdaterEngine implements DbUpdater {
         for (File file : files) {
             String name = getScriptName(file);
             if (!scripts.contains(name)) {
-                executeScript(file);
-                markScript(name, false);
+                if (executeScript(file)) {
+                    markScript(name, false);
+                }
             }
         }
         log.info("Database is up-to-date");
@@ -320,7 +321,7 @@ public class DbUpdaterEngine implements DbUpdater {
         return true;
     }
 
-    protected void executeSqlScript(File file) {
+    protected boolean executeSqlScript(File file) {
         String script;
         try {
             script = FileUtils.readFileToString(file);
@@ -349,9 +350,10 @@ public class DbUpdaterEngine implements DbUpdater {
                 }
             }
         }
+        return true;
     }
 
-    protected void executeGroovyScript(File file) {
+    protected boolean executeGroovyScript(File file) {
         try {
             String scriptRoot = file.getParentFile().getAbsolutePath();
             ClassLoader classLoader = getClass().getClassLoader();
@@ -373,33 +375,23 @@ public class DbUpdaterEngine implements DbUpdater {
         } catch (IOException | ResourceException | ScriptException e) {
             throw new RuntimeException(e);
         }
+        return true;
     }
 
-    // If first keyword is not SELECT then its probably not a select query.
-    protected boolean isLikelySelect(String sql) {
-        String[] lines = sql.split("\\r?\\n");
-        for (String line : lines) {
-            line = line.trim();
-            if (!line.startsWith(SQL_COMMENT_PREFIX) && !StringUtils.isBlank(line)) {
-                return line.toLowerCase().startsWith("select");
-            }
-        }
-        return false;
-    }
-
-    protected void executeScript(File file) {
-        log.info("Executing script " + file.getPath());
+    protected boolean executeScript(File file) {
+        log.info("Executing script " + getScriptName(file));
         String filename = file.getName();
         String extension = FilenameUtils.getExtension(filename);
         if (StringUtils.isNotEmpty(extension)) {
             if (extensionHandlers.containsKey(extension)) {
                 FileHandler handler = extensionHandlers.get(extension);
-                handler.run(file);
+                return handler.run(file);
             } else
                 log.warn("Update script ignored, file handler for extension not found:" +
                         file.getName());
         } else
             log.warn("Update script ignored, file extension undefined:" + file.getName());
+        return false;
     }
 
     protected List<File> getInitScripts() {
@@ -428,6 +420,9 @@ public class DbUpdaterEngine implements DbUpdater {
 
     // File extension handler
     public interface FileHandler {
-        void run(File file);
+        /**
+         * @return need mark as executed or not
+         */
+        boolean run(File file);
     }
 }
