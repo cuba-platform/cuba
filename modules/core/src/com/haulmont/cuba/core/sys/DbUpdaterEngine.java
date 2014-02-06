@@ -117,6 +117,15 @@ public class DbUpdaterEngine implements DbUpdater {
         Collections.sort(scripts, new Comparator<File>() {
             @Override
             public int compare(File f1, File f2) {
+                File f1Parent = f1.getAbsoluteFile().getParentFile();
+                File f2Parent = f2.getAbsoluteFile().getParentFile();
+                if (f1Parent.equals(f2Parent)) {
+                    String f1Name = FilenameUtils.getBaseName(f1.getName());
+                    String f2Name = FilenameUtils.getBaseName(f2.getName());
+
+                    return f1Name.compareTo(f2Name);
+                }
+
                 URI f1Uri = scriptDirUri.relativize(f1.toURI());
                 URI f2Uri = scriptDirUri.relativize(f2.toURI());
 
