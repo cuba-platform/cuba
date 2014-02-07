@@ -5,15 +5,17 @@
 
 package com.haulmont.cuba.gui.components.filter;
 
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Category;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.sys.SetValueEntity;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.RuntimePropertiesHelper;
 import com.haulmont.cuba.gui.data.ValueListener;
@@ -33,7 +35,8 @@ public abstract class AbstractRuntimePropConditionEditDlg<T> {
 
     protected AbstractRuntimePropCondition condition;
     protected String messagesPack;
-    private DataService dataService;
+    protected DataService dataService;
+    protected Metadata metadata;
     protected LookupField categorySelect;
     protected LookupField attributeSelect;
     protected LookupField operationSelect;
@@ -45,7 +48,8 @@ public abstract class AbstractRuntimePropConditionEditDlg<T> {
     private ComponentsFactory factory = AppConfig.getFactory();
 
     public AbstractRuntimePropConditionEditDlg(AbstractRuntimePropCondition condition) {
-        dataService = ServiceLocator.lookup(DataService.NAME);
+        dataService = AppBeans.get(DataService.NAME);
+        metadata = AppBeans.get(Metadata.class);
         this.condition = condition;
         messagesPack = AppConfig.getMessagesPack();
 
@@ -202,10 +206,11 @@ public abstract class AbstractRuntimePropConditionEditDlg<T> {
     }
 
     protected void fillCategorySelect() {
+        List<String> metaClassName = getMetaClassNames();
         LoadContext context = new LoadContext(Category.class);
-        LoadContext.Query query = context.setQueryString("select c from sys$Category c where c.entityType=:entityType");
-        query.setParameter("entityType", condition.getDatasource().getMetaClass().getName());
-        context.setView("_minimal");
+        context.setView("_minimal")
+                .setQueryString("select c from sys$Category c where c.entityType in :entityType")
+                .setParameter("entityType", metaClassName);
         List<Category> categories = dataService.loadList(context);
         UUID catId = condition.getCategoryId();
         Category selectedCategory = null;
@@ -231,6 +236,20 @@ public abstract class AbstractRuntimePropConditionEditDlg<T> {
             categorySelect.setOptionsMap(categoriesMap);
             categorySelect.setValue(selectedCategory);
         }
+    }
+
+    protected List<String> getMetaClassNames() {
+        String metaClassName = condition.getDatasource().getMetaClass().getName();
+        List<String> metaClassNames = new ArrayList<>();
+        metaClassNames.add(metaClassName);
+        MetaClass currentMetaClass = metadata.getClass(metaClassName);
+        if (currentMetaClass == null)
+            return metaClassNames;
+        Collection<MetaClass> descendants = currentMetaClass.getDescendants();
+        for (MetaClass metaClass : descendants) {
+            metaClassNames.add(metaClass.getName());
+        }
+        return metaClassNames;
     }
 
     protected void fillAttributeSelect(Category category) {
