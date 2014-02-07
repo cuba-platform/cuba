@@ -21,6 +21,7 @@ import org.dom4j.Element;
 import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author abramov
@@ -411,8 +412,10 @@ public class DsContextLoader {
 
     private String getDatasourceId(Element element) {
         String id = element.attributeValue("id");
-        if (context.get(id) != null)
-            throw new DevelopmentException("Duplicated datasource id: " + id);
+        for (Datasource datasource : context.getAll()) {
+            if (Objects.equals(datasource.getId(), id))
+                throw new DevelopmentException("Duplicated datasource id: " + id);
+        }
         return id;
     }
 }
