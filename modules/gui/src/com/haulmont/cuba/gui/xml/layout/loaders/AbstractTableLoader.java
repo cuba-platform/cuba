@@ -241,6 +241,8 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         }
 
         loadCaption(column, element);
+        loadDescription(column, element);
+
         if (column.getCaption() == null) {
             String columnCaption;
             if (column.getId() instanceof MetaPropertyPath) {

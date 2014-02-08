@@ -288,6 +288,7 @@ public interface Table
 
         protected Object id;
         protected String caption;
+        protected String description;
         protected boolean editable;
         protected Formatter formatter;
         protected Integer width;
@@ -329,13 +330,12 @@ public interface Table
 
         @Override
         public String getDescription() {
-            log.warn("Description attribute is not supported for table column");
-            return null;
+            return description;
         }
 
         @Override
         public void setDescription(String description) {
-            log.warn("Description attribute is not supported for table column");
+            this.description = description;
         }
 
         public Boolean isEditable() {
