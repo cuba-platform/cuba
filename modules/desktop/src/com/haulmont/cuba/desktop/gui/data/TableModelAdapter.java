@@ -187,6 +187,8 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
         Table.Column column = columns.get(columnIndex);
         if (!column.isEditable())
             return;
+        if (generatedColumns.contains(column))
+            return;
 
         Object id = getItemId(rowIndex);
         Entity item = datasource.getItem(id);

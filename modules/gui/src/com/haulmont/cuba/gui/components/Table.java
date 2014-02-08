@@ -365,9 +365,6 @@ public interface Table
         @Override
         public void setFormatter(Formatter formatter) {
             this.formatter = formatter;
-            if (owner != null) {
-                log.warn("Changing formatter for column in runtime is not supported");
-            }
         }
 
         public Integer getWidth() {

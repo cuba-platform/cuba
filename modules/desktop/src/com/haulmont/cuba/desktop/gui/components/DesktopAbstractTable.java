@@ -1281,7 +1281,6 @@ public abstract class DesktopAbstractTable<C extends JXTable>
             associatedRuntimeColumn = col;
         }
 
-        col.setEditable(false); // generated column must be non-editable, see TableModelAdapter.setValueAt()
         tableModel.addGeneratedColumn(col);
         TableColumn tableColumn = getColumn(col);
         DesktopTableCellEditor cellEditor = new DesktopTableCellEditor(this, generator, componentClass);
@@ -1313,6 +1312,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
         // if column with columnId does not exists then add new to model
         Column col = new Column(columnId, columnId);
+        col.setEditable(false);
 
         columns.put(col.getId(), col);
         // do not touch columnsOrder, it will be synced from table model
