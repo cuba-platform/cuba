@@ -137,7 +137,10 @@ public class PortalConnection implements Connection {
     }
 
     protected void internalLogin() throws LoginException {
-        AppContext.setSecurityContext(new SecurityContext(session));
+        PortalSecurityContext securityContext = new PortalSecurityContext(session);
+        securityContext.setPortalApp(App.getInstance());
+
+        AppContext.setSecurityContext(securityContext);
 
         fireConnectionListeners();
 
