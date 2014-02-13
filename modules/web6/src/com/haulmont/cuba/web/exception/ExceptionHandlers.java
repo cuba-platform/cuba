@@ -44,6 +44,21 @@ public class ExceptionHandlers {
     }
 
     /**
+     * @return default exception handler which is used when none of registered handlers have handled an exception
+     */
+    public ExceptionHandler getDefaultHandler() {
+        return defaultHandler;
+    }
+
+    /**
+     * Set the default handler instead of initialized in constructor.
+     * @param defaultHandler     default handler instance
+     */
+    public void setDefaultHandler(ExceptionHandler defaultHandler) {
+        this.defaultHandler = defaultHandler;
+    }
+
+    /**
      * Adds new handler if it is not yet registered.
      * @param handler   handler instance
      */
