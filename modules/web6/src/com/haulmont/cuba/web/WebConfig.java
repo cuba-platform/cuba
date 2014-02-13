@@ -198,6 +198,13 @@ public interface WebConfig extends Config {
     boolean getAllowIdSuffix();
 
     /**
+     * @return Whether to redirect by blank html page on getting URL request action
+     */
+    @Property("cuba.web.redirectByPageOnLinkActionEnabled")
+    @DefaultBoolean(false)
+    boolean getRedirectByPageOnLinkActionEnabled();
+
+    /**
      * Supports automatic testing.
      * @return a name of request parameter that marks a request from an automatic testing tool, for example jMeter.
      */

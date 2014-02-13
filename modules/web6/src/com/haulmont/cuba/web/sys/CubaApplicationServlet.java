@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -105,7 +106,13 @@ public class CubaApplicationServlet extends ApplicationServlet {
         }
 
         if (needRedirect) {
-            redirectToApp(request, response, contextName, uriParts, action);
+            if (webConfig.getRedirectByPageOnLinkActionEnabled() &&
+                    action != null &&
+                    request.getParameter(App.FROM_HTML_REDIRECT_PARAM) == null) {
+                redirectByBlankHtmlPage(request, response);
+            } else {
+                redirectToApp(request, response, contextName, uriParts, action);
+            }
         } else {
             RequestContext.create(request, response);
 
@@ -115,6 +122,49 @@ public class CubaApplicationServlet extends ApplicationServlet {
                 RequestContext.destroy();
             }
         }
+    }
+
+    protected void redirectByBlankHtmlPage(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+
+        final BufferedWriter page = new BufferedWriter(new OutputStreamWriter(
+                response.getOutputStream(), "UTF-8"));
+
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(request.getRequestURI());
+        Map<String, String[]> parameterMap = request.getParameterMap();
+        stringBuilder.append("?");
+        stringBuilder.append(App.FROM_HTML_REDIRECT_PARAM);
+        stringBuilder.append("=true");
+
+        for (String key : parameterMap.keySet()) {
+            for (String value : parameterMap.get(key)) {
+                stringBuilder.append("&");
+                stringBuilder.append(key);
+                stringBuilder.append("=");
+                stringBuilder.append(value);
+            }
+        }
+        String url = stringBuilder.toString();
+
+        page.write("<!DOCTYPE HTML>");
+        page.write("<head>");
+        page.write("<meta charset=\"UTF-8\"");
+        page.write("<meta http-equiv=\"refresh\" content=\"1;url=");
+        page.write(url);
+        page.write("\">");
+        page.write("<script type=\"text/javascript\">");
+        page.write("<meta charset=\"UTF-8\">");
+        page.write("<meta http-equiv=\"refresh\" content=\"1;url=");
+        page.write(url);
+        page.write("\"><script type=\"text/javascript\">");
+        page.write("window.location.href = \"");
+        page.write(url);
+        page.write("\"</script>");
+        page.write("</head>");
+        page.write("<body/>");
+        page.write("</html>");
+        page.close();
     }
 
     private void redirectToApp(HttpServletRequest request, HttpServletResponse response,
@@ -140,7 +190,9 @@ public class CubaApplicationServlet extends ApplicationServlet {
             Enumeration parameterNames = request.getParameterNames();
             while (parameterNames.hasMoreElements()) {
                 String name = (String) parameterNames.nextElement();
-                params.put(name, request.getParameter(name));
+                if (!App.FROM_HTML_REDIRECT_PARAM.equals(name)) {
+                    params.put(name, request.getParameter(name));
+                }
             }
             httpSession.setAttribute(App.LAST_REQUEST_PARAMS_ATTR, params);
         }

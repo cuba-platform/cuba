@@ -66,6 +66,8 @@ public abstract class App extends Application
 
     public static final String LAST_REQUEST_ACTION_ATTR = "lastRequestAction";
 
+    public static final String FROM_HTML_REDIRECT_PARAM = "fromCubaHtmlRedirect";
+
     public static final String USER_SESSION_ATTR = "userSessionId";
 
     public static final String APP_THEME_COOKIE_PREFIX = "APP_THEME_NAME_";
