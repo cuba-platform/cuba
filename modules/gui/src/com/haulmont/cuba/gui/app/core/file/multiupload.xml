@@ -3,12 +3,11 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<window
-        xmlns="http://schemas.haulmont.com/cuba/5.2/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/5.2/window.xsd"
         class="com.haulmont.cuba.gui.app.core.file.MultiUploader"
         datasource="filesDs"
         messagesPack="com.haulmont.cuba.gui.app.core.file"
-        caption="msg://editorCaption"
+        caption="msg://uploadFiles"
         focusComponent="multiUpload">
 
     <dsContext>
@@ -19,7 +18,7 @@
 
     <layout expand="windowActions" spacing="true">
         <hbox spacing="true">
-            <multiUpload id="multiUpload" width="90px"/>
+            <multiUpload id="multiUpload"/>
             <button action="uploadsTable.remove" icon="icons/remove.png"/>
         </hbox>
 
