@@ -13,6 +13,7 @@ import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.presentations.Presentations;
+import com.haulmont.cuba.web.App;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.TextField;
@@ -71,7 +72,12 @@ public class AppFolderEditWindow extends FolderEditWindow {
             quantityScriptField.setCaption(getMessage("folders.quantityScript"));
             layout.addComponent(quantityScriptField, 4);
 
+            if (App.getInstance().isTestMode()) {
+                setCubaId("appFolderEditWindow");
 
+                visibilityScriptField.setCubaId("visibilityScriptField");
+                quantityScriptField.setCubaId("quantityScriptField");
+            }
         }
     }
 

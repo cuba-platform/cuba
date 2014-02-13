@@ -16,10 +16,10 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.security.entity.Presentation;
 import com.haulmont.cuba.security.entity.SearchFolder;
+import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.vaadin.terminal.Sizeable;
-import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -46,9 +46,9 @@ public class FolderEditWindow extends Window {
     protected VerticalLayout layout;
     protected Button okBtn;
     protected Messages messages;
+    protected TextField selectedPresentationField;
 
     public FolderEditWindow(boolean adding, Folder folder, Presentations presentations, Runnable commitHandler) {
-        super();
         this.folder = folder;
         this.commitHandler = commitHandler;
 
@@ -97,12 +97,12 @@ public class FolderEditWindow extends Window {
                 presentation.setValue(((SearchFolder) folder).getPresentation());
                 layout.addComponent(presentation);
             } else if (((SearchFolder) folder).getPresentation() != null) {
-                final TextField selectedPresentation = new TextField();
-                selectedPresentation.setWidth("250px");
-                selectedPresentation.setCaption(getMessage("folders.folderEditWindow.presentation"));
-                selectedPresentation.setValue(((SearchFolder) folder).getPresentation().getName());
-                selectedPresentation.setEnabled(false);
-                layout.addComponent(selectedPresentation);
+                selectedPresentationField = new TextField();
+                selectedPresentationField.setWidth("250px");
+                selectedPresentationField.setCaption(getMessage("folders.folderEditWindow.presentation"));
+                selectedPresentationField.setValue(((SearchFolder) folder).getPresentation().getName());
+                selectedPresentationField.setEnabled(false);
+                layout.addComponent(selectedPresentationField);
             }
         }
 
@@ -148,6 +148,27 @@ public class FolderEditWindow extends Window {
             }
         });
         buttonsLayout.addComponent(cancelBtn);
+
+        if (App.getInstance().isTestMode()) {
+            setCubaId("folderEditWindow");
+
+            nameField.setCubaId("nameField");
+            tabNameField.setCubaId("tabNameField");
+            parentSelect.setCubaId("parentSelect");
+            if (presentation != null) {
+                presentation.setCubaId("presentationSelect");
+            }
+            sortOrderField.setCubaId("sortOrderField");
+            if (selectedPresentationField != null) {
+                selectedPresentationField.setCubaId("selectedPresentationField");
+            }
+            if (globalCb != null) {
+                globalCb.setCubaId("globalCb");
+            }
+            applyDefaultCb.setCubaId("applyDefaultCb");
+            okBtn.setCubaId("okBtn");
+            cancelBtn.setCubaId("cancelBtn");
+        }
     }
 
     protected void initButtonOkListener() {
