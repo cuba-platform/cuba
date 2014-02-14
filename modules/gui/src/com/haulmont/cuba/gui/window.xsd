@@ -182,7 +182,7 @@
     <!-- Interfaces -->
 
     <xs:attributeGroup name="hasId">
-        <xs:attribute name="id" type="xs:string" use="optional"/>
+        <xs:attribute name="id" type="xs:string"/>
         <xs:anyAttribute namespace="##other" processContents="lax"/>
     </xs:attributeGroup>
 
@@ -192,57 +192,57 @@
     </xs:attributeGroup>
 
     <xs:attributeGroup name="hasSize">
-        <xs:attribute name="width" type="componentSize" use="optional"/>
-        <xs:attribute name="height" type="componentSize" use="optional"/>
-        <xs:attribute name="colspan" type="xs:integer" use="optional"/>
-        <xs:attribute name="rowspan" type="xs:integer" use="optional"/>
+        <xs:attribute name="width" type="componentSize"/>
+        <xs:attribute name="height" type="componentSize"/>
+        <xs:attribute name="colspan" type="xs:integer"/>
+        <xs:attribute name="rowspan" type="xs:integer"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="hasWidthProp">
-        <xs:attribute name="width" type="xs:string" use="optional"/>
+        <xs:attribute name="width" type="xs:string"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="hasVisibility">
-        <xs:attribute name="visible" type="xs:boolean" use="optional"/>
+        <xs:attribute name="visible" type="xs:boolean"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="hasAlign">
-        <xs:attribute name="align" type="align" use="optional"/>
+        <xs:attribute name="align" type="align"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="hasStyle">
-        <xs:attribute name="stylename" type="xs:string" use="optional"/>
+        <xs:attribute name="stylename" type="xs:string"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="hasSpacingMargin">
-        <xs:attribute name="spacing" type="xs:boolean" use="optional"/>
-        <xs:attribute name="margin" type="xs:string" use="optional"/>
+        <xs:attribute name="spacing" type="xs:boolean"/>
+        <xs:attribute name="margin" type="xs:string"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="hasSpacing">
-        <xs:attribute name="spacing" type="xs:boolean" use="optional"/>
+        <xs:attribute name="spacing" type="xs:boolean"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="hasExpand">
-        <xs:attribute name="expand" type="xs:string" use="optional"/>
+        <xs:attribute name="expand" type="xs:string"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="hasEditState">
-        <xs:attribute name="editable" type="xs:boolean" use="optional"/>
-        <xs:attribute name="enable" type="xs:boolean" use="optional"/>
+        <xs:attribute name="editable" type="xs:boolean"/>
+        <xs:attribute name="enable" type="xs:boolean"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="hasEditable">
-        <xs:attribute name="editable" type="xs:boolean" use="optional"/>
+        <xs:attribute name="editable" type="xs:boolean"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="hasEnableProp">
-        <xs:attribute name="enable" type="xs:boolean" use="optional"/>
+        <xs:attribute name="enable" type="xs:boolean"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="hasDatasource">
-        <xs:attribute name="datasource" type="xs:string" use="optional"/>
-        <xs:attribute name="property" type="xs:string" use="optional"/>
+        <xs:attribute name="datasource" type="xs:string"/>
+        <xs:attribute name="property" type="xs:string"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="requiresDatasource">
@@ -254,12 +254,12 @@
     </xs:attributeGroup>
 
     <xs:attributeGroup name="hasValue">
-        <xs:attribute name="value" type="xs:string" use="optional"/>
+        <xs:attribute name="value" type="xs:string"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="hasCaption">
-        <xs:attribute name="caption" type="xs:string" use="optional" default="msg://"/>
-        <xs:attribute name="description" type="xs:string" use="optional" default="msg://"/>
+        <xs:attribute name="caption" type="xs:string" default="msg://"/>
+        <xs:attribute name="description" type="xs:string" default="msg://"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="requiresCaption">
@@ -267,35 +267,35 @@
     </xs:attributeGroup>
 
     <xs:attributeGroup name="hasCaptionProp">
-        <xs:attribute name="caption" type="xs:string" use="optional" default="msg://"/>
+        <xs:attribute name="caption" type="xs:string" default="msg://"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="hasRequirements">
-        <xs:attribute name="required" type="xs:boolean" use="optional"/>
-        <xs:attribute name="requiredMessage" type="xs:string" use="optional" default="msg://"/>
+        <xs:attribute name="required" type="xs:boolean"/>
+        <xs:attribute name="requiredMessage" type="xs:string" default="msg://"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="hasDatatype">
-        <xs:attribute name="datatype" type="datatypeEnum" use="optional"/>
+        <xs:attribute name="datatype" type="datatypeEnum"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="hasOptions">
-        <xs:attribute name="optionsDatasource" type="xs:string" use="optional"/>
+        <xs:attribute name="optionsDatasource" type="xs:string"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="hasCaptionSource">
-        <xs:attribute name="captionProperty" type="xs:string" use="optional"/>
+        <xs:attribute name="captionProperty" type="xs:string"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="isTableComponent">
-        <xs:attribute name="multiselect" type="xs:boolean" use="optional"/>
-        <xs:attribute name="sortable" type="xs:boolean" use="optional"/>
-        <xs:attribute name="reorderingAllowed" type="xs:boolean" use="optional"/>
-        <xs:attribute name="columnControlVisible" type="xs:boolean" use="optional"/>
+        <xs:attribute name="multiselect" type="xs:boolean"/>
+        <xs:attribute name="sortable" type="xs:boolean"/>
+        <xs:attribute name="reorderingAllowed" type="xs:boolean"/>
+        <xs:attribute name="columnControlVisible" type="xs:boolean"/>
 
-        <xs:attribute name="aggregatable" type="xs:boolean" use="optional"/>
-        <xs:attribute name="presentations" type="xs:boolean" use="optional"/>
-        <xs:attribute name="allowPopupMenu" type="xs:boolean" use="optional"/>
+        <xs:attribute name="aggregatable" type="xs:boolean"/>
+        <xs:attribute name="presentations" type="xs:boolean"/>
+        <xs:attribute name="allowPopupMenu" type="xs:boolean"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="isLayoutComponent">
@@ -304,15 +304,15 @@
         <xs:attributeGroup ref="hasStyle"/>
         <xs:attributeGroup ref="hasSpacingMargin"/>
 
-        <xs:attribute name="expand" type="xs:string" use="optional"/>
+        <xs:attribute name="expand" type="xs:string"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="isDatasource">
         <xs:attribute name="id" type="xs:string" use="required"/>
-        <xs:attribute name="class" type="xs:string" use="optional"/>
-        <xs:attribute name="view" type="xs:string" use="optional"/>
-        <xs:attribute name="allowCommit" type="xs:boolean" use="optional"/>
-        <xs:attribute name="datasourceClass" type="xs:string" use="optional"/>
+        <xs:attribute name="class" type="xs:string"/>
+        <xs:attribute name="view" type="xs:string"/>
+        <xs:attribute name="allowCommit" type="xs:boolean"/>
+        <xs:attribute name="datasourceClass" type="xs:string"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="isCollectionDatasource">
@@ -322,28 +322,28 @@
     <xs:attributeGroup name="isNestedDatasource">
         <xs:attribute name="id" type="xs:string" use="required"/>
         <xs:attribute name="property" type="xs:string" use="required"/>
-        <xs:attribute name="datasourceClass" type="xs:string" use="optional"/>
-        <xs:attribute name="allowCommit" type="xs:boolean" use="optional"/>
+        <xs:attribute name="datasourceClass" type="xs:string"/>
+        <xs:attribute name="allowCommit" type="xs:boolean"/>
     </xs:attributeGroup>
 
     <!-- Utils -->
 
     <xs:complexType name="formatterType">
-        <xs:attribute name="class" type="xs:string" use="optional"/>
-        <xs:attribute name="format" type="xs:string" use="optional"/>
-        <xs:attribute name="type" type="xs:string" use="optional"/>
+        <xs:attribute name="class" type="xs:string"/>
+        <xs:attribute name="format" type="xs:string"/>
+        <xs:attribute name="type" type="xs:string"/>
     </xs:complexType>
 
     <xs:complexType name="validatorType" mixed="true">
-        <xs:attribute name="class" type="xs:string" use="optional"/>
-        <xs:attribute name="message" type="xs:string" use="optional"/>
-        <xs:attribute name="script" type="xs:string" use="optional"/>
-        <xs:attribute name="onlyPositive" type="xs:boolean" use="optional"/>
+        <xs:attribute name="class" type="xs:string"/>
+        <xs:attribute name="message" type="xs:string"/>
+        <xs:attribute name="script" type="xs:string"/>
+        <xs:attribute name="onlyPositive" type="xs:boolean"/>
     </xs:complexType>
 
     <xs:complexType name="tableRowsType">
         <xs:attribute name="datasource" type="xs:string" use="required"/>
-        <xs:attribute name="headerMode" type="headerMode" use="optional"/>
+        <xs:attribute name="headerMode" type="headerMode"/>
     </xs:complexType>
 
     <xs:complexType name="tableColumnsList">
@@ -373,8 +373,8 @@
                 </xs:complexType>
             </xs:element>
         </xs:sequence>
-        <xs:attribute name="script" type="xs:string" use="optional"/>
-        <xs:attribute name="property" type="xs:string" use="optional"/>
+        <xs:attribute name="script" type="xs:string"/>
+        <xs:attribute name="property" type="xs:string"/>
     </xs:complexType>
 
     <xs:complexType name="companionType">
@@ -389,7 +389,7 @@
     </xs:complexType>
 
     <xs:complexType name="filterClauseType" mixed="true">
-        <xs:attribute name="join" type="xs:string" use="optional"/>
+        <xs:attribute name="join" type="xs:string"/>
     </xs:complexType>
 
     <xs:complexType name="filterLogicalType">
@@ -405,9 +405,9 @@
         <xs:attributeGroup ref="hasCaption"/>
         <xs:attributeGroup ref="hasEnableProp"/>
         <xs:attributeGroup ref="hasVisibility"/>
-        <xs:attribute name="icon" type="xs:string" use="optional"/>
-        <xs:attribute name="invoke" type="xs:string" use="optional"/>
-        <xs:attribute name="shortcut" type="xs:string" use="optional"/>
+        <xs:attribute name="icon" type="xs:string"/>
+        <xs:attribute name="invoke" type="xs:string"/>
+        <xs:attribute name="shortcut" type="xs:string"/>
     </xs:complexType>
 
     <xs:complexType name="componentAction">
@@ -415,11 +415,11 @@
         <xs:attributeGroup ref="hasCaption"/>
         <xs:attributeGroup ref="hasEnableProp"/>
         <xs:attributeGroup ref="hasVisibility"/>
-        <xs:attribute name="openType" type="openType" use="optional"/>
-        <xs:attribute name="icon" type="xs:string" use="optional"/>
-        <xs:attribute name="trackSelection" type="xs:boolean" use="optional"/>
-        <xs:attribute name="invoke" type="xs:string" use="optional"/>
-        <xs:attribute name="shortcut" type="xs:string" use="optional"/>
+        <xs:attribute name="openType" type="openType"/>
+        <xs:attribute name="icon" type="xs:string"/>
+        <xs:attribute name="trackSelection" type="xs:boolean"/>
+        <xs:attribute name="invoke" type="xs:string"/>
+        <xs:attribute name="shortcut" type="xs:string"/>
     </xs:complexType>
 
     <xs:complexType name="popupButtonAction">
@@ -427,7 +427,7 @@
         <xs:attributeGroup ref="hasCaptionProp"/>
         <xs:attributeGroup ref="hasEnableProp"/>
         <xs:attributeGroup ref="hasVisibility"/>
-        <xs:attribute name="invoke" type="xs:string" use="optional"/>
+        <xs:attribute name="invoke" type="xs:string"/>
     </xs:complexType>
 
     <!-- Components -->
@@ -457,8 +457,8 @@
         <xs:attributeGroup ref="hasStyle"/>
         <xs:attributeGroup ref="hasCaption"/>
 
-        <xs:attribute name="url" type="xs:anyURI" use="optional"/>
-        <xs:attribute name="target" type="xs:string" use="optional"/>
+        <xs:attribute name="url" type="xs:anyURI"/>
+        <xs:attribute name="target" type="xs:string"/>
     </xs:complexType>
 
     <!-- CheckBox -->
@@ -512,8 +512,8 @@
 
                 <xs:attributeGroup ref="hasDatatype"/>
 
-                <xs:attribute name="maxLength" type="xs:int" use="optional"/>
-                <xs:attribute name="trim" type="xs:boolean" use="optional"/>
+                <xs:attribute name="maxLength" type="xs:int"/>
+                <xs:attribute name="trim" type="xs:boolean"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -522,12 +522,12 @@
     <xs:complexType name="textAreaComponent">
         <xs:complexContent>
             <xs:extension base="baseTextComponent">
-                <xs:attribute name="cols" type="xs:int" use="optional"/>
-                <xs:attribute name="rows" type="xs:int" use="optional"/>
+                <xs:attribute name="cols" type="xs:int"/>
+                <xs:attribute name="rows" type="xs:int"/>
 
-                <xs:attribute name="maxLength" type="xs:int" use="optional"/>
-                <xs:attribute name="resizable" type="xs:boolean" use="optional"/>
-                <xs:attribute name="trim" type="xs:boolean" use="optional"/>
+                <xs:attribute name="maxLength" type="xs:int"/>
+                <xs:attribute name="resizable" type="xs:boolean"/>
+                <xs:attribute name="trim" type="xs:boolean"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -536,7 +536,7 @@
     <xs:complexType name="sourceCodeEditorComponent">
         <xs:complexContent>
             <xs:extension base="baseFieldComponent">
-                <xs:attribute name="mode" type="sourceCodeEditorMode" use="optional"/>
+                <xs:attribute name="mode" type="sourceCodeEditorMode"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -546,7 +546,7 @@
         <xs:complexContent>
             <xs:extension base="baseTextComponent">
                 <xs:attribute name="mask" type="xs:string" use="required"/>
-                <xs:attribute name="valueMode" type="maskedFieldValueMode" use="optional"/>
+                <xs:attribute name="valueMode" type="maskedFieldValueMode"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -554,7 +554,7 @@
     <xs:complexType name="passwordFieldComponent">
         <xs:complexContent>
             <xs:extension base="baseTextComponent">
-                <xs:attribute name="maxLength" type="xs:int" use="optional"/>
+                <xs:attribute name="maxLength" type="xs:int"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -573,8 +573,8 @@
                 <xs:sequence>
                     <xs:element name="validator" minOccurs="0" maxOccurs="1" type="validatorType"/>
                 </xs:sequence>
-                <xs:attribute name="resolution" type="dateFieldResolution" use="optional"/>
-                <xs:attribute name="dateFormat" type="xs:string" use="optional"/>
+                <xs:attribute name="resolution" type="dateFieldResolution"/>
+                <xs:attribute name="dateFormat" type="xs:string"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -586,7 +586,7 @@
                 <xs:sequence>
                     <xs:element name="validator" minOccurs="0" maxOccurs="1" type="validatorType"/>
                 </xs:sequence>
-                <xs:attribute name="showSeconds" type="xs:string" use="optional"/>
+                <xs:attribute name="showSeconds" type="xs:string"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -600,7 +600,7 @@
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasEditState"/>
         <xs:attributeGroup ref="hasAlign"/>
-        <xs:attribute name="indeterminate" type="xs:string" use="optional"/>
+        <xs:attribute name="indeterminate" type="xs:string"/>
     </xs:complexType>
 
     <!-- LookupField-->
@@ -613,8 +613,8 @@
                 <xs:attributeGroup ref="hasOptions"/>
                 <xs:attributeGroup ref="hasCaptionSource"/>
 
-                <xs:attribute name="filterMode" type="filterMode" use="optional"/>
-                <xs:attribute name="nullName" type="xs:string" use="optional"/>
+                <xs:attribute name="filterMode" type="filterMode"/>
+                <xs:attribute name="nullName" type="xs:string"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -623,7 +623,7 @@
     <xs:complexType name="searchFieldComponent">
         <xs:complexContent>
             <xs:extension base="lookupFieldComponent">
-                <xs:attribute name="minSearchStringLength" type="xs:integer" use="optional"/>
+                <xs:attribute name="minSearchStringLength" type="xs:integer"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -639,8 +639,8 @@
 
                 <xs:attributeGroup ref="hasCaptionSource"/>
 
-                <xs:attribute name="metaClass" type="xs:string" use="optional"/>
-                <xs:attribute name="lookupScreen" type="xs:string" use="optional"/>
+                <xs:attribute name="metaClass" type="xs:string"/>
+                <xs:attribute name="lookupScreen" type="xs:string"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -657,9 +657,9 @@
                 <xs:attributeGroup ref="hasOptions"/>
                 <xs:attributeGroup ref="hasCaptionSource"/>
 
-                <xs:attribute name="filterMode" type="filterMode" use="optional"/>
-                <xs:attribute name="nullName" type="xs:string" use="optional"/>
-                <xs:attribute name="metaClass" type="xs:string" use="optional"/>
+                <xs:attribute name="filterMode" type="filterMode"/>
+                <xs:attribute name="nullName" type="xs:string"/>
+                <xs:attribute name="metaClass" type="xs:string"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -667,7 +667,7 @@
     <xs:complexType name="searchPickerFieldComponent">
         <xs:complexContent>
             <xs:extension base="lookupPickerFieldComponent">
-                <xs:attribute name="minSearchStringLength" type="xs:integer" use="optional"/>
+                <xs:attribute name="minSearchStringLength" type="xs:integer"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -716,14 +716,14 @@
                 <xs:complexType>
                     <xs:attributeGroup ref="hasCaptionSource"/>
                     <xs:attribute name="datasource" type="xs:string" use="required"/>
-                    <xs:attribute name="hierarchyProperty" type="xs:string" use="optional"/>
+                    <xs:attribute name="hierarchyProperty" type="xs:string"/>
                 </xs:complexType>
             </xs:element>
         </xs:sequence>
 
         <xs:attributeGroup ref="hasId"/>
         <xs:attributeGroup ref="hasSize"/>
-        <xs:attribute name="multiselect" type="xs:boolean" use="optional"/>
+        <xs:attribute name="multiselect" type="xs:boolean"/>
     </xs:complexType>
 
     <!-- Button -->
@@ -737,10 +737,10 @@
         <xs:attributeGroup ref="hasWidthProp"/>
         <xs:attributeGroup ref="hasAlign"/>
 
-        <xs:attribute name="action" type="xs:string" use="optional"/>
-        <xs:attribute name="icon" type="xs:string" use="optional"/>
+        <xs:attribute name="action" type="xs:string"/>
+        <xs:attribute name="icon" type="xs:string"/>
 
-        <xs:attribute name="invoke" type="xs:string" use="optional"/>
+        <xs:attribute name="invoke" type="xs:string"/>
     </xs:complexType>
 
     <!-- PopupButton -->
@@ -766,7 +766,7 @@
         <xs:attributeGroup ref="hasWidthProp"/>
         <xs:attributeGroup ref="hasAlign"/>
 
-        <xs:attribute name="icon" type="xs:string" use="optional"/>
+        <xs:attribute name="icon" type="xs:string"/>
     </xs:complexType>
 
     <!-- ButtonsPanel -->
@@ -786,8 +786,8 @@
         <xs:attributeGroup ref="hasAlign"/>
         <xs:attributeGroup ref="hasVisibility"/>
 
-        <xs:attribute name="providerClass" type="xs:string" use="optional"/>
-        <xs:attribute name="alwaysVisible" type="xs:boolean" use="optional"/>
+        <xs:attribute name="providerClass" type="xs:string"/>
+        <xs:attribute name="alwaysVisible" type="xs:boolean"/>
     </xs:complexType>
 
     <!-- Table.Column -->
@@ -812,17 +812,17 @@
         <xs:attributeGroup ref="hasCaptionProp"/>
         <xs:attributeGroup ref="hasVisibility"/>
 
-        <xs:attribute name="clickAction" type="xs:string" use="optional"/>
-        <xs:attribute name="collapsed" type="xs:boolean" use="optional"/>
-        <xs:attribute name="maxTextLength" type="xs:integer" use="optional"/>
+        <xs:attribute name="clickAction" type="xs:string"/>
+        <xs:attribute name="collapsed" type="xs:boolean"/>
+        <xs:attribute name="maxTextLength" type="xs:integer"/>
 
         <!-- Additional attributes, use only for editable table -->
         <xs:attributeGroup ref="hasOptions"/>
         <xs:attributeGroup ref="hasEditable"/>
         <xs:attributeGroup ref="hasRequirements"/>
         <xs:attributeGroup ref="hasCaptionSource"/>
-        <xs:attribute name="resolution" type="xs:string" use="optional"/>
-        <xs:attribute name="dateFormat" type="xs:string" use="optional"/>
+        <xs:attribute name="resolution" type="xs:string"/>
+        <xs:attribute name="dateFormat" type="xs:string"/>
     </xs:complexType>
 
     <!-- Table -->
@@ -868,7 +868,7 @@
 
         <xs:attributeGroup ref="isTableComponent"/>
 
-        <xs:attribute name="fixedGrouping" type="xs:boolean" use="optional"/>
+        <xs:attribute name="fixedGrouping" type="xs:boolean"/>
     </xs:complexType>
 
     <!-- Filter -->
@@ -877,27 +877,27 @@
             <xs:element name="properties" minOccurs="0" maxOccurs="1">
                 <xs:complexType>
                     <xs:attribute name="include" type="xs:string" use="required"/>
-                    <xs:attribute name="exclude" type="xs:string" use="optional"/>
+                    <xs:attribute name="exclude" type="xs:string"/>
                 </xs:complexType>
             </xs:element>
             <xs:element name="property" minOccurs="0" maxOccurs="unbounded">
                 <xs:complexType>
                     <xs:attribute name="name" type="xs:string" use="required"/>
-                    <xs:attribute name="caption" type="xs:string" use="optional"/>
-                    <xs:attribute name="paramWhere" type="xs:string" use="optional"/>
-                    <xs:attribute name="paramView" type="xs:string" use="optional"/>
+                    <xs:attribute name="caption" type="xs:string"/>
+                    <xs:attribute name="paramWhere" type="xs:string"/>
+                    <xs:attribute name="paramView" type="xs:string"/>
                 </xs:complexType>
             </xs:element>
             <xs:element name="custom" minOccurs="0" maxOccurs="unbounded">
                 <xs:complexType mixed="true">
                     <xs:attribute name="name" type="xs:string" use="required"/>
-                    <xs:attribute name="caption" type="xs:string" use="optional"/>
-                    <xs:attribute name="paramClass" type="xs:string" use="optional"/>
-                    <xs:attribute name="inExpr" type="xs:boolean" use="optional"/>
-                    <xs:attribute name="join" type="xs:string" use="optional"/>
-                    <xs:attribute name="paramWhere" type="xs:string" use="optional"/>
-                    <xs:attribute name="paramView" type="xs:string" use="optional"/>
-                    <xs:attribute name="operatorType" type="operatorEnum" use="optional"/>
+                    <xs:attribute name="caption" type="xs:string"/>
+                    <xs:attribute name="paramClass" type="xs:string"/>
+                    <xs:attribute name="inExpr" type="xs:boolean"/>
+                    <xs:attribute name="join" type="xs:string"/>
+                    <xs:attribute name="paramWhere" type="xs:string"/>
+                    <xs:attribute name="paramView" type="xs:string"/>
+                    <xs:attribute name="operatorType" type="operatorEnum"/>
                 </xs:complexType>
             </xs:element>
         </xs:sequence>
@@ -908,14 +908,14 @@
         <xs:attributeGroup ref="hasStyle"/>
         <xs:attributeGroup ref="hasVisibility"/>
 
-        <xs:attribute name="margin" type="xs:string" use="optional"/>
+        <xs:attribute name="margin" type="xs:string"/>
 
-        <xs:attribute name="applyTo" type="xs:string" use="optional"/>
-        <xs:attribute name="useMaxResults" type="xs:boolean" use="optional"/>
-        <xs:attribute name="manualApplyRequired" type="xs:boolean" use="optional"/>
-        <xs:attribute name="required" type="xs:boolean" use="optional"/>
-        <xs:attribute name="editable" type="xs:boolean" use="optional"/>
-        <xs:attribute name="folderActionsEnabled" type="xs:boolean" use="optional"/>
+        <xs:attribute name="applyTo" type="xs:string"/>
+        <xs:attribute name="useMaxResults" type="xs:boolean"/>
+        <xs:attribute name="manualApplyRequired" type="xs:boolean"/>
+        <xs:attribute name="required" type="xs:boolean"/>
+        <xs:attribute name="editable" type="xs:boolean"/>
+        <xs:attribute name="folderActionsEnabled" type="xs:boolean"/>
     </xs:complexType>
 
     <!-- FieldGroup.FieldConfig -->
@@ -932,26 +932,26 @@
         <xs:attributeGroup ref="hasWidthProp"/>
         <xs:attributeGroup ref="hasVisibility"/>
 
-        <xs:attribute name="requiredMessage" type="xs:string" use="optional"/>
-        <xs:attribute name="custom" type="xs:boolean" use="optional"/>
+        <xs:attribute name="requiredMessage" type="xs:string"/>
+        <xs:attribute name="custom" type="xs:boolean"/>
 
-        <xs:attribute name="datasource" type="xs:string" use="optional"/>
+        <xs:attribute name="datasource" type="xs:string"/>
 
-        <xs:attribute name="resolution" type="xs:string" use="optional"/>
-        <xs:attribute name="dateFormat" type="xs:string" use="optional"/>
-        <xs:attribute name="maxLength" type="xs:int" use="optional"/>
+        <xs:attribute name="resolution" type="xs:string"/>
+        <xs:attribute name="dateFormat" type="xs:string"/>
+        <xs:attribute name="maxLength" type="xs:int"/>
 
-        <xs:attribute name="cols" type="xs:int" use="optional"/>
-        <xs:attribute name="rows" type="xs:int" use="optional"/>
+        <xs:attribute name="cols" type="xs:int"/>
+        <xs:attribute name="rows" type="xs:int"/>
 
-        <xs:attribute name="optionsDatasource" type="xs:string" use="optional"/>
-        <xs:attribute name="captionProperty" type="xs:string" use="optional"/>
-        <xs:attribute name="descriptionProperty" type="xs:string" use="optional"/>
-        <xs:attribute name="field" type="xs:string" use="optional"/>
-        <xs:attribute name="showSeconds" type="xs:string" use="optional"/>
-        <xs:attribute name="required" type="xs:boolean" use="optional"/>
-        <xs:attribute name="mask" type="xs:string" use="optional"/>
-        <xs:attribute name="valueMode" type="maskedFieldValueMode" use="optional"/>
+        <xs:attribute name="optionsDatasource" type="xs:string"/>
+        <xs:attribute name="captionProperty" type="xs:string"/>
+        <xs:attribute name="descriptionProperty" type="xs:string"/>
+        <xs:attribute name="field" type="xs:string"/>
+        <xs:attribute name="showSeconds" type="xs:string"/>
+        <xs:attribute name="required" type="xs:boolean"/>
+        <xs:attribute name="mask" type="xs:string"/>
+        <xs:attribute name="valueMode" type="maskedFieldValueMode"/>
     </xs:complexType>
 
     <!-- FieldGroup -->
@@ -964,8 +964,8 @@
                         <xs:element name="field" minOccurs="1" maxOccurs="unbounded" type="fieldGroupField"/>
                     </xs:sequence>
                     <xs:attributeGroup ref="hasId"/>
-                    <xs:attribute name="width" type="xs:string" use="optional"/>
-                    <xs:attribute name="flex" type="xs:string" use="optional"/>
+                    <xs:attribute name="width" type="xs:string"/>
+                    <xs:attribute name="flex" type="xs:string"/>
                 </xs:complexType>
             </xs:element>
         </xs:choice>
@@ -980,8 +980,8 @@
 
         <xs:attribute name="captionAlignment" type="fieldGroupCaptionAlignment"/>
 
-        <xs:attribute name="datasource" type="xs:string" use="optional"/>
-        <xs:attribute name="border" type="borderMode" use="optional" default="hidden"/>
+        <xs:attribute name="datasource" type="xs:string"/>
+        <xs:attribute name="border" type="borderMode" default="hidden"/>
     </xs:complexType>
 
     <!-- TokenList -->
@@ -989,19 +989,19 @@
         <xs:sequence>
             <xs:element name="lookup" maxOccurs="1">
                 <xs:complexType>
-                    <xs:attribute name="optionsDatasource" type="xs:string" use="optional"/>
-                    <xs:attribute name="captionProperty" type="xs:string" use="optional"/>
-                    <xs:attribute name="lookupScreen" type="xs:string" use="optional"/>
-                    <xs:attribute name="lookup" type="xs:boolean" use="optional"/>
-                    <xs:attribute name="filterMode" type="filterMode" use="optional"/>
-                    <xs:attribute name="openType" type="openType" use="optional"/>
-                    <xs:attribute name="multiselect" type="xs:string" use="optional"/>
+                    <xs:attribute name="optionsDatasource" type="xs:string"/>
+                    <xs:attribute name="captionProperty" type="xs:string"/>
+                    <xs:attribute name="lookupScreen" type="xs:string"/>
+                    <xs:attribute name="lookup" type="xs:boolean"/>
+                    <xs:attribute name="filterMode" type="filterMode"/>
+                    <xs:attribute name="openType" type="openType"/>
+                    <xs:attribute name="multiselect" type="xs:string"/>
                 </xs:complexType>
             </xs:element>
             <xs:element name="button" maxOccurs="1">
                 <xs:complexType>
-                    <xs:attribute name="caption" type="xs:string" use="optional" default="msg://"/>
-                    <xs:attribute name="icon" type="xs:string" use="optional"/>
+                    <xs:attribute name="caption" type="xs:string" default="msg://"/>
+                    <xs:attribute name="icon" type="xs:string"/>
                 </xs:complexType>
             </xs:element>
         </xs:sequence>
@@ -1017,9 +1017,9 @@
         <xs:attributeGroup ref="hasCaptionSource"/>
         <xs:attributeGroup ref="hasDatasourceProp"/>
 
-        <xs:attribute name="position" type="tokenListPosition" use="optional"/>
-        <xs:attribute name="inline" type="xs:string" use="optional"/>
-        <xs:attribute name="simple" type="xs:boolean" use="optional"/>
+        <xs:attribute name="position" type="tokenListPosition"/>
+        <xs:attribute name="inline" type="xs:string"/>
+        <xs:attribute name="simple" type="xs:boolean"/>
     </xs:complexType>
 
     <!-- WidgetsTree -->
@@ -1057,9 +1057,9 @@
         <xs:attributeGroup ref="hasCaptionSource"/>
         <xs:attributeGroup ref="hasRequirements"/>
 
-        <xs:attribute name="columns" type="xs:string" use="optional"/>
-        <xs:attribute name="rows" type="xs:string" use="optional"/>
-        <xs:attribute name="addAllBtnEnabled" type="xs:boolean" use="optional"/>
+        <xs:attribute name="columns" type="xs:string"/>
+        <xs:attribute name="rows" type="xs:string"/>
+        <xs:attribute name="addAllBtnEnabled" type="xs:boolean"/>
     </xs:complexType>
 
     <!-- Layouts && Containers -->
@@ -1136,12 +1136,12 @@
 
                     <xs:attributeGroup ref="hasStyle"/>
 
-                    <xs:attribute name="enable" type="xs:boolean" use="optional"/>
-                    <xs:attribute name="lazy" type="xs:boolean" use="optional"/>
-                    <xs:attribute name="margin" type="xs:boolean" use="optional"/>
-                    <xs:attribute name="spacing" type="xs:boolean" use="optional"/>
-                    <xs:attribute name="expand" type="xs:string" use="optional"/>
-                    <xs:attribute name="detachable" type="xs:boolean" use="optional"/>
+                    <xs:attribute name="enable" type="xs:boolean"/>
+                    <xs:attribute name="lazy" type="xs:boolean"/>
+                    <xs:attribute name="margin" type="xs:boolean"/>
+                    <xs:attribute name="spacing" type="xs:boolean"/>
+                    <xs:attribute name="expand" type="xs:string"/>
+                    <xs:attribute name="detachable" type="xs:boolean"/>
                 </xs:complexType>
             </xs:element>
         </xs:sequence>
@@ -1161,11 +1161,11 @@
                     <xs:sequence>
                         <xs:element name="column" minOccurs="0" maxOccurs="unbounded">
                             <xs:complexType>
-                                <xs:attribute name="flex" type="xs:float" use="optional"/>
+                                <xs:attribute name="flex" type="xs:float"/>
                             </xs:complexType>
                         </xs:element>
                     </xs:sequence>
-                    <xs:attribute name="count" type="xs:int" use="optional"/>
+                    <xs:attribute name="count" type="xs:int"/>
                 </xs:complexType>
             </xs:element>
             <xs:element name="rows" minOccurs="1">
@@ -1177,12 +1177,12 @@
 
                                 <xs:attributeGroup ref="hasId"/>
 
-                                <xs:attribute name="flex" type="xs:float" use="optional"/>
+                                <xs:attribute name="flex" type="xs:float"/>
 
                                 <xs:attributeGroup ref="hasVisibility"/>
                                 <xs:attributeGroup ref="hasAlign"/>
 
-                                <xs:attribute name="spacing" type="xs:boolean" use="optional"/>
+                                <xs:attribute name="spacing" type="xs:boolean"/>
                             </xs:complexType>
                         </xs:element>
                     </xs:sequence>
@@ -1211,8 +1211,8 @@
         <xs:attributeGroup ref="hasEnableProp"/>
         <xs:attributeGroup ref="hasSpacing"/>
 
-        <xs:attribute name="collapsable" type="xs:boolean" use="optional"/>
-        <xs:attribute name="collapsed" type="xs:boolean" use="optional"/>
+        <xs:attribute name="collapsable" type="xs:boolean"/>
+        <xs:attribute name="collapsed" type="xs:boolean"/>
         <xs:attribute name="orientation" default="vertical" type="orientation"/>
     </xs:complexType>
 
@@ -1224,8 +1224,8 @@
         <xs:attributeGroup ref="hasAlign"/>
         <xs:attributeGroup ref="hasVisibility"/>
 
-        <xs:attribute name="src" type="xs:string" use="optional"/>
-        <xs:attribute name="screen" type="xs:string" use="optional"/>
+        <xs:attribute name="src" type="xs:string"/>
+        <xs:attribute name="screen" type="xs:string"/>
     </xs:complexType>
 
     <!-- RuntimeProperty -->
@@ -1238,10 +1238,10 @@
 
         <xs:attribute name="runtimeDs" type="xs:string" use="required"/>
         <xs:attribute name="categoriesDs" type="xs:string" use="required"/>
-        <xs:attribute name="src" type="xs:string" use="optional"/>
-        <xs:attribute name="cols" type="xs:integer" use="optional"/>
-        <xs:attribute name="rows" type="xs:integer" use="optional"/>
-        <xs:attribute name="fieldWidth" type="xs:string" use="optional"/>
+        <xs:attribute name="src" type="xs:string"/>
+        <xs:attribute name="cols" type="xs:integer"/>
+        <xs:attribute name="rows" type="xs:integer"/>
+        <xs:attribute name="fieldWidth" type="xs:string"/>
     </xs:complexType>
 
     <!-- AccessControl -->
@@ -1254,8 +1254,8 @@
 
         <xs:attributeGroup ref="hasId"/>
 
-        <xs:attribute name="data" type="xs:string" use="optional"/>
-        <xs:attribute name="param" type="xs:string" use="optional"/>
+        <xs:attribute name="data" type="xs:string"/>
+        <xs:attribute name="param" type="xs:string"/>
     </xs:complexType>
 
     <!-- Datasources -->
@@ -1275,9 +1275,9 @@
 
         <xs:attributeGroup ref="isCollectionDatasource"/>
 
-        <xs:attribute name="query" type="xs:string" use="optional"/>
-        <xs:attribute name="refreshMode" type="refreshMode" use="optional"/>
-        <xs:attribute name="softDeletion" type="xs:boolean" use="optional"/>
+        <xs:attribute name="query" type="xs:string"/>
+        <xs:attribute name="refreshMode" type="refreshMode"/>
+        <xs:attribute name="softDeletion" type="xs:boolean"/>
     </xs:complexType>
 
     <!-- HierarchicalDatasource -->
@@ -1295,10 +1295,10 @@
 
         <xs:attributeGroup ref="isCollectionDatasource"/>
 
-        <xs:attribute name="query" type="xs:string" use="optional"/>
-        <xs:attribute name="hierarchyProperty" type="xs:string" use="optional"/>
-        <xs:attribute name="refreshMode" type="refreshMode" use="optional"/>
-        <xs:attribute name="softDeletion" type="xs:boolean" use="optional"/>
+        <xs:attribute name="query" type="xs:string"/>
+        <xs:attribute name="hierarchyProperty" type="xs:string"/>
+        <xs:attribute name="refreshMode" type="refreshMode"/>
+        <xs:attribute name="softDeletion" type="xs:boolean"/>
     </xs:complexType>
 
     <!-- GroupDatasource -->
@@ -1317,9 +1317,9 @@
 
         <xs:attributeGroup ref="isCollectionDatasource"/>
 
-        <xs:attribute name="query" type="xs:string" use="optional"/>
-        <xs:attribute name="refreshMode" type="refreshMode" use="optional"/>
-        <xs:attribute name="softDeletion" type="xs:boolean" use="optional"/>
+        <xs:attribute name="query" type="xs:string"/>
+        <xs:attribute name="refreshMode" type="refreshMode"/>
+        <xs:attribute name="softDeletion" type="xs:boolean"/>
     </xs:complexType>
 
     <!-- RuntimePropsDatasource -->
@@ -1360,7 +1360,7 @@
             <xs:group ref="nestedDatasources"/>
         </xs:sequence>
         <xs:attributeGroup ref="isNestedDatasource"/>
-        <xs:attribute name="hierarchyProperty" type="xs:string" use="optional"/>
+        <xs:attribute name="hierarchyProperty" type="xs:string"/>
     </xs:complexType>
 
     <!-- Datasource -->
@@ -1500,11 +1500,11 @@
                             <xs:choice minOccurs="1" maxOccurs="unbounded">
                                 <xs:element name="timer">
                                     <xs:complexType>
-                                        <xs:attribute name="id" type="xs:string" use="optional"/>
+                                        <xs:attribute name="id" type="xs:string"/>
                                         <xs:attribute name="delay" type="xs:integer" use="required"/>
-                                        <xs:attribute name="repeating" type="xs:boolean" use="optional"/>
-                                        <xs:attribute name="onTimer" type="xs:string" use="optional" default="invoke:"/>
-                                        <xs:attribute name="autostart" type="xs:boolean" use="optional" default="false"/>
+                                        <xs:attribute name="repeating" type="xs:boolean"/>
+                                        <xs:attribute name="onTimer" type="xs:string" default="invoke:"/>
+                                        <xs:attribute name="autostart" type="xs:boolean" default="false"/>
                                     </xs:complexType>
                                 </xs:element>
                             </xs:choice>
@@ -1521,7 +1521,7 @@
                 <xs:element name="layout" minOccurs="1" maxOccurs="1">
                     <xs:complexType>
                         <xs:group ref="layoutOrComponent"/>
-                        <xs:attribute name="expand" type="xs:string" use="optional"/>
+                        <xs:attribute name="expand" type="xs:string"/>
 
                         <xs:attributeGroup ref="hasSize"/>
                         <xs:attributeGroup ref="hasStyle"/>
@@ -1538,8 +1538,8 @@
 
             <xs:attribute name="datasource" type="xs:string"/>
             <xs:attribute name="dataSupplier" type="xs:string"/>
-            <xs:attribute name="caption" type="xs:string" use="optional" default="msg://"/>
-            <xs:attribute name="focusComponent" type="xs:string" use="optional"/>
+            <xs:attribute name="caption" type="xs:string" default="msg://"/>
+            <xs:attribute name="focusComponent" type="xs:string"/>
         </xs:complexType>
     </xs:element>
 
