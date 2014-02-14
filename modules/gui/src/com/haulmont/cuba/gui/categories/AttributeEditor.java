@@ -96,6 +96,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
                 attribute.setName((String) value);
             }
         });
+        nameField.setMaxLength(CategoryAttribute.NAME_FIELD_LENGTH);
         fieldsContainer.add(nameField);
 
         codeField = factory.createComponent(TextField.NAME);

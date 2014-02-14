@@ -22,13 +22,14 @@ public class CategoryAttribute extends StandardEntity {
 
     private static final long serialVersionUID = -6959392628534815752L;
 
+    public static final int NAME_FIELD_LENGTH = 255;
     public static final int CODE_FIELD_LENGTH = 50;
 
     @ManyToOne
     @JoinColumn(name = "CATEGORY_ID")
     private Category category;
 
-    @Column(name = "NAME")
+    @Column(name = "NAME", length = NAME_FIELD_LENGTH)
     private String name;
 
     @Column(name = "CODE", length = CODE_FIELD_LENGTH)
