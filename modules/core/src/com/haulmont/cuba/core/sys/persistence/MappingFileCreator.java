@@ -55,7 +55,7 @@ class MappingFileCreator {
         Map<Class, Class> extendedClasses = new HashMap<>();
         List<Class> persistentClasses = new ArrayList<>();
         for (String className : classNames) {
-            Class<Object> aClass = ReflectionHelper.getClass(className);
+            Class<?> aClass = ReflectionHelper.getClass(className);
             persistentClasses.add(aClass);
             Extends annotation = aClass.getAnnotation(Extends.class);
             if (annotation != null) {
@@ -67,9 +67,25 @@ class MappingFileCreator {
         if (extendedClasses.isEmpty())
             return;
 
+        // search for higher order extensions
+        Map<Class, Class> classes = new HashMap<>();
+        for (Class originalClass : extendedClasses.keySet()) {
+            Class extClass = extendedClasses.get(originalClass);
+            Class lastExtClass = null;
+            Class aClass = extendedClasses.get(extClass);
+            while (aClass != null) {
+                lastExtClass = aClass;
+                aClass = extendedClasses.get(aClass);
+            }
+            if (lastExtClass != null)
+                classes.put(originalClass, lastExtClass);
+            else
+                classes.put(originalClass, extClass);
+        }
+
         Map<Class<?>, List<Attr>> mappings = new LinkedHashMap<>();
         for (Class aClass : persistentClasses) {
-            List<Attr> attrList = processClass(aClass, extendedClasses);
+            List<Attr> attrList = processClass(aClass, classes);
             if (!attrList.isEmpty())
                 mappings.put(aClass, attrList);
         }

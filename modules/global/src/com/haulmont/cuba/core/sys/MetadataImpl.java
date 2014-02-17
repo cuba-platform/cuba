@@ -21,6 +21,7 @@ import org.apache.commons.logging.LogFactory;
 import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -145,18 +146,26 @@ public class MetadataImpl implements Metadata {
         for (MetaClass metaClass : session.getClasses()) {
             Class<?> javaClass = metaClass.getJavaClass();
 
+            List<Class> superClasses = new ArrayList<>();
             Extends extendsAnnotation = javaClass.getAnnotation(Extends.class);
-            if (extendsAnnotation != null) {
+            while (extendsAnnotation != null) {
                 Class<? extends Entity> superClass = extendsAnnotation.value();
+                superClasses.add(superClass);
+                extendsAnnotation = superClass.getAnnotation(Extends.class);
+            }
+
+            for (Class superClass : superClasses) {
                 metaClass.getAnnotations().put(Extends.class.getName(), superClass);
 
-                MetaClass superMetaClass = session.getClass(superClass);
-                if (superMetaClass == null)
-                    throw new IllegalStateException("No meta class found for " + superClass);
+                MetaClass superMetaClass = session.getClassNN(superClass);
 
-                Object extendedBy = superMetaClass.getAnnotations().get(ExtendedBy.class.getName());
-                if (extendedBy != null && !javaClass.equals(extendedBy))
-                    throw new IllegalStateException(superClass + " is already extended by " + extendedBy);
+                Class<?> extendedByClass = (Class) superMetaClass.getAnnotations().get(ExtendedBy.class.getName());
+                if (extendedByClass != null && !javaClass.equals(extendedByClass)) {
+                    if (javaClass.isAssignableFrom(extendedByClass))
+                        continue;
+                    else if (!extendedByClass.isAssignableFrom(javaClass))
+                        throw new IllegalStateException(superClass + " is already extended by " + extendedByClass);
+                }
 
                 superMetaClass.getAnnotations().put(ExtendedBy.class.getName(), javaClass);
             }
