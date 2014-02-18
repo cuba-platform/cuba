@@ -987,6 +987,12 @@ public class DesktopWindow implements Window, Component.Disposable,
             ((EditorWindowDelegate) delegate).releaseLock();
         }
 
+        @Nullable
+        @Override
+        public Datasource getParentDs() {
+            return ((EditorWindowDelegate) delegate).getParentDs();
+        }
+
         @Override
         public void setParentDs(Datasource parentDs) {
             ((EditorWindowDelegate) delegate).setParentDs(parentDs);

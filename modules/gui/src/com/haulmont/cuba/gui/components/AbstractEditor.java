@@ -8,6 +8,9 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
+
+import javax.annotation.Nullable;
 
 /**
  * Base class for edit screen controllers.
@@ -27,6 +30,12 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
         return (T) ((Editor) frame).getItem();
     }
 
+    @Nullable
+    @Override
+    public Datasource getParentDs() {
+        return ((Editor) frame).getParentDs();
+    }
+
     @Override
     public void setParentDs(Datasource parentDs) {
         ((Editor) frame).setParentDs(parentDs);
@@ -42,8 +51,11 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
     @Override
     public void setItem(Entity item) {
         if (PersistenceHelper.isNew(item)) {
-            //noinspection unchecked
-            initNewItem((T) item);
+            DatasourceImplementation parentDs = (DatasourceImplementation) ((Editor) frame).getParentDs();
+            if (parentDs == null || !parentDs.getItemsToCreate().contains(item)) {
+                //noinspection unchecked
+                initNewItem((T) item);
+            }
         }
         ((Editor) frame).setItem(item);
         postInit();

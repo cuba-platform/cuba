@@ -956,6 +956,12 @@ public class WebWindow implements Window, Component.Wrapper,
             ((EditorWindowDelegate) delegate).releaseLock();
         }
 
+        @Nullable
+        @Override
+        public Datasource getParentDs() {
+            return ((EditorWindowDelegate) delegate).getParentDs();
+        }
+
         @Override
         public void setParentDs(Datasource parentDs) {
             ((EditorWindowDelegate) delegate).setParentDs(parentDs);

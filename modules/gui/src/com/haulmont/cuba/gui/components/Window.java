@@ -191,7 +191,13 @@ public interface Window extends IFrame, Component.HasCaption {
          */
         Entity getItem();
 
-        /** 
+        /**
+         * @return parent datasource if it is set
+         */
+        @Nullable
+        Datasource getParentDs();
+
+        /**
          * This method is called by the framework to set parent datasource to commit into this datasource instead
          * of directly to the database.
          */

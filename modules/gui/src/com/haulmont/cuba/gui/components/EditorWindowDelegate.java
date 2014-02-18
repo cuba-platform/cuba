@@ -22,6 +22,7 @@ import com.haulmont.cuba.gui.data.impl.CollectionPropertyDatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.security.entity.EntityOp;
 
+import javax.annotation.Nullable;
 import java.util.Date;
 
 /**
@@ -180,6 +181,12 @@ public class EditorWindowDelegate extends WindowDelegate {
     public void setParentDs(Datasource parentDs) {
         Datasource ds = getDatasource();
         ((DatasourceImplementation) ds).setParent(parentDs);
+    }
+
+    @Nullable
+    public Datasource getParentDs() {
+        Datasource ds = getDatasource();
+        return ((DatasourceImplementation) ds).getParent();
     }
 
     public boolean isModified() {
