@@ -163,15 +163,28 @@ public class AbstractViewRepository implements ViewRepository {
             return null;
 
         checkInitialized();
+        ExtendedEntities extendedEntities = metadata.getExtendedEntities();
 
         // Replace with extended entity if such one exists
-        metaClass = metadata.getExtendedEntities().getEffectiveMetaClass(metaClass);
+        MetaClass effectiveMetaClass = extendedEntities.getEffectiveMetaClass(metaClass);
 
-        View view = retrieveView(metaClass, name, false);
+        View view = retrieveView(effectiveMetaClass, name, false);
+
         if (view == null) {
-            MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalMetaClass(metaClass);
+            // If not found for effective metaclass, try to find for original
+            MetaClass originalMetaClass = extendedEntities.getOriginalMetaClass(effectiveMetaClass);
             if (originalMetaClass != null) {
                 view = retrieveView(originalMetaClass, name, false);
+            }
+            if (view == null) {
+                // Last resort - search for all ancestors
+                for (MetaClass ancestorMetaClass : effectiveMetaClass.getAncestors()) {
+                    if (extendedEntities.getEffectiveMetaClass(ancestorMetaClass).equals(effectiveMetaClass)) {
+                        view = retrieveView(ancestorMetaClass, name, false);
+                        if (view != null)
+                            break;
+                    }
+                }
             }
         }
         if (view != null)
@@ -305,9 +318,21 @@ public class AbstractViewRepository implements ViewRepository {
     private View getAncestorView(MetaClass metaClass, String ancestor) {
         View ancestorView = retrieveView(metaClass, ancestor, false);
         if (ancestorView == null) {
-            MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalMetaClass(metaClass);
-            if (originalMetaClass != null)
+            ExtendedEntities extendedEntities = metadata.getExtendedEntities();
+            MetaClass originalMetaClass = extendedEntities.getOriginalMetaClass(metaClass);
+            if (originalMetaClass != null) {
                 ancestorView = retrieveView(originalMetaClass, ancestor, false);
+            }
+            if (ancestorView == null) {
+                // Last resort - search for all ancestors
+                for (MetaClass ancestorMetaClass : metaClass.getAncestors()) {
+                    if (extendedEntities.getEffectiveMetaClass(ancestorMetaClass).equals(metaClass)) {
+                        ancestorView = retrieveView(ancestorMetaClass, ancestor, false);
+                        if (ancestorView != null)
+                            break;
+                    }
+                }
+            }
             if (ancestorView == null)
                 throw new DevelopmentException("No ancestor view found: " + ancestor);
         }
