@@ -80,9 +80,23 @@ public class AbstractViewRepository implements ViewRepository {
                 addFile(rootElem, fileName);
             }
 
+            checkDuplicates(rootElem);
+
             for (Element viewElem : Dom4j.elements(rootElem, "view")) {
                 deployView(rootElem, viewElem);
             }
+        }
+    }
+
+    protected void checkDuplicates(Element rootElem) {
+        Set<String> checked = new HashSet<>();
+        for (Element viewElem : Dom4j.elements(rootElem, "view")) {
+            String key = getMetaClass(viewElem) + "/" + getViewName(viewElem);
+            if (!BooleanUtils.toBoolean(viewElem.attributeValue("overwrite"))) {
+                if (checked.contains(key))
+                    log.warn("Duplicate view definition without 'overwrite' attribute: " + key);
+            }
+            checked.add(key);
         }
     }
 
@@ -274,22 +288,8 @@ public class AbstractViewRepository implements ViewRepository {
     }
 
     public View deployView(Element rootElem, Element viewElem) {
-        String viewName = viewElem.attributeValue("name");
-        if (StringUtils.isBlank(viewName))
-            throw new DevelopmentException("Invalid view definition: no 'name' attribute present");
-
-        MetaClass metaClass;
-
-        String entity = viewElem.attributeValue("entity");
-        if (StringUtils.isBlank(entity)) {
-            String className = viewElem.attributeValue("class");
-            if (StringUtils.isBlank(className))
-                throw new DevelopmentException("Invalid view definition: no 'entity' or 'class' attribute present");
-            Class entityClass = ReflectionHelper.getClass(className);
-            metaClass = metadata.getSession().getClassNN(entityClass);
-        } else {
-            metaClass = metadata.getSession().getClassNN(entity);
-        }
+        String viewName = getViewName(viewElem);
+        MetaClass metaClass = getMetaClass(viewElem);
 
         View v = retrieveView(metaClass, viewName, true);
         boolean overwrite = BooleanUtils.toBoolean(viewElem.attributeValue("overwrite"));
@@ -412,6 +412,28 @@ public class AbstractViewRepository implements ViewRepository {
             boolean lazy = Boolean.valueOf(propElem.attributeValue("lazy"));
             view.addProperty(propertyName, refView, lazy);
         }
+    }
+
+    protected String getViewName(Element viewElem) {
+        String viewName = viewElem.attributeValue("name");
+        if (StringUtils.isBlank(viewName))
+            throw new DevelopmentException("Invalid view definition: no 'name' attribute present");
+        return viewName;
+    }
+
+    protected MetaClass getMetaClass(Element viewElem) {
+        MetaClass metaClass;
+        String entity = viewElem.attributeValue("entity");
+        if (StringUtils.isBlank(entity)) {
+            String className = viewElem.attributeValue("class");
+            if (StringUtils.isBlank(className))
+                throw new DevelopmentException("Invalid view definition: no 'entity' or 'class' attribute present");
+            Class entityClass = ReflectionHelper.getClass(className);
+            metaClass = metadata.getSession().getClassNN(entityClass);
+        } else {
+            metaClass = metadata.getSession().getClassNN(entity);
+        }
+        return metaClass;
     }
 
     private MetaClass getMetaClass(String entityName, String entityClass) {
