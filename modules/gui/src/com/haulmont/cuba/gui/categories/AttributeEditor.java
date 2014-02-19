@@ -233,10 +233,12 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             CheckBox checkBox = factory.createComponent(CheckBox.NAME);
             checkBox.setId("defaultDateIsCurrent");
             checkBox.setCaption(getMessage("currentDate"));
+            checkBox.setWidth(Component.AUTO_SIZE);
             final DateField dateField = factory.createComponent(DateField.NAME);
             dateField.setId("dateDefaultValueField");
             dateField.setCaption(getMessage("defaultValue"));
             dateField.setFrame(frame);
+            dateField.setWidth(FIELD_WIDTH);
             boxLayout.add(checkBox);
             boxLayout.add(dateField);
             fieldsContainer.add(boxLayout);
