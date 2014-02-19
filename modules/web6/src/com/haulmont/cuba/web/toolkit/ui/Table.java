@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.data.TableContainer;
 import com.haulmont.cuba.web.toolkit.data.util.AggregationContainerOrderedWrapper;
@@ -22,6 +23,8 @@ import com.vaadin.ui.Field;
 
 import java.io.Serializable;
 import java.util.*;
+
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 /**
  * @author gorodnov
@@ -328,16 +331,9 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer, 
      * <b>For internal use only.</b>
      */
     public void addGeneratedColumnInternal(Object id, ColumnGenerator generatedColumn) {
-        if (generatedColumn == null) {
-            throw new IllegalArgumentException(
-                    "Can not add null as a GeneratedColumn");
-        }
-        if (columnGenerators.containsKey(id)) {
-            throw new IllegalArgumentException(
-                    "Can not add the same GeneratedColumn twice, id:" + id);
-        } else {
-            columnGenerators.put(id, generatedColumn);
-        }
+        checkNotNullArgument(generatedColumn, "Can not add null as a GeneratedColumn");
+
+        columnGenerators.put(id, generatedColumn);
     }
 
     @Override

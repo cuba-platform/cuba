@@ -28,6 +28,7 @@ import com.vaadin.ui.Field;
 import java.util.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 /**
  * @author artamonov
@@ -127,16 +128,9 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
      */
     @Override
     public void addGeneratedColumnInternal(Object id, ColumnGenerator generatedColumn) {
-        if (generatedColumn == null) {
-            throw new IllegalArgumentException(
-                    "Can not add null as a GeneratedColumn");
-        }
-        if (columnGenerators.containsKey(id)) {
-            throw new IllegalArgumentException(
-                    "Can not add the same GeneratedColumn twice, id:" + id);
-        } else {
-            columnGenerators.put(id, generatedColumn);
-        }
+        checkNotNullArgument(generatedColumn, "Can not add null as a GeneratedColumn");
+
+        columnGenerators.put(id, generatedColumn);
     }
 
     @Override
