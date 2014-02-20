@@ -4,7 +4,6 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.impl.BooleanDatatype;
@@ -295,25 +294,60 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
                 @SuppressWarnings("unchecked")
                 final Collection<MetaPropertyPath> propertyIds = (Collection<MetaPropertyPath>) ds.getContainerPropertyIds();
-                // added generated columns
-                final List<Pair<Object, com.vaadin.ui.Table.ColumnGenerator>> columnGenerators = new LinkedList<>();
 
-                for (final MetaPropertyPath id : propertyIds) {
-                    final Table.Column column = getColumn(id.toString());
-                    // save generators only for non editable columns
-                    if (!column.isEditable()) {
-                        com.vaadin.ui.Table.ColumnGenerator generator = component.getColumnGenerator(id);
-                        if (generator != null && !(generator instanceof WebAbstractTable.SystemTableColumnGenerator)) {
-                            columnGenerators.add(new Pair<Object, com.vaadin.ui.Table.ColumnGenerator>(id, generator));
+                if (editable) {
+                    final List<MetaPropertyPath> editableColumns = new ArrayList<>(propertyIds.size());
+                    for (final MetaPropertyPath propertyId : propertyIds) {
+                        final Table.Column column = getColumn(propertyId.toString());
+                        if (BooleanUtils.isTrue(column.isEditable())) {
+                            com.vaadin.ui.Table.ColumnGenerator generator = component.getColumnGenerator(column.getId());
+                            if (generator != null) {
+                                if (generator instanceof SystemTableColumnGenerator) {
+                                    // remove default generator
+                                    component.removeGeneratedColumn(propertyId);
+                                } else {
+                                    // do not edit generated columns
+                                    continue;
+                                }
+                            }
+
+                            editableColumns.add(propertyId);
                         }
                     }
-                }
+                    setEditableColumns(editableColumns);
+                } else {
+                    setEditableColumns(Collections.<MetaPropertyPath>emptyList());
 
-                refreshColumns(ds);
+                    Window window = ComponentsHelper.getWindow(this);
+                    boolean isLookup = window instanceof Window.Lookup;
 
-                // restore generated columns
-                for (Pair<Object, com.vaadin.ui.Table.ColumnGenerator> generatorEntry : columnGenerators) {
-                    component.addGeneratedColumnInternal(generatorEntry.getFirst(), generatorEntry.getSecond());
+                    // restore generators for some type of attributes
+                    for (MetaPropertyPath propertyId : propertyIds) {
+                        final Table.Column column = columns.get(propertyId);
+                        if (column != null) {
+                            final String clickAction = column.getXmlDescriptor() == null ?
+                                    null : column.getXmlDescriptor().attributeValue("clickAction");
+
+                            if (component.getColumnGenerator(column.getId()) == null) {
+                                if (propertyId.getRange().isClass()) {
+                                    if (!isLookup && StringUtils.isNotEmpty(clickAction)) {
+                                        addGeneratedColumn(propertyId, new ReadOnlyAssociationGenerator(column));
+                                    }
+                                } else if (propertyId.getRange().isDatatype()) {
+                                    if (!isLookup && !StringUtils.isEmpty(clickAction)) {
+                                        addGeneratedColumn(propertyId, new CodePropertyGenerator(column));
+                                    } else {
+                                        final Datatype datatype = propertyId.getRange().asDatatype();
+                                        if (BooleanDatatype.NAME.equals(datatype.getName()) && column.getFormatter() == null) {
+                                            addGeneratedColumn(propertyId, new ReadOnlyBooleanDatatypeGenerator());
+                                        } else if (column.getMaxTextLength() != null) {
+                                            addGeneratedColumn(propertyId, new AbbreviatedColumnGenerator(column));
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
@@ -649,31 +683,6 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         }
 
         return properties;
-    }
-
-    protected void refreshColumns(com.vaadin.data.Container ds) {
-        @SuppressWarnings({"unchecked"})
-        final Collection<MetaPropertyPath> propertyIds = (Collection<MetaPropertyPath>) ds.getContainerPropertyIds();
-        for (final MetaPropertyPath id : propertyIds) {
-            removeGeneratedColumn(id);
-        }
-
-        if (isEditable()) {
-            final List<MetaPropertyPath> editableColumns = new ArrayList<>(propertyIds.size());
-            for (final MetaPropertyPath propertyId : propertyIds) {
-                final Table.Column column = getColumn(propertyId.toString());
-                if (BooleanUtils.isTrue(column.isEditable())) {
-                    editableColumns.add(propertyId);
-                }
-            }
-            if (!editableColumns.isEmpty()) {
-                setEditableColumns(editableColumns);
-            }
-        } else {
-            setEditableColumns(Collections.<MetaPropertyPath>emptyList());
-        }
-
-        createColumns(ds);
     }
 
     protected void updateReadonlyBooleanCell(Entity source, String property, Object value) {
@@ -1310,31 +1319,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
      */
     @Override
     public void repaint() {
-        if (datasource != null) {
-            com.vaadin.data.Container ds = component.getContainerDataSource();
-
-            final Collection<MetaPropertyPath> propertyIds = (Collection<MetaPropertyPath>) ds.getContainerPropertyIds();
-            // added generated columns
-            final List<Pair<Object, com.vaadin.ui.Table.ColumnGenerator>> columnGenerators = new LinkedList<>();
-
-            for (final MetaPropertyPath id : propertyIds) {
-                com.vaadin.ui.Table.ColumnGenerator generator = component.getColumnGenerator(id);
-                if (generator != null && !(generator instanceof WebAbstractTable.SystemTableColumnGenerator)) {
-                    columnGenerators.add(new Pair<Object, com.vaadin.ui.Table.ColumnGenerator>(id, generator));
-                }
-            }
-
-            component.disableContentRefreshing();
-
-            refreshColumns(ds);
-
-            // restore generated columns
-            for (Pair<Object, com.vaadin.ui.Table.ColumnGenerator> generatorEntry : columnGenerators) {
-                component.addGeneratedColumnInternal(generatorEntry.getFirst(), generatorEntry.getSecond());
-            }
-
-            component.enableContentRefreshing(true);
-        }
+        component.refreshRowCache();
         component.requestRepaintAll();
     }
 
