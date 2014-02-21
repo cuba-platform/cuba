@@ -8,6 +8,7 @@ import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.app.PersistenceManagerService;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
@@ -141,7 +142,17 @@ public class Param extends AbstractParam<Component> {
                         value = field.getValue();
                     }
                 }
-                setValue(value);
+
+                if (value instanceof String) {
+                    Configuration configuration = AppBeans.get(Configuration.NAME);
+                    if (configuration.getConfig(ClientConfig.class).getGenericFilterTrimParamValues()) {
+                        setValue(StringUtils.trimToNull((String) value));
+                    } else {
+                        setValue(value);
+                    }
+                } else {
+                    setValue(value);
+                }
             }
         });
         if (value instanceof List) {

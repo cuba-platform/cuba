@@ -101,6 +101,14 @@ public interface ClientConfig extends Config {
     @DefaultBoolean(true)
     boolean getGenericFilterTreeConditionSelect();
 
+    /**
+     * @return If true, all generic text filters will trim value.<br/>
+     * If false, the text filter will not be trim value.
+     */
+    @Property("cuba.gui.genericFilterTrimParamValues")
+    @DefaultBoolean(true)
+    boolean getGenericFilterTrimParamValues();
+
     @DefaultString("CTRL-INSERT")
     @Property("cuba.gui.tableInsertShortcut")
     String getTableInsertShortcut();
