@@ -27,11 +27,11 @@
             <rows>
                 <row>
                     <label id="passwLab" value="msg://password"/>
-                    <passwordField id="passwField" width="200px"/>
+                    <passwordField id="passwField" width="200px" required="true"/>
                 </row>
                 <row>
                     <label id="confirmPasswLab" value="msg://confirmPassword"/>
-                    <passwordField id="confirmPasswField" width="200px"/>
+                    <passwordField id="confirmPasswField" width="200px" required="true"/>
                 </row>
             </rows>
         </grid>
