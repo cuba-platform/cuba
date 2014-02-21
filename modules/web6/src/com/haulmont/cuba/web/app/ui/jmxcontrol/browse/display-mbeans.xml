@@ -54,6 +54,10 @@
                 <button action="mbeans.refresh" icon="icons/refresh.png"/>
                 <button action="mbeans.inspect" icon="icons/edit.png"/>
             </buttonsPanel>
+            <actions>
+                <action id="refresh"/>
+                <action id="inspect"/>
+            </actions>
             <columns>
                 <column id="domain" caption="msg://mbean.domain"/>
                 <column id="objectName" caption="msg://mbean.name"/>
