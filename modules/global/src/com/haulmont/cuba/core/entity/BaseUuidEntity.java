@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.core.entity;
 
+import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -17,6 +18,7 @@ import org.apache.openjpa.persistence.Persistent;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.Transient;
 import java.util.BitSet;
 import java.util.Date;
 import java.util.UUID;
@@ -33,6 +35,9 @@ public abstract class BaseUuidEntity extends AbstractInstance implements BaseEnt
 
     private static final long serialVersionUID = -2217624132287086972L;
 
+    @Transient
+    protected boolean detached;
+
     @Id
     @Column(name = "ID")
     @Persistent
@@ -46,6 +51,14 @@ public abstract class BaseUuidEntity extends AbstractInstance implements BaseEnt
 
     public BaseUuidEntity() {
         id = UuidProvider.createUuid();
+    }
+
+    public boolean isDetached() {
+        return detached;
+    }
+
+    public void setDetached(boolean detached) {
+        this.detached = detached;
     }
 
     @Override

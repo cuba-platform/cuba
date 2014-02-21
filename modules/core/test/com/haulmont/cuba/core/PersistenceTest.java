@@ -6,6 +6,7 @@ package com.haulmont.cuba.core;
 
 import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.cuba.core.entity.Server;
+import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
@@ -48,26 +49,44 @@ public class PersistenceTest extends CubaTestCase {
 
     public void test() {
         UUID id;
+        Server server;
         Transaction tx = persistence.createTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
             assertNotNull(em);
-            Server server = new Server();
+            server = new Server();
+
+            assertTrue(PersistenceHelper.isNew(server));
+            assertFalse(PersistenceHelper.isManaged(server));
+            assertFalse(PersistenceHelper.isDetached(server));
+
             id = server.getId();
             server.setName("localhost");
             server.setRunning(true);
             em.persist(server);
+            assertFalse(PersistenceHelper.isNew(server));
+            assertTrue(PersistenceHelper.isManaged(server));
+            assertFalse(PersistenceHelper.isDetached(server));
 
             tx.commit();
         } finally {
             tx.end();
         }
+        assertFalse(PersistenceHelper.isNew(server));
+        assertFalse(PersistenceHelper.isManaged(server));
+        assertTrue(PersistenceHelper.isDetached(server));
+
 
         tx = persistence.createTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
-            Server server = em.find(Server.class, id);
+            server = em.find(Server.class, id);
+            assertNotNull(server);
             assertEquals(id, server.getId());
+
+            assertFalse(PersistenceHelper.isNew(server));
+            assertTrue(PersistenceHelper.isManaged(server));
+            assertFalse(PersistenceHelper.isDetached(server));
 
             server.setRunning(false);
 
@@ -75,19 +94,46 @@ public class PersistenceTest extends CubaTestCase {
         } finally {
             tx.end();
         }
+        assertFalse(PersistenceHelper.isNew(server));
+        assertFalse(PersistenceHelper.isManaged(server));
+        assertTrue(PersistenceHelper.isDetached(server));
 
         tx = persistence.createTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
-            Server server = em.find(Server.class, id);
-            assertEquals(id, server.getId());
+            server = em.merge(server);
 
-            em.remove(server);
-            
+            assertFalse(PersistenceHelper.isNew(server));
+            assertTrue(PersistenceHelper.isManaged(server));
+            assertFalse(PersistenceHelper.isDetached(server));
+
             tx.commit();
         } finally {
             tx.end();
         }
+
+
+        tx = persistence.createTransaction();
+        try {
+            EntityManager em = persistence.getEntityManager();
+            server = em.find(Server.class, id);
+            assertNotNull(server);
+            assertEquals(id, server.getId());
+
+            em.remove(server);
+            
+            assertFalse(PersistenceHelper.isNew(server));
+            assertTrue(PersistenceHelper.isManaged(server));  // is it correct?
+            assertFalse(PersistenceHelper.isDetached(server));
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+
+        assertFalse(PersistenceHelper.isNew(server));
+        assertFalse(PersistenceHelper.isManaged(server));
+        assertTrue(PersistenceHelper.isDetached(server)); // is it correct?
     }
 
     private void raiseException() {

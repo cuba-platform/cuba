@@ -416,7 +416,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     public void modifyItem(T item) {
         for (T t : __getCollection()) {
             if (t.equals(item)) {
-                InstanceUtils.copy(item, t);
+                EntityCopyUtils.copyCompositionsBack(item, t);
 
                 modified = true;
                 if (cascadeProperty) {

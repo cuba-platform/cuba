@@ -183,7 +183,7 @@ public class EntityManagerImpl implements EntityManager {
     @Override
     public void fetch(Entity entity, View view) {
         Objects.requireNonNull(view, "View is null");
-        if (PersistenceHelper.isDetached(entity))
+        if (!PersistenceHelper.isManaged(entity))
             throw new IllegalArgumentException("Can not fetch detached entity. Merge first.");
 
         // Set default fetch plan

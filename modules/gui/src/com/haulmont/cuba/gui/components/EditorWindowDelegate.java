@@ -20,6 +20,7 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.CollectionPropertyDatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
+import com.haulmont.cuba.gui.data.impl.EntityCopyUtils;
 import com.haulmont.cuba.security.entity.EntityOp;
 
 import javax.annotation.Nullable;
@@ -133,7 +134,7 @@ public class EditorWindowDelegate extends WindowDelegate {
                     ((CollectionDatasource) parentDs).updateItem(item);
                 }
             }
-            item = (Entity) InstanceUtils.copy(item);
+            item = EntityCopyUtils.copyCompositions(item);
 
         } else if (!PersistenceHelper.isNew(item)) {
             boolean useSecConstraints = !WindowParams.DISABLE_SECURITY_CONSTRAINTS.getBool(window.getContext());

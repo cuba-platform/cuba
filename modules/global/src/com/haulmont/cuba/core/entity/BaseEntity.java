@@ -20,6 +20,18 @@ public interface BaseEntity<T> extends Entity<T> {
 
     String[] PROPERTIES = {"id", "createTs", "createdBy"};
 
+    /**
+     * For internal ise.
+     * If you need to check instance state, use {@link com.haulmont.cuba.core.global.PersistenceHelper} methods.
+     * @return true if the entity is detached from persistence context
+     */
+    boolean isDetached();
+
+    /**
+     * Called by the framework when the entity is detached or attached to a persistence context.
+     */
+    void setDetached(boolean detached);
+
     UUID getUuid();
 
     Date getCreateTs();

@@ -57,6 +57,14 @@ public class EntityLifecycleListener extends AbstractLifecycleListener {
     }
 
     @Override
+    public void afterAttach(LifecycleEvent event) {
+        if (!(event.getSource() instanceof BaseEntity))
+            return;
+
+        ((BaseEntity) event.getSource()).setDetached(false);
+    }
+
+    @Override
     public void beforePersist(LifecycleEvent event) {
         if (!(event.getSource() instanceof BaseEntity))
             return;

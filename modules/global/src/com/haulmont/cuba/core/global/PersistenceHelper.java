@@ -4,11 +4,12 @@
  */
 package com.haulmont.cuba.core.global;
 
-import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.kernel.StateManagerImpl;
 
 import javax.annotation.Nullable;
 import javax.persistence.Table;
@@ -23,27 +24,53 @@ import java.lang.annotation.Annotation;
 public class PersistenceHelper {
 
     /**
-     * Determines whether the instance is in <em>New</em> state.
+     * Determines whether the instance is <em>New</em>, i.e. just created and not stored in database yet.
      * @param entity entity instance
-     * @return <code>true</code> if new or if the object provided is not persistent or is not an entity
+     * @return <li>true if the instance is new,
+     *         <li>false if it is Managed or Detached, or if the state can not be determined because the instance
+     *         is not a persistent entity
      */
     public static boolean isNew(Object entity) {
-        if (entity instanceof PersistenceCapable)
-            return ((PersistenceCapable) entity).pcIsDetached() == null;
-        else if (entity instanceof Entity)
-            return ((Entity) entity).getId() != null;
-        else
-            return true;
+        if (entity instanceof BaseEntity && ((BaseEntity) entity).isDetached()) {
+            return false;
+        }
+        if (entity instanceof PersistenceCapable) {
+            return ((PersistenceCapable) entity).pcGetStateManager() == null;
+        }
+        return false;
     }
 
     /**
-     * Determines whether the instance is in <em>Detached</em> state.
+     * Determines whether the instance is <em>Managed</em>, i.e. attached to a persistence context.
      * @param entity entity instance
-     * @return <code>true</code> if the instance is detached or if it is not a persistent entity
+     * @return <li>true if the instance is managed,
+     *         <li>false if it is New or Detached, or if the state can not be determined because the instance
+     *         is not a persistent entity
+     */
+    public static boolean isManaged(Object entity) {
+        if (entity instanceof PersistenceCapable) {
+            return ((PersistenceCapable) entity).pcGetStateManager() != null
+                    && !((PersistenceCapable) entity).pcGetStateManager().isDetached();
+        }
+        return false;
+    }
+
+    /**
+     * Determines whether the instance is <em>Detached</em>, i.e. stored in database but not attached to a persistence
+     * context at the moment.
+     * @param entity entity instance
+     * @return <li>true if the instance is detached,
+     *         <li>false if it is New or Managed, or if it is not a persistent entity
      */
     public static boolean isDetached(Object entity) {
-        return !(entity instanceof PersistenceCapable)
-                || BooleanUtils.isTrue(((PersistenceCapable) entity).pcIsDetached());
+        if (entity instanceof BaseEntity && ((BaseEntity) entity).isDetached()) {
+            return true;
+        }
+        if (entity instanceof PersistenceCapable) {
+            return ((PersistenceCapable) entity).pcGetStateManager() != null
+                    && ((PersistenceCapable) entity).pcGetStateManager().isDetached();
+        }
+        return false;
     }
 
     /**

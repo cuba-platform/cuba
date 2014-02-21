@@ -5,13 +5,10 @@
 package com.haulmont.cuba.gui.data;
 
 import com.haulmont.chile.core.common.ValueListener;
-import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.CategoryAttributeValue;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.global.UuidProvider;
 import com.haulmont.cuba.core.sys.SetValueEntity;
 import org.apache.commons.lang.ObjectUtils;
@@ -22,12 +19,11 @@ import java.util.*;
 /**
  * The entity, that contains a set of runtime properties.
  *
- * <p>$Id$</p>
- *
  * @author devyatkin
+ * @version $Id$
  */
 
-public class RuntimePropertiesEntity implements Entity, Instance, BaseEntity {
+public class RuntimePropertiesEntity implements BaseEntity {
 
     private static final long serialVersionUID = -8091230910619941201L;
 
@@ -48,6 +44,15 @@ public class RuntimePropertiesEntity implements Entity, Instance, BaseEntity {
 
     public UUID getId() {
         return id;
+    }
+
+    @Override
+    public boolean isDetached() {
+        return false;
+    }
+
+    @Override
+    public void setDetached(boolean detached) {
     }
 
     public UUID getUuid() {
