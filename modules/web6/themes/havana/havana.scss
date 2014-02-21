@@ -227,6 +227,32 @@
   background: #F5F8FB;
 }
 
+.cuba-app-work-area-single-window {
+  background: #fff
+}
+
+.cuba-app-work-area-single-window .v-tabsheet-tabitemcell .v-tabsheet-tabitem {
+  border-left: 1px solid #C9D7E9;
+  height: 14px;
+  line-height: 14px;
+  margin-bottom: 9px;
+  padding-top: 0;
+  padding-left: 5px;
+}
+
+.cuba-app-work-area-single-window .v-tabsheet-tabitemcell-selected-after .v-tabsheet-tabitem {
+  border-left: 1px transparent;
+  padding-left: 0;
+}
+
+.cuba-app-work-area-single-window .v-tabsheet-tabitemcell .v-tabsheet-tabitem-selected {
+  height: 25px;
+  line-height: 14px;
+  margin-bottom: 0;
+  padding-left: 6px;
+  padding-top: 3px;
+}
+
 /*
  * Login page styles
  */
