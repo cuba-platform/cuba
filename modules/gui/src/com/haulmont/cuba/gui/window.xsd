@@ -821,7 +821,7 @@
         <xs:attributeGroup ref="hasEditable"/>
         <xs:attributeGroup ref="hasRequirements"/>
         <xs:attributeGroup ref="hasCaptionSource"/>
-        <xs:attribute name="resolution" type="xs:string"/>
+        <xs:attribute name="resolution" type="dateFieldResolution"/>
         <xs:attribute name="dateFormat" type="xs:string"/>
     </xs:complexType>
 
@@ -937,7 +937,7 @@
 
         <xs:attribute name="datasource" type="xs:string"/>
 
-        <xs:attribute name="resolution" type="xs:string"/>
+        <xs:attribute name="resolution" type="dateFieldResolution"/>
         <xs:attribute name="dateFormat" type="xs:string"/>
         <xs:attribute name="maxLength" type="xs:int"/>
 
