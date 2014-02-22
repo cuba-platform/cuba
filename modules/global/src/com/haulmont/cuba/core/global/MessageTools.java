@@ -119,10 +119,14 @@ public class MessageTools {
 
         String key = className + "." + propertyName;
         String message = messages.getMessage(ownClass, key);
-        if (!message.equals(key)) return message;
+        if (!message.equals(key))
+            return message;
 
         MetaPropertyPath propertyPath = metaClass.getPropertyPath(propertyName);
-        return getPropertyCaption(propertyPath.getMetaProperty());
+        if (propertyPath != null)
+            return getPropertyCaption(propertyPath.getMetaProperty());
+        else
+            return message;
     }
 
     /**

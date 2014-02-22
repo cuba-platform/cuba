@@ -290,7 +290,8 @@ public class EntityLogBrowser extends AbstractWindow {
     protected void fillAttributes(String metaClassName, LoggedEntity item, boolean setEditableCheckboxes) {
         clearAttributes();
         if (metaClassName != null) {
-            MetaClass metaClass = metadata.getClassNN(metaClassName);
+            MetaClass metaClass = metadata.getExtendedEntities().getEffectiveMetaClass(
+                    metadata.getClassNN(metaClassName));
             Collection<MetaProperty> metaProperties = metaClass.getProperties();
             selectAllCheckBox.setEditable(setEditableCheckboxes);
             Set<LoggedAttribute> enabledAttr = null;
