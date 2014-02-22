@@ -42,6 +42,8 @@ public class ClusterInvocationSupport {
     private ReadWriteLock lock = new ReentrantReadWriteLock();
 
     protected String baseUrl = AppContext.getProperty("cuba.connectionUrl");
+    protected boolean randomPriority = Boolean.valueOf(AppContext.getProperty("cuba.randomServerPriority"));
+
     protected String servletPath = "remoting";
 
     private List<Listener> listeners = new ArrayList<Listener>();
@@ -63,12 +65,15 @@ public class ClusterInvocationSupport {
     }
 
     public void init() {
-        urls = new ArrayList<String>();
+        urls = new ArrayList<>();
         String[] strings = baseUrl.split("[,;]");
         for (String string : strings) {
             if (!StringUtils.isBlank(string)) {
                 urls.add(string + "/" + servletPath);
             }
+        }
+        if (urls.size() > 1 && randomPriority) {
+            Collections.shuffle(urls);
         }
     }
 
