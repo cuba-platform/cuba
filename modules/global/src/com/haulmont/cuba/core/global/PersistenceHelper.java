@@ -26,9 +26,8 @@ public class PersistenceHelper {
     /**
      * Determines whether the instance is <em>New</em>, i.e. just created and not stored in database yet.
      * @param entity entity instance
-     * @return <li>true if the instance is new,
-     *         <li>false if it is Managed or Detached, or if the state can not be determined because the instance
-     *         is not a persistent entity
+     * @return <li>true if the instance is new or if it is not a persistent entity
+     *         <li>false if it is Managed or Detached
      */
     public static boolean isNew(Object entity) {
         if (entity instanceof BaseEntity && ((BaseEntity) entity).isDetached()) {
@@ -37,15 +36,14 @@ public class PersistenceHelper {
         if (entity instanceof PersistenceCapable) {
             return ((PersistenceCapable) entity).pcGetStateManager() == null;
         }
-        return false;
+        return true;
     }
 
     /**
      * Determines whether the instance is <em>Managed</em>, i.e. attached to a persistence context.
      * @param entity entity instance
      * @return <li>true if the instance is managed,
-     *         <li>false if it is New or Detached, or if the state can not be determined because the instance
-     *         is not a persistent entity
+     *         <li>false if it is New or Detached, or if it is not a persistent entity
      */
     public static boolean isManaged(Object entity) {
         if (entity instanceof PersistenceCapable) {
