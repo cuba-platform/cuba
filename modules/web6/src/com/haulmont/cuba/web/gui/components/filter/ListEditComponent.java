@@ -434,7 +434,7 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
                 lookup.addListener(new ValueListener() {
                     @Override
                     public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                        if (value != null && !containsName(value)) {
+                        if (value != null && !containsValue((Instance) value)) {
                             String str = addEntityInstance((Instance) value);
                             addItemLayout(value, str);
                         }
@@ -456,7 +456,7 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
                         new ValueListener() {
                             @Override
                             public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                                if (value != null && !containsName(value)) {
+                                if (value != null && !containsValue((Instance) value)) {
                                     String str = addEntityInstance((Instance) value);
                                     addItemLayout(value, str);
                                 }
@@ -475,7 +475,7 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
                 lookup.addListener(new ValueListener() {
                     @Override
                     public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                        if (value != null && !containsName(value)) {
+                        if (value != null && !containsValue((String) value)) {
                             String str = addRuntimeEnumValue((String) value);
                             addItemLayout(value, str);
                         }
@@ -497,7 +497,7 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
                 lookup.addListener(new ValueListener() {
                     @Override
                     public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                        if (value != null && !containsName(value)) {
+                        if (value != null && !containsValue((Enum) value)) {
                             String str = addEnumValue((Enum) value);
                             addItemLayout(value, str);
                         }
@@ -573,10 +573,16 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
             setContent(contentLayout);
         }
 
-        private boolean containsName(Object value) {
-            String name = ((Instance) value).getInstanceName();
-            Map<Object, String> values = ListEditWindow.this.values;
-            return values.containsValue(name);
+        private boolean containsValue(String value) {
+            return ListEditWindow.this.values.containsValue(value);
+        }
+
+        private boolean containsValue(Instance value) {
+            return this.values.containsValue(value.getInstanceName());
+        }
+
+        private boolean containsValue(Enum value) {
+            return this.values.containsValue(messages.getMessage(value));
         }
 
         private String addRuntimeEnumValue(String value) {
