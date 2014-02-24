@@ -32,14 +32,14 @@ public class WebSearchField extends WebLookupField implements SearchField {
     protected SearchNotifications searchNotifications = new SearchNotifications() {
         @Override
         public void notFoundSuggestions(String filterString) {
-            String message = messages.formatMessage("com.haulmont.cuba.web", "searchSelect.notFound", filterString);
+            String message = messages.formatMessage("com.haulmont.cuba.gui", "searchSelect.notFound", filterString);
             App.getInstance().getWindowManager().showNotification(message, defaultNotificationType);
         }
 
         @Override
         public void needMinSearchStringLength(String filterString, int minSearchStringLength) {
             String message = messages.formatMessage(
-                    "com.haulmont.cuba.web", "searchSelect.minimumLengthOfFilter", minSearchStringLength);
+                    "com.haulmont.cuba.gui", "searchSelect.minimumLengthOfFilter", minSearchStringLength);
             App.getInstance().getWindowManager().showNotification(message, defaultNotificationType);
         }
     };

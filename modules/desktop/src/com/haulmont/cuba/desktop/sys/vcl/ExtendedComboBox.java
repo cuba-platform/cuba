@@ -12,7 +12,7 @@ import java.awt.*;
  * @author artamonov
  * @version $Id$
  */
-public class ExtendedComboBox extends JComboBox {
+public class ExtendedComboBox extends JComboBox<Object> {
 
     private static final int MAX_LIST_WIDTH = 350;
 
@@ -65,6 +65,27 @@ public class ExtendedComboBox extends JComboBox {
             dim.width = Math.max(getWidth(), dim.width);
         }
         return dim;
+    }
+
+    public void setButtonVisible(boolean buttonVisible) {
+        for (Component child : getComponents()) {
+            if (child instanceof JButton) {
+                child.setVisible(buttonVisible);
+                break;
+            }
+        }
+    }
+
+    @Override
+    public void setEnabled(boolean b) {
+        if (b == isEnabled()) return;
+        for (Component child : getComponents()) {
+            if (child instanceof JButton) {
+                child.setVisible(b);
+                break;
+            }
+        }
+        super.setEnabled(b);
     }
 
     private int getWidestItemWidth() {

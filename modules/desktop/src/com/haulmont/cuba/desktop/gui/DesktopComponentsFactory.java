@@ -61,6 +61,10 @@ public class DesktopComponentsFactory implements ComponentsFactory {
         classes.put(LookupField.NAME, DesktopLookupField.class);
         classes.put(PickerField.NAME, DesktopPickerField.class);
         classes.put(LookupPickerField.NAME, DesktopLookupPickerField.class);
+
+        classes.put(SearchField.NAME, DesktopSearchField.class);
+        classes.put(SearchPickerField.NAME, DesktopSearchPickerField.class);
+
         classes.put(OptionsGroup.NAME, DesktopOptionsGroup.class);
         classes.put(FileUploadField.NAME, DesktopFileUploadField.class);
         classes.put(FileMultiUploadField.NAME, DesktopFileMultiUploadField.class);

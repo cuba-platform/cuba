@@ -19,6 +19,7 @@
         <!-- default is 6 14 6 14 -->
         <!--<color property="cubaRequired" value="#c0250f"/>-->
         <color property="cubaRequiredBackground" value="#fffbb9"/>
+        <color property="cubaSearchEditBackground" value="#bdd2e5"/>
     </ui-defaults>
 
     <layout margin-size="5" spacing-size="3"/>
