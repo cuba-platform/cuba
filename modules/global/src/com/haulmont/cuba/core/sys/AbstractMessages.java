@@ -354,7 +354,7 @@ public abstract class AbstractMessages implements Messages {
 
         String packPath = confDir + "/" + pack.replaceAll("\\.", "/");
         File file = new File(packPath + "/" + BUNDLE_NAME + getLocaleSuffix(defaultLocale ? null : locale) + EXT);
-        InputStream stream;
+        InputStream stream = null;
         try {
             if (file.exists()) {
                 stream = new FileInputStream(file);
@@ -377,6 +377,8 @@ public abstract class AbstractMessages implements Messages {
 
         } catch (IOException e) {
             throw new RuntimeException(e);
+        } finally {
+            IOUtils.closeQuietly(stream);
         }
     }
 
