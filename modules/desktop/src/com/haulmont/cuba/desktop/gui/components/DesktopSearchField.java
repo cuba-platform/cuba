@@ -16,7 +16,7 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
-import com.haulmont.cuba.desktop.sys.vcl.ExtendedComboBox;
+import com.haulmont.cuba.desktop.sys.vcl.SearchComboBox;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.SearchField;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -26,7 +26,6 @@ import org.apache.commons.lang.StringUtils;
 import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
-import javax.swing.plaf.synth.SynthComboBoxUI;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.*;
@@ -91,17 +90,16 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
         composition.setLayout(new BorderLayout());
         composition.setFocusable(false);
 
-        comboBox = new SearchComboBox();
-        comboBox.setUI(new SynthComboBoxUI() {
+        comboBox = new SearchComboBox() {
             @Override
-            protected JButton createArrowButton() {
-                JButton button = super.createArrowButton();
-                button.setSize(new Dimension(0, 0));
-                button.setMaximumSize(new Dimension(0, 0));
-                button.setPreferredSize(new Dimension(0, 0));
-                return button;
+            public void setPopupVisible(boolean v) {
+                if (!items.isEmpty()) {
+                    super.setPopupVisible(v);
+                } else if (!v) {
+                    super.setPopupVisible(false);
+                }
             }
-        });
+        };
         comboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -152,7 +150,6 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
             }
         });
 
-        comboBox.setButtonVisible(false);
         comboBox.setEditable(true);
         comboBox.setPrototypeDisplayValue("AAAAAAAAAAAA");
         autoComplete = AutoCompleteSupport.install(comboBox, items);
@@ -440,6 +437,7 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
 
             impl = comboBox;
         }
+        comboBox.setEditable(editable);
         this.editable = editable;
         updateMissingValueState();
     }
@@ -567,21 +565,6 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
         @Override
         public Entity getValue() {
             return null;
-        }
-    }
-
-    protected class SearchComboBox extends ExtendedComboBox {
-        @Override
-        public void setPopupVisible(boolean v) {
-            if (!items.isEmpty()) {
-                super.setPopupVisible(v);
-            } else if (!v) {
-                super.setPopupVisible(false);
-            }
-        }
-
-        public void showSearchPopup() {
-            super.setPopupVisible(true);
         }
     }
 }

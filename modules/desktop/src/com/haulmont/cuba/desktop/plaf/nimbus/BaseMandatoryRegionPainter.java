@@ -14,7 +14,6 @@ import java.awt.*;
  */
 public abstract class BaseMandatoryRegionPainter extends AbstractRegionPainter {
 
-    protected Color colorRequired = decodeColor("cubaRequired", 0.0f, 0.0f, 0.0f, 0);
     /**
      * The only reason to have this is to access AbstractRegionPainter.PaintContextCacheMode which has protected access.
      */
