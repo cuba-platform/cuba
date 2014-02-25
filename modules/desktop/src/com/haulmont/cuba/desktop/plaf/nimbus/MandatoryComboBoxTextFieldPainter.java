@@ -18,7 +18,7 @@ import java.awt.geom.RoundRectangle2D;
  * @author Alexander Budarov
  * @version $Id$
  */
-public class MandatoryComboBoxComboBoxTextFieldPainter extends BaseMandatoryRegionPainter {
+public class MandatoryComboBoxTextFieldPainter extends BaseMandatoryRegionPainter {
     //package private integers representing the available states that
     //this painter will paint. These are used when creating a new instance
     //of ComboBoxComboBoxTextFieldPainter to determine which region/state is being painted
@@ -26,7 +26,6 @@ public class MandatoryComboBoxComboBoxTextFieldPainter extends BaseMandatoryRegi
     static final int BACKGROUND_DISABLED = 1;
     static final int BACKGROUND_ENABLED = 2;
     static final int BACKGROUND_SELECTED = 3;
-
 
     private int state; //refers to one of the static final ints above
     private PaintContext ctx;
@@ -57,7 +56,7 @@ public class MandatoryComboBoxComboBoxTextFieldPainter extends BaseMandatoryRegi
     //Array of current component colors, updated in each paint call
     private Object[] componentColors;
 
-    public MandatoryComboBoxComboBoxTextFieldPainter() {
+    public MandatoryComboBoxTextFieldPainter() {
         super();
         this.state = BACKGROUND_ENABLED;
         this.ctx = new AbstractRegionPainterPaintContext(new Insets(5, 3, 3, 1), new Dimension(64, 24), false, "NINE_SQUARE_SCALE", Double.POSITIVE_INFINITY, 2.0);
@@ -73,7 +72,6 @@ public class MandatoryComboBoxComboBoxTextFieldPainter extends BaseMandatoryRegi
             case BACKGROUND_DISABLED: paintBackgroundDisabled(g); break;
             case BACKGROUND_ENABLED: paintBackgroundEnabled(g); break;
             case BACKGROUND_SELECTED: paintBackgroundSelected(g); break;
-
         }
     }
 
@@ -106,7 +104,6 @@ public class MandatoryComboBoxComboBoxTextFieldPainter extends BaseMandatoryRegi
         rect = decodeRect5();
         g.setPaint(color7);
         g.fill(rect);
-
     }
 
     private void paintBackgroundEnabled(Graphics2D g) {
@@ -125,7 +122,6 @@ public class MandatoryComboBoxComboBoxTextFieldPainter extends BaseMandatoryRegi
         rect = decodeRect5();
         g.setPaint((Color) componentColors[0]);
         g.fill(rect);
-
     }
 
     private void paintBackgroundSelected(Graphics2D g) {
@@ -144,10 +140,7 @@ public class MandatoryComboBoxComboBoxTextFieldPainter extends BaseMandatoryRegi
         rect = decodeRect5();
         g.setPaint((Color) componentColors[0]);
         g.fill(rect);
-
     }
-
-
 
     private Rectangle2D decodeRect1() {
             rect.setRect(decodeX(0.6666667f), //x
@@ -188,8 +181,6 @@ public class MandatoryComboBoxComboBoxTextFieldPainter extends BaseMandatoryRegi
                          decodeY(2.0f) - decodeY(1.0f)); //height
         return rect;
     }
-
-
 
     private Paint decodeGradient1(Shape s) {
         Rectangle2D bounds = s.getBounds2D();
@@ -242,7 +233,4 @@ public class MandatoryComboBoxComboBoxTextFieldPainter extends BaseMandatoryRegi
                             decodeColor(color10,(Color) componentColors[0],0.5f),
                             (Color) componentColors[0]});
     }
-
-
-
 }

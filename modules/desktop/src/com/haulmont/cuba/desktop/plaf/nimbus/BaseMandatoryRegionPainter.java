@@ -19,7 +19,8 @@ public abstract class BaseMandatoryRegionPainter extends AbstractRegionPainter {
      * The only reason to have this is to access AbstractRegionPainter.PaintContextCacheMode which has protected access.
      */
     public static class AbstractRegionPainterPaintContext extends PaintContext {
-        public AbstractRegionPainterPaintContext(Insets insets, Dimension canvasSize, boolean inverted, String cacheMode, double maxH, double maxV) {
+        public AbstractRegionPainterPaintContext(Insets insets, Dimension canvasSize,
+                                                 boolean inverted, String cacheMode, double maxH, double maxV) {
             super(insets, canvasSize, inverted, CacheMode.valueOf(cacheMode), maxH, maxV);
         }
     }

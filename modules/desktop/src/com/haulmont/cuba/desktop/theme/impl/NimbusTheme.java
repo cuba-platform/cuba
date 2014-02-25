@@ -5,7 +5,7 @@
 
 package com.haulmont.cuba.desktop.theme.impl;
 
-import com.haulmont.cuba.desktop.plaf.nimbus.MandatoryComboBoxComboBoxTextFieldPainter;
+import com.haulmont.cuba.desktop.plaf.nimbus.MandatoryComboBoxTextFieldPainter;
 
 import javax.swing.*;
 
@@ -23,6 +23,6 @@ public class NimbusTheme extends DesktopThemeImpl {
 
         UIDefaults lafDefaults = UIManager.getLookAndFeelDefaults();
         lafDefaults.put("Nimbus.keepAlternateRowColor", true); // deny SwingX to remove alternate row color
-        lafDefaults.put("ComboBox:\"ComboBox.textField\"[Enabled].backgroundPainter", new MandatoryComboBoxComboBoxTextFieldPainter());
+        lafDefaults.put("ComboBox:\"ComboBox.textField\"[Enabled].backgroundPainter", new MandatoryComboBoxTextFieldPainter());
     }
 }
