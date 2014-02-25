@@ -11,6 +11,7 @@ import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.AbstractLookup;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
@@ -54,7 +55,7 @@ public class RoleBrowser extends AbstractLookup {
                 }
                 final Role role = rolesTable.<Role>getSelected().iterator().next();
                 Map<String, Object> params = new HashMap<>();
-                params.put("multiSelect", "true");
+                WindowParams.MULTI_SELECT.set(params, true);
                 openLookup("sec$User.lookup", new Handler() {
                     public void handleLookup(Collection items) {
                         if (items == null) return;

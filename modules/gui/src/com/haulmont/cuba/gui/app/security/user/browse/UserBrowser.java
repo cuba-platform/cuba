@@ -9,6 +9,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.app.security.user.edit.UserEditor;
 import com.haulmont.cuba.gui.app.security.user.resetpasswords.ResetPasswordsDialog;
 import com.haulmont.cuba.gui.components.AbstractLookup;
@@ -115,9 +116,8 @@ public class UserBrowser extends AbstractLookup {
             }
         });
 
-        Boolean multiSelect = BooleanUtils.toBooleanObject((String) params.get("multiselect"));
-        if (multiSelect != null) {
-            usersTable.setMultiSelect(multiSelect);
+        if (WindowParams.MULTI_SELECT.getBool(getContext())) {
+            usersTable.setMultiSelect(true);
         }
     }
 

@@ -5,9 +5,9 @@
 
 package com.haulmont.cuba.gui.app.security.user.browse;
 
+import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.AbstractLookup;
 import com.haulmont.cuba.gui.components.Table;
-import org.apache.commons.lang.BooleanUtils;
 
 import javax.inject.Inject;
 import java.util.Map;
@@ -24,9 +24,8 @@ public class UserLookup extends AbstractLookup {
     @Override
     public void init(Map<String, Object> params) {
         setHeight("400px");
-        Boolean multiSelect = BooleanUtils.toBooleanObject((String) params.get("multiSelect"));
-        if (multiSelect != null)
-            usersTable.setMultiSelect(multiSelect);
+        if (WindowParams.MULTI_SELECT.getBool(getContext())) {
+            usersTable.setMultiSelect(true);
+        }
     }
 }
-

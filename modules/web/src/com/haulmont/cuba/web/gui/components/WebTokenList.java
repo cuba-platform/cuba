@@ -9,6 +9,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
@@ -492,8 +493,10 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
                         WindowInfo windowInfo = AppBeans.get(WindowConfig.class).getWindowInfo(windowAlias);
 
                         Map<String, Object> params = new HashMap<>();
-                        params.put("windowOpener", WebTokenList.this.<IFrame>getFrame().getId());
+                        params.put("windowOpener", WebTokenList.this.getFrame().getId());
                         if (isMultiSelect()) {
+                            WindowParams.MULTI_SELECT.set(params, true);
+                            // for backward compatibility
                             params.put("multiSelect", "true");
                         }
                         if (lookupScreenParams != null)

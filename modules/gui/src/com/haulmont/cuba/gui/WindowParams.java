@@ -43,6 +43,11 @@ public enum WindowParams {
     DESCRIPTION,
 
     /**
+     * If this parameter is set, a lookup screen can set up its lookup component (usually Table) for multi-selection.
+     */
+    MULTI_SELECT,
+
+    /**
      * Prevents datasources from automatic refresh caused by visual components.
      */
     DISABLE_AUTO_REFRESH,

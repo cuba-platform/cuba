@@ -12,6 +12,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowConfig;
@@ -597,9 +598,11 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
             WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
             WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
 
-            Map<String, Object> params = new HashMap<String, Object>();
-            params.put("windowOpener", DesktopTokenList.this.<IFrame>getFrame().getId());
+            Map<String, Object> params = new HashMap<>();
+            params.put("windowOpener", DesktopTokenList.this.getFrame().getId());
             if (isMultiSelect()) {
+                WindowParams.MULTI_SELECT.set(params, true);
+                // for backward compatibility
                 params.put("multiSelect", "true");
             }
             if (lookupScreenParams != null)
