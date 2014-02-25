@@ -16,8 +16,8 @@ import java.util.Arrays;
  * @version $Id$
  */
 public class KeyCombination {
-
     private static final String SHORTCUT_PREFIX = "shortcut.";
+    private static final Modifier[] EMPTY_MODIFIERS = new Modifier[0];
 
     private final Key key;
     private final Modifier[] modifiers;
@@ -249,8 +249,10 @@ public class KeyCombination {
 
         KeyCombination other = (KeyCombination) obj;
 
-        return this.key == other.key && Arrays.equals(this.modifiers, other.modifiers);
+        KeyCombination.Modifier[] modifiers = this.modifiers != null ? this.modifiers : EMPTY_MODIFIERS;
+        KeyCombination.Modifier[] otherModifiers = other.modifiers != null ? other.modifiers : EMPTY_MODIFIERS;
 
+        return this.key == other.key && Arrays.equals(modifiers, otherModifiers);
     }
 
     @Override

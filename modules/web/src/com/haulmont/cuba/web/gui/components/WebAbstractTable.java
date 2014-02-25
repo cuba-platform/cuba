@@ -157,6 +157,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                 return WebAbstractTable.this.getActions();
             }
         };
+        shortcutsDelegate.setAllowEnterShortcut(false);
     }
 
     @Override

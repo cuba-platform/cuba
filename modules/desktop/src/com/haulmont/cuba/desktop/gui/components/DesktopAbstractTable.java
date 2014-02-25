@@ -160,6 +160,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                 return DesktopAbstractTable.this.getActions();
             }
         };
+        shortcutsDelegate.setAllowEnterShortcut(false);
     }
 
     protected void initComponent() {

@@ -160,6 +160,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                 return WebAbstractTable.this.getActions();
             }
         };
+        shortcutsDelegate.setAllowEnterShortcut(false);
     }
 
     @Override

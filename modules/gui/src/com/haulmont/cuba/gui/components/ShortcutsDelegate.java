@@ -21,6 +21,16 @@ public abstract class ShortcutsDelegate<T> {
 
     private Map<String, T> shortcuts = new HashMap<>();
 
+    private boolean allowEnterShortcut = true;
+
+    public boolean isAllowEnterShortcut() {
+        return allowEnterShortcut;
+    }
+
+    public void setAllowEnterShortcut(boolean allowEnterShortcut) {
+        this.allowEnterShortcut = allowEnterShortcut;
+    }
+
     public void addAction(Action oldAction, Action newAction) {
         KeyCombination newShortcut = newAction.getShortcut();
         if (newShortcut != null) {
@@ -79,7 +89,8 @@ public abstract class ShortcutsDelegate<T> {
     }
 
     private void addShortcut(final String actionId, KeyCombination keyCombination) {
-        if ((keyCombination.getModifiers() == null || keyCombination.getModifiers().length == 0)
+        if (!allowEnterShortcut
+                && (keyCombination.getModifiers() == null || keyCombination.getModifiers().length == 0)
                 && keyCombination.getKey() == KeyCombination.Key.ENTER) {
             return;
         }

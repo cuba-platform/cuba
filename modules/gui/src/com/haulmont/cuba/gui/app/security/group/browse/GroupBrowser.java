@@ -80,7 +80,6 @@ public class GroupBrowser extends AbstractWindow {
 
         groupCreateAction.setOpenType(WindowManager.OpenType.DIALOG);
         groupEditAction.setOpenType(WindowManager.OpenType.DIALOG);
-        groupEditAction.setShortcut((String) null);
 
         groupCreateButton.addAction(groupCreateAction);
         groupCreateButton.addAction(groupCopyAction);
