@@ -126,16 +126,19 @@ public class AttributePermissionsFrame extends AbstractFrame {
             modifyCheckBox.setAlignment(Alignment.MIDDLE_CENTER);
             modifyCheckBox.setFrame(AttributePermissionsFrame.this);
             modifyCheckBox.setWidth(CHECKER_COLUMN_WIDTH);
+            modifyCheckBox.setId(attributeName + "_modifyCheckBox");
 
             readOnlyCheckBox = uiFactory.createComponent(CheckBox.NAME);
             readOnlyCheckBox.setAlignment(Alignment.MIDDLE_CENTER);
             readOnlyCheckBox.setFrame(AttributePermissionsFrame.this);
             readOnlyCheckBox.setWidth(CHECKER_COLUMN_WIDTH);
+            readOnlyCheckBox.setId(attributeName + "_readOnlyCheckBox");
 
             hideCheckBox = uiFactory.createComponent(CheckBox.NAME);
             hideCheckBox.setAlignment(Alignment.MIDDLE_CENTER);
             hideCheckBox.setFrame(AttributePermissionsFrame.this);
             hideCheckBox.setWidth(CHECKER_COLUMN_WIDTH);
+            hideCheckBox.setId(attributeName + "_hideCheckBox");
 
             updateCheckers(permissionVariant);
 
@@ -382,6 +385,10 @@ public class AttributePermissionsFrame extends AbstractFrame {
         allModifyCheck.setWidth(CHECKER_COLUMN_WIDTH);
         allReadOnlyCheck.setWidth(CHECKER_COLUMN_WIDTH);
         allHideCheck.setWidth(CHECKER_COLUMN_WIDTH);
+
+        allModifyCheck.setId("allAttributesModifyCheck");
+        allReadOnlyCheck.setId("allAttributesReadOnlyCheck");
+        allHideCheck.setId("allAttributesHideCheck");
 
         attachAllCheckboxListener(allModifyCheck, AttributePermissionVariant.MODIFY);
         attachAllCheckboxListener(allReadOnlyCheck, AttributePermissionVariant.READ_ONLY);
