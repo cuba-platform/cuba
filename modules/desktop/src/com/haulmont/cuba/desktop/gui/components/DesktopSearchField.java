@@ -244,6 +244,16 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
     protected void handleSearch(String newFilter) {
         clearSearchVariants();
 
+        if (!isRequired() && StringUtils.isEmpty(newFilter)) {
+            if (optionsDatasource.getState() == Datasource.State.VALID) {
+                optionsDatasource.clear();
+            }
+
+            setValue(null);
+            updateOptionsDsItem();
+            return;
+        }
+
         if (StringUtils.length(newFilter) >= minSearchStringLength) {
             optionsDatasource.refresh(
                     Collections.singletonMap(SearchField.SEARCH_STRING_PARAM, (Object) newFilter));
@@ -271,10 +281,6 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
         } else {
             if (optionsDatasource.getState() == Datasource.State.VALID) {
                 optionsDatasource.clear();
-                if (!isRequired()) {
-                    setValue(null);
-                    updateOptionsDsItem();
-                }
             }
 
             if (searchNotifications != null && StringUtils.length(newFilter) > 0) {

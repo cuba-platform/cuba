@@ -103,6 +103,14 @@ public class WebSearchField extends WebLookupField implements SearchField {
         getSearchComponent().setFilterHandler(new SearchSelect.FilterHandler() {
             @Override
             public void onFilterChange(String newFilter) {
+                if (!isRequired() && StringUtils.isEmpty(newFilter)) {
+                    setValue(null);
+                    if (optionsDatasource.getState() == Datasource.State.VALID) {
+                        optionsDatasource.clear();
+                    }
+                    return;
+                }
+
                 if (StringUtils.length(newFilter) >= minSearchStringLength) {
                     optionsDatasource.refresh(Collections.singletonMap(SEARCH_STRING_PARAM, (Object) newFilter));
                     if (optionsDatasource.getState() == Datasource.State.VALID && optionsDatasource.size() == 1) {
@@ -115,8 +123,9 @@ public class WebSearchField extends WebLookupField implements SearchField {
                             searchNotifications.notFoundSuggestions(newFilter);
                     }
                 } else {
-                    if (optionsDatasource.getState() == Datasource.State.VALID)
+                    if (optionsDatasource.getState() == Datasource.State.VALID) {
                         optionsDatasource.clear();
+                    }
 
                     if (searchNotifications != null)
                         searchNotifications.needMinSearchStringLength(newFilter, minSearchStringLength);
