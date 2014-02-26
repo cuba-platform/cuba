@@ -26,6 +26,20 @@
     background: #ffbac2 url(images/bg-center-filter-focus.png) no-repeat right top;
 }
 
+.v-app {
+  .v-readonly.cuba-searchselect-edit-filter.cuba-searchselect-focus,
+  .v-readonly.cuba-searchselect-edit-filter.cuba-searchselect-focus .cuba-searchselect-input:focus {
+    background-color: transparent;
+  }
+}
+
+.v-window {
+  .v-readonly.cuba-searchselect-edit-filter.cuba-searchselect-focus,
+  .v-readonly.cuba-searchselect-edit-filter.cuba-searchselect-focus .cuba-searchselect-input:focus {
+    background-color: transparent;
+  }
+}
+
 .cuba-searchselect.v-readonly {
     height: 25px;
     white-space: nowrap;
