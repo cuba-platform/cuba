@@ -31,6 +31,10 @@ public class DevelopmentException extends RuntimeException {
         this.params.putAll(params);
     }
 
+    public DevelopmentException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
     public Map<String, Object> getParams() {
         return params;
     }
