@@ -267,17 +267,6 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
             if (optionsDatasource.getState() == Datasource.State.VALID && optionsDatasource.size() > 1) {
                 initSearchVariants();
                 comboBox.showSearchPopup();
-
-                for (int i = 0; i < comboBox.getItemCount(); i++) {
-                    Object item = comboBox.getItemAt(i);
-                    if (item instanceof ValueWrapper) {
-                        Object value = ((ValueWrapper) item).getValue();
-                        if (value != null) {
-                            comboBox.setSelectedItem(item);
-                            break;
-                        }
-                    }
-                }
             }
         } else {
             if (optionsDatasource.getState() == Datasource.State.VALID) {
