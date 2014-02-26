@@ -20,7 +20,7 @@
 
   .#{$primaryStyleName}-edit-filter.#{$primaryStyleName}-focus,
   .#{$primaryStyleName}-edit-filter.#{$primaryStyleName}-focus .#{$primaryStyleName}-input:focus {
-    background-color: #ffbac2;
+    background-color: $theme_searchSelectEditColor;
   }
 
   .v-readonly.#{$primaryStyleName}-edit-filter.#{$primaryStyleName}-focus,
