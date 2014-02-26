@@ -7,7 +7,6 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.matchers.TextMatcherEditor;
-import ca.odell.glazedlists.swing.AutoCompleteSupport;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
 import com.haulmont.cuba.core.entity.Entity;
@@ -16,6 +15,7 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
+import com.haulmont.cuba.desktop.sys.vcl.SearchAutoCompleteSupport;
 import com.haulmont.cuba.desktop.sys.vcl.SearchComboBox;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.SearchField;
@@ -41,7 +41,7 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
     protected static final FilterMode DEFAULT_FILTER_MODE = FilterMode.CONTAINS;
 
     protected BasicEventList<Object> items = new BasicEventList<>();
-    protected AutoCompleteSupport<Object> autoComplete;
+    protected SearchAutoCompleteSupport<Object> autoComplete;
     protected String caption;
 
     protected boolean resetValueState = false;
@@ -131,7 +131,8 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
                 enterHandling = false;
             }
         });
-        comboBox.getEditor().getEditorComponent().addKeyListener(new KeyAdapter() {
+        Component editorComponent = comboBox.getEditor().getEditorComponent();
+        editorComponent.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
                 SwingUtilities.invokeLater(new Runnable() {
@@ -152,7 +153,8 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
 
         comboBox.setEditable(true);
         comboBox.setPrototypeDisplayValue("AAAAAAAAAAAA");
-        autoComplete = AutoCompleteSupport.install(comboBox, items);
+        autoComplete = SearchAutoCompleteSupport.install(comboBox, items);
+        autoComplete.setFilterEnabled(false);
 
         for (int i = 0; i < comboBox.getComponentCount(); i++) {
             java.awt.Component component = comboBox.getComponent(i);
@@ -183,8 +185,8 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
                                 Object selectedValue = ((ValueWrapper) selectedItem).getValue();
                                 setValue(selectedValue);
                                 updateOptionsDsItem();
-                            } else if (selectedItem != null) {
-                                updateComponent(prevValue);
+                            } else if (selectedItem instanceof String) {
+                                handleSearch((String) selectedItem);
                             }
 
                             updateMissingValueState();
@@ -193,6 +195,7 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
 
                     @Override
                     public void popupMenuCanceled(PopupMenuEvent e) {
+                        clearSearchVariants();
                     }
                 }
         );
@@ -264,6 +267,17 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
             if (optionsDatasource.getState() == Datasource.State.VALID && optionsDatasource.size() > 1) {
                 initSearchVariants();
                 comboBox.showSearchPopup();
+
+                for (int i = 0; i < comboBox.getItemCount(); i++) {
+                    Object item = comboBox.getItemAt(i);
+                    if (item instanceof ValueWrapper) {
+                        Object value = ((ValueWrapper) item).getValue();
+                        if (value != null) {
+                            comboBox.setSelectedItem(item);
+                            break;
+                        }
+                    }
+                }
             }
         } else {
             if (optionsDatasource.getState() == Datasource.State.VALID) {

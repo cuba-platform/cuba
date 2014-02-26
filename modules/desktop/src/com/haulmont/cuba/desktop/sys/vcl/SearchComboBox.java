@@ -45,4 +45,8 @@ public class SearchComboBox extends ExtendedComboBox {
     public void showSearchPopup() {
         super.setPopupVisible(true);
     }
+
+    public void hideSearchPopup() {
+        super.setPopupVisible(false);
+    }
 }
