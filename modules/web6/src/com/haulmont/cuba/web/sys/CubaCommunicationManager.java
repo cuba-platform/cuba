@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.web.sys;
 
+import com.google.common.collect.MapMaker;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.RemoteException;
@@ -48,9 +49,9 @@ public class CubaCommunicationManager extends CommunicationManager {
 
     private long timerIdSequence = 0;
 
-    private Map<String, Timer> id2Timer = new HashMap<>();
+    private Map<String, Timer> id2Timer = new MapMaker().weakValues().makeMap();
 
-    private Map<Timer, String> timer2Id = new HashMap<>();
+    private Map<Timer, String> timer2Id = new WeakHashMap<>();
 
     private List<String> deadTimers = new ArrayList<>();
 

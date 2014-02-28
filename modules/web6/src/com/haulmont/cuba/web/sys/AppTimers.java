@@ -135,6 +135,19 @@ public class AppTimers {
     }
 
     /**
+     * Call after remove window
+     * @param window removing window
+     */
+    public void removeWindow(Window window) {
+        if (windowTimers.containsKey(window)) {
+            for (Timer timer : windowTimers.get(window).timers) {
+                timerWindow.remove(timer);
+            }
+            windowTimers.remove(window);
+        }
+    }
+
+    /**
      * Do not use this method in application code
      * @param currentWindow current window
      * @return collection of timers that applied for the current window
