@@ -16,6 +16,9 @@ import com.haulmont.cuba.gui.app.core.file.FileUploadDialog;
 import com.haulmont.cuba.gui.components.DialogAction;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.config.WindowConfig;
+import com.haulmont.cuba.gui.executors.BackgroundTask;
+import com.haulmont.cuba.gui.executors.BackgroundTaskWrapper;
+import com.haulmont.cuba.gui.executors.TaskLifeCycle;
 import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
 import com.haulmont.cuba.gui.export.ExportFormat;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
@@ -94,12 +97,15 @@ public class FoldersPane extends VerticalLayout {
 
     protected Folders folders = AppBeans.get(Folders.class);
 
+    protected BackgroundTaskWrapper<Integer, List<AppFolder>> folderUpdateBackgroundTaskWrapper;
+
     public FoldersPane(MenuBar menuBar, AppWindow appWindow) {
         this.menuBar = menuBar;
         parentAppWindow = appWindow;
 
         setHeight(100, Unit.PERCENTAGE);
         setStyleName("cuba-folders-pane");
+        folderUpdateBackgroundTaskWrapper = new BackgroundTaskWrapper(new AppFolderUpdateBackgroundTask(10));
     }
 
     public void init(Component parent) {
@@ -387,10 +393,26 @@ public class FoldersPane extends VerticalLayout {
         if (appFoldersTree == null)
             return;
 
+        List<AppFolder> reloadedFolders = getReloadedFolders();
+        updateFolders(reloadedFolders);
+    }
+
+    public void asyncReloadAppFolders() {
+        if (appFoldersTree == null)
+            return;
+        folderUpdateBackgroundTaskWrapper.restart();
+    }
+
+    protected List<AppFolder> getReloadedFolders() {
         List<AppFolder> folders = new ArrayList(appFoldersTree.getItemIds());
-        List<AppFolder> updateFolders = foldersService.reloadAppFolders(folders);
-        for (AppFolder folder : updateFolders) {
-            int index = updateFolders.indexOf(folder);
+        FoldersService service = AppBeans.get(FoldersService.NAME);
+        return service.reloadAppFolders(folders);
+    }
+
+    protected void updateFolders(List<AppFolder> reloadedFolders) {
+        List<AppFolder> folders = new ArrayList(appFoldersTree.getItemIds());
+        for (AppFolder folder : reloadedFolders) {
+            int index = reloadedFolders.indexOf(folder);
             AppFolder f = folders.get(index);
             if (f != null) {
                 f.setItemStyle(folder.getItemStyle());
@@ -905,6 +927,23 @@ public class FoldersPane extends VerticalLayout {
                     }
                 }
             });
+        }
+    }
+
+    public class AppFolderUpdateBackgroundTask extends BackgroundTask<Integer, List<AppFolder>> {
+
+        public AppFolderUpdateBackgroundTask(long timeoutSeconds) {
+            super(timeoutSeconds);
+        }
+
+        @Override
+        public List<AppFolder> run(TaskLifeCycle<Integer> taskLifeCycle) throws Exception {
+            return getReloadedFolders();
+        }
+
+        @Override
+        public void done(List<AppFolder> reloadedFolders) {
+            updateFolders(reloadedFolders);
         }
     }
 
