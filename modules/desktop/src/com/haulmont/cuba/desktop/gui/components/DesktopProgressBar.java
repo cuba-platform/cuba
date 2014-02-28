@@ -16,10 +16,9 @@ import java.util.List;
 
 /**
  * Desktop implementation of progress bar depending on swing JProgressBar component.
- * <p/>
- * <p>$Id$</p>
  *
  * @author Alexander Budarov
+ * @version $Id$
  */
 public class DesktopProgressBar extends DesktopAbstractComponent<JProgressBar> implements ProgressBar {
 
@@ -85,9 +84,11 @@ public class DesktopProgressBar extends DesktopAbstractComponent<JProgressBar> i
     }
 
     private void fireChangeListeners(Object newValue) {
-        if (!ObjectUtils.equals(prevValue, newValue))
-            fireValueChanged(prevValue, newValue);
+        Object oldValue = prevValue;
         prevValue = newValue;
+        if (!ObjectUtils.equals(oldValue, newValue)) {
+            fireValueChanged(oldValue, newValue);
+        }
     }
 
     private void updateComponent(Object value) {

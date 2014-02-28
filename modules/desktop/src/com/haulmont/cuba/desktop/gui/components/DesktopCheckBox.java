@@ -197,8 +197,10 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
     }
 
     private void fireChangeListeners(Object newValue) {
-        if (!ObjectUtils.equals(prevValue, newValue))
-            fireValueChanged(prevValue, newValue);
+        Object oldValue = prevValue;
         prevValue = newValue;
+        if (!ObjectUtils.equals(oldValue, newValue)) {
+            fireValueChanged(oldValue, newValue);
+        }
     }
 }

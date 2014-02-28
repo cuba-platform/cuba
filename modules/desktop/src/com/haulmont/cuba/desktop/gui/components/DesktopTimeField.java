@@ -53,7 +53,6 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
     private Object prevValue;
     private boolean valid = true;
     private String caption;
-    private String description;
     private DateField.Resolution resolution;
     private boolean editable = true;
 
@@ -249,6 +248,7 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
         }
     }
 
+    @Override
     public void setValue(Object value) {
         if (!ObjectUtils.equals(prevValue, value)) {
             updateInstance(value);
@@ -311,9 +311,11 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
     }
 
     private void fireChangeListeners(Object newValue) {
-        if (!ObjectUtils.equals(prevValue, newValue))
-            fireValueChanged(prevValue, newValue);
+        Object oldValue = prevValue;
         prevValue = newValue;
+        if (!ObjectUtils.equals(oldValue, newValue)) {
+            fireValueChanged(oldValue, newValue);
+        }
     }
 
     @Override
