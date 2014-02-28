@@ -4,8 +4,12 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -29,8 +33,8 @@ import java.util.List;
  * @version $Id$
  */
 public class WebLookupField
-            extends WebAbstractOptionsField<CubaComboBox>
-            implements LookupField {
+        extends WebAbstractOptionsField<CubaComboBox>
+        implements LookupField {
 
     protected Object nullOption;
     protected Entity nullEntity;
@@ -200,10 +204,11 @@ public class WebLookupField
             if (optionsDatasource != null) {
                 initNullEntity();
             } else {
+                // todo init null item in option list and option map
                 component.setNullSelectionItemId(nullOption);
             }
         } else {
-            component.setNullSelectionItemId(nullOption);
+            component.setNullSelectionItemId(null);
         }
     }
 
@@ -211,7 +216,15 @@ public class WebLookupField
         nullEntity = new AbstractNotPersistentEntity() {
             @Override
             public String getInstanceName() {
-                return String.valueOf(WebLookupField.this.nullOption);
+                if (nullOption instanceof Instance) {
+                    return InstanceUtils.getInstanceName((Instance) nullOption);
+                }
+
+                if (nullOption == null) {
+                    return "";
+                } else {
+                    return nullOption.toString();
+                }
             }
 
             // Used for captionProperty of null entity
@@ -406,6 +419,9 @@ public class WebLookupField
     }
 
     protected class NullNameAwareEnumContainer extends EnumerationContainer {
+
+        protected Messages messages = AppBeans.get(Messages.NAME);
+
         public NullNameAwareEnumContainer(List<Enum> values) {
             super(values);
         }
@@ -449,7 +465,13 @@ public class WebLookupField
 
                     @Override
                     public String toString() {
-                        return String.valueOf(nullOption);
+                        if (nullOption == null)
+                            return "";
+
+                        if (nullOption instanceof Enum) {
+                            return messages.getMessage((Enum) nullOption);
+                        }
+                        return nullOption.toString();
                     }
                 };
             }

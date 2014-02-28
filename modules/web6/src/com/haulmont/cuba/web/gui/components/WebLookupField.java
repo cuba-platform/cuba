@@ -4,9 +4,12 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -246,7 +249,21 @@ public class WebLookupField
         nullEntity = new AbstractNotPersistentEntity() {
             @Override
             public String getInstanceName() {
-                return WebLookupField.this.nullOption.toString();
+                if (nullOption instanceof Instance) {
+                    return InstanceUtils.getInstanceName((Instance) nullOption);
+                }
+
+                if (nullOption == null) {
+                    return "";
+                } else {
+                    return nullOption.toString();
+                }
+            }
+
+            // Used for captionProperty of null entity
+            @Override
+            public <T> T getValue(String s) {
+                return (T) getInstanceName();
             }
         };
         component.setNullSelectionItemId(nullEntity.getId());
@@ -381,18 +398,6 @@ public class WebLookupField
                     if (value instanceof Entity && ((Entity) value).getId().equals(itemId)) {
                         item = getItemWrapper(value);
                     }
-                } else if (WebLookupField.this.component.getPropertyDataSource() != null) {
-                    // For work in field group
-                    Property propertyDataSource = WebLookupField.this.component.getPropertyDataSource();
-                    Object value;
-                    if (propertyDataSource instanceof LookupPropertyAdapter)
-                        value = ((LookupPropertyAdapter) propertyDataSource).getInternalValue();
-                    else
-                        value = propertyDataSource.getValue();
-
-                    if (value instanceof Entity && ((Entity) value).getId().equals(itemId)) {
-                        item = getItemWrapper(value);
-                    }
                 }
             }
             return item;
@@ -511,6 +516,8 @@ public class WebLookupField
 
     protected class NullNameAwareEnumContainer extends EnumerationContainer {
 
+        protected Messages messages = AppBeans.get(Messages.NAME);
+
         public NullNameAwareEnumContainer(List values) {
             super(values);
         }
@@ -554,7 +561,13 @@ public class WebLookupField
 
                     @Override
                     public String toString() {
-                        return String.valueOf(nullOption);
+                        if (nullOption == null)
+                            return "";
+
+                        if (nullOption instanceof Enum) {
+                            return messages.getMessage((Enum) nullOption);
+                        }
+                        return nullOption.toString();
                     }
                 };
             }

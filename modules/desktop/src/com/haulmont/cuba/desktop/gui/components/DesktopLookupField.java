@@ -9,6 +9,8 @@ import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.matchers.TextMatcherEditor;
 import ca.odell.glazedlists.swing.AutoCompleteSupport;
 import com.haulmont.chile.core.datatypes.Enumeration;
+import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -456,7 +458,18 @@ public class DesktopLookupField
             super(new AbstractNotPersistentEntity() {
                 @Override
                 public String getInstanceName() {
-                    return String.valueOf(DesktopLookupField.this.nullOption);
+                    // NullOption class is used for any type of nullOption value
+                    if (nullOption instanceof Instance) {
+                        return InstanceUtils.getInstanceName((Instance) nullOption);
+                    } else if (nullOption instanceof Enum) {
+                        return messages.getMessage((Enum) nullOption);
+                    }
+
+                    if (nullOption == null) {
+                        return "";
+                    } else {
+                        return nullOption.toString();
+                    }
                 }
 
                 // Used for captionProperty of null entity
