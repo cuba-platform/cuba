@@ -6,18 +6,15 @@
 // Version: $Id$
 
 @mixin cuba-breadcrumbs {
-  .cuba-breadcrumbs {
-    .v-slot {
-      padding-top: 5px;
-    }
+  $breadCrumbsHeight: 25px;
 
+  .cuba-breadcrumbs {
     .v-label {
       font-family: $theme_fonts;
       font-size: 10px;
       color: $theme_breadcrumbsColor;
       font-weight: normal;
-      line-height: normal;
-      height: 20px;
+      height: $breadCrumbsHeight;
       border: 0;
     }
 
@@ -26,10 +23,11 @@
     }
 
     .v-button-link {
-      height: 20px;
+      height: $breadCrumbsHeight;
       border: none;
 
       .v-button-wrap {
+        vertical-align: top;
         margin-top: 0;
 
         .v-button-caption {

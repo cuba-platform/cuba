@@ -7,21 +7,6 @@
 
 @mixin cuba-login-window {
 
-  // login button
-  .v-button.cuba-login-submit {
-    padding: 0 12px 0 10px;
-
-    .v-button-wrap {
-      padding-top: 0;
-      padding-bottom: 0;
-      height: 25px;
-    }
-
-    .v-button-caption {
-      padding-bottom: 2px;
-    }
-  }
-
   .cuba-login-bottom {
     background: $theme_loginFormBackgroundColor;
     border: thin solid $theme_loginFormBorderColor;

@@ -7,7 +7,7 @@
 
 @mixin havana-button($primaryStyleName: v-button) {
   .#{$primaryStyleName} {
-    display: inline-block;
+    display: table;
     zoom: 1;
     text-align: center;
     text-decoration: none;
@@ -28,20 +28,17 @@
     font-size: 12px;
 
     .#{$primaryStyleName}-wrap {
+      display: table-cell;
       vertical-align: middle;
 
       .#{$primaryStyleName}-caption {
         font: inherit;
         font-size: 12px;
+        line-height: 18px;
         font-family: $theme_fonts;
         vertical-align: middle;
         white-space: nowrap;
         color: $theme_buttonCaptionColor;
-        line-height: normal;
-      }
-
-      .v-icon {
-        border-top: 2px transparent solid;
       }
     }
   }
@@ -91,6 +88,7 @@
     text-align: left;
     background: transparent;
     padding: 0;
+    height: auto;
 
     .#{$primaryStyleName}-wrap {
       background: transparent;
