@@ -166,8 +166,6 @@ public class WebLookupField
                 if (settingValue)
                     return;
 
-                settingValue = true;
-
                 final Object value = getValue();
 
                 Object newValue = fireValueChanging(prevValue, value);
@@ -175,16 +173,17 @@ public class WebLookupField
                 final Object oldValue = prevValue;
                 prevValue = newValue;
 
+                // use setting block value only for ValueChangingListener
+                settingValue = true;
                 if (!ObjectUtils.equals(value, newValue)) {
                     WebLookupField.this.component.setValue(newValue);
                 }
-                fireValueChanged(oldValue, newValue);
+                settingValue = false;
 
                 if (optionsDatasource != null) {
                     optionsDatasource.setItem((Entity) value);
                 }
-
-                settingValue = false;
+                fireValueChanged(oldValue, newValue);
             }
         });
     }
