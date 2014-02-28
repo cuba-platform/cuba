@@ -291,7 +291,7 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
         fireChangeListeners(getValue());
     }
 
-    private void fireChangeListeners(Object newValue) {
+    protected void fireChangeListeners(Object newValue) {
         Object oldValue = prevValue;
         prevValue = newValue;
         if (!ObjectUtils.equals(oldValue, newValue)) {

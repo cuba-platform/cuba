@@ -156,7 +156,7 @@ public class DesktopPickerField extends DesktopAbstractField<Picker> implements 
         });
     }
 
-    private void fireFieldListener(FieldListener listener, String fieldText) {
+    protected void fireFieldListener(FieldListener listener, String fieldText) {
         if (!(ObjectUtils.equals(prevTextValue, fieldText))) {
             prevValue = nullValue;
             prevTextValue = fieldText;
@@ -164,7 +164,7 @@ public class DesktopPickerField extends DesktopAbstractField<Picker> implements 
         }
     }
 
-    private void initModifiersMask() {
+    protected void initModifiersMask() {
         ClientConfig config = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
         String[] strModifiers = StringUtils.split(config.getPickerShortcutModifiers().toUpperCase(), "-");
 
@@ -295,11 +295,11 @@ public class DesktopPickerField extends DesktopAbstractField<Picker> implements 
         }
     }
 
-    private void fireChangeListeners() {
+    protected void fireChangeListeners() {
         fireChangeListeners(getValue());
     }
 
-    private void fireChangeListeners(Object newValue) {
+    protected void fireChangeListeners(Object newValue) {
         if (!ObjectUtils.equals(prevValue, newValue)) {
             Object oldValue = prevValue;
 

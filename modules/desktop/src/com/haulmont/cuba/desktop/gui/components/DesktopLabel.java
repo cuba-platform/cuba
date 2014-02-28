@@ -170,7 +170,7 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
         impl.setText(valueFormatter.formatValue(value));
     }
 
-    private void fireChangeListeners(Object newValue) {
+    protected void fireChangeListeners(Object newValue) {
         Object oldValue = prevValue;
         prevValue = newValue;
         if (!ObjectUtils.equals(oldValue, newValue)) {

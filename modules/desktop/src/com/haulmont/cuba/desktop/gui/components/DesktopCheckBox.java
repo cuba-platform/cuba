@@ -179,7 +179,7 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
         return enabled;
     }
 
-    private void updateInstance() {
+    protected void updateInstance() {
         if (updatingInstance)
             return;
 
@@ -196,7 +196,7 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
         }
     }
 
-    private void fireChangeListeners(Object newValue) {
+    protected void fireChangeListeners(Object newValue) {
         Object oldValue = prevValue;
         prevValue = newValue;
         if (!ObjectUtils.equals(oldValue, newValue)) {

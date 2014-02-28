@@ -83,7 +83,7 @@ public class DesktopProgressBar extends DesktopAbstractComponent<JProgressBar> i
         }
     }
 
-    private void fireChangeListeners(Object newValue) {
+    protected void fireChangeListeners(Object newValue) {
         Object oldValue = prevValue;
         prevValue = newValue;
         if (!ObjectUtils.equals(oldValue, newValue)) {
@@ -91,7 +91,7 @@ public class DesktopProgressBar extends DesktopAbstractComponent<JProgressBar> i
         }
     }
 
-    private void updateComponent(Object value) {
+    protected void updateComponent(Object value) {
         float floatValue = value != null ? ((Number) value).floatValue() : 0;
         int progress = convertValueToSwing(floatValue);
         impl.setValue(progress);

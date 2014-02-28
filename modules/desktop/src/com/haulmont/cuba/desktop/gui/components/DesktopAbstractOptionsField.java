@@ -177,7 +177,7 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
         }
     }
 
-    private void fireChangeListeners(Object newValue) {
+    protected void fireChangeListeners(Object newValue) {
         Object oldValue = prevValue;
         prevValue = newValue;
         if (!ObjectUtils.equals(oldValue, newValue)) {

@@ -257,7 +257,7 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
         }
     }
 
-    private void updateComponent(Object value) {
+    protected void updateComponent(Object value) {
         updatingInstance = true;
         if (value == null) {
             impl.setValue("");
@@ -277,7 +277,7 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
         updateMissingValueState();
     }
 
-    private void updateInstance(Object value) {
+    protected void updateInstance(Object value) {
         if (updatingInstance)
             return;
 
@@ -293,7 +293,7 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
         }
     }
 
-    private void updateWidth() {
+    protected void updateWidth() {
         int width = isAmPmUsed() ? DIGIT_WIDTH : 0;
         if (showSeconds) {
             width = width + DIGIT_WIDTH;
@@ -310,7 +310,7 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
         }
     }
 
-    private void fireChangeListeners(Object newValue) {
+    protected void fireChangeListeners(Object newValue) {
         Object oldValue = prevValue;
         prevValue = newValue;
         if (!ObjectUtils.equals(oldValue, newValue)) {
