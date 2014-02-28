@@ -1299,7 +1299,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     public void setColumnWidth(Column column, int width) {
         checkNotNullArgument(column, "column must be non null");
 
-        if (column.getWidth() != width) {
+        if (column.getWidth() == null || column.getWidth() != width) {
             column.setWidth(width);
         }
         component.setColumnWidth(column.getId(), width);
