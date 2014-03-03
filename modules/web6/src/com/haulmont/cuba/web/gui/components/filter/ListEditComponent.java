@@ -58,6 +58,7 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
 
     private List listValue;
     private Map<Object, String> values = new LinkedHashMap<>();
+    protected ListEditWindow listEditWindow;
 
     private List<ValueChangeListener> listeners = new ArrayList<>();
 
@@ -85,8 +86,12 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
                 new Button.ClickListener() {
                     @Override
                     public void buttonClick(Button.ClickEvent event) {
-                        ListEditWindow window = new ListEditWindow(values);
-                        com.haulmont.cuba.web.App.getInstance().getAppWindow().addWindow(window);
+                        if (listEditWindow == null) {
+                            listEditWindow = new ListEditWindow(values);
+                        } else {
+                            listEditWindow.setValues(values);
+                        }
+                        com.haulmont.cuba.web.App.getInstance().getAppUI().addWindow(listEditWindow);
                     }
                 }
         );
@@ -395,6 +400,10 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
         private VerticalLayout listLayout;
         private Map<Object, String> values;
         private Messages messages;
+
+        private void setValues(Map<Object, String> values) {
+            this.values = new HashMap<>(values);
+        }
 
         private ListEditWindow(Map<Object, String> values) {
             super(AppBeans.get(Messages.class).getMessage(MESSAGES_PACK, "ListEditWindow.caption"));

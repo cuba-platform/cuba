@@ -50,7 +50,7 @@ public class ListEditComponent extends CustomField {
 
     protected List listValue;
     protected Map<Object, String> values = new LinkedHashMap<>();
-    private ListEditWindow listEditWindow;
+    protected ListEditWindow listEditWindow;
 
     protected List<ValueChangeListener> listeners = new LinkedList<>();
     protected HorizontalLayout composition;
@@ -82,7 +82,7 @@ public class ListEditComponent extends CustomField {
                         if (listEditWindow == null) {
                             listEditWindow = new ListEditWindow(values);
                         } else {
-                            listEditWindow.init(values);
+                            listEditWindow.setValues(values);
                         }
                         com.haulmont.cuba.web.App.getInstance().getAppUI().addWindow(listEditWindow);
                     }
@@ -348,7 +348,7 @@ public class ListEditComponent extends CustomField {
         private Map<Object, String> values;
         private Messages messages;
 
-        private void init(Map<Object, String> values) {
+        private void setValues(Map<Object, String> values) {
             this.values = new HashMap<>(values);
         }
 
