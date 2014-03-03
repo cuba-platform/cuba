@@ -143,9 +143,13 @@ public class App implements ConnectionListener {
         if (exiting)
             return;
 
-        LoginDialog loginDialog = new LoginDialog(mainFrame, connection);
+        LoginDialog loginDialog = createLoginDialog();
         loginDialog.setLocationRelativeTo(mainFrame);
         loginDialog.open();
+    }
+
+    protected LoginDialog createLoginDialog() {
+        return new LoginDialog(mainFrame, connection);
     }
 
     protected String getApplicationTitle() {
@@ -234,8 +238,12 @@ public class App implements ConnectionListener {
     }
 
     protected void initConnection() {
-        connection = new Connection();
+        connection = createConnection();
         connection.addListener(this);
+    }
+
+    protected Connection createConnection() {
+        return new Connection();
     }
 
     protected void exit() {
@@ -552,7 +560,7 @@ public class App implements ConnectionListener {
      */
     protected void afterLoggedIn() {
         final User user = AppBeans.get(UserSessionSource.class).getUserSession().getUser();
-            // Change password on logon
+        // Change password on logon
         if (Boolean.TRUE.equals(user.getChangePasswordAtNextLogon())) {
             mainFrame.deactivate("");
             final DesktopWindowManager wm = mainFrame.getWindowManager();
@@ -561,7 +569,7 @@ public class App implements ConnectionListener {
 
             WindowInfo changePasswordDialog = AppBeans.get(WindowConfig.class).getWindowInfo("sec$User.changePassw");
             wm.getDialogParams().setCloseable(false);
-            Map<String, Object> params = Collections.singletonMap("cancelEnabled", (Object)Boolean.FALSE);
+            Map<String, Object> params = Collections.singletonMap("cancelEnabled", (Object) Boolean.FALSE);
             Window changePasswordWindow = wm.openEditor(changePasswordDialog, user, WindowManager.OpenType.DIALOG, params);
             changePasswordWindow.addListener(new Window.CloseListener() {
                 @Override
