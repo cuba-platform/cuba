@@ -382,58 +382,67 @@ public abstract class App extends Application
 
     @Override
     public void transactionStart(Application application, Object transactionData) {
-        HttpServletRequest request = (HttpServletRequest) transactionData;
+        try {
+            HttpServletRequest request = (HttpServletRequest) transactionData;
 
-        this.httpSession = request.getSession();
+            this.httpSession = request.getSession();
 
-        httpSession.setMaxInactiveInterval(webConfig.getHttpSessionExpirationTimeoutSec());
+            httpSession.setMaxInactiveInterval(webConfig.getHttpSessionExpirationTimeoutSec());
 
-        setClientAddress(request);
+            setClientAddress(request);
 
-        if (log.isTraceEnabled()) {
-            log.trace("requestStart: [@" + Integer.toHexString(System.identityHashCode(request)) + "] " +
-                    request.getRequestURI() +
-                    (request.getUserPrincipal() != null ? " [" + request.getUserPrincipal() + "]" : "") +
-                    " from " + clientAddress);
-        }
-
-        if (application == App.this) {
-            currentApp.set((App) application);
-        }
-        application.setLocale(request.getLocale());
-
-        if (ActiveDirectoryHelper.useActiveDirectory()) {
-            setUser(request.getUserPrincipal());
-        }
-
-        if (contextName == null) {
-            contextName = request.getContextPath().substring(1);
-        }
-
-        String requestURI = request.getRequestURI();
-        String windowName = request.getParameter("windowName");
-
-        setupCurrentWindowName(requestURI, windowName);
-
-        String action = (String) httpSession.getAttribute(LAST_REQUEST_ACTION_ATTR);
-
-        if (!connection.isConnected() &&
-                !((webConfig.getLoginAction().equals(action)) || auxillaryUrl(requestURI))) {
-            if (loginOnStart(request)) {
-                setupCurrentWindowName(requestURI, windowName);
+            if (log.isTraceEnabled()) {
+                log.trace("requestStart: [@" + Integer.toHexString(System.identityHashCode(request)) + "] " +
+                        request.getRequestURI() +
+                        (request.getUserPrincipal() != null ? " [" + request.getUserPrincipal() + "]" : "") +
+                        " from " + clientAddress);
             }
-        }
 
-        if (connection.isConnected()) {
-            UserSession userSession = connection.getSession();
-            if (userSession != null) {
-                AppContext.setSecurityContext(new SecurityContext(userSession));
-                application.setLocale(userSession.getLocale());
+            if (application == App.this) {
+                currentApp.set((App) application);
             }
-            requestStartTimes.put(transactionData, System.currentTimeMillis());
-        }
+            application.setLocale(request.getLocale());
 
-        processExternalLink(request, requestURI);
+            if (ActiveDirectoryHelper.useActiveDirectory()) {
+                setUser(request.getUserPrincipal());
+            }
+
+            if (contextName == null) {
+                contextName = request.getContextPath().substring(1);
+            }
+
+            String requestURI = request.getRequestURI();
+            String windowName = request.getParameter("windowName");
+
+            setupCurrentWindowName(requestURI, windowName);
+
+            String action = (String) httpSession.getAttribute(LAST_REQUEST_ACTION_ATTR);
+
+
+            if (!connection.isConnected() &&
+                    !((webConfig.getLoginAction().equals(action)) || auxillaryUrl(requestURI))) {
+                if (loginOnStart(request)) {
+                    setupCurrentWindowName(requestURI, windowName);
+                }
+            }
+
+            if (connection.isConnected()) {
+                UserSession userSession = connection.getSession();
+                if (userSession != null) {
+                    AppContext.setSecurityContext(new SecurityContext(userSession));
+                    application.setLocale(userSession.getLocale());
+                }
+                requestStartTimes.put(transactionData, System.currentTimeMillis());
+            }
+
+            processExternalLink(request, requestURI);
+        } catch (final Exception ex) {
+            getErrorHandler().terminalError(new Terminal.ErrorEvent() {
+                public Throwable getThrowable() {
+                    return ex;
+                }
+            });
+        }
     }
 
     protected void setClientAddress(HttpServletRequest request) {
