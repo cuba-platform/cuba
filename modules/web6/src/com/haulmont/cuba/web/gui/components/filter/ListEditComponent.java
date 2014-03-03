@@ -91,7 +91,7 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
                         } else {
                             listEditWindow.setValues(values);
                         }
-                        com.haulmont.cuba.web.App.getInstance().getAppUI().addWindow(listEditWindow);
+                        com.haulmont.cuba.web.App.getInstance().getAppWindow().addWindow(listEditWindow);
                     }
                 }
         );
