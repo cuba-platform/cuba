@@ -50,6 +50,7 @@ public class ListEditComponent extends CustomField {
 
     protected List listValue;
     protected Map<Object, String> values = new LinkedHashMap<>();
+    private ListEditWindow listEditWindow;
 
     protected List<ValueChangeListener> listeners = new LinkedList<>();
     protected HorizontalLayout composition;
@@ -78,8 +79,12 @@ public class ListEditComponent extends CustomField {
                 new Button.ClickListener() {
                     @Override
                     public void buttonClick(Button.ClickEvent event) {
-                        ListEditWindow window = new ListEditWindow(values);
-                        com.haulmont.cuba.web.App.getInstance().getAppUI().addWindow(window);
+                        if (listEditWindow == null) {
+                            listEditWindow = new ListEditWindow(values);
+                        } else {
+                            listEditWindow.init(values);
+                        }
+                        com.haulmont.cuba.web.App.getInstance().getAppUI().addWindow(listEditWindow);
                     }
                 }
         );
@@ -342,6 +347,10 @@ public class ListEditComponent extends CustomField {
         private VerticalLayout listLayout;
         private Map<Object, String> values;
         private Messages messages;
+
+        private void init(Map<Object, String> values) {
+            this.values = new HashMap<>(values);
+        }
 
         private ListEditWindow(Map<Object, String> values) {
             super(AppBeans.get(Messages.class).getMessage(MESSAGES_PACK, "ListEditWindow.caption"));
