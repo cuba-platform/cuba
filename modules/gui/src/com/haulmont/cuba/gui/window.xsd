@@ -16,13 +16,6 @@
 
     <!-- Enums -->
 
-    <xs:simpleType name="operatorEnum">
-        <xs:restriction base="xs:string">
-            <xs:enumeration value="STARTS_WITH"/>
-            <xs:enumeration value="ENDS_WITH"/>
-        </xs:restriction>
-    </xs:simpleType>
-
     <xs:simpleType name="filterMode">
         <xs:restriction base="xs:string">
             <xs:enumeration value="NO"/>
@@ -897,7 +890,6 @@
                     <xs:attribute name="join" type="xs:string"/>
                     <xs:attribute name="paramWhere" type="xs:string"/>
                     <xs:attribute name="paramView" type="xs:string"/>
-                    <xs:attribute name="operatorType" type="operatorEnum"/>
                 </xs:complexType>
             </xs:element>
         </xs:sequence>
@@ -1180,9 +1172,6 @@
                                 <xs:attribute name="flex" type="xs:float"/>
 
                                 <xs:attributeGroup ref="hasVisibility"/>
-                                <xs:attributeGroup ref="hasAlign"/>
-
-                                <xs:attribute name="spacing" type="xs:boolean"/>
                             </xs:complexType>
                         </xs:element>
                     </xs:sequence>
