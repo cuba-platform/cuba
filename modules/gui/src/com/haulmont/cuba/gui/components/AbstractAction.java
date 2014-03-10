@@ -109,9 +109,9 @@ public abstract class AbstractAction implements Action {
     @Override
     public void setShortcut(String shortcut) {
         if (shortcut != null) {
-            this.shortcut = KeyCombination.create(shortcut);
+            setShortcut(KeyCombination.create(shortcut));
         } else {
-            this.shortcut = null;
+            setShortcut((KeyCombination) null);
         }
     }
 
