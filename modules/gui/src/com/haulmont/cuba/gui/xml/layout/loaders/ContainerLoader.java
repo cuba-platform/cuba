@@ -63,7 +63,7 @@ public abstract class ContainerLoader extends ComponentLoader {
 
     protected void loadSpacing(Component.Spacing layout, Element element) {
         final String spacing = element.attributeValue("spacing");
-        if (!StringUtils.isEmpty(spacing) && isBoolean(spacing)) {
+        if (!StringUtils.isEmpty(spacing)) {
             layout.setSpacing(Boolean.valueOf(spacing));
         }
     }

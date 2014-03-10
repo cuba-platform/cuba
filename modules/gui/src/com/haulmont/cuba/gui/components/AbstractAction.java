@@ -14,10 +14,7 @@ import org.apache.commons.lang.StringUtils;
 import javax.annotation.Nullable;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Base class for GUI actions.
@@ -74,7 +71,11 @@ public abstract class AbstractAction implements Action {
 
     @Override
     public void setShortcut(KeyCombination shortcut) {
-        this.shortcut = shortcut;
+        KeyCombination oldValue = this.shortcut;
+        if (!Objects.equals(oldValue, shortcut)) {
+            this.shortcut = shortcut;
+            firePropertyChange(PROP_SHORTCUT, oldValue, shortcut);
+        }
     }
 
     @Override

@@ -17,7 +17,6 @@ import java.util.Set;
 
 /**
  * The <code>RemoveAction</code> variant that excludes instances from the list, but doesn't delete them from DB.
- * Makes sense for removing items from non-aggregating OneToMany collections.
  *
  * @author krivopustov
  * @version $Id$
@@ -77,8 +76,9 @@ public class ExcludeAction extends RemoveAction {
 
     @Override
     public void actionPerform(Component component) {
-        if(!isEnabled()) return;
-        final Set selected = owner.getSelected();
+        if (!isEnabled())
+            return;
+        Set selected = owner.getSelected();
         if (!selected.isEmpty()) {
             if (confirm) {
                 confirmAndRemove(selected);
@@ -92,7 +92,7 @@ public class ExcludeAction extends RemoveAction {
     @Override
     protected void doRemove(Set selected, boolean autocommit) {
         @SuppressWarnings({"unchecked"})
-        final CollectionDatasource ds = owner.getDatasource();
+        CollectionDatasource ds = owner.getDatasource();
         for (Object item : selected) {
             ds.excludeItem((Entity) item);
         }

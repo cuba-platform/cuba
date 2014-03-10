@@ -417,6 +417,10 @@ public interface PickerField extends Field, Component.ActionsHolder {
             }
         }
 
+        /**
+         * Hook invoked after the editor was closed
+         * @param window    the editor window
+         */
         protected void afterWindowClosed(Window window) {
         }
 

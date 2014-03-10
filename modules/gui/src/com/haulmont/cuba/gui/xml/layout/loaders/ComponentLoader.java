@@ -275,7 +275,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
                 }
                 layout.setMargin(Boolean.valueOf(margins[0]), Boolean.valueOf(margins[1]),
                         Boolean.valueOf(margins[2]), Boolean.valueOf(margins[3]));
-            } else if (isBoolean(margin)) {
+            } else {
                 layout.setMargin(Boolean.valueOf(margin));
             }
         }
@@ -286,10 +286,6 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
             component.setFrame(context.getFrame());
         } else
             throw new GuiDevelopmentException("ComponentLoaderContext.frame is null", context.getFullFrameId());
-    }
-
-    protected static boolean isBoolean(String s) {
-        return "true".equals(s) || "false".equals(s);
     }
 
     protected void loadAction(Component.ActionOwner component, Element element) {
@@ -396,7 +392,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
 
         String trackSelection = element.attributeValue("trackSelection");
         String shortcut = StringUtils.trimToNull(element.attributeValue("shortcut"));
-        if (isBoolean(trackSelection) && Boolean.parseBoolean(trackSelection)) {
+        if (Boolean.valueOf(trackSelection)) {
             return new DeclarativeTrackingAction(
                     id,
                     loadResourceString(element.attributeValue("caption")),

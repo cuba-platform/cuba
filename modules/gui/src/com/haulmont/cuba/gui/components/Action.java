@@ -8,7 +8,8 @@ import java.beans.PropertyChangeListener;
 import java.util.Collection;
 
 /**
- * A named listener to UI events
+ * The <code>Action</code> interface abstracts away a function from a visual component.
+ * When an action occurs, {@link #actionPerform(Component)} method is invoked.
  *
  * @author abramov
  * @version $Id$
@@ -17,6 +18,7 @@ public interface Action {
 
     public static final String PROP_CAPTION = "caption";
     public static final String PROP_DESCRIPTION = "description";
+    public static final String PROP_SHORTCUT = "shortcut";
     public static final String PROP_ICON = "icon";
     public static final String PROP_ENABLED = "enabled";
     public static final String PROP_VISIBLE = "visible";
@@ -103,7 +105,7 @@ public interface Action {
     void removeOwner(Component.ActionOwner actionOwner);
 
     /**
-     * This method is invoked by owning component.
+     * Invoked by owning component when an action occurs.
      * @param component invoking component
      */
     void actionPerform(Component component);
