@@ -65,29 +65,6 @@ public abstract class AbstractAction implements Action {
     }
 
     @Override
-    public KeyCombination getShortcut() {
-        return shortcut;
-    }
-
-    @Override
-    public void setShortcut(KeyCombination shortcut) {
-        KeyCombination oldValue = this.shortcut;
-        if (!Objects.equals(oldValue, shortcut)) {
-            this.shortcut = shortcut;
-            firePropertyChange(PROP_SHORTCUT, oldValue, shortcut);
-        }
-    }
-
-    @Override
-    public void setShortcut(String shortcut) {
-        if (shortcut != null) {
-            this.shortcut = KeyCombination.create(shortcut);
-        } else {
-            this.shortcut = null;
-        }
-    }
-
-    @Override
     public String getCaption() {
         return caption == null ? messages.getMessage(getClass(), id) : caption;
     }
@@ -112,6 +89,43 @@ public abstract class AbstractAction implements Action {
         if (!StringUtils.equals(oldValue, description)) {
             this.description = description;
             firePropertyChange(PROP_DESCRIPTION, oldValue, description);
+        }
+    }
+
+    @Override
+    public KeyCombination getShortcut() {
+        return shortcut;
+    }
+
+    @Override
+    public void setShortcut(KeyCombination shortcut) {
+        KeyCombination oldValue = this.shortcut;
+        if (!Objects.equals(oldValue, shortcut)) {
+            this.shortcut = shortcut;
+            firePropertyChange(PROP_SHORTCUT, oldValue, shortcut);
+        }
+    }
+
+    @Override
+    public void setShortcut(String shortcut) {
+        if (shortcut != null) {
+            this.shortcut = KeyCombination.create(shortcut);
+        } else {
+            this.shortcut = null;
+        }
+    }
+
+    @Override
+    public String getIcon() {
+        return icon;
+    }
+
+    @Override
+    public void setIcon(String icon) {
+        String oldValue = this.icon;
+        if (!StringUtils.equals(oldValue, icon)) {
+            this.icon = icon;
+            firePropertyChange(PROP_ICON, oldValue, icon);
         }
     }
 
@@ -196,20 +210,6 @@ public abstract class AbstractAction implements Action {
             return;
         }
         changeSupport.firePropertyChange(propertyName, oldValue, newValue);
-    }
-
-    @Override
-    public String getIcon() {
-        return icon;
-    }
-
-    @Override
-    public void setIcon(String icon) {
-        String oldValue = this.icon;
-        if (!StringUtils.equals(oldValue, icon)) {
-            this.icon = icon;
-            firePropertyChange(PROP_ICON, oldValue, icon);
-        }
     }
 
     @Override
