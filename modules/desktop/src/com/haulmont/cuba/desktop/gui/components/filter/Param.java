@@ -125,6 +125,10 @@ public class Param extends AbstractParam<ParamEditorComponent> {
 
     protected ParamEditorComponent createTextField() {
         final DesktopTextField field = new DesktopTextField();
+
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        field.setTrimming(configuration.getConfig(ClientConfig.class).getGenericFilterTrimParamValues());
+
         field.addListener(new ValueListener() {
             @Override
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
