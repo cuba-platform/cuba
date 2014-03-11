@@ -7,7 +7,6 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.matchers.TextMatcherEditor;
-import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -46,6 +45,7 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
 
     protected boolean resetValueState = false;
     protected boolean enterHandling = false;
+    protected boolean popupItemSelectionHandling = false;
     protected boolean settingValue;
 
     protected boolean editable = true;
@@ -103,34 +103,45 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
         comboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if ("comboBoxEdited".equals(e.getActionCommand()) && enterHandling) {
-                    Object item = comboBox.getSelectedItem();
+                if ("comboBoxEdited".equals(e.getActionCommand())) {
+                    Object selectedItem = comboBox.getSelectedItem();
 
-                    if (item instanceof String) {
-                        boolean found = false;
-                        String newFilter = (String) item;
-                        if (prevValue != null) {
-                            if (StringUtils.equals(InstanceUtils.getInstanceName((Entity) prevValue), newFilter)) {
-                                found = true;
-                            }
+                    if (popupItemSelectionHandling) {
+                        if (selectedItem instanceof ValueWrapper) {
+                            Object selectedValue = ((ValueWrapper) selectedItem).getValue();
+                            setValue(selectedValue);
+                            updateOptionsDsItem();
+                        } else if (selectedItem instanceof String) {
+                            handleSearch((String) selectedItem);
                         }
-                        if (!found) {
-                            handleSearch(newFilter);
+                        popupItemSelectionHandling = false;
+                    } else if (enterHandling) {
+                        if (selectedItem instanceof String) {
+                            boolean found = false;
+                            String newFilter = (String) selectedItem;
+                            if (prevValue != null) {
+                                if (StringUtils.equals(getDisplayString((Entity) prevValue), newFilter)) {
+                                    found = true;
+                                }
+                            }
+                            if (!found) {
+                                handleSearch(newFilter);
+                            } else {
+                                updateComponent(prevValue);
+                                clearSearchVariants();
+                            }
                         } else {
-                            updateComponent(prevValue);
+                            // Disable variants after select
                             clearSearchVariants();
                         }
-                    } else {
-                        // Disable variants after select
-                        clearSearchVariants();
+                        enterHandling = false;
                     }
                 }
 
                 updateMissingValueState();
-
-                enterHandling = false;
             }
         });
+
         Component editorComponent = comboBox.getEditor().getEditorComponent();
         editorComponent.addKeyListener(new KeyAdapter() {
             @Override
@@ -180,13 +191,17 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
                     public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
                         if (!autoComplete.isEditableState()) {
                             // Only if realy item changed
-                            Object selectedItem = comboBox.getSelectedItem();
-                            if (selectedItem instanceof ValueWrapper) {
-                                Object selectedValue = ((ValueWrapper) selectedItem).getValue();
-                                setValue(selectedValue);
-                                updateOptionsDsItem();
-                            } else if (selectedItem instanceof String) {
-                                handleSearch((String) selectedItem);
+                            if (!enterHandling) {
+                                Object selectedItem = comboBox.getSelectedItem();
+                                if (selectedItem instanceof ValueWrapper) {
+                                    Object selectedValue = ((ValueWrapper) selectedItem).getValue();
+                                    setValue(selectedValue);
+                                    updateOptionsDsItem();
+                                } else if (selectedItem instanceof String) {
+                                    handleSearch((String) selectedItem);
+                                }
+                            } else {
+                                popupItemSelectionHandling = true;
                             }
 
                             updateMissingValueState();
@@ -230,7 +245,7 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
                             comboBox.setBackground(searchEditBgColor);
                         }
                     } else {
-                        String valueText = InstanceUtils.getInstanceName((Entity) prevValue);
+                        String valueText = getDisplayString((Entity) prevValue);
 
                         if (!StringUtils.equals(inputText, valueText)) {
                             comboBox.setBackground(searchEditBgColor);

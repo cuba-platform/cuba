@@ -252,6 +252,23 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
             updateComponent(value);
     }
 
+    protected String getDisplayString(Entity entity) {
+        if (entity == null)
+            return "";
+
+        String captionValue;
+        if (captionMode.equals(CaptionMode.PROPERTY) && !StringUtils.isBlank(captionProperty)) {
+            captionValue = entity.getValueEx(captionProperty);
+        } else {
+            captionValue = entity.getInstanceName();
+        }
+
+        if (captionValue == null)
+            captionValue = "";
+
+        return captionValue;
+    }
+
     protected abstract Object getSelectedItem();
     protected abstract void setSelectedItem(Object item);
 
@@ -274,20 +291,7 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
 
         @Override
         public String toString() {
-            if (entity == null)
-                return "";
-
-            String captionValue;
-            if (captionMode.equals(CaptionMode.PROPERTY) && !StringUtils.isBlank(captionProperty)) {
-                captionValue = entity.getValueEx(captionProperty);
-            } else {
-                captionValue = entity.getInstanceName();
-            }
-
-            if (captionValue == null)
-                captionValue = "";
-
-            return captionValue;
+            return getDisplayString(entity);
         }
     }
 
