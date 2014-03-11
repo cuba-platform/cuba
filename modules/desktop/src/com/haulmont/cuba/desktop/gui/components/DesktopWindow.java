@@ -214,6 +214,11 @@ public class DesktopWindow implements Window, Component.Disposable,
 
     @Override
     public boolean close(final String actionId) {
+        if (!forceClose) {
+            if (!delegate.preClose(actionId))
+                return false;
+        }
+
         if (!forceClose && isModified()) {
             final Committable committable = (getWrapper() instanceof Committable) ? (Committable) getWrapper() :
                         (this instanceof Committable) ? (Committable) this : null;
