@@ -94,8 +94,11 @@ public class DesktopWindowManager extends WindowManager {
         if (tabContent == null)
             return;
         WindowBreadCrumbs breadCrumbs = tabs.get(tabContent);
-        Runnable closeTask = new TabCloseTask(breadCrumbs);
-        closeTask.run();
+        // may be window already closed
+        if (breadCrumbs != null) {
+            Runnable closeTask = new TabCloseTask(breadCrumbs);
+            closeTask.run();
+        }
     }
 
     @Override
