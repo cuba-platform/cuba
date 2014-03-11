@@ -86,7 +86,11 @@ public class SwingXTableSettings implements TableSettings {
             List<? extends RowSorter.SortKey> sortKeys = table.getRowSorter().getSortKeys();
             if (!sortKeys.isEmpty()) {
                 RowSorter.SortKey sortKey = sortKeys.get(0);
-                columnsElem.addAttribute("sortColumn", String.valueOf(sortKey.getColumn()));
+                if (sortKey.getColumn() >= 0) {
+                    TableColumn tableColumn = columns.get(sortKey.getColumn());
+                    columnsElem.addAttribute("sortColumn", String.valueOf(tableColumn.getIdentifier()));
+                }
+
                 columnsElem.addAttribute("sortOrder", sortKey.getSortOrder().toString());
             }
         }
@@ -136,7 +140,21 @@ public class SwingXTableSettings implements TableSettings {
             String sortColumn = columnsElem.attributeValue("sortColumn");
             if (sortColumn != null) {
                 SortOrder sortOrder = SortOrder.valueOf(columnsElem.attributeValue("sortOrder"));
-                table.getRowSorter().setSortKeys(Collections.singletonList(new RowSorter.SortKey(Integer.valueOf(sortColumn), sortOrder)));
+                int sortColumnIndex = -1;
+
+                if (!StringUtils.isNumeric(sortColumn)) {
+                    Table.Column column = getColumn(sortColumn);
+                    if (column != null) {
+                        sortColumnIndex = columns.indexOf(column);
+                    }
+                } else {
+                    // backward compatibility
+                    sortColumnIndex = Integer.valueOf(sortColumn);
+                }
+
+                if (sortColumnIndex >= 0) {
+                    table.getRowSorter().setSortKeys(Collections.singletonList(new RowSorter.SortKey(sortColumnIndex, sortOrder)));
+                }
             }
         }
     }
