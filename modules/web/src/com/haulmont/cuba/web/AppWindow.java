@@ -668,7 +668,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
 
         Component logoImage = getLogoImage();
         if (logoImage != null) {
-            titleLayout.setStyleName("cuba-app-icon");
+            logoImage.setStyleName("cuba-app-icon");
             titleLayout.addComponent(logoImage);
             titleLayout.setComponentAlignment(logoImage, Alignment.MIDDLE_LEFT);
         }
