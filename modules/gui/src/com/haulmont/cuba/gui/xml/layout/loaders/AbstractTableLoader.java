@@ -69,12 +69,12 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         loadPresentations(component, element);
 
         loadActions(component, element);
-        loadAllowPopupMenu(component,element);
+        loadAllowPopupMenu(component, element);
 
         final Element columnsElement = element.element("columns");
         final Element rowsElement = element.element("rows");
 
-        if (rowsElement == null){
+        if (rowsElement == null) {
             throw new GuiDevelopmentException("Table doesn't have 'rows' element", context.getCurrentIFrameId(),
                     "Table ID", element.attributeValue("id"));
         }
@@ -89,7 +89,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         loadRowsCount(component, element); // must be before datasource setting
 
         final String datasource = rowsElement.attributeValue("datasource");
-        if (StringUtils.isBlank(datasource)){
+        if (StringUtils.isBlank(datasource)) {
             throw new GuiDevelopmentException("Table 'rows' element doesn't have 'datasource' attribute",
                     context.getCurrentIFrameId(), "Table ID", element.attributeValue("id"));
         }
@@ -125,7 +125,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         return component;
     }
 
-    protected void loadAllowPopupMenu(T table,Element element){
+    protected void loadAllowPopupMenu(T table, Element element) {
         final String allowPopupMenu = element.attributeValue("allowPopupMenu");
         if (!StringUtils.isBlank(allowPopupMenu))
             table.setAllowPopupMenu(BooleanUtils.toBoolean(allowPopupMenu));
@@ -314,6 +314,11 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         final Element formatterElement = element.element("formatter");
         if (formatterElement != null) {
             final String className = formatterElement.attributeValue("class");
+
+            if (className == null) {
+                throw new GuiDevelopmentException("Formatter's attribute 'class' is not specified", context.getCurrentIFrameId());
+            }
+
             Class<Formatter> aClass = scripting.loadClass(className);
             if (aClass == null)
                 throw new GuiDevelopmentException("Class " + className + " is not found", context.getFullFrameId());
