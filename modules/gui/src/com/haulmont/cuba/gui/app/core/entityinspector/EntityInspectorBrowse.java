@@ -175,7 +175,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
                 .buildCollectionDatasource();
 
         entitiesDs.setQuery(String.format("select e from %s e", meta.getName()));
-        entitiesDs.refresh();
+
         entitiesTable.setDatasource(entitiesDs);
 
         tableBox.add(entitiesTable);
