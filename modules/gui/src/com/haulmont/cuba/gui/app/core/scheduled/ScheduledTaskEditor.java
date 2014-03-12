@@ -26,7 +26,7 @@ import java.util.*;
  * @author krivopustov
  * @version $Id$
  */
-public class ScheduledTaskEditor extends AbstractEditor {
+public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
 
     @Inject
     protected LookupField beanNameField;
@@ -203,13 +203,19 @@ public class ScheduledTaskEditor extends AbstractEditor {
         }
     }
 
+
+    @Override
+    protected void initNewItem(ScheduledTask item) {
+        item.setDefinedBy(ScheduledTaskDefinedBy.BEAN);
+        item.setSchedulingType(SchedulingType.PERIOD);
+    }
+
     @Override
     public void setItem(Entity item) {
         super.setItem(item);
 
-        ScheduledTask task = (ScheduledTask) getItem();
-        if (StringUtils.isNotEmpty(task.getMethodName())) {
-            setInitialMethodNameValue(task);
+        if (StringUtils.isNotEmpty(getItem().getMethodName())) {
+            setInitialMethodNameValue(getItem());
         }
     }
 

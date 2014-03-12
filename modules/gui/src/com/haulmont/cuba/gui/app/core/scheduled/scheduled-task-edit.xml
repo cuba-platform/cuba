@@ -28,7 +28,7 @@
                         <label id="beanNameLabel" value="msg://com.haulmont.cuba.core.entity/ScheduledTask.beanName"/>
                         <lookupField id="beanNameField" datasource="taskDs" property="beanName" width="400px"
                                      required="true"/>
-                        <label value=""/> <!-- temporary workaround until #PL-1701 is fixed -->
+                        <label value=""/>
                     </row>
                     <row>
                         <label id="methodNameLabel"
@@ -42,25 +42,30 @@
                         <label id="classNameLabel" value="msg://com.haulmont.cuba.core.entity/ScheduledTask.className"/>
                         <textField id="classNameField" datasource="taskDs" property="className" width="400px"
                                    required="true"/>
+                        <label value=""/>
                     </row>
                     <row>
                         <label id="scriptNameLabel"
                                value="msg://com.haulmont.cuba.core.entity/ScheduledTask.scriptName"/>
                         <textField id="scriptNameField" datasource="taskDs" property="scriptName" width="400px"
                                    required="true"/>
+                        <label value=""/>
                     </row>
                     <row>
                         <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.userName"/>
                         <lookupField id="userNameField" datasource="taskDs" property="userName" width="400px"/>
+                        <label value=""/>
                     </row>
                     <row>
                         <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.singleton"/>
                         <checkBox id="singletonField" datasource="taskDs" property="singleton"/>
+                        <label value=""/>
                     </row>
                     <row>
                         <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.schedulingType"/>
                         <optionsGroup id="schedulingTypeField" datasource="taskDs" property="schedulingType"
                                       required="true" multiselect="false" orientation="horizontal"/>
+                        <label value=""/>
                     </row>
                     <!--scheduling type options start-->
                     <row>
@@ -68,42 +73,50 @@
                         <textField id="cronField" datasource="taskDs" property="cron" width="180px" required="true">
                             <validator class="com.haulmont.cuba.gui.app.core.scheduled.CronValidator" message="msg://validation.cronInvalid"/>
                         </textField>
-
+                        <label value=""/>
                     </row>
                     <row>
                         <label id="periodLabel" value="msg://com.haulmont.cuba.core.entity/ScheduledTask.period"/>
                         <textField id="periodField" datasource="taskDs" property="period" width="180px" required="true"/>
+                        <label value=""/>
                     </row>
                     <row>
                         <label id="startDateLabel" value="msg://com.haulmont.cuba.core.entity/ScheduledTask.startDate"/>
                         <dateField id="startDateField" datasource="taskDs" property="startDate" width="180px"/>
+                        <label value=""/>
                     </row>
                     <!--scheduling type options end-->
                     <row>
                         <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.timeout"/>
                         <textField id="timeoutField" datasource="taskDs" property="timeout" width="180px"/>
+                        <label value=""/>
                     </row>
                     <row>
                         <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.timeFrame"/>
                         <textField id="timeFrameField" datasource="taskDs" property="timeFrame" width="180px"/>
+                        <label value=""/>
                     </row>
                     <row>
                         <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.permittedServers"/>
                         <textField id="permittedServersField" datasource="taskDs" property="permittedServers"
                                    width="400px"/>
+                        <label value=""/>
                     </row>
                     <row>
                         <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.logStart"/>
                         <checkBox id="logStartField" datasource="taskDs" property="logStart"/>
+                        <label value=""/>
                     </row>
                     <row>
                         <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.logFinish"/>
                         <checkBox id="logFinishField" datasource="taskDs" property="logFinish"/>
+                        <label value=""/>
                     </row>
                     <row>
                         <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.description"/>
                         <textArea id="description" datasource="taskDs" property="description"
                                   width="400px" rows="3"/>
+                        <label value=""/>
                     </row>
                 </rows>
             </grid>
