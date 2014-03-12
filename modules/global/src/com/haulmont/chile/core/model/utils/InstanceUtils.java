@@ -7,7 +7,6 @@ package com.haulmont.chile.core.model.utils;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.chile.core.model.Instance;
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.global.IllegalEntityStateException;
 import org.apache.commons.lang.ArrayUtils;
@@ -18,7 +17,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Utility class to work with {@link Instance}s.
