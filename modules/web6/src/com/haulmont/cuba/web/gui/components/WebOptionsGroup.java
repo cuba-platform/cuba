@@ -94,7 +94,7 @@ public class WebOptionsGroup
         } else if (optionsDatasource != null) {
             t = optionsDatasource.getItem(o);
         } else
-            t = null;
+            t = o;
         return t;
     }
 

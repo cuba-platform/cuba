@@ -312,6 +312,15 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
         public String toString() {
             return key;
         }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj instanceof DesktopAbstractOptionsField.MapKeyWrapper) {
+                MapKeyWrapper other = (MapKeyWrapper) obj;
+                return StringUtils.equals(this.key, other.key);
+            }
+            return false;
+        }
     }
 
     public class ObjectWrapper implements ValueWrapper<Object> {

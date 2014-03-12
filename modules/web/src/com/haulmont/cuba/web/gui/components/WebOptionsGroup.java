@@ -26,11 +26,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @author abramov
  * @version $Id$
  */
-public class WebOptionsGroup
-        extends
-            WebAbstractOptionsField<CubaOptionGroup>
-        implements
-            OptionsGroup {
+public class WebOptionsGroup extends WebAbstractOptionsField<CubaOptionGroup> implements OptionsGroup {
 
     protected Orientation orientation = Orientation.VERTICAL;
 
@@ -39,6 +35,12 @@ public class WebOptionsGroup
             @Override
             public void setPropertyDataSource(Property newDataSource) {
                 super.setPropertyDataSource(new PropertyAdapter(newDataSource) {
+
+                    @Override
+                    public Class getType() {
+                        // we ourselves convert values in this property adapter
+                        return Object.class;
+                    }
 
                     @Override
                     public Object getValue() {
@@ -99,7 +101,7 @@ public class WebOptionsGroup
             }
             t = optionsDatasource.getItem(o);
         } else {
-            t = null;
+            t = o;
         }
         return t;
     }
@@ -140,8 +142,9 @@ public class WebOptionsGroup
                 }
                 return ((Entity) o).getId();
             } else {
-                if ((optionsList != null) || (optionsMap != null))
+                if ((optionsList != null) || (optionsMap != null)) {
                     return o;
+                }
                 return ((Entity) o).getId();
             }
         } else if (o instanceof Enum) {
@@ -193,7 +196,7 @@ public class WebOptionsGroup
         if (datasource != null && StringUtils.isNotEmpty(datasource.getId()) && metaPropertyPath != null) {
             return getClass().getSimpleName() + datasource.getId() + "_" + metaPropertyPath.toString();
         }
-        if (optionsDatasource != null &&  StringUtils.isNotEmpty(optionsDatasource.getId())) {
+        if (optionsDatasource != null && StringUtils.isNotEmpty(optionsDatasource.getId())) {
             return getClass().getSimpleName() + optionsDatasource.getId();
         }
 
