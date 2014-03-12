@@ -414,6 +414,7 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
         this.styleName = styleName;
     }
 
+    @Override
     public void setSpacing(boolean enabled) {
         frame.setSpacing(enabled);
     }
