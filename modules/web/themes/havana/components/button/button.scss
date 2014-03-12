@@ -43,6 +43,15 @@
     }
   }
 
+  .v-align-top > .#{$primaryStyleName}.v-widget,
+  .v-align-bottom > .#{$primaryStyleName}.v-widget,
+  .v-align-middle > .#{$primaryStyleName}.v-widget,
+  .v-align-center > .#{$primaryStyleName}.v-widget,
+  .v-align-left > .#{$primaryStyleName}.v-widget,
+  .v-align-right > .#{$primaryStyleName}.v-widget {
+    display: table;
+  }
+
   .#{$primaryStyleName}:focus {
     outline: none;
     border-color: $theme_buttonFocucedBorderColor;
