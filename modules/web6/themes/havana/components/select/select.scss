@@ -21,6 +21,10 @@
     zoom: 1;
 }
 
+.v-select-optiongroup-horizontal {
+  white-space: nowrap;
+}
+
 .v-select-optiongroup-horizontal .v-select-option {
     display: inline-block;
     padding: 0;

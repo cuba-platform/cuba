@@ -18,6 +18,8 @@
   }
 
   .#{$primaryStyleName}-horizontal {
+    white-space: nowrap;
+
     .v-select-option {
       display: inline-block;
       padding: 0;
@@ -25,7 +27,7 @@
     }
 
     .v-select-option:first-child input {
-      margin-left: 0;
+      margin-left: 3px;
     }
   }
 }
