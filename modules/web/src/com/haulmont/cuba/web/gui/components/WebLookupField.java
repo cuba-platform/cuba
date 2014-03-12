@@ -14,6 +14,7 @@ import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.gui.data.EnumerationContainer;
+import com.haulmont.cuba.web.gui.data.ObjectContainer;
 import com.haulmont.cuba.web.gui.data.OptionsDsWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaComboBox;
 import com.vaadin.data.Item;
@@ -32,9 +33,7 @@ import java.util.List;
  * @author abramov
  * @version $Id$
  */
-public class WebLookupField
-        extends WebAbstractOptionsField<CubaComboBox>
-        implements LookupField {
+public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implements LookupField {
 
     protected Object nullOption;
     protected Entity nullEntity;
@@ -45,6 +44,8 @@ public class WebLookupField
     protected Object missingValue = null;
 
     protected ComponentErrorHandler componentErrorHandler;
+
+    protected Messages messages = AppBeans.get(Messages.NAME);
 
     public WebLookupField() {
         createComponent();
@@ -73,12 +74,6 @@ public class WebLookupField
 
     protected void createComponent() {
         this.component = new CubaComboBox() {
-
-            @Override
-            protected void setValue(Object newValue, boolean repaintIsNotNeeded) throws ReadOnlyException {
-                super.setValue(newValue, repaintIsNotNeeded);
-            }
-
             @Override
             public void setPropertyDataSource(Property newDataSource) {
                 if (newDataSource == null)
@@ -204,7 +199,6 @@ public class WebLookupField
             if (optionsDatasource != null) {
                 initNullEntity();
             } else {
-                // todo init null item in option list and option map
                 component.setNullSelectionItemId(nullOption);
             }
         } else {
@@ -273,6 +267,11 @@ public class WebLookupField
     }
 
     @Override
+    protected ObjectContainer createObjectContainer(List opts) {
+        return new NullNameAwareObjectContainer(opts);
+    }
+
+    @Override
     public boolean isNewOptionAllowed() {
         return component.isNewItemsAllowed();
     }
@@ -302,6 +301,7 @@ public class WebLookupField
 //        }
     }
 
+    @Deprecated
     @Override
     public void disablePaging() {
 //        vaadin7
@@ -326,20 +326,23 @@ public class WebLookupField
         public Collection getItemIds() {
             //noinspection unchecked
             Collection<Object> itemIds = super.getItemIds();
-            boolean modifiable = false;
-            if (missingValue != null && !itemIds.contains(missingValue)) {
-                Collection<Object> newItemIds = new LinkedHashSet<>(itemIds);
-                newItemIds.add(missingValue);
-                for (Object itemId : itemIds)
-                    newItemIds.add(itemId);
-                itemIds = newItemIds;
-                modifiable = true;
-            }
+            Collection<Object> additionalItemIds = null;
 
             if (nullOption != null) {
-                if (!modifiable)
-                    itemIds = new LinkedHashSet<>(itemIds);
-                itemIds.add(nullEntity);
+                additionalItemIds = new LinkedHashSet<>();
+                additionalItemIds.add(nullEntity);
+            }
+
+            if (missingValue != null && !itemIds.contains(missingValue)) {
+                if (additionalItemIds == null) {
+                    additionalItemIds = new LinkedHashSet<>();
+                }
+                additionalItemIds.add(missingValue);
+            }
+
+            if (additionalItemIds != null) {
+                additionalItemIds.addAll(itemIds);
+                return additionalItemIds;
             }
 
             return itemIds;
@@ -350,7 +353,6 @@ public class WebLookupField
             if (ObjectUtils.equals(missingValue, itemId)) {
                 return getItemWrapper(missingValue);
             }
-
             if (ObjectUtils.equals(nullEntity, itemId)) {
                 return getItemWrapper(nullEntity);
             }
@@ -395,16 +397,24 @@ public class WebLookupField
 
         @Override
         public Object prevItemId(Object itemId) {
-            if (ObjectUtils.equals(nullEntity, super.firstItemId()))
+            if (ObjectUtils.equals(nullEntity, super.firstItemId())) {
                 return nullEntity;
+            }
+            if (ObjectUtils.equals(missingValue, super.firstItemId())) {
+                return missingValue;
+            }
 
             return super.prevItemId(itemId);
         }
 
         @Override
         public boolean isFirstId(Object itemId) {
-            if (ObjectUtils.equals(nullEntity, itemId))
+            if (ObjectUtils.equals(nullEntity, itemId)) {
                 return true;
+            }
+            if (ObjectUtils.equals(missingValue, itemId)) {
+                return true;
+            }
 
             return super.isFirstId(itemId);
         }
@@ -419,8 +429,6 @@ public class WebLookupField
     }
 
     protected class NullNameAwareEnumContainer extends EnumerationContainer {
-
-        protected Messages messages = AppBeans.get(Messages.NAME);
 
         public NullNameAwareEnumContainer(List<Enum> values) {
             super(values);
@@ -442,38 +450,36 @@ public class WebLookupField
         @Override
         public Item getItem(Object itemId) {
             if (ObjectUtils.equals(nullOption, itemId)) {
-                return new Item() {
-                    @Override
-                    public Property getItemProperty(Object id) {
-                        return null;
-                    }
+                return new NullOptionItem();
+            }
 
-                    @Override
-                    public Collection<?> getItemPropertyIds() {
-                        return Collections.emptyList();
-                    }
+            return super.getItem(itemId);
+        }
+    }
 
-                    @Override
-                    public boolean addItemProperty(Object id, Property property) throws UnsupportedOperationException {
-                        return false;
-                    }
+    protected class NullNameAwareObjectContainer extends ObjectContainer {
 
-                    @Override
-                    public boolean removeItemProperty(Object id) throws UnsupportedOperationException {
-                        return false;
-                    }
+        public NullNameAwareObjectContainer(List values) {
+            super(values);
+        }
 
-                    @Override
-                    public String toString() {
-                        if (nullOption == null)
-                            return "";
+        @Override
+        public Collection getItemIds() {
+            //noinspection unchecked
+            Collection<Object> itemIds = super.getItemIds();
+            if (nullOption != null) {
+                Collection<Object> withNull = new LinkedHashSet<>();
+                withNull.add(nullOption);
+                withNull.addAll(itemIds);
+                itemIds = withNull;
+            }
+            return itemIds;
+        }
 
-                        if (nullOption instanceof Enum) {
-                            return messages.getMessage((Enum) nullOption);
-                        }
-                        return nullOption.toString();
-                    }
-                };
+        @Override
+        public Item getItem(Object itemId) {
+            if (ObjectUtils.equals(nullOption, itemId)) {
+                return new NullOptionItem();
             }
 
             return super.getItem(itemId);
@@ -507,8 +513,43 @@ public class WebLookupField
         }
     }
 
+    protected class NullOptionItem implements Item {
+        @Override
+        public Property getItemProperty(Object id) {
+            return null;
+        }
+
+        @Override
+        public Collection<?> getItemPropertyIds() {
+            return Collections.emptyList();
+        }
+
+        @Override
+        public boolean addItemProperty(Object id, Property property) throws UnsupportedOperationException {
+            return false;
+        }
+
+        @Override
+        public boolean removeItemProperty(Object id) throws UnsupportedOperationException {
+            return false;
+        }
+
+        @Override
+        public String toString() {
+            if (nullOption == null) {
+                return "";
+            }
+            if (nullOption instanceof Enum) {
+                return messages.getMessage((Enum) nullOption);
+            }
+            if (nullOption instanceof Entity) {
+                return InstanceUtils.getInstanceName((Instance) nullOption);
+            }
+            return nullOption.toString();
+        }
+    }
+
     protected interface ComponentErrorHandler {
         boolean handleError(ErrorMessage message);
     }
-
 }

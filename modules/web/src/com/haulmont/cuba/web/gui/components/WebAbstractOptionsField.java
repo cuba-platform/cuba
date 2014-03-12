@@ -9,6 +9,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.gui.components.CaptionMode;
+import com.haulmont.cuba.gui.components.OptionsField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
@@ -29,7 +30,7 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
     extends
         WebAbstractField<T>
     implements
-        com.haulmont.cuba.gui.components.Field {
+        OptionsField {
 
     protected List optionsList;
     protected Map<String, Object> optionsMap;
@@ -84,6 +85,11 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
         return new EnumerationContainer(options);
     }
 
+    protected ObjectContainer createObjectContainer(List opts) {
+        return new ObjectContainer(opts);
+    }
+
+    @Override
     public void setOptionsMap(Map<String, Object> options) {
         if (metaProperty != null && metaProperty.getRange().isEnum()) {
             List constants = Arrays.asList(metaProperty.getRange().asEnumeration().getJavaClass().getEnumConstants());
@@ -108,7 +114,7 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
                 component.setItemCaption(itemId, key);
                 opts.add(itemId);
             }
-            setComponentContainerDs(new ObjectContainer(opts));
+            setComponentContainerDs(createObjectContainer(opts));
             component.setItemCaptionMode(AbstractSelect.ItemCaptionMode.EXPLICIT_DEFAULTS_ID);
             this.optionsMap = options;
         }
@@ -120,6 +126,7 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
         optionsInitialization = false;
     }
 
+    @Override
     public void setOptionsList(List optionsList) {
         if (metaProperty != null) {
             Object currentValue = component.getValue();
@@ -127,7 +134,7 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
                 setComponentContainerDs(createEnumContainer(optionsList));
                 setCaptionMode(CaptionMode.ITEM);
             } else {
-                setComponentContainerDs(new ObjectContainer(optionsList));
+                setComponentContainerDs(createObjectContainer(optionsList));
                 component.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ITEM);
             }
 
@@ -138,29 +145,33 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
             if (o instanceof Enum) {
                 setComponentContainerDs(createEnumContainer(optionsList));
             } else {
-                setComponentContainerDs(new ObjectContainer(optionsList));
+                setComponentContainerDs(createObjectContainer(optionsList));
             }
             setCaptionMode(CaptionMode.ITEM);
             this.optionsList = optionsList;
         } else {
-            setComponentContainerDs(new ObjectContainer(optionsList));
+            setComponentContainerDs(createObjectContainer(optionsList));
             setCaptionMode(CaptionMode.ITEM);
             this.optionsList = optionsList;
         }
     }
 
+    @Override
     public boolean isMultiSelect() {
         return component.isMultiSelect();
     }
 
+    @Override
     public void setMultiSelect(boolean multiselect) {
         component.setMultiSelect(multiselect);
     }
 
+    @Override
     public CaptionMode getCaptionMode() {
         return captionMode;
     }
 
+    @Override
     public void setCaptionMode(CaptionMode captionMode) {
         this.captionMode = captionMode;
         switch (captionMode) {
@@ -177,10 +188,12 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
         }
     }
 
+    @Override
     public String getCaptionProperty() {
         return captionProperty;
     }
 
+    @Override
     public void setCaptionProperty(String captionProperty) {
         this.captionProperty = captionProperty;
         if (optionsDatasource != null) {
@@ -188,27 +201,33 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
         }
     }
 
+    @Override
     public String getDescriptionProperty() {
         return descriptionProperty;
     }
 
+    @Override
     public void setDescriptionProperty(String descriptionProperty) {
         this.descriptionProperty = descriptionProperty;
         //todo gorodnov: support description for all option fields
     }
 
+    @Override
     public List getOptionsList() {
         return optionsList;
     }
 
+    @Override
     public Map<String, Object> getOptionsMap() {
         return optionsMap;
     }
 
+    @Override
     public CollectionDatasource getOptionsDatasource() {
         return optionsDatasource;
     }
 
+    @Override
     public void setOptionsDatasource(CollectionDatasource datasource) {
         this.optionsDatasource = datasource;
         setComponentContainerDs(new CollectionDsWrapper(datasource, true));
