@@ -7,7 +7,6 @@
 
 @mixin havana-button($primaryStyleName: v-button) {
   .#{$primaryStyleName} {
-    display: table;
     zoom: 1;
     text-align: center;
     text-decoration: none;
@@ -41,15 +40,6 @@
         color: $theme_buttonCaptionColor;
       }
     }
-  }
-
-  .v-align-top > .#{$primaryStyleName}.v-widget,
-  .v-align-bottom > .#{$primaryStyleName}.v-widget,
-  .v-align-middle > .#{$primaryStyleName}.v-widget,
-  .v-align-center > .#{$primaryStyleName}.v-widget,
-  .v-align-left > .#{$primaryStyleName}.v-widget,
-  .v-align-right > .#{$primaryStyleName}.v-widget {
-    display: table;
   }
 
   .#{$primaryStyleName}:focus {
