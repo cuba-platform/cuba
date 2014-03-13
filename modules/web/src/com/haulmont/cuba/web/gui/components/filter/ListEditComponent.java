@@ -17,7 +17,10 @@ import com.haulmont.cuba.gui.components.PickerField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
-import com.haulmont.cuba.web.gui.components.*;
+import com.haulmont.cuba.web.gui.components.WebButton;
+import com.haulmont.cuba.web.gui.components.WebDateField;
+import com.haulmont.cuba.web.gui.components.WebLookupField;
+import com.haulmont.cuba.web.gui.components.WebPickerField;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
@@ -614,7 +617,7 @@ public class ListEditComponent extends CustomField {
         }
 
         private void commitList() {
-            setValues(values);
+            ListEditComponent.this.setValues(values);
             close();
         }
     }

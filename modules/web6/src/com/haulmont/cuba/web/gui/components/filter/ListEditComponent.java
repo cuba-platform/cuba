@@ -8,11 +8,12 @@ import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
@@ -23,13 +24,10 @@ import com.haulmont.cuba.web.gui.components.WebPickerField;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
-import com.vaadin.terminal.*;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Field;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.text.StrBuilder;
@@ -646,7 +644,7 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
         }
 
         private void commitList() {
-            setValues(values);
+            ListEditComponent.this.setValues(values);
             close();
         }
     }
