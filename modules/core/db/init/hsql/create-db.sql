@@ -536,10 +536,13 @@ create table SYS_FTS_QUEUE (
     ENTITY_ID varchar(36),
     ENTITY_NAME varchar(200),
     CHANGE_TYPE char(1),
-    SOURCE_HOST varchar(100),
+    SOURCE_HOST varchar(255),
+    INDEXING_HOST varchar(255),
     --
     primary key (ID)
 )^
+
+create index IDX_SYS_FTS_QUEUE_IDXHOST_CRTS on SYS_FTS_QUEUE (INDEXING_HOST, CREATE_TS)^
 
 --------------------------------------------------------------------------------------------------------------
 

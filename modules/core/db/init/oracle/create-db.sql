@@ -159,10 +159,11 @@ create table SYS_FTS_QUEUE (
     ENTITY_ID varchar2(32),
     ENTITY_NAME varchar2(200),
     CHANGE_TYPE char(1),
-    SOURCE_HOST varchar2(100),
+    SOURCE_HOST varchar2(255),
+    INDEXING_HOST varchar2(255),
     primary key(ID)
 )^
-create index IDX_SYS_FTS_QUEUE_CREATE_TS on SYS_FTS_QUEUE(CREATE_TS)^
+create index IDX_SYS_FTS_QUEUE_IDXHOST_CRTS on SYS_FTS_QUEUE (INDEXING_HOST, CREATE_TS)^
 
 create table SYS_JMX_INSTANCE (
     ID varchar2(32) not null,

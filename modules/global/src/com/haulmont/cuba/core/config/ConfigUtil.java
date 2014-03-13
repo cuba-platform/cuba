@@ -281,7 +281,6 @@ public class ConfigUtil
             if (defaultValue != null) {
                 return defaultValue.value();
             } else {
-                TypeStringify stringConverter = TypeStringify.getInstance(configInterface, method);
                 Class<?> type = method.getReturnType();
                 if (EnumClass.class.isAssignableFrom(type)) {
                     @SuppressWarnings("unchecked")
@@ -293,6 +292,7 @@ public class ConfigUtil
                         Object value = getAnnotationValue(method, name);
                         if (value != null) {
                             Method fromId = enumeration.getDeclaredMethod("fromId", idType);
+                            TypeStringify stringConverter = TypeStringify.getInstance(configInterface, method);
                             return stringConverter.stringify(fromId.invoke(null, value));
                         }
                         return NO_DEFAULT;
@@ -301,6 +301,7 @@ public class ConfigUtil
                 String name = "Default" + StringUtils.capitalize(ClassUtils.getShortClassName(type));
                 Object value = getAnnotationValue(method, name);
                 if (value != null) {
+                    TypeStringify stringConverter = TypeStringify.getInstance(configInterface, method);
                     return stringConverter.stringify(value);
                 }
             }

@@ -21,16 +21,19 @@ public class FtsQueue extends BaseUuidEntity {
 
     @Persistent
     @Column(name = "ENTITY_ID")
-    private UUID entityId;
+    protected UUID entityId;
 
     @Column(name = "ENTITY_NAME")
-    private String entityName;
+    protected String entityName;
 
     @Column(name = "CHANGE_TYPE")
-    private String changeType;
+    protected String changeType;
 
     @Column(name = "SOURCE_HOST")
-    private String sourceHost;
+    protected String sourceHost;
+
+    @Column(name = "INDEXING_HOST")
+    protected String indexingHost;
 
     public UUID getEntityId() {
         return entityId;
@@ -62,5 +65,13 @@ public class FtsQueue extends BaseUuidEntity {
 
     public void setSourceHost(String sourceHost) {
         this.sourceHost = sourceHost;
+    }
+
+    public String getIndexingHost() {
+        return indexingHost;
+    }
+
+    public void setIndexingHost(String indexingHost) {
+        this.indexingHost = indexingHost;
     }
 }
