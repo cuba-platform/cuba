@@ -5,6 +5,12 @@
 
 package com.haulmont.cuba.gui.app.security.role.edit;
 
+/**
+ * Possible values of UI permission
+ *
+ * @author artamonov
+ * @version $Id$
+ */
 public enum UiPermissionValue {
 
     SHOW(2),
