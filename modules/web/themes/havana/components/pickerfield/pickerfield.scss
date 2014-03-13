@@ -20,7 +20,7 @@
     }
 
     .v-button {
-      display: block;
+      display: block !important;
       text-align: center !important;
       border: 1px solid $theme_fieldBorderColor;
       background: #fff;
@@ -31,6 +31,7 @@
       min-width: 24px;
 
       .v-button-wrap {
+        display: inline-block;
         margin: 0;
 
         img {
