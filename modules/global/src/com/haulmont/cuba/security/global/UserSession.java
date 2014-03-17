@@ -7,6 +7,7 @@ package com.haulmont.cuba.security.global;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.security.entity.*;
 
+import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -285,9 +286,14 @@ public class UserSession implements Serializable {
 
     /**
      * Get user session attribute. Attribute is a named serializable object bound to session.
-     * @param name attribute name, or <code>userId</code> to obtain current or substituted user ID
-     * @return attribute value
+     * @param name attribute name. The following names have predefined values:
+     *             <ul>
+     *             <li>userId - current or substituted user ID</li>
+     *             <li>userLogin - current or substituted user login in lower case</li>
+     *             </ul>
+     * @return attribute value or null if attribute with the given name is not found
      */
+    @Nullable
     public <T> T getAttribute(String name) {
         if ("userId".equals(name))
             return (T) getCurrentOrSubstitutedUser().getId();
