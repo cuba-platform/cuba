@@ -7,6 +7,7 @@ package com.haulmont.cuba.core.app;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.queryresults.QueryResultsManagerAPI;
 import com.haulmont.cuba.core.entity.Entity;
@@ -30,28 +31,28 @@ import java.util.*;
 @ManagedBean(DataWorker.NAME)
 public class DataWorkerBean implements DataWorker {
 
-    private Log log = LogFactory.getLog(getClass());
+    private Log log = LogFactory.getLog(DataWorkerBean.class);
 
     @Inject
-    private Metadata metadata;
+    protected Metadata metadata;
 
     @Inject
-    private Configuration configuration;
+    protected Configuration configuration;
 
     @Inject
-    private Persistence persistence;
+    protected Persistence persistence;
 
     @Inject
-    private PersistenceSecurity security;
+    protected PersistenceSecurity security;
 
     @Inject
-    private DataCacheAPI dataCacheAPI;
+    protected DataCacheAPI dataCacheAPI;
 
     @Inject
-    private UserSessionSource userSessionSource;
+    protected UserSessionSource userSessionSource;
 
     @Inject
-    private QueryResultsManagerAPI queryResultsManager;
+    protected QueryResultsManagerAPI queryResultsManager;
 
     @Override
     public Set<Entity> commit(CommitContext context) {
@@ -59,7 +60,8 @@ public class DataWorkerBean implements DataWorker {
             log.debug("commit: commitInstances=" + context.getCommitInstances()
                     + ", removeInstances=" + context.getRemoveInstances());
 
-        final Set<Entity> res = new HashSet<Entity>();
+        Set<Entity> res = new HashSet<>();
+        List<Entity> persisted = new ArrayList<>();
 
         Transaction tx = persistence.createTransaction();
         try {
@@ -74,6 +76,7 @@ public class DataWorkerBean implements DataWorker {
                 if (PersistenceHelper.isNew(entity)) {
                     em.persist(entity);
                     res.add(entity);
+                    persisted.add(entity);
                 }
             }
             // merge detached
@@ -102,7 +105,56 @@ public class DataWorkerBean implements DataWorker {
             tx.end();
         }
 
+        updateReferences(persisted, res);
+
         return res;
+    }
+
+    /**
+     * Update references from newly persisted entities to merged detached entities. Otherwise a new entity can
+     * contain a stale instance of merged entity.
+     * @param persisted persisted entities
+     * @param committed all committed entities
+     */
+    protected void updateReferences(Collection<Entity> persisted, Collection<Entity> committed) {
+        for (Entity persistedEntity : persisted) {
+            for (Entity entity : committed) {
+                if (entity != persistedEntity) {
+                    updateReferences(persistedEntity, entity, new HashSet<Entity>());
+                }
+            }
+        }
+    }
+
+    protected void updateReferences(Entity entity, Entity refEntity, Set<Entity> visited) {
+        if (entity == null || refEntity == null || visited.contains(entity))
+            return;
+        visited.add(entity);
+
+        MetaClass refEntityMetaClass = refEntity.getMetaClass();
+        for (MetaProperty property : entity.getMetaClass().getProperties()) {
+            if (!property.getRange().isClass() || !property.getRange().asClass().equals(refEntityMetaClass))
+                continue;
+            if (property.getRange().getCardinality().isMany()) {
+                Collection collection = entity.getValue(property.getName());
+                if (collection != null) {
+                    for (Object obj : collection) {
+                        updateReferences((Entity) obj, refEntity, visited);
+                    }
+                }
+            } else {
+                Entity value = entity.getValue(property.getName());
+                if (value != null) {
+                    if (value.getId().equals(refEntity.getId())) {
+                        if (entity instanceof AbstractInstance) {
+                            ((AbstractInstance) entity).setValue(property.getName(), refEntity, false);
+                        }
+                    } else {
+                        updateReferences(value, refEntity, visited);
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -185,7 +237,7 @@ public class DataWorkerBean implements DataWorker {
         return res;
     }
 
-    private Entity getEntityById(Collection<Entity> entities, Object id) {
+    protected Entity getEntityById(Collection<Entity> entities, Object id) {
         if (id == null)
             return null;
 
@@ -290,7 +342,7 @@ public class DataWorkerBean implements DataWorker {
     }
 
     @SuppressWarnings("unchecked")
-    private List getResultList(LoadContext context, Query query, boolean ensureDistinct) {
+    protected List getResultList(LoadContext context, Query query, boolean ensureDistinct) {
         List list = query.getResultList();
         if (!ensureDistinct || list.size() == 0)
             return list;
