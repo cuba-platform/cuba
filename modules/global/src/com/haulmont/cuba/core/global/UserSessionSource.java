@@ -26,18 +26,21 @@ public interface UserSessionSource {
     boolean checkCurrentUserSession();
 
     /**
-     * @return current user session. Throws an exception if there is no active user session.
+     * @return current user session
+     * @throws IllegalStateException if there is no active user session
      */
     UserSession getUserSession();
 
     /**
      * @return effective user ID. This is either the logged in user, or substituted user if a substitution was performed
      * in this user session.
+     * @throws IllegalStateException if there is no active user session
      */
     UUID currentOrSubstitutedUserId();
 
     /**
      * @return current user session locale
+     * @throws IllegalStateException if there is no active user session
      */
     Locale getLocale();
 }

@@ -13,9 +13,8 @@ import com.haulmont.cuba.security.global.UserSession;
 import javax.annotation.ManagedBean;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 @ManagedBean(UserSessionSource.NAME)
 public class DesktopUserSessionSource extends AbstractUserSessionSource {
@@ -27,6 +26,9 @@ public class DesktopUserSessionSource extends AbstractUserSessionSource {
 
     @Override
     public UserSession getUserSession() {
-        return App.getInstance().getConnection().getSession();
+        UserSession session = App.getInstance().getConnection().getSession();
+        if (session == null)
+            throw new IllegalStateException("No user session");
+        return session;
     }
 }
