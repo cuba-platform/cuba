@@ -22,9 +22,8 @@ import java.util.Map;
  * in spring.xml. If a project needs specific handlers, it should define a bean of such type with its own
  * <strong>id</strong>, e.g. <code>refapp_ExceptionHandlersConfiguration</code></p>
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 @ManagedBean("cuba_ExceptionHandlers")
 public class ExceptionHandlers {
@@ -109,6 +108,7 @@ public class ExceptionHandlers {
         handlers.clear();
         addHandler(new SilentExceptionHandler());
         addHandler(new ConnectExceptionHandler());
+        addHandler(new IllegalComponentStateExceptionHandler());
     }
 
     /**

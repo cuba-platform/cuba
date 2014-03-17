@@ -81,6 +81,7 @@
                 <value>com.haulmont.cuba.desktop.exception.FileStorageExceptionHandler</value>
                 <value>com.haulmont.cuba.desktop.exception.EntityAccessExceptionHandler</value>
                 <value>com.haulmont.cuba.desktop.exception.MssqlDateOutOfRangeExceptionHandler</value>
+                <value>com.haulmont.cuba.desktop.exception.IllegalComponentStateExceptionHandler</value>
             </list>
         </property>
     </bean>
