@@ -59,6 +59,9 @@ public class DataServiceController {
     @Inject
     protected DomainDescriptionService domainDescriptionService;
 
+    @Inject
+    protected Authentication authentication;
+
     @RequestMapping(value = "/api/find.{type}", method = RequestMethod.GET)
     public void find(@PathVariable String type,
                      @RequestParam(value = "e") String entityRef,
@@ -66,9 +69,8 @@ public class DataServiceController {
                      HttpServletRequest request,
                      HttpServletResponse response) throws IOException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
 
-        Authentication authentication = Authentication.me(sessionId);
-        if (authentication == null) {
-            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+        if (!authentication.begin(sessionId)) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
         try {
@@ -104,7 +106,7 @@ public class DataServiceController {
             log.error("Error processing request: " + request.getRequestURI() + "?" + request.getQueryString(), e);
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         } finally {
-            authentication.forget();
+            authentication.end();
         }
     }
 
@@ -119,9 +121,8 @@ public class DataServiceController {
                       HttpServletRequest request,
                       HttpServletResponse response) throws IOException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
 
-        Authentication authentication = Authentication.me(sessionId);
-        if (authentication == null) {
-            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+        if (!authentication.begin(sessionId)) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
         try {
@@ -177,7 +178,7 @@ public class DataServiceController {
             log.error("Error processing request: " + request.getRequestURI() + "?" + request.getQueryString(), e);
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         } finally {
-            authentication.forget();
+            authentication.end();
         }
     }
 
@@ -189,9 +190,8 @@ public class DataServiceController {
                        HttpServletResponse response) throws
             IOException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
 
-        Authentication authentication = Authentication.me(sessionId);
-        if (authentication == null) {
-            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+        if (!authentication.begin(sessionId)) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
         try {
@@ -228,7 +228,7 @@ public class DataServiceController {
             log.error("Error processing request: " + request.getRequestURI() + "?" + request.getQueryString(), e);
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         } finally {
-            authentication.forget();
+            authentication.end();
         }
     }
 
@@ -239,9 +239,8 @@ public class DataServiceController {
                             HttpServletResponse response) throws
             IOException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
 
-        Authentication authentication = Authentication.me(sessionId);
-        if (authentication == null) {
-            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+        if (!authentication.begin(sessionId)) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
         try {
@@ -252,7 +251,7 @@ public class DataServiceController {
             log.error("Error processing request: " + request.getRequestURI() + "?" + request.getQueryString(), e);
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         } finally {
-            authentication.forget();
+            authentication.end();
         }
     }
 
@@ -262,9 +261,8 @@ public class DataServiceController {
                             HttpServletResponse response) throws
             IOException, InvocationTargetException, NoSuchMethodException, IllegalAccessException, TemplateException {
 
-        Authentication authentication = Authentication.me(sessionId);
-        if (authentication == null) {
-            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+        if (!authentication.begin(sessionId)) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
         try {
@@ -280,7 +278,7 @@ public class DataServiceController {
             log.error("Error processing request: " + request.getRequestURI() + "?" + request.getQueryString(), e);
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         } finally {
-            authentication.forget();
+            authentication.end();
         }
     }
 

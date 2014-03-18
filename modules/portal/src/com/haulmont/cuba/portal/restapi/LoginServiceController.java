@@ -38,7 +38,10 @@ import java.util.Map;
 public class LoginServiceController {
 
     @Inject
-    private PasswordEncryption passwordEncryption;
+    protected PasswordEncryption passwordEncryption;
+
+    @Inject
+    protected Authentication authentication;
 
     private static Log log = LogFactory.getLog(LoginServiceController.class);
     private static MimeType FORM_TYPE;
@@ -152,32 +155,27 @@ public class LoginServiceController {
             throw new IllegalStateException("Unsupported content type: " + contentType);
         }
         try {
-            Authentication authentication = Authentication.me(sessionUUID);
-            if (authentication != null) {
+            if (authentication.begin(sessionUUID)) {
                 LoginService loginService = AppBeans.get(LoginService.NAME);
                 loginService.logout();
-            } else {
-                response.sendError(HttpServletResponse.SC_FORBIDDEN);
             }
-        } catch (NoUserSessionException e) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        } catch (Throwable e) {
+            log.error("Error processing logout request", e);
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
 
     @RequestMapping(value = "/api/logout", method = RequestMethod.GET)
     public void logoutByGet(@RequestParam(value = "session") String sessionUUID,
                             HttpServletResponse response) throws IOException, JSONException {
-
         try {
-            Authentication authentication = Authentication.me(sessionUUID);
-            if (authentication != null) {
+            if (authentication.begin(sessionUUID)) {
                 LoginService loginService = AppBeans.get(LoginService.NAME);
                 loginService.logout();
-            } else {
-                response.sendError(HttpServletResponse.SC_FORBIDDEN);
             }
-        } catch (NoUserSessionException e) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        } catch (Throwable e) {
+            log.error("Error processing logout request", e);
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
 }

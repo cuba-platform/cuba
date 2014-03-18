@@ -5,45 +5,51 @@
 
 package com.haulmont.cuba.portal.restapi;
 
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.portal.security.PortalSession;
 import com.haulmont.cuba.portal.sys.security.PortalSecurityContext;
 import com.haulmont.cuba.portal.sys.security.PortalSessionFactory;
-import com.haulmont.cuba.security.app.UserSessionService;
+import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.global.UserSession;
 
+import javax.annotation.ManagedBean;
+import javax.inject.Inject;
 import java.util.UUID;
 
 /**
  * @author chevelev
  * @version $Id$
  */
+@ManagedBean(Authentication.NAME)
 public class Authentication {
-    public static Authentication me(String sessionId) {
-        UserSession userSession = getSession(sessionId);
-        if (userSession == null) {
-            return null;
+
+    public static final String NAME = "cuba_RestApiAuthentication";
+
+    @Inject
+    protected LoginService loginService;
+
+    @Inject
+    protected PortalSessionFactory portalSessionFactory;
+
+    public boolean begin(String sessionId) {
+        UUID uuid;
+        try {
+            uuid = UUID.fromString(sessionId);
+        } catch (Exception e) {
+            return false;
         }
 
-        PortalSessionFactory portalSessionFactory = AppBeans.get(PortalSessionFactory.class);
-        PortalSession portalSession = portalSessionFactory.createPortalSession(userSession, null);
+        UserSession session = loginService.getSession(uuid);
+        if (session == null)
+            return false;
+
+        PortalSession portalSession = portalSessionFactory.createPortalSession(session, null);
         AppContext.setSecurityContext(new PortalSecurityContext(portalSession));
 
-        return new Authentication();
+        return true;
     }
 
-    public void forget() {
+    public void end() {
         AppContext.setSecurityContext(null);
-    }
-
-    private static UserSession getSession(String sessionIdStr) {
-        UUID sessionId;
-        try {
-            sessionId = UUID.fromString(sessionIdStr);
-        } catch (Exception e) {
-            return null;
-        }
-        return AppBeans.get(UserSessionService.class).getUserSession(sessionId);
     }
 }
