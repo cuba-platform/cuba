@@ -874,7 +874,9 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         @Override
         public Component getTableCellEditorComponent(JTable table, Object value,
                                                      boolean isSelected, int row, int column) {
-            return DesktopComponentsHelper.getComposition(cellComponent);
+            JComponent composition = DesktopComponentsHelper.getComposition(cellComponent);
+            composition.putClientProperty(DesktopTableCellEditor.CELL_EDITOR_TABLE, table);
+            return composition;
         }
 
         @Override

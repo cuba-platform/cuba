@@ -171,9 +171,6 @@ public class DesktopComponentsHelper {
     }
 
     /**
-     * Returns {@link TopLevelFrame} of container.
-     *
-     * @param container
      * @return {@link TopLevelFrame} of container
      */
     public static TopLevelFrame getTopLevelFrame(Container container) {
@@ -190,6 +187,16 @@ public class DesktopComponentsHelper {
             }
         } while (parent != null);
 
+        if (!(prevContainer instanceof TopLevelFrame)) {
+            if (prevContainer instanceof JComponent) {
+                Object tableForEditor = ((JComponent) prevContainer).getClientProperty(DesktopTableCellEditor.CELL_EDITOR_TABLE);
+                if (tableForEditor != null) {
+                    return getTopLevelFrame((java.awt.Component) tableForEditor);
+                }
+            }
+
+            return App.getInstance().getMainFrame();
+        }
 
         return (TopLevelFrame) prevContainer;
     }
@@ -209,6 +216,13 @@ public class DesktopComponentsHelper {
         } while (parent != null);
 
         if (!(prevContainer instanceof TopLevelFrame)) {
+            if (prevContainer instanceof JComponent) {
+                Object tableForEditor = ((JComponent) prevContainer).getClientProperty(DesktopTableCellEditor.CELL_EDITOR_TABLE);
+                if (tableForEditor != null) {
+                    return getTopLevelFrame((Container) tableForEditor);
+                }
+            }
+
             return App.getInstance().getMainFrame();
         }
 

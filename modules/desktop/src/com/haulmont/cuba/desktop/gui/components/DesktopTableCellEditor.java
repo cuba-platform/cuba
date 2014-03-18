@@ -28,6 +28,9 @@ import java.util.*;
  */
 public class DesktopTableCellEditor extends AbstractCellEditor implements TableCellEditor, TableCellRenderer {
 
+    // Client property key for cell editor components, value of property contains table for this editor
+    public static final String CELL_EDITOR_TABLE = "CELL_EDITOR_TABLE";
+
     private static final long serialVersionUID = 5217563286634642347L;
 
     private Table.ColumnGenerator columnGenerator;
@@ -111,14 +114,20 @@ public class DesktopTableCellEditor extends AbstractCellEditor implements TableC
         Entity item = desktopAbstractTable.getTableModel().getItem(row);
 
         StopWatch sw = new Log4JStopWatch("TableColumnGenerator." + desktopAbstractTable.getId());
+        @SuppressWarnings("unchecked")
         com.haulmont.cuba.gui.components.Component component = columnGenerator.generateCell(item);
         sw.stop();
 
         Component comp;
-        if (component == null)
+        if (component == null) {
             comp = new JLabel("");
-        else
-            comp = DesktopComponentsHelper.getComposition(component);
+        } else {
+            JComponent jComposition = DesktopComponentsHelper.getComposition(component);
+            jComposition.putClientProperty(CELL_EDITOR_TABLE, desktopAbstractTable.getComponent());
+
+            comp = jComposition;
+        }
+
         cache.put(row, comp);
         return comp;
     }
