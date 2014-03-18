@@ -1474,7 +1474,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
             final com.vaadin.ui.Button component = new com.vaadin.ui.Button();
             component.setData(value);
-            component.setCaption(value == null ? "" : property.toString());
+            component.setCaption(value == null ? "" : ((PropertyWrapper)property).getFormattedValue());
             component.setStyleName(BaseTheme.BUTTON_LINK);
 
             component.addClickListener(new com.vaadin.ui.Button.ClickListener() {
