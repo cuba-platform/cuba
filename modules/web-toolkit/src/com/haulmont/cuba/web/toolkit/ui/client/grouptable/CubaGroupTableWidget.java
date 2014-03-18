@@ -374,22 +374,23 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
                 this.groupKey = uidl.getStringAttribute("groupKey");
                 this.expanded = uidl.hasAttribute("expanded") && uidl.getBooleanAttribute("expanded");
 
-                while (colIndex < visibleColOrder.length && !visibleColOrder[colIndex].equals(colKey)) {
-                    //draw empty cells
-                    Element td = DOM.createTD();
+                if (colIndex < visibleColOrder.length) {
+                    while (colIndex < visibleColOrder.length && !visibleColOrder[colIndex].equals(colKey)) {
+                        //draw empty cells
+                        Element td = DOM.createTD();
 
-                    final TableCellElement tdCell = td.cast();
-                    initCellWithText("", ALIGN_LEFT, "", false, true, null, tdCell);
+                        final TableCellElement tdCell = td.cast();
+                        initCellWithText("", ALIGN_LEFT, "", false, true, null, tdCell);
 
-                    td.setClassName(CubaGroupTableWidget.this.getStylePrimaryName() + "-cell-content");
-                    td.addClassName(CubaGroupTableWidget.this.getStylePrimaryName() + "-cell-stub");
-                    DOM.appendChild(getElement(), td);
+                        td.setClassName(CubaGroupTableWidget.this.getStylePrimaryName() + "-cell-content");
+                        td.addClassName(CubaGroupTableWidget.this.getStylePrimaryName() + "-cell-stub");
+                        DOM.appendChild(getElement(), td);
 
-                    colIndex++;
+                        colIndex++;
+                    }
+                } else {
+                    throw new ArrayIndexOutOfBoundsException("Group rendering error");
                 }
-
-                if (colIndex >= visibleColOrder.length)
-                    throw new ArrayIndexOutOfBoundsException();
 
                 //paint "+" and group caption
                 this.colIndex = colIndex;
