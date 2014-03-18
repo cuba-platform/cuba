@@ -15,6 +15,7 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.ui.UI;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -124,7 +125,23 @@ public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetCha
 
     @Override
     public Collection getItemIds() {
-        CollectionDsHelper.autoRefreshInvalid(datasource, autoRefresh);
+        if (UI.getCurrent().getConnectorTracker().isWritingResponse()) {
+            try {
+                CollectionDsHelper.autoRefreshInvalid(datasource, autoRefresh);
+            } catch (IllegalStateException ex) {
+                if (StringUtils.contains(ex.getMessage(), "A connector should not be marked as dirty while a response is being written")) {
+                    // explain exception
+                    String message = String.format(
+                            "Some datasource listener has modified the component while it is in rendering state. Please refresh datasource '%s' explicitly",
+                            datasource.getId());
+                    throw new IllegalStateException(message);
+                }
+
+                throw ex;
+            }
+        } else {
+            CollectionDsHelper.autoRefreshInvalid(datasource, autoRefresh);
+        }
 
         Collection itemIds = datasource.getItemIds();
         ArrayList items = new ArrayList(itemIds.size());
