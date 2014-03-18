@@ -106,7 +106,7 @@ public class DesktopLookupField
                     @Override
                     public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
                         if (!autoComplete.isEditableState()) {
-                            // Only if realy item changed
+                            // Only if really item changed
                             Object selectedItem = comboBox.getSelectedItem();
                             if (selectedItem instanceof ValueWrapper) {
                                 Object selectedValue = ((ValueWrapper) selectedItem).getValue();
@@ -215,7 +215,7 @@ public class DesktopLookupField
 
         items.clear();
 
-        if (!isRequired()) {
+        if (!isRequired() && nullOption == null) {
             items.add(new ObjectWrapper(null));
         }
 
@@ -270,6 +270,7 @@ public class DesktopLookupField
     public void setNullOption(Object nullOption) {
         this.nullOption = nullOption;
         autoComplete.setFirstItem(new NullOption());
+        optionsInitialized = false;
     }
 
     @Override
