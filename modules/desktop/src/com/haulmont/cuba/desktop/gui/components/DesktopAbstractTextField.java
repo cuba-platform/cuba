@@ -270,14 +270,19 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
         }
         if (datatype != null) {
             try {
-                return datatype.parse(rawValue, locale);
+                // double conversion to verify type constraints
+                // used for properly parsing BigDecimal values
+                Object datatypeValue = datatype.parse(rawValue, locale);
+
+                return datatype.parse(datatype.format(datatypeValue));
             } catch (ParseException ignored) {
                 showValidationMessage();
                 return prevValue;
             }
         }
-        if (StringUtils.isEmpty(rawValue))
+        if (StringUtils.isEmpty(rawValue)) {
             return null;
+        }
         return rawValue;
     }
 
