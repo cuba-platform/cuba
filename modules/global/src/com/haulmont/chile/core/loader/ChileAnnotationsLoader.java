@@ -192,7 +192,7 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
         if (!metaClass.getOwnProperties().isEmpty())
             return;
 
-        //load collection properties after non-collection on order to have all inverse properties loaded up
+        // load collection properties after non-collection in order to have all inverse properties loaded up
         ArrayList<Field> collectionProps = new ArrayList<>();
         for (Field field : clazz.getDeclaredFields()) {
             if (field.isSynthetic())
@@ -212,6 +212,9 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
                         final MetaProperty metaProperty = info.getObject();
                         onPropertyLoaded(metaProperty, field);
                     }
+                } else {
+                    log.warn("Field " + clazz.getSimpleName() + "." + field.getName()
+                            + " is not included in metadata because property " + property + " already exists");
                 }
             }
         }
@@ -238,13 +241,16 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
                 if (property == null) {
                     MetadataObjectInfo<MetaProperty> info;
                     if (isCollection(method) || isMap(method)) {
-                        throw new UnsupportedOperationException("Method-based properties doesn't support collections and maps yet");
+                        throw new UnsupportedOperationException("Method-based properties don't support collections and maps");
                     } else {
                         info = __loadProperty(metaClass, method, name);
                         tasks.addAll(info.getTasks());
                     }
                     final MetaProperty metaProperty = info.getObject();
                     onPropertyLoaded(metaProperty, method);
+                } else {
+                    log.warn("Method " + clazz.getSimpleName() + "." + method.getName()
+                            + " is not included in metadata because property " + property + " already exists");
                 }
             }
         }
