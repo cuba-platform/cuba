@@ -25,33 +25,37 @@ import java.util.Properties;
  */
 public class LoginProperties {
 
-    private Log log = LogFactory.getLog(getClass());
+    private Log log = LogFactory.getLog(LoginProperties.class);
 
-    private File propertiesFile;
+    protected Properties properties = new Properties();
 
-    private static String LOGIN = "login";
+    protected String dataDir;
+
+    protected static final String FILE_NAME = "login.properties";
+    protected static final String LOGIN = "login";
+    protected static final String LOCALE = "locale";
 
     public LoginProperties() {
-        propertiesFile = loadFile();
+        dataDir = AppBeans.get(Configuration.NAME, Configuration.class).getConfig(GlobalConfig.class).getDataDir();
+        loadProperties();
     }
 
-    public void saveLogin(String login) {
-        Properties properties = new Properties();
+    public void save(String login, String locale) {
         properties.setProperty(LOGIN, login);
-        try {
-            FileOutputStream stream = FileUtils.openOutputStream(propertiesFile);
-            try {
-                properties.store(stream, "Login properties");
-            } finally {
-                IOUtils.closeQuietly(stream);
-            }
-        } catch (IOException e) {
-            log.error("Error saving login properties", e);
-        }
+        properties.setProperty(LOCALE, locale);
+        saveProperties();
     }
 
     public String loadLastLogin() {
-        Properties properties = new Properties();
+        return properties.getProperty(LOGIN);
+    }
+
+    public String loadLastLocale() {
+        return properties.getProperty(LOCALE);
+    }
+
+    protected void loadProperties() {
+        File propertiesFile = new File(dataDir, FILE_NAME);
         try {
             if (propertiesFile.exists()) {
                 FileInputStream stream = FileUtils.openInputStream(propertiesFile);
@@ -64,11 +68,19 @@ public class LoginProperties {
         } catch (IOException e) {
             log.error("Error loading login properties", e);
         }
-        return properties.getProperty(LOGIN);
     }
 
-    private File loadFile() {
-        String dataDir = AppBeans.get(Configuration.NAME, Configuration.class).getConfig(GlobalConfig.class).getDataDir();
-        return new File(dataDir, "login.properties");
+    protected void saveProperties() {
+        File propertiesFile = new File(dataDir, "login.properties");
+        try {
+            FileOutputStream stream = FileUtils.openOutputStream(propertiesFile);
+            try {
+                properties.store(stream, "Login properties");
+            } finally {
+                IOUtils.closeQuietly(stream);
+            }
+        } catch (IOException e) {
+            log.error("Error saving login properties", e);
+        }
     }
 }

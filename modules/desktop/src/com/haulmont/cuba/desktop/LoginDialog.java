@@ -47,6 +47,7 @@ public class LoginDialog extends JDialog {
     public LoginDialog(JFrame owner, Connection connection) {
         super(owner);
         this.connection = connection;
+        this.loginProperties = new LoginProperties();
         Configuration configuration = AppBeans.get(Configuration.class);
         this.locales = configuration.getConfig(GlobalConfig.class).getAvailableLocales();
 
@@ -75,7 +76,6 @@ public class LoginDialog extends JDialog {
         passwordField = new JPasswordField();
 
         String defaultName = AppContext.getProperty("cuba.desktop.loginDialogDefaultUser");
-        loginProperties = new LoginProperties();
         String lastLogin = loginProperties.loadLastLogin();
         if (!StringUtils.isBlank(lastLogin)) {
             nameField.setText(lastLogin);
@@ -130,7 +130,7 @@ public class LoginDialog extends JDialog {
         try {
             connection.login(name, passwordEncryption.getPlainHash(password), locale);
             setVisible(false);
-            loginProperties.saveLogin(name);
+            loginProperties.save(name, messages.getTools().localeToString(locale));
             DesktopComponentsHelper.getTopLevelFrame(this).activate();
         } catch (LoginException ex) {
             log.info("Login failed: " + ex.toString());
@@ -144,7 +144,10 @@ public class LoginDialog extends JDialog {
     }
 
     protected void initLocales(JComboBox<String> localeCombo) {
-        String currLocale = messages.getTools().localeToString(Locale.getDefault());
+        String currLocale = loginProperties.loadLastLocale();
+        if (StringUtils.isBlank(currLocale)) {
+            currLocale = messages.getTools().localeToString(Locale.getDefault());
+        }
         String selected = null;
         for (Map.Entry<String, Locale> entry : locales.entrySet()) {
             localeCombo.addItem(entry.getKey());
