@@ -75,7 +75,7 @@ public class EditorWindowDelegate extends WindowDelegate {
         AbstractAction commitAction = new AbstractAction(Window.Editor.WINDOW_COMMIT) {
             @Override
             public String getCaption() {
-                return messages.getMainMessage("actions.Ok");
+                return messages.getMainMessage(commitAndCloseButtonExists ? "actions.Save" : "actions.Ok");
             }
 
             public void actionPerform(Component component) {

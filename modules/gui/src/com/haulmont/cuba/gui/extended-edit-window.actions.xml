@@ -7,7 +7,7 @@
     <layout>
         <hbox spacing="true" height="AUTO">
             <button id="windowCommitAndClose" action="windowCommitAndClose" icon="icons/ok.png"/>
-            <button id="windowCommit" action="windowCommit" icon="icons/ok.png"/>
+            <button id="windowCommit" action="windowCommit"/>
             <button id="windowClose" action="windowClose" icon="icons/cancel.png"/>
         </hbox>
     </layout>
