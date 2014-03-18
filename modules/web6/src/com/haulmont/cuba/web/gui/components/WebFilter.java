@@ -17,6 +17,7 @@ import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.AppFolder;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.annotation.EnableRestore;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
@@ -77,6 +78,7 @@ import java.util.regex.Pattern;
  * @author krivopustov
  * @version $Id$
  */
+@EnableRestore
 public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> implements Filter {
 
     private static final String MESSAGES_PACK = "com.haulmont.cuba.gui.components.filter";
