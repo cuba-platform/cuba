@@ -28,8 +28,7 @@ import org.apache.commons.collections.map.MultiKeyMap;
  * @author Merlin Hughes
  * @version $Id$
  */
-public abstract class ConfigMethod
-{
+public abstract class ConfigMethod {
     /**
      * Create a new ConfigMethod instance.
      */

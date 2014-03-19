@@ -46,7 +46,7 @@ public class Tree<T> implements Serializable {
      */
     public List<Node<T>> getRootNodes() {
         if (rootNodes == null) {
-            return rootNodes = new ArrayList<>();
+            rootNodes = new ArrayList<>();
         }
 
         return this.rootNodes;

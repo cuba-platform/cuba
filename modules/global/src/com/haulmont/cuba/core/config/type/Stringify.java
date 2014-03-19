@@ -33,8 +33,7 @@ import java.lang.annotation.*;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD})
-public @interface Stringify
-{
+public @interface Stringify {
     /**
      * The name of a method that can convert an object to its primitive
      * (ultimately string) form.

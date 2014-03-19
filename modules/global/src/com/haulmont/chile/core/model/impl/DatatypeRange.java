@@ -16,41 +16,41 @@ import com.haulmont.chile.core.model.Range;
  */
 public class DatatypeRange extends AbstractRange implements Range {
 
-	private final Datatype datatype;
+    private final Datatype datatype;
 
     public DatatypeRange(Datatype datatype) {
-		this.datatype = datatype;
-	}
+        this.datatype = datatype;
+    }
 
     @Override
-	public MetaClass asClass() {
-		throw new IllegalStateException("Range is datatype");
-	}
+    public MetaClass asClass() {
+        throw new IllegalStateException("Range is datatype");
+    }
 
     @Override
-	public Datatype asDatatype() {
-		return datatype;
-	}
+    public Datatype asDatatype() {
+        return datatype;
+    }
 
     @Override
-	public Enumeration asEnumeration() {
-		throw new IllegalStateException("Range is datatype");
-	}
+    public Enumeration asEnumeration() {
+        throw new IllegalStateException("Range is datatype");
+    }
 
     @Override
-	public boolean isClass() {
-		return false;
-	}
+    public boolean isClass() {
+        return false;
+    }
 
     @Override
-	public boolean isDatatype() {
-		return true;
-	}
+    public boolean isDatatype() {
+        return true;
+    }
 
     @Override
-	public boolean isEnum() {
-		return false;
-	}
+    public boolean isEnum() {
+        return false;
+    }
 
     @Override
     public String toString() {

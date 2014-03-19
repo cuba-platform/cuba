@@ -13,28 +13,28 @@ import com.haulmont.chile.core.model.Range;
  */
 public abstract class AbstractRange implements Range {
 
-	private Cardinality cardinality = Cardinality.NONE;
-	private boolean ordered;
+    private Cardinality cardinality = Cardinality.NONE;
+    private boolean ordered;
 
-	public AbstractRange() {
-		super();
-	}
-
-    @Override
-	public Cardinality getCardinality() {
-		return cardinality;
-	}
+    public AbstractRange() {
+        super();
+    }
 
     @Override
-	public boolean isOrdered() {
-		return ordered;
-	}
+    public Cardinality getCardinality() {
+        return cardinality;
+    }
 
-	public void setCardinality(Cardinality cardinality) {
-		this.cardinality = cardinality;
-	}
+    @Override
+    public boolean isOrdered() {
+        return ordered;
+    }
 
-	public void setOrdered(boolean ordered) {
-		this.ordered = ordered;
-	}
+    public void setCardinality(Cardinality cardinality) {
+        this.cardinality = cardinality;
+    }
+
+    public void setOrdered(boolean ordered) {
+        this.ordered = ordered;
+    }
 }

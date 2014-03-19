@@ -8,8 +8,8 @@ package com.haulmont.cuba.core.config.type;
  * @author krivopustov
  * @version $Id$
  */
-public class PrimitiveTypeStringify extends TypeStringify
-{
+public class PrimitiveTypeStringify extends TypeStringify {
+    @Override
     public String stringify(Object value) {
         return String.valueOf(value);
     }

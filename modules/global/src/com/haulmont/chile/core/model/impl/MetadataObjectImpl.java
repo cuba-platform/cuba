@@ -33,8 +33,9 @@ public abstract class MetadataObjectImpl<T extends MetadataObject> implements Me
 
     private transient UUID uuid = UUID.randomUUID();
 
-	private transient Map<String, Object> annotations = new HashMap<String, Object>();
+    private transient Map<String, Object> annotations = new HashMap<>();
 
+    @Override
     public T getAncestor() {
         if (ancestor == null) {
             if (ancestors.size() == 0) {
@@ -51,36 +52,44 @@ public abstract class MetadataObjectImpl<T extends MetadataObject> implements Me
         }
     }
 
+    @Override
     public Collection<T> getAncestors() {
         return ancestors;
     }
 
+    @Override
     public Collection<T> getDescendants() {
         return descendants;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public String getFullName() {
         return name;
     }
 
+    @Override
     public String getCaption() {
         return caption;
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
 
+    @Override
     public UUID getUUID() {
         return uuid;
     }
 
+    @Override
     public Map<String, Object> getAnnotations() {
-        return annotations;  
+        return annotations;
     }
 
     public void setName(String name) {

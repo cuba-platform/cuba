@@ -4,7 +4,6 @@
  */
 package com.haulmont.cuba.core.entity;
 
-import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -53,10 +52,12 @@ public abstract class BaseUuidEntity extends AbstractInstance implements BaseEnt
         id = UuidProvider.createUuid();
     }
 
+    @Override
     public boolean isDetached() {
         return detached;
     }
 
+    @Override
     public void setDetached(boolean detached) {
         this.detached = detached;
     }
@@ -106,8 +107,12 @@ public abstract class BaseUuidEntity extends AbstractInstance implements BaseEnt
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         BaseUuidEntity that = (BaseUuidEntity) o;
 
@@ -127,9 +132,9 @@ public abstract class BaseUuidEntity extends AbstractInstance implements BaseEnt
     /**
      * Called from enhanced setters before property is changed.
      *
-     * @param name          property name
-     * @param fieldIndex    corresponding OpenJPA field index
-     * @param value         new value
+     * @param name       property name
+     * @param fieldIndex corresponding OpenJPA field index
+     * @param value      new value
      */
     protected void propertyChanging(String name, int fieldIndex, Object value) {
         if (!allowSetNotLoadedAttributes
@@ -144,6 +149,8 @@ public abstract class BaseUuidEntity extends AbstractInstance implements BaseEnt
         }
     }
 
-    /** For internal use only. */
+    /**
+     * For internal use only.
+     */
     public static boolean allowSetNotLoadedAttributes;
 }

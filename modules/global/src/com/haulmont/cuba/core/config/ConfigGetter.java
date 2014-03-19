@@ -29,8 +29,7 @@ import java.util.NoSuchElementException;
  * @author Merlin Hughes
  * @version $Id$
  */
-public class ConfigGetter extends ConfigAccessorMethod
-{
+public class ConfigGetter extends ConfigAccessorMethod {
     /**
      * The default value.
      */
@@ -52,7 +51,7 @@ public class ConfigGetter extends ConfigAccessorMethod
         defaultValue = ConfigUtil.getDefaultValue(configInterface, method);
         sourceType = ConfigUtil.getSourceType(configInterface, method);
 //        if (!String.class.equals(method.getReturnType()))
-            factory = TypeFactory.getInstance(configInterface, method);
+        factory = TypeFactory.getInstance(configInterface, method);
     }
 
     /**
@@ -61,6 +60,7 @@ public class ConfigGetter extends ConfigAccessorMethod
      * {@link #getProperty(ConfigPersister, String)} depending on whether a
      * run-time default value was specified.
      */
+    @Override
     public Object invoke(ConfigHandler handler, Object[] args) {
         ConfigPersister configuration = handler.getPersister();
         String str;
@@ -94,6 +94,7 @@ public class ConfigGetter extends ConfigAccessorMethod
      */
     public String getProperty(ConfigPersister configuration) {
         String value = getProperty(configuration, defaultValue);
+        //noinspection StringEquality
         return (value == ConfigUtil.NO_DEFAULT) ? null : value;
     }
 
@@ -110,6 +111,7 @@ public class ConfigGetter extends ConfigAccessorMethod
             String value = persister.getProperty(sourceType, getPropertyName());
             return value != null ? value : defaultValue;
         } catch (NoSuchElementException ex) { // primitives
+            //noinspection StringEquality
             if (defaultValue == ConfigUtil.NO_DEFAULT) {
                 throw ex;
             }
@@ -120,14 +122,14 @@ public class ConfigGetter extends ConfigAccessorMethod
     /**
      * The ConfigGetter factory.
      */
-    public static final Factory FACTORY = new Factory()
-    {
+    public static final Factory FACTORY = new Factory() {
         /**
          * {@inheritDoc}
          * The method has the name get* or is* (if the return type is
          * boolean), has a non-void return type and either no parameters
          * or one parameter with the same type as the return value.
          */
+        @Override
         public boolean canHandle(Method method) {
             String methodName = method.getName();
             Class returnType = method.getReturnType();
@@ -139,7 +141,7 @@ public class ConfigGetter extends ConfigAccessorMethod
                             ((parameterTypes.length == 1) && parameterTypes[0].equals(returnType)));
         }
 
-        /* Inherited. */
+        @Override
         public ConfigMethod newInstance(Class<?> configInterface, Method configMethod) {
             return new ConfigGetter(configInterface, configMethod);
         }

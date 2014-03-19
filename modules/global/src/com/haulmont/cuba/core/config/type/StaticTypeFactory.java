@@ -28,8 +28,7 @@ import java.lang.reflect.InvocationTargetException;
  * @author Merlin Hughes
  * @version 0.1, 2007/04/15
  */
-public class StaticTypeFactory extends TypeFactory
-{
+public class StaticTypeFactory extends TypeFactory {
     /**
      * The type factory method.
      */
@@ -44,10 +43,11 @@ public class StaticTypeFactory extends TypeFactory
         this.method = method;
     }
 
-    /* Inherited. */
+    @Override
     public Object build(String string) {
-        if (string == null)
+        if (string == null) {
             return null;
+        }
 
         try {
             try {
@@ -62,4 +62,3 @@ public class StaticTypeFactory extends TypeFactory
         }
     }
 }
-

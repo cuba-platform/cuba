@@ -26,7 +26,7 @@ import javax.annotation.Nonnull;
  */
 public class DoubleDatatype extends NumberDatatype implements Datatype<Double> {
 
-	public static String NAME = "double";
+    public final static String NAME = "double";
 
     public DoubleDatatype(Element element) {
         super(element);
@@ -35,18 +35,20 @@ public class DoubleDatatype extends NumberDatatype implements Datatype<Double> {
     @Nonnull
     @Override
     public String format(Double value) {
-		return value == null ? "" : format.format(value);
-	}
+        return value == null ? "" : format.format(value);
+    }
 
     @Nonnull
     @Override
     public String format(Double value, Locale locale) {
-        if (value == null)
+        if (value == null) {
             return "";
+        }
 
         FormatStrings formatStrings = Datatypes.getFormatStrings(locale);
-        if (formatStrings == null)
+        if (formatStrings == null) {
             return format(value);
+        }
 
         DecimalFormatSymbols formatSymbols = formatStrings.getFormatSymbols();
         NumberFormat format = new DecimalFormat(formatStrings.getDoubleFormat(), formatSymbols);
@@ -54,36 +56,39 @@ public class DoubleDatatype extends NumberDatatype implements Datatype<Double> {
     }
 
     @Override
-	public Class getJavaClass() {
-		return Double.class;
-	}
+    public Class getJavaClass() {
+        return Double.class;
+    }
 
     @Override
-	public String getName() {
-		return NAME;
-	}
+    public String getName() {
+        return NAME;
+    }
 
     @Override
-	public int getSqlType() {
-		return Types.NUMERIC;
-	}
+    public int getSqlType() {
+        return Types.NUMERIC;
+    }
 
     @Override
-	public Double parse(String value) throws ParseException {
-        if (StringUtils.isBlank(value))
+    public Double parse(String value) throws ParseException {
+        if (StringUtils.isBlank(value)) {
             return null;
+        }
 
         return parse(value, format).doubleValue();
-	}
+    }
 
     @Override
     public Double parse(String value, Locale locale) throws ParseException {
-        if (StringUtils.isBlank(value))
+        if (StringUtils.isBlank(value)) {
             return null;
+        }
 
         FormatStrings formatStrings = Datatypes.getFormatStrings(locale);
-        if (formatStrings == null)
+        if (formatStrings == null) {
             return parse(value);
+        }
 
         DecimalFormatSymbols formatSymbols = formatStrings.getFormatSymbols();
         NumberFormat format = new DecimalFormat(formatStrings.getDoubleFormat(), formatSymbols);
@@ -91,19 +96,19 @@ public class DoubleDatatype extends NumberDatatype implements Datatype<Double> {
     }
 
     @Override
-	public Double read(ResultSet resultSet, int index) throws SQLException {
-		Double value = resultSet.getDouble(index);
-		return resultSet.wasNull() ? null : value;
-	}
+    public Double read(ResultSet resultSet, int index) throws SQLException {
+        Double value = resultSet.getDouble(index);
+        return resultSet.wasNull() ? null : value;
+    }
 
     @Override
-	public void write(PreparedStatement statement, int index, Double value) throws SQLException {
-		if (value == null) {
-			statement.setString(index, null);
-		} else {
-			statement.setDouble(index, value);
-		}
-	}
+    public void write(PreparedStatement statement, int index, Double value) throws SQLException {
+        if (value == null) {
+            statement.setString(index, null);
+        } else {
+            statement.setDouble(index, value);
+        }
+    }
 
     @Override
     public String toString() {

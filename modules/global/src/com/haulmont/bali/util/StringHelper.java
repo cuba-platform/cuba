@@ -4,7 +4,14 @@
  */
 package com.haulmont.bali.util;
 
-public class StringHelper {
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
+public final class StringHelper {
+
+    private StringHelper() {
+    }
 
     /**
      * Removes extra (more than one) whitespace characters from any place of the string.<br>

@@ -20,15 +20,15 @@ import java.lang.reflect.Proxy;
 @SuppressWarnings({"TransientFieldNotInitialized"})
 public class MetaPropertyImpl extends MetadataObjectImpl<MetaProperty> implements MetaProperty {
 
-	private final MetaClass domain;
-	private transient final MetaModel model;
-	
-	private transient boolean mandatory;
+    private final MetaClass domain;
+    private transient final MetaModel model;
+
+    private transient boolean mandatory;
     private transient boolean readOnly;
-	private transient Type type;
-	private transient Range range;
-	
-	private transient MetaProperty inverse;
+    private transient Type type;
+    private transient Range range;
+
+    private transient MetaProperty inverse;
 
     private transient AnnotatedElement annotatedElement;
     private transient Class<?> javaType;
@@ -37,9 +37,9 @@ public class MetaPropertyImpl extends MetadataObjectImpl<MetaProperty> implement
     private static final long serialVersionUID = -2827471157045502206L;
 
     public MetaPropertyImpl(MetaClass domain, String name) {
-		super();
-		this.domain = domain;
-		this.model = domain.getModel();
+        super();
+        this.domain = domain;
+        this.model = domain.getModel();
         this.name = name;
 
         ((MetaClassImpl) domain).registerProperty(this);
@@ -50,7 +50,7 @@ public class MetaPropertyImpl extends MetadataObjectImpl<MetaProperty> implement
         if (session == null) {
             return Proxy.newProxyInstance(
                     this.getClass().getClassLoader(),
-                    new Class[] { MetaProperty.class },
+                    new Class[]{MetaProperty.class},
                     new MetaPropertyInvocationHandler(domain, name)
             );
         } else {
@@ -58,35 +58,40 @@ public class MetaPropertyImpl extends MetadataObjectImpl<MetaProperty> implement
         }
     }
 
-	public MetaClass getDomain() {
-		return domain;
-	}
+    @Override
+    public MetaClass getDomain() {
+        return domain;
+    }
 
-	public MetaProperty getInverse() {
-		return inverse;
-	}
+    @Override
+    public MetaProperty getInverse() {
+        return inverse;
+    }
 
-	public void setInverse(MetaProperty inverse) {
-		this.inverse = inverse;
-	}
+    public void setInverse(MetaProperty inverse) {
+        this.inverse = inverse;
+    }
 
-	public MetaModel getModel() {
-		return model;
-	}
+    @Override
+    public MetaModel getModel() {
+        return model;
+    }
 
-	public Range getRange() {
-		return range;
-	}
+    @Override
+    public Range getRange() {
+        return range;
+    }
 
+    @Override
     public AnnotatedElement getAnnotatedElement() {
         return annotatedElement;
     }
-
 
     public void setAnnotatedElement(AnnotatedElement annotatedElement) {
         this.annotatedElement = annotatedElement;
     }
 
+    @Override
     public Class<?> getJavaType() {
         return javaType;
     }
@@ -95,6 +100,7 @@ public class MetaPropertyImpl extends MetadataObjectImpl<MetaProperty> implement
         this.javaType = javaType;
     }
 
+    @Override
     public Class<?> getDeclaringClass() {
         return declaringClass;
     }
@@ -104,25 +110,28 @@ public class MetaPropertyImpl extends MetadataObjectImpl<MetaProperty> implement
     }
 
     public void setRange(Range range) {
-		this.range = range;
-	}
+        this.range = range;
+    }
 
-	public Type getType() {
-		return type;
-	}
+    @Override
+    public Type getType() {
+        return type;
+    }
 
-	public void setType(Type type) {
-		this.type = type;
-	}
+    public void setType(Type type) {
+        this.type = type;
+    }
 
-	public boolean isMandatory() {
-		return mandatory;
-	}
+    @Override
+    public boolean isMandatory() {
+        return mandatory;
+    }
 
     public void setMandatory(boolean mandatory) {
-		this.mandatory = mandatory;
-	}
+        this.mandatory = mandatory;
+    }
 
+    @Override
     public boolean isReadOnly() {
         return readOnly;
     }
@@ -131,6 +140,7 @@ public class MetaPropertyImpl extends MetadataObjectImpl<MetaProperty> implement
         this.readOnly = readOnly;
     }
 
+    @Override
     public String toString() {
         return domain.getName() + "." + name;
     }
@@ -146,6 +156,7 @@ public class MetaPropertyImpl extends MetadataObjectImpl<MetaProperty> implement
             this.name = name;
         }
 
+        @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             if ("hashCode".equals(method.getName())) {
                 return hashCode();

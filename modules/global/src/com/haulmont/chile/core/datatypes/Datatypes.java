@@ -5,6 +5,7 @@
 
 package com.haulmont.chile.core.datatypes;
 
+import com.haulmont.bali.util.ReflectionHelper;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -13,15 +14,11 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.util.*;
-
-import com.haulmont.bali.util.ReflectionHelper;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.ejb.Local;
 
 /**
  * Contains instances of all Datatype's registered for the application.
@@ -32,7 +29,7 @@ import javax.ejb.Local;
  * @author abramov
  * @version $Id$
  */
-public class Datatypes {
+public final class Datatypes {
 
     private static Log log = LogFactory.getLog(Datatypes.class);
 

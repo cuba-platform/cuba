@@ -8,8 +8,7 @@ package com.haulmont.cuba.core.config;
  * @author krivopustov
  * @version $Id$
  */
-public enum SourceType
-{
+public enum SourceType {
     SYSTEM,
     APP,
     DATABASE

@@ -28,8 +28,7 @@ import java.lang.reflect.InvocationTargetException;
  * @author Merlin Hughes
  * @version $Id$
  */
-public class ConstructorTypeFactory extends TypeFactory
-{
+public class ConstructorTypeFactory extends TypeFactory {
     /**
      * The type constructor.
      */
@@ -44,10 +43,11 @@ public class ConstructorTypeFactory extends TypeFactory
         this.constructor = constructor;
     }
 
-    /* Inherited. */
+    @Override
     public Object build(String string) {
-        if (string == null)
+        if (string == null) {
             return null;
+        }
 
         try {
             try {

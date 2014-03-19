@@ -18,7 +18,10 @@ import java.util.*;
  * @author krivopustov
  * @version $Id$
  */
-public class ReflectionHelper {
+public final class ReflectionHelper {
+
+    private ReflectionHelper() {
+    }
 
     /**
      * Load class by name.

@@ -19,9 +19,9 @@ import java.util.UUID;
  * @author krivopustov
  * @version $Id$
  */
-public class UUIDDatatype implements Datatype<UUID>{
+public class UUIDDatatype implements Datatype<UUID> {
 
-    public static String NAME = "uuid";
+    public final static String NAME = "uuid";
 
     @Override
     public String getName() {
@@ -39,6 +39,7 @@ public class UUIDDatatype implements Datatype<UUID>{
         return value == null ? "" : value.toString();
     }
 
+    @Override
     @Nonnull
     public String format(UUID value, Locale locale) {
         return format(value);

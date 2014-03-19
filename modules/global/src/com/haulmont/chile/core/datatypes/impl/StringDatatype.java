@@ -21,7 +21,7 @@ import java.util.Locale;
  */
 public class StringDatatype implements Datatype<String> {
 
-	public static String NAME = "string";
+	public final static String NAME = "string";
 
     @Nonnull
     @Override

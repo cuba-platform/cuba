@@ -28,8 +28,7 @@ import java.lang.annotation.*;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
-public @interface DefaultBoolean
-{
+public @interface DefaultBoolean {
     /**
      * The default value.
      */

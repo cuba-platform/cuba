@@ -26,49 +26,53 @@ import javax.annotation.Nullable;
  */
 public class BooleanDatatype implements Datatype<Boolean> {
 
-	public static String NAME = "boolean";
+    public final static String NAME = "boolean";
 
     @Nonnull
     @Override
-	public String format(Boolean value) {
-		return value == null ? "" : Boolean.toString(value);
-	}
+    public String format(Boolean value) {
+        return value == null ? "" : Boolean.toString(value);
+    }
 
     @Nonnull
     @Override
     public String format(Boolean value, Locale locale) {
-        if (value == null)
+        if (value == null) {
             return "";
+        }
 
         FormatStrings formatStrings = Datatypes.getFormatStrings(locale);
-        if (formatStrings == null)
+        if (formatStrings == null) {
             return format(value);
+        }
 
         return value ? formatStrings.getTrueString() : formatStrings.getFalseString();
     }
 
     @Override
-	public Class getJavaClass() {
-		return Boolean.class;
-	}
+    public Class getJavaClass() {
+        return Boolean.class;
+    }
 
     @Override
-	public String getName() {
-		return NAME;
-	}
+    public String getName() {
+        return NAME;
+    }
 
     @Override
-	public int getSqlType() {
-		return Types.BOOLEAN;
-	}
+    public int getSqlType() {
+        return Types.BOOLEAN;
+    }
 
     protected Boolean parse(@Nullable String value, String trueString, String falseString) throws ParseException {
         if (!StringUtils.isBlank(value)) {
             String lowerCaseValue = StringUtils.lowerCase(value);
-            if (trueString.equals(lowerCaseValue))
+            if (trueString.equals(lowerCaseValue)) {
                 return true;
-            if (falseString.equals(lowerCaseValue))
+            }
+            if (falseString.equals(lowerCaseValue)) {
                 return false;
+            }
             throw new ParseException(String.format("Can't parse '%s'", value), 0);
         }
         return null;
@@ -81,30 +85,32 @@ public class BooleanDatatype implements Datatype<Boolean> {
 
     @Override
     public Boolean parse(String value, Locale locale) throws ParseException {
-        if (StringUtils.isBlank(value))
+        if (StringUtils.isBlank(value)) {
             return null;
+        }
 
         FormatStrings formatStrings = Datatypes.getFormatStrings(locale);
-        if (formatStrings == null)
+        if (formatStrings == null) {
             return parse(value);
+        }
 
         return parse(value, formatStrings.getTrueString(), formatStrings.getFalseString());
     }
 
     @Override
-	public Boolean read(ResultSet resultSet, int index) throws SQLException {
-		Boolean value = resultSet.getBoolean(index);
-		return resultSet.wasNull() ? null : value;
-	}
+    public Boolean read(ResultSet resultSet, int index) throws SQLException {
+        Boolean value = resultSet.getBoolean(index);
+        return resultSet.wasNull() ? null : value;
+    }
 
     @Override
-	public void write(PreparedStatement statement, int index, Boolean value) throws SQLException {
-		if (value == null) {
-			statement.setString(index, null);
-		} else {
-			statement.setBoolean(index, value);
-		}
-	}
+    public void write(PreparedStatement statement, int index, Boolean value) throws SQLException {
+        if (value == null) {
+            statement.setString(index, null);
+        } else {
+            statement.setBoolean(index, value);
+        }
+    }
 
     @Override
     public String toString() {

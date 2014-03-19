@@ -15,15 +15,16 @@ import java.util.List;
  * @author artamonov
  * @version $Id$
  */
-public class StringListTypeFactory extends TypeFactory{
+public class StringListTypeFactory extends TypeFactory {
     @Override
     public Object build(String string) {
         List<String> stringList = new ArrayList<>();
-        if (StringUtils.isNotEmpty(string)){
+        if (StringUtils.isNotEmpty(string)) {
             String[] elements = string.split("\\|");
             for (String element : elements) {
-                if (StringUtils.isNotEmpty(element))
+                if (StringUtils.isNotEmpty(element)) {
                     stringList.add(element);
+                }
             }
         }
         return stringList;

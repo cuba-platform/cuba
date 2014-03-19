@@ -40,8 +40,7 @@ import java.lang.reflect.Modifier;
  * @author Merlin Hughes
  * @version $Id$
  */
-public abstract class TypeFactory
-{
+public abstract class TypeFactory {
     public static final String ENTITY_FACTORY_BEAN_NAME = "cuba_ConfigEntityFactory";
 
     /**
@@ -149,7 +148,7 @@ public abstract class TypeFactory
 
     private static boolean isAcceptableMethod(Class<?> returnType, Method factoryMethod) {
         int modifiers = factoryMethod.getModifiers();
-        return  Modifier.isStatic(modifiers) &&
+        return Modifier.isStatic(modifiers) &&
                 Modifier.isPublic(modifiers) &&
                 returnType.isAssignableFrom(factoryMethod.getReturnType());
     }

@@ -16,42 +16,42 @@ import com.haulmont.chile.core.model.Range;
  */
 public class EnumerationRange extends AbstractRange implements Range {
 
-	private Enumeration enumeration;
+    private Enumeration enumeration;
 
     public EnumerationRange(Enumeration enumeration) {
-		super();
-		this.enumeration = enumeration;
-	}
+        super();
+        this.enumeration = enumeration;
+    }
 
     @Override
     public MetaClass asClass() {
-		throw new IllegalStateException("Range is enumeration");
-	}
+        throw new IllegalStateException("Range is enumeration");
+    }
 
     @Override
-	public Datatype asDatatype() {
-		throw new IllegalStateException("Range is enumeration");
-	}
+    public Datatype asDatatype() {
+        throw new IllegalStateException("Range is enumeration");
+    }
 
     @Override
-	public Enumeration asEnumeration() {
-		return enumeration;
-	}
+    public Enumeration asEnumeration() {
+        return enumeration;
+    }
 
     @Override
-	public boolean isClass() {
-		return false;
-	}
+    public boolean isClass() {
+        return false;
+    }
 
     @Override
-	public boolean isDatatype() {
-		return false;
-	}
+    public boolean isDatatype() {
+        return false;
+    }
 
     @Override
-	public boolean isEnum() {
-		return true;
-	}
+    public boolean isEnum() {
+        return true;
+    }
 
     @Override
     public String toString() {

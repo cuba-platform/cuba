@@ -27,8 +27,7 @@ import java.lang.reflect.Method;
  * @author Merlin Hughes
  * @version $Id$
  */
-public class ConfigHandler implements InvocationHandler
-{
+public class ConfigHandler implements InvocationHandler {
     /**
      * The configuration source.
      */
@@ -75,6 +74,7 @@ public class ConfigHandler implements InvocationHandler
      * @param args   The method arguments.
      * @return The method result.
      */
+    @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         ConfigMethod configMethod = ConfigMethod.getInstance(configInterface, method);
         return configMethod.invoke(this, args);

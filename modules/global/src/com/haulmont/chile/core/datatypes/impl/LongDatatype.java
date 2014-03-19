@@ -26,7 +26,7 @@ import javax.annotation.Nonnull;
  */
 public class LongDatatype extends NumberDatatype implements Datatype<Long> {
 
-	public static String NAME = "long";
+    public final static String NAME = "long";
 
     public LongDatatype(Element element) {
         super(element);
@@ -36,17 +36,19 @@ public class LongDatatype extends NumberDatatype implements Datatype<Long> {
     @Override
     public String format(Long value) {
         return value == null ? "" : format.format(value);
-	}
+    }
 
     @Nonnull
     @Override
     public String format(Long value, Locale locale) {
-        if (value == null)
+        if (value == null) {
             return "";
+        }
 
         FormatStrings formatStrings = Datatypes.getFormatStrings(locale);
-        if (formatStrings == null)
+        if (formatStrings == null) {
             return format(value);
+        }
 
         DecimalFormatSymbols formatSymbols = formatStrings.getFormatSymbols();
         NumberFormat format = new DecimalFormat(formatStrings.getIntegerFormat(), formatSymbols);
@@ -54,36 +56,39 @@ public class LongDatatype extends NumberDatatype implements Datatype<Long> {
     }
 
     @Override
-	public Class getJavaClass() {
-		return Long.class;
-	}
+    public Class getJavaClass() {
+        return Long.class;
+    }
 
     @Override
-	public String getName() {
-		return NAME;
-	}
+    public String getName() {
+        return NAME;
+    }
 
     @Override
-	public int getSqlType() {
-		return Types.BIGINT;
-	}
+    public int getSqlType() {
+        return Types.BIGINT;
+    }
 
     @Override
-	public Long parse(String value) throws ParseException {
-        if (StringUtils.isBlank(value))
+    public Long parse(String value) throws ParseException {
+        if (StringUtils.isBlank(value)) {
             return null;
+        }
 
         return parse(value, format).longValue();
-	}
+    }
 
     @Override
     public Long parse(String value, Locale locale) throws ParseException {
-        if (StringUtils.isBlank(value))
+        if (StringUtils.isBlank(value)) {
             return null;
+        }
 
         FormatStrings formatStrings = Datatypes.getFormatStrings(locale);
-        if (formatStrings == null)
+        if (formatStrings == null) {
             return parse(value);
+        }
 
         DecimalFormatSymbols formatSymbols = formatStrings.getFormatSymbols();
         NumberFormat format = new DecimalFormat(formatStrings.getIntegerFormat(), formatSymbols);
@@ -91,19 +96,19 @@ public class LongDatatype extends NumberDatatype implements Datatype<Long> {
     }
 
     @Override
-	public Long read(ResultSet resultSet, int index) throws SQLException {
-		Long value = resultSet.getLong(index);
-		return resultSet.wasNull() ? null : value;
-	}
+    public Long read(ResultSet resultSet, int index) throws SQLException {
+        Long value = resultSet.getLong(index);
+        return resultSet.wasNull() ? null : value;
+    }
 
     @Override
-	public void write(PreparedStatement statement, int index, Long value) throws SQLException {
-		if (value == null) {
-			statement.setString(index, null);
-		} else {
-			statement.setLong(index, value);
-		}
-	}
+    public void write(PreparedStatement statement, int index, Long value) throws SQLException {
+        if (value == null) {
+            statement.setString(index, null);
+        } else {
+            statement.setLong(index, value);
+        }
+    }
 
     @Override
     public String toString() {

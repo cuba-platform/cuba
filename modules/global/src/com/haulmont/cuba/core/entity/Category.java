@@ -20,7 +20,7 @@ import java.util.List;
  */
 @javax.persistence.Entity(name = "sys$Category")
 @Table(name = "SYS_CATEGORY")
-@Inheritance(strategy=InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "DISCRIMINATOR", discriminatorType = DiscriminatorType.INTEGER)
 @DiscriminatorValue("0")
 @NamePattern("%s|name")
@@ -59,7 +59,6 @@ public class Category extends StandardEntity {
         this.name = name;
     }
 
-
     public void setCategoryAttrs(List<CategoryAttribute> categoryAttrs) {
         this.categoryAttrs = categoryAttrs;
     }
@@ -72,19 +71,19 @@ public class Category extends StandardEntity {
         this.entityType = entityType;
     }
 
-    public Boolean getIsDefault(){
+    public Boolean getIsDefault() {
         return isDefault;
     }
 
-    public void setIsDefault(Boolean isDefault){
-        this.isDefault=isDefault;
+    public void setIsDefault(Boolean isDefault) {
+        this.isDefault = isDefault;
     }
 
-    public String getSpecial(){
+    public String getSpecial() {
         return special;
     }
 
-    public void setSpecial(String special){
-        this.special=special;
+    public void setSpecial(String special) {
+        this.special = special;
     }
 }

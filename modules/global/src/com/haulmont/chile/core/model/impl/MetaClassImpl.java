@@ -20,8 +20,8 @@ import java.util.*;
 @SuppressWarnings({"TransientFieldNotInitialized"})
 public class MetaClassImpl extends MetadataObjectImpl<MetaClass> implements MetaClass {
 
-	private transient Map<String, MetaProperty> propertyByName = new HashMap<String, MetaProperty>();
-    private transient Map<String, MetaProperty> ownPropertyByName = new HashMap<String, MetaProperty>();
+	private transient Map<String, MetaProperty> propertyByName = new HashMap<>();
+    private transient Map<String, MetaProperty> ownPropertyByName = new HashMap<>();
 
 	private transient final MetaModel model;
     private transient Class javaClass;
@@ -50,8 +50,8 @@ public class MetaClassImpl extends MetadataObjectImpl<MetaClass> implements Meta
         }
     }
 
-
-	public <T> T createInstance() throws InstantiationException, IllegalAccessException {
+	@Override
+    public <T> T createInstance() throws InstantiationException, IllegalAccessException {
         final Class aClass = getJavaClass();
         if (aClass == null) throw new IllegalStateException(String.format("Can't find java class for metaClass '%s'", this));
 
@@ -62,19 +62,23 @@ public class MetaClassImpl extends MetadataObjectImpl<MetaClass> implements Meta
 		throw new UnsupportedOperationException();
 	}
 
-	public MetaModel getModel() {
+	@Override
+    public MetaModel getModel() {
 		return model;
 	}
 
+    @Override
     public Class getJavaClass() {
         return javaClass;
     }
 
+    @Override
     public Collection<MetaProperty> getProperties() {
 		return propertyByName.values();
 	}
 
-	public MetaProperty getProperty(String name) {
+	@Override
+    public MetaProperty getProperty(String name) {
 		return propertyByName.get(name);
 	}
 
@@ -86,9 +90,10 @@ public class MetaClassImpl extends MetadataObjectImpl<MetaClass> implements Meta
         return property;
     }
 
+    @Override
     public MetaPropertyPath getPropertyEx(String propertyPath) {
         String[] properties = propertyPath.split("[.]");
-        List<MetaProperty> metaProperties = new ArrayList<MetaProperty>();
+        List<MetaProperty> metaProperties = new ArrayList<>();
 
 		MetaProperty currentProperty;
 		MetaClass currentClass = this;
@@ -107,9 +112,10 @@ public class MetaClassImpl extends MetadataObjectImpl<MetaClass> implements Meta
 		return new MetaPropertyPath(this, metaProperties.toArray(new MetaProperty[metaProperties.size()]));
 	}
 
+    @Override
     public MetaPropertyPath getPropertyPath(String propertyPath) {
         String[] properties = propertyPath.split("[.]");
-        List<MetaProperty> metaProperties = new ArrayList<MetaProperty>();
+        List<MetaProperty> metaProperties = new ArrayList<>();
 
 		MetaProperty currentProperty;
 		MetaClass currentClass = this;
@@ -128,6 +134,7 @@ public class MetaClassImpl extends MetadataObjectImpl<MetaClass> implements Meta
 		return new MetaPropertyPath(this, metaProperties.toArray(new MetaProperty[metaProperties.size()]));
     }
 
+    @Override
     public Collection<MetaProperty> getOwnProperties() {
         return ownPropertyByName.values();
     }
@@ -137,6 +144,7 @@ public class MetaClassImpl extends MetadataObjectImpl<MetaClass> implements Meta
         ((MetaModelImpl) model).registerClass(this);
     }
 
+    @Override
     public void addAncestor(MetaClass ancestorClass) {
         super.addAncestor(ancestorClass);
         for (MetaProperty metaProperty : ancestorClass.getProperties()) {
@@ -162,6 +170,7 @@ public class MetaClassImpl extends MetadataObjectImpl<MetaClass> implements Meta
         }
     }
 
+    @Override
     public String toString() {
         return name;
     }
@@ -175,6 +184,7 @@ public class MetaClassImpl extends MetadataObjectImpl<MetaClass> implements Meta
             this.name = name;
         }
 
+        @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             if ("hashCode".equals(method.getName())) {
                 return hashCode();

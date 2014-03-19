@@ -28,8 +28,8 @@ import java.lang.reflect.Method;
  * @author Merlin Hughes
  * @version $Id$
  */
-public class ConfigSetter extends ConfigAccessorMethod
-{
+public class ConfigSetter extends ConfigAccessorMethod {
+
     private final SourceType sourceType;
 
     private TypeStringify stringifier;
@@ -52,6 +52,7 @@ public class ConfigSetter extends ConfigAccessorMethod
      * This implementation invokes {@link #setProperty} with the
      * filed value.
      */
+    @Override
     public Object invoke(ConfigHandler handler, Object[] args) {
         setProperty(handler.getPersister(), args[0]);
         return null;

@@ -29,29 +29,32 @@ import java.util.Locale;
  */
 public class BigDecimalDatatype extends NumberDatatype implements Datatype<BigDecimal> {
 
-	public static String NAME = "decimal";
+    public final static String NAME = "decimal";
 
     public BigDecimalDatatype(Element element) {
         super(element);
-        if (format instanceof DecimalFormat)
+        if (format instanceof DecimalFormat) {
             ((DecimalFormat) format).setParseBigDecimal(true);
+        }
     }
 
     @Nonnull
     @Override
     public String format(BigDecimal value) {
-		return value == null ? "" : format.format(value);
-	}
+        return value == null ? "" : format.format(value);
+    }
 
     @Nonnull
     @Override
     public String format(BigDecimal value, Locale locale) {
-        if (value == null)
+        if (value == null) {
             return "";
+        }
 
         FormatStrings formatStrings = Datatypes.getFormatStrings(locale);
-        if (formatStrings == null)
+        if (formatStrings == null) {
             return format(value);
+        }
 
         DecimalFormatSymbols formatSymbols = formatStrings.getFormatSymbols();
         NumberFormat format = new DecimalFormat(formatStrings.getDecimalFormat(), formatSymbols);
@@ -59,36 +62,39 @@ public class BigDecimalDatatype extends NumberDatatype implements Datatype<BigDe
     }
 
     @Override
-	public Class getJavaClass() {
-		return BigDecimal.class;
-	}
+    public Class getJavaClass() {
+        return BigDecimal.class;
+    }
 
     @Override
-	public String getName() {
-		return NAME;
-	}
+    public String getName() {
+        return NAME;
+    }
 
     @Override
-	public int getSqlType() {
-		return Types.NUMERIC;
-	}
+    public int getSqlType() {
+        return Types.NUMERIC;
+    }
 
     @Override
-	public BigDecimal parse(String value) throws ParseException {
-        if (StringUtils.isBlank(value))
+    public BigDecimal parse(String value) throws ParseException {
+        if (StringUtils.isBlank(value)) {
             return null;
+        }
 
         return (BigDecimal) parse(value, format);
-	}
+    }
 
     @Override
     public BigDecimal parse(String value, Locale locale) throws ParseException {
-        if (StringUtils.isBlank(value))
+        if (StringUtils.isBlank(value)) {
             return null;
+        }
 
         FormatStrings formatStrings = Datatypes.getFormatStrings(locale);
-        if (formatStrings == null)
+        if (formatStrings == null) {
             return parse(value);
+        }
 
         DecimalFormatSymbols formatSymbols = formatStrings.getFormatSymbols();
         DecimalFormat format = new DecimalFormat(formatStrings.getDecimalFormat(), formatSymbols);
@@ -97,19 +103,19 @@ public class BigDecimalDatatype extends NumberDatatype implements Datatype<BigDe
     }
 
     @Override
-	public BigDecimal read(ResultSet resultSet, int index) throws SQLException {
-		BigDecimal value = resultSet.getBigDecimal(index);
-		return resultSet.wasNull() ? null : value;
-	}
+    public BigDecimal read(ResultSet resultSet, int index) throws SQLException {
+        BigDecimal value = resultSet.getBigDecimal(index);
+        return resultSet.wasNull() ? null : value;
+    }
 
     @Override
-	public void write(PreparedStatement statement, int index, BigDecimal value) throws SQLException {
-		if (value == null) {
-			statement.setString(index, null);
-		} else {
-			statement.setBigDecimal(index, value);
-		}
-	}
+    public void write(PreparedStatement statement, int index, BigDecimal value) throws SQLException {
+        if (value == null) {
+            statement.setString(index, null);
+        } else {
+            statement.setBigDecimal(index, value);
+        }
+    }
 
     @Override
     public String toString() {

@@ -14,11 +14,12 @@ import com.haulmont.chile.core.model.Session;
 import javax.annotation.Nullable;
 
 /**
- *
+ * @author krivopustov
+ * @version $Id$
  */
 public class SessionImpl implements Session {
 
-	private final Map<String, MetaModel> models = new HashMap<String, MetaModel>();
+    private final Map<String, MetaModel> models = new HashMap<>();
 
     static Session serializationSupportSession;
 
@@ -26,30 +27,35 @@ public class SessionImpl implements Session {
         SessionImpl.serializationSupportSession = serializationSupportSession;
     }
 
+    @Override
     public MetaModel getModel(String name) {
-		return models.get(name);
-	}
+        return models.get(name);
+    }
 
-	public Collection<MetaModel> getModels() {
-		return models.values();
-	}
+    @Override
+    public Collection<MetaModel> getModels() {
+        return models.values();
+    }
 
     @Nullable
     @Override
-	public MetaClass getClass(String name) {
+    public MetaClass getClass(String name) {
         for (MetaModel model : models.values()) {
             final MetaClass metaClass = model.getClass(name);
-            if (metaClass != null) return metaClass;
+            if (metaClass != null) {
+                return metaClass;
+            }
         }
 
         return null;
-	}
+    }
 
     @Override
     public MetaClass getClassNN(String name) {
         MetaClass metaClass = getClass(name);
-        if (metaClass == null)
+        if (metaClass == null) {
             throw new IllegalArgumentException("MetaClass not found for " + name);
+        }
         return metaClass;
     }
 
@@ -58,28 +64,32 @@ public class SessionImpl implements Session {
     public MetaClass getClass(Class<?> clazz) {
         for (MetaModel model : models.values()) {
             final MetaClass metaClass = model.getClass(clazz);
-            if (metaClass != null) return metaClass;
+            if (metaClass != null) {
+                return metaClass;
+            }
         }
 
         return null;
-	}
+    }
 
     @Override
     public MetaClass getClassNN(Class<?> clazz) {
         MetaClass metaClass = getClass(clazz);
-        if (metaClass == null)
+        if (metaClass == null) {
             throw new IllegalArgumentException("MetaClass not found for " + clazz);
+        }
         return metaClass;
     }
 
+    @Override
     public Collection<MetaClass> getClasses() {
-        final List<MetaClass> classes = new ArrayList<MetaClass>();
+        final List<MetaClass> classes = new ArrayList<>();
         for (MetaModel model : models.values()) {
             classes.addAll(model.getClasses());
         }
 
         return classes;
-	}
+    }
 
     public void addModel(MetaModelImpl model) {
         models.put(model.getName(), model);

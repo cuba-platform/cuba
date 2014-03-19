@@ -33,8 +33,7 @@ import java.lang.annotation.*;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD})
-public @interface Factory
-{
+public @interface Factory {
     /**
      * The name of a static method that can convert a string to an instance
      * of the class.

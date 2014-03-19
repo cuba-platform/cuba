@@ -11,11 +11,12 @@ import java.util.UUID;
  * @author krivopustov
  * @version $Id$
  */
-public class UuidTypeFactory extends TypeFactory
-{
+public class UuidTypeFactory extends TypeFactory {
+    @Override
     public Object build(String string) {
-        if (string == null)
+        if (string == null) {
             return null;
+        }
 
         return UUID.fromString(string);
     }

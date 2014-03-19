@@ -21,25 +21,28 @@ public class MetaModelImpl extends MetadataObjectImpl<MetaModel> implements Meta
 
     private static final long serialVersionUID = -2951212408198161458L;
 
-    private Map<String, MetaClass> classByName = new HashMap<String, MetaClass>();
-	private Map<Class, MetaClass> classByClass = new HashMap<Class, MetaClass>();
+    private Map<String, MetaClass> classByName = new HashMap<>();
+    private Map<Class, MetaClass> classByClass = new HashMap<>();
 
     public MetaModelImpl(Session session, String name) {
         this.name = name;
         ((SessionImpl) session).addModel(this);
     }
 
+    @Override
     public MetaClass getClass(String name) {
-		return classByName.get(name);
-	}
+        return classByName.get(name);
+    }
 
-	public MetaClass getClass(Class<?> clazz) {
-		return classByClass.get(clazz);
-	}
+    @Override
+    public MetaClass getClass(Class<?> clazz) {
+        return classByClass.get(clazz);
+    }
 
-	public Collection<MetaClass> getClasses() {
-		return classByName.values();
-	}
+    @Override
+    public Collection<MetaClass> getClasses() {
+        return classByName.values();
+    }
 
     public void registerClass(MetaClassImpl clazz) {
         classByName.put(clazz.getName(), clazz);

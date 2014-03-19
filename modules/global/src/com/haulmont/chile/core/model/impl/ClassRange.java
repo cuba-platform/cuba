@@ -15,41 +15,41 @@ import com.haulmont.chile.core.model.Range;
  * @version $Id$
  */
 public class ClassRange extends AbstractRange implements Range {
-	private final MetaClass metaClass;
+    private final MetaClass metaClass;
 
-	public ClassRange(MetaClass metaClass) {
-		this.metaClass = metaClass;
-	}
-
-    @Override
-	public MetaClass asClass() {
-		return metaClass;
-	}
+    public ClassRange(MetaClass metaClass) {
+        this.metaClass = metaClass;
+    }
 
     @Override
-	public Datatype asDatatype() {
-		throw new IllegalStateException("Range is class");
-	}
+    public MetaClass asClass() {
+        return metaClass;
+    }
 
     @Override
-	public Enumeration asEnumeration() {
-		throw new IllegalStateException("Range is class");
-	}
+    public Datatype asDatatype() {
+        throw new IllegalStateException("Range is class");
+    }
 
     @Override
-	public boolean isClass() {
-		return true;
-	}
+    public Enumeration asEnumeration() {
+        throw new IllegalStateException("Range is class");
+    }
 
     @Override
-	public boolean isDatatype() {
-		return false;
-	}
+    public boolean isClass() {
+        return true;
+    }
 
     @Override
-	public boolean isEnum() {
-		return false;
-	}
+    public boolean isDatatype() {
+        return false;
+    }
+
+    @Override
+    public boolean isEnum() {
+        return false;
+    }
 
     @Override
     public String toString() {

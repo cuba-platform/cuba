@@ -38,8 +38,7 @@ import java.util.regex.Pattern;
  * @author Merlin Hughes
  * @version $Id$
  */
-public class ConfigUtil
-{
+public final class ConfigUtil {
     /**
      * Prohibited.
      */
@@ -354,4 +353,3 @@ public class ConfigUtil
         }
     }
 }
-

@@ -19,6 +19,9 @@ import javax.sql.DataSource;
  * <code>ResultSet</code>s.  This class is thread safe.
  *
  * @see ResultSetHandler
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 public class QueryRunner {
 
@@ -42,7 +45,6 @@ public class QueryRunner {
      * @param ds The <code>DataSource</code> to retrieve connections from.
      */
     public QueryRunner(DataSource ds) {
-        super();
         setDataSource(ds);
     }
 
@@ -239,9 +241,9 @@ public class QueryRunner {
      * @since DbUtils 1.1
      */
     protected Connection prepareConnection() throws SQLException {
-        if(this.getDataSource() == null) {
+        if (this.getDataSource() == null) {
             throw new SQLException("QueryRunner requires a DataSource to be " +
-                "invoked in this way, or a Connection should be passed in");
+                    "invoked in this way, or a Connection should be passed in");
         }
         return this.getDataSource().getConnection();
     }
@@ -250,17 +252,17 @@ public class QueryRunner {
      * Execute an SQL SELECT query with a single replacement parameter. The
      * caller is responsible for closing the connection.
      *
-     * @param conn The connection to execute the query in.
-     * @param sql The query to execute.
+     * @param conn  The connection to execute the query in.
+     * @param sql   The query to execute.
      * @param param The replacement parameter.
-     * @param rsh The handler that converts the results into an object.
+     * @param rsh   The handler that converts the results into an object.
      * @return The object returned by the handler.
      * @throws SQLException if a database access error occurs
      */
     public <T> T query(Connection conn, String sql, Object param,
-            ResultSetHandler<T> rsh) throws SQLException {
+                       ResultSetHandler<T> rsh) throws SQLException {
 
-        return this.query(conn, sql, new Object[] { param }, rsh);
+        return this.query(conn, sql, new Object[]{param}, rsh);
     }
 
     /**

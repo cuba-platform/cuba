@@ -234,11 +234,13 @@ public class SMTPAppender extends org.apache.log4j.net.SMTPAppender {
 
     protected Message cloneMessage(Message message) throws MessagingException {
         Message messageToSend = new MimeMessage(session);
-        for (Address address : message.getFrom())
+        for (Address address : message.getFrom()) {
             messageToSend.setFrom(address);
+        }
 
-        for (Message.RecipientType recipientType : RECIPIENT_TYPES)
+        for (Message.RecipientType recipientType : RECIPIENT_TYPES) {
             messageToSend.setRecipients(recipientType, message.getRecipients(recipientType));
+        }
 
         messageToSend.setSubject(message.getSubject());
         messageToSend.setReplyTo(message.getReplyTo());
@@ -273,8 +275,7 @@ public class SMTPAppender extends org.apache.log4j.net.SMTPAppender {
                                 timeout = 0;
                             }
                             SMTPAppender.this.wait(timeout);
-                        } catch (InterruptedException e) {
-                            // Do Nothing
+                        } catch (InterruptedException ignored) {
                         }
                     }
                 }

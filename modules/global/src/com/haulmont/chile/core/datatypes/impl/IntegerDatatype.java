@@ -28,7 +28,7 @@ import java.util.Locale;
  */
 public class IntegerDatatype extends NumberDatatype implements Datatype<Integer> {
 
-    public static String NAME = "int";
+    public final static String NAME = "int";
 
     public IntegerDatatype(Element element) {
         super(element);

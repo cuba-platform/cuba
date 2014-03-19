@@ -24,7 +24,10 @@ import java.util.List;
  * @author abramov
  * @version $Id$
  */
-public class InstanceUtils {
+public final class InstanceUtils {
+
+    private InstanceUtils() {
+    }
 
     /**
      * Converts a string of identifiers separated by dots to an array. A part of the given string, enclosed in square

@@ -8,8 +8,12 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.ArrayList;
 
-public class Node<T> implements Serializable
-{
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
+public class Node<T> implements Serializable {
+
     private static final long serialVersionUID = -7441713052548471005L;
     
     public T data;
@@ -97,7 +101,6 @@ public class Node<T> implements Serializable
         if (index == getNumberOfChildren()) {
             // this is really an append
             addChild(child);
-            return;
         } else {
             children.get(index); //just to throw the exception, and stop here
             children.add(index, child);
@@ -121,6 +124,7 @@ public class Node<T> implements Serializable
         this.data = data;
     }
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("{").append(getData().toString()).append(",[");
@@ -136,4 +140,3 @@ public class Node<T> implements Serializable
         return sb.toString();
     }
 }
-

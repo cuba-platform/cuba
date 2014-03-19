@@ -27,7 +27,8 @@ public class MethodsCache {
             if (name.startsWith("get") && method.getParameterTypes().length == 0) {
                 name = StringUtils.uncapitalize(name.substring(3));
                 getters.put(name, method);
-            } if (name.startsWith("is") && method.getParameterTypes().length == 0) {
+            }
+            if (name.startsWith("is") && method.getParameterTypes().length == 0) {
                 name = StringUtils.uncapitalize(name.substring(2));
                 getters.put(name, method);
             } else if (name.startsWith("set") && method.getParameterTypes().length == 1) {
@@ -39,9 +40,10 @@ public class MethodsCache {
 
     public void invokeSetter(Object object, String property, Object value) {
         final Method method = setters.get(property);
-        if (method == null)
+        if (method == null) {
             throw new IllegalArgumentException(
                     String.format("Can't find setter for property '%s' at class %s", property, object.getClass()));
+        }
         try {
             method.invoke(object, value);
         } catch (IllegalAccessException | InvocationTargetException e) {
@@ -51,9 +53,10 @@ public class MethodsCache {
 
     public Object invokeGetter(Object object, String property) {
         final Method method = getters.get(property);
-        if (method == null)
+        if (method == null) {
             throw new IllegalArgumentException(
                     String.format("Can't find getter for property '%s' at class %s", property, object.getClass()));
+        }
         try {
             return method.invoke(object);
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {

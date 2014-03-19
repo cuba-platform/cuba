@@ -16,6 +16,10 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashSet;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class ChileMetadataLoader implements MetadataLoader {
 
     protected Session session;
@@ -26,36 +30,43 @@ public class ChileMetadataLoader implements MetadataLoader {
             this.session = session;
             annotationsLoader = createAnnotationsLoader(session);
         }
-	}
+    }
 
     protected ClassMetadataLoader createAnnotationsLoader(Session session) {
         return new ChileAnnotationsLoader(session);
     }
 
-	public Session loadXml(String xml) {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public Session loadXml(String xml) {
+        throw new UnsupportedOperationException();
+    }
 
-	public Session loadXml(Element xml) {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public Session loadXml(Element xml) {
+        throw new UnsupportedOperationException();
+    }
 
-	public Session loadXml(InputStream xml) {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public Session loadXml(InputStream xml) {
+        throw new UnsupportedOperationException();
+    }
 
+    @Override
     public Session loadPackage(String modelName, String packageName) {
         return annotationsLoader.loadPackage(modelName, packageName);
     }
 
+    @Override
     public Session loadClass(String modelName, Class<?> clazz) {
         return annotationsLoader.loadClass(modelName, clazz);
     }
 
+    @Override
     public Session loadClass(String modelName, String className) {
         return annotationsLoader.loadClass(modelName, className);
     }
 
+    @Override
     public Session postProcess() {
         for (MetaClass metaClass : session.getClasses()) {
             initMetaClass(metaClass);
@@ -92,7 +103,7 @@ public class ChileMetadataLoader implements MetadataLoader {
 
     protected void findMissingDescendants(MetaClass ancestor, Collection<MetaClass> missingDescendants) {
         Collection<MetaClass> descendants = ancestor.getDescendants();
-        for (Object descendant: descendants) {
+        for (Object descendant : descendants) {
             missingDescendants.add((MetaClass) descendant);
             findMissingDescendants((MetaClass) descendant, missingDescendants);
         }
@@ -101,6 +112,7 @@ public class ChileMetadataLoader implements MetadataLoader {
     protected void initMetaProperty(MetaClass metaClass, MetaProperty metaProperty) {
     }
 
+    @Override
     public Session getSession() {
         return session;
     }

@@ -12,20 +12,28 @@ import com.haulmont.chile.core.model.MetaProperty;
 import java.util.Collection;
 import java.util.LinkedList;
 
-public class PrintUtils {
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
+public final class PrintUtils {
+
+    private PrintUtils() {
+    }
+
     public static String printModels(Session session) {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder builder = new StringBuilder();
         for (MetaModel model : session.getModels()) {
-            buffer.append(model.getName()).append("\n");
+            builder.append(model.getName()).append("\n");
         }
 
-        return buffer.toString();
+        return builder.toString();
     }
 
     public static String printClassHierarchy(MetaModel model) {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder builder = new StringBuilder();
 
-        Collection<MetaClass> topLevelClasses = new LinkedList<MetaClass>();
+        Collection<MetaClass> topLevelClasses = new LinkedList<>();
         for (MetaClass metaClass : model.getClasses()) {
             if (metaClass.getAncestor() == null) {
                 topLevelClasses.add(metaClass);
@@ -33,43 +41,42 @@ public class PrintUtils {
         }
 
         for (MetaClass topLevelClass : topLevelClasses) {
-            buffer.append(printClassHierarchy(topLevelClass));
+            builder.append(printClassHierarchy(topLevelClass));
         }
 
-        return buffer.toString();
+        return builder.toString();
     }
 
     public static String printClassHierarchy(MetaClass metaClass) {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder builder = new StringBuilder();
 
-        buffer.append(metaClass.getName()).append("\n");
+        builder.append(metaClass.getName()).append("\n");
         for (MetaClass descendantClass : metaClass.getDescendants()) {
-            buffer.append(shift(printClassHierarchy(descendantClass)));
+            builder.append(shift(printClassHierarchy(descendantClass)));
         }
 
-        return buffer.toString();
+        return builder.toString();
     }
 
     public static String printClass(MetaClass metaClass) {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder builder = new StringBuilder();
 
-        buffer.append(metaClass.getName()).append("\n");
+        builder.append(metaClass.getName()).append("\n");
         for (MetaProperty metaProperty : metaClass.getOwnProperties()) {
-            buffer.append(shift(metaProperty.getName() + ": " + metaProperty.getRange()));
+            builder.append(shift(metaProperty.getName() + ": " + metaProperty.getRange()));
         }
 
-        return buffer.toString();
+        return builder.toString();
     }
 
     private static String shift(String string) {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder builder = new StringBuilder();
 
         final String[] strings = string.split("\n");
         for (String s : strings) {
-            buffer.append("    ").append(s).append("\n");
+            builder.append("    ").append(s).append("\n");
         }
 
-        return buffer.toString();
+        return builder.toString();
     }
-
 }

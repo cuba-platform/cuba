@@ -28,8 +28,7 @@ import java.lang.reflect.Method;
  * @author Merlin Hughes
  * @version $Id$
  */
-public class MethodTypeStringify extends TypeStringify
-{
+public class MethodTypeStringify extends TypeStringify {
     /**
      * The stringify method.
      */
@@ -44,7 +43,7 @@ public class MethodTypeStringify extends TypeStringify
         this.method = method;
     }
 
-    /* Inherited. */
+    @Override
     public String stringify(Object value) {
         try {
             try {

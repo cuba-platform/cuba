@@ -17,7 +17,14 @@ import java.io.*;
 import java.util.List;
 import java.util.Map;
 
-public class Dom4j {
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
+public final class Dom4j {
+
+    private Dom4j() {
+    }
 
     public static Document readDocument(String xmlString) {
         return readDocument(new StringReader(xmlString));

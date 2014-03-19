@@ -34,8 +34,7 @@ import java.lang.reflect.Modifier;
  * @author Merlin Hughes
  * @version $Id$
  */
-public abstract class TypeStringify
-{
+public abstract class TypeStringify {
     /**
      * Convert an instance of the configuration type into a string.
      *
@@ -66,8 +65,9 @@ public abstract class TypeStringify
                 }
             } else {
                 if ((method.getParameterTypes().length > 0)) {
-                    if (Entity.class.isAssignableFrom(method.getParameterTypes()[0]))
+                    if (Entity.class.isAssignableFrom(method.getParameterTypes()[0])) {
                         return new EntityStringify();
+                    }
                 }
                 if (EnumClass.class.isAssignableFrom(methodType)) {
                     EnumStore mode = ConfigUtil.getAnnotation(configInterface, method, EnumStore.class, true);
@@ -101,8 +101,7 @@ public abstract class TypeStringify
             if (Modifier.isStatic(stringifyMethod.getModifiers()) ||
                     !Modifier.isPublic(stringifyMethod.getModifiers()) ||
                     Void.TYPE.equals(stringifyMethod.getReturnType()) ||
-                    (stringifyMethod.getParameterTypes().length > 0))
-            {
+                    (stringifyMethod.getParameterTypes().length > 0)) {
                 throw new IllegalArgumentException("Invalid stringify method: " + method);
             }
             return new MethodTypeStringify(stringifyMethod);

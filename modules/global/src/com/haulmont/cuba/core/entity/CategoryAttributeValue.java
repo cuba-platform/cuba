@@ -5,18 +5,19 @@
 
 package com.haulmont.cuba.core.entity;
 
-import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import org.apache.openjpa.persistence.Persistent;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import java.util.Date;
 import java.util.UUID;
 
 /**
- * <p>$Id$</p>
- *
  * @author devyatkin
+ * @version $Id$
  */
 @javax.persistence.Entity(name = "sys$CategoryAttributeValue")
 @Table(name = "SYS_ATTR_VALUE")
@@ -28,7 +29,6 @@ public class CategoryAttributeValue extends StandardEntity {
     @ManyToOne
     @JoinColumn(name = "CATEGORY_ATTR_ID")
     private CategoryAttribute categoryAttribute;
-
 
     @Column(name = "STRING_VALUE")
     private String stringValue;
@@ -132,5 +132,4 @@ public class CategoryAttributeValue extends StandardEntity {
             return entityValue;
         return null;
     }
-
 }

@@ -12,10 +12,11 @@ import java.text.SimpleDateFormat;
  * @author krivopustov
  * @version $Id$
  */
-public class DateStringify extends TypeStringify{
+public class DateStringify extends TypeStringify {
 
     public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
 
+    @Override
     public String stringify(Object value) {
         DateFormat df = new SimpleDateFormat(DATE_FORMAT);
         return df.format(value);

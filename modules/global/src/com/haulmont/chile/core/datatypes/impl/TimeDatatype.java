@@ -28,7 +28,8 @@ import java.util.Locale;
  * @version $Id$
  */
 public class TimeDatatype implements Datatype<Date> {
-    public static String NAME = "time";
+
+    public final static String NAME = "time";
 
     private String formatPattern;
 

@@ -4,6 +4,7 @@
  */
 package com.haulmont.bali.db;
 
+import javax.annotation.concurrent.ThreadSafe;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -11,9 +12,16 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * A collection of JDBC helper methods.  This class is thread safe.
+ * A collection of JDBC helper methods. This class is thread safe.
+ *
+ * @author krivopustov
+ * @version $Id$
  */
+@ThreadSafe
 public final class DbUtils {
+
+    private DbUtils() {
+    }
 
     /**
      * Close a <code>Connection</code>, avoid closing if null.

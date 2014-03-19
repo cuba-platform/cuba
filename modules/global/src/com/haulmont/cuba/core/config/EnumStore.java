@@ -12,9 +12,10 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation for config properties, specifying the way to store enum values.
- * @see EnumStoreMode
+ *
  * @author kozlov
  * @version $Id$
+ * @see EnumStoreMode
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
