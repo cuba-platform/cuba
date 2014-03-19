@@ -22,6 +22,7 @@
 
         <collectionDatasource id="specificPermissionsTreeDs"
                               class="com.haulmont.cuba.gui.security.entity.BasicPermissionTarget"
+                              allowCommit="false"
                               view="_local"
                               datasourceClass="com.haulmont.cuba.gui.security.SpecificPermissionTreeDatasource">
         </collectionDatasource>

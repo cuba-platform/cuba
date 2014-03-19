@@ -22,6 +22,7 @@
 
         <collectionDatasource id="attributeTargetsDs"
                               class="com.haulmont.cuba.gui.security.entity.MultiplePermissionTarget"
+                              allowCommit="false"
                               view="_local"
                               datasourceClass="com.haulmont.cuba.gui.security.MultiplePermissionTargetsDatasource">
         </collectionDatasource>

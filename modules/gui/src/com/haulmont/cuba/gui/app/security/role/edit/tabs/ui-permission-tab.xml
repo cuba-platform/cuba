@@ -22,6 +22,7 @@
 
         <groupDatasource id="uiPermissionTargetsDs"
                          class="com.haulmont.cuba.gui.security.entity.UiPermissionTarget"
+                         allowCommit="false"
                          view="_local"
                          datasourceClass="com.haulmont.cuba.gui.security.UiPermissionsDatasource">
         </groupDatasource>
