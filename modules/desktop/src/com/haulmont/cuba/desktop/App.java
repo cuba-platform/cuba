@@ -144,8 +144,24 @@ public class App implements ConnectionListener {
             return;
 
         LoginDialog loginDialog = createLoginDialog();
-        loginDialog.setLocationRelativeTo(mainFrame);
+        setLoginDialogLocation(loginDialog);
         loginDialog.open();
+    }
+
+    protected void setLoginDialogLocation(LoginDialog loginDialog) {
+        Point ownerLocation = mainFrame.getLocationOnScreen();
+        int mainX = ownerLocation.x;
+        int mainY = ownerLocation.y;
+
+        Dimension onwerSize = mainFrame.getSize();
+        int mainWidth = onwerSize.width;
+        int mainHeight = onwerSize.height;
+
+        Dimension size = loginDialog.getSize();
+        int width = size.width;
+        int height = size.height;
+
+        loginDialog.setLocation(mainX + mainWidth/2 - width/2, mainY + mainHeight/2 - height/2);
     }
 
     protected LoginDialog createLoginDialog() {
