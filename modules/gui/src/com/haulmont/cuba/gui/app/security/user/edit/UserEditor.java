@@ -444,6 +444,13 @@ public class UserEditor extends AbstractEditor<User> {
                 }
             });
         }
+
+        @Override
+        public boolean isEnabled() {
+            return super.isEnabled() &&
+                    userSession.isEntityOpPermitted(
+                            metadata.getSession().getClass(UserSubstitution.class), EntityOp.CREATE);
+        }
     }
 
     protected class EditSubstitutedAction extends ItemTrackingAction {
