@@ -18,6 +18,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.ManagedBean;
+import javax.annotation.Nullable;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -43,7 +44,7 @@ public class SessionMessagesNotifier {
         }
 
         Configuration configuration = AppBeans.get(Configuration.NAME);
-        int timeout = configuration.getConfig(DesktopConfig.class).getSessionMessagesTimeoutSec();
+        int timeout = configuration.getConfig(DesktopConfig.class).getSessionMessagesIntervalSec();
 
         if (timeout > 0) {
             timer = new Timer(timeout * 1000, new ActionListener() {
@@ -105,7 +106,7 @@ public class SessionMessagesNotifier {
         }
     }
 
-    protected void processServerMessage(String message) {
+    protected void processServerMessage(@Nullable String message) {
         if (message != null) {
             log.debug("Received session message");
 

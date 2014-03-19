@@ -77,7 +77,7 @@ public interface DesktopConfig extends Config {
     /**
      * @return Timeout of loading session messages from server in seconds
      */
-    @Property("cuba.desktop.sessionMessagesTimeoutSec")
+    @Property("cuba.desktop.sessionMessagesIntervalSec")
     @DefaultInt(60)
-    int getSessionMessagesTimeoutSec();
+    int getSessionMessagesIntervalSec();
 }
