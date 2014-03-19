@@ -6,9 +6,7 @@
 package com.haulmont.cuba.gui.app.security.session.browse;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -57,19 +55,13 @@ public class SessionBrowser extends AbstractLookup {
     @Inject
     protected TextField userInfo;
 
-    @Named("sessionsTable.message")
-    protected Action messageAction;
-
     @Named("sessionsTable.refresh")
     protected Action refreshAction;
 
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
-        // TODO remove after implementing #1588
-        if (!ClientType.WEB.equals(AppConfig.getClientType())) {
-            messageAction.setVisible(false);
-        }
+
         sessionsDs.addListener(new CollectionDsListenerAdapter<UserSessionEntity>() {
             @Override
             public void collectionChanged(CollectionDatasource ds, Operation operation, List<UserSessionEntity> items) {

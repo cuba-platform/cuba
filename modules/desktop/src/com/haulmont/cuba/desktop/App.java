@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.remoting.ClusterInvocationSupport;
 import com.haulmont.cuba.desktop.exception.ExceptionHandlers;
+import com.haulmont.cuba.desktop.gui.SessionMessagesNotifier;
 import com.haulmont.cuba.desktop.sys.*;
 import com.haulmont.cuba.desktop.theme.DesktopTheme;
 import com.haulmont.cuba.desktop.theme.DesktopThemeLoader;
@@ -76,6 +77,7 @@ public class App implements ConnectionListener {
 
     public static void main(final String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 app = new App();
                 app.init(args);
@@ -512,6 +514,7 @@ public class App implements ConnectionListener {
     @Override
     public void connectionStateChanged(Connection connection) throws LoginException {
         MessagesClientImpl messagesClient = AppBeans.get(Messages.NAME);
+        SessionMessagesNotifier messagesNotifier = AppBeans.get(SessionMessagesNotifier.NAME);
 
         if (connection.isConnected()) {
             messagesClient.setRemoteSearch(true);
@@ -524,6 +527,8 @@ public class App implements ConnectionListener {
             initExceptionHandlers(true);
             initClientTime();
 
+            messagesNotifier.activate();
+
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
@@ -532,6 +537,8 @@ public class App implements ConnectionListener {
                 }
             });
         } else {
+            messagesNotifier.deactivate();
+
             messagesClient.setRemoteSearch(false);
             Iterator<TopLevelFrame> it = topLevelFrames.iterator();
             while (it.hasNext()) {

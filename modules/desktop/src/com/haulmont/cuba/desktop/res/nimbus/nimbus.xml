@@ -20,6 +20,11 @@
         <!--<color property="cubaRequired" value="#c0250f"/>-->
         <color property="cubaRequiredBackground" value="#fffbb9"/>
         <color property="cubaSearchEditBackground" value="#bdd2e5"/>
+
+        <color property="cubaSessionMessageDialogBorderColor" value="#c91a1a"/>
+        <color property="cubaSessionMessageDialogBackground" value="#f3501a"/>
+        <color property="cubaSessionMessageDialogFontColor" value="#ffffff"/>
+        <font property="cubaSessionMessageDialogFont" size="14" family="SansSerif" style="bold"/>
     </ui-defaults>
 
     <layout margin-size="5" spacing-size="3"/>

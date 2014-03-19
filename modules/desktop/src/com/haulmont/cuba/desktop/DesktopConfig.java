@@ -19,10 +19,9 @@ import java.util.List;
 
 /**
  * Desktop UI configuration parameters.
- * <p/>
- * <p>$Id$</p>
  *
  * @author krivopustov
+ * @version $Id$
  */
 @Source(type = SourceType.APP)
 public interface DesktopConfig extends Config {
@@ -74,4 +73,11 @@ public interface DesktopConfig extends Config {
     @Property("cuba.desktop.useServerTime")
     @DefaultBoolean(true)
     boolean isUseServerTime();
+
+    /**
+     * @return Timeout of loading session messages from server in seconds
+     */
+    @Property("cuba.desktop.sessionMessagesTimeoutSec")
+    @DefaultInt(60)
+    int getSessionMessagesTimeoutSec();
 }
