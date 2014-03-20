@@ -7,13 +7,11 @@ package com.haulmont.cuba.desktop.gui;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.RemoteException;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.Connection;
 import com.haulmont.cuba.desktop.DesktopConfig;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.NoUserSessionException;
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -81,12 +79,8 @@ public class SessionMessagesNotifier {
                         return uss.getMessages();
                     } catch (NoUserSessionException e) {
                         log.warn("Unable to get messages for session, user session not found");
-                    } catch (RemoteException e) {
-                        if (ExceptionUtils.getRootCause(e) instanceof NoUserSessionException) {
-                            log.warn("Unable to get messages for session, user session not found");
-                        }
                     } catch (Exception e) {
-                        log.warn("Session messages exception", e);
+                        log.warn("Session messages exception: " + e.toString());
                     }
                     return null;
                 }
