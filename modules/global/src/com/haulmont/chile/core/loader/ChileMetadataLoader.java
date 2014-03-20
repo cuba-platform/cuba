@@ -9,69 +9,37 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Session;
 import org.apache.commons.collections.CollectionUtils;
-import org.dom4j.Element;
 
-import javax.annotation.Nullable;
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 
 /**
- * @author krivopustov
+ * @author abramov
  * @version $Id$
  */
 public class ChileMetadataLoader implements MetadataLoader {
 
     protected Session session;
-    protected ClassMetadataLoader annotationsLoader;
+    protected MetaClassLoader metaClassLoader;
 
-    public ChileMetadataLoader(@Nullable Session session) {
-        if (session != null) {
-            this.session = session;
-            annotationsLoader = createAnnotationsLoader(session);
-        }
-    }
+    public ChileMetadataLoader(Session session) {
+        this.session = session;
+        metaClassLoader = createMetaClassLoader(session);
+	}
 
-    protected ClassMetadataLoader createAnnotationsLoader(Session session) {
+    protected MetaClassLoader createMetaClassLoader(Session session) {
         return new ChileAnnotationsLoader(session);
     }
 
-    @Override
-    public Session loadXml(String xml) {
-        throw new UnsupportedOperationException();
+    public void loadModel(String modelName, List<String> classNames) {
+        metaClassLoader.loadPackage(modelName, classNames);
     }
 
-    @Override
-    public Session loadXml(Element xml) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Session loadXml(InputStream xml) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Session loadPackage(String modelName, String packageName) {
-        return annotationsLoader.loadPackage(modelName, packageName);
-    }
-
-    @Override
-    public Session loadClass(String modelName, Class<?> clazz) {
-        return annotationsLoader.loadClass(modelName, clazz);
-    }
-
-    @Override
-    public Session loadClass(String modelName, String className) {
-        return annotationsLoader.loadClass(modelName, className);
-    }
-
-    @Override
     public Session postProcess() {
         for (MetaClass metaClass : session.getClasses()) {
             initMetaClass(metaClass);
         }
-
         return session;
     }
 
@@ -80,7 +48,7 @@ public class ChileMetadataLoader implements MetadataLoader {
             initMetaProperty(metaClass, property);
         }
 
-        Collection<MetaClass> missingDescendants = new HashSet<MetaClass>(1);
+        Collection<MetaClass> missingDescendants = new HashSet<>(1);
 
         findMissingDescendants(metaClass, missingDescendants);
 

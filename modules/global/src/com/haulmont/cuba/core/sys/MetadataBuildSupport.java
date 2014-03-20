@@ -25,13 +25,24 @@ import java.util.*;
 @ManagedBean("cuba_MetadataBuildSupport")
 public class MetadataBuildSupport {
 
+    public static final String PERSISTENCE_CONFIG = "cuba.persistenceConfig";
     public static final String METADATA_CONFIG = "cuba.metadataConfig";
 
     @Inject
     private Resources resources;
 
     /**
-     * Get the location of non-persistent metadata descriptor
+     * @return location of persistent entities descriptor
+     */
+    public String getPersistenceConfig() {
+        String config = AppContext.getProperty(PERSISTENCE_CONFIG);
+        if (StringUtils.isBlank(config))
+            throw new IllegalStateException(PERSISTENCE_CONFIG + " application property is not defined");
+        return config;
+    }
+
+    /**
+     * @return location of metadata descriptor
      */
     public String getMetadataConfig() {
         String config = AppContext.getProperty(METADATA_CONFIG);
@@ -40,11 +51,18 @@ public class MetadataBuildSupport {
         return config;
     }
 
-    public List<String> getEntityPackages() {
-        String config = getMetadataConfig();
-        List<String> packages = new ArrayList<>();
-        StrTokenizer tokenizer = new StrTokenizer(config);
-        for (String fileName : tokenizer.getTokenArray()) {
+    public Map<String, List<String>> getEntityPackages() {
+        Map<String, List<String>> packages = new LinkedHashMap<>();
+
+        loadFromMetadataConfig(packages);
+        loadFromPersistenceConfig(packages);
+
+        return packages;
+    }
+
+    protected void loadFromMetadataConfig(Map<String, List<String>> packages) {
+        StrTokenizer metadataFilesTokenizer = new StrTokenizer(getMetadataConfig());
+        for (String fileName : metadataFilesTokenizer.getTokenArray()) {
             Element root = readXml(fileName);
             //noinspection unchecked
             for (Element element : (List<Element>) root.elements("metadata-model")) {
@@ -52,11 +70,53 @@ public class MetadataBuildSupport {
                 if (StringUtils.isBlank(rootPackage))
                     throw new IllegalStateException("metadata-model/@root-package is empty in " + fileName);
 
-                if (!packages.contains(rootPackage))
-                    packages.add(rootPackage);
+                List<String> classNames = packages.get(rootPackage);
+                if (classNames == null) {
+                    classNames = new ArrayList<>();
+                    packages.put(rootPackage, classNames);
+                }
+                for (Element classEl : Dom4j.elements(element, "class")) {
+                    classNames.add(classEl.getText().trim());
+                }
             }
         }
-        return packages;
+    }
+
+    protected void loadFromPersistenceConfig(Map<String, List<String>> packages) {
+        StrTokenizer persistenceFilestokenizer = new StrTokenizer(getPersistenceConfig());
+        for (String fileName : persistenceFilestokenizer.getTokenArray()) {
+            Element root = readXml(fileName);
+            Element puEl = root.element("persistence-unit");
+            if (puEl == null)
+                throw new IllegalStateException("File " + fileName + " has no persistence-unit element");
+
+            for (Element classEl : Dom4j.elements(puEl, "class")) {
+                String className = classEl.getText().trim();
+                boolean included = false;
+                for (String rootPackage : packages.keySet()) {
+                    if (className.startsWith(rootPackage + ".")) {
+                        // check if the class is already included into a model
+                        for (Map.Entry<String, List<String>> entry : packages.entrySet()) {
+                            if (entry.getValue().contains(className)) {
+                                throw new IllegalStateException("Class " + className
+                                        + " is already included into model " + entry.getKey());
+                            }
+                        }
+                        List<String> classNames = packages.get(rootPackage);
+                        if (classNames == null) {
+                            classNames = new ArrayList<>();
+                            packages.put(rootPackage, classNames);
+                        }
+                        classNames.add(className);
+                        included = true;
+                        break;
+                    }
+                }
+                if (!included)
+                    throw new IllegalStateException("Can not find a model for class " + className
+                            + ". The class's package must be inside of some model's root package.");
+            }
+        }
     }
 
     public Element readXml(String path) {

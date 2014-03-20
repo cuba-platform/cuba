@@ -6,13 +6,11 @@
 package com.haulmont.chile.core.loader;
 
 import com.haulmont.bali.util.ReflectionHelper;
-import com.haulmont.chile.core.annotations.*;
+import com.haulmont.chile.core.annotations.Composition;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.EnumerationImpl;
 import com.haulmont.chile.core.model.*;
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.impl.*;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import org.apache.commons.lang.StringUtils;
@@ -33,15 +31,14 @@ import java.lang.reflect.*;
 import java.util.*;
 
 /**
- * @author krivopustov
+ * @author abramov
  * @version $Id$
  */
-public class ChileAnnotationsLoader implements ClassMetadataLoader {
+public class ChileAnnotationsLoader implements MetaClassLoader {
 
     private Log log = LogFactory.getLog(ChileAnnotationsLoader.class);
 
     protected Session session;
-    protected String packageName;
 
     protected ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
     protected MetadataReaderFactory metadataReaderFactory = new CachingMetadataReaderFactory(this.resourcePatternResolver);
@@ -51,34 +48,40 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
     }
 
     @Override
-    public Session loadPackage(String modelName, final String packageName) {
-        this.packageName = packageName;
+    public void loadPackage(String packageName, List<String> classNames) {
+        List<Class<?>> classes;
+        List<MetadataObjectInitTask> tasks = new ArrayList<>();
 
-        List<MetadataObjectInitTask> tasks =
-                new ArrayList<>();
-
-        final String packagePrefix = packageName.replace(".", "/") + "/**/*.class";
-        String packageSearchPath = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + packagePrefix;
-        Resource[] resources;
-        try {
-            resources = resourcePatternResolver.getResources(packageSearchPath);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        if (classNames != null) {
+            classes = new ArrayList<>();
+            for (String className : classNames) {
+                try {
+                    classes.add(ReflectionHelper.loadClass(className));
+                } catch (ClassNotFoundException e) {
+                    log.warn("Class " + className + " not found for model " + packageName);
+                }
+            }
+        } else {
+            String packagePrefix = packageName.replace(".", "/") + "/**/*.class";
+            String packageSearchPath = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + packagePrefix;
+            Resource[] resources;
+            try {
+                resources = resourcePatternResolver.getResources(packageSearchPath);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            classes = getClasses(resources);
         }
 
-        List<Class<?>> annotated = getClasses(resources);
-
-        for (Class<?> aClass : annotated) {
+        for (Class<?> aClass : classes) {
             if (aClass.getName().startsWith(packageName)) {
-                tasks.addAll(__loadClass(modelName, aClass).getTasks());
+                tasks.addAll(loadClass(packageName, aClass).getTasks());
             }
         }
 
         for (MetadataObjectInitTask task : tasks) {
             task.execute();
         }
-
-        return session;
     }
 
     protected List<Class<?>> getClasses(Resource[] resources) {
@@ -123,23 +126,23 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
         return method.isAnnotationPresent(com.haulmont.chile.core.annotations.MetaProperty.class);
     }
 
-    protected MetaClassImpl createMetaClass(String modelName, String className) {
-        MetaModel model = session.getModel(modelName);
+    protected MetaClassImpl createMetaClass(String packageName, String className) {
+        MetaModel model = session.getModel(packageName);
         if (model == null) {
-            model = new MetaModelImpl(session, modelName);
+            model = new MetaModelImpl(session, packageName);
         }
-
         return new MetaClassImpl(model, className);
     }
 
-    protected MetaClassImpl __createClass(Class<?> clazz, String modelName) {
-        if (Object.class.equals(clazz)) return null;
+    protected MetaClassImpl createClass(Class<?> clazz, String packageName) {
+        if (Object.class.equals(clazz))
+            return null;
 
         final com.haulmont.chile.core.annotations.MetaClass metaClassAnnotaion =
                 clazz.getAnnotation(com.haulmont.chile.core.annotations.MetaClass.class);
 
         if (metaClassAnnotaion == null) {
-            log.trace(String.format("Class '%s' isn't annotated as metadata entity, ignore it", clazz.getName()));
+            log.trace(String.format("Class %s isn't annotated as metadata entity, ignore it", clazz.getName()));
             return null;
         }
 
@@ -148,7 +151,7 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
             className = clazz.getSimpleName();
         }
 
-        return __createClass(clazz, modelName, className);
+        return createClass(clazz, packageName, className);
     }
 
     protected boolean isCollection(Field field) {
@@ -171,8 +174,8 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
         return Collection.class.isAssignableFrom(type);
     }
 
-    public MetadataObjectInfo<MetaClass> __loadClass(String modelName, Class<?> clazz) {
-        final MetaClassImpl metaClass = __createClass(clazz, modelName);
+    protected MetadataObjectInfo<MetaClass> loadClass(String packageName, Class<?> clazz) {
+        final MetaClassImpl metaClass = createClass(clazz, packageName);
         if (metaClass == null)
             return null;
 
@@ -207,9 +210,9 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
                     if (isCollection(field) || isMap(field)) {
                         collectionProps.add(field);
                     } else {
-                        info = __loadProperty(metaClass, field);
+                        info = loadProperty(metaClass, field);
                         tasks.addAll(info.getTasks());
-                        final MetaProperty metaProperty = info.getObject();
+                        MetaProperty metaProperty = info.getObject();
                         onPropertyLoaded(metaProperty, field);
                     }
                 } else {
@@ -220,9 +223,9 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
         }
 
         for (Field f : collectionProps) {
-            MetadataObjectInfo<MetaProperty> info = __loadCollectionProperty(metaClass, f);
+            MetadataObjectInfo<MetaProperty> info = loadCollectionProperty(metaClass, f);
             tasks.addAll(info.getTasks());
-            final MetaProperty metaProperty = info.getObject();
+            MetaProperty metaProperty = info.getObject();
             onPropertyLoaded(metaProperty, f);
         }
 
@@ -243,10 +246,10 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
                     if (isCollection(method) || isMap(method)) {
                         throw new UnsupportedOperationException("Method-based properties don't support collections and maps");
                     } else {
-                        info = __loadProperty(metaClass, method, name);
+                        info = loadProperty(metaClass, method, name);
                         tasks.addAll(info.getTasks());
                     }
-                    final MetaProperty metaProperty = info.getObject();
+                    MetaProperty metaProperty = info.getObject();
                     onPropertyLoaded(metaProperty, method);
                 } else {
                     log.warn("Method " + clazz.getSimpleName() + "." + method.getName()
@@ -254,37 +257,6 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
                 }
             }
         }
-    }
-
-    @Override
-    public Session loadClass(String modelName, Class<?> clazz) {
-        final MetadataObjectInfo<MetaClass> info = __loadClass(modelName, clazz);
-        checkWarnings(info);
-
-        return session;
-    }
-
-    protected void checkWarnings(MetadataObjectInfo<? extends MetadataObject> info) {
-        if (info != null) {
-            for (MetadataObjectInitTask task : info.getTasks()) {
-                log.warn(task.getWarning());
-            }
-        }
-    }
-
-    @Override
-    public Session loadClass(String modelName, String className) {
-        final Class<?> clazz = ReflectionHelper.getClass(className);
-
-        final MetadataObjectInfo<MetaClass> info = __loadClass(modelName, clazz);
-        checkWarnings(info);
-
-        return session;
-    }
-
-    @Override
-    public Session getSession() {
-        return session;
     }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -296,13 +268,13 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
         }
     }
 
-    private void onPropertyLoaded(MetaProperty metaProperty, Method method) {
+    protected void onPropertyLoaded(MetaProperty metaProperty, Method method) {
     }
 
     protected void onClassLoaded(MetaClass metaClass, Class<?> clazz) {
     }
 
-    protected MetadataObjectInfo<MetaProperty> __loadProperty(MetaClassImpl metaClass, Field field) {
+    protected MetadataObjectInfo<MetaProperty> loadProperty(MetaClassImpl metaClass, Field field) {
         Collection<MetadataObjectInitTask> tasks = new ArrayList<>();
 
         MetaPropertyImpl property = new MetaPropertyImpl(metaClass, field.getName());
@@ -322,8 +294,8 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
         else
             type = field.getType();
 
-        MetadataObjectInfo<Range> info = __loadRange(property, type, map);
-        final Range range = info.getObject();
+        MetadataObjectInfo<Range> info = loadRange(property, type, map);
+        Range range = info.getObject();
         if (range != null) {
             ((AbstractRange) range).setCardinality(cardinality);
             property.setRange(range);
@@ -352,7 +324,7 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
         return annotation != null && !annotation.datatype().equals("") ? Datatypes.get(annotation.datatype()) : null;
     }
 
-    private boolean setterExists(Field field) {
+    protected boolean setterExists(Field field) {
         String name = "set" + StringUtils.capitalize(field.getName());
         Method[] methods = field.getDeclaringClass().getDeclaredMethods();
         for (Method method : methods) {
@@ -362,8 +334,8 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
         return false;
     }
 
-    protected MetadataObjectInfo<MetaProperty> __loadProperty(MetaClassImpl metaClass,
-                                                              Method method, String name) {
+    protected MetadataObjectInfo<MetaProperty> loadProperty(MetaClassImpl metaClass,
+                                                            Method method, String name) {
         Collection<MetadataObjectInitTask> tasks = new ArrayList<>();
 
         MetaPropertyImpl property = new MetaPropertyImpl(metaClass, name);
@@ -381,8 +353,8 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
         else
             type = method.getReturnType();
 
-        MetadataObjectInfo<Range> info = __loadRange(property, type, map);
-        final Range range = info.getObject();
+        MetadataObjectInfo<Range> info = loadRange(property, type, map);
+        Range range = info.getObject();
         if (range != null) {
             ((AbstractRange) range).setCardinality(Range.Cardinality.NONE);
             property.setRange(range);
@@ -399,7 +371,7 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
         return new MetadataObjectInfo<MetaProperty>(property, tasks);
     }
 
-    private boolean setterExists(Method getter) {
+    protected boolean setterExists(Method getter) {
         if (getter.getName().startsWith("get")) {
             String setterName = "set" + getter.getName().substring(3);
             Method[] methods = getter.getDeclaringClass().getDeclaredMethods();
@@ -430,7 +402,7 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
     }
 
     @SuppressWarnings({"unchecked"})
-    protected MetadataObjectInfo<Range> __loadRange(MetaProperty metaProperty, Class type, Map<String, Object> map) {
+    protected MetadataObjectInfo<Range> loadRange(MetaProperty metaProperty, Class type, Map<String, Object> map) {
         Datatype datatype = (Datatype) map.get("datatype");
         if (datatype != null) {
             return new MetadataObjectInfo<Range>(new DatatypeRange(datatype));
@@ -438,14 +410,14 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
 
         datatype = Datatypes.get(type);
         if (datatype != null) {
-            final MetaClass metaClass = metaProperty.getDomain();
-            final Class javaClass = metaClass.getJavaClass();
+            MetaClass metaClass = metaProperty.getDomain();
+            Class javaClass = metaClass.getJavaClass();
 
             try {
-                final String name = "get" + StringUtils.capitalize(metaProperty.getName());
-                final Method method = javaClass.getMethod(name);
+                String name = "get" + StringUtils.capitalize(metaProperty.getName());
+                Method method = javaClass.getMethod(name);
 
-                final Class<Enum> returnType = (Class<Enum>) method.getReturnType();
+                Class<Enum> returnType = (Class<Enum>) method.getReturnType();
                 if (returnType.isEnum()) {
                     return new MetadataObjectInfo<Range>(new EnumerationRange(new EnumerationImpl<>(returnType)));
                 }
@@ -507,7 +479,7 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
         return null;
     }
 
-    protected MetadataObjectInfo<MetaProperty> __loadCollectionProperty(MetaClassImpl metaClass, Field field) {
+    protected MetadataObjectInfo<MetaProperty> loadCollectionProperty(MetaClassImpl metaClass, Field field) {
         Collection<MetadataObjectInitTask> tasks = new ArrayList<>();
 
         MetaPropertyImpl property = new MetaPropertyImpl(metaClass, field.getName());
@@ -526,7 +498,7 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
         if (inverseField != null)
             map.put("inverseField", inverseField);
 
-        MetadataObjectInfo<Range> info = __loadRange(property, type, map);
+        MetadataObjectInfo<Range> info = loadRange(property, type, map);
         Range range = info.getObject();
         if (range != null) {
             ((AbstractRange) range).setCardinality(cardinality);
@@ -545,7 +517,7 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
         return new MetadataObjectInfo<MetaProperty>(property, tasks);
     }
 
-    private void assignInverse(MetaPropertyImpl property, Range range, String inverseField) {
+    protected void assignInverse(MetaPropertyImpl property, Range range, String inverseField) {
         if (inverseField == null)
             return;
 
@@ -561,21 +533,21 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
     }
 
     protected boolean isOrdered(Field field) {
-        final Class<?> type = field.getType();
+        Class<?> type = field.getType();
         return List.class.isAssignableFrom(type) || Set.class.isAssignableFrom(type);
     }
 
-    protected MetaClassImpl __createClass(Class<?> clazz, String modelName, String className) {
+    protected MetaClassImpl createClass(Class<?> clazz, String packageName, String className) {
         MetaClassImpl metaClass = (MetaClassImpl) session.getClass(clazz);
         if (metaClass != null) {
             return metaClass;
         } else if (packageName == null || clazz.getName().startsWith(packageName)) {
-            metaClass = createMetaClass(modelName, className);
+            metaClass = createMetaClass(packageName, className);
             metaClass.setJavaClass(clazz);
 
-            final Class<?> ancestor = clazz.getSuperclass();
+            Class<?> ancestor = clazz.getSuperclass();
             if (ancestor != null) {
-                MetaClass ancestorClass = __createClass(ancestor, modelName);
+                MetaClass ancestorClass = createClass(ancestor, packageName);
                 if (ancestorClass != null) {
                     metaClass.addAncestor(ancestorClass);
                 }
@@ -589,6 +561,7 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
     }
 
     protected class RangeInitTask implements MetadataObjectInitTask {
+
         private MetaProperty metaProperty;
         private Class rangeClass;
         private Map<String, Object> map;
@@ -608,13 +581,13 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
 
         @Override
         public void execute() {
-            final MetaClass rangeClass = session.getClass(this.rangeClass);
+            MetaClass rangeClass = session.getClass(this.rangeClass);
             if (rangeClass == null) {
                 throw new IllegalStateException(
                         String.format("Can't find range class '%s' for property '%s.%s'",
                                 this.rangeClass.getName(), metaProperty.getDomain(), metaProperty.getName()));
             } else {
-                final ClassRange range = new ClassRange(rangeClass);
+                ClassRange range = new ClassRange(rangeClass);
 
                 Range.Cardinality cardinality = (Range.Cardinality) map.get("cardinality");
                 range.setCardinality(cardinality);
@@ -623,7 +596,7 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
                     range.setOrdered((Boolean) map.get("ordered"));
                 }
 
-                final Boolean mandatory = (Boolean) map.get("mandatory");
+                Boolean mandatory = (Boolean) map.get("mandatory");
                 if (mandatory != null) {
                     ((MetaPropertyImpl) metaProperty).setMandatory(mandatory);
                 }

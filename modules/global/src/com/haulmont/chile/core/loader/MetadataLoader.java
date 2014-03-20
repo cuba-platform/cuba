@@ -7,7 +7,17 @@ package com.haulmont.chile.core.loader;
 
 import com.haulmont.chile.core.model.Session;
 
-public interface MetadataLoader extends ClassMetadataLoader, XmlMetadataLoader {
+import java.util.List;
+
+/**
+ * @author abramov
+ * @version $Id: MetadataBuildSupport.java 12898 2013-09-16 10:23:29Z krivopustov $
+ */
+public interface MetadataLoader {
     
+    void loadModel(String modelName, List<String> classNames);
+
     Session postProcess();
+
+    Session getSession();
 }

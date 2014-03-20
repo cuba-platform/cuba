@@ -35,7 +35,7 @@ public class TestMetadataClient extends MetadataImpl {
     protected void initMetadata() {
         MetadataLoader persistentEntitiesMetadataLoader = new PersistentEntitiesMetadataLoader();
         for (String p : packages) {
-            persistentEntitiesMetadataLoader.loadPackage(p, p);
+            persistentEntitiesMetadataLoader.loadModel(p, null);
         }
         persistentEntitiesMetadataLoader.postProcess();
 

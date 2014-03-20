@@ -5,7 +5,7 @@
 
 package com.haulmont.cuba.core.sys;
 
-import com.haulmont.chile.core.loader.ClassMetadataLoader;
+import com.haulmont.chile.core.loader.MetaClassLoader;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Session;
@@ -20,10 +20,9 @@ import java.lang.reflect.AnnotatedElement;
 import java.util.Map;
 
 /**
-* <p>$Id$</p>
-*
-* @author krivopustov
-*/
+ * @author krivopustov
+ * @version $Id$
+ */
 @ManagedBean("cuba_PersistentEntitiesMetadataLoader")
 public class PersistentEntitiesMetadataLoader extends JPAMetadataLoader {
 
@@ -32,7 +31,7 @@ public class PersistentEntitiesMetadataLoader extends JPAMetadataLoader {
     }
 
     @Override
-    protected ClassMetadataLoader createAnnotationsLoader(Session session) {
+    protected MetaClassLoader createMetaClassLoader(Session session) {
         return new CubaAnnotationsLoader(session);
     }
 

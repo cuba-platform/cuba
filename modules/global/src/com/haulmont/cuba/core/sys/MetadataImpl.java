@@ -85,9 +85,9 @@ public class MetadataImpl implements Metadata {
         return tools;
     }
 
-    protected void loadMetadata(MetadataLoader loader, List<String> packages) {
-        for (String p : packages) {
-            loader.loadPackage(p, p);
+    protected void loadMetadata(MetadataLoader loader, Map<String, List<String>> packages) {
+        for (Map.Entry<String, List<String>> entry : packages.entrySet()) {
+            loader.loadModel(entry.getKey(), entry.getValue());
         }
     }
 
@@ -125,9 +125,10 @@ public class MetadataImpl implements Metadata {
 
         initExtensionMetaAnnotations(session);
 
+        Map<String, Map<String, String>> xmlAnnotations = metadataBuildSupport.getEntityAnnotations();
         for (MetaClass metaClass : session.getClasses()) {
             initMetaAnnotations(session, metaClass);
-            addMetaAnnotationsFromXml(metadataBuildSupport.getEntityAnnotations(), metaClass);
+            addMetaAnnotationsFromXml(xmlAnnotations, metaClass);
         }
 
         this.session = new CachingMetadataSession(session);

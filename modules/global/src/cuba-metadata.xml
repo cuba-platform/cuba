@@ -6,7 +6,17 @@
 
 <metadata xmlns="http://schemas.haulmont.com/cuba/5.2/metadata.xsd">
 
-    <metadata-model root-package="com.haulmont.cuba"/>
+    <metadata-model root-package="com.haulmont.cuba">
+        <class>com.haulmont.cuba.core.entity.diff.EntityBasicPropertyDiff</class>
+        <class>com.haulmont.cuba.core.entity.diff.EntityClassPropertyDiff</class>
+        <class>com.haulmont.cuba.core.entity.diff.EntityCollectionPropertyDiff</class>
+        <class>com.haulmont.cuba.core.entity.diff.EntityDiff</class>
+        <class>com.haulmont.cuba.core.entity.diff.EntityPropertyDiff</class>
+        <class>com.haulmont.cuba.core.global.LockInfo</class>
+        <class>com.haulmont.cuba.core.sys.SetValueEntity</class>
+        <class>com.haulmont.cuba.security.entity.EntityLogAttr</class>
+        <class>com.haulmont.cuba.security.entity.UserSessionEntity</class>
+    </metadata-model>
 
     <!-- Use this element to define or override entity annotations available through MetaClass.getAnnotations()
     <annotations>

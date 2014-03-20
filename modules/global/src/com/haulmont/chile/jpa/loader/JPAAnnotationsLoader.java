@@ -7,7 +7,6 @@ package com.haulmont.chile.jpa.loader;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.loader.ChileAnnotationsLoader;
-import com.haulmont.chile.core.loader.ClassMetadataLoader;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.chile.core.model.Session;
@@ -32,7 +31,7 @@ import static org.apache.commons.lang.StringUtils.isBlank;
  * @author krivopustov
  * @version $Id$
  */
-public class JPAAnnotationsLoader extends ChileAnnotationsLoader implements ClassMetadataLoader {
+public class JPAAnnotationsLoader extends ChileAnnotationsLoader {
 
     private Log log = LogFactory.getLog(JPAMetadataLoader.class);
 
@@ -172,7 +171,7 @@ public class JPAAnnotationsLoader extends ChileAnnotationsLoader implements Clas
     }
 
     @Override
-    protected MetaClassImpl __createClass(Class<?> clazz, String modelName) {
+    protected MetaClassImpl createClass(Class<?> clazz, String packageName) {
         if (Object.class.equals(clazz)) return null;
 
         Entity entityAnnotation = clazz.getAnnotation(Entity.class);
@@ -198,7 +197,7 @@ public class JPAAnnotationsLoader extends ChileAnnotationsLoader implements Clas
             className = clazz.getSimpleName();
         }
 
-        return __createClass(clazz, modelName, className);
+        return createClass(clazz, packageName, className);
     }
 
     @Override

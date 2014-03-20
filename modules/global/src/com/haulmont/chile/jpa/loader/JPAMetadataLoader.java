@@ -6,7 +6,7 @@
 package com.haulmont.chile.jpa.loader;
 
 import com.haulmont.chile.core.loader.ChileMetadataLoader;
-import com.haulmont.chile.core.loader.ClassMetadataLoader;
+import com.haulmont.chile.core.loader.MetaClassLoader;
 import com.haulmont.chile.core.model.Session;
 
 public class JPAMetadataLoader extends ChileMetadataLoader {
@@ -16,7 +16,7 @@ public class JPAMetadataLoader extends ChileMetadataLoader {
     }
 
     @Override
-    protected ClassMetadataLoader createAnnotationsLoader(Session session) {
+    protected MetaClassLoader createMetaClassLoader(Session session) {
         return new JPAAnnotationsLoader(session);
     }
 }

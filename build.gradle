@@ -201,6 +201,10 @@ configure(globalModule) {
     task enhance(type: CubaEnhancing) {
         persistenceXml = "$globalModule.projectDir/src/cuba-persistence.xml"
     }
+
+    task enhanceTransient(type: CubaEnhanceTransient) {
+        metadataXml = "$globalModule.projectDir/src/cuba-metadata.xml"
+    }
 }
 
 configure(coreModule) {
@@ -343,14 +347,7 @@ configure(guiModule) {
     }
 
     task enhanceTransient(type: CubaEnhanceTransient) {
-        classes = [
-                'com.haulmont.cuba.gui.security.entity.AbstractPermissionTarget',
-                'com.haulmont.cuba.gui.security.entity.AttributeTarget',
-                'com.haulmont.cuba.gui.security.entity.BasicPermissionTarget',
-                'com.haulmont.cuba.gui.security.entity.MultiplePermissionTarget',
-                'com.haulmont.cuba.gui.security.entity.OperationPermissionTarget',
-                'com.haulmont.cuba.gui.security.entity.UiPermissionTarget'
-        ]
+        metadataXml = "$guiModule.projectDir/src/cuba-gui-metadata.xml"
     }
 
     test {
@@ -387,6 +384,10 @@ configure(webModule) {
     }
 
     classes.dependsOn resourceTimeStampInject
+
+    task enhanceTransient(type: CubaEnhanceTransient) {
+        metadataXml = "$webModule.projectDir/src/cuba-web-metadata.xml"
+    }
 
     task buildScssThemes(type: CubaWebScssThemeCreation) {
         buildTimeStamp = resourceBuildTimeStamp
@@ -595,6 +596,10 @@ configure(webLegacyModule) {
     }
 
     classes.dependsOn resourceTimeStampInject
+
+    task enhanceTransient(type: CubaEnhanceTransient) {
+        metadataXml = "$webLegacyModule.projectDir/src/cuba-web-metadata.xml"
+    }
 
     task buildScssThemes(type: CubaWebScssThemeCreation) {
         buildTimeStamp = resourceBuildTimeStamp
