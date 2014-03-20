@@ -44,6 +44,9 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
     protected Resolution resolution;
 
     protected boolean editable = true;
+
+    // Due to #PL-3538, #VAADIN-13124
+    protected boolean enabled = true;
     protected boolean updatingInstance;
 
     protected CubaDateField dateField;
@@ -257,6 +260,18 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
 
         Object newValue = getValue();
         fireValueChanged(newValue);
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+        dateField.setEnabled(enabled);
+        timeField.setEnabled(enabled);
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
     }
 
     @Override
