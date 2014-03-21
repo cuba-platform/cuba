@@ -93,6 +93,16 @@ public class PickerField extends CustomField {
         return Collections.unmodifiableList(buttons);
     }
 
+    public void replaceButton(Button oldButton, Button button) {
+        button.setTabIndex(-1);
+
+        buttons.add(buttons.indexOf(oldButton), button);
+        buttons.remove(oldButton);
+
+        container.replaceComponent(oldButton, button);
+        container.setComponentAlignment(button, Alignment.BOTTOM_LEFT);
+    }
+
     public void addButton(Button button) {
         button.setTabIndex(-1);
         buttons.add(button);

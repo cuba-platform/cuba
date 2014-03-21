@@ -393,22 +393,58 @@ public class DesktopPickerField extends DesktopAbstractField<Picker> implements 
 
     @Override
     public void addAction(final Action action) {
-        actionsOrder.add(action);
+        Action oldAction = null;
+        // find action with same id
+        Iterator<Action> actionIterator = actionsOrder.iterator();
+        while (actionIterator.hasNext() && oldAction == null) {
+            Action iterationAction = actionIterator.next();
+            if (StringUtils.equals(action.getId(), iterationAction.getId())) {
+                oldAction = iterationAction;
+            }
+        }
+
+        // get button for old action
+        JButton oldButton = null;
+        if (oldAction != null && oldAction.getOwner() != null && oldAction.getOwner() instanceof DesktopButton) {
+            DesktopButton oldActionButton = (DesktopButton) oldAction.getOwner();
+            oldButton = oldActionButton.getImpl();
+        }
+
+        if (oldAction == null) {
+            actionsOrder.add(action);
+        } else {
+            actionsOrder.add(actionsOrder.indexOf(oldAction), action);
+            actionsOrder.remove(oldAction);
+        }
+
         final DesktopButton dButton = new DesktopButton();
         dButton.setAction(action);
         dButton.getImpl().setFocusable(false);
         dButton.getImpl().setText("");
 
-        impl.addButton(dButton.getImpl());
+        if (oldButton == null) {
+            impl.addButton(dButton.getImpl());
+        } else {
+            impl.replaceButton(oldButton, dButton.getImpl());
+        }
+
         // apply Editable after action owner is set
         if (action instanceof StandardAction) {
             ((StandardAction) action).setEditable(isEditable());
         }
 
-        KeyStroke keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_1 + actionsOrder.size() - 1, modifiersMask, false);
+        int position = actionsOrder.indexOf(action);
+
+        @SuppressWarnings("MagicConstant")
+        KeyStroke keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_1 + position, modifiersMask, false);
         List<KeyStroke> keyStrokes = new LinkedList<>();
         keyStrokes.add(keyStroke);
+
+        if (oldAction != null) {
+            keyStrokesMap.remove(oldAction);
+        }
         keyStrokesMap.put(action, keyStrokes);
+
         InputMap inputMap = getImpl().getInputField().getInputMap(JComponent.WHEN_FOCUSED);
         inputMap.put(keyStroke, action.getId());
         ActionMap actionMap = getImpl().getInputField().getActionMap();
@@ -418,6 +454,11 @@ public class DesktopPickerField extends DesktopAbstractField<Picker> implements 
                 action.actionPerform(dButton);
             }
         });
+
+        if (oldAction != null && oldAction.getShortcut() != null) {
+            KeyStroke oldShortcutKeyStroke = DesktopComponentsHelper.convertKeyCombination(oldAction.getShortcut());
+            inputMap.remove(oldShortcutKeyStroke);
+        }
         if (action.getShortcut() != null) {
             KeyStroke shortcutKeyStroke = DesktopComponentsHelper.convertKeyCombination(action.getShortcut());
             inputMap.put(shortcutKeyStroke, action.getId());

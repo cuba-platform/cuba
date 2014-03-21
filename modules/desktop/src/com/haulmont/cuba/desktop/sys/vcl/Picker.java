@@ -78,6 +78,29 @@ public class Picker extends JComponent implements FocusableComponent {
         return Collections.unmodifiableList(buttons);
     }
 
+    public void replaceButton(JButton oldButton, JButton button) {
+        if (buttons.contains(button))
+            return;
+
+        button.setPreferredSize(new Dimension(22, DesktopComponentsHelper.FIELD_HEIGHT));
+        button.setMaximumSize(new Dimension(22, Integer.MAX_VALUE));
+
+        buttons.add(buttons.indexOf(oldButton), button);
+
+        int index = -1;
+        int i = 0;
+        int componentCount = actionsPanel.getComponentCount();
+        while (i < componentCount && index < 0) {
+            if (actionsPanel.getComponent(i) == oldButton) {
+                index = i;
+            }
+            i++;
+        }
+
+        actionsPanel.remove(oldButton);
+        actionsPanel.add(button, index);
+    }
+
     public void addButton(JButton button) {
         if (buttons.contains(button))
             return;

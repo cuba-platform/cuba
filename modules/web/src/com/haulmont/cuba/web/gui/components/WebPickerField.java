@@ -15,7 +15,6 @@ import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.CaptionMode;
-import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.PickerField;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
@@ -231,13 +230,43 @@ public class WebPickerField
 
     @Override
     public void addAction(Action action) {
-        actions.add(action);
-        actionHandler.addAction(action);
+        Action oldAction = null;
+        // find action with same id
+        Iterator<Action> actionIterator = actions.iterator();
+        while (actionIterator.hasNext() && oldAction == null) {
+            Action iterationAction = actionIterator.next();
+            if (StringUtils.equals(iterationAction.getId(), action.getId())) {
+                oldAction = iterationAction;
+            }
+        }
+
+        // get button for old action
+        Button oldButton = null;
+        if (oldAction != null && oldAction.getOwner() != null && oldAction.getOwner() instanceof WebButton) {
+            WebButton oldActionButton = (WebButton) oldAction.getOwner();
+            oldButton = oldActionButton.getComponent();
+        }
+
+        if (oldAction == null) {
+            actions.add(action);
+            actionHandler.addAction(action);
+        } else {
+            actions.add(actions.indexOf(oldAction), action);
+            actions.remove(oldAction);
+            actionHandler.removeAction(oldAction);
+        }
+
         PickerButton pButton = new PickerButton();
         pButton.setAction(action);
         // no captions for picker buttons
         pButton.<Button>getComponent().setCaption("");
-        component.addButton(pButton.<Button>getComponent());
+
+        if (oldButton == null) {
+            component.addButton(pButton.<Button>getComponent());
+        } else {
+            component.replaceButton(oldButton, pButton.<Button>getComponent());
+        }
+
         // apply Editable after action owner is set
         if (action instanceof StandardAction) {
             ((StandardAction) action).setEditable(isEditable());
