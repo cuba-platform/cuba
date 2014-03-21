@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowManagerProvider;
 import com.haulmont.cuba.gui.config.WindowConfig;
@@ -199,7 +200,14 @@ public interface PickerField extends Field, Component.ActionsHolder {
                     if (!windowConfig.hasWindow(windowAlias))
                         windowAlias = metaClass.getName() + ".browse";
                 }
-                WindowManager wm = AppBeans.get(WindowManagerProvider.class).get();
+
+                WindowManager wm;
+                if (pickerField.getFrame() != null) {
+                    wm = ComponentsHelper.getWindow(pickerField).getWindowManager();
+                } else {
+                    wm = AppBeans.get(WindowManagerProvider.class).get();
+                }
+
                 Window lookupWindow = wm.openLookup(
                         windowConfig.getWindowInfo(windowAlias),
                         new Window.Lookup.Handler() {
@@ -339,7 +347,13 @@ public interface PickerField extends Field, Component.ActionsHolder {
             if (entity == null)
                 return;
 
-            WindowManager wm = AppBeans.get(WindowManagerProvider.class).get();
+            WindowManager wm;
+            if (pickerField.getFrame() != null) {
+                wm = ComponentsHelper.getWindow(pickerField).getWindowManager();
+            } else {
+                wm = AppBeans.get(WindowManagerProvider.class).get();
+            }
+
             if (entity instanceof SoftDelete && ((SoftDelete) entity).isDeleted()) {
                 wm.showNotification(
                         messages.getMessage(getClass(), "OpenAction.objectIsDeleted"),
