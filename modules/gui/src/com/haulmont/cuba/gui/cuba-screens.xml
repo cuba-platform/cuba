@@ -48,9 +48,6 @@
     <screen id="sec$Role.edit"
             template="/com/haulmont/cuba/gui/app/security/role/edit/role-edit.xml"/>
 
-    <screen id="sec$Permission.show"
-            template="/com/haulmont/cuba/gui/app/security/role/edit/permission-show.xml"/>
-
     <screen id="sec$UserSessionEntity.browse"
             template="/com/haulmont/cuba/gui/app/security/session/browse/session-browse.xml"/>
 
