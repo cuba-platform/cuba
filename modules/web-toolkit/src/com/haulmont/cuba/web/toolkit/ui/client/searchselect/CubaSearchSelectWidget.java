@@ -69,7 +69,7 @@ public class CubaSearchSelectWidget extends VFilterSelect {
             logger.log("Matches: " + totalMatches);
         }
 
-        if (totalMatches == 1) {
+        if (totalMatches == 1 || currentSuggestions.size() == 1) {
             logger.log("onSuggestionSelected");
             onSuggestionSelected(currentSuggestions.get(0));
         } else {
