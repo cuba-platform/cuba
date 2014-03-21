@@ -8,9 +8,8 @@ package com.haulmont.cuba.gui.components.filter;
 /**
  * Generic filter grouping condition type.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
 */
 public enum GroupType {
 

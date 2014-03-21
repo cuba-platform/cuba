@@ -10,15 +10,15 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 /**
  * Base GUI class for grouping conditions (AND & OR) descriptors.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public abstract class AbstractGroupConditionDescriptor<T extends AbstractParam> extends AbstractConditionDescriptor<T> {
 
     protected GroupType groupType;
 
-    public AbstractGroupConditionDescriptor(GroupType groupType, String name, String filterComponentName, CollectionDatasource datasource) {
+    public AbstractGroupConditionDescriptor(GroupType groupType, String name,
+                                            String filterComponentName, CollectionDatasource datasource) {
         super(name, filterComponentName, datasource);
         this.groupType = groupType;
     }

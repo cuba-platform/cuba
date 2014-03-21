@@ -16,9 +16,8 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 /**
- * <p>$Id$</p>
- *
  * @author devyatkin
+ * @version $Id$
  */
 public abstract class AbstractFilterParser {
     private static Log log = LogFactory.getLog(AbstractFilterParser.class);
@@ -75,7 +74,7 @@ public abstract class AbstractFilterParser {
 
             } else if ("and".equals(el.getName()) || "or".equals(el.getName())) {
                 condition = createCondition(ConditionType.GROUP, el);
-                Node<AbstractCondition> node = new Node<AbstractCondition>(condition);
+                Node<AbstractCondition> node = new Node<>(condition);
                 if (parentNode != null)
                     parentNode.addChild(node);
                 else

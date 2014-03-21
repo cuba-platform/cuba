@@ -12,9 +12,8 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import org.dom4j.Element;
 
 /**
- * <p>$Id$</p>
- *
  * @author devyatkin
+ * @version $Id$
  */
 public abstract class AbstractCustomConditionDescriptor<T extends AbstractParam> extends AbstractConditionDescriptor<T> {
     public AbstractCustomConditionDescriptor(Element element,

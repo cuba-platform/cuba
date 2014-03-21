@@ -6,9 +6,8 @@
 package com.haulmont.cuba.gui.components.filter;
 
 /**
- * <p>$Id$</p>
- *
  * @author devyatkin
+ * @version $Id$
  */
 public abstract class AbstractOperationEditor<T> {
 
@@ -25,5 +24,4 @@ public abstract class AbstractOperationEditor<T> {
     public T getImpl() {
         return impl;
     }
-
 }

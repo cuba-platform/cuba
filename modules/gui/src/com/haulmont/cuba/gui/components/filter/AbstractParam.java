@@ -55,7 +55,7 @@ public abstract class AbstractParam<T> {
     protected Messages messages = AppBeans.get(Messages.class);
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.class);
 
-    private List<ValueListener> listeners = new ArrayList<ValueListener>();
+    private List<ValueListener> listeners = new ArrayList<>();
 
     public AbstractParam(String name, Class javaClass, String entityWhere, String entityView,
                          Datasource datasource, boolean inExpr, boolean required) {

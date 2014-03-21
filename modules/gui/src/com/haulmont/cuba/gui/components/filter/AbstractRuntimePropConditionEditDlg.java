@@ -10,10 +10,7 @@ import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Category;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.SetValueEntity;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
@@ -25,9 +22,8 @@ import org.apache.commons.lang.ObjectUtils;
 import java.util.*;
 
 /**
- * <p>$Id$</p>
- *
  * @author devyatkin
+ * @version $Id$
  */
 public abstract class AbstractRuntimePropConditionEditDlg<T> {
     protected static final String MESSAGES_PACK = "com.haulmont.cuba.gui.components.filter";
@@ -45,7 +41,9 @@ public abstract class AbstractRuntimePropConditionEditDlg<T> {
     protected Label categoryLabel;
     protected Label attributeLabel;
     protected Label operationLabel;
-    private ComponentsFactory factory = AppConfig.getFactory();
+
+    protected ComponentsFactory factory = AppConfig.getFactory();
+    protected Messages messages;
 
     public AbstractRuntimePropConditionEditDlg(AbstractRuntimePropCondition condition) {
         dataService = AppBeans.get(DataService.NAME);
@@ -53,8 +51,10 @@ public abstract class AbstractRuntimePropConditionEditDlg<T> {
         this.condition = condition;
         messagesPack = AppConfig.getMessagesPack();
 
+        messages = AppBeans.get(Messages.NAME);
+
         categoryLabel = factory.createComponent(Label.NAME);
-        categoryLabel.setValue(MessageProvider.getMessage(MESSAGES_PACK, "RuntimePropConditionEditDlg.categoryLabel"));
+        categoryLabel.setValue(messages.getMessage(MESSAGES_PACK, "RuntimePropConditionEditDlg.categoryLabel"));
 
         categorySelect = factory.createComponent(LookupField.NAME);
         categorySelect.setWidth(FIELD_WIDTH);
@@ -69,7 +69,7 @@ public abstract class AbstractRuntimePropConditionEditDlg<T> {
         categorySelect.requestFocus();
 
         attributeLabel = factory.createComponent(Label.NAME);
-        attributeLabel.setValue(MessageProvider.getMessage(MESSAGES_PACK, "RuntimePropConditionEditDlg.attributeLabel"));
+        attributeLabel.setValue(messages.getMessage(MESSAGES_PACK, "RuntimePropConditionEditDlg.attributeLabel"));
 
         attributeSelect = factory.createComponent(LookupField.NAME);
         attributeSelect.setWidth(FIELD_WIDTH);
@@ -83,7 +83,7 @@ public abstract class AbstractRuntimePropConditionEditDlg<T> {
         });
 
         operationLabel = factory.createComponent(Label.NAME);
-        operationLabel.setValue(MessageProvider.getMessage(MESSAGES_PACK, "RuntimePropConditionEditDlg.operationLabel"));
+        operationLabel.setValue(messages.getMessage(MESSAGES_PACK, "RuntimePropConditionEditDlg.operationLabel"));
 
         operationSelect = factory.createComponent(LookupField.NAME);
         operationSelect.setWidth(FIELD_WIDTH);
@@ -91,7 +91,7 @@ public abstract class AbstractRuntimePropConditionEditDlg<T> {
 
         btnOk = factory.createComponent(Button.NAME);
         btnOk.setIcon("icons/ok.png");
-        btnOk.setCaption(MessageProvider.getMessage(messagesPack, "actions.Ok"));
+        btnOk.setCaption(messages.getMessage(messagesPack, "actions.Ok"));
         btnOk.setAction(new AbstractAction("OK") {
             @Override
             public void actionPerform(Component component) {
@@ -102,7 +102,7 @@ public abstract class AbstractRuntimePropConditionEditDlg<T> {
 
         btnCancel = factory.createComponent(Button.NAME);
         btnCancel.setIcon("icons/cancel.png");
-        btnCancel.setCaption(MessageProvider.getMessage(messagesPack, "actions.Cancel"));
+        btnCancel.setCaption(messages.getMessage(messagesPack, "actions.Cancel"));
         btnCancel.setAction(new AbstractAction("CANCEL") {
             @Override
             public void actionPerform(Component component) {
@@ -128,7 +128,7 @@ public abstract class AbstractRuntimePropConditionEditDlg<T> {
     protected boolean commit() {
         String error = checkCondition();
         if (error != null) {
-            showNotification(MessageProvider.getMessage(MESSAGES_PACK, error), IFrame.NotificationType.TRAY);
+            showNotification(messages.getMessage(MESSAGES_PACK, error), IFrame.NotificationType.TRAY);
             return false;
         }
 
@@ -264,7 +264,7 @@ public abstract class AbstractRuntimePropConditionEditDlg<T> {
             attrId = (UUID) p.getValue();
         }
         CategoryAttribute selectedAttribute = null;
-        Map<String, Object> attributesMap = new HashMap<String, Object>();
+        Map<String, Object> attributesMap = new HashMap<>();
         for (CategoryAttribute attribute : attributes) {
             attributesMap.put(attribute.getName(), attribute);
             if (attribute.getId().equals(attrId)) {

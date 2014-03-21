@@ -11,9 +11,8 @@ import org.dom4j.Element;
 /**
  * Base GUI class for grouping conditions (AND & OR).
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public abstract class AbstractGroupCondition<T extends AbstractParam> extends AbstractCondition<T> {
 

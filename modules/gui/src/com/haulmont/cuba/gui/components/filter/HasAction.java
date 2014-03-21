@@ -6,9 +6,8 @@
 package com.haulmont.cuba.gui.components.filter;
 
 /**
- * <p>$Id$</p>
- *
  * @author devyatkin
+ * @version $Id$
  */
 public interface HasAction<T> {
     void doAction(T component);

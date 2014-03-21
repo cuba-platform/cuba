@@ -11,6 +11,10 @@ import com.haulmont.cuba.core.global.QueryTransformerFactory;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import org.dom4j.Element;
 
+/**
+ * @author devyatkin
+ * @version $Id$
+ */
 public abstract class AbstractConditionDescriptor<T extends AbstractParam> {
 
     protected static final String MESSAGES_PACK = "com.haulmont.cuba.gui.components.filter";

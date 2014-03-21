@@ -17,9 +17,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * <p>$Id$</p>
- *
  * @author devyatkin
+ * @version $Id$
  */
 public abstract class AbstractPropertyCondition<T extends AbstractParam> extends AbstractCondition<T> {
 
@@ -91,7 +90,7 @@ public abstract class AbstractPropertyCondition<T extends AbstractParam> extends
                 sb.append(")");
 
             if (operator.equals(Op.NOT_IN)) {
-                sb.append(") or (" + entityAlias + "." + name + " is null)) ");
+                sb.append(") or (").append(entityAlias).append(".").append(name).append(" is null)) ");
             }
         }
 
@@ -148,5 +147,4 @@ public abstract class AbstractPropertyCondition<T extends AbstractParam> extends
     public String getOperationCaption() {
         return MessageProvider.getMessage(operator);
     }
-
 }

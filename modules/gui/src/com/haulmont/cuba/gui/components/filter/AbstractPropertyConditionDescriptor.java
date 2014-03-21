@@ -16,9 +16,8 @@ import javax.annotation.Nullable;
 import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
- * <p>$Id$</p>
- *
  * @author devyatkin
+ * @version $Id$
  */
 public abstract class AbstractPropertyConditionDescriptor<T extends AbstractParam> extends AbstractConditionDescriptor<T> {
     protected String entityParamWhere;
@@ -84,5 +83,4 @@ public abstract class AbstractPropertyConditionDescriptor<T extends AbstractPara
     public String getEntityParamView() {
         return entityParamView;
     }
-
 }

@@ -16,9 +16,8 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * <p>$Id$</p>
- *
  * @author devyatkin
+ * @version $Id$
  */
 public abstract class AbstractRuntimePropCondition<T extends AbstractParam> extends AbstractCustomCondition<T> {
     private AbstractParam categoryAttributeParam;
@@ -45,6 +44,7 @@ public abstract class AbstractRuntimePropCondition<T extends AbstractParam> exte
         }
     }
 
+    @Override
     public void toXml(Element element) {
         super.toXml(element);
         element.addAttribute("type", ConditionType.RUNTIME_PROPERTY.name());
@@ -89,5 +89,4 @@ public abstract class AbstractRuntimePropCondition<T extends AbstractParam> exte
             return MessageProvider.getMessage(getOperator());
         else return super.getOperationCaption();
     }
-
 }

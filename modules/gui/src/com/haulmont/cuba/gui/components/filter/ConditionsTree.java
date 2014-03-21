@@ -6,11 +6,8 @@
 package com.haulmont.cuba.gui.components.filter;
 
 import com.haulmont.bali.datastruct.Node;
-import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.bali.datastruct.Tree;
-import org.apache.commons.lang.mutable.MutableInt;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,9 +15,8 @@ import java.util.List;
 /**
  * This class is used as a data structure to store conditions inside generic filter.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class ConditionsTree extends Tree<AbstractCondition> {
 

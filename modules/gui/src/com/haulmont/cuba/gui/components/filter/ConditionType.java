@@ -6,6 +6,9 @@ package com.haulmont.cuba.gui.components.filter;
 
 /**
  * Generic filter condition type.
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 public enum ConditionType {
     GROUP,
