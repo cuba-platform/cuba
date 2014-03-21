@@ -6,11 +6,7 @@ package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.entity.LockDescriptor;
-import com.haulmont.cuba.core.global.LockInfo;
-import com.haulmont.cuba.core.global.LockNotSupported;
-import com.haulmont.cuba.core.global.TimeProvider;
-import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.core.jmx.LockManagerMBean;
+import com.haulmont.cuba.core.global.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -65,7 +61,7 @@ public class LockManager implements LockManagerAPI, ClusterListener<LockInfo> {
 
     private volatile Map<String, LockDescriptor> config;
 
-    private Map<LockKey, LockInfo> locks = new ConcurrentHashMap<LockKey, LockInfo>();
+    private Map<LockKey, LockInfo> locks = new ConcurrentHashMap<>();
 
     @Inject
     private UserSessionSource userSessionSource;
@@ -82,10 +78,12 @@ public class LockManager implements LockManagerAPI, ClusterListener<LockInfo> {
         if (config == null) {
             synchronized (this) {
                 if (config == null) {
-                    config = new ConcurrentHashMap<String, LockDescriptor>();
-                    Transaction tx = Locator.createTransaction();
+                    config = new ConcurrentHashMap<>();
+
+                    Persistence persistence = AppBeans.get(Persistence.NAME);
+                    Transaction tx = persistence.createTransaction();
                     try {
-                        EntityManager em = PersistenceProvider.getEntityManager();
+                        EntityManager em = persistence.getEntityManager();
                         Query q = em.createQuery("select d from sys$LockDescriptor d");
                         List<LockDescriptor> list = q.getResultList();
                         for (LockDescriptor ld : list) {
@@ -101,6 +99,7 @@ public class LockManager implements LockManagerAPI, ClusterListener<LockInfo> {
         return config;
     }
 
+    @Override
     public LockInfo lock(String name, String id) {
         LockKey key = new LockKey(name, id);
 
@@ -124,6 +123,7 @@ public class LockManager implements LockManagerAPI, ClusterListener<LockInfo> {
         return null;
     }
 
+    @Override
     public void unlock(String name, String id) {
         LockInfo lockInfo = locks.remove(new LockKey(name, id));
         if (lockInfo != null) {
@@ -133,23 +133,25 @@ public class LockManager implements LockManagerAPI, ClusterListener<LockInfo> {
         }
     }
 
+    @Override
     public LockInfo getLockInfo(String name, String id) {
         LockDescriptor ld = getConfig().get(name);
         if (ld == null) {
             return new LockNotSupported();
         }
 
-        LockInfo lockInfo = locks.get(new LockKey(name, id));
-        return lockInfo;
+        return locks.get(new LockKey(name, id));
     }
 
+    @Override
     public List<LockInfo> getCurrentLocks() {
-        return new ArrayList(locks.values());
+        return new ArrayList<>(locks.values());
     }
 
+    @Override
     public void expireLocks() {
         log.debug("Expiring locks");
-        ArrayList<LockKey> list = new ArrayList(locks.keySet());
+        ArrayList<LockKey> list = new ArrayList<>(locks.keySet());
         for (LockKey key : list) {
             LockInfo lockInfo = locks.get(key);
             if (lockInfo != null) {
@@ -176,6 +178,7 @@ public class LockManager implements LockManagerAPI, ClusterListener<LockInfo> {
         config = null;
     }
 
+    @Override
     public void receive(LockInfo message) {
         LockKey key = new LockKey(message.getEntityName(), message.getEntityId());
         if (message.getUser() != null) {
@@ -188,8 +191,9 @@ public class LockManager implements LockManagerAPI, ClusterListener<LockInfo> {
         }
     }
 
+    @Override
     public byte[] getState() {
-        List<LockInfo> list = new ArrayList<LockInfo>(locks.values());
+        List<LockInfo> list = new ArrayList<>(locks.values());
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try {
@@ -202,6 +206,7 @@ public class LockManager implements LockManagerAPI, ClusterListener<LockInfo> {
         return bos.toByteArray();
     }
 
+    @Override
     public void setState(byte[] state) {
         if (state == null || state.length == 0)
             return;

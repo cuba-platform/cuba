@@ -17,7 +17,10 @@ import java.util.Collection;
  * @author krivopustov
  * @version $Id$
  */
-public class ViewHelper {
+public final class ViewHelper {
+
+    private ViewHelper() {
+    }
 
     public static View intersectViews(View first, View second) {
         if (first == null)

@@ -6,7 +6,6 @@
 package com.haulmont.cuba.core.sys.persistence;
 
 import com.haulmont.bali.db.DbUtils;
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;

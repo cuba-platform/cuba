@@ -20,8 +20,8 @@ import java.io.InputStream;
  * @version $Id$
  */
 @ManagedBean(ServerInfoAPI.NAME)
-public class ServerInfo implements ServerInfoAPI
-{
+public class ServerInfo implements ServerInfoAPI {
+
     protected Log log = LogFactory.getLog(getClass());
 
     protected String releaseNumber = "?";
@@ -37,26 +37,30 @@ public class ServerInfo implements ServerInfoAPI
         ServerConfig config = configuration.getConfig(ServerConfig.class);
 
         InputStream stream = getClass().getResourceAsStream(config.getReleaseNumberPath());
-        if (stream != null)
+        if (stream != null) {
             try {
                 releaseNumber = IOUtils.toString(stream);
             } catch (IOException e) {
                 log.warn("Unable to read release number", e);
             }
+        }
 
         stream = getClass().getResourceAsStream(config.getReleaseTimestampPath());
-        if (stream != null)
+        if (stream != null) {
             try {
                 releaseTimestamp = IOUtils.toString(stream);
             } catch (IOException e) {
                 log.warn("Unable to read release timestamp", e);
             }
+        }
     }
 
+    @Override
     public String getReleaseNumber() {
         return releaseNumber;
     }
 
+    @Override
     public String getReleaseTimestamp() {
         return releaseTimestamp;
     }

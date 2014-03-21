@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Scope;
 
 import javax.annotation.ManagedBean;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;

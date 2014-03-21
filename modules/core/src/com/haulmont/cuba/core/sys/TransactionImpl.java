@@ -4,7 +4,6 @@
  */
 package com.haulmont.cuba.core.sys;
 
-import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.TransactionParams;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -25,8 +24,7 @@ public class TransactionImpl implements Transaction {
     private boolean committed;
 
     public TransactionImpl(PlatformTransactionManager transactionManager, PersistenceImpl persistence, boolean join,
-                           TransactionParams params)
-    {
+                           TransactionParams params) {
         this.tm = transactionManager;
         this.persistence = persistence;
 

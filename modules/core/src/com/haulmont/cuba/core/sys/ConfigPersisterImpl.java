@@ -16,10 +16,10 @@ import org.apache.commons.logging.LogFactory;
  * @author krivopustov
  * @version $Id$
  */
-public class ConfigPersisterImpl implements ConfigPersister
-{
+public class ConfigPersisterImpl implements ConfigPersister {
     private final Log log = LogFactory.getLog(ConfigPersisterImpl.class);
 
+    @Override
     public String getProperty(SourceType sourceType, String name) {
         log.trace("Getting property '" + name + "', source=" + sourceType.name());
         String value;
@@ -41,6 +41,7 @@ public class ConfigPersisterImpl implements ConfigPersister
         return value;
     }
 
+    @Override
     public void setProperty(SourceType sourceType, String name, String value) {
         log.debug("Setting property '" + name + "' to '" + value + "', source=" + sourceType.name());
         switch (sourceType) {

@@ -12,7 +12,6 @@ import org.apache.openjpa.persistence.*;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
-import java.util.Collection;
 
 /**
  * JMX interface for {@link DataCacheAPI}.

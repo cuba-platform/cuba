@@ -18,7 +18,10 @@ import java.util.*;
  * @author krivopustov
  * @version $Id$
  */
-public class DBDictionaryUtils {
+public final class DBDictionaryUtils {
+
+    private DBDictionaryUtils() {
+    }
 
     public static SQLBuffer toTraditionalJoin(DBDictionary dbDictionary, Join join) {
         Persistence persistence = AppBeans.get(Persistence.NAME);
@@ -49,8 +52,7 @@ public class DBDictionaryUtils {
             // KK: support deferred delete for collections
             if ((inverse || persistenceManager.isManyToManyLinkTable(from[i].getTable().getIdentifier().getName()))
                     && to[i].getTable().containsColumn(DBIdentifier.newColumn(deleteTsCol), null)
-                    && persistence.getEntityManagerContext().isSoftDeletion())
-            {
+                    && persistence.getEntityManagerContext().isSoftDeletion()) {
                 buf.append(" AND ");
                 buf.append(join.getAlias2()).append(".").append(deleteTsCol).append(" IS NULL");
             }
@@ -106,13 +108,12 @@ public class DBDictionaryUtils {
 
         Joins joins = sel.getJoins();
         if (sel.getJoinSyntax() == JoinSyntaxes.SYNTAX_SQL92
-            || joins == null || joins.isEmpty())
-        {
+            || joins == null || joins.isEmpty()) {
             SQLBuffer buf = sel.getWhere();
             if (!persistence.getEntityManagerContext().isSoftDeletion())
                 return buf;
 
-            Set<String> aliases = new HashSet<String>();
+            Set<String> aliases = new HashSet<>();
 
             for (String tableAlias : (Collection<String>) sel.getTableAliases()) {
                 int i = tableAlias.indexOf(' ');
@@ -157,8 +158,7 @@ public class DBDictionaryUtils {
             if (joins != null)
                 sel.append(where, joins);
             if (sel instanceof SelectImpl
-                    && persistence.getEntityManagerContext().isSoftDeletion())
-            {
+                    && persistence.getEntityManagerContext().isSoftDeletion()) {
                 StringBuilder sb = new StringBuilder();
                 Map tables = ((SelectImpl) sel).getTables();
                 for (Object table : tables.values()) {

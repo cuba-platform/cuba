@@ -26,20 +26,13 @@ import org.apache.commons.logging.LogFactory;
 import javax.annotation.ManagedBean;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import javax.inject.Inject;
 import java.io.*;
 import java.math.BigInteger;
-import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
-import java.security.InvalidKeyException;
 import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
-import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAPublicKeySpec;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -69,6 +62,7 @@ public final class UserSessions implements UserSessionsAPI {
             this.lastUsedTs = now;
         }
 
+        @Override
         public String toString() {
             return session + ", since: " + new Date(since) + ", lastUsed: " + new Date(lastUsedTs);
         }
@@ -199,7 +193,7 @@ public final class UserSessions implements UserSessionsAPI {
             return;
         }
 
-        Object[] objects = null;
+        Object[] objects;
         try {
             bytes = Base64.decodeBase64(encodedStr);
         } catch (Exception e) {

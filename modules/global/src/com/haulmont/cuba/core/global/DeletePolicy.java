@@ -11,9 +11,11 @@ package com.haulmont.cuba.core.global;
  * <li>CASCADE - soft delete the linked object
  * <li>UNLINK - remove link
  * </ul>
+ *
+ * @author krivopustov
+ * @version $Id$
  */
-public enum DeletePolicy
-{
+public enum DeletePolicy {
     DENY,
     CASCADE,
     UNLINK

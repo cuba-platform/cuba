@@ -103,8 +103,9 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
                 String beforeClassName = beforeClass.getCanonicalName();
                 String afterClassName = afterClass.getCanonicalName();
 
-                if (beforeClassName.equals(element.getName()))
+                if (beforeClassName.equals(element.getName())) {
                     element.setName(afterClassName);
+                }
 
                 Attribute classAttribute = element.attribute("class");
                 if ((classAttribute != null) && beforeClassName.equals(classAttribute.getValue())) {
@@ -157,8 +158,9 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
         }
 
         for (EntitySnapshot snapshot : snapshotList) {
-            if (mappedMetaClass != null)
+            if (mappedMetaClass != null) {
                 snapshot.setEntityMetaClass(mappedMetaClass.getName());
+            }
 
             String snapshotXml = snapshot.getSnapshotXml();
             String viewXml = snapshot.getViewXml();
@@ -172,8 +174,9 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
         try {
             EntityManager em = persistence.getEntityManager();
 
-            for (EntitySnapshot snapshot : snapshotList)
+            for (EntitySnapshot snapshot : snapshotList) {
                 em.merge(snapshot);
+            }
 
             tx.commit();
         } finally {
@@ -194,17 +197,20 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
 
     @Override
     public EntitySnapshot createSnapshot(BaseEntity entity, View view, Date snapshotDate, User author) {
-        if (entity == null)
+        if (entity == null) {
             throw new NullPointerException("Could not be create snapshot for null entity");
+        }
 
-        if (view == null)
+        if (view == null) {
             throw new NullPointerException("Could not be create snapshot for entity with null view");
+        }
 
         Class viewEntityClass = view.getEntityClass();
         Class entityClass = entity.getClass();
 
-        if (!viewEntityClass.isAssignableFrom(entityClass))
+        if (!viewEntityClass.isAssignableFrom(entityClass)) {
             throw new IllegalStateException("View could not be used with this propertyValue");
+        }
 
         EntitySnapshot snapshot = new EntitySnapshot();
         snapshot.setEntityId(entity.getUuid());
@@ -255,8 +261,9 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
 
     private MetaClass getOriginalOrCurrentMetaClass(MetaClass mappedMetaClass) {
         MetaClass originalMappedMetaClass = extendedEntities.getOriginalMetaClass(mappedMetaClass);
-        if (originalMappedMetaClass != null)
+        if (originalMappedMetaClass != null) {
             mappedMetaClass = originalMappedMetaClass;
+        }
         return mappedMetaClass;
     }
 

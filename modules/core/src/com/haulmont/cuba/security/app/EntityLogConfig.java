@@ -17,8 +17,7 @@ import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
  * @version $Id$
  */
 @Source(type = SourceType.DATABASE)
-public interface EntityLogConfig extends Config
-{
+public interface EntityLogConfig extends Config {
     /**
      * @return Whether the EntityLog is enabled
      */

@@ -29,8 +29,7 @@ import java.util.*;
  * @version $Id$
  */
 @Service(UserSessionService.NAME)
-public class UserSessionServiceBean implements UserSessionService
-{
+public class UserSessionServiceBean implements UserSessionService {
     public static final String MESSAGE_ATTR_PREFIX = "message-";
 
     private Log log = LogFactory.getLog(getClass());

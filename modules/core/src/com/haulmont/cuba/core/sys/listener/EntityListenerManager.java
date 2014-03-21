@@ -26,8 +26,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 @ManagedBean("cuba_EntityListenerManager")
 public class EntityListenerManager {
 
-    private static class Key
-    {
+    private static class Key {
         private final Class entityClass;
         private final EntityListenerType type;
 
@@ -36,6 +35,7 @@ public class EntityListenerManager {
             this.type = type;
         }
 
+        @Override
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
@@ -48,6 +48,7 @@ public class EntityListenerManager {
             return true;
         }
 
+        @Override
         public int hashCode() {
             int result;
             result = entityClass.hashCode();
@@ -227,5 +228,4 @@ public class EntityListenerManager {
             lock.readLock().unlock();
         }
     }
-
 }

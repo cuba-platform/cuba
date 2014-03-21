@@ -6,12 +6,17 @@ package com.haulmont.cuba.core.sys.persistence;
 
 import org.apache.openjpa.jdbc.sql.*;
 
-public class CubaHSQLDictionary extends HSQLDictionary
-{
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
+public class CubaHSQLDictionary extends HSQLDictionary {
+    @Override
     public SQLBuffer toTraditionalJoin(Join join) {
         return DBDictionaryUtils.toTraditionalJoin(this, join);
     }
 
+    @Override
     protected SQLBuffer getWhere(Select sel, boolean forUpdate) {
         return DBDictionaryUtils.getWhere(this, sel, forUpdate, true);
     }

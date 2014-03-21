@@ -7,8 +7,6 @@ package com.haulmont.cuba.core.app.queryresults;
 
 import com.haulmont.cuba.core.global.LoadContext;
 
-import java.util.List;
-
 /**
  * Supports functionality that allows queries from previously selected results.
  *

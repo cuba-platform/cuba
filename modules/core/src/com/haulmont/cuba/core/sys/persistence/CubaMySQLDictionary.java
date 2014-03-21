@@ -9,12 +9,17 @@ import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Join;
 import org.apache.openjpa.jdbc.sql.Select;
 
-public class CubaMySQLDictionary extends MySQLDictionary
-{
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
+public class CubaMySQLDictionary extends MySQLDictionary {
+    @Override
     public SQLBuffer toTraditionalJoin(Join join) {
         return DBDictionaryUtils.toTraditionalJoin(this, join);
     }
 
+    @Override
     protected SQLBuffer getWhere(Select sel, boolean forUpdate) {
         return DBDictionaryUtils.getWhere(this, sel, forUpdate, false);
     }
