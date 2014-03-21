@@ -10,7 +10,10 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.CategorizedEntity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.desktop.App;
+import com.haulmont.cuba.desktop.TopLevelFrame;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
+import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
+import com.haulmont.cuba.desktop.sys.DialogWindow;
 import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
 import com.haulmont.cuba.desktop.sys.vcl.ExtendedComboBox;
 import com.haulmont.cuba.gui.components.IFrame;
@@ -262,6 +265,7 @@ public class FilterEditor extends AbstractFilterEditor {
         button.addActionListener(new AddConditionActionListener());
     }
 
+    @SuppressWarnings("unchecked")
     protected void initAddSelect(JPanel panel) {
         JLabel label = new JLabel(getMessage("FilterEditor.addCondition"));
         panel.add(label, new CC().alignX("right"));
@@ -596,7 +600,6 @@ public class FilterEditor extends AbstractFilterEditor {
             wrapper.add(component);
             return wrapper;
         }
-
     }
 
     protected class OperationCell extends AbstractCell {
@@ -664,6 +667,7 @@ public class FilterEditor extends AbstractFilterEditor {
     }
 
     protected class ConditionsTable extends JXTable {
+        @Override
         public boolean isCellSelected(int row, int column) {
             return (row == getSelectedRow());
         }
@@ -682,7 +686,17 @@ public class FilterEditor extends AbstractFilterEditor {
                         }
                     },
                     getPanel());
-            DesktopComponentsHelper.getTopLevelFrame(getPanel()).deactivate(null);
+
+            TopLevelFrame topLevelFrame = DesktopComponentsHelper.getTopLevelFrame(getPanel());
+            DesktopWindowManager wm = topLevelFrame.getWindowManager();
+
+            DialogWindow lastDialogWindow = wm.getLastDialogWindow();
+            if (lastDialogWindow == null) {
+                topLevelFrame.deactivate(null);
+            } else {
+                lastDialogWindow.disableWindow(null);
+            }
+
             dlg.setVisible(true);
         }
     }

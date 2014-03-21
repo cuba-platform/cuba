@@ -14,6 +14,8 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.desktop.TopLevelFrame;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
+import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
+import com.haulmont.cuba.desktop.sys.DialogWindow;
 import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.gui.components.filter.AbstractConditionDescriptor;
 import com.haulmont.cuba.gui.components.filter.AbstractCustomConditionDescriptor;
@@ -133,7 +135,14 @@ public class AddConditionDlg extends JDialog {
 
     private void close() {
         setVisible(false);
-        topLevelFrame.activate();
+        DesktopWindowManager wm = topLevelFrame.getWindowManager();
+
+        DialogWindow lastDialogWindow = wm.getLastDialogWindow();
+        if (lastDialogWindow == null) {
+            topLevelFrame.activate();
+        } else {
+            lastDialogWindow.enableWindow();
+        }
     }
 
     private class CommitAction extends AbstractAction {
