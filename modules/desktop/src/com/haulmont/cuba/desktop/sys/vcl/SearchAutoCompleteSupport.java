@@ -445,7 +445,7 @@ public final class SearchAutoCompleteSupport<E> {
         try {
             // build the ComboBoxModel capable of filtering its values
             this.filterMatcherEditor = new TextMatcherEditor(filterator == null ? new DefaultTextFilterator() : filterator);
-            this.filterMatcherEditor.setMode(TextMatcherEditor.STARTS_WITH);
+            this.filterMatcherEditor.setMode(TextMatcherEditor.CONTAINS);
             this.filteredItems = new FilterList<E>(items, this.filterMatcherEditor);
             this.firstItem = new BasicEventList<E>(items.getPublisher(), items.getReadWriteLock());
 
@@ -1248,7 +1248,9 @@ public final class SearchAutoCompleteSupport<E> {
         final ActionListener[] listeners = unregisterAllActionListeners(comboBox);
         isFiltering = true;
         try {
-            filterMatcherEditor.setFilterText(new String[] {newFilter});
+            if (filterEnabled) {
+                filterMatcherEditor.setFilterText(new String[]{newFilter});
+            }
         } finally {
             isFiltering = false;
             registerAllActionListeners(comboBox, listeners);
