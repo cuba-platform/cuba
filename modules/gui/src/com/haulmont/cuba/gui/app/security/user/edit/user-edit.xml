@@ -40,8 +40,6 @@
                     <validator class="com.haulmont.cuba.gui.components.validators.EmailValidator" message="msg://email.alert"/>
                 </field>
                 <field id="ipMask"/>
-                <!-- hidden, todo rewrite broken permission lookups -->
-                <!--<field id="permissionsLookupField" caption="msg://permissions" custom="true" visible="false"/>-->
             </column>
             <column flex="3" width="${width}" id="fieldGroupColumn2">
                 <field id="group" custom="true"/>
