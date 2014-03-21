@@ -28,6 +28,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * @author artamonov
@@ -126,13 +127,17 @@ public class AnonymousSessionHolder {
 
     private void pingSession(UserSession userSession) {
         AppContext.setSecurityContext(new SecurityContext(userSession));
+        UserSession savedSession = anonymousSession;
         try {
             userSessionService.getMessages();
         } catch (NoUserSessionException e) {
-            log.warn("Anonymous session has been lost, try restore");
-            // auto restore anonymous session
-            anonymousSession = null;
-            getSession();
+            log.warn("Anonymous session has been lost, restoring it");
+            synchronized (this) {
+                if (Objects.equals(savedSession, anonymousSession)) {
+                    // auto restore anonymous session
+                    anonymousSession = loginAsAnonymous();
+                }
+            }
         }
         AppContext.setSecurityContext(null);
     }
