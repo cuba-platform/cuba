@@ -32,7 +32,7 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
 
     protected Log log = LogFactory.getLog(ClusterManager.class);
 
-    protected Map<String, ClusterListener> listeners = new HashMap<String, ClusterListener>();
+    protected Map<String, ClusterListener> listeners = new HashMap<>();
 
     protected JChannel channel;
 
@@ -47,6 +47,7 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
         AppContext.addListener(this);
     }
 
+    @Override
     public void send(final Serializable message) {
         if (channel == null)
             return;
@@ -59,9 +60,7 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
                 Message msg = new Message(null, null, bytes);
                 try {
                     channel.send(msg);
-                } catch (ChannelNotConnectedException e) {
-                    log.error("Send error", e);
-                } catch (ChannelClosedException e) {
+                } catch (ChannelNotConnectedException | ChannelClosedException e) {
                     log.error("Send error", e);
                 }
             }
@@ -156,6 +155,7 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
 
     protected class ClusterReceiver implements Receiver {
 
+        @Override
         public void receive(Message msg) {
             byte[] bytes = msg.getBuffer();
             if (bytes == null) {
@@ -170,11 +170,13 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
                 listener.receive(data);
         }
 
+        @Override
         public void viewAccepted(View new_view) {
             log.info("New cluster view: " + new_view);
             currentView = new_view;
         }
 
+        @Override
         public byte[] getState() {
             log.debug("Sending state");
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -205,10 +207,12 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
             return outputStream.toByteArray();
         }
 
+        @Override
         public void suspect(Address suspected_mbr) {
             log.info("Suspected member: " + suspected_mbr);
         }
 
+        @Override
         public void setState(byte[] state) {
             log.debug("Receiving state");
             if (state.length == 0)
@@ -242,6 +246,7 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
             }
         }
 
+        @Override
         public void block() {
         }
     }
