@@ -108,4 +108,8 @@
         <property name="poolSize" value="10"/>
     </bean>
 
+    <task:scheduled-tasks scheduler="scheduler">
+        <task:scheduled ref="cuba_Messages" method="checkTriggerAndClearCache" fixed-delay="${cuba.messagesCacheTriggerCheckInterval?:5000}"/>
+    </task:scheduled-tasks>
+
 </beans>
