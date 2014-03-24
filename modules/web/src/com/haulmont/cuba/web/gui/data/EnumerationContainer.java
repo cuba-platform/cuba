@@ -90,7 +90,7 @@ public class EnumerationContainer implements com.vaadin.data.Container {
         throw new UnsupportedOperationException();
     }
 
-    private static class EnumerationItem implements Item {
+    protected static class EnumerationItem implements Item {
         private Enum item;
         private String name;
 

@@ -109,11 +109,11 @@ public class ObjectContainer implements com.vaadin.data.Container {
         throw new UnsupportedOperationException();
     }
 
-    class ObjectItem implements Item {
+    protected class ObjectItem implements Item {
         private Object item;
         private String name;
 
-        ObjectItem(final Object item) {
+        public ObjectItem(final Object item) {
             this.item = item;
 
             if (item instanceof Instance)
@@ -141,7 +141,7 @@ public class ObjectContainer implements com.vaadin.data.Container {
                         else
                             return String.valueOf(o);
                     } catch (Exception e) {
-                        log.error("error invoking " + method.getName(), e);
+                        log.error("Error invoking " + method.getName(), e);
                     }
                 }
             }
