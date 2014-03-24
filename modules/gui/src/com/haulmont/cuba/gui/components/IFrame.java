@@ -12,6 +12,7 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -247,10 +248,10 @@ public interface IFrame
      * @param message     text
      * @param messageType defines how to display the dialog.
      *                    Don't forget to escape data from the database in case of <code>*_HTML</code> types!
-     * @param actions     array of actions that represent options. For standard options consider use of
+     * @param actions     list of actions that represent options. For standard options consider use of
      *                    {@link DialogAction} instances.
      */
-    void showOptionDialog(String title, String message, MessageType messageType, java.util.List<Action> actions);
+    void showOptionDialog(String title, String message, MessageType messageType, List<Action> actions);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -284,18 +285,18 @@ public interface IFrame
      * Show notification. <br/>
      * Supports line breaks (<code>\n</code>).
      *
-     * @param caption text
+     * @param caption notification text
      * @param type    defines how to display the notification.
      *                Don't forget to escape data from the database in case of <code>*_HTML</code> types!
      */
     void showNotification(String caption, NotificationType type);
 
     /**
-     * Show notification with caption description. <br/>
+     * Show notification with caption and description. <br/>
      * Supports line breaks (<code>\n</code>).
      *
-     * @param caption     caption
-     * @param description text
+     * @param caption     notification text
+     * @param description notification description
      * @param type        defines how to display the notification.
      *                    Don't forget to escape data from the database in case of <code>*_HTML</code> types!
      */

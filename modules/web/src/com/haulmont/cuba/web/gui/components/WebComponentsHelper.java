@@ -84,6 +84,7 @@ public class WebComponentsHelper {
      *
      * @param component GUI component
      * @return          Vaadin component
+     * @see #unwrap(com.haulmont.cuba.gui.components.Component)
      */
     public static Component getComposition(com.haulmont.cuba.gui.components.Component component) {
         Object comp = component;

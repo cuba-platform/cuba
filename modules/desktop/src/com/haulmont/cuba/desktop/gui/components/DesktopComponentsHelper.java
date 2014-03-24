@@ -33,6 +33,13 @@ public class DesktopComponentsHelper {
     // todo move nimbus constants to theme
     public static Color defaultBgColor = (Color) UIManager.get("nimbusLightBackground");
 
+    /**
+     * Returns underlying Swing component implementation.
+     *
+     * @param component GUI component
+     * @return          Swing component
+     * @see #getComposition(com.haulmont.cuba.gui.components.Component)
+     */
     public static JComponent unwrap(Component component) {
         Object comp = component;
         while (comp instanceof Component.Wrapper) {
@@ -41,6 +48,15 @@ public class DesktopComponentsHelper {
         return (JComponent) comp;
     }
 
+    /**
+     * Returns underlying Swing component, which serves as the outermost container for the supplied GUI component.
+     * For simple components like {@link com.haulmont.cuba.gui.components.Button} this method returns the same
+     * result as {@link #unwrap(com.haulmont.cuba.gui.components.Component)}.
+     *
+     * @param component GUI component
+     * @return          Swing component
+     * @see #unwrap(com.haulmont.cuba.gui.components.Component)
+     */
     public static JComponent getComposition(Component component) {
         Object comp = component;
         while (comp instanceof Component.Wrapper) {

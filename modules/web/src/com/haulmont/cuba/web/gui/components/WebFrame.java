@@ -237,7 +237,7 @@ public class WebFrame extends WebVBoxLayout implements IFrame, WrappedFrame {
     }
 
     @Override
-    public void showOptionDialog(String title, String message, MessageType messageType, java.util.List<Action> actions) {
+    public void showOptionDialog(String title, String message, MessageType messageType, List<Action> actions) {
         App.getInstance().getWindowManager().showOptionDialog(title, message, messageType, actions.toArray(new Action[actions.size()]));
     }
 

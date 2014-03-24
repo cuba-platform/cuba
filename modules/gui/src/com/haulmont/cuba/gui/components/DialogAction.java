@@ -4,8 +4,8 @@
  */
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 
 public class DialogAction extends AbstractAction {
 
@@ -36,7 +36,7 @@ public class DialogAction extends AbstractAction {
 
     @Override
     public String getCaption() {
-        return MessageProvider.getMessage(AppConfig.getMessagesPack(), type.msgKey);
+        return AppBeans.get(Messages.class).getMainMessage(type.msgKey);
     }
 
     @Override
