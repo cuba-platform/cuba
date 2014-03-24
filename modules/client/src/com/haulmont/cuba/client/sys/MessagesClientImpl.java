@@ -110,7 +110,7 @@ public class MessagesClientImpl extends AbstractMessages {
     }
 
     protected Path getTriggerFile() {
-        return Paths.get(globalConfig.getTempDir(), "clear-messages-cache");
+        return Paths.get(globalConfig.getTempDir(), "triggers", "clear-messages-cache");
     }
 
     protected void deleteTriggerFile(Path triggerFile) {
