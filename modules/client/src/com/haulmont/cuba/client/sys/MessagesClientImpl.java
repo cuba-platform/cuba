@@ -16,11 +16,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
-import java.io.IOException;
 import java.net.SocketException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Locale;
 
@@ -46,15 +42,6 @@ public class MessagesClientImpl extends AbstractMessages {
     public void setConfiguration(Configuration configuration) {
         super.setConfiguration(configuration);
         clientConfig = configuration.getConfig(ClientConfig.class);
-    }
-
-    @Override
-    protected void init() {
-        super.init();
-        Path triggerFile = getTriggerFile();
-        if (Files.exists(triggerFile)) {
-            deleteTriggerFile(triggerFile);
-        }
     }
 
     @Override
@@ -96,28 +83,5 @@ public class MessagesClientImpl extends AbstractMessages {
 
     public void setRemoteSearch(boolean remoteSearch) {
         this.remoteSearch = remoteSearch && clientConfig.getRemoteMessagesSearchEnabled();
-    }
-
-    public void checkTriggerAndClearCache() {
-        if (!AppContext.isStarted())
-            return;
-        Path triggerFile = getTriggerFile();
-        if (Files.exists(triggerFile)) {
-            log.info("Clear messages cache: trigger file " + triggerFile + " found");
-            deleteTriggerFile(triggerFile);
-            clearCache();
-        }
-    }
-
-    protected Path getTriggerFile() {
-        return Paths.get(globalConfig.getTempDir(), "triggers", "clear-messages-cache");
-    }
-
-    protected void deleteTriggerFile(Path triggerFile) {
-        try {
-            Files.delete(triggerFile);
-        } catch (IOException e) {
-            log.warn("Unable to delete trigger file " + triggerFile + ": " + e);
-        }
     }
 }

@@ -109,7 +109,7 @@
     </bean>
 
     <task:scheduled-tasks scheduler="scheduler">
-        <task:scheduled ref="cuba_Messages" method="checkTriggerAndClearCache" fixed-delay="${cuba.messagesCacheTriggerCheckInterval?:5000}"/>
+        <task:scheduled ref="cuba_TriggerFilesProcessor" method="process" fixed-delay="${cuba.triggerFilesCheckInterval?:5000}"/>
     </task:scheduled-tasks>
 
 </beans>
