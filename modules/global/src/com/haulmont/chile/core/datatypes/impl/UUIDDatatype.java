@@ -5,6 +5,7 @@
 package com.haulmont.chile.core.datatypes.impl;
 
 import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.cuba.core.global.UuidProvider;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nonnull;
@@ -47,7 +48,7 @@ public class UUIDDatatype implements Datatype<UUID> {
 
     @Override
     public UUID parse(String value) throws ParseException {
-        return StringUtils.isBlank(value) ? null : UUID.fromString(value.trim());
+        return StringUtils.isBlank(value) ? null : UuidProvider.fromString(value.trim());
     }
 
     @Override

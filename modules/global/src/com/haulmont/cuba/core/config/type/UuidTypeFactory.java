@@ -5,6 +5,8 @@
 
 package com.haulmont.cuba.core.config.type;
 
+import com.haulmont.cuba.core.global.UuidProvider;
+
 import java.util.UUID;
 
 /**
@@ -18,6 +20,6 @@ public class UuidTypeFactory extends TypeFactory {
             return null;
         }
 
-        return UUID.fromString(string);
+        return UuidProvider.fromString(string);
     }
 }

@@ -461,7 +461,7 @@ public final class UserSessions implements UserSessionsAPI {
                                     String[] strings = data.split("\\s");
                                     for (String string : strings) {
                                         if (!StringUtils.isEmpty(string)) {
-                                            set.add(UUID.fromString(string));
+                                            set.add(UuidProvider.fromString(string));
                                         }
                                     }
                                 }

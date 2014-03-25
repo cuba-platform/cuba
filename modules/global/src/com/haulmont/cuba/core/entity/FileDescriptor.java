@@ -6,6 +6,7 @@ package com.haulmont.cuba.core.entity;
 
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
+import com.haulmont.cuba.core.global.UuidProvider;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
 
@@ -101,7 +102,7 @@ public class FileDescriptor extends StandardEntity {
         if (parts.length != 3)
             throw new IllegalArgumentException("Invalid FileDescriptor format");
         FileDescriptor fd = new FileDescriptor();
-        fd.setId(UUID.fromString(parts[0]));
+        fd.setId(UuidProvider.fromString(parts[0]));
         fd.setExtension(parts[1]);
         fd.setCreateDate(new Date(Long.parseLong(parts[2])));
         return fd;

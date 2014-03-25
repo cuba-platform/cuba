@@ -52,7 +52,7 @@ public class UuidStringValueHandler extends AbstractValueHandler {
                 sb.insert(23, '-');
                 str = sb.toString();
             }
-            return UUID.fromString(str);
+            return UuidHelper.fromString(str);
         }
     }
 }

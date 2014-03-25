@@ -17,5 +17,8 @@ public interface UuidSource {
 
     String NAME = "cuba_UuidSource";
 
+    /**
+     * @return new UUID
+     */
     UUID createUuid();
 }

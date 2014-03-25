@@ -7,10 +7,7 @@ package com.haulmont.cuba.security.app;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.*;
-import com.haulmont.cuba.core.global.AccessDeniedException;
-import com.haulmont.cuba.core.global.ClientType;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.*;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
@@ -142,7 +139,7 @@ public class UserSettingServiceBean implements UserSettingService {
                     for (Element component : components) {
                         Attribute presentationAttr = component.attribute("presentation");
                         if (presentationAttr != null) {
-                            UUID presentationId = UUID.fromString(presentationAttr.getValue());
+                            UUID presentationId = UuidProvider.fromString(presentationAttr.getValue());
                             Presentation newPresentation = presentationsMap.get(presentationId);
                             if (newPresentation != null) {
                                 presentationAttr.setValue(newPresentation.getId().toString());
@@ -152,7 +149,7 @@ public class UserSettingServiceBean implements UserSettingService {
                         if (defaultFilterEl != null) {
                             Attribute idAttr = defaultFilterEl.attribute("id");
                             if (idAttr != null) {
-                                UUID filterId = UUID.fromString(idAttr.getValue());
+                                UUID filterId = UuidProvider.fromString(idAttr.getValue());
                                 FilterEntity newFilter = filtersMap.get(filterId);
                                 if (newFilter != null) {
                                     idAttr.setValue(newFilter.getId().toString());

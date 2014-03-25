@@ -9,18 +9,18 @@ import com.haulmont.cuba.core.global.UuidSource;
 
 import javax.annotation.ManagedBean;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 @ManagedBean(UuidSource.NAME)
 public class UuidSourceClientImpl implements UuidSource {
 
     @Override
     public UUID createUuid() {
-        // TODO KK: implement UUID version 1
-        return UUID.randomUUID();
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        return new UUID(random.nextLong(), random.nextLong());
     }
 }

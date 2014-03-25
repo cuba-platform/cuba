@@ -9,6 +9,7 @@ import com.haulmont.cuba.core.global.UuidSource;
 
 import javax.annotation.ManagedBean;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author krivopustov
@@ -19,7 +20,7 @@ public class UuidSourceImpl implements UuidSource {
 
     @Override
     public UUID createUuid() {
-        // TODO KK: implement UUID version 1
-        return UUID.randomUUID();
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        return new UUID(random.nextLong(), random.nextLong());
     }
 }

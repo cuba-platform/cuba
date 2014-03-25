@@ -5,6 +5,8 @@
 
 package com.haulmont.cuba.core.sys.persistence;
 
+import com.haulmont.cuba.core.global.UuidProvider;
+
 import java.sql.*;
 import java.util.Date;
 import java.util.UUID;
@@ -33,7 +35,7 @@ public class MssqlTypeConverter implements DbTypeConverter {
             case Types.CLOB:
                 if ("uniqueidentifier".equals(typeName)) {
                     String stringValue = resultSet.getString(columnIndex);
-                    value = stringValue != null ? UUID.fromString(stringValue) : null;
+                    value = stringValue != null ? UuidProvider.fromString(stringValue) : null;
                 } else {
                     value = resultSet.getObject(columnIndex);
                 }

@@ -123,7 +123,7 @@ public class EntityLoadInfo {
         String entityIdStr = str.substring(idDashPos + 1, viewDashPos);
         UUID id;
         try {
-            id = UUID.fromString(entityIdStr);
+            id = UuidProvider.fromString(entityIdStr);
         } catch (Exception e) {
             return null;
         }

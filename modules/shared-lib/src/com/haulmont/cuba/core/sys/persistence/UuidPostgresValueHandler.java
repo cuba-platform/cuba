@@ -44,7 +44,7 @@ public class UuidPostgresValueHandler extends AbstractValueHandler
         if (val == null)
             return null;
 
-        UUID uuid = UUID.fromString(((String) val));
+        UUID uuid = UuidHelper.fromString(((String) val));
         return uuid;
     }
 }

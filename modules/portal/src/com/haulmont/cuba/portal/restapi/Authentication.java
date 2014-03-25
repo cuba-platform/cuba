@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.portal.restapi;
 
+import com.haulmont.cuba.core.global.UuidProvider;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.portal.security.PortalSession;
 import com.haulmont.cuba.portal.sys.security.PortalSecurityContext;
@@ -34,7 +35,7 @@ public class Authentication {
     public boolean begin(String sessionId) {
         UUID uuid;
         try {
-            uuid = UUID.fromString(sessionId);
+            uuid = UuidProvider.fromString(sessionId);
         } catch (Exception e) {
             return false;
         }

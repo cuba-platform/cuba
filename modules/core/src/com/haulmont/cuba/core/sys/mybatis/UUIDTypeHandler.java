@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.core.sys.mybatis;
 
+import com.haulmont.cuba.core.global.UuidProvider;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
 
@@ -25,14 +26,18 @@ public class UUIDTypeHandler implements TypeHandler {
     @Override
     public Object getResult(ResultSet rs, String columnName) throws SQLException {
         String val = rs.getString(columnName);
-        if (val != null) return UUID.fromString(val);
-        else return null;
+        if (val != null)
+            return UuidProvider.fromString(val);
+        else
+            return null;
     }
 
     @Override
     public Object getResult(CallableStatement cs, int columnIndex) throws SQLException {
         String val = cs.getString(columnIndex);
-        if (val != null) return UUID.fromString(val);
-        else return null;
+        if (val != null)
+            return UuidProvider.fromString(val);
+        else
+            return null;
     }
 }

@@ -37,6 +37,6 @@ public class UuidMssqlValueHandler extends AbstractValueHandler {
     }
 
     public Object toObjectValue(ValueMapping vm, Object val) {
-        return val == null ? null : UUID.fromString((String) val);
+        return val == null ? null : UuidHelper.fromString((String) val);
     }
 }

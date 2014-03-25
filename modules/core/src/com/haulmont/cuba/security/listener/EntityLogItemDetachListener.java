@@ -10,6 +10,7 @@ import com.haulmont.bali.db.ResultSetHandler;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.UuidProvider;
 import com.haulmont.cuba.core.listener.BeforeDetachEntityListener;
 import com.haulmont.cuba.core.sys.persistence.DbTypeConverter;
 import com.haulmont.cuba.security.entity.EntityLogAttr;
@@ -66,7 +67,7 @@ public class EntityLogItemDetachListener implements BeforeDetachEntityListener<E
 
                 String id = properties.getProperty(name + EntityLogAttr.VALUE_ID_SUFFIX);
                 if (id != null)
-                    attr.setValueId(UUID.fromString(id));
+                    attr.setValueId(UuidProvider.fromString(id));
 
                 String mp = properties.getProperty(name + EntityLogAttr.MP_SUFFIX);
                 if (mp != null)
