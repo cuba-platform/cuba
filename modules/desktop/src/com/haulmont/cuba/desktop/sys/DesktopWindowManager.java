@@ -920,8 +920,12 @@ public class DesktopWindowManager extends WindowManager {
                 dialog.setVisible(false);
             }
         }
-        // Stop background tasks
-        AppBeans.get(WatchDog.class).stopTasks();
+
+        if (isMainWindowManager) {
+            // Stop background tasks
+            AppBeans.get(WatchDog.class).stopTasks();
+        }
+
         // Dispose windows
         for (Window window : windowOpenMode.keySet()) {
             IFrame frame = window.getFrame();
