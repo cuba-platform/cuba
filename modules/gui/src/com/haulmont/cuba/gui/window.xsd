@@ -85,7 +85,6 @@
             </xs:simpleType>
         </xs:union>
     </xs:simpleType>
-
     <xs:simpleType name="orientation">
         <xs:restriction base="xs:string">
             <xs:enumeration value="horizontal"/>
@@ -1117,7 +1116,12 @@
         <xs:group ref="layoutOrComponent"/>
 
         <xs:attributeGroup ref="hasId"/>
-        <xs:attributeGroup ref="hasSize"/>
+
+        <xs:attribute name="width" type="xs:string"/>
+        <xs:attribute name="height" type="xs:string"/>
+
+        <xs:attributeGroup ref="hasGridConstraints"/>
+
         <xs:attributeGroup ref="hasAlign"/>
         <xs:attributeGroup ref="hasStyle"/>
         <xs:attributeGroup ref="hasEnableProp"/>
