@@ -32,10 +32,12 @@ public class ChileMetadataLoader implements MetadataLoader {
         return new ChileAnnotationsLoader(session);
     }
 
+    @Override
     public void loadModel(String modelName, List<String> classNames) {
         metaClassLoader.loadPackage(modelName, classNames);
     }
 
+    @Override
     public Session postProcess() {
         for (MetaClass metaClass : session.getClasses()) {
             initMetaClass(metaClass);
