@@ -1008,10 +1008,13 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                         selectedItems = getSelected();
 //                        disabled for #PL-2035
 //                        disableItemListener = true;
-                        if (!selectedItems.isEmpty()) {
-                            datasource.setItem(selectedItems.iterator().next());
-                        } else {
+                        if (selectedItems.isEmpty()) {
                             datasource.setItem(null);
+                        } else {
+                            // reset selection and select new item
+                            if (isMultiSelect())
+                                datasource.setItem(null);
+                            datasource.setItem(selectedItems.iterator().next());
                         }
 //                        disabled for #PL-2035
 //                        disableItemListener = false;
