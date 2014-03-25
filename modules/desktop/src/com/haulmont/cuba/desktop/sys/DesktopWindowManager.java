@@ -47,6 +47,8 @@ import java.util.List;
  */
 public class DesktopWindowManager extends WindowManager {
 
+    private static final Log log = LogFactory.getLog(DesktopWindowManager.class);
+
     private static final float NEW_WINDOW_SCALE = 0.7f;
 
     private JTabbedPane tabsPane;
@@ -60,8 +62,6 @@ public class DesktopWindowManager extends WindowManager {
 
     private boolean disableSavingScreenHistory;
     private ScreenHistorySupport screenHistorySupport = new ScreenHistorySupport();
-
-    private Log log = LogFactory.getLog(DesktopWindowManager.class);
 
     public DesktopWindowManager(TopLevelFrame frame) {
         this.frame = frame;
@@ -116,6 +116,37 @@ public class DesktopWindowManager extends WindowManager {
                     // show in tabsheet
                     JComponent layout = (JComponent) openMode.getData();
                     tabsPane.setSelectedComponent(layout);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void setWindowCaption(Window window, String caption, String description) {
+        Window desktopWindow = window;
+        if (window instanceof Window.Wrapper) {
+            desktopWindow = ((Window.Wrapper) window).getWrappedWindow();
+        }
+        WindowOpenMode openMode = windowOpenMode.get(desktopWindow);
+        String formattedCaption = formatTabDescription(caption, description);
+        window.setCaption(formattedCaption);
+
+        if (openMode != null) {
+            OpenType openType = openMode.getOpenType();
+
+            if (openType != OpenType.DIALOG) {
+                if (tabsPane != null) {
+                    int selectedIndex = tabsPane.getSelectedIndex();
+                    if (selectedIndex != -1) {
+                        setActiveWindowCaption(caption, description, selectedIndex);
+                    }
+                } else if (!isMainWindowManager) {
+                    setTopLevelWindowCaption(formattedCaption);
+                }
+            } else {
+                JDialog jDialog = (JDialog) openMode.getData();
+                if (jDialog != null) {
+                    jDialog.setTitle(formattedCaption);
                 }
             }
         }
@@ -405,7 +436,7 @@ public class DesktopWindowManager extends WindowManager {
 
         breadCrumbs.addWindow(window);
         if (isMainWindowManager) {
-            setWindowCaption(caption, description, tabsPane.getSelectedIndex());
+            setActiveWindowCaption(caption, description, tabsPane.getSelectedIndex());
         } else {
             setTopLevelWindowCaption(caption);
             component.revalidate();
@@ -415,7 +446,7 @@ public class DesktopWindowManager extends WindowManager {
         return layout;
     }
 
-    private void setWindowCaption(String caption, String description, int tabIndex) {
+    private void setActiveWindowCaption(String caption, String description, int tabIndex) {
         ((ButtonTabComponent) tabsPane.getTabComponentAt(tabIndex)).setCaption(formatTabCaption(caption, description));
     }
 
@@ -686,7 +717,7 @@ public class DesktopWindowManager extends WindowManager {
                             selectedIndex = tabsPane.getSelectedIndex();
                         }
 
-                        setWindowCaption(currentWindow.getCaption(), currentWindow.getDescription(), selectedIndex);
+                        setActiveWindowCaption(currentWindow.getCaption(), currentWindow.getDescription(), selectedIndex);
                     } else {
                         setTopLevelWindowCaption(currentWindow.getCaption());
                         component.revalidate();
@@ -745,6 +776,7 @@ public class DesktopWindowManager extends WindowManager {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
+                //noinspection MagicConstant
                 JOptionPane.showMessageDialog(frame, msg, title, swingMessageType);
             }
         });
@@ -861,31 +893,11 @@ public class DesktopWindowManager extends WindowManager {
         }
     }
 
+    /**
+     * @deprecated Use {@link WindowManager#setWindowCaption(com.haulmont.cuba.gui.components.Window, String, String)}
+     */
     public void setCurrentWindowCaption(Window window, String caption, String description) {
-        WindowOpenMode openMode;
-        if (window instanceof Window.Wrapper)
-            openMode = windowOpenMode.get(((Window.Wrapper) window).getWrappedWindow());
-        else
-            openMode = windowOpenMode.get(window);
-
-        OpenType openType = openMode.getOpenType();
-        String formattedCaption = formatTabDescription(caption, description);
-
-        if (openType != OpenType.DIALOG) {
-            if (tabsPane == null)
-                return;
-            int selectedIndex = tabsPane.getSelectedIndex();
-            if (selectedIndex != -1) {
-                setWindowCaption(caption, description, selectedIndex);
-            }
-        } else {
-            JDialog jDialog = (JDialog) openMode.getData();
-            if (jDialog != null) {
-                jDialog.setTitle(formattedCaption);
-            }
-        }
-
-        window.setCaption(formattedCaption);
+        setWindowCaption(window, caption, description);
     }
 
     protected JComponent findTab(Integer hashCode) {
@@ -1043,5 +1055,4 @@ public class DesktopWindowManager extends WindowManager {
             runIfOk.run();
         }
     }
-
 }

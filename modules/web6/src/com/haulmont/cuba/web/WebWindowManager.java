@@ -46,13 +46,13 @@ import java.util.*;
  */
 public class WebWindowManager extends WindowManager {
 
+    private static final Log log = LogFactory.getLog(WebWindowManager.class);
+
     protected final Map<Layout, WindowBreadCrumbs> tabs = new HashMap<>();
     protected final Map<WindowBreadCrumbs, Stack<Map.Entry<Window, Integer>>> stacks = new HashMap<>();
     protected final Map<Window, WindowOpenMode> windowOpenMode = new LinkedHashMap<>();
     protected final Map<Window, Integer> windows = new HashMap<>();
     protected final Map<Layout, WindowBreadCrumbs> fakeTabs = new HashMap<>();
-
-    private static Log log = LogFactory.getLog(WebWindowManager.class);
 
     protected App app;
     protected AppWindow appWindow;
@@ -110,6 +110,42 @@ public class WebWindowManager extends WindowManager {
 
                 TabSheet webTabsheet = appWindow.getTabSheet();
                 webTabsheet.setSelectedTab(layout);
+            }
+        }
+    }
+
+    @Override
+    public void setWindowCaption(Window window, String caption, String description) {
+        Window webWindow = window;
+        if (window instanceof Window.Wrapper) {
+            webWindow = ((Window.Wrapper) window).getWrappedWindow();
+        }
+        WindowOpenMode openMode = windowOpenMode.get(webWindow);
+
+        String formattedCaption = formatTabCaption(caption, description);
+        window.setCaption(formattedCaption);
+
+        if (openMode != null) {
+            if (openMode.getOpenType() == OpenType.DIALOG) {
+                com.vaadin.ui.Window dialog = (com.vaadin.ui.Window) openMode.getData();
+                dialog.setCaption(formattedCaption);
+            } else {
+                TabSheet tabSheet = appWindow.getTabSheet();
+                if (tabSheet == null) {
+                    return; // for SINGLE tabbing mode
+                }
+
+                com.vaadin.ui.Component tabContent = (Component) openMode.getData();
+                if (tabContent == null) {
+                    return;
+                }
+
+                TabSheet.Tab tab = tabSheet.getTab(tabContent);
+                if (tab == null) {
+                    return;
+                }
+
+                tab.setCaption(formattedCaption);
             }
         }
     }
@@ -424,31 +460,11 @@ public class WebWindowManager extends WindowManager {
         }
     }
 
+    /**
+     * @deprecated Use {@link WindowManager#setWindowCaption(com.haulmont.cuba.gui.components.Window, String, String)}
+     */
     public void setCurrentWindowCaption(Window window, String caption, String description) {
-        TabSheet tabSheet = appWindow.getTabSheet();
-        if (tabSheet == null) {
-            return; // for SINGLE tabbing mode
-        }
-
-        if (window instanceof Window.Wrapper) {
-            window = ((Window.Wrapper) window).getWrappedWindow();
-        }
-        WindowOpenMode openMode = getWindowOpenMode().get(window);
-        if (openMode == null || OpenType.DIALOG.equals(openMode.getOpenType())) {
-            return;
-        }
-
-        com.vaadin.ui.Component tabContent = tabSheet.getSelectedTab();
-        if (tabContent == null) {
-            return;
-        }
-
-        TabSheet.Tab tab = tabSheet.getTab(tabContent);
-        if (tab == null) {
-            return;
-        }
-
-        tab.setCaption(formatTabCaption(caption, description));
+        setWindowCaption(window, caption, description);
     }
 
     protected String formatTabCaption(final String caption, final String description) {

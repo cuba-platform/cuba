@@ -1727,7 +1727,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
                 else
                     descr = null;
                 window.setDescription(descr);
-                App.getInstance().getWindowManager().setCurrentWindowCaption(window, window.getCaption(), descr);
+                App.getInstance().getWindowManager().setWindowCaption(window, window.getCaption(), descr);
             }
 
             if (useMaxResults)

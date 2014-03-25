@@ -1317,7 +1317,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
                 } else {
                     DesktopWindowManager wManager = DesktopComponentsHelper.getTopLevelFrame(
                             DesktopFilter.this.getComposition()).getWindowManager();
-                    wManager.setCurrentWindowCaption(window, window.getCaption(), descr);
+                    wManager.setWindowCaption(window, window.getCaption(), descr);
                 }
             }
             if (useMaxResults)

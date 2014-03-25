@@ -100,6 +100,8 @@ public abstract class WindowManager {
      */
     public abstract void selectWindowTab(Window window);
 
+    public abstract void setWindowCaption(Window window, String caption, String description);
+
     protected Integer getHash(WindowInfo windowInfo, Map<String, Object> params) {
         return windowInfo.hashCode() + params.hashCode();
     }

@@ -1702,7 +1702,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
                 else
                     descr = null;
                 window.setDescription(descr);
-                App.getInstance().getWindowManager().setCurrentWindowCaption(window, window.getCaption(), descr);
+                App.getInstance().getWindowManager().setWindowCaption(window, window.getCaption(), descr);
             }
 
             if (useMaxResults)
