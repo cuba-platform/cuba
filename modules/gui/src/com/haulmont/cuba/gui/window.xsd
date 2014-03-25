@@ -172,6 +172,14 @@
         </xs:restriction>
     </xs:simpleType>
 
+    <xs:simpleType name="searchMode">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="CASE_SENSITIVE"/>
+            <xs:enumeration value="LOWER_CASE"/>
+            <xs:enumeration value="UPPER_CASE"/>
+        </xs:restriction>
+    </xs:simpleType>
+
     <!-- Interfaces -->
 
     <xs:attributeGroup name="hasId">
@@ -626,6 +634,7 @@
         <xs:complexContent>
             <xs:extension base="lookupFieldComponent">
                 <xs:attribute name="minSearchStringLength" type="xs:integer"/>
+                <xs:attribute name="mode" type="searchMode"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -670,6 +679,7 @@
         <xs:complexContent>
             <xs:extension base="lookupPickerFieldComponent">
                 <xs:attribute name="minSearchStringLength" type="xs:integer"/>
+                <xs:attribute name="mode" type="searchMode"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>

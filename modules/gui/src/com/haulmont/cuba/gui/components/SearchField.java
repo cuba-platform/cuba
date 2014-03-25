@@ -24,10 +24,19 @@ public interface SearchField extends LookupField {
     IFrame.NotificationType getDefaultNotificationType();
     void setDefaultNotificationType(IFrame.NotificationType defaultNotificationType);
 
+    Mode getMode();
+    void setMode(Mode mode);
+
     public interface SearchNotifications {
 
         void notFoundSuggestions(String filterString);
 
         void needMinSearchStringLength(String filterString, int minSearchStringLength);
+    }
+
+    public enum Mode {
+        CASE_SENSITIVE,
+        LOWER_CASE,
+        UPPER_CASE
     }
 }

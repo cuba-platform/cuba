@@ -29,13 +29,15 @@ public class SearchSelect extends FilterSelect {
     }
 
     @Override
-    protected void optionRepaint() {
-        super.optionRepaint();
+    protected void requestRepaintOptions(String newFilter) {
         if (!repaintOptions && currentPage < 0) {
             String aPrevFilter = this.prevfilterstring;
             String aFilter = this.filterstring;
-            if (filterHandler != null && StringUtils.isNotEmpty(filterstring))
-                filterHandler.onFilterChange(filterstring);
+
+            if (filterHandler != null && StringUtils.isNotEmpty(newFilter)) {
+                filterHandler.onFilterChange(newFilter);
+            }
+
             this.repaintOptions = true;
             this.currentPage = 0;
             this.prevfilterstring = aPrevFilter;

@@ -36,14 +36,13 @@ public class CubaSearchSelect extends CubaComboBox {
     }
 
     @Override
-    protected void requestRepaintOptions() {
-        super.requestRepaintOptions();
+    protected void requestRepaintOptions(String caseSensitiveFilter) {
         if (!repaintOptions && currentPage < 0) {
             String aPrevFilter = this.prevfilterstring;
             String aFilter = this.filterstring;
 
             if (filterHandler != null) {
-                filterHandler.onFilterChange(filterstring);
+                filterHandler.onFilterChange(caseSensitiveFilter);
             }
 
             this.repaintOptions = true;

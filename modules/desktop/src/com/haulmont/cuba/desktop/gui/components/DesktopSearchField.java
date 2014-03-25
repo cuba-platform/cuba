@@ -51,6 +51,8 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
     protected boolean editable = true;
     protected boolean enabled = true;
 
+    protected Mode mode = Mode.CASE_SENSITIVE;
+
     protected Object nullOption;
 
     protected SearchComboBox comboBox;
@@ -259,6 +261,13 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
     protected void handleSearch(String newFilter) {
         clearSearchVariants();
 
+        String originalFilter = newFilter;
+        if (mode == Mode.LOWER_CASE) {
+            newFilter = StringUtils.lowerCase(newFilter);
+        } else if (mode == Mode.UPPER_CASE) {
+            newFilter = StringUtils.upperCase(newFilter);
+        }
+
         if (!isRequired() && StringUtils.isEmpty(newFilter)) {
             if (optionsDatasource.getState() == Datasource.State.VALID) {
                 optionsDatasource.clear();
@@ -285,7 +294,7 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
 
             if (searchNotifications != null) {
                 if (optionsDatasource.getState() == Datasource.State.VALID && optionsDatasource.size() == 0) {
-                    searchNotifications.notFoundSuggestions(newFilter);
+                    searchNotifications.notFoundSuggestions(originalFilter);
                 }
             }
 
@@ -299,7 +308,7 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
             }
 
             if (searchNotifications != null && StringUtils.length(newFilter) > 0) {
-                searchNotifications.needMinSearchStringLength(newFilter, minSearchStringLength);
+                searchNotifications.needMinSearchStringLength(originalFilter, minSearchStringLength);
             }
         }
     }
@@ -568,6 +577,16 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
     @Override
     public void setDefaultNotificationType(IFrame.NotificationType defaultNotificationType) {
         this.defaultNotificationType = defaultNotificationType;
+    }
+
+    @Override
+    public Mode getMode() {
+        return mode;
+    }
+
+    @Override
+    public void setMode(Mode mode) {
+        this.mode = mode;
     }
 
     protected class NullOption extends EntityWrapper {

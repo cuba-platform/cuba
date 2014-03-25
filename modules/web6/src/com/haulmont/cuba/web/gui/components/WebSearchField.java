@@ -30,6 +30,7 @@ import java.util.HashSet;
 public class WebSearchField extends WebLookupField implements SearchField {
 
     protected int minSearchStringLength = 0;
+    protected Mode mode = Mode.CASE_SENSITIVE;
 
     protected Messages messages;
 
@@ -103,6 +104,13 @@ public class WebSearchField extends WebLookupField implements SearchField {
         getSearchComponent().setFilterHandler(new SearchSelect.FilterHandler() {
             @Override
             public void onFilterChange(String newFilter) {
+                String originalFilter = newFilter;
+                if (mode == Mode.LOWER_CASE) {
+                    newFilter = StringUtils.lowerCase(newFilter);
+                } else if (mode == Mode.UPPER_CASE) {
+                    newFilter = StringUtils.upperCase(newFilter);
+                }
+
                 if (!isRequired() && StringUtils.isEmpty(newFilter)) {
                     setValue(null);
                     if (optionsDatasource.getState() == Datasource.State.VALID) {
@@ -120,7 +128,7 @@ public class WebSearchField extends WebLookupField implements SearchField {
 
                     if (searchNotifications != null) {
                         if (optionsDatasource.getState() == Datasource.State.VALID && optionsDatasource.size() == 0)
-                            searchNotifications.notFoundSuggestions(newFilter);
+                            searchNotifications.notFoundSuggestions(originalFilter);
                     }
                 } else {
                     if (optionsDatasource.getState() == Datasource.State.VALID) {
@@ -128,7 +136,7 @@ public class WebSearchField extends WebLookupField implements SearchField {
                     }
 
                     if (searchNotifications != null)
-                        searchNotifications.needMinSearchStringLength(newFilter, minSearchStringLength);
+                        searchNotifications.needMinSearchStringLength(originalFilter, minSearchStringLength);
                 }
             }
         });
@@ -210,6 +218,16 @@ public class WebSearchField extends WebLookupField implements SearchField {
     @Override
     public void setDefaultNotificationType(IFrame.NotificationType defaultNotificationType) {
         this.defaultNotificationType = defaultNotificationType;
+    }
+
+    @Override
+    public Mode getMode() {
+        return mode;
+    }
+
+    @Override
+    public void setMode(Mode mode) {
+        this.mode = mode;
     }
 
     /**

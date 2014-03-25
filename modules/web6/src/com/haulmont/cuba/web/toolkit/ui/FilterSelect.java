@@ -315,6 +315,7 @@ public class FilterSelect extends Select implements Action.Container {
             currentPage = (Integer) variables.get("page");
             filterstring = newFilter.toLowerCase();
             optionRepaint();
+            requestRepaintOptions(newFilter);
         } else if (isNewItemsAllowed()) {
             // New option entered (and it is allowed)
             final String newitem = (String) variables.get("newitem");
@@ -358,6 +359,10 @@ public class FilterSelect extends Select implements Action.Container {
         if (actionManager != null) {
             actionManager.handleActions(variables, this);
         }
+    }
+
+    // Haulmont API
+    protected void requestRepaintOptions(String newFilter) {
     }
 
     @Override
