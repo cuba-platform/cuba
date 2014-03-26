@@ -7,13 +7,13 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.SearchPickerField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.vaadin.data.Property;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Component;
 import org.apache.commons.lang.ObjectUtils;
 
 import java.util.Collection;
@@ -82,7 +82,7 @@ public class WebSearchPickerField extends WebSearchField implements SearchPicker
     }
 
     @Override
-    public com.vaadin.ui.Component getComposition() {
+    public Component getComposition() {
         return pickerField.getComposition();
     }
 
