@@ -49,6 +49,8 @@ public abstract class AbstractFilterEditor {
 
     protected Messages messages = AppBeans.get(Messages.NAME, Messages.class);
 
+    protected Metadata metadata = AppBeans.get(Metadata.NAME, Metadata.class);
+
     public AbstractFilterEditor(final Filter filter, FilterEntity filterEntity,
                                 Element filterDescriptor, List<String> existingNames) {
         this.filter = filter;
@@ -140,14 +142,13 @@ public abstract class AbstractFilterEditor {
         Pattern inclPattern = Pattern.compile(inclRe);
 
         for (MetaProperty property : metaClass.getProperties()) {
-            Map<String,Object> propertyAnnotation = property.getAnnotations();
-            if (propertyAnnotation.size() == 0 || propertyAnnotation.get("persistent") == null)
+            if (metadata.getTools().isTransient(property))
                 continue;
             if (property.getRange().getCardinality().isMany())
                 continue;
             if (defaultExcludedProps.contains(property.getName()))
                 continue;
-            if (!AppBeans.get(MessageTools.class).hasPropertyCaption(property))
+            if (!messages.getTools().hasPropertyCaption(property))
                 continue;
 
             if (inclPattern.matcher(property.getName()).matches()) {

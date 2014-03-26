@@ -30,16 +30,10 @@ public class ModelPropertiesFilter {
     }
 
     public boolean isPropertyFilterAllowed(MetaProperty property) {
-        if (userSession.isEntityAttrPermitted(property.getDomain(), property.getName(), EntityAttrAccess.VIEW)) {
-            // exclude system level attributes
-            Boolean systemLevel = metadataTools.isSystemLevel(property);
-            if (!systemLevel) {
-                // exclude not localized properties (they are usually not for end user) and ToMany
-                if (messageTools.hasPropertyCaption(property) && !property.getRange().getCardinality().isMany()) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return userSession.isEntityAttrPermitted(property.getDomain(), property.getName(), EntityAttrAccess.VIEW)
+                && !metadataTools.isSystemLevel(property)           // exclude system level attributes
+                && metadataTools.isPersistent(property)             // exclude transient properties
+                && messageTools.hasPropertyCaption(property)        // exclude not localized properties (they are usually not for end user)
+                && !property.getRange().getCardinality().isMany();  // exclude ToMany
     }
 }
