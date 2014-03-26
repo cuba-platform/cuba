@@ -107,6 +107,7 @@ public class ExceptionHandlers {
     public void createMinimalSet() {
         handlers.clear();
         addHandler(new SilentExceptionHandler());
+        addHandler(new EntitySerializationExceptionHandler());
         addHandler(new ConnectExceptionHandler());
         addHandler(new IllegalComponentStateExceptionHandler());
     }
