@@ -35,6 +35,7 @@ public class FilterLoader extends ComponentLoader {
         assignXmlDescriptor(filter, element);
         loadId(filter, element);
         loadVisible(filter, element);
+        loadEnable(filter, element);
         loadStyleName(filter, element);
         loadMargin(filter, element);
 
