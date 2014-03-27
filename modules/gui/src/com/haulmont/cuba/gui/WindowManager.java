@@ -633,6 +633,16 @@ public abstract class WindowManager {
         if (!WindowParams.DISABLE_RESUME_SUSPENDED.getBool(window.getContext())) {
             ((DsContextImplementation) window.getDsContext()).resumeSuspended();
         }
+
+        StopWatch readyStopWatch = new Log4JStopWatch(window.getId() + "#" +
+                UIPerformanceLogger.LifeCycle.READY,
+                Logger.getLogger(UIPerformanceLogger.class));
+        try {
+            ReflectionHelper.invokeMethod(window, "ready");
+        } catch (NoSuchMethodException e) {
+            // do nothing
+        }
+        readyStopWatch.stop();
     }
 
     public abstract void close(Window window);

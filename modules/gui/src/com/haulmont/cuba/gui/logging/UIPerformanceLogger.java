@@ -18,6 +18,7 @@ public interface UIPerformanceLogger {
         LOAD_DESCRIPTOR("loadDescriptor"),
         XML("xml"),
         INIT("init"),
+        READY("ready"),
         SET_ITEM("setItem"),
         UI_PERMISSIONS("uiPermissions"),
         INJECTION("inject"),

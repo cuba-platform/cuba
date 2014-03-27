@@ -141,7 +141,6 @@ public class AbstractWindow extends AbstractFrame
         return ((Window) frame).validate(fields);
     }
 
-
     /**
      * Check validity by invoking validators on all components which support them
      * and show validation result notification. This method also calls {@link #postValidate(ValidationErrors)} hook to
@@ -163,6 +162,14 @@ public class AbstractWindow extends AbstractFrame
     @Override
     public void setWindowManager(WindowManager windowManager) {
         ((Window) frame).setWindowManager(windowManager);
+    }
+
+    /**
+     * Hook to be implemented in subclasses. <br/>
+     * Called by the framework after full initialization and opening of screen. <br/>
+     * Override this method and put custom initialization logic here.
+     */
+    protected void ready() {
     }
 
     /**
