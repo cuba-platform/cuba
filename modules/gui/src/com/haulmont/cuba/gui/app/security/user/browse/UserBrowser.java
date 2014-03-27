@@ -121,11 +121,6 @@ public class UserBrowser extends AbstractLookup {
         }
     }
 
-    @Override
-    protected void ready() {
-        showNotification("Ready!", NotificationType.HUMANIZED);
-    }
-
     protected boolean isNotCurrentUserSelected(User item) {
         return !(usersTable.getSelected().contains(userSession.getUser()) ||
                 userSession.getCurrentOrSubstitutedUser().equals(item));
