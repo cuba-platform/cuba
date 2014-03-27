@@ -419,10 +419,10 @@ public abstract class WindowManager {
         checkCanOpenWindow(windowInfo, openType, params);
 
         Integer hashCode = getHash(windowInfo, params);
-        params = createParametersMap(windowInfo, params);
         String template = windowInfo.getTemplate();
         Window window = getWindow(hashCode);
         if (window != null) {
+            params = createParametersMap(windowInfo, params);
             String caption = loadCaption(window, params);
             String description = loadDescription(window, params);
 
