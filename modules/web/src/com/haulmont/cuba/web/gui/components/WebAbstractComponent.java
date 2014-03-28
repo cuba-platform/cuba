@@ -212,9 +212,9 @@ public class WebAbstractComponent<T extends com.vaadin.ui.Component>
     @Override
     public void setAlignment(Alignment alignment) {
         this.alignment = alignment;
-        final com.vaadin.ui.Component component = this.component.getParent();
+        final com.vaadin.ui.Component component = this.getComposition().getParent();
         if (component instanceof Layout.AlignmentHandler) {
-            ((Layout.AlignmentHandler) component).setComponentAlignment(this.component,
+            ((Layout.AlignmentHandler) component).setComponentAlignment(this.getComposition(),
                     WebComponentsHelper.convertAlignment(alignment));
         }
     }

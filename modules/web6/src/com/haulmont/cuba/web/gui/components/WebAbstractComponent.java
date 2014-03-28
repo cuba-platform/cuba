@@ -4,13 +4,11 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.web.App;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Layout;
-import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 /**
@@ -189,10 +187,10 @@ public class WebAbstractComponent<T extends com.vaadin.ui.Component>
     @Override
     public void setAlignment(Alignment alignment) {
         this.alignment = alignment;
-        final com.vaadin.ui.Component component = this.component.getParent();
+        final com.vaadin.ui.Component component = this.getComposition().getParent();
         if (component instanceof Layout.AlignmentHandler) {
             ((Layout.AlignmentHandler) component).setComponentAlignment(
-                    this.component, WebComponentsHelper.convertAlignment(alignment));
+                    this.getComposition(), WebComponentsHelper.convertAlignment(alignment));
         }
     }
 
