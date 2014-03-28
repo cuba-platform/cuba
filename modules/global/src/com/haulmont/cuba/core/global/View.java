@@ -45,7 +45,7 @@ public class View implements Serializable {
 
     private String name;
 
-    private Map<String, ViewProperty> properties = new HashMap<String, ViewProperty>();
+    private Map<String, ViewProperty> properties = new HashMap<>();
 
     private boolean includeSystemProperties;
 
@@ -139,6 +139,7 @@ public class View implements Serializable {
         return this;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -148,12 +149,14 @@ public class View implements Serializable {
         return entityClass.equals(view.entityClass) && name.equals(view.name);
     }
 
+    @Override
     public int hashCode() {
         int result = entityClass.hashCode();
         result = 31 * result + name.hashCode();
         return result;
     }
 
+    @Override
     public String toString() {
         return entityClass.getName() + "/" + name;
     }

@@ -14,8 +14,8 @@ import java.io.Serializable;
  * @author krivopustov
  * @version $Id$
  */
-public class ViewProperty implements Serializable
-{
+public class ViewProperty implements Serializable {
+
     private static final long serialVersionUID = 4098678639930287203L;
 
     private String name;
@@ -58,6 +58,7 @@ public class ViewProperty implements Serializable
         return lazy;
     }
 
+    @Override
     public String toString() {
         return name;
     }

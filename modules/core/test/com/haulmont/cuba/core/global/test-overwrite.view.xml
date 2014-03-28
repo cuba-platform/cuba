@@ -1,0 +1,21 @@
+<!--
+  ~ Copyright (c) 2008-2013 Haulmont. All rights reserved.
+  ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+  -->
+
+<views xmlns="http://schemas.haulmont.com/cuba/5.2/view.xsd">
+
+    <view entity="sec$User" name="test.overwrite">
+        <property name="name"/>
+        <property name="login"/>
+    </view>
+
+    <view entity="sec$UserRole" name="dependent">
+        <property name="user" view="test.overwrite"/>
+    </view>
+
+    <view entity="sec$User" name="test.overwrite" overwrite="true" extends="test.overwrite">
+        <property name="group" view="_local"/>
+    </view>
+
+</views>

@@ -24,6 +24,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+import org.perf4j.log4j.Log4JStopWatch;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -71,6 +72,8 @@ public class AbstractViewRepository implements ViewRepository {
     }
 
     protected void init() {
+        Log4JStopWatch initTiming = new Log4JStopWatch("ViewRepository.init." + getClass().getSimpleName());
+
         String configName = AppContext.getProperty("cuba.viewsConfig");
         if (!StringUtils.isBlank(configName)) {
             Element rootElem = DocumentHelper.createDocument().addElement("views");
@@ -86,6 +89,8 @@ public class AbstractViewRepository implements ViewRepository {
                 deployView(rootElem, viewElem);
             }
         }
+
+        initTiming.stop();
     }
 
     protected void checkDuplicates(Element rootElem) {
@@ -312,7 +317,53 @@ public class AbstractViewRepository implements ViewRepository {
         loadView(rootElem, viewElem, view);
         storeView(metaClass, view);
 
+        if (overwrite) {
+            replaceOverridden(view);
+        }
+
         return view;
+    }
+
+    private void replaceOverridden(View replacementView) {
+        Log4JStopWatch replaceTiming = new Log4JStopWatch("ViewRepository.replaceOverridden");
+
+        HashSet<View> checked = new HashSet<>();
+
+        for (View view : getAll()) {
+            if (!checked.contains(view)) {
+                replaceOverridden(view, replacementView, checked);
+            }
+        }
+
+        replaceTiming.stop();
+    }
+
+    private void replaceOverridden(View root, View replacementView, HashSet<View> checked) {
+        checked.add(root);
+
+        List<ViewProperty> replacements = null;
+
+        for (ViewProperty property : root.getProperties()) {
+            View propertyView = property.getView();
+
+            if (propertyView != null) {
+                if (StringUtils.equals(propertyView.getName(), replacementView.getName())
+                        && replacementView.getEntityClass() == propertyView.getEntityClass()) {
+                    if (replacements == null) {
+                        replacements = new LinkedList<>();
+                    }
+                    replacements.add(new ViewProperty(property.getName(), replacementView, property.isLazy()));
+                } else if (propertyView.getEntityClass() != null && !checked.contains(propertyView)) {
+                    replaceOverridden(propertyView, replacementView, checked);
+                }
+            }
+        }
+
+        if (replacements != null) {
+            for (ViewProperty replacement : replacements) {
+                root.addProperty(replacement.getName(), replacement.getView(), replacement.isLazy());
+            }
+        }
     }
 
     private View getAncestorView(MetaClass metaClass, String ancestor) {

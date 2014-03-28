@@ -10,10 +10,11 @@ import com.haulmont.cuba.security.entity.User;
 
 import java.io.InputStream;
 
-public class ViewRepositoryTest extends CubaTestCase
-{
+public class ViewRepositoryTest extends CubaTestCase {
+
     private ViewRepository repository;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         repository = metadata.getViewRepository();
