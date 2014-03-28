@@ -161,7 +161,7 @@ public class CubaVaadinServletService extends VaadinServletService {
     protected static class CubaPublishedFileHandler extends PublishedFileHandler {
         @Override
         protected InputStream getApplicationResourceAsStream(Class<?> contextClass, String fileName) {
-            return VaadinServlet.getCurrent().getServletContext().getResourceAsStream("VAADIN/" + fileName);
+            return VaadinServlet.getCurrent().getServletContext().getResourceAsStream("/VAADIN/" + fileName);
         }
     }
 
