@@ -8,7 +8,7 @@
 @mixin havana-checkbox($primaryStyleName : v-checkbox) {
 
   .#{$primaryStyleName} {
-    @include box-defaults;
+    display: inline-block;
 
     outline: 0;
     border: transparent 1px solid;
