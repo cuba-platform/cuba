@@ -101,14 +101,17 @@ public class MetadataImpl implements Metadata {
         }
     }
 
+    @Override
     public <T> T create(Class<T> entityClass) {
         return (T) __create(entityClass);
     }
 
+    @Override
     public <T> T create(MetaClass metaClass) {
         return (T) __create(metaClass.getJavaClass());
     }
 
+    @Override
     public <T> T create(String entityName) {
         MetaClass metaClass = getSession().getClassNN(entityName);
         return (T) __create(metaClass.getJavaClass());
