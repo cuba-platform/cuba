@@ -153,12 +153,7 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
                     break;
 
                 case DATATYPE:
-                    Datatype<?> datatype = Datatypes.get(metaProperty.getJavaType());
-                    if (datatype == null) {
-                        datatype = Datatypes.getNN(String.class);
-                    }
-
-                    component.setConverter(new TextFieldStringToDatatypeConverter(datatype));
+                    component.setConverter(new TextFieldStringToDatatypeConverter(metaProperty.getRange().asDatatype()));
                     break;
 
                 case ENUM:

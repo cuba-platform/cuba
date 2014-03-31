@@ -63,6 +63,8 @@ public class WebLabel extends WebAbstractComponent<com.vaadin.ui.Label> implemen
 
         final MetaClass metaClass = datasource.getMetaClass();
         metaPropertyPath = metaClass.getPropertyPath(property);
+        if (metaPropertyPath == null)
+            throw new IllegalArgumentException("Property " + property + " is not found in " + metaClass);
         metaProperty = metaPropertyPath.getMetaProperty();
 
         switch (metaProperty.getType()) {
@@ -76,17 +78,12 @@ public class WebLabel extends WebAbstractComponent<com.vaadin.ui.Label> implemen
                 break;
 
             case DATATYPE:
-                Datatype<?> datatype = Datatypes.get(metaProperty.getJavaType());
-                if (datatype != null) {
-                    component.setConverter(new StringToDatatypeConverter(datatype) {
-                        @Override
-                        public Formatter getFormatter() {
-                            return WebLabel.this.formatter;
-                        }
-                    });
-                } else {
-                    component.setConverter(null);
-                }
+                component.setConverter(new StringToDatatypeConverter(metaProperty.getRange().asDatatype()) {
+                    @Override
+                    public Formatter getFormatter() {
+                        return WebLabel.this.formatter;
+                    }
+                });
                 break;
 
             case ENUM:
