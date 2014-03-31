@@ -76,7 +76,7 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 if (!suppressTextChangeListener) {
-                    updateTextRepresentaion();
+                    updateTextRepresentation();
                 }
             }
         });
@@ -92,11 +92,11 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
 
         // update text representaion manually
         if (field instanceof TextField) {
-            updateTextRepresentaion();
+            updateTextRepresentation();
         }
     }
 
-    protected void updateTextRepresentaion() {
+    protected void updateTextRepresentation() {
         TextField textField = (TextField) field;
 
         boolean textFieldReadonly = textField.isReadOnly();
@@ -104,13 +104,13 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
         suppressTextChangeListener = true;
 
         textField.setReadOnly(false);
-        textField.setValue(getStringRepresentaion());
+        textField.setValue(getStringRepresentation());
         textField.setReadOnly(textFieldReadonly);
 
         suppressTextChangeListener = false;
     }
 
-    protected String getStringRepresentaion() {
+    protected String getStringRepresentation() {
         if (captionFormatter != null) {
             return (String) captionFormatter.convertToPresentation(getValue(), String.class, getLocale());
         }
@@ -153,7 +153,7 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
         ((TextField) field).addTextChangeListener(new FieldEvents.TextChangeListener() {
             @Override
             public void textChange(FieldEvents.TextChangeEvent event) {
-                if (!suppressTextChangeListener && !StringUtils.equals(getStringRepresentaion(), event.getText())) {
+                if (!suppressTextChangeListener && !StringUtils.equals(getStringRepresentation(), event.getText())) {
                     suppressTextChangeListener = true;
 
                     listener.actionPerformed(event.getText(), getValue());
@@ -162,7 +162,7 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
 
                     // update text representaion manually
                     if (field instanceof TextField) {
-                        updateTextRepresentaion();
+                        updateTextRepresentation();
                     }
                 }
             }
