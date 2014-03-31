@@ -140,7 +140,12 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
                     }
                 }
 
-                updateMissingValueState();
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateEditState();
+                    }
+                });
             }
         });
 
