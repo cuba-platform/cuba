@@ -22,13 +22,15 @@ public class CubaMultiUploadState extends AbstractComponentState {
     public int buttonWidth = 90;
     public int buttonHeight = 25;
 
-    public int buttonTextLeft = 22;
+    public int buttonTextLeft = 0;
     public int buttonTextTop = 1;
 
     public String buttonStyles =
             ".swfupload {" +
                     "color: #1e3146;" +
                     "font-size: 12px; " +
+                    "margin-left: 17px; " +
+                    "text-align: center; " +
                     "vertical-align: middle; " +
                     "font-family: Verdana,tahoma,arial,geneva,helvetica,sans-serif,\"Trebuchet MS\";" +
             "}";
@@ -37,6 +39,8 @@ public class CubaMultiUploadState extends AbstractComponentState {
             ".swfupload {" +
                     "color: #c0c5cb;" +
                     "font-size: 12px; " +
+                    "margin-left: 17px; " +
+                    "text-align: center; " +
                     "vertical-align: middle; " +
                     "font-family: Verdana,tahoma,arial,geneva,helvetica,sans-serif,\"Trebuchet MS\";" +
                     "}";

@@ -147,11 +147,10 @@ public class VSwfUpload
                 opts.set("button_height", height);
 
                 opts.set("button_placeholder_id", uploadButton.getId());
-                opts.set("button_text_left_padding", "22");
                 opts.set("button_text_top_padding", "4");
                 opts.set("button_text", "<span class=\"swfupload\">" + caption + "</span>");
                 opts.set("button_text_style",
-                        ".swfupload {font-size: 12px; font-family: verdana,Tahoma,sans-serif; }");
+                        ".swfupload {font-size: 12px; font-family: verdana,Tahoma,sans-serif; text-align: center; margin-left: 17px;}");
 
                 /*
                  *   SWF Handlers list
