@@ -5,14 +5,19 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.datefield;
 
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Event;
 import com.haulmont.cuba.web.toolkit.ui.client.textfield.CubaMaskedFieldWidget;
+import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.VPopupCalendar;
 
 /**
  * @author artamonov
  * @version $Id$
  */
-public class CubaDateFieldWidget extends VPopupCalendar {
+public class CubaDateFieldWidget extends VPopupCalendar implements ShortcutActionHandler.ShortcutActionHandlerOwner {
+
+    protected ShortcutActionHandler shortcutHandler;
 
     protected static final String CLASSNAME = "cuba-datefield";
 
@@ -21,6 +26,9 @@ public class CubaDateFieldWidget extends VPopupCalendar {
     public CubaDateFieldWidget() {
         setStylePrimaryName(CLASSNAME);
         setStyleName(CLASSNAME);
+
+        // handle shortcuts
+        DOM.sinkEvents(getElement(), Event.ONKEYDOWN);
     }
 
     @Override
@@ -87,5 +95,25 @@ public class CubaDateFieldWidget extends VPopupCalendar {
         cubaMaskedFieldWidget.setImmediate(isImmediate());
 
         return cubaMaskedFieldWidget;
+    }
+
+    @Override
+    public void onBrowserEvent(Event event) {
+        super.onBrowserEvent(event);
+
+        final int type = DOM.eventGetType(event);
+
+        if (type == Event.ONKEYDOWN && shortcutHandler != null) {
+            shortcutHandler.handleKeyboardEvent(event);
+        }
+    }
+
+    public void setShortcutActionHandler(ShortcutActionHandler handler) {
+        this.shortcutHandler = handler;
+    }
+
+    @Override
+    public ShortcutActionHandler getShortcutActionHandler() {
+        return shortcutHandler;
     }
 }

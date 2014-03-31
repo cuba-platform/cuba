@@ -8,7 +8,10 @@ package com.haulmont.cuba.web.toolkit.ui.client.datefield;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.CubaDateField;
+import com.vaadin.client.ApplicationConnection;
+import com.vaadin.client.UIDL;
 import com.vaadin.client.communication.StateChangeEvent;
+import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.datefield.PopupDateFieldConnector;
 import com.vaadin.shared.ui.Connect;
 
@@ -38,5 +41,24 @@ public class CubaDateFieldConnector extends PopupDateFieldConnector {
     public void onStateChanged(StateChangeEvent stateChangeEvent) {
         super.onStateChanged(stateChangeEvent);
         getWidget().getImpl().setMask(getState().dateMask);
+    }
+
+    @Override
+    public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
+        super.updateFromUIDL(uidl, client);
+
+        // We may have actions attached to this text field
+        if (uidl.getChildCount() > 0) {
+            final int cnt = uidl.getChildCount();
+            for (int i = 0; i < cnt; i++) {
+                UIDL childUidl = uidl.getChildUIDL(i);
+                if (childUidl.getTag().equals("actions")) {
+                    if (getWidget().getShortcutActionHandler() == null) {
+                        getWidget().setShortcutActionHandler(new ShortcutActionHandler(uidl.getId(), client));
+                    }
+                    getWidget().getShortcutActionHandler().updateActionMap(childUidl);
+                }
+            }
+        }
     }
 }

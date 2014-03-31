@@ -6,6 +6,7 @@ package com.haulmont.cuba.web.toolkit.ui;
 
 import com.vaadin.event.Action;
 import com.vaadin.event.ActionManager;
+import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.PaintException;
 import com.vaadin.server.PaintTarget;
 import com.vaadin.ui.AbstractOrderedLayout;
@@ -33,6 +34,16 @@ public class CubaOrderedActionsLayout extends AbstractOrderedLayout implements A
             actionManager.removeActionHandler(actionHandler);
             markAsDirty();
         }
+    }
+
+    @Override
+    public void addShortcutListener(ShortcutListener listener) {
+        getActionManager().addAction(listener);
+    }
+
+    @Override
+    public void removeShortcutListener(ShortcutListener listener) {
+        getActionManager().removeAction(listener);
     }
 
     @Override
