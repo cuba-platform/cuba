@@ -114,6 +114,7 @@
     .v-button-nextyear,
     .v-button-nextmonth,
     .v-button-prevmonth {
+      outline: none;
       display: block;
       width: 15px;
       height: 15px;
@@ -124,6 +125,13 @@
       background: transparent;
       background-position: middle center;
       background-repeat: no-repeat;
+    }
+
+    .v-button-prevyear:focus,
+    .v-button-nextyear:focus,
+    .v-button-nextmonth:focus,
+    .v-button-prevmonth:focus {
+      outline: none;
     }
 
     .v-button-prevmonth {
