@@ -214,9 +214,13 @@ public abstract class WindowManager {
         final LayoutLoader layoutLoader = new LayoutLoader(context, AppConfig.getFactory(), layoutConfig);
         layoutLoader.setLocale(getLocale());
         if (!StringUtils.isEmpty(descriptorPath)) {
+            if (descriptorPath.contains("/")) {
+                descriptorPath = StringUtils.substring(descriptorPath, 0, descriptorPath.lastIndexOf("/"));
+            }
+
             String path = descriptorPath.replaceAll("/", ".");
             int start = path.startsWith(".") ? 1 : 0;
-            path = path.substring(start, path.lastIndexOf("."));
+            path = path.substring(start);
 
             layoutLoader.setMessagesPack(path);
         }

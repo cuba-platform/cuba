@@ -25,8 +25,6 @@ import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
 import javax.annotation.Nullable;
@@ -49,8 +47,6 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
     protected Scripting scripting = AppBeans.get(Scripting.NAME);
     protected Resources resources = AppBeans.get(Resources.NAME);
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
-
-    private static Log log = LogFactory.getLog(ComponentLoader.class);
 
     protected ComponentLoader(Context context) {
         this.context = context;

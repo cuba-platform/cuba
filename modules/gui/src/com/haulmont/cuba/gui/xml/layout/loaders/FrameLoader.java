@@ -175,7 +175,7 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
             frame.setMessagesPack(msgPack);
             setMessagesPack(msgPack);
         } else {
-            frame.setMessagesPack(msgPack);
+            frame.setMessagesPack(this.messagesPack);
             setMessagesPack(this.messagesPack);
         }
     }
