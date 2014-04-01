@@ -48,6 +48,11 @@ public class TreeLoader extends ComponentLoader {
 
         loadActions(component, element);
 
+        String multiselect = element.attributeValue("multiselect");
+        if (StringUtils.isNotEmpty(multiselect)) {
+            component.setMultiSelect(Boolean.valueOf(multiselect));
+        }
+
         Element itemsElem = element.element("treechildren");
         String datasource = itemsElem.attributeValue("datasource");
         if (!StringUtils.isBlank(datasource)) {

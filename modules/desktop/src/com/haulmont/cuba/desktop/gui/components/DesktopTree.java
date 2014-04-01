@@ -13,10 +13,12 @@ import com.haulmont.cuba.desktop.gui.data.TreeModelAdapter;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
-import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
+import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import org.apache.commons.lang.StringUtils;
 
+import javax.annotation.Nullable;
 import javax.swing.AbstractAction;
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
@@ -29,6 +31,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.*;
+import java.util.List;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
@@ -257,7 +260,35 @@ public class DesktopTree extends DesktopAbstractActionsHolderComponent<JTree> im
             action.setDatasource(datasource);
         }
 
-        datasource.addListener(new CollectionDsActionsNotifier(this));
+        datasource.addListener(
+                new CollectionDsListenerAdapter<Entity>() {
+                    @Override
+                    public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
+                        // #PL-2035, reload selection from ds
+                        Set<Entity> selectedItems = getSelected();
+                        if (selectedItems == null) {
+                            selectedItems = Collections.emptySet();
+                        }
+
+                        Set<Entity> newSelection = new HashSet<>();
+                        for (Entity entity : selectedItems) {
+                            if (ds.containsItem(entity.getId())) {
+                                newSelection.add(entity);
+                            }
+                        }
+
+                        if (ds.getState() == Datasource.State.VALID && ds.getItem() != null) {
+                            newSelection.add(ds.getItem());
+                        }
+
+                        if (newSelection.isEmpty()) {
+                            setSelected((Entity) null);
+                        } else {
+                            setSelected(newSelection);
+                        }
+                    }
+                }
+        );
 
         for (Action action : getActions()) {
             action.refreshState();
@@ -271,7 +302,9 @@ public class DesktopTree extends DesktopAbstractActionsHolderComponent<JTree> im
 
     @Override
     public void setMultiSelect(boolean multiselect) {
-        impl.getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
+        int mode = multiselect ?
+                TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION : TreeSelectionModel.SINGLE_TREE_SELECTION;
+        impl.getSelectionModel().setSelectionMode(mode);
     }
 
     @Override
@@ -296,9 +329,13 @@ public class DesktopTree extends DesktopAbstractActionsHolderComponent<JTree> im
     }
 
     @Override
-    public void setSelected(Entity item) {
-        TreePath path = model.getTreePath(item);
-        impl.setSelectionPath(path);
+    public void setSelected(@Nullable Entity item) {
+        if (item != null) {
+            TreePath path = model.getTreePath(item);
+            impl.setSelectionPath(path);
+        } else {
+            impl.setSelectionPath(null);
+        }
     }
 
     @Override
@@ -341,6 +378,10 @@ public class DesktopTree extends DesktopAbstractActionsHolderComponent<JTree> im
             } else {
                 Object item = selected.iterator().next();
                 if (item instanceof Entity) {
+                    // reset selection and select new item
+                    if (isMultiSelect()) {
+                        datasource.setItem(null);
+                    }
                     datasource.setItem((Entity) item);
                 } else {
                     datasource.setItem(null);

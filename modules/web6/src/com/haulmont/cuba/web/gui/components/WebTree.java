@@ -6,8 +6,11 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
 import com.haulmont.cuba.web.gui.data.HierarchicalDsWrapper;
@@ -16,8 +19,7 @@ import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.AbstractSelect;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.Collection;
-import java.util.Set;
+import java.util.*;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
@@ -41,17 +43,20 @@ public class WebTree extends WebAbstractList<com.haulmont.cuba.web.toolkit.ui.Tr
         component.addActionHandler(new ActionsAdapter());
         component.addListener(
                 new Property.ValueChangeListener() {
+                    @SuppressWarnings("unchecked")
                     @Override
                     public void valueChange(Property.ValueChangeEvent event) {
-                        Set items = getSelected();
-                        if (items.isEmpty()) {
-                            //noinspection unchecked
-                            datasource.setItem(null);
-                        } else if (items.size() == 1) {
-                            //noinspection unchecked
-                            datasource.setItem((Entity) items.iterator().next());
-                        } else {
-                            throw new UnsupportedOperationException();
+                        if (datasource != null) {
+                            Set selected = getSelected();
+                            if (selected.isEmpty()) {
+                                datasource.setItem(null);
+                            } else {
+                                // reset selection and select new item
+                                if (isMultiSelect()) {
+                                    datasource.setItem(null);
+                                }
+                                datasource.setItem((Entity) selected.iterator().next());
+                            }
                         }
                     }
                 }
@@ -201,7 +206,7 @@ public class WebTree extends WebAbstractList<com.haulmont.cuba.web.toolkit.ui.Tr
         HierarchicalDsWrapper wrapper = new HierarchicalDsWrapper(datasource);
         component.setContainerDataSource(wrapper);
 
-        if (UserSessionProvider.getUserSession().isSpecificPermitted(ShowInfoAction.ACTION_PERMISSION)) {
+        if (AppBeans.get(UserSessionSource.class).getUserSession().isSpecificPermitted(ShowInfoAction.ACTION_PERMISSION)) {
             ShowInfoAction action = (ShowInfoAction) getAction(ShowInfoAction.ACTION_ID);
             if (action == null) {
                 action = new ShowInfoAction();
@@ -210,7 +215,33 @@ public class WebTree extends WebAbstractList<com.haulmont.cuba.web.toolkit.ui.Tr
             action.setDatasource(datasource);
         }
 
-        datasource.addListener(new CollectionDsActionsNotifier(this));
+        datasource.addListener(new CollectionDsActionsNotifier(this) {
+            @Override
+            public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
+                // #PL-2035, reload selection from ds
+                Set<Object> selectedItemIds = getSelectedItemIds();
+                if (selectedItemIds == null) {
+                    selectedItemIds = Collections.emptySet();
+                }
+
+                Set<Object> newSelection = new HashSet<>();
+                for (Object entityId : selectedItemIds) {
+                    if (ds.containsItem(entityId)) {
+                        newSelection.add(entityId);
+                    }
+                }
+
+                if (ds.getState() == Datasource.State.VALID && ds.getItem() != null) {
+                    newSelection.add(ds.getItem().getId());
+                }
+
+                if (newSelection.isEmpty()) {
+                    setSelected((Entity) null);
+                } else {
+                    setSelectedIds(newSelection);
+                }
+            }
+        });
 
         for (Action action : getActions()) {
             action.refreshState();
