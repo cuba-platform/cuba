@@ -24,7 +24,7 @@ public class CubaTabSheet extends com.vaadin.ui.TabSheet implements Action.Conta
 
     private static final long serialVersionUID = -2956008661221108673L;
 
-    private Stack<Component> openedComponents = new Stack<>();
+    protected Stack<Component> openedComponents = new Stack<>();
 
     protected HashSet<Action.Handler> actionHandlers = new HashSet<>();
 
@@ -106,19 +106,15 @@ public class CubaTabSheet extends com.vaadin.ui.TabSheet implements Action.Conta
         getState().hasActionsHanlders = !actionHandlers.isEmpty();
     }
 
-    public void closeTabAndSelectPrevious(Component tab) {
-        while (openedComponents.removeElement(tab)) {
-            openedComponents.removeElement(tab);
-        }
+    public Component getPreviousTab(Component tab) {
         if ((!openedComponents.empty()) && (getSelectedTab().equals(tab))) {
             Component c = openedComponents.pop();
             while (!components.contains(c) && !openedComponents.isEmpty()) {
                 c = openedComponents.pop();
             }
-            setSelectedTab(c);
+            return c;
         }
-        closeHandler.onTabClose(this, tab);
-        removeComponent(tab);
+        return null;
     }
 
     public void silentCloseTabAndSelectPrevious(Component tab) {

@@ -11,10 +11,14 @@ import com.vaadin.ui.Component;
 
 import java.util.*;
 
+/**
+ * @author artamonov
+ * @version $Id$
+ */
 public class ActionsTabSheet extends com.vaadin.ui.TabSheet implements Action.Container {
     private static final long serialVersionUID = -2956008661221108673L;
 
-    private Stack<Component> openedComponents = new Stack<Component>();
+    protected Stack<Component> openedComponents = new Stack<>();
 
     protected TabSheetActionsManager actionManager;
 
@@ -47,29 +51,21 @@ public class ActionsTabSheet extends com.vaadin.ui.TabSheet implements Action.Co
 
     @Override
     public void changeVariables(Object source, Map variables) {
-        if (variables.containsKey("close")) {
-            final Component tab = (Component) keyMapper.get((String) variables.get("close"));
-            if (tab != null) {
-                closeTabAndSelectPrevious(tab);
-            }
-        } else {
-            super.changeVariables(source, variables);
-        }
+        super.changeVariables(source, variables);
         if (actionManager != null) {
             getActionManager().handleActions(variables, this);
         }
     }
 
-    public void closeTabAndSelectPrevious(Component tab) {
-        while (openedComponents.removeElement(tab))
-            openedComponents.removeElement(tab);
-        if ((!openedComponents.empty()) && (selected.equals(tab))) {
+    public Component getPreviousTab(Component tab) {
+        if ((!openedComponents.empty()) && (getSelectedTab().equals(tab))) {
             Component c = openedComponents.pop();
-            while (!components.contains(c) && !openedComponents.isEmpty())
+            while (!components.contains(c) && !openedComponents.isEmpty()) {
                 c = openedComponents.pop();
-            setSelectedTab(c);
+            }
+            return c;
         }
-        closeHandler.onTabClose(this, tab);
+        return null;
     }
 
     public void silentCloseTabAndSelectPrevious(Component tab) {

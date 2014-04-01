@@ -422,13 +422,23 @@ public class WebWindowManager extends WindowManager {
             @Override
             public void handleAction(Object sender, Object target) {
                 if (AppWindow.Mode.TABBED == appWindow.getMode()) {
-                    TabSheet tabSheet = appWindow.getTabSheet();
+                    final TabSheet tabSheet = appWindow.getTabSheet();
                     if (tabSheet != null) {
                         VerticalLayout layout = (VerticalLayout) tabSheet.getSelectedTab();
                         if (layout != null) {
                             WindowBreadCrumbs breadCrumbs = tabs.get(layout);
                             if (stacks.get(breadCrumbs).empty()) {
-                                ((AppWindow.AppTabSheet) tabSheet).closeTabAndSelectPrevious(layout);
+                                final Component previousTab = ((AppWindow.AppTabSheet) tabSheet).getPreviousTab(layout);
+                                if (previousTab != null) {
+                                    breadCrumbs.getCurrentWindow().closeAndRun(Window.CLOSE_ACTION_ID, new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            tabSheet.setSelectedTab(previousTab);
+                                        }
+                                    });
+                                } else {
+                                    breadCrumbs.getCurrentWindow().close(Window.CLOSE_ACTION_ID);
+                                }
                             } else {
                                 breadCrumbs.getCurrentWindow().close(Window.CLOSE_ACTION_ID);
                             }
