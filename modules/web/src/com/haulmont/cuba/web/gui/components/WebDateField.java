@@ -78,11 +78,10 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
 
         timeField = new WebTimeField();
 
-        dateField.setImmediate(true);
-        dateField.setInvalidCommitted(true);
-        timeField.<CubaMaskedTextField>getComponent().setImmediate(true);
-        timeField.<CubaMaskedTextField>getComponent().setInvalidAllowed(false);
-        timeField.<CubaMaskedTextField>getComponent().setInvalidCommitted(true);
+        CubaMaskedTextField vTimeField = timeField.getComponent();
+        vTimeField.setImmediate(true);
+        vTimeField.setInvalidAllowed(false);
+        vTimeField.setInvalidCommitted(true);
 
         dateField.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
