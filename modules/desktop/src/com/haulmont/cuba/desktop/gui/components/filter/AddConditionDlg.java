@@ -111,7 +111,6 @@ public class AddConditionDlg extends JDialog {
         DesktopComponentsHelper.addShortcutAction("close", getRootPane(),
                 DesktopComponentsHelper.convertKeyCombination(close), cancelAction);
 
-
         DesktopComponentsHelper.addShortcutAction("commit", getRootPane(),
                 DesktopComponentsHelper.convertKeyCombination(commit), commitAction);
 
@@ -274,18 +273,22 @@ public class AddConditionDlg extends JDialog {
             super(messagesPack, filterComponentName, datasource);
         }
 
+        @Override
         public PropertyConditionDescriptor buildPropertyConditionDescriptor(String name, String caption) {
             return new PropertyConditionDescriptor(name, caption, messagesPack, filterComponentName, datasource);
         }
 
+        @Override
         public GroupCreator buildGroupConditionDescriptor(GroupType groupType) {
             return new GroupCreator(groupType, filterComponentName, datasource);
         }
 
+        @Override
         public ConditionCreator buildCustomConditionDescriptor() {
             return new ConditionCreator(filterComponentName, datasource);
         }
 
+        @Override
         public RuntimePropConditionCreator buildRuntimePropConditionDescriptor() {
             return new RuntimePropConditionCreator(filterComponentName, datasource);
         }

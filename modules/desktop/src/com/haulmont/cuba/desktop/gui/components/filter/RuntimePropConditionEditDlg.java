@@ -9,7 +9,10 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.desktop.App;
+import com.haulmont.cuba.desktop.TopLevelFrame;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
+import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
+import com.haulmont.cuba.desktop.sys.DialogWindow;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.gui.components.filter.AbstractRuntimePropConditionEditDlg;
@@ -18,28 +21,40 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 /**
- * <p>$Id$</p>
- *
  * @author devyatkin
+ * @version $Id$
  */
 public class RuntimePropConditionEditDlg extends AbstractRuntimePropConditionEditDlg<JDialog> {
 
-    private Editor impl;
     private static final int FIELD_WIDTH = 250;
-    private JComponent component;
+
+    protected Editor impl;
+
+    protected JComponent component;
+    protected TopLevelFrame topLevelFrame;
 
     public RuntimePropConditionEditDlg(final RuntimePropCondition condition, JComponent component) {
         super(condition);
         this.component = component;
+        this.topLevelFrame = DesktopComponentsHelper.getTopLevelFrame(component);
     }
 
     @Override
     protected void closeDlg() {
-        impl.dispose();
-        DesktopComponentsHelper.getTopLevelFrame(getImpl()).activate();
+        impl.setVisible(false);
+        DesktopWindowManager wm = topLevelFrame.getWindowManager();
+
+        DialogWindow lastDialogWindow = wm.getLastDialogWindow();
+        if (lastDialogWindow == null) {
+            topLevelFrame.activate();
+        } else {
+            lastDialogWindow.enableWindow();
+        }
     }
 
     @Override
@@ -84,12 +99,12 @@ public class RuntimePropConditionEditDlg extends AbstractRuntimePropConditionEdi
 
     @Override
     protected void showNotification(String msg, IFrame.NotificationType type) {
-        DesktopComponentsHelper.getTopLevelFrame(getImpl()).showNotification(msg, type);
+        topLevelFrame.showNotification(msg, type);
     }
 
     protected class Editor extends JDialog {
         public Editor() {
-            super(DesktopComponentsHelper.getTopLevelFrame(component));
+            super(topLevelFrame);
             setLocationRelativeTo(App.getInstance().getMainFrame());
             setTitle(condition.getLocCaption());
             setSize(350, 230);
@@ -138,7 +153,7 @@ public class RuntimePropConditionEditDlg extends AbstractRuntimePropConditionEdi
 
                 @Override
                 public void windowClosed(WindowEvent e) {
-                    DesktopComponentsHelper.getTopLevelFrame(getImpl()).activate();
+                    closeDlg();
                 }
             });
         }

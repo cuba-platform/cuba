@@ -10,11 +10,13 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.desktop.App;
+import com.haulmont.cuba.desktop.TopLevelFrame;
 import com.haulmont.cuba.desktop.gui.components.*;
+import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
+import com.haulmont.cuba.desktop.sys.DialogWindow;
 import com.haulmont.cuba.desktop.sys.vcl.Picker;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
@@ -44,17 +46,17 @@ public class ListEditComponent extends Picker {
     protected JButton pickerButton;
     protected JButton clearButton;
 
-    private Class itemClass;
-    private MetaClass metaClass;
-    private Messages messages;
+    protected Class itemClass;
+    protected MetaClass metaClass;
+    protected Messages messages;
 
-    private CollectionDatasource collectionDatasource;
-    private List<String> runtimeEnum;
+    protected CollectionDatasource collectionDatasource;
+    protected List<String> runtimeEnum;
 
-    private List listValue;
-    private Map<Object, String> values = new LinkedHashMap<>();
+    protected List listValue;
+    protected Map<Object, String> values = new LinkedHashMap<>();
 
-    private List<ValueListener> listeners = new ArrayList<>();
+    protected List<ValueListener> listeners = new ArrayList<>();
 
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.class);
 
@@ -114,6 +116,7 @@ public class ListEditComponent extends Picker {
         super.setValue(text);
     }
 
+    @Override
     public void setValue(Object newValue) {
         if (!ObjectUtils.equals(listValue, newValue)) {
             listValue = (List) newValue;
@@ -145,10 +148,13 @@ public class ListEditComponent extends Picker {
         private JScrollPane pane;
 
         private ListEditWindow(Map<Object, String> values) {
-            super(App.getInstance().getMainFrame(), MessageProvider.getMessage(MESSAGES_PACK, "ListEditWindow.caption"));
+            super(App.getInstance().getMainFrame());
+
+            setTitle(messages.getMessage(MESSAGES_PACK, "ListEditWindow.caption"));
             setLocationRelativeTo(App.getInstance().getMainFrame());
             add(mainPanel);
-            this.values = new HashMap<Object, String>(values);
+
+            this.values = new HashMap<>(values);
             listPanel = new JPanel(new MigLayout());
             pane = new JScrollPane(listPanel);
             pane.setAutoscrolls(true);
@@ -225,9 +231,9 @@ public class ListEditComponent extends Picker {
 
                 field = lookup;
             } else if (itemClass.isEnum()) {
-                Map<String, Object> options = new HashMap<String, Object>();
+                Map<String, Object> options = new HashMap<>();
                 for (Object obj : itemClass.getEnumConstants()) {
-                    options.put(MessageProvider.getMessage((Enum) obj), obj);
+                    options.put(messages.getMessage((Enum) obj), obj);
                 }
 
                 final DesktopLookupField lookup = new DesktopLookupField();
@@ -269,9 +275,8 @@ public class ListEditComponent extends Picker {
             } else
                 throw new UnsupportedOperationException();
 
-
             JPanel bottomPanel = new JPanel(new MigLayout());
-            JButton okBtn = new JButton(MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Ok"));
+            JButton okBtn = new JButton(messages.getMessage(AppConfig.getMessagesPack(), "actions.Ok"));
             okBtn.setIcon(App.getInstance().getResources().getIcon("icons/ok.png"));
             DesktopComponentsHelper.adjustSize(okBtn);
             okBtn.addActionListener(
@@ -284,7 +289,7 @@ public class ListEditComponent extends Picker {
             );
             bottomPanel.add(okBtn);
 
-            JButton cancelBtn = new JButton(MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Cancel"));
+            JButton cancelBtn = new JButton(messages.getMessage(AppConfig.getMessagesPack(), "actions.Cancel"));
             cancelBtn.setIcon(App.getInstance().getResources().getIcon("icons/cancel.png"));
             DesktopComponentsHelper.adjustSize(cancelBtn);
             cancelBtn.addActionListener(
@@ -310,10 +315,17 @@ public class ListEditComponent extends Picker {
 
             setDefaultCloseOperation(DISPOSE_ON_CLOSE);
             addWindowListener(new WindowAdapter() {
-
                 @Override
                 public void windowClosed(WindowEvent e) {
-                    DesktopComponentsHelper.getTopLevelFrame(ListEditWindow.this).activate();
+                    TopLevelFrame topLevelFrame = DesktopComponentsHelper.getTopLevelFrame(ListEditComponent.this);
+                    DesktopWindowManager wm = topLevelFrame.getWindowManager();
+
+                    DialogWindow lastDialogWindow = wm.getLastDialogWindow();
+                    if (lastDialogWindow == null) {
+                        topLevelFrame.activate();
+                    } else {
+                        lastDialogWindow.enableWindow();
+                    }
                 }
             });
         }
@@ -349,7 +361,7 @@ public class ListEditComponent extends Picker {
         }
 
         private String addEnumValue(Enum en) {
-            String str = MessageProvider.getMessage(en);
+            String str = messages.getMessage(en);
             values.put(en, str);
             return str;
         }

@@ -10,7 +10,10 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.desktop.App;
+import com.haulmont.cuba.desktop.TopLevelFrame;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
+import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
+import com.haulmont.cuba.desktop.sys.DialogWindow;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.gui.components.filter.AbstractCustomConditionEditDlg;
@@ -34,10 +37,19 @@ public class CustomConditionEditDlg extends AbstractCustomConditionEditDlg<JDial
     protected EditDlg impl;
 
     protected JComponent component;
+    protected TopLevelFrame topLevelFrame;
 
     public CustomConditionEditDlg(final CustomCondition condition, JComponent component) {
         super(condition);
         this.component = component;
+        this.topLevelFrame = DesktopComponentsHelper.getTopLevelFrame(component);
+
+        DialogWindow lastDialogWindow = topLevelFrame.getWindowManager().getLastDialogWindow();
+        if (lastDialogWindow == null) {
+            topLevelFrame.deactivate(null);
+        } else {
+            lastDialogWindow.disableWindow(null);
+        }
     }
 
     @Override
@@ -82,19 +94,26 @@ public class CustomConditionEditDlg extends AbstractCustomConditionEditDlg<JDial
 
     @Override
     protected void showNotification(String msg, IFrame.NotificationType type) {
-        DesktopComponentsHelper.getTopLevelFrame(getImpl()).showNotification(msg, type);
+        topLevelFrame.showNotification(msg, type);
     }
 
     @Override
     protected void closeDlg() {
-        impl.dispose();
-        DesktopComponentsHelper.getTopLevelFrame(getImpl()).activate();
+        impl.setVisible(false);
+        DesktopWindowManager wm = topLevelFrame.getWindowManager();
+
+        DialogWindow lastDialogWindow = wm.getLastDialogWindow();
+        if (lastDialogWindow == null) {
+            topLevelFrame.activate();
+        } else {
+            lastDialogWindow.enableWindow();
+        }
     }
 
     private class EditDlg extends JDialog {
 
         public EditDlg() {
-            super(DesktopComponentsHelper.getTopLevelFrame(component));
+            super(topLevelFrame);
             setLocationRelativeTo(App.getInstance().getMainFrame());
             setSize(430, 380);
             setResizable(false);
@@ -192,7 +211,7 @@ public class CustomConditionEditDlg extends AbstractCustomConditionEditDlg<JDial
             addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowClosed(WindowEvent e) {
-                    DesktopComponentsHelper.getTopLevelFrame(EditDlg.this).activate();
+                    closeDlg();
                 }
             });
         }
