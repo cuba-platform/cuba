@@ -8,7 +8,6 @@ package com.haulmont.cuba.core.sys;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
@@ -38,7 +37,12 @@ public class AbstractAppContextLoader {
         StrTokenizer tokenizer = new StrTokenizer(configProperty);
         String[] locations = tokenizer.getTokenArray();
 
-        ApplicationContext appContext = new ClassPathXmlApplicationContext(locations);
+        ClassPathXmlApplicationContext appContext = new ClassPathXmlApplicationContext();
+
+        appContext.setConfigLocations(locations);
+        appContext.setValidating(false);
+        appContext.refresh();
+
         AppContext.setApplicationContext(appContext);
     }
 

@@ -23,7 +23,6 @@ import org.apache.commons.lang.text.StrSubstitutor;
 import org.apache.commons.lang.text.StrTokenizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
@@ -52,8 +51,8 @@ import java.util.UUID;
  * @author krivopustov
  * @version $Id$
  */
-public abstract class CubaTestCase extends TestCase
-{
+public abstract class CubaTestCase extends TestCase {
+
     private Log log;
 
     protected static boolean initialized;
@@ -170,7 +169,12 @@ public abstract class CubaTestCase extends TestCase
         List<String> locations = tokenizer.getTokenList();
         locations.add(getTestSpringConfig());
 
-        ApplicationContext appContext = new ClassPathXmlApplicationContext(locations.toArray(new String[locations.size()]));
+        ClassPathXmlApplicationContext appContext = new ClassPathXmlApplicationContext();
+
+        appContext.setConfigLocations(locations.toArray(new String[locations.size()]));
+        appContext.setValidating(false);
+        appContext.refresh();
+
         AppContext.setApplicationContext(appContext);
     }
 
