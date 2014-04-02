@@ -62,7 +62,8 @@ def webLegacyModuleThemes = project(':cuba-web6-themes')
 
 def vaadinVersion = '7.1.12.cuba.0'
 def vaadinLegacyVersion = '6.6.1.144'
-def springVersion = '3.1.3.RELEASE'
+def springVersion = '3.1.4.RELEASE'
+def springSecurityVersion = '3.1.6.RELEASE'
 
 def servletApi = [group: 'org.apache.tomcat', name: 'servlet-api', version: '6.0.20']
 def groovyArtifact = [group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.1.6']
@@ -540,14 +541,12 @@ configure(portalModule) {
         }
     }
 
-    def springSecurityVersion = '3.1.3.RELEASE'
-
     dependencies {
         compile(globalModule)
         compile(clientModule)
         compile(sharedLibModule)
         provided(servletApi)
-        compile(group: 'org.springframework', name: 'spring-webmvc', version: springSecurityVersion)
+        compile(group: 'org.springframework', name: 'spring-webmvc', version: springVersion)
         compile(group: 'org.springframework.security', name: 'spring-security-core', version: springSecurityVersion)
         compile(group: 'org.springframework.security', name: 'spring-security-web', version: springSecurityVersion)
         compile(group: 'org.springframework.security', name: 'spring-security-config', version: springSecurityVersion)
