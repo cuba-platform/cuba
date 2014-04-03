@@ -17,6 +17,7 @@ import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.ScreensHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.validators.DateValidator;
 import com.haulmont.cuba.gui.components.validators.DoubleValidator;
@@ -424,11 +425,16 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             }
         });
 
-        Collection<WindowInfo> windowInfoCollection = windowConfig.getWindows();
-        List screensList = new ArrayList();
+        List<WindowInfo> windowInfoCollection =  new ArrayList<>(windowConfig.getWindows());
+        ScreensHelper.sortWindowInfos(windowInfoCollection);
+
+        List<String> screensList = new ArrayList<>();
         for (WindowInfo windowInfo : windowInfoCollection) {
-            if (!windowInfo.getId().contains(".") || windowInfo.getId().contains(".browse") || windowInfo.getId().contains(".lookup"))
+            if (!windowInfo.getId().contains(".")
+                    || windowInfo.getId().contains(".browse")
+                    || windowInfo.getId().contains(".lookup")) {
                 screensList.add(windowInfo.getId());
+            }
         }
         screenField.setOptionsList(screensList);
 
