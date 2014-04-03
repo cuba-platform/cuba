@@ -217,6 +217,9 @@ public class DesktopComponentsHelper {
         return (TopLevelFrame) prevContainer;
     }
 
+    /**
+     * @return {@link TopLevelFrame} of component
+     */
     public static TopLevelFrame getTopLevelFrame(java.awt.Component component) {
         Container prevContainer;
         Container parent = component instanceof Container ? (Container) component : component.getParent();
@@ -283,10 +286,30 @@ public class DesktopComponentsHelper {
     /**
      * Determines whether component will be displayed on the screen.
      *
-     * @param component
+     * @param component component
      * @return true if the component and all of its ancestors are visible
      */
     public static boolean isRecursivelyVisible(java.awt.Component component) {
         return component.isVisible() && (component.getParent() == null || isRecursivelyVisible(component.getParent()));
+    }
+
+    /**
+     * Determines real size of HTML label with text on screen.
+     *
+     * @param html text with html markup
+     * @return size of label
+     */
+    public static Dimension measureHtmlText(String html) {
+        JFrame testFrame = new JFrame();
+        testFrame.setLayout(new BoxLayout(testFrame.getContentPane(), BoxLayout.PAGE_AXIS));
+        JLabel testLabel = new JLabel(html);
+        testFrame.add(testLabel);
+        testFrame.pack();
+
+        Dimension size = testLabel.getSize();
+
+        testFrame.dispose();
+
+        return new Dimension(size);
     }
 }

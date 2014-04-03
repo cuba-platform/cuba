@@ -5,25 +5,26 @@
 
 package com.haulmont.cuba.desktop.sys.vcl;
 
+import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import net.miginfocom.layout.AC;
 import net.miginfocom.layout.CC;
 import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
-import javax.swing.event.MouseInputAdapter;
 import javax.swing.table.AbstractTableModel;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class VclTestApp extends JFrame {
 
@@ -45,8 +46,8 @@ public class VclTestApp extends JFrame {
 
     private static void printUIDefaults() {
         Set defaults = UIManager.getLookAndFeelDefaults().entrySet();
-        for (Iterator i = defaults.iterator(); i.hasNext();) {
-            Map.Entry entry = (Map.Entry) i.next();
+        for (Object aDefault : defaults) {
+            Map.Entry entry = (Map.Entry) aDefault;
             System.out.print(entry.getKey() + " = ");
             System.out.println(entry.getValue());
         }
@@ -78,7 +79,7 @@ public class VclTestApp extends JFrame {
             if (!found)
                 UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(System.out);
             System.exit(-1);
         }
     }
@@ -318,15 +319,14 @@ public class VclTestApp extends JFrame {
         panel.setBorder(BorderFactory.createLineBorder(Color.yellow));
         panel.setBackground(Color.yellow);
         String text = "A Message " + new Date();
-        JLabel label = new JLabel("<html>" + text + "<br/>" + text + "</html>");
 
+        JLabel label = new JLabel("<html>" + text + "<br/>" + text + "</html>");
         panel.add(label);
 
-        FontMetrics fontMetrics = getGraphics().getFontMetrics();
-        double width = fontMetrics.getStringBounds(text, getGraphics()).getWidth();
+        Dimension labelSize = DesktopComponentsHelper.measureHtmlText(text);
 
-        int x = getX() + getWidth() - (50 + (int)width);
-        int y = getY() + getHeight() - 100;
+        int x = getX() + getWidth() - (50 + labelSize.width);
+        int y = getY() + getHeight() - (50 + labelSize.height);
 
         PopupFactory factory = PopupFactory.getSharedInstance();
         final Popup popup = factory.getPopup(this, panel, x, y);

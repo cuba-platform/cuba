@@ -24,23 +24,23 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * Represents Top - level application frame
+ * Represents Top level application frame
  *
  * @author devyatkin
  * @version $Id$
  */
 public class TopLevelFrame extends JFrame {
 
-    private DisabledGlassPane glassPane;
+    protected DisabledGlassPane glassPane;
 
-    private DesktopWindowManager windowManager;
+    protected DesktopWindowManager windowManager;
 
     public TopLevelFrame(String applicationTitle) {
         super(applicationTitle);
         initUI();
     }
 
-    private void initUI() {
+    protected void initUI() {
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         glassPane = new DisabledGlassPane();
         JRootPane rootPane = SwingUtilities.getRootPane(this);
@@ -79,27 +79,15 @@ public class TopLevelFrame extends JFrame {
                 panel.setBackground(Color.cyan);
         }
 
-        FontMetrics fontMetrics = getGraphics().getFontMetrics();
+        String popupText = preparePopupText(title, caption);
 
-        if (StringUtils.isNotBlank(title)) {
-            caption = String.format("<b>%s</b><br>%s", title, caption);
-        }
-        int height = (int) fontMetrics.getStringBounds(caption, getGraphics()).getHeight();
-        int width = 0;
-        StringBuilder sb = new StringBuilder("<html>");
-        String[] strings = caption.split("(<br>)|(<br/>)");
-        for (String string : strings) {
-            int w = (int) fontMetrics.getStringBounds(string, getGraphics()).getWidth();
-            width = Math.max(width, w);
-            sb.append(string).append("<br/>");
-        }
-        sb.append("</html>");
-
-        JLabel label = new JLabel(sb.toString());
+        JLabel label = new JLabel(popupText);
         panel.add(label);
 
-        int x = getX() + getWidth() - (50 + width);
-        int y = getY() + getHeight() - (50 + ((height + 5) * strings.length));
+        Dimension labelSize = DesktopComponentsHelper.measureHtmlText(popupText);
+
+        int x = getX() + getWidth() - (50 + labelSize.getSize().width);
+        int y = getY() + getHeight() - (50 + labelSize.getSize().height);
 
         PopupFactory factory = PopupFactory.getSharedInstance();
         final Popup popup = factory.getPopup(this, panel, x, y);
@@ -108,6 +96,7 @@ public class TopLevelFrame extends JFrame {
         final Timer timer = new Timer(3000, null);
         timer.addActionListener(
                 new ActionListener() {
+                    @Override
                     public void actionPerformed(ActionEvent e) {
                         if (!MouseInfo.getPointerInfo().getLocation().equals(location)) {
                             popup.hide();
@@ -117,6 +106,19 @@ public class TopLevelFrame extends JFrame {
                 }
         );
         timer.start();
+    }
+
+    protected String preparePopupText(String title, String caption) {
+        if (StringUtils.isNotBlank(title)) {
+            caption = String.format("<b>%s</b><br>%s", title, caption);
+        }
+        StringBuilder sb = new StringBuilder("<html>");
+        String[] strings = caption.split("(<br>)|(<br/>)");
+        for (String string : strings) {
+            sb.append(string).append("<br/>");
+        }
+        sb.append("</html>");
+        return sb.toString();
     }
 
     public void showNotification(String caption, String description, IFrame.NotificationType type) {
@@ -141,12 +143,7 @@ public class TopLevelFrame extends JFrame {
 
     protected void showNotificationDialog(String caption, String description, IFrame.NotificationType type) {
         String title = AppBeans.get(Messages.class).getMessage(AppConfig.getMessagesPack(), "notification.title." + type);
-        String text;
-        if (StringUtils.isNotBlank(caption)) {
-            text = String.format("<html><b>%s</b><br>%s", caption, description);
-        } else {
-            text = "<html>" + description;
-        }
+        String text = preparePopupText(caption, description);
 
         int messageType = DesktopComponentsHelper.convertNotificationType(type);
 
@@ -154,6 +151,7 @@ public class TopLevelFrame extends JFrame {
         JButton option = new JButton(closeText);
         option.setPreferredSize(new Dimension(80, DesktopComponentsHelper.BUTTON_HEIGHT));
 
+        @SuppressWarnings("MagicConstant")
         JOptionPane pane = new JOptionPane(text, messageType,
                 JOptionPane.DEFAULT_OPTION, null,
                 new Object[]{option}, option);
