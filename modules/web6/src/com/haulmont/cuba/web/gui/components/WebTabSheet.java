@@ -25,11 +25,7 @@ import java.util.*;
  * @author abramov
  * @version $Id$
  */
-public class WebTabSheet
-        extends
-        WebAbstractComponent<com.vaadin.ui.TabSheet>
-        implements
-        TabSheet, Component.Container {
+public class WebTabSheet extends WebAbstractComponent<com.vaadin.ui.TabSheet> implements TabSheet, Component.Container {
 
     protected boolean postInitTaskAdded;
     protected boolean componentTabChangeListenerInitialized;
@@ -176,6 +172,7 @@ public class WebTabSheet
         public void setDetachable(boolean detachable) {
         }
 
+        @Override
         public TabCloseHandler getCloseHandler() {
             return closeHandler;
         }
@@ -329,6 +326,9 @@ public class WebTabSheet
                     if (context != null) {
                         context.executePostInitTasks();
                     }
+
+                    Window window = com.haulmont.cuba.gui.ComponentsHelper.getWindow(WebTabSheet.this);
+                    ((DsContextImplementation) window.getDsContext()).resumeSuspended();
                 }
             });
             componentTabChangeListenerInitialized = true;
@@ -399,8 +399,6 @@ public class WebTabSheet
                                 }
                             }
                     );
-
-                    ((DsContextImplementation) window.getDsContext()).resumeSuspended();
                 }
             }
         }

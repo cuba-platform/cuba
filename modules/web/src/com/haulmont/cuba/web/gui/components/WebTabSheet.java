@@ -30,11 +30,7 @@ import java.util.*;
  * @author abramov
  * @version $Id$
  */
-public class WebTabSheet
-        extends
-        WebAbstractComponent<CubaTabSheet>
-        implements
-        TabSheet, Component.Container {
+public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements TabSheet, Component.Container {
 
     protected boolean postInitTaskAdded;
     protected boolean componentTabChangeListenerInitialized;
@@ -182,6 +178,7 @@ public class WebTabSheet
         public void setDetachable(boolean detachable) {
         }
 
+        @Override
         public TabCloseHandler getCloseHandler() {
             return closeHandler;
         }
@@ -371,6 +368,9 @@ public class WebTabSheet
                     if (context != null) {
                         context.executePostInitTasks();
                     }
+
+                    Window window = com.haulmont.cuba.gui.ComponentsHelper.getWindow(WebTabSheet.this);
+                    ((DsContextImplementation) window.getDsContext()).resumeSuspended();
                 }
             });
             componentTabChangeListenerInitialized = true;
@@ -391,7 +391,7 @@ public class WebTabSheet
     protected static class TabSheetEx extends CubaTabSheet implements WebComponentEx {
         private Component component;
 
-        private TabSheetEx(Component component) {
+        public TabSheetEx(Component component) {
             this.component = component;
         }
 
@@ -402,10 +402,9 @@ public class WebTabSheet
     }
 
     protected class LazyTabChangeListener implements com.vaadin.ui.TabSheet.SelectedTabChangeListener {
-
-        private WebAbstractBox tabContent;
-        private Element descriptor;
-        private ComponentLoader loader;
+        protected WebAbstractBox tabContent;
+        protected Element descriptor;
+        protected ComponentLoader loader;
 
         public LazyTabChangeListener(WebAbstractBox tabContent, Element descriptor, ComponentLoader loader) {
             this.tabContent = tabContent;
@@ -443,24 +442,24 @@ public class WebTabSheet
                     );
 
                     // init debug ids after all
-                    context.addPostInitTask(new ComponentLoader.PostInitTask() {
-                        @Override
-                        public void execute(ComponentLoader.Context context, IFrame window) {
-                            AppWindow appWindow = AppUI.getCurrent().getAppWindow();
-                            appWindow.getWindowManager().initDebugIds(window);
-                        }
-                    });
-
-                    ((DsContextImplementation) window.getDsContext()).resumeSuspended();
+                    if (AppUI.getCurrent().isTestMode()) {
+                        context.addPostInitTask(new ComponentLoader.PostInitTask() {
+                            @Override
+                            public void execute(ComponentLoader.Context context, IFrame window) {
+                                AppWindow appWindow = AppUI.getCurrent().getAppWindow();
+                                appWindow.getWindowManager().initDebugIds(window);
+                            }
+                        });
+                    }
                 }
             }
         }
     }
 
     protected static class ComponentDescriptor {
-        private Component component;
+        protected Component component;
 
-        private String name;
+        protected String name;
 
         public ComponentDescriptor(String name, Component component) {
             this.name = name;

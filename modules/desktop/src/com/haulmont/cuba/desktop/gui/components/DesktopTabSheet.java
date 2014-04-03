@@ -30,9 +30,7 @@ import java.util.*;
  * @author krivopustov
  * @version $Id$
  */
-public class DesktopTabSheet
-        extends DesktopAbstractComponent<JTabbedPane>
-        implements TabSheet, DesktopContainer, AutoExpanding {
+public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> implements TabSheet, DesktopContainer, AutoExpanding {
 
     protected Map<Component, String> components = new HashMap<>();
 
@@ -42,11 +40,11 @@ public class DesktopTabSheet
     
     protected Set<LazyTabInfo> lazyTabs = new HashSet<>();
 
-    private ComponentLoader.Context context;
+    protected ComponentLoader.Context context;
 
-    private boolean initLazyTabListenerAdded;
-    private boolean postInitTaskAdded;
-    private boolean componentTabChangeListenerInitialized;
+    protected boolean initLazyTabListenerAdded;
+    protected boolean postInitTaskAdded;
+    protected boolean componentTabChangeListenerInitialized;
 
     protected Set<TabChangeListener> listeners = new HashSet<>();
 
@@ -119,7 +117,7 @@ public class DesktopTabSheet
         return tab;
     }
 
-    private void setTabComponent(final TabImpl tab, int componentIndex) {
+    protected void setTabComponent(final TabImpl tab, int componentIndex) {
         ButtonTabComponent.CloseListener closeListener = new ButtonTabComponent.CloseListener(){
             @Override
             public void onTabClose(int tabIndex) {
@@ -196,7 +194,7 @@ public class DesktopTabSheet
         impl.remove(DesktopComponentsHelper.getComposition(tab.getComponent()));
     }
 
-    private TabImpl getTabImpl(String name) {
+    protected TabImpl getTabImpl(String name) {
         TabImpl tab = null;
         for (TabImpl t : tabs) {
             if (t.getName().equals(name)) {
@@ -250,7 +248,7 @@ public class DesktopTabSheet
         listeners.add(listener);
     }
 
-    private void initComponentTabChangeListener() {
+    protected void initComponentTabChangeListener() {
         // init component SelectedTabChangeListener only when needed, making sure it is
         // after all lazy tabs listeners
         if (!componentTabChangeListenerInitialized) {
@@ -263,15 +261,19 @@ public class DesktopTabSheet
                     fireTabChanged();
                     // Execute outstanding post init tasks after GUI listener.
                     // We suppose that context.executePostInitTasks() executes a task once and then remove it from task list.
-                    if (context != null)
+                    if (context != null) {
                         context.executePostInitTasks();
+                    }
+
+                    Window window = com.haulmont.cuba.gui.ComponentsHelper.getWindow(DesktopTabSheet.this);
+                    ((DsContextImplementation) window.getDsContext()).resumeSuspended();
                 }
             });
             componentTabChangeListenerInitialized = true;
         }
     }
 
-    private void initLazyTab(JComponent tab) {
+    protected void initLazyTab(JComponent tab) {
         LazyTabInfo lti = null;
         for (LazyTabInfo lazyTabInfo : lazyTabs) {
             if (lazyTabInfo.getTabComponent() == tab) {
@@ -310,7 +312,6 @@ public class DesktopTabSheet
                     }
             );
 
-            ((DsContextImplementation) window.getDsContext()).resumeSuspended();
             lti.getTab().setLazyInitialized(true);
         }
     }
@@ -326,7 +327,7 @@ public class DesktopTabSheet
         }
     }
 
-    private void updateTabVisibility(TabImpl tab) {
+    protected void updateTabVisibility(TabImpl tab) {
         // find insert/remove index by visibility of existing tabs
         int currentIndex = tab.getTabIndex();
         int idx = 0;
@@ -537,13 +538,13 @@ public class DesktopTabSheet
         }
     }
 
-    private class LazyTabInfo {
-        private DesktopAbstractBox tabContent;
-        private Element descriptor;
-        private ComponentLoader loader;
-        private TabImpl tabImpl;
+    protected class LazyTabInfo {
+        protected DesktopAbstractBox tabContent;
+        protected Element descriptor;
+        protected ComponentLoader loader;
+        protected TabImpl tabImpl;
 
-        private LazyTabInfo(TabImpl tabImpl, DesktopAbstractBox tabContent, Element descriptor,
+        public LazyTabInfo(TabImpl tabImpl, DesktopAbstractBox tabContent, Element descriptor,
                             ComponentLoader loader) {
             this.descriptor = descriptor;
             this.loader = loader;
@@ -551,11 +552,11 @@ public class DesktopTabSheet
             this.tabImpl = tabImpl;
         }
 
-        private JComponent getTabComponent() {
+        protected JComponent getTabComponent() {
             return DesktopComponentsHelper.getComposition(tabContent);
         }
 
-        private TabImpl getTab(){
+        protected TabImpl getTab(){
             return tabImpl;
         }
     }
@@ -605,7 +606,7 @@ public class DesktopTabSheet
         frame.setVisible(true);
     }
 
-    private void attachTab(JFrame frame, TabImpl tab) {
+    protected void attachTab(JFrame frame, TabImpl tab) {
         int tabIndex = 0;
         int attachedBeforeCount = 0;
         JComponent tabContent = DesktopComponentsHelper.getComposition(tab.getComponent());
@@ -632,7 +633,7 @@ public class DesktopTabSheet
         frame.dispose();
     }
 
-    private void updateTabsEnabledState() {
+    protected void updateTabsEnabledState() {
         for (TabImpl tab : tabs) {
             int tabIndex = tab.getTabIndex();
             if (tabIndex >= 0) {
