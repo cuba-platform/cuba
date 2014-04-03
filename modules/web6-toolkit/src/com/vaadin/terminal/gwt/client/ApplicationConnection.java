@@ -137,7 +137,7 @@ public class ApplicationConnection {
 
     protected ApplicationTimer lastTimerAction = null;
 
-    protected final static int TIMER_REQUEST_TIMEOUT_MILLIS = 5000;
+    protected final static int TIMER_REQUEST_TIMEOUT_MILLIS = 60000;
 
     protected final Set<ApplicationTimer> pendingTimers = new HashSet<ApplicationTimer>();
 
