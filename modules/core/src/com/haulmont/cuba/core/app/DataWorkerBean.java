@@ -163,7 +163,7 @@ public class DataWorkerBean implements DataWorker {
             log.debug("commitNotDetached: commitInstances=" + context.getCommitInstances()
                     + ", removeInstances=" + context.getRemoveInstances());
 
-        final Map<Entity, Entity> res = new HashMap<Entity, Entity>();
+        final Map<Entity, Entity> res = new HashMap<>();
 
         Transaction tx = persistence.getTransaction();
         try {
@@ -400,7 +400,7 @@ public class DataWorkerBean implements DataWorker {
         return result;
     }
 
-    protected <A extends Entity> Query createQuery(EntityManager em, LoadContext context) {
+    protected Query createQuery(EntityManager em, LoadContext context) {
         LoadContext.Query contextQuery = context.getQuery();
         if ((contextQuery == null || StringUtils.isBlank(contextQuery.getQueryString()))
                 && context.getId() == null)
