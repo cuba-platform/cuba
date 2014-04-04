@@ -455,6 +455,8 @@
 
         <xs:attributeGroup ref="hasDatasource"/>
         <xs:attributeGroup ref="hasValue"/>
+
+        <xs:attribute name="htmlEnabled" type="xs:boolean"/>
     </xs:complexType>
 
     <!-- Link -->

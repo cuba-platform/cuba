@@ -34,8 +34,13 @@ public class LabelLoader extends AbstractDatasourceComponentLoader {
 
         loadStyleName(component, element);
 
+        String htmlEnabled = element.attributeValue("htmlEnabled");
+        if (StringUtils.isNotEmpty(htmlEnabled)) {
+            component.setHtmlEnabled(Boolean.valueOf(htmlEnabled));
+        }
+
         String caption = element.attributeValue("value");
-        if (!StringUtils.isEmpty(caption)) {
+        if (StringUtils.isNotEmpty(caption)) {
             caption = loadResourceString(caption);
             component.setValue(caption);
         }

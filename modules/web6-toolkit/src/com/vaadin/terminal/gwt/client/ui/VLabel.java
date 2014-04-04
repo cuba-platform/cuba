@@ -56,13 +56,13 @@ public class VLabel extends HTML implements Paintable {
         if (event.getTypeInt() == Event.ONLOAD) {
             Util.notifyParentOfSizeChange(this, true);
             event.cancelBubble(true);
-            return;
         }
         /*if (client != null) {
             client.handleTooltipEvent(event, this);
         }*/
     }
 
+    @Override
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
 
         if (client.updateComponent(this, uidl, true)) {
@@ -75,7 +75,17 @@ public class VLabel extends HTML implements Paintable {
 
         final String mode = uidl.getStringAttribute("mode");
         if (mode == null || "text".equals(mode)) {
-            setText(uidl.getChildString(0));
+            String text = uidl.getChildString(0);
+
+            // clear existing content
+            setHTML("");
+            // set multiline text if needed
+            if (text != null && text.contains("\n")) {
+                text = Util.escapeHTML(text).replace("\n", "<br/>");
+                setHTML(text);
+            } else {
+                setText(text);
+            }
         } else if ("pre".equals(mode)) {
             PreElement preElement = Document.get().createPreElement();
             preElement.setInnerText(uidl.getChildUIDL(0).getChildString(0));

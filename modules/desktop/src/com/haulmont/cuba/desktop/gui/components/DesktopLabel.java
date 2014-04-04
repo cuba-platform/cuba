@@ -13,6 +13,7 @@ import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -20,6 +21,7 @@ import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -43,6 +45,8 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
     protected Object prevValue;
 
     protected boolean updatingInstance = false;
+
+    protected boolean htmlEnabled = false;
 
     public DesktopLabel() {
         impl = new JLabel();
@@ -145,7 +149,7 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
         }
     }
 
-    private void updateInstance(Object value) {
+    protected void updateInstance(Object value) {
         if (updatingInstance) {
             return;
         }
@@ -167,7 +171,11 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
     }
 
     protected void updateComponent(Object value) {
-        impl.setText(valueFormatter.formatValue(value));
+        String text = valueFormatter.formatValue(value);
+        if (!htmlEnabled) {
+            text = ComponentsHelper.preprocessHtmlMessage("<html>" + StringEscapeUtils.escapeHtml(text) + "</html>");
+        }
+        impl.setText(text);
     }
 
     protected void fireChangeListeners(Object newValue) {
@@ -202,5 +210,15 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
         for (ValueListener listener : listeners) {
             listener.valueChanged(this, "value", prevValue, value);
         }
+    }
+
+    @Override
+    public boolean isHtmlEnabled() {
+        return htmlEnabled;
+    }
+
+    @Override
+    public void setHtmlEnabled(boolean htmlEnabled) {
+        this.htmlEnabled = htmlEnabled;
     }
 }

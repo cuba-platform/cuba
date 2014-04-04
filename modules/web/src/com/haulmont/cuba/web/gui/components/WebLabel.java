@@ -4,7 +4,6 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -23,6 +22,7 @@ import com.haulmont.cuba.web.toolkit.ui.CubaLabel;
 import com.haulmont.cuba.web.toolkit.ui.converters.StringToDatatypeConverter;
 import com.haulmont.cuba.web.toolkit.ui.converters.StringToEntityConverter;
 import com.haulmont.cuba.web.toolkit.ui.converters.StringToEnumConverter;
+import com.vaadin.shared.ui.label.ContentMode;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -196,5 +196,15 @@ public class WebLabel extends WebAbstractComponent<com.vaadin.ui.Label> implemen
             text = formatter.format(value);
         }
         return text;
+    }
+
+    @Override
+    public boolean isHtmlEnabled() {
+        return component.getContentMode() == ContentMode.HTML;
+    }
+
+    @Override
+    public void setHtmlEnabled(boolean htmlEnabled) {
+        component.setContentMode(htmlEnabled ? ContentMode.HTML : ContentMode.TEXT);
     }
 }

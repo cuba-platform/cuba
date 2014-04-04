@@ -162,4 +162,14 @@ public class WebLabel extends WebAbstractComponent<com.vaadin.ui.Label> implemen
             listener.valueChanged(this, "value", prevValue, value);
         }
     }
+
+    @Override
+    public boolean isHtmlEnabled() {
+        return component.getContentMode() == com.vaadin.ui.Label.CONTENT_XHTML;
+    }
+
+    @Override
+    public void setHtmlEnabled(boolean htmlEnabled) {
+        component.setContentMode(htmlEnabled ? com.vaadin.ui.Label.CONTENT_XHTML : com.vaadin.ui.Label.CONTENT_TEXT);
+    }
 }
