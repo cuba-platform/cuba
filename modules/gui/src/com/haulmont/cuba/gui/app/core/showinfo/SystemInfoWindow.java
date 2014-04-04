@@ -36,7 +36,7 @@ public class SystemInfoWindow extends AbstractWindow {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        getDialogParams().setHeight(250);
+        getDialogParams().setHeight(300);
         getDialogParams().setResizable(true);
 
         paramsDs.setInstance((Entity) params.get("item"));

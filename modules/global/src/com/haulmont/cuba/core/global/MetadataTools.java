@@ -21,10 +21,7 @@ import javax.annotation.ManagedBean;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import javax.persistence.CascadeType;
-import javax.persistence.Embedded;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.*;
@@ -278,6 +275,13 @@ public class MetadataTools {
     }
 
     /**
+     * Determine whether the given metaclass is embeddable.
+     */
+    public boolean isEmbeddable(MetaClass metaClass) {
+        return metaClass.getJavaClass().isAnnotationPresent(javax.persistence.Embeddable.class);
+    }
+
+    /**
      * Return a collection of properties included into entity's name pattern (see {@link NamePattern}).
      * @param metaClass entity metaclass
      * @return collection of the name pattern properties
@@ -423,5 +427,21 @@ public class MetadataTools {
             }
         }
         return enums;
+    }
+
+    @Nullable
+    public String getDatabaseTable(MetaClass metaClass) {
+        if (isEmbeddable(metaClass) || !isPersistent(metaClass))
+            return null;
+
+        Class<?> javaClass = metaClass.getJavaClass();
+        javax.persistence.Table annotation = javaClass.getAnnotation(javax.persistence.Table.class);
+        if (annotation != null && StringUtils.isNotEmpty(annotation.name())) {
+            return annotation.name();
+        } else if (metaClass.getAncestor() != null) {
+            return getDatabaseTable(metaClass.getAncestor());
+        }
+
+        return null;
     }
 }

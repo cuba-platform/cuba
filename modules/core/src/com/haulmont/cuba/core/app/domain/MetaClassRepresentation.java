@@ -37,8 +37,10 @@ public class MetaClassRepresentation {
         if (isEmbeddable)
             return "not defined for embeddable entities";
 
-        Table tableAnn = (Table) meta.getJavaClass().getAnnotation(Table.class);
-        return tableAnn != null ? tableAnn.name() : "not defined";
+        MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
+
+        String databaseTable = metadataTools.getDatabaseTable(meta);
+        return databaseTable != null ? databaseTable : "not defined";
     }
 
     public String getName() {
@@ -65,7 +67,7 @@ public class MetaClassRepresentation {
     }
 
     public Collection<MetaClassRepProperty> getProperties() {
-        List<MetaClassRepProperty> result = new ArrayList<MetaClassRepProperty>();
+        List<MetaClassRepProperty> result = new ArrayList<>();
         for (MetaProperty property : meta.getProperties()) {
             MetaProperty.Type propertyType = property.getType();
             //don't show property if user don't have permissions to view it
@@ -155,7 +157,7 @@ public class MetaClassRepresentation {
         }
 
         public Collection<String> getAnnotations() {
-            Collection<String> result = new ArrayList<String>();
+            Collection<String> result = new ArrayList<>();
             Map<String, Object> map = property.getAnnotations();
             for (Map.Entry<String, Object> entry : map.entrySet()) {
                 String annotationName = entry.getKey();
@@ -176,7 +178,7 @@ public class MetaClassRepresentation {
         if (views == null)
             return null;
 
-        Collection<MetaClassRepView> result = new ArrayList<MetaClassRepView>();
+        Collection<MetaClassRepView> result = new ArrayList<>();
         for (View view : views) {
             if (!viewAccessPermitted(view))
                 continue;
