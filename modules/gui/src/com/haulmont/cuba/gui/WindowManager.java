@@ -48,6 +48,12 @@ import java.util.concurrent.Callable;
 public abstract class WindowManager {
 
     /**
+     * Constant that is passed to {@link Window#close(String)} and {@link Window#close(String, boolean)} methods when
+     * the screen is closed by window manager. Propagated to {@link Window.CloseListener#windowClosed}.
+     */
+    public static final String MAIN_MENU_ACTION_ID = "mainMenu";
+
+    /**
      * How to open a screen: {@link #NEW_TAB}, {@link #THIS_TAB}, {@link #DIALOG}, {@link #NEW_WINDOW}
      */
     public enum OpenType {

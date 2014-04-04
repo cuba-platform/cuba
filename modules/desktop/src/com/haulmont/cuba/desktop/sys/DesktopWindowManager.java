@@ -240,7 +240,7 @@ public class DesktopWindowManager extends WindowManager {
                             }
                         }
                         WindowBreadCrumbs oldBreadCrumbs = tabs.get(tab);
-                        oldBreadCrumbs.getCurrentWindow().close("mainMenu");
+                        oldBreadCrumbs.getCurrentWindow().close(MAIN_MENU_ACTION_ID);
                         windowData = showWindowNewTab(window, caption, description, oldTabPosition);
                     } else {
                         windowData = showWindowNewTab(window, caption, description, null);

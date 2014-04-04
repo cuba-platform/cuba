@@ -254,7 +254,7 @@ public class WebWindowManager extends WindowManager {
                         WindowBreadCrumbs oldBreadCrumbs = getTabs().get(oldLayout);
                         if (oldBreadCrumbs != null) {
                             Window oldWindow = oldBreadCrumbs.getCurrentWindow();
-                            oldWindow.closeAndRun("mainMenu", new Runnable() {
+                            oldWindow.closeAndRun(MAIN_MENU_ACTION_ID, new Runnable() {
                                 @Override
                                 public void run() {
                                     showWindow(window, caption, OpenType.NEW_TAB, false);
@@ -269,19 +269,20 @@ public class WebWindowManager extends WindowManager {
                     if (hashCode != null && !multipleOpen) {
                         tab = findTab(hashCode);
                     }
-                    Layout oldLayout = tab;
+                    final Layout oldLayout = tab;
                     final WindowBreadCrumbs oldBreadCrumbs = getTabs().get(oldLayout);
 
                     if (oldBreadCrumbs != null &&
                             windowOpenMode.containsKey(oldBreadCrumbs.getCurrentWindow().<IFrame>getFrame()) &&
                             !multipleOpen) {
                         final Window oldWindow = oldBreadCrumbs.getCurrentWindow();
-                        Layout l = new VerticalLayout();
-                        appWindow.getTabSheet().replaceComponent(tab, l);
-                        fakeTabs.put(l, oldBreadCrumbs);
-                        oldWindow.closeAndRun("mainMenu", new Runnable() {
+                        oldWindow.closeAndRun(MAIN_MENU_ACTION_ID, new Runnable() {
                             @Override
                             public void run() {
+                                Layout l = new VerticalLayout();
+                                appWindow.getTabSheet().replaceComponent(oldLayout, l);
+                                fakeTabs.put(l, oldBreadCrumbs);
+
                                 putToWindowMap(oldWindow, hashCode);
                                 oldBreadCrumbs.addWindow(oldWindow);
                                 showWindow(window, caption, description, OpenType.NEW_TAB, multipleOpen);
