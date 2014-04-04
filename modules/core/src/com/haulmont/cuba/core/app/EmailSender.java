@@ -27,10 +27,7 @@ import javax.inject.Inject;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Part;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
+import javax.mail.internet.*;
 import java.io.*;
 
 /**
@@ -144,7 +141,7 @@ public class EmailSender implements EmailSenderAPI {
         }
 
         String disposition = attachment.getDisposition() != null ? attachment.getDisposition() : Part.INLINE;
-        String charset = (attachment.getEncoding() != null ? attachment.getEncoding() : UTF_8).toLowerCase();
+        String charset = MimeUtility.mimeCharset(attachment.getEncoding() != null ? attachment.getEncoding() : UTF_8);
         String contentTypeValue = String.format("%s; charset=%s; name=%s", mimeType, charset, encodedFileName);
 
         MimeBodyPart attachmentPart = new MimeBodyPart();
