@@ -5,7 +5,9 @@
 
 package com.haulmont.cuba.desktop.app.security.role;
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.app.security.role.edit.tabs.UiPermissionsFrame;
@@ -18,11 +20,13 @@ import com.haulmont.cuba.gui.security.entity.UiPermissionVariant;
 import javax.swing.*;
 
 /**
- * <p>$Id$</p>
- *
  * @author artamonov
+ * @version $Id$
  */
 public class UiPermissionsFrameCompanion implements UiPermissionsFrame.Companion {
+
+    protected Messages messages = AppBeans.get(Messages.NAME);
+
     @Override
     public void initPermissionsColoredColumns(Table uiPermissionsTable) {
         uiPermissionsTable.addGeneratedColumn("permissionVariant", new Table.ColumnGenerator<UiPermissionTarget>() {
@@ -38,7 +42,7 @@ public class UiPermissionsFrameCompanion implements UiPermissionsFrame.Companion
                 if (permissionVariant != UiPermissionVariant.NOTSET) {
                     builder.append("<html>");
                     builder.append("<font color=\"").append(permissionVariant.getColor()).append("\">")
-                            .append(MessageProvider.getMessage(permissionVariant)).append("</font>");
+                            .append(messages.getMessage(permissionVariant)).append("</font>");
 
                     builder.append("</html>");
                 }
