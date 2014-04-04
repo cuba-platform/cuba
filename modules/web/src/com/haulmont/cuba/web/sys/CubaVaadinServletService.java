@@ -133,6 +133,11 @@ public class CubaVaadinServletService extends VaadinServletService {
     }
 
     @Override
+    protected VaadinSession createVaadinSession(VaadinRequest request) throws ServiceException {
+        return new CubaVaadinSession(this);
+    }
+
+    @Override
     protected List<RequestHandler> createRequestHandlers() throws ServiceException {
         List<RequestHandler> requestHandlers = super.createRequestHandlers();
 

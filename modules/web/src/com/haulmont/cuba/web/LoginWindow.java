@@ -13,6 +13,7 @@ import com.haulmont.cuba.web.auth.ActiveDirectoryHelper;
 import com.haulmont.cuba.web.auth.DomainAliasesResolver;
 import com.haulmont.cuba.web.sys.Browser;
 import com.haulmont.cuba.gui.TestIdManager;
+import com.haulmont.cuba.web.sys.CubaVaadinSession;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.ui.CubaCheckBox;
 import com.vaadin.data.Property;
@@ -503,6 +504,10 @@ public class LoginWindow extends UIView implements Action.Handler {
                 app.removeCookie(COOKIE_LOGIN);
                 app.removeCookie(COOKIE_PASSWORD);
             }
+        }
+
+        if (webConfig.getUseSessionFixationProtection()) {
+            CubaVaadinSession.getCurrent().reinitialize();
         }
     }
 

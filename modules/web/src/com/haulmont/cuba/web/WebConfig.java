@@ -274,4 +274,10 @@ public interface WebConfig extends Config {
     @Default("open|o")
     List<String> getLinkHandlerActions();
 
+    /**
+     * Reinitialize session after login to protect from Session Fixation attacks.
+     */
+    @Property("cuba.web.useSessionFixationProtection")
+    @DefaultBoolean(true)
+    boolean getUseSessionFixationProtection();
 }
