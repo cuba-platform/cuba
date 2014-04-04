@@ -174,6 +174,8 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
         String text = valueFormatter.formatValue(value);
         if (!htmlEnabled) {
             text = ComponentsHelper.preprocessHtmlMessage("<html>" + StringEscapeUtils.escapeHtml(text) + "</html>");
+        } else {
+            text = "<html>" + text + "</html>";
         }
         impl.setText(text);
     }
