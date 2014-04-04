@@ -28,6 +28,16 @@ public class DesktopTable extends DesktopAbstractTable<JXTable> {
                 applyFont(this, font);
             }
 
+            /**
+             * Default implementation uses row sorter to return rows count,
+             * but there is nonconformity in how RowSorterImpl and table wrapper counts rows.
+             * Absence of this method will lead to empty table in case of sortable=false.
+             */
+            @Override
+            public int getRowCount() {
+                return getModel().getRowCount();
+            }
+
             @Override
             public void editingStopped(ChangeEvent e) {
                 TableCellEditor editor = getCellEditor();

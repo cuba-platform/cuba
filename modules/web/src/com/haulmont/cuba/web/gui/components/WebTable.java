@@ -61,11 +61,11 @@ public class WebTable extends WebAbstractTable<CubaTable> {
         private List<Object> aggregationProperties = null;
 
         public TableDsWrapper(CollectionDatasource datasource) {
-            super(datasource);
+            super(datasource, true);
         }
 
         public TableDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties) {
-            super(datasource, properties);
+            super(datasource, properties, true);
         }
 
         @Override
@@ -124,6 +124,7 @@ public class WebTable extends WebAbstractTable<CubaTable> {
             }
         }
 
+        @Override
         @SuppressWarnings("unchecked")
         public Map<Object, Object> aggregate(Context context) {
             return __aggregate(this, context);

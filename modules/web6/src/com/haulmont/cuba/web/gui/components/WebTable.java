@@ -7,7 +7,6 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
@@ -69,11 +68,11 @@ public class WebTable extends WebAbstractTable<com.haulmont.cuba.web.toolkit.ui.
         private List<Object> aggregationProperties = null;
 
         public TableDsWrapper(CollectionDatasource datasource) {
-            super(datasource);
+            super(datasource, true);
         }
 
         public TableDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties) {
-            super(datasource, properties);
+            super(datasource, properties, true);
         }
 
         @Override
@@ -132,6 +131,7 @@ public class WebTable extends WebAbstractTable<com.haulmont.cuba.web.toolkit.ui.
             }
         }
 
+        @Override
         @SuppressWarnings("unchecked")
         public Map<Object, Object> aggregate(Context context) {
             return __aggregate(this, context);
