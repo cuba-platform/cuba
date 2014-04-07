@@ -181,7 +181,7 @@ public class JSONConvertor implements Convertor {
             if ("version".equals(key))
                 continue;
 
-            MetaProperty property = metaClass.getProperty(key);
+            MetaProperty property = metaClass.getPropertyNN(key);
 
             if (!attrModifyPermitted(metaClass, property.getName()))
                 continue;
@@ -199,10 +199,10 @@ public class JSONConvertor implements Convertor {
             switch (property.getType()) {
                 case DATATYPE:
                     String value = json.getString(key);
-                    String typeName = property.getRange().<Object>asDatatype().getName();
+                    String typeName = property.getRange().asDatatype().getName();
                     if (!StringDatatype.NAME.equals(typeName) && "null".equals(value))
                             value = null;
-                    setField(bean, key, property.getRange().<Object>asDatatype().parse(value));
+                    setField(bean, key, property.getRange().asDatatype().parse(value));
                     break;
                 case ENUM:
                     setField(bean, key, property.getRange().asEnumeration().parse(json.getString(key)));
@@ -230,6 +230,8 @@ public class JSONConvertor implements Convertor {
                             //will be registered later
                             if (commitRequest.getCommitIds().contains(id)) {
                                 EntityLoadInfo loadInfo = EntityLoadInfo.parse(id);
+                                if (loadInfo == null)
+                                    throw new IllegalArgumentException("Unable to parse ID: " + id);
                                 BaseUuidEntity ref = loadInfo.getMetaClass().createInstance();
                                 ref.setValue("id", loadInfo.getId());
                                 setField(bean, key, ref);
