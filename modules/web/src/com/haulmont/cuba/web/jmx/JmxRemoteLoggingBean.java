@@ -50,6 +50,14 @@ public class JmxRemoteLoggingBean implements JmxRemoteLoggingAPI {
     }
 
     @Override
+    public long getLogFileSize(JmxInstance instance, String fileName) throws LogControlException {
+        // get link from remote interface and add session id parameter
+        final MBeanServerConnection connection = JmxConnectionHelper.getConnection(instance);
+        JmxLogControlMBean logControlMBean = getRemoteLogControl(connection);
+        return logControlMBean.getLogFileSize(fileName);
+    }
+
+    @Override
     public List<String> getLoggers(JmxInstance instance) {
         final MBeanServerConnection connection = JmxConnectionHelper.getConnection(instance);
         JmxLogControlMBean logControlMBean = getRemoteLogControl(connection);
@@ -95,7 +103,7 @@ public class JmxRemoteLoggingBean implements JmxRemoteLoggingAPI {
         log.info(String.format("Threshold for appender '%s' set to '%s' on '%s'", appenderName, threshold, instance.getNodeName()));
     }
 
-    private JmxLogControlMBean getRemoteLogControl(MBeanServerConnection connection) {
+    protected JmxLogControlMBean getRemoteLogControl(MBeanServerConnection connection) {
         ObjectName objectName;
         try {
             objectName = JmxConnectionHelper.getObjectName(connection, JmxLogControl.class);

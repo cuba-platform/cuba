@@ -6,6 +6,7 @@
 package com.haulmont.cuba.web.app.ui.serverlogviewer;
 
 import com.haulmont.cuba.core.entity.JmxInstance;
+import com.haulmont.cuba.core.sys.logging.LogArchiver;
 import com.haulmont.cuba.core.sys.logging.LogControlException;
 import com.haulmont.cuba.core.sys.logging.LoggingHelper;
 import com.haulmont.cuba.gui.AppConfig;
@@ -44,6 +45,8 @@ import java.util.*;
 public class ServerLogWindow extends AbstractWindow {
 
     private static final Log log = LogFactory.getLog(ServerLogWindow.class);
+
+    private static final int BYTES_IN_MB = (1024 * 1024);
 
     @Inject
     protected CollectionDatasource<JmxInstance, UUID> jmxInstancesDs;
@@ -220,7 +223,6 @@ public class ServerLogWindow extends AbstractWindow {
         loggerLevelField.setValue(null);
     }
 
-    // action method
     public void showLogTail() {
         updateLogTail(false);
     }
@@ -265,7 +267,6 @@ public class ServerLogWindow extends AbstractWindow {
         logContainer.setScrollTop(scrollPos);
     }
 
-    // action method
     public void getLoggerLevel() {
         if (StringUtils.isNotEmpty(loggerNameField.<String>getValue())) {
             String loggerName = loggerNameField.getValue();
@@ -287,7 +288,6 @@ public class ServerLogWindow extends AbstractWindow {
         }
     }
 
-    // action method
     public void setLoggerLevel() {
         if (StringUtils.isNotEmpty(loggerNameField.<String>getValue())) {
             if (loggerLevelField.getValue() != null) {
@@ -311,7 +311,6 @@ public class ServerLogWindow extends AbstractWindow {
         }
     }
 
-    // action method
     public void getAppenderLevel() {
         if (StringUtils.isNotEmpty(appenderNameField.<String>getValue())) {
             String appenderName = appenderNameField.getValue();
@@ -333,7 +332,6 @@ public class ServerLogWindow extends AbstractWindow {
         }
     }
 
-    // action method
     public void setAppenderLevel() {
         if (StringUtils.isNotEmpty(appenderNameField.<String>getValue())) {
             if (appenderLevelField.getValue() != null) {
@@ -357,27 +355,57 @@ public class ServerLogWindow extends AbstractWindow {
         }
     }
 
-    // action method
     public void downloadLog() {
-        String fileName = logFileNameField.getValue();
+        final String fileName = logFileNameField.getValue();
         if (fileName != null) {
             try {
-                LogDataProvider logDataProvider = new LogDataProvider(getSelectedConnection(), fileName);
-                AppConfig.createExportDisplay(this).show(logDataProvider, fileName + ".zip");
-            } catch (Exception e) {
+                final JmxInstance selectedConnection = getSelectedConnection();
+                long size = jmxRemoteLoggingAPI.getLogFileSize(selectedConnection, fileName);
+
+                if (size <= LogArchiver.LOG_TAIL_FOR_PACKING_SIZE) {
+                    exportFile(new LogDataProvider(selectedConnection, fileName), fileName);
+                } else {
+                    long sizeMb = size / BYTES_IN_MB;
+
+                    showOptionDialog(getMessage("log.downloadOption"), formatMessage("log.selectDownloadOption", sizeMb),
+                            MessageType.CONFIRMATION,
+                            new Action[]{
+                                    new AbstractAction("log.downloadTail") {
+                                        @Override
+                                        public void actionPerform(Component component) {
+                                            exportFile(new LogDataProvider(selectedConnection, fileName), fileName);
+                                        }
+                                    },
+                                    new AbstractAction("log.downloadFull") {
+                                        @Override
+                                        public void actionPerform(Component component) {
+                                            exportFile(new LogDataProvider(selectedConnection, fileName, true), fileName);
+                                        }
+                                    },
+                                    new AbstractAction("actions.Cancel") {
+                                        @Override
+                                        public void actionPerform(Component component) {
+                                        }
+                                    }
+                            });
+                }
+            } catch (RuntimeException | LogControlException e) {
                 showNotification(getMessage("exception.logControl"), NotificationType.ERROR);
                 log.error(e);
             }
-        } else
+        } else {
             showNotification(getMessage("log.notSelected"), NotificationType.HUMANIZED);
+        }
     }
 
-    // action method
+    protected void exportFile(LogDataProvider logDataProvider, String fileName) {
+        AppConfig.createExportDisplay(this).show(logDataProvider, fileName + ".zip");
+    }
+
     public void updateLogTail(@SuppressWarnings("unused") Timer timer) {
         updateLogTail(true);
     }
 
-    // action method
     public void openLoggerControlDialog() {
         Map<String, Object> params = new HashMap<>();
         Map<String, Level> loggersMap = new HashMap<>();

@@ -22,6 +22,7 @@ import org.apache.log4j.Logger;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Iterator;
@@ -63,6 +64,14 @@ public class JmxLogControl implements JmxLogControlMBean {
         }
 
         return globalConfig.getDispatcherBaseUrl() + "/log/" + encodedFileName;
+    }
+
+    @Override
+    public long getLogFileSize(String fileName) throws LogControlException {
+        // check log file exists
+        File logFile = logControl.getLogFile(fileName);
+
+        return logFile.length();
     }
 
     @Override

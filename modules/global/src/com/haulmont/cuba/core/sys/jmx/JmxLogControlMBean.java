@@ -39,6 +39,14 @@ public interface JmxLogControlMBean {
     String getLogFileLink(String fileName) throws LogControlException;
 
     /**
+     * Get size for log file downloading
+     *
+     * @param fileName name of a log file
+     * @return URL
+     */
+    long getLogFileSize(String fileName) throws LogControlException;
+
+    /**
      * Get current loggers
      *
      * @return current logger names

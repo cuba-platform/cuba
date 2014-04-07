@@ -12,6 +12,7 @@ import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.sys.UserSessionManager;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Controller;
@@ -45,6 +46,7 @@ public class LogDownloadController {
     @RequestMapping(value = "/log/{file:[a-zA-Z0-9\\.\\-_]+}", method = RequestMethod.GET)
     public void getLogFile(HttpServletResponse response,
                            @RequestParam(value = "s") String sessionId,
+                           @RequestParam(value = "full", required = false) Boolean downloadFull,
                            @PathVariable(value = "file") String logFileName) throws IOException {
         UserSession userSession = getSession(sessionId, response);
         if (userSession == null)
@@ -73,8 +75,12 @@ public class LogDownloadController {
             try {
                 outputStream = response.getOutputStream();
 
-                LogArchiver.writeArchivedLogToStream(logFile, outputStream);
-            } catch (Exception ex) {
+                if (BooleanUtils.isTrue(downloadFull)) {
+                    LogArchiver.writeArchivedLogToStream(logFile, outputStream);
+                } else {
+                    LogArchiver.writeArchivedLogTailToStream(logFile, outputStream);
+                }
+            } catch (RuntimeException | IOException ex) {
                 log.error("Unable to download file", ex);
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             } finally {

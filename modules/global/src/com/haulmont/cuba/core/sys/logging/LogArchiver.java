@@ -8,6 +8,8 @@ package com.haulmont.cuba.core.sys.logging;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -23,18 +25,21 @@ public class LogArchiver {
 
     private static final Log log = LogFactory.getLog(LogArchiver.class);
 
-    private static final long LOG_TAIL_FOR_PACKING_SIZE = 20 * 1024 * 1024; // 20 MB
+    private static final String ZIP_ENCODING = "CP866";
+    public static final long LOG_TAIL_FOR_PACKING_SIZE = 20 * 1024 * 1024; // 20 MB
 
-    public static void writeArchivedLogToStream(File logFile, OutputStream outputStream) throws IOException{
-        final String ENCODING = "CP866";
+    public static void writeArchivedLogTailToStream(File logFile, OutputStream outputStream) throws IOException {
+        if (!logFile.exists()) {
+            throw new FileNotFoundException();
+        }
 
         ZipArchiveOutputStream zipOutputStream = new ZipArchiveOutputStream(outputStream);
         zipOutputStream.setMethod(ZipArchiveOutputStream.DEFLATED);
-        zipOutputStream.setEncoding(ENCODING);
+        zipOutputStream.setEncoding(ZIP_ENCODING);
 
         byte[] content = getTailBytes(logFile);
 
-        ArchiveEntry archiveEntry = newArchive(logFile.getName(), content);
+        ArchiveEntry archiveEntry = newTailArchive(logFile.getName(), content);
         zipOutputStream.putArchiveEntry(archiveEntry);
         zipOutputStream.write(content);
 
@@ -42,10 +47,38 @@ public class LogArchiver {
         zipOutputStream.close();
     }
 
+    public static void writeArchivedLogToStream(File logFile, OutputStream outputStream) throws IOException {
+        if (!logFile.exists()) {
+            throw new FileNotFoundException();
+        }
+
+        File tempFile = File.createTempFile(FilenameUtils.getBaseName(logFile.getName()) + "_log_", ".zip");
+
+        ZipArchiveOutputStream zipOutputStream = new ZipArchiveOutputStream(tempFile);
+        zipOutputStream.setMethod(ZipArchiveOutputStream.DEFLATED);
+        zipOutputStream.setEncoding(ZIP_ENCODING);
+
+        ArchiveEntry archiveEntry = newArchive(logFile);
+        zipOutputStream.putArchiveEntry(archiveEntry);
+
+        FileInputStream logFileInput = new FileInputStream(logFile);
+        IOUtils.copyLarge(logFileInput, zipOutputStream);
+
+        logFileInput.close();
+
+        zipOutputStream.closeArchiveEntry();
+        zipOutputStream.close();
+
+        FileInputStream tempFileInput = new FileInputStream(tempFile);
+        IOUtils.copyLarge(tempFileInput, outputStream);
+
+        tempFileInput.close();
+
+        FileUtils.deleteQuietly(tempFile);
+    }
+
     private static byte[] getTailBytes(File logFile) throws FileNotFoundException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        if (!logFile.exists())
-            throw new FileNotFoundException();
 
         byte[] buf = null;
         int len;
@@ -57,24 +90,33 @@ public class LogArchiver {
                 randomAccessFile.seek(lengthFile - LOG_TAIL_FOR_PACKING_SIZE);
             }
             buf = new byte[size];
-            while ((len = randomAccessFile.read(buf, 0, size)) != -1)
+            while ((len = randomAccessFile.read(buf, 0, size)) != -1) {
                 bos.write(buf, 0, len);
+            }
             buf = bos.toByteArray();
         } catch (IOException e) {
-            log.error("Pack error", e);
+            log.error("Unable to get tail for log file " + logFile.getName(), e);
         } finally {
             IOUtils.closeQuietly(bos);
         }
         return buf;
     }
 
-    private static ArchiveEntry newArchive(String name, byte[] data) {
+    private static ArchiveEntry newTailArchive(String name, byte[] tail) {
         ZipArchiveEntry zipEntry = new ZipArchiveEntry(name);
-        zipEntry.setSize(data.length);
+        zipEntry.setSize(tail.length);
         zipEntry.setCompressedSize(zipEntry.getSize());
         CRC32 crc32 = new CRC32();
-        crc32.update(data);
+        crc32.update(tail);
         zipEntry.setCrc(crc32.getValue());
+        return zipEntry;
+    }
+
+    private static ArchiveEntry newArchive(File file) throws IOException {
+        ZipArchiveEntry zipEntry = new ZipArchiveEntry(file.getName());
+        zipEntry.setSize(file.length());
+        zipEntry.setCompressedSize(zipEntry.getSize());
+        zipEntry.setCrc(FileUtils.checksumCRC32(file));
         return zipEntry;
     }
 }

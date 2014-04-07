@@ -53,9 +53,17 @@ public class LogDataProvider implements ExportDataProvider {
 
     protected JmxInstance jmxInstance;
 
+    protected boolean downloadFullLog = false;
+
     public LogDataProvider(JmxInstance jmxInstance, String logFileName) {
         this.logFileName = logFileName;
         this.jmxInstance = jmxInstance;
+    }
+
+    public LogDataProvider(JmxInstance jmxInstance, String logFileName, boolean downloadFullLog) {
+        this.logFileName = logFileName;
+        this.jmxInstance = jmxInstance;
+        this.downloadFullLog = downloadFullLog;
     }
 
     @Override
@@ -73,7 +81,12 @@ public class LogDataProvider implements ExportDataProvider {
         }
 
         HttpClient httpClient = new DefaultHttpClient();
-        HttpGet httpGet = new HttpGet(url + "?s=" + userSessionSource.getUserSession().getId());
+        String uri = url + "?s=" + userSessionSource.getUserSession().getId();
+        if (downloadFullLog) {
+            uri += "&full=true";
+        }
+
+        HttpGet httpGet = new HttpGet(uri);
 
         try {
             HttpResponse httpResponse = httpClient.execute(httpGet);
