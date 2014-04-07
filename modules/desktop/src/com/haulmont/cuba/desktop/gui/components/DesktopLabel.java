@@ -48,6 +48,8 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
 
     protected boolean htmlEnabled = false;
 
+    protected String labelText = "";
+
     public DesktopLabel() {
         impl = new JLabel();
         impl.setFocusable(false);
@@ -172,8 +174,18 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
 
     protected void updateComponent(Object value) {
         String text = valueFormatter.formatValue(value);
+        this.labelText = text;
+        updateLabel(text);
+    }
+
+    private void updateLabel(String text) {
         if (!htmlEnabled) {
-            text = ComponentsHelper.preprocessHtmlMessage("<html>" + StringEscapeUtils.escapeHtml(text) + "</html>");
+            text = StringEscapeUtils.escapeHtml(text);
+            if (getWidth() > 0 && getHeight() < 0) {
+                text = ComponentsHelper.preprocessHtmlMessage("<html>" + text + "</html>");
+            } else {
+                text = ComponentsHelper.preprocessHtmlMessage("<html><nobr>" + text + "</nobr></html>");
+            }
         } else {
             text = "<html>" + text + "</html>";
         }
@@ -186,6 +198,20 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
         if (!ObjectUtils.equals(oldValue, newValue)) {
             fireValueChanged(oldValue, newValue);
         }
+    }
+
+    @Override
+    public void setWidth(String width) {
+        super.setWidth(width);
+
+        updateLabel(this.labelText);
+    }
+
+    @Override
+    public void setHeight(String height) {
+        super.setHeight(height);
+
+        updateLabel(this.labelText);
     }
 
     @Override
