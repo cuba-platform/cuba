@@ -285,7 +285,7 @@ public final class ConfigUtil {
                     @SuppressWarnings("unchecked")
                     Class<EnumClass> enumeration = (Class<EnumClass>) type;
                     EnumStore mode = getAnnotation(configInterface, method, EnumStore.class, true);
-                    if (EnumStoreMode.ID == mode.value()) {
+                    if (mode != null && EnumStoreMode.ID == mode.value()) {
                         Class<?> idType = getEnumIdType(enumeration);
                         String name = "Default" + StringUtils.capitalize(ClassUtils.getShortClassName(idType));
                         Object value = getAnnotationValue(method, name);
@@ -342,6 +342,7 @@ public final class ConfigUtil {
      * Returns id type parameter for classes that implement {@link EnumClass}.
      * Id type is usually known for concrete enum classes, but if type is unavailable,
      * {@code IllegalArgumentException} is thrown.
+     *
      * @param enumeration class describing subclass of {@code EnumClass}
      * @return id type parameter
      */
@@ -349,7 +350,8 @@ public final class ConfigUtil {
         try {
             return enumeration.getMethod("getId").getReturnType();
         } catch (NoSuchMethodException e) {
-            throw new IllegalArgumentException("Cannot infer generic type parameter for " + enumeration.getName());
+            throw new IllegalArgumentException("Cannot infer generic type parameter for " + enumeration.getName() +
+                    ". Please check if enumeration has public method getId with proper return type");
         }
     }
 }

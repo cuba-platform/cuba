@@ -7,6 +7,7 @@ package com.haulmont.cuba.core.config;
 
 /**
  * Identifies the way to store enum class values in the config storage.
+ *
  * @author kozlov
  * @version $Id$
  */
