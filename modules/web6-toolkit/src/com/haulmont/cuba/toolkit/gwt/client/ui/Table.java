@@ -546,10 +546,12 @@ public abstract class Table
         }
 
         if (uidl.hasVariable("collapsedcolumns")) {
+            tHead.addStyleName("collapsing-allowed");
             tHead.setColumnCollapsingAllowed(true);
             collapsedColumns = uidl
                     .getStringArrayVariableAsSet("collapsedcolumns");
         } else {
+            tHead.removeStyleName("collapsing-allowed");
             tHead.setColumnCollapsingAllowed(false);
         }
 

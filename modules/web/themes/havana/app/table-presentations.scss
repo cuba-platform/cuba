@@ -13,11 +13,15 @@
     height: 16px;
     cursor: pointer;
     position: relative;
+    margin-right: 4px;
     margin-top: -20px;
-    margin-right: 22px;
     background: transparent;
     background-repeat: no-repeat;
     background-image: url(sprites/table-presentations-icon.png); /** sprite-ref: application; */
+  }
+
+  .collapsing-allowed .cuba-table-presentations-icon {
+    margin-right: 22px;
   }
 
   .cuba-table-presentations-editor {

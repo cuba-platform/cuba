@@ -90,6 +90,12 @@ public class CubaTreeTableConnector extends TreeTableConnector {
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
         super.updateFromUIDL(uidl, client);
 
+        if (uidl.hasVariable("collapsedcolumns")) {
+            getWidget().addStyleName("collapsing-allowed");
+        } else {
+            getWidget().removeStyleName("collapsing-allowed");
+        }
+
         // We may have actions attached to this panel
         if (uidl.getChildCount() > 1) {
             final int cnt = uidl.getChildCount();
