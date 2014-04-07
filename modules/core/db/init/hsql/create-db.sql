@@ -31,7 +31,7 @@ create table SYS_CONFIG (
     UPDATED_BY varchar(50),
     --
     NAME varchar(255),
-    VALUE longvarbinary,
+    VALUE longvarchar,
     --
     primary key (ID),
     constraint SYS_CONFIG_UNIQ_NAME unique (NAME)
