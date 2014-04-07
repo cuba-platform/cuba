@@ -35,7 +35,7 @@ public class Config extends BaseUuidEntity implements Versioned, Updatable {
     @Column(name = "NAME")
     private String name;
 
-    @Column(name = "VALUE", length = 1500)
+    @Column(name = "VALUE")
     private String value;
 
     @Override

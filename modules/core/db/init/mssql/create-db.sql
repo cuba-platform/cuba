@@ -24,7 +24,7 @@ create table SYS_CONFIG (
     UPDATED_BY varchar(50),
     --
     NAME varchar(255),
-    VALUE varchar(1500),
+    VALUE varchar(max),
     --
     primary key nonclustered (ID)
 )^
