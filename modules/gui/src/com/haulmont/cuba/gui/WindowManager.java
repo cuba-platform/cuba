@@ -265,17 +265,7 @@ public abstract class WindowManager {
         window.setId(windowInfo.getId());
         window.setWindowManager(this);
 
-        StopWatch initStopWatch = new Log4JStopWatch(windowInfo.getId() +
-                "#" + UIPerformanceLogger.LifeCycle.INIT,
-                Logger.getLogger(UIPerformanceLogger.class));
-
-        try {
-            ReflectionHelper.invokeMethod(window, "init", params);
-        } catch (NoSuchMethodException ignored) {
-            // Do nothing
-        }
-
-        initStopWatch.stop();
+        init(window, params);
 
         StopWatch uiPermissionsWatch = new Log4JStopWatch(windowInfo.getId() + "#" +
                 UIPerformanceLogger.LifeCycle.UI_PERMISSIONS,
@@ -644,15 +634,15 @@ public abstract class WindowManager {
             ((DsContextImplementation) window.getDsContext()).resumeSuspended();
         }
 
-        StopWatch readyStopWatch = new Log4JStopWatch(window.getId() + "#" +
-                UIPerformanceLogger.LifeCycle.READY,
-                Logger.getLogger(UIPerformanceLogger.class));
-        try {
-            ReflectionHelper.invokeMethod(window, "ready");
-        } catch (NoSuchMethodException e) {
-            // do nothing
+        if (window instanceof AbstractWindow) {
+            StopWatch readyStopWatch = new Log4JStopWatch(window.getId() + "#" +
+                    UIPerformanceLogger.LifeCycle.READY,
+                    Logger.getLogger(UIPerformanceLogger.class));
+
+            ((AbstractWindow) window).ready();
+
+            readyStopWatch.stop();
         }
-        readyStopWatch.stop();
     }
 
     public abstract void close(Window window);
@@ -695,21 +685,23 @@ public abstract class WindowManager {
 
             injectStopWatch.stop();
 
-            StopWatch initStopWatch = new Log4JStopWatch(window.getId() + "#" +
-                    UIPerformanceLogger.LifeCycle.INIT,
-                    Logger.getLogger(UIPerformanceLogger.class));
-
-            try {
-                ReflectionHelper.invokeMethod(wrappingWindow, "init", params);
-            } catch (NoSuchMethodException e) {
-                // do nothing
-            }
-
-            initStopWatch.stop();
+            init(wrappingWindow, params);
 
             return wrappingWindow;
         } else {
             throw new GuiDevelopmentException("'class' attribute is not defined in XML descriptor", window.getId());
+        }
+    }
+
+    protected void init(Window window, Map<String, Object> params) {
+        if (window instanceof AbstractWindow) {
+            StopWatch initStopWatch = new Log4JStopWatch(window.getId() +
+                    "#" + UIPerformanceLogger.LifeCycle.INIT,
+                    Logger.getLogger(UIPerformanceLogger.class));
+
+            ((AbstractWindow) window).init(params);
+
+            initStopWatch.stop();
         }
     }
 

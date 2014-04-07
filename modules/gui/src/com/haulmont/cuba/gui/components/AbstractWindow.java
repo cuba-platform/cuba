@@ -166,10 +166,10 @@ public class AbstractWindow extends AbstractFrame
 
     /**
      * Hook to be implemented in subclasses. <br/>
-     * Called by the framework after full initialization and opening of screen. <br/>
+     * Called by the framework after the screen is fully initialized and opened. <br/>
      * Override this method and put custom initialization logic here.
      */
-    protected void ready() {
+    public void ready() {
     }
 
     /**
