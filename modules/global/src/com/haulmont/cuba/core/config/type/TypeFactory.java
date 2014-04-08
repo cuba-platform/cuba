@@ -22,7 +22,6 @@ import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.cuba.core.config.ConfigUtil;
 import com.haulmont.cuba.core.config.EnumStore;
 import com.haulmont.cuba.core.config.EnumStoreMode;
-import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import org.apache.commons.lang.ClassUtils;
@@ -71,7 +70,6 @@ public abstract class TypeFactory {
      * @throws IllegalArgumentException If the type is not supported.
      */
     public static TypeFactory getInstance(Class<?> configInterface, Method method) {
-        SourceType sourceType = ConfigUtil.getSourceType(configInterface, method);
         Class<?> returnType = method.getReturnType();
         if (returnType.isPrimitive()) {
             returnType = ClassUtils.primitiveToWrapper(returnType);
