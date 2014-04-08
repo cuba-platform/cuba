@@ -18,6 +18,7 @@ import com.haulmont.cuba.desktop.sys.layout.MigLayoutHelper;
 import com.haulmont.cuba.desktop.sys.vcl.CollapsiblePanel;
 import com.haulmont.cuba.desktop.sys.vcl.ToolTipButton;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -28,7 +29,9 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 /**
  * @author krivopustov
@@ -575,9 +578,10 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         applyPermissions(fieldComponent);
 
         JLabel label = new JLabel(caption);
+        label.setPreferredSize(new Dimension(label.getPreferredSize().width, 25));
         label.setVisible(fieldComponent.isVisible());
         CC labelCc = new CC();
-        MigLayoutHelper.applyAlignment(labelCc, Alignment.MIDDLE_LEFT);
+        MigLayoutHelper.applyAlignment(labelCc, Alignment.TOP_LEFT);
 
         impl.add(label, labelCc.cell(col * 3, row, 1, 1));
         fieldLabels.put(fieldConf, label);
