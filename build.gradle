@@ -373,7 +373,7 @@ configure(webModule) {
         /* Vaadin addons */
         compile(group: 'com.haulmont.thirdparty', name: 'appletintegration', version: '1.2.10')
         compile(group: 'com.haulmont.thirdparty', name: 'popupbutton', version: '2.2.1')
-        compile(group: 'org.vaadin.addons', name: 'aceeditor', version: '0.8.9')
+        compile(group: 'org.vaadin.addons', name: 'aceeditor', version: '0.8.11')
 
         provided(servletApi)
     }
