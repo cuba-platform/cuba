@@ -197,12 +197,12 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
             if (wrapped) {
                 String loggingId = ComponentsHelper.getFullFrameId(this.frame);
 
-                if (window instanceof AbstractFrame) {
+                if (this.frame instanceof AbstractFrame) {
                     StopWatch initStopWatch = new Log4JStopWatch(loggingId + "#" +
                             UIPerformanceLogger.LifeCycle.INIT,
                             Logger.getLogger(UIPerformanceLogger.class));
 
-                    ((AbstractFrame) window).init(params);
+                    ((AbstractFrame) this.frame).init(params);
 
                     initStopWatch.stop();
                 }
