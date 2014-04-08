@@ -432,6 +432,8 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
     @Override
     public void addColumn(Column column) {
+        checkNotNullArgument(column, "Column must be non null");
+
         columns.put(column.getId(), column);
         columnsOrder.add(column);
 
@@ -453,6 +455,10 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
     @Override
     public void removeColumn(Column column) {
+        if (column == null) {
+            return;
+        }
+
         String name;
         if (column.getId() instanceof MetaPropertyPath) {
             MetaPropertyPath metaPropertyPath = (MetaPropertyPath) column.getId();

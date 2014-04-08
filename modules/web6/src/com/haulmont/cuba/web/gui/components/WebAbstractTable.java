@@ -188,6 +188,8 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
     @Override
     public void addColumn(Table.Column column) {
+        checkNotNullArgument(column, "Column must be non null");
+
         component.addContainerProperty(column.getId(), column.getType(), null);
         columns.put(column.getId(), column);
         columnsOrder.add(column);
@@ -199,6 +201,10 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
     @Override
     public void removeColumn(Table.Column column) {
+        if (column == null) {
+            return;
+        }
+
         component.removeContainerProperty(column.getId());
         columns.remove(column.getId());
         columnsOrder.remove(column);

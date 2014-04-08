@@ -5,6 +5,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.util.Dom4j;
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.impl.BooleanDatatype;
 import com.haulmont.chile.core.model.Instance;
@@ -176,6 +177,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
     @Override
     public void addColumn(Table.Column column) {
+        checkNotNullArgument(column, "Column must be non null");
+
         component.addContainerProperty(column.getId(), column.getType(), null);
         columns.put(column.getId(), column);
         columnsOrder.add(column);
@@ -187,6 +190,10 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
     @Override
     public void removeColumn(Table.Column column) {
+        if (column == null) {
+            return;
+        }
+
         component.removeContainerProperty(column.getId());
         columns.remove(column.getId());
         columnsOrder.remove(column);
