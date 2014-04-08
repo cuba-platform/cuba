@@ -20,4 +20,13 @@
       visibility: visible;
     }
   }
+
+  .#{$primaryStyleName}-focus {
+    border-color: $theme_fieldFocusedBorderColor;
+  }
+
+  .#{$primaryStyleName},
+  .#{$primaryStyleName}:focus {
+    outline: none;
+  }
 }

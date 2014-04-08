@@ -9,6 +9,8 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import org.vaadin.aceeditor.client.AceEditorWidget;
+import org.vaadin.aceeditor.client.gwt.GwtAceEvent;
+import org.vaadin.aceeditor.client.gwt.GwtAceFocusBlurHandler;
 
 /**
  * @author artamonov
@@ -16,8 +18,28 @@ import org.vaadin.aceeditor.client.AceEditorWidget;
  */
 public class CubaSourceCodeEditorWidget extends AceEditorWidget {
 
+    private boolean enabled = true;
+    private boolean readOnly = false;
+
     public CubaSourceCodeEditorWidget() {
-        sinkEvents(Event.ONKEYDOWN);
+        sinkEvents(Event.ONKEYDOWN | Event.ONFOCUS);
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
+
+        editor.addFocusListener(new GwtAceFocusBlurHandler() {
+            @Override
+            public void onFocus(GwtAceEvent e) {
+                addStyleDependentName("focus");
+            }
+
+            @Override
+            public void onBlur(GwtAceEvent e) {
+                removeStyleDependentName("focus");
+            }
+        });
     }
 
     @Override
@@ -31,6 +53,28 @@ public class CubaSourceCodeEditorWidget extends AceEditorWidget {
             event.stopPropagation();
             return;
         }
+
+        if (type == Event.ONFOCUS) {
+            editor.focus();
+            return;
+        }
+
         super.onBrowserEvent(event);
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+
+        this.enabled = enabled;
+
+        super.setReadOnly(!this.enabled || readOnly);
+    }
+
+    @Override
+    public void setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
+
+        super.setReadOnly(!this.enabled || readOnly);
     }
 }
