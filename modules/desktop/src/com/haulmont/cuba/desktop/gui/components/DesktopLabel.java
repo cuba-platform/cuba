@@ -181,7 +181,7 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
     private void updateLabel(String text) {
         if (!htmlEnabled) {
             text = StringEscapeUtils.escapeHtml(text);
-            if (getWidth() > 0 && getHeight() < 0) {
+            if (getWidth() > 0 && getHeight() <= 0) {
                 text = ComponentsHelper.preprocessHtmlMessage("<html>" + text + "</html>");
             } else {
                 text = ComponentsHelper.preprocessHtmlMessage("<html><nobr>" + text + "</nobr></html>");
