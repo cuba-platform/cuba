@@ -413,6 +413,9 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
             for (ListActionType type : ListActionType.values()) {
                 if (type.getId().equals(id)) {
                     Action instance = type.createAction((ListComponent) actionsHolder);
+
+                    loadStandardActionProperties(element, instance);
+
                     if (type != ListActionType.CREATE && type != ListActionType.EDIT) {
                         return instance;
                     }
@@ -444,5 +447,32 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         }
 
         return super.loadDeclarativeAction(actionsHolder, element);
+    }
+
+    protected void loadStandardActionProperties(Element element, Action instance) {
+        String enable = element.attributeValue("enable");
+        if (StringUtils.isNotEmpty(enable)) {
+            instance.setEnabled(Boolean.valueOf(enable));
+        }
+
+        String visible = element.attributeValue("visible");
+        if (StringUtils.isNotEmpty(visible)) {
+            instance.setVisible(Boolean.valueOf(visible));
+        }
+
+        String caption = element.attributeValue("caption");
+        if (StringUtils.isNotEmpty(caption)) {
+            instance.setCaption(loadResourceString(caption));
+        }
+
+        String description = element.attributeValue("description");
+        if (StringUtils.isNotEmpty(description)) {
+            instance.setDescription(loadResourceString(description));
+        }
+
+        String icon = element.attributeValue("icon");
+        if (StringUtils.isNotEmpty(icon)) {
+            instance.setIcon(loadResourceString(icon));
+        }
     }
 }
