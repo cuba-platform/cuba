@@ -15,6 +15,5 @@ import com.vaadin.ui.VerticalLayout;
 @ClientWidget(VFlowLayout.class)
 public class FlowLayout extends VerticalLayout {
     public FlowLayout() {
-        setHeight("100%");
     }
 }
