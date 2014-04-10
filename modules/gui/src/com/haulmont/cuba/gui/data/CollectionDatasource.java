@@ -26,14 +26,6 @@ import java.util.Map;
  */
 public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource<T> {
 
-    /** Mode of load data from database: {@link #ALWAYS}, {@link #NEVER} */
-    enum RefreshMode{
-        /** Datasource will load data for each refresh */
-        ALWAYS,
-        /** Datasource will never load data from database */
-        NEVER
-    }
-
     /**
      * @return item by ID, can be null
      */
@@ -349,6 +341,25 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
 
         void pinQuery();
         void unpinLastQuery();
+    }
+
+    /**
+     * Mode of loading data from database: {@link #ALWAYS}, {@link #NEVER}
+     */
+    enum RefreshMode {
+        /**
+         * Datasource will load data for each refresh
+         */
+        ALWAYS,
+        /**
+         * Datasource will never load data from database
+         */
+        NEVER
+    }
+
+    interface SupportsRefreshMode<T extends Entity<K>, K> extends CollectionDatasource<T,K> {
+        RefreshMode getRefreshMode();
+        void setRefreshMode(RefreshMode refreshMode);
     }
 
     /** Mode of fetching data from database: {@link #ALL}, {@link #LAZY} */

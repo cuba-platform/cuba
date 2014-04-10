@@ -37,7 +37,8 @@ import java.util.regex.Pattern;
  */
 public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         extends DatasourceImpl<T>
-        implements CollectionDatasource<T, K> {
+        implements CollectionDatasource<T, K>,
+                   CollectionDatasource.SupportsRefreshMode<T, K> {
 
     protected String query;
     protected QueryFilter filter;
@@ -555,10 +556,12 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         }
     }
 
+    @Override
     public RefreshMode getRefreshMode() {
         return refreshMode;
     }
 
+    @Override
     public void setRefreshMode(RefreshMode refreshMode) {
         this.refreshMode = refreshMode;
     }
