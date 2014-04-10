@@ -687,6 +687,9 @@ public class WebWindowManager extends WindowManager {
                             new AbstractAction(messages.getMessage(WebWindow.class, "actions.Yes")) {
                                 @Override
                                 public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
+                                    app.cleanupBackgroundTasks();
+                                    app.closeAllWindows();
+
                                     if (runIfOk != null) {
                                         runIfOk.run();
                                     }
@@ -713,6 +716,9 @@ public class WebWindowManager extends WindowManager {
                     }
             );
         } else {
+            app.cleanupBackgroundTasks();
+            app.closeAllWindows();
+
             runIfOk.run();
         }
     }

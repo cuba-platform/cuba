@@ -675,9 +675,13 @@ public class WebWindowManager extends WindowManager {
                             new AbstractAction(messages.getMessage(WebWindow.class, "closeApplication")) {
                                 @Override
                                 public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
+                                    app.cleanupBackgroundTasks();
+                                    app.closeAllWindows();
+
                                     if (runIfOk != null)
                                         runIfOk.run();
                                 }
+
                                 @Override
                                 public String getIcon() {
                                     return "icons/ok.png";
@@ -689,6 +693,7 @@ public class WebWindowManager extends WindowManager {
                                     if (runIfCancel != null)
                                         runIfCancel.run();
                                 }
+
                                 @Override
                                 public String getIcon() {
                                     return "icons/cancel.png";
@@ -697,6 +702,9 @@ public class WebWindowManager extends WindowManager {
                     }
             );
         } else {
+            app.cleanupBackgroundTasks();
+            app.closeAllWindows();
+
             runIfOk.run();
         }
     }
