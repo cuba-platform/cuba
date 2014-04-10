@@ -17,6 +17,7 @@ import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -202,10 +203,13 @@ public interface PickerField extends Field, Component.ActionsHolder {
                 }
 
                 WindowManager wm;
-                if (pickerField.getFrame() != null) {
-                    wm = ComponentsHelper.getWindow(pickerField).getWindowManager();
-                } else {
+                Window window = ComponentsHelper.getWindow(pickerField);
+                if (window == null) {
+                    LogFactory.getLog(PickerField.class).warn("Please specify Frame for PickerField");
+
                     wm = AppBeans.get(WindowManagerProvider.class).get();
+                } else {
+                    wm = window.getWindowManager();
                 }
 
                 Window lookupWindow = wm.openLookup(
@@ -348,10 +352,13 @@ public interface PickerField extends Field, Component.ActionsHolder {
                 return;
 
             WindowManager wm;
-            if (pickerField.getFrame() != null) {
-                wm = ComponentsHelper.getWindow(pickerField).getWindowManager();
-            } else {
+            Window window = ComponentsHelper.getWindow(pickerField);
+            if (window == null) {
+                LogFactory.getLog(PickerField.class).warn("Please specify Frame for PickerField");
+
                 wm = AppBeans.get(WindowManagerProvider.class).get();
+            } else {
+                wm = window.getWindowManager();
             }
 
             if (entity instanceof SoftDelete && ((SoftDelete) entity).isDeleted()) {

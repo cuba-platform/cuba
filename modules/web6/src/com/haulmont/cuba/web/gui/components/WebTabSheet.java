@@ -16,6 +16,7 @@ import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.vaadin.ui.Layout;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
 import javax.annotation.Nonnull;
@@ -328,7 +329,11 @@ public class WebTabSheet extends WebAbstractComponent<com.vaadin.ui.TabSheet> im
                     }
 
                     Window window = com.haulmont.cuba.gui.ComponentsHelper.getWindow(WebTabSheet.this);
-                    ((DsContextImplementation) window.getDsContext()).resumeSuspended();
+                    if (window != null) {
+                        ((DsContextImplementation) window.getDsContext()).resumeSuspended();
+                    } else {
+                        LogFactory.getLog(WebTabSheet.class).warn("Please specify Frame for TabSheet");
+                    }
                 }
             });
             componentTabChangeListenerInitialized = true;

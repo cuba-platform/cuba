@@ -219,6 +219,7 @@ public abstract class ComponentsHelper {
      * <br/>If the window has a controller class, an instance of the controller is returned.
      * <br/>Can be null only if the component wasn't properly initialized.
      */
+    @Nullable
     public static Window getWindow(Component.BelongToFrame component) {
         IFrame frame = component.getFrame();
         while (frame != null) {
@@ -238,6 +239,7 @@ public abstract class ComponentsHelper {
      *
      * <br/>Can be null only if the component wasn't properly initialized.
      */
+    @Nullable
     public static Window getWindowImplementation(Component.BelongToFrame component) {
         IFrame frame = component.getFrame();
         while (frame != null) {

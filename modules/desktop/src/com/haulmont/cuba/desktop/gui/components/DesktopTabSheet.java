@@ -12,7 +12,10 @@ import com.haulmont.cuba.desktop.sys.ButtonTabComponent;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentVisitor;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.TabSheet;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
@@ -23,7 +26,10 @@ import javax.annotation.Nonnull;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import java.awt.event.*;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.*;
 
 /**
@@ -266,7 +272,11 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> imple
                     }
 
                     Window window = com.haulmont.cuba.gui.ComponentsHelper.getWindow(DesktopTabSheet.this);
-                    ((DsContextImplementation) window.getDsContext()).resumeSuspended();
+                    if (window != null) {
+                        ((DsContextImplementation) window.getDsContext()).resumeSuspended();
+                    } else {
+                        log.warn("Please specify Frame for TabSheet");
+                    }
                 }
             });
             componentTabChangeListenerInitialized = true;
