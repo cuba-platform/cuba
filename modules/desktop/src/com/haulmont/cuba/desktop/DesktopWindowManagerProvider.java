@@ -12,7 +12,7 @@ import javax.annotation.ManagedBean;
 import javax.swing.*;
 
 /**
- * Naive implmentation of WindowManagerProvider. <br/>
+ * Naive implementation of WindowManagerProvider. <br/>
  * Always returns WindowManager of main application frame.
  *
  * @author artamonov
@@ -24,7 +24,7 @@ public class DesktopWindowManagerProvider implements WindowManagerProvider {
     @Override
     public WindowManager get() {
         if (!SwingUtilities.isEventDispatchThread())
-            throw new IllegalStateException("Could not access to WindowManager outside Event Dispath Thread");
+            throw new IllegalStateException("Could not access to WindowManager outside Event Dispatch Thread");
 
         TopLevelFrame topFrame = App.getInstance().getMainFrame();
 
