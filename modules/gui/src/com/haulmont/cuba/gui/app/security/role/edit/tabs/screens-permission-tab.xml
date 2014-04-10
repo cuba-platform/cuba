@@ -30,7 +30,7 @@
 
     <layout>
         <hbox expand="screenPermissionsTree" margin="true" spacing="true" width="100%" height="100%">
-            <treeTable id="screenPermissionsTree" height="100%">
+            <treeTable id="screenPermissionsTree" height="100%" multiselect="true">
                 <columns>
                     <column id="caption" caption="msg://target"/>
                     <column id="permissionVariant" caption="msg://value"/>

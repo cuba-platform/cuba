@@ -15,12 +15,12 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.security.ScreenPermissionTreeDatasource;
+import com.haulmont.cuba.gui.security.entity.BasicPermissionTarget;
+import com.haulmont.cuba.gui.security.entity.PermissionVariant;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.Role;
-import com.haulmont.cuba.gui.security.entity.BasicPermissionTarget;
-import com.haulmont.cuba.gui.security.entity.PermissionVariant;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.inject.Inject;
@@ -156,7 +156,7 @@ public class ScreenPermissionsFrame extends AbstractFrame {
             public void valueChanged(CheckBox source, String property, Object prevValue, Object value) {
                 if (!itemChanging) {
                     itemChanging = true;
-//
+
                     markItemPermission(PermissionUiHelper.getCheckBoxVariant(value, PermissionVariant.DISALLOWED));
 
                     itemChanging = false;
@@ -187,8 +187,7 @@ public class ScreenPermissionsFrame extends AbstractFrame {
     }
 
     private void markItemPermission(PermissionVariant permissionVariant) {
-        BasicPermissionTarget target = screenPermissionsTree.getSingleSelected();
-        if (target != null) {
+        for (BasicPermissionTarget target : screenPermissionsTree.<BasicPermissionTarget>getSelected()) {
             target.setPermissionVariant(permissionVariant);
             if (permissionVariant != PermissionVariant.NOTSET) {
                 // Create permission
