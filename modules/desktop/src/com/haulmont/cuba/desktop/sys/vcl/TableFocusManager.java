@@ -35,6 +35,10 @@ public class TableFocusManager {
         this.impl = impl;
     }
 
+    public boolean isDisabledKeys(KeyEvent e) {
+        return (e.getModifiers() & KeyEvent.CTRL_MASK) > 0 && (e.getModifiers() & KeyEvent.SHIFT_MASK) > 0;
+    }
+
     public boolean processKeyBinding(KeyStroke ks, KeyEvent e, int condition, boolean pressed) {
         Set<AWTKeyStroke> forwardKeys = KeyboardFocusManager.getCurrentKeyboardFocusManager().getDefaultFocusTraversalKeys(
                 KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS);

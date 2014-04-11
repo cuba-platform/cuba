@@ -414,6 +414,68 @@ public class WebWindowManager extends WindowManager {
         return layout;
     }
 
+    public ShortcutListener createNextWindowTabShortcut() {
+        if (AppWindow.Mode.TABBED == appWindow.getMode()) {
+            String nextTabShortcut = clientConfig.getNextTabShortcut();
+            KeyCombination combination = KeyCombination.create(nextTabShortcut);
+
+            return new ShortcutListener("onNextTab", combination.getKey().getCode(),
+                    KeyCombination.Modifier.codes(combination.getModifiers())) {
+                @Override
+                public void handleAction(Object sender, Object target) {
+                    TabSheet tabSheet = appWindow.getTabSheet();
+
+                    if (tabSheet != null && !hasDialogWindows() && tabSheet.getComponentCount() > 1) {
+                        Component selectedTabComponent = tabSheet.getSelectedTab();
+                        TabSheet.Tab selectedTab = tabSheet.getTab(selectedTabComponent);
+                        int tabPosition = tabSheet.getTabPosition(selectedTab);
+                        int newTabPosition = (tabPosition + 1) % tabSheet.getComponentCount();
+
+                        TabSheet.Tab newTab = tabSheet.getTab(newTabPosition);
+                        tabSheet.setSelectedTab(newTab.getComponent());
+
+                        app.getAppWindow().focus();
+                    }
+                }
+            };
+        }
+
+        return null;
+    }
+
+    public ShortcutListener createPreviousWindowTabShortcut() {
+        if (AppWindow.Mode.TABBED == appWindow.getMode()) {
+            String previousTabShortcut = clientConfig.getPreviousTabShortcut();
+            KeyCombination combination = KeyCombination.create(previousTabShortcut);
+
+            return new ShortcutListener("onPreviousTab", combination.getKey().getCode(),
+                    KeyCombination.Modifier.codes(combination.getModifiers())) {
+                @Override
+                public void handleAction(Object sender, Object target) {
+                    TabSheet tabSheet = appWindow.getTabSheet();
+
+                    if (tabSheet != null && !hasDialogWindows() && tabSheet.getComponentCount() > 1) {
+                        Component selectedTabComponent = tabSheet.getSelectedTab();
+                        TabSheet.Tab selectedTab = tabSheet.getTab(selectedTabComponent);
+                        int tabPosition = tabSheet.getTabPosition(selectedTab);
+                        int newTabPosition = (tabSheet.getComponentCount() + tabPosition - 1) % tabSheet.getComponentCount();
+
+                        TabSheet.Tab newTab = tabSheet.getTab(newTabPosition);
+                        tabSheet.setSelectedTab(newTab.getComponent());
+
+                        app.getAppWindow().focus();
+                    }
+                }
+            };
+        }
+
+        return null;
+    }
+
+    protected boolean hasDialogWindows() {
+        return !app.getAppWindow().getChildWindows().isEmpty();
+    }
+
     public com.vaadin.ui.Window.CloseShortcut createCloseShortcut() {
         String closeShortcut = clientConfig.getCloseShortcut();
         KeyCombination combination = KeyCombination.create(closeShortcut);

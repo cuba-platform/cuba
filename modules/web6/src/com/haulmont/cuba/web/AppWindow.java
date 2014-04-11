@@ -135,6 +135,9 @@ public class AppWindow extends Window implements UserSubstitutionListener,
 
     protected WebTimer workerTimer;
 
+    protected ShortcutListener nextTabShortcut;
+    protected ShortcutListener previousTabShortcut;
+
     public AppWindow(App app) {
         log.trace("Creating " + this);
         this.app = app;
@@ -457,12 +460,28 @@ public class AppWindow extends Window implements UserSubstitutionListener,
                 tabSheet.setSizeFull();
                 mainLayout.addComponent(tabSheet);
                 mainLayout.setExpandRatio(tabSheet, 1);
+
+                createTabShortcuts();
             }
         }
 
         if (closeShortcut == null)
             closeShortcut = getWindowManager().createCloseShortcut();
         addAction(closeShortcut);
+    }
+
+    protected void createTabShortcuts() {
+        if (nextTabShortcut == null) {
+            nextTabShortcut = windowManager.createNextWindowTabShortcut();
+
+            addAction(nextTabShortcut);
+        }
+
+        if (previousTabShortcut == null) {
+            previousTabShortcut = windowManager.createPreviousWindowTabShortcut();
+
+            addAction(previousTabShortcut);
+        }
     }
 
     /**

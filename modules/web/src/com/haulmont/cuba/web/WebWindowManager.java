@@ -305,6 +305,68 @@ public class WebWindowManager extends WindowManager {
         afterShowWindow(window);
     }
 
+    public ShortcutListener createNextWindowTabShortcut() {
+        if (AppWindow.Mode.TABBED == appWindow.getMode()) {
+            String nextTabShortcut = clientConfig.getNextTabShortcut();
+            KeyCombination combination = KeyCombination.create(nextTabShortcut);
+
+            return new ShortcutListener("onNextTab", combination.getKey().getCode(),
+                    KeyCombination.Modifier.codes(combination.getModifiers())) {
+                @Override
+                public void handleAction(Object sender, Object target) {
+                    TabSheet tabSheet = appWindow.getTabSheet();
+
+                    if (tabSheet != null && !hasDialogWindows() && tabSheet.getComponentCount() > 1) {
+                        Component selectedTabComponent = tabSheet.getSelectedTab();
+                        TabSheet.Tab selectedTab = tabSheet.getTab(selectedTabComponent);
+                        int tabPosition = tabSheet.getTabPosition(selectedTab);
+                        int newTabPosition = (tabPosition + 1) % tabSheet.getComponentCount();
+
+                        TabSheet.Tab newTab = tabSheet.getTab(newTabPosition);
+                        tabSheet.setSelectedTab(newTab);
+
+                        tabSheet.focus();
+                    }
+                }
+            };
+        }
+
+        return null;
+    }
+
+    public ShortcutListener createPreviousWindowTabShortcut() {
+        if (AppWindow.Mode.TABBED == appWindow.getMode()) {
+            String previousTabShortcut = clientConfig.getPreviousTabShortcut();
+            KeyCombination combination = KeyCombination.create(previousTabShortcut);
+
+            return new ShortcutListener("onPreviousTab", combination.getKey().getCode(),
+                    KeyCombination.Modifier.codes(combination.getModifiers())) {
+                @Override
+                public void handleAction(Object sender, Object target) {
+                    TabSheet tabSheet = appWindow.getTabSheet();
+
+                    if (tabSheet != null && !hasDialogWindows() && tabSheet.getComponentCount() > 1) {
+                        Component selectedTabComponent = tabSheet.getSelectedTab();
+                        TabSheet.Tab selectedTab = tabSheet.getTab(selectedTabComponent);
+                        int tabPosition = tabSheet.getTabPosition(selectedTab);
+                        int newTabPosition = (tabSheet.getComponentCount() + tabPosition - 1) % tabSheet.getComponentCount();
+
+                        TabSheet.Tab newTab = tabSheet.getTab(newTabPosition);
+                        tabSheet.setSelectedTab(newTab);
+
+                        tabSheet.focus();
+                    }
+                }
+            };
+        }
+
+        return null;
+    }
+
+    protected boolean hasDialogWindows() {
+        return !ui.getWindows().isEmpty();
+    }
+
     public ShortcutListener createCloseShortcut() {
         String closeShortcut = clientConfig.getCloseShortcut();
         KeyCombination combination = KeyCombination.create(closeShortcut);
@@ -335,12 +397,16 @@ public class WebWindowManager extends WindowManager {
                                 breadCrumbs.getCurrentWindow().close(Window.CLOSE_ACTION_ID);
                             }
                         }
+
+                        tabSheet.focus();
                     }
                 } else {
                     Iterator<WindowBreadCrumbs> it = tabs.values().iterator();
                     if (it.hasNext()) {
                         it.next().getCurrentWindow().close(Window.CLOSE_ACTION_ID);
                     }
+
+                    ui.focus();
                 }
             }
         };

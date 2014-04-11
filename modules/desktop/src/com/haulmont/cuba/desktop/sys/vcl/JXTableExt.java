@@ -21,6 +21,11 @@ public class JXTableExt extends JXTable implements FocusableTable {
 
     @Override
     protected boolean processKeyBinding(KeyStroke ks, KeyEvent e, int condition, boolean pressed) {
+        // ctrl shift keys are not handled by table
+        if (focusManager.isDisabledKeys(e)) {
+            return false;
+        }
+
         if (focusManager.processKeyBinding(ks, e, condition, pressed))
             return true;
         else

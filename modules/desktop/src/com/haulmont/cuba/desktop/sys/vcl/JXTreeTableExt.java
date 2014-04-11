@@ -26,6 +26,11 @@ public class JXTreeTableExt extends JXTreeTable implements FocusableTable {
 
     @Override
     protected boolean processKeyBinding(KeyStroke ks, KeyEvent e, int condition, boolean pressed) {
+        // ctrl shift keys are not handled by table
+        if (focusManager.isDisabledKeys(e)) {
+            return false;
+        }
+
         if (focusManager.processKeyBinding(ks, e, condition, pressed))
             return true;
         else
@@ -39,7 +44,7 @@ public class JXTreeTableExt extends JXTreeTable implements FocusableTable {
     }
 
     public void backupExpandedNodes() {
-        expandedPaths = new HashSet<TreePath>();
+        expandedPaths = new HashSet<>();
 
         TreeTableModel treeTableModel = getTreeTableModel();
         TreePath rootPath = new TreePath(treeTableModel.getRoot());

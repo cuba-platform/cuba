@@ -144,6 +144,9 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
 
     protected ShortcutListener closeShortcut;
 
+    protected ShortcutListener nextTabShortcut;
+    protected ShortcutListener previousTabShortcut;
+
     public AppWindow(AppUI ui) {
         log.trace("Creating " + this);
         this.ui = ui;
@@ -511,12 +514,32 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
                 tabSheet.setSizeFull();
                 mainLayout.addComponent(tabSheet);
                 mainLayout.setExpandRatio(tabSheet, 1);
+
+                createTabShortcuts();
             }
         }
 
         if (closeShortcut == null)
             closeShortcut = windowManager.createCloseShortcut();
         addAction(closeShortcut);
+    }
+
+    protected void createTabShortcuts() {
+        if (nextTabShortcut == null) {
+            nextTabShortcut = windowManager.createNextWindowTabShortcut();
+
+            ui.addShortcutListener(nextTabShortcut);
+        }
+
+        if (previousTabShortcut == null) {
+            previousTabShortcut = windowManager.createPreviousWindowTabShortcut();
+
+            ui.addShortcutListener(previousTabShortcut);
+        }
+    }
+
+    protected boolean hasDialogWindows() {
+        return !ui.getWindows().isEmpty();
     }
 
     /**

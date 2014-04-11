@@ -324,13 +324,59 @@ public class DesktopWindowManager extends WindowManager {
 
     protected void addShortcuts(final Window window) {
         ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
-        String keys = clientConfig.getCloseShortcut();
-        window.addAction(new com.haulmont.cuba.gui.components.AbstractAction("closeWindowShortcutAction", keys) {
+        String closeShortcut = clientConfig.getCloseShortcut();
+        window.addAction(new com.haulmont.cuba.gui.components.AbstractAction("closeWindowShortcutAction", closeShortcut) {
             @Override
             public void actionPerform(Component component) {
                 window.close("close");
             }
         });
+
+        String previousTabShortcut = clientConfig.getPreviousTabShortcut();
+        window.addAction(new com.haulmont.cuba.gui.components.AbstractAction("onPreviousTab", previousTabShortcut) {
+            @Override
+            public void actionPerform(Component component) {
+                if (window.getWindowManager() != DesktopWindowManager.this) {
+                    // detached tab
+                    return;
+                }
+
+                if (isMainWindowManager && getLastDialogWindow() == null && tabsPane.getTabCount() > 1) {
+                    int selectedIndex = getSelectedTabIndex();
+
+                    int newIndex = (selectedIndex + tabsPane.getTabCount() - 1) % tabsPane.getTabCount();
+                    tabsPane.setSelectedComponent(tabsPane.getComponentAt(newIndex));
+                }
+            }
+        });
+
+        String nextTabShortcut = clientConfig.getNextTabShortcut();
+        window.addAction(new com.haulmont.cuba.gui.components.AbstractAction("onNextTab", nextTabShortcut) {
+            @Override
+            public void actionPerform(Component component) {
+                if (window.getWindowManager() != DesktopWindowManager.this) {
+                    // detached tab
+                    return;
+                }
+
+                if (isMainWindowManager && getLastDialogWindow() == null && tabsPane.getTabCount() > 1) {
+                    int selectedIndex = getSelectedTabIndex();
+
+                    int newIndex = (selectedIndex + 1) % tabsPane.getTabCount();
+                    tabsPane.setSelectedComponent(tabsPane.getComponentAt(newIndex));
+                }
+            }
+        });
+    }
+
+    protected int getSelectedTabIndex() {
+        java.awt.Component selectedComponent = tabsPane.getSelectedComponent();
+        for (int i = 0; i < tabsPane.getTabCount(); i++) {
+            if (selectedComponent == tabsPane.getComponentAt(i)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     protected JDialog showWindowDialog(final Window window, String caption, String description, boolean forciblyDialog) {

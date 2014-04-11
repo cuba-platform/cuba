@@ -137,6 +137,14 @@ public interface ClientConfig extends Config {
     @Property("cuba.gui.filterApplyShortcut")
     String getFilterApplyShortcut();
 
+    @DefaultString("CTRL-SHIFT-PAGE_UP")
+    @Property("cuba.gui.nextTabShortcut")
+    String getNextTabShortcut();
+
+    @DefaultString("CTRL-SHIFT-PAGE_DOWN")
+    @Property("cuba.gui.previousTabShortcut")
+    String getPreviousTabShortcut();
+
     /**
      * @return If false, the client loads all server views on startup.
      * If true, it loads views one by one only when needed.
