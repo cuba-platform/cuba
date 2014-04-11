@@ -92,7 +92,7 @@ public class WebTwinColumn extends WebAbstractOptionsField<CubaTwinColSelect> im
                     newValue = new HashSet();
                 } else {
                     if (newValue instanceof Collection) {
-                        newValue = new HashSet((Collection) newValue);
+                        newValue = new HashSet<>((Collection<?>) newValue);
                     } else {
                         newValue = Collections.singleton(newValue);
                     }
@@ -102,7 +102,7 @@ public class WebTwinColumn extends WebAbstractOptionsField<CubaTwinColSelect> im
                     newValue = new ArrayList();
                 } else {
                     if (newValue instanceof Collection) {
-                        newValue = new ArrayList((Collection) newValue);
+                        newValue = new ArrayList<>((Collection<?>) newValue);
                     } else {
                         newValue = Collections.singletonList(newValue);
                     }
@@ -117,9 +117,9 @@ public class WebTwinColumn extends WebAbstractOptionsField<CubaTwinColSelect> im
             if (value instanceof Collection) {
                 Class propertyType = propertyPath.getMetaProperty().getJavaType();
                 if (Set.class.isAssignableFrom(propertyType)) {
-                    value = new HashSet((Collection) value);
+                    value = new HashSet<>((Collection<?>) value);
                 } else if (List.class.isAssignableFrom(propertyType)) {
-                    value = new LinkedHashSet((Collection) value);
+                    value = new LinkedHashSet<>((Collection<?>) value);
                 }
             }
             return value;
