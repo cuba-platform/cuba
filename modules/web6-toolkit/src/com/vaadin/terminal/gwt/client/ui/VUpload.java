@@ -155,6 +155,7 @@ public class VUpload extends SimplePanel implements Paintable {
       form.encoding = encoding;
     }-*/;
 
+    @Override
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
         if (client.updateComponent(this, uidl, true)) {
             return;
@@ -202,6 +203,12 @@ public class VUpload extends SimplePanel implements Paintable {
             // Enable the button only if an upload is not in progress
             enableUpload();
             ensureTargetFrame();
+        }
+
+        if (uidl.hasAttribute("accept")) {
+            fu.getElement().setAttribute("accept", uidl.getStringAttribute("accept"));
+        } else {
+            fu.getElement().removeAttribute("accept");
         }
     }
 

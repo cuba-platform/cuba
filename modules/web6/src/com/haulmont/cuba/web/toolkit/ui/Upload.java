@@ -9,12 +9,19 @@ import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import org.apache.commons.lang.StringUtils;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 @SuppressWarnings("serial")
 public class Upload extends com.vaadin.ui.Upload {
 
     private String action;
     private String buttonWidth;
-    
+
+    // permitted mime types, comma separated
+    private String accept;
+
     public Upload(String caption, Receiver uploadReceiver) {
         super(caption, uploadReceiver);
     }
@@ -32,6 +39,10 @@ public class Upload extends com.vaadin.ui.Upload {
         String currentWindowName = App.getInstance().getCurrentWindowName();
         if (StringUtils.isNotEmpty(currentWindowName))
             target.addAttribute("windowName", currentWindowName);
+
+        if (StringUtils.isNotEmpty(accept)) {
+            target.addAttribute("accept", accept);
+        }
     }
 
     public String getAction() {
@@ -50,5 +61,13 @@ public class Upload extends com.vaadin.ui.Upload {
     public void setButtonWidth(String buttonWidth) {
         this.buttonWidth = buttonWidth;
         requestRepaint();
+    }
+
+    public String getAccept() {
+        return accept;
+    }
+
+    public void setAccept(String accept) {
+        this.accept = accept;
     }
 }
