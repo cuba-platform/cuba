@@ -110,6 +110,25 @@ public class WebTwinColumn extends WebAbstractOptionsField<CubaTwinColSelect> im
             }
             super.setValue(newValue);
         }
+
+        @Override
+        public Object getValue() {
+            Object value = super.getValue();
+            if (value instanceof Collection) {
+                Class propertyType = propertyPath.getMetaProperty().getJavaType();
+                if (Set.class.isAssignableFrom(propertyType)) {
+                    value = new HashSet((Collection) value);
+                } else if (List.class.isAssignableFrom(propertyType)) {
+                    value = new LinkedHashSet((Collection) value);
+                }
+            }
+            return value;
+        }
+
+        @Override
+        public Class getType() {
+            return Object.class;
+        }
     }
 
     @Override

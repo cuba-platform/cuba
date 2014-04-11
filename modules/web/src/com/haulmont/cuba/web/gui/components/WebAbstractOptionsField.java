@@ -57,7 +57,7 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
             throw new RuntimeException("Metaproperty name is possibly wrong: " + property, e);
         }
 
-        if (metaProperty.getRange().getCardinality() != null){
+        if (metaProperty.getRange().getCardinality() != null) {
             setMultiSelect(metaProperty.getRange().getCardinality().isMany());
         }
 
