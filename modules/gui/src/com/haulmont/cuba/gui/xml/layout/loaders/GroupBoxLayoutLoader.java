@@ -31,7 +31,6 @@ public class GroupBoxLayoutLoader extends ContainerLoader implements com.haulmon
         loadId(component, element);
 
         loadCaption(component, element);
-        loadDescription(component, element);
 
         if (StringUtils.isEmpty(component.getCaption())) {
             // for backward compatibility

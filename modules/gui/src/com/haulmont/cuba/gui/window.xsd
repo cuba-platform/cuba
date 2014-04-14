@@ -1223,7 +1223,7 @@
         <xs:group ref="layoutOrComponent" minOccurs="0"/>
 
         <xs:attributeGroup ref="hasId"/>
-        <xs:attributeGroup ref="hasCaption"/>
+        <xs:attributeGroup ref="hasCaptionProp"/>
         <xs:attributeGroup ref="hasSize"/>
         <xs:attributeGroup ref="hasStyle"/>
         <xs:attributeGroup ref="hasExpand"/>
