@@ -4,13 +4,18 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
+import com.haulmont.cuba.gui.xml.layout.*;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author abramov
@@ -33,14 +38,53 @@ public class LookupFieldLoader extends AbstractFieldLoader {
         }
 
         String nullName = element.attributeValue("nullName");
-        if (!StringUtils.isEmpty(nullName)) {
+        if (StringUtils.isNotEmpty(nullName)) {
             nullName = loadResourceString(nullName);
             component.setNullOption(nullName);
         }
 
         loadFilterMode(component, element);
+        loadNewOptionHandler(component, element);
 
         return component;
+    }
+
+    protected void loadNewOptionHandler(final LookupField component, Element element) {
+        String newOptionAllowed = element.attributeValue("newOptionAllowed");
+        if (StringUtils.isNotEmpty(newOptionAllowed)) {
+            component.setNewOptionAllowed(Boolean.valueOf(newOptionAllowed));
+        }
+
+        final String newOptionHandlerMethod = element.attributeValue("newOptionHandler");
+        if (StringUtils.isNotEmpty(newOptionHandlerMethod)) {
+            context.addPostInitTask(new PostInitTask() {
+                @Override
+                public void execute(Context context, final IFrame window) {
+                    final Method newOptionHandler;
+                    try {
+                        newOptionHandler = window.getClass().getMethod(newOptionHandlerMethod, LookupField.class, String.class);
+                    } catch (NoSuchMethodException e) {
+                        Map<String, Object> params = new HashMap<>(2);
+                        params.put("LookupField Id", component.getId());
+                        params.put("Method name", newOptionHandlerMethod);
+
+                        throw new GuiDevelopmentException("Unable to find new option handler method for lookup field",
+                                context.getFullFrameId(), params);
+                    }
+
+                    component.setNewOptionHandler(new LookupField.NewOptionHandler() {
+                        @Override
+                        public void addNewOption(String caption) {
+                            try {
+                                newOptionHandler.invoke(window, component, caption);
+                            } catch (IllegalAccessException | InvocationTargetException e) {
+                                throw new RuntimeException("Unable to invoke new option handler", e);
+                            }
+                        }
+                    });
+                }
+            });
+        }
     }
 
     @Override
