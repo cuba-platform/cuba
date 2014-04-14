@@ -11,9 +11,12 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.user.client.DOM;
+import com.haulmont.cuba.web.toolkit.ui.client.logging.ActiveClientLogger;
 import com.haulmont.cuba.web.toolkit.ui.client.logging.ClientLogger;
 import com.haulmont.cuba.web.toolkit.ui.client.logging.ClientLoggerFactory;
+import com.vaadin.client.VConsole;
 import com.vaadin.client.ui.VFilterSelect;
+import com.vaadin.client.ui.VVerticalLayout;
 import com.vaadin.client.ui.menubar.MenuItem;
 
 /**
@@ -30,7 +33,7 @@ public class CubaSearchSelectWidget extends VFilterSelect {
 
     protected boolean keyboardNavigation = false;
 
-    protected ClientLogger logger = ClientLoggerFactory.getLogger("CubaSearchSelect");
+    protected ClientLogger logger = new ActiveClientLogger("CSS"); // ClientLoggerFactory.getLogger("CubaSearchSelect");
 
     @Override
     public void filterOptions(int page, String filter) {
@@ -149,11 +152,14 @@ public class CubaSearchSelectWidget extends VFilterSelect {
             tabPressedWhenPopupOpen = false;
             suggestionPopup.menu.doSelectedItemAction();
             suggestionPopup.hide();
-        } else if (!suggestionPopup.isAttached()
-                || suggestionPopup.isJustClosed()) {
-            if (currentSuggestion == null ||
-                    !currentSuggestion.getReplacementString().equals(tb.getText()))
+        } else if (!suggestionPopup.isAttached() || suggestionPopup.isJustClosed()) {
+            if (currentSuggestion == null) {
+                if (tb.getText() != null && !"".equals(tb.getText().trim())) {
+                    suggestionPopup.menu.doSelectedItemAction();
+                }
+            } else if (!currentSuggestion.getReplacementString().equals(tb.getText())) {
                 suggestionPopup.menu.doSelectedItemAction();
+            }
         }
     }
 
