@@ -7,19 +7,19 @@ package com.haulmont.cuba.web;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.web.auth.ActiveDirectoryConnection;
 import com.haulmont.cuba.web.auth.ActiveDirectoryHelper;
 import com.haulmont.cuba.web.auth.DomainAliasesResolver;
 import com.haulmont.cuba.web.sys.Browser;
-import com.haulmont.cuba.gui.TestIdManager;
-import com.haulmont.cuba.web.sys.CubaVaadinSession;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.ui.CubaCheckBox;
 import com.vaadin.data.Property;
 import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.Sizeable;
+import com.vaadin.server.VaadinService;
 import com.vaadin.server.WebBrowser;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
@@ -507,7 +507,7 @@ public class LoginWindow extends UIView implements Action.Handler {
         }
 
         if (webConfig.getUseSessionFixationProtection()) {
-            CubaVaadinSession.getCurrent().reinitialize();
+            VaadinService.reinitializeSession(VaadinService.getCurrentRequest());
         }
     }
 
