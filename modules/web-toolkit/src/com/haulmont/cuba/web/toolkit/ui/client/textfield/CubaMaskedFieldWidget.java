@@ -42,6 +42,8 @@ public class CubaMaskedFieldWidget extends VTextField {
 
     protected MaskedKeyHandler keyHandler;
 
+    protected int tabIndex = 0;
+
     public CubaMaskedFieldWidget() {
         setStylePrimaryName(CLASSNAME);
         setStyleName(CLASSNAME);
@@ -92,6 +94,31 @@ public class CubaMaskedFieldWidget extends VTextField {
         if (pos < 0)
             return getNextPos(pos);
         return pos;
+    }
+
+    @Override
+    public void setTabIndex(int index) {
+        if (!isReadOnly()) {
+            super.setTabIndex(index);
+        }
+
+        this.tabIndex = index;
+    }
+
+    @Override
+    public int getTabIndex() {
+        return tabIndex;
+    }
+
+    @Override
+    public void setReadOnly(boolean readOnly) {
+        super.setReadOnly(readOnly);
+
+        if (readOnly) {
+            super.setTabIndex(-1);
+        } else {
+            super.setTabIndex(tabIndex);
+        }
     }
 
     @Override

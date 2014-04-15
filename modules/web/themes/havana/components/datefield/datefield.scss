@@ -8,7 +8,7 @@
 @mixin havana-datefield($primaryStyleName : cuba-datefield) {
   @include base-datefield($primaryStyleName);
 
-  .#{$primaryStyleName}  {
+  .#{$primaryStyleName} {
     white-space: nowrap;
 
     input.#{$primaryStyleName}-empty {
@@ -17,6 +17,10 @@
 
     input.#{$primaryStyleName}-empty:focus {
       color: inherit;
+    }
+
+    input.#{$primaryStyleName}-empty.v-readonly:focus {
+      color: #ccc;
     }
   }
 

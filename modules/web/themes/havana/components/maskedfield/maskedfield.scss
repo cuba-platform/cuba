@@ -5,7 +5,7 @@
 
 // Version: $Id$
 
-@mixin havana-maskedfield($primaryStyleName: cuba-maskedfield){
+@mixin havana-maskedfield($primaryStyleName: cuba-maskedfield) {
   @include havana-textfield($primaryStyleName);
 
   .v-ui,
@@ -18,7 +18,7 @@
       color: inherit;
     }
 
-    input.#{$primaryStyleName}-empty.#{$primaryStyleName}-readonly:focus {
+    input.#{$primaryStyleName}-empty.v-readonly:focus {
       color: #ccc;
     }
   }
