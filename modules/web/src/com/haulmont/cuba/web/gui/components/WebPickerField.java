@@ -29,6 +29,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 
@@ -110,8 +111,10 @@ public class WebPickerField
 
     @Override
     public void setValue(Object value) {
-        if (component.isReadOnly())
+        if (component.isReadOnly()) {
+            LogFactory.getLog(getClass()).debug("Set value for non editable field ignored");
             return;
+        }
 
         if (value != null) {
             if (datasource == null && metaClass == null) {
