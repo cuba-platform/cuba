@@ -165,6 +165,7 @@ public class DesktopSplitPanel
                 this.applyNewPosition = false;
 
                 impl.setDividerLocation(Integer.valueOf(value));
+                impl.setResizeWeight(position / 100.0);
             }
         }
     }
