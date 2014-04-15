@@ -14,6 +14,7 @@ import org.dom4j.Element;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.*;
+import java.awt.*;
 import java.util.*;
 
 /**
@@ -24,12 +25,30 @@ public class DesktopSplitPanel
         extends DesktopAbstractComponent<JSplitPane>
         implements SplitPanel, Component.HasSettings {
 
+    protected boolean applyNewPosition = true;
+    protected int position = 50;
+
     protected Map<String, Component> componentByIds = new HashMap<>();
     protected Collection<Component> ownComponents = new LinkedHashSet<>();
 
     public DesktopSplitPanel() {
-        impl = new JSplitPane();
-        impl.setResizeWeight(0.5);
+        impl = new JSplitPane() {
+            @Override
+            public void paint(Graphics g) {
+                super.paint(g);
+
+                if (applyNewPosition) {
+                    double ratio = position / 100.0;
+
+                    impl.setDividerLocation(ratio);
+                    impl.setResizeWeight(ratio);
+                    applyNewPosition = false;
+                }
+            }
+        };
+
+        impl.getLeftComponent().setMinimumSize(new Dimension());
+        impl.getRightComponent().setMinimumSize(new Dimension());
     }
 
     @Override
@@ -44,9 +63,15 @@ public class DesktopSplitPanel
 
     @Override
     public void setSplitPosition(int pos) {
-        if (pos < 0 || pos > 100)
+        if (pos < 0 || pos > 100) {
             throw new IllegalArgumentException("Split position must be between 0 and 100");
-        impl.setResizeWeight(pos / 100.0);
+        }
+
+        this.position = pos;
+        this.applyNewPosition = true;
+
+        impl.revalidate();
+        impl.repaint();
     }
 
     @Override
@@ -72,10 +97,12 @@ public class DesktopSplitPanel
     @Override
     public void add(Component component) {
         JComponent jComponent = DesktopComponentsHelper.getComposition(component);
-        if (ownComponents.isEmpty())
+        jComponent.setMinimumSize(new Dimension());
+        if (ownComponents.isEmpty()) {
             impl.setLeftComponent(jComponent);
-        else
+        } else {
             impl.setRightComponent(jComponent);
+        }
 
         if (component.getId() != null) {
             componentByIds.put(component.getId(), component);
@@ -142,8 +169,9 @@ public class DesktopSplitPanel
     @Override
     public boolean saveSettings(Element element) {
         int location = impl.getLastDividerLocation();
-        if (location < 0)
+        if (location < 0) {
             return false; // most probably user didn't change the divider location
+        }
 
         Element e = element.element("position");
         if (e == null)
