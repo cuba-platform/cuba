@@ -100,10 +100,8 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
 
     @Override
     public void setValue(Object value) {
-        if (!isEditable()) {
-            LogFactory.getLog(getClass()).debug("Set value for non editable field ignored");
+        if (!isEditable())
             return;
-        }
 
         Datatype datatype = getActualDatatype();
         if (!(value instanceof String) && datatype != null) {

@@ -191,10 +191,8 @@ public class DesktopPickerField extends DesktopAbstractField<Picker> implements 
 
     @Override
     public void setValue(Object value) {
-        if (!isEditable()) {
-            log.debug("Set value for non editable field ignored");
+        if (!isEditable())
             return;
-        }
 
         if (datasource == null && metaClass == null) {
             throw new IllegalStateException("Datasource or metaclass must be set for field");

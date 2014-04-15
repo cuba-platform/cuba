@@ -28,7 +28,6 @@ import com.vaadin.data.Property;
 import com.vaadin.ui.HorizontalLayout;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.LogFactory;
 
 import java.sql.Time;
 import java.util.Calendar;
@@ -217,7 +216,6 @@ public class WebDateField extends WebAbstractField<DateFieldWrapper> implements 
     @Override
     public void setValue(Object value) {
         if (!editable) {
-            LogFactory.getLog(getClass()).debug("Set value for non editable field ignored");
             return;
         }
 
