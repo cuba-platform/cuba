@@ -743,7 +743,7 @@ public class WebWindowManager extends WindowManager {
         if (modified) {
             showOptionDialog(
                     messages.getMessage(WebWindow.class, "closeUnsaved.caption"),
-                    messages.getMessage(WebWindow.class, "closeUnsaved"),
+                    messages.getMessage(WebWindow.class, "discardChangesOnClose"),
                     IFrame.MessageType.WARNING,
                     new Action[]{
                             new AbstractAction(messages.getMessage(WebWindow.class, "actions.Yes")) {
