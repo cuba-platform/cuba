@@ -161,6 +161,9 @@ public class DesktopSplitPanel
         if (e != null) {
             String value = e.attributeValue("value");
             if (!StringUtils.isBlank(value)) {
+                // ignore defaults
+                this.applyNewPosition = false;
+
                 impl.setDividerLocation(Integer.valueOf(value));
             }
         }
