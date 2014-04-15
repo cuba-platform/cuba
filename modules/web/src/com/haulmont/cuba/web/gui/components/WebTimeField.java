@@ -80,8 +80,12 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implemen
                             component.setComponentError(null);
                         if (targetType == java.sql.Time.class) {
                             return new Time(date.getTime());
-                        } else
-                            return date;
+                        }
+                        if (targetType == java.sql.Date.class) {
+                            log.warn("Do not use java.sql.Date with time field");
+                            return new java.sql.Date(date.getTime());
+                        }
+                        return date;
                     } catch (Exception e) {
                         log.debug("Unable to parse value of component " + getId() + "\n" + e.getMessage());
                         throw new ConversionException("Invalid value");
