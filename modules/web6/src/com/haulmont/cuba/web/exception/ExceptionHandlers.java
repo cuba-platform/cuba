@@ -11,8 +11,7 @@ import com.vaadin.terminal.Terminal;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Class that holds the collection of exception handlers and delegates unhandled exception processing to them. Handlers
@@ -92,7 +91,12 @@ public class ExceptionHandlers {
      */
     public void createByConfiguration() {
         Map<String, ExceptionHandlersConfiguration> map = AppBeans.getAll(ExceptionHandlersConfiguration.class);
-        for (ExceptionHandlersConfiguration conf : map.values()) {
+
+        // Project-level handlers must run before platform-level
+        List<ExceptionHandlersConfiguration> configurations = new ArrayList<>(map.values());
+        Collections.reverse(configurations);
+
+        for (ExceptionHandlersConfiguration conf : configurations) {
             for (Class aClass : conf.getHandlerClasses()) {
                 try {
                     addHandler(ReflectionHelper.<ExceptionHandler>newInstance(aClass));
