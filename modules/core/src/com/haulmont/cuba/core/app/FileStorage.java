@@ -74,7 +74,7 @@ public class FileStorage implements FileStorageAPI {
     }
 
     @Override
-    public void saveStream(final FileDescriptor fileDescr, final InputStream inputStream) throws FileStorageException {
+    public long saveStream(final FileDescriptor fileDescr, final InputStream inputStream) throws FileStorageException {
         checkNotNull(fileDescr, "No file descriptor");
         checkNotNull(fileDescr.getCreateDate(), "Empty creation date");
 
@@ -100,10 +100,11 @@ public class FileStorage implements FileStorageAPI {
         if (file.exists())
             throw new FileStorageException(FileStorageException.Type.FILE_ALREADY_EXISTS, file.getAbsolutePath());
 
+        long size = 0;
         OutputStream os = null;
         try {
             os = FileUtils.openOutputStream(file);
-            IOUtils.copy(inputStream, os);
+            size = IOUtils.copyLarge(inputStream, os);
             os.flush();
             writeLog(file, false);
         } catch (IOException e) {
@@ -138,6 +139,8 @@ public class FileStorage implements FileStorageAPI {
                 }
             });
         }
+
+        return size;
     }
 
     @Override

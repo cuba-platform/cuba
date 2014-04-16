@@ -24,9 +24,10 @@ public interface FileStorageAPI {
      * Save an InputStream contents into file storage.
      * @param fileDescr             file descriptor
      * @param inputStream           input stream, must be closed in the calling code
+     * @return                      number of bytes saved
      * @throws FileStorageException if something goes wrong
      */
-    void saveStream(FileDescriptor fileDescr, InputStream inputStream) throws FileStorageException;
+    long saveStream(FileDescriptor fileDescr, InputStream inputStream) throws FileStorageException;
 
     /**
      * Save a byte array into file storage.
