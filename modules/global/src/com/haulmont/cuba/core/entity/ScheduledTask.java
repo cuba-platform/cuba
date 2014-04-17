@@ -386,6 +386,7 @@ public class ScheduledTask extends BaseUuidEntity implements Updatable, SoftDele
     @Override
     public String toString() {
         return "ScheduledTask{" +
+                id + ", " +
                 beanName + '.' + methodName +
                 (BooleanUtils.isTrue(singleton) ? ", singleton" : "") +
                 ", period=" + period +
