@@ -7,12 +7,9 @@ package com.haulmont.cuba.client.sys.config;
 
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.config.type.TypeFactory;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.EntityLoadInfo;
 import com.haulmont.cuba.core.global.LoadContext;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -23,8 +20,6 @@ import javax.inject.Inject;
  */
 @ManagedBean(TypeFactory.ENTITY_FACTORY_BEAN_NAME)
 public class EntityFactory extends TypeFactory {
-
-    private static Log log = LogFactory.getLog(EntityFactory.class);
 
     @Inject
     private DataService ds;
@@ -40,13 +35,6 @@ public class EntityFactory extends TypeFactory {
         LoadContext ctx = new LoadContext(info.getMetaClass()).setId(info.getId());
         if (info.getViewName() != null)
             ctx.setView(info.getViewName());
-        Entity entity;
-        try {
-            entity = ds.load(ctx);
-        } catch (Exception e) {
-            log.warn("Unable to load item: " + info, e);
-            return null;
-        }
-        return entity;
+        return ds.load(ctx);
     }
 }
