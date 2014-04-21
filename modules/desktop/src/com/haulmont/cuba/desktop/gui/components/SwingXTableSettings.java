@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.desktop.DesktopConfig;
 import com.haulmont.cuba.gui.components.Table;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -49,8 +50,9 @@ public class SwingXTableSettings implements TableSettings {
         saveFontPreferences(element);
 
         Element columnsElem = element.element("columns");
-        if (columnsElem != null)
+        if (columnsElem != null) {
             element.remove(columnsElem);
+        }
         columnsElem = element.addElement("columns");
 
         List<TableColumn> columns = table.getColumns(true);
@@ -59,10 +61,12 @@ public class SwingXTableSettings implements TableSettings {
                 new Comparator<TableColumn>() {
                     @Override
                     public int compare(TableColumn col1, TableColumn col2) {
-                        if (col1 instanceof TableColumnExt && !((TableColumnExt) col1).isVisible())
+                        if (col1 instanceof TableColumnExt && !((TableColumnExt) col1).isVisible()) {
                             return 1;
-                        if (col2 instanceof TableColumnExt && !((TableColumnExt) col2).isVisible())
+                        }
+                        if (col2 instanceof TableColumnExt && !((TableColumnExt) col2).isVisible()) {
                             return -1;
+                        }
                         TableColumnModel model = table.getColumnModel();
                         int i1 = model.getColumnIndex(col1.getIdentifier());
                         int i2 = model.getColumnIndex(col2.getIdentifier());
@@ -99,18 +103,38 @@ public class SwingXTableSettings implements TableSettings {
     @Override
     public void apply(Element element, boolean sortable) {
         String horizontalScroll = element.attributeValue("horizontalScroll");
-        if (!StringUtils.isBlank(horizontalScroll))
+        if (!StringUtils.isBlank(horizontalScroll)) {
             table.setHorizontalScrollEnabled(Boolean.valueOf(horizontalScroll));
+        }
 
         loadFontPreferences(element);
 
         final Element columnsElem = element.element("columns");
-        if (columnsElem == null)
+        if (columnsElem == null) {
             return;
+        }
 
+        Collection<String> modelIds = new LinkedList<>();
+        for (TableColumn modelColumn : table.getColumns(true)) {
+            modelIds.add(String.valueOf(modelColumn.getIdentifier()));
+        }
+
+        Collection<String> loadedIds = new LinkedList<>();
+        for (Element colElem : Dom4j.elements(columnsElem, "column")) {
+            String id = colElem.attributeValue("id");
+            loadedIds.add(id);
+        }
+
+        if (CollectionUtils.isEqualCollection(modelIds, loadedIds)) {
+            applyColumnSettings(sortable, columnsElem);
+        }
+    }
+
+    protected void applyColumnSettings(boolean sortable, Element columnsElem) {
         // do not allow dublicates
-        Collection<Object> sequence = new LinkedHashSet<>();
+        Collection<Table.Column> sequence = new LinkedHashSet<>();
         List<TableColumnExt> invisible = new ArrayList<>();
+
         for (Element colElem : Dom4j.elements(columnsElem, "column")) {
             String id = colElem.attributeValue("id");
             Table.Column column = getColumn(id);
@@ -120,12 +144,14 @@ public class SwingXTableSettings implements TableSettings {
                 TableColumnExt tableColumn = table.getColumnExt(column);
 
                 String width = colElem.attributeValue("width");
-                if ((width != null) && (tableColumn != null))
+                if ((width != null) && (tableColumn != null)) {
                     tableColumn.setPreferredWidth(Integer.valueOf(width));
+                }
 
                 String visible = colElem.attributeValue("visible");
-                if (visible != null && !Boolean.valueOf(visible))
+                if (visible != null && !Boolean.valueOf(visible)) {
                     invisible.add(tableColumn);
+                }
             }
         }
         table.setColumnSequence(sequence.toArray(new Object[sequence.size()]));
@@ -222,8 +248,9 @@ public class SwingXTableSettings implements TableSettings {
 
     protected Table.Column getColumn(String id) {
         for (Table.Column column : columns) {
-            if (column.getId().toString().equals(id))
+            if (column.getId().toString().equals(id)) {
                 return column;
+            }
         }
         return null;
     }

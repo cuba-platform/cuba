@@ -86,8 +86,8 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
     }
 
     @Override
-    public void applySettings(Element element) {
-        super.applySettings(element);
+    public void applyColumnSettings(Element element) {
+        super.applyColumnSettings(element);
 
         final Element groupPropertiesElement = element.element("groupProperties");
         if (groupPropertiesElement != null) {

@@ -34,8 +34,7 @@ import java.util.*;
  * @author gorodnov
  * @version $Id$
  */
-public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolkit.ui.GroupTable>
-        implements GroupTable {
+public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolkit.ui.GroupTable> implements GroupTable {
 
     protected Map<Table.Column, GroupAggregationCells> groupAggregationCells = null;
 
@@ -92,15 +91,15 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
     }
 
     @Override
-    public void applySettings(Element element) {
-        super.applySettings(element);
+    public void applyColumnSettings(Element element) {
+        super.applyColumnSettings(element);
 
         final Element groupPropertiesElement = element.element("groupProperties");
         if (groupPropertiesElement != null) {
             final List elements = groupPropertiesElement.elements("property");
-            final List<MetaPropertyPath> properties = new ArrayList<MetaPropertyPath>(elements.size());
+            final List<MetaPropertyPath> properties = new ArrayList<>(elements.size());
             for (final Object o : elements) {
-                final MetaPropertyPath property = datasource.getMetaClass().getPropertyEx(
+                final MetaPropertyPath property = datasource.getMetaClass().getPropertyPath(
                         ((Element) o).attributeValue("id")
                 );
                 properties.add(property);

@@ -52,6 +52,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextArea;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -1035,58 +1036,75 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     public void applySettings(Element element) {
         final Element columnsElem = element.element("columns");
         if (columnsElem != null) {
-            Object[] oldColumns = component.getVisibleColumns();
-            List<Object> newColumns = new ArrayList<>();
-            // add columns from saved settings
+            Collection<String> modelIds = new LinkedList<>();
+            for (Object column : component.getVisibleColumns()) {
+                modelIds.add(String.valueOf(column));
+            }
+
+            Collection<String> loadedIds = new LinkedList<>();
             for (Element colElem : Dom4j.elements(columnsElem, "columns")) {
-                for (Object column : oldColumns) {
-                    if (column.toString().equals(colElem.attributeValue("id"))) {
-                        newColumns.add(column);
-
-                        String width = colElem.attributeValue("width");
-                        if (width != null)
-                            component.setColumnWidth(column, Integer.valueOf(width));
-
-                        String visible = colElem.attributeValue("visible");
-                        if (visible != null) {
-                            if (component.isColumnCollapsingAllowed()) { // throws exception if not
-                                component.setColumnCollapsed(column, !Boolean.valueOf(visible));
-                            }
-                        }
-                        break;
-                    }
-                }
+                loadedIds.add(colElem.attributeValue("id"));
             }
-            // add columns not saved in settings (perhaps new)
+
+            if (CollectionUtils.isEqualCollection(modelIds, loadedIds)) {
+                applyColumnSettings(columnsElem);
+            }
+        }
+    }
+
+    protected void applyColumnSettings(Element columnsElem) {
+        Object[] oldColumns = component.getVisibleColumns();
+        List<Object> newColumns = new ArrayList<>();
+        // add columns from saved settings
+        for (Element colElem : Dom4j.elements(columnsElem, "columns")) {
             for (Object column : oldColumns) {
-                if (!newColumns.contains(column)) {
+                if (column.toString().equals(colElem.attributeValue("id"))) {
                     newColumns.add(column);
-                }
-            }
-            // if the table contains only one column, always show it
-            if (newColumns.size() == 1) {
-                if (component.isColumnCollapsingAllowed()) { // throws exception if not
-                    component.setColumnCollapsed(newColumns.get(0), false);
-                }
-            }
 
-            component.setVisibleColumns(newColumns.toArray());
-
-            if (isSortable()) {
-                //apply sorting
-                String sortProp = columnsElem.attributeValue("sortProperty");
-                if (!StringUtils.isEmpty(sortProp)) {
-                    MetaPropertyPath sortProperty = datasource.getMetaClass().getPropertyPath(sortProp);
-                    if (newColumns.contains(sortProperty)) {
-                        boolean sortAscending = BooleanUtils.toBoolean(columnsElem.attributeValue("sortAscending"));
-
-                        component.setSortContainerPropertyId(null);
-                        component.setSortAscending(sortAscending);
-                        component.setSortContainerPropertyId(sortProperty);
+                    String width = colElem.attributeValue("width");
+                    if (width != null) {
+                        component.setColumnWidth(column, Integer.valueOf(width));
                     }
-                } else {
-                    component.setSortContainerPropertyId(null);
+
+                    String visible = colElem.attributeValue("visible");
+                    if (visible != null) {
+                        if (component.isColumnCollapsingAllowed()) { // throws exception if not
+                            component.setColumnCollapsed(column, !Boolean.valueOf(visible));
+                        }
+                    }
+                    break;
                 }
+            }
+        }
+        // add columns not saved in settings (perhaps new)
+        for (Object column : oldColumns) {
+            if (!newColumns.contains(column)) {
+                newColumns.add(column);
+            }
+        }
+        // if the table contains only one column, always show it
+        if (newColumns.size() == 1) {
+            if (component.isColumnCollapsingAllowed()) { // throws exception if not
+                component.setColumnCollapsed(newColumns.get(0), false);
+            }
+        }
+
+        component.setVisibleColumns(newColumns.toArray());
+
+        if (isSortable()) {
+            //apply sorting
+            String sortProp = columnsElem.attributeValue("sortProperty");
+            if (!StringUtils.isEmpty(sortProp)) {
+                MetaPropertyPath sortProperty = datasource.getMetaClass().getPropertyPath(sortProp);
+                if (newColumns.contains(sortProperty)) {
+                    boolean sortAscending = BooleanUtils.toBoolean(columnsElem.attributeValue("sortAscending"));
+
+                    component.setSortContainerPropertyId(null);
+                    component.setSortAscending(sortAscending);
+                    component.setSortContainerPropertyId(sortProperty);
+                }
+            } else {
+                component.setSortContainerPropertyId(null);
             }
         }
     }
