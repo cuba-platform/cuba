@@ -28,7 +28,7 @@ public class WebTasksWatchDog extends TasksWatchDog {
     protected boolean checkHangup(long actualTimeMs, TaskHandlerImpl taskHandler) {
         WebConfig webConfig = configuration.getConfig(WebConfig.class);
 
-        long timeout = taskHandler.getStartTimeStamp();
+        long timeout = taskHandler.getTimeoutMs();
         long latencyMs = TimeUnit.SECONDS.toMillis(webConfig.getClientBackgroundTasksLatencySeconds());
 
         // kill tasks, which do not update status for latency milliseconds
