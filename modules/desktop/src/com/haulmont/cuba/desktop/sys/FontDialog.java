@@ -5,11 +5,13 @@
 
 package com.haulmont.cuba.desktop.sys;
 
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.DesktopConfig;
 import com.haulmont.cuba.desktop.DesktopResources;
+import com.haulmont.cuba.desktop.TopLevelFrame;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.desktop.sys.vcl.CollapsiblePanel;
 import org.jdesktop.swingx.combobox.ListComboBoxModel;
@@ -34,11 +36,13 @@ public class FontDialog extends JDialog {
     private Font editFont;
 
     private JLabel previewLabel;
-    private JToggleButton boldToogle;
-    private JToggleButton italicToogle;
-    private JToggleButton underlineToogle;
+    private JToggleButton boldToggle;
+    private JToggleButton italicToggle;
+    private JToggleButton underlineToggle;
     private JComboBox fontSizeBox;
     private JComboBox fontFamilyBox;
+
+    private Messages messages;
 
     public FontDialog(Frame parent, Font editFont) {
         super(parent);
@@ -61,16 +65,25 @@ public class FontDialog extends JDialog {
 
     private void initDialog(Component parent, Font editFont) {
         this.editFont = editFont;
+        this.messages = AppBeans.get(Messages.NAME);
 
         setLocationRelativeTo(parent);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setTitle(MessageProvider.getMessage(getClass(), "FontDialog.title"));
+        setTitle(messages.getMessage(getClass(), "FontDialog.title"));
 
         addWindowListener(
                 new WindowAdapter() {
                     @Override
                     public void windowClosed(WindowEvent e) {
-                        DesktopComponentsHelper.getTopLevelFrame(FontDialog.this).activate();
+                        TopLevelFrame topLevelFrame = DesktopComponentsHelper.getTopLevelFrame(FontDialog.this);
+                        DesktopWindowManager wm = topLevelFrame.getWindowManager();
+
+                        DialogWindow lastDialogWindow = wm.getLastDialogWindow();
+                        if (lastDialogWindow == null) {
+                            topLevelFrame.activate();
+                        } else {
+                            lastDialogWindow.enableWindow();
+                        }
                     }
                 }
         );
@@ -79,7 +92,7 @@ public class FontDialog extends JDialog {
     }
 
     private void initUI() {
-        DesktopConfig desktopConfig = ConfigProvider.getConfig(DesktopConfig.class);
+        DesktopConfig desktopConfig = AppBeans.get(Configuration.class).getConfig(DesktopConfig.class);
 
         setIconImage(null);
         setIconImages(null);
@@ -99,34 +112,34 @@ public class FontDialog extends JDialog {
         fontFamilyBox = new JComboBox();
         fontFamilyBox.setPreferredSize(new Dimension(160, -1));
         String[] availableFonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
-        fontFamilyBox.setModel(new DefaultComboBoxModel(availableFonts));
+        fontFamilyBox.setModel(new DefaultComboBoxModel<>(availableFonts));
 
         fontSizeBox = new JComboBox();
         fontSizeBox.setPreferredSize(new Dimension(60, -1));
         fontSizeBox.setMaximumSize(new Dimension(60, Integer.MAX_VALUE));
         fontSizeBox.setMinimumSize(new Dimension(60, 0));
-        fontSizeBox.setModel(new ListComboBoxModel<Integer>(desktopConfig.getAvailableFontSizes()));
+        fontSizeBox.setModel(new ListComboBoxModel<>(desktopConfig.getAvailableFontSizes()));
 
         DesktopResources resources = App.getInstance().getResources();
-        boldToogle = new JToggleButton(resources.getIcon("font/bold.png"));
-        italicToogle = new JToggleButton(resources.getIcon("font/italic.png"));
-        underlineToogle = new JToggleButton(resources.getIcon("font/underline.png"));
+        boldToggle = new JToggleButton(resources.getIcon("font/bold.png"));
+        italicToggle = new JToggleButton(resources.getIcon("font/italic.png"));
+        underlineToggle = new JToggleButton(resources.getIcon("font/underline.png"));
 
         fontPrefsPanel.add(fontFamilyBox);
         fontPrefsPanel.add(fontSizeBox);
-        fontPrefsPanel.add(boldToogle);
-        fontPrefsPanel.add(italicToogle);
-        fontPrefsPanel.add(underlineToogle);
+        fontPrefsPanel.add(boldToggle);
+        fontPrefsPanel.add(italicToggle);
+        fontPrefsPanel.add(underlineToggle);
 
         if (editFont != null) {
             fontFamilyBox.setSelectedItem(editFont.getFamily());
             fontSizeBox.setSelectedItem(editFont.getSize());
-            // toogle buttons
+            // toggle buttons
             Map<TextAttribute, ?> attributes = editFont.getAttributes();
 
-            boldToogle.setSelected((editFont.getStyle() & Font.BOLD) == Font.BOLD);
-            italicToogle.setSelected((editFont.getStyle() & Font.ITALIC) == Font.ITALIC);
-            underlineToogle.setSelected(attributes.get(TextAttribute.UNDERLINE) == TextAttribute.UNDERLINE_ON);
+            boldToggle.setSelected((editFont.getStyle() & Font.BOLD) == Font.BOLD);
+            italicToggle.setSelected((editFont.getStyle() & Font.ITALIC) == Font.ITALIC);
+            underlineToggle.setSelected(attributes.get(TextAttribute.UNDERLINE) == TextAttribute.UNDERLINE_ON);
         } else {
             fontFamilyBox.setSelectedIndex(0);
             fontSizeBox.setSelectedIndex(0);
@@ -152,7 +165,7 @@ public class FontDialog extends JDialog {
 
         CollapsiblePanel groupBox = new CollapsiblePanel(previewPanel);
         groupBox.setCollapsible(false);
-        groupBox.setCaption(MessageProvider.getMessage(getClass(), "FontDialog.preview"));
+        groupBox.setCaption(messages.getMessage(getClass(), "FontDialog.preview"));
 
         contentPane.add(groupBox, BorderLayout.CENTER);
 
@@ -162,7 +175,7 @@ public class FontDialog extends JDialog {
         buttonsPanel.setLayout(new BoxLayout(buttonsPanel, BoxLayout.X_AXIS));
 
         JButton okBtn = new JButton(new AbstractAction(
-                MessageProvider.getMessage(getClass(), "actions.Ok"),
+                messages.getMessage(getClass(), "actions.Ok"),
                 resources.getIcon("icons/ok.png")) {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -173,7 +186,7 @@ public class FontDialog extends JDialog {
         okBtn.setPreferredSize(new Dimension(0, DesktopComponentsHelper.BUTTON_HEIGHT));
 
         JButton cancelBtn = new JButton(new AbstractAction(
-                MessageProvider.getMessage(getClass(), "actions.Cancel"),
+                messages.getMessage(getClass(), "actions.Cancel"),
                 resources.getIcon("icons/cancel.png")) {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -191,22 +204,40 @@ public class FontDialog extends JDialog {
 
         setContentPane(contentPane);
         pack();
+
+        applyLocation();
+    }
+
+    private void applyLocation() {
+        Point ownerLocation = getParent().getLocationOnScreen();
+        int mainX = ownerLocation.x;
+        int mainY = ownerLocation.y;
+
+        Dimension ownerSize = getParent().getSize();
+        int mainWidth = ownerSize.width;
+        int mainHeight = ownerSize.height;
+
+        Dimension size = getSize();
+        int width = size.width;
+        int height = size.height;
+
+        setLocation(mainX + mainWidth / 2 - width / 2, mainY + mainHeight / 2 - height / 2);
     }
 
     private void initToolTips() {
-        fontFamilyBox.setToolTipText(MessageProvider.getMessage(getClass(), "FontDialog.font"));
-        fontSizeBox.setToolTipText(MessageProvider.getMessage(getClass(), "FontDialog.size"));
+        fontFamilyBox.setToolTipText(messages.getMessage(getClass(), "FontDialog.font"));
+        fontSizeBox.setToolTipText(messages.getMessage(getClass(), "FontDialog.size"));
 
-        boldToogle.setToolTipText(MessageProvider.getMessage(getClass(), "FontDialog.bold"));
-        italicToogle.setToolTipText(MessageProvider.getMessage(getClass(), "FontDialog.italic"));
-        underlineToogle.setToolTipText(MessageProvider.getMessage(getClass(), "FontDialog.underline"));
+        boldToggle.setToolTipText(messages.getMessage(getClass(), "FontDialog.bold"));
+        italicToggle.setToolTipText(messages.getMessage(getClass(), "FontDialog.italic"));
+        underlineToggle.setToolTipText(messages.getMessage(getClass(), "FontDialog.underline"));
 
         DesktopToolTipManager.getInstance().registerTooltip(fontFamilyBox);
         DesktopToolTipManager.getInstance().registerTooltip(fontSizeBox);
 
-        DesktopToolTipManager.getInstance().registerTooltip(boldToogle);
-        DesktopToolTipManager.getInstance().registerTooltip(italicToogle);
-        DesktopToolTipManager.getInstance().registerTooltip(underlineToogle);
+        DesktopToolTipManager.getInstance().registerTooltip(boldToggle);
+        DesktopToolTipManager.getInstance().registerTooltip(italicToggle);
+        DesktopToolTipManager.getInstance().registerTooltip(underlineToggle);
     }
 
     private void closeDialog() {
@@ -225,25 +256,25 @@ public class FontDialog extends JDialog {
         fontFamilyBox.addItemListener(propertyBoxChangeListener);
         fontSizeBox.addItemListener(propertyBoxChangeListener);
 
-        ChangeListener toogleListener = new ChangeListener() {
+        ChangeListener toggleListener = new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
                 previewLabel.setFont(compileFont());
             }
         };
 
-        boldToogle.addChangeListener(toogleListener);
-        italicToogle.addChangeListener(toogleListener);
-        underlineToogle.addChangeListener(toogleListener);
+        boldToggle.addChangeListener(toggleListener);
+        italicToggle.addChangeListener(toggleListener);
+        underlineToggle.addChangeListener(toggleListener);
     }
 
     public Font compileFont() {
         int style = 0;
-        style |= boldToogle.isSelected() ? Font.BOLD : 0;
-        style |= italicToogle.isSelected() ? Font.ITALIC : 0;
+        style |= boldToggle.isSelected() ? Font.BOLD : 0;
+        style |= italicToggle.isSelected() ? Font.ITALIC : 0;
         Font font = new Font((String) fontFamilyBox.getSelectedItem(), style, (Integer) fontSizeBox.getSelectedItem());
-        if (underlineToogle.isSelected()) {
-            Map<TextAttribute, Integer> attributes = new HashMap<TextAttribute, Integer>();
+        if (underlineToggle.isSelected()) {
+            Map<TextAttribute, Integer> attributes = new HashMap<>();
             attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
             font = font.deriveFont(attributes);
         }
@@ -251,7 +282,13 @@ public class FontDialog extends JDialog {
     }
 
     public void open() {
-        DesktopComponentsHelper.getTopLevelFrame(this).deactivate(null);
+        TopLevelFrame topLevelFrame = DesktopComponentsHelper.getTopLevelFrame(this);
+        DialogWindow lastDialogWindow = topLevelFrame.getWindowManager().getLastDialogWindow();
+        if (lastDialogWindow == null) {
+            topLevelFrame.deactivate(null);
+        } else {
+            lastDialogWindow.disableWindow(null);
+        }
         setVisible(true);
     }
 
