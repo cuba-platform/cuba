@@ -8,9 +8,8 @@ package com.haulmont.cuba.desktop.gui.components;
 import org.dom4j.Element;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public interface TableSettings {
 
