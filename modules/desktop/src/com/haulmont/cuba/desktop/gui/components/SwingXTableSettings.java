@@ -20,6 +20,7 @@ import org.jdesktop.swingx.table.TableColumnExt;
 
 import javax.swing.*;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.font.TextAttribute;
 import java.util.*;
@@ -31,7 +32,7 @@ import java.util.List;
  */
 public class SwingXTableSettings implements TableSettings {
 
-    private Log log = LogFactory.getLog(getClass());
+    protected static Log log = LogFactory.getLog(SwingXTableSettings.class);
 
     protected JXTable table;
     protected List<Table.Column> columns;
@@ -62,9 +63,10 @@ public class SwingXTableSettings implements TableSettings {
                             return 1;
                         if (col2 instanceof TableColumnExt && !((TableColumnExt) col2).isVisible())
                             return -1;
-                        int i1 = table.getColumnModel().getColumnIndex(col1.getIdentifier());
-                        int i2 = table.getColumnModel().getColumnIndex(col2.getIdentifier());
-                        return i1 - i2;
+                        TableColumnModel model = table.getColumnModel();
+                        int i1 = model.getColumnIndex(col1.getIdentifier());
+                        int i2 = model.getColumnIndex(col2.getIdentifier());
+                        return Integer.compare(i1, i2);
                     }
                 }
         );
@@ -83,15 +85,11 @@ public class SwingXTableSettings implements TableSettings {
         }
 
         if (table.getRowSorter() != null) {
+            TableColumn sortedColumn = table.getSortedColumn();
             List<? extends RowSorter.SortKey> sortKeys = table.getRowSorter().getSortKeys();
-            if (!sortKeys.isEmpty()) {
-                RowSorter.SortKey sortKey = sortKeys.get(0);
-                if (sortKey.getColumn() >= 0) {
-                    TableColumn tableColumn = columns.get(sortKey.getColumn());
-                    columnsElem.addAttribute("sortColumn", String.valueOf(tableColumn.getIdentifier()));
-                }
-
-                columnsElem.addAttribute("sortOrder", sortKey.getSortOrder().toString());
+            if (sortedColumn != null && !sortKeys.isEmpty()) {
+                columnsElem.addAttribute("sortColumn", String.valueOf(sortedColumn.getIdentifier()));
+                columnsElem.addAttribute("sortOrder", sortKeys.get(0).getSortOrder().toString());
             }
         }
 
