@@ -4,19 +4,19 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.OptionsGroup;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.web.gui.data.ItemWrapper;
+import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.ui.OptionGroup;
 import com.vaadin.data.Property;
 import com.vaadin.ui.AbstractSelect;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author abramov
@@ -66,6 +66,50 @@ public class WebOptionsGroup
             return getValueFromKey(key);
         } else {
             return wrapAsCollection(super.getValue());
+        }
+    }
+
+    @Override
+    protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {
+        return new ItemWrapper(datasource, propertyPaths) {
+
+            @Override
+            protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
+                return new CollectionPropertyWrapper(item, propertyPath);
+            }
+        };
+    }
+
+    public class CollectionPropertyWrapper extends PropertyWrapper {
+        public CollectionPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
+            super(item, propertyPath);
+        }
+
+        @Override
+        public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
+            if (newValue instanceof Collection) {
+                Class propertyType = propertyPath.getMetaProperty().getJavaType();
+                if (Set.class.isAssignableFrom(propertyType)) {
+                    newValue = new HashSet<>((Collection<?>) newValue);
+                } else if (List.class.isAssignableFrom(propertyType)) {
+                    newValue = new ArrayList<>((Collection<?>) newValue);
+                }
+            }
+            super.setValue(newValue);
+        }
+
+        @Override
+        public Object getValue() {
+            Object value = super.getValue();
+            if (value instanceof Collection) {
+                Class propertyType = propertyPath.getMetaProperty().getJavaType();
+                if (Set.class.isAssignableFrom(propertyType)) {
+                    value = new HashSet<>((Collection<?>) value);
+                } else if (List.class.isAssignableFrom(propertyType)) {
+                    value = new LinkedHashSet<>((Collection<?>) value);
+                }
+            }
+            return value;
         }
     }
 
