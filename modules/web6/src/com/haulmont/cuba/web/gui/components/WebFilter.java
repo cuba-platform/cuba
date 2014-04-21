@@ -55,6 +55,7 @@ import com.vaadin.data.Validator;
 import com.vaadin.data.validator.IntegerValidator;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.terminal.Sizeable;
+import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
@@ -213,7 +214,8 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
 
         if (globalConfig.getAllowQueryFromSelected()) {
             pinAppliedFilterBtn = WebComponentsHelper.createButton();
-            pinAppliedFilterBtn.setCaption(messages.getMessage(MESSAGES_PACK, "pinAppliedFilterBtn.caption"));
+            pinAppliedFilterBtn.setCaption("");
+            pinAppliedFilterBtn.setIcon(new ThemeResource("icons/pin.png"));
             pinAppliedFilterBtn.setDescription(messages.getMessage(MESSAGES_PACK, "pinAppliedFilterBtn.description"));
             pinAppliedFilterBtn.setEnabled(false);
             pinAppliedFilterBtn.addListener(new Button.ClickListener() {
