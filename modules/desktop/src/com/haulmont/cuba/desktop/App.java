@@ -155,9 +155,9 @@ public class App implements ConnectionListener {
         int mainX = ownerLocation.x;
         int mainY = ownerLocation.y;
 
-        Dimension onwerSize = mainFrame.getSize();
-        int mainWidth = onwerSize.width;
-        int mainHeight = onwerSize.height;
+        Dimension ownerSize = mainFrame.getSize();
+        int mainWidth = ownerSize.width;
+        int mainHeight = ownerSize.height;
 
         Dimension size = loginDialog.getSize();
         int width = size.width;
@@ -363,6 +363,7 @@ public class App implements ConnectionListener {
         item = new JMenuItem(messages.getMessage(AppConfig.getMessagesPack(), "mainMenu.disconnect"));
         item.addActionListener(
                 new ActionListener() {
+                    @Override
                     public void actionPerformed(ActionEvent e) {
                         logout();
                     }
@@ -472,6 +473,7 @@ public class App implements ConnectionListener {
 
     protected void initExceptionHandling() {
         Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            @Override
             public void uncaughtException(Thread thread, Throwable throwable) {
                 handleException(thread, throwable);
             }
