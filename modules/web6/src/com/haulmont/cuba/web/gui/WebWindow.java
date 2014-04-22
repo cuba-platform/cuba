@@ -830,11 +830,13 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
         return res;
     }
 
-    protected void findAndFocusChildComponent() {
+    public boolean findAndFocusChildComponent() {
         com.vaadin.ui.Component.Focusable focusComponent = getComponentToFocus(getContainer());
         if (focusComponent != null) {
             focusComponent.focus();
+            return true;
         }
+        return false;
     }
 
     protected boolean isModified() {

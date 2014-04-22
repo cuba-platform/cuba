@@ -157,17 +157,22 @@ public class DesktopWindow implements Window, Component.Disposable,
                 log.error("Can't find focus component: " + componentId);
             }
         } else {
-
-            final java.awt.Component focusComponent = getComponentToFocus(getContainer());
-            if (focusComponent != null) {
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        focusComponent.requestFocus();
-                    }
-                });
-            }
+            findAndFocusChildComponent();
         }
+    }
+
+    public boolean findAndFocusChildComponent() {
+        final java.awt.Component focusComponent = getComponentToFocus(getContainer());
+        if (focusComponent != null) {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    focusComponent.requestFocus();
+                }
+            });
+            return true;
+        }
+        return false;
     }
 
     //todo devyatkin find another way to get component to focus

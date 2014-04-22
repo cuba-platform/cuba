@@ -434,7 +434,7 @@ public class WebWindowManager extends WindowManager {
                         TabSheet.Tab newTab = tabSheet.getTab(newTabPosition);
                         tabSheet.setSelectedTab(newTab.getComponent());
 
-                        app.getAppWindow().focus();
+                        moveFocus(newTab);
                     }
                 }
             };
@@ -463,13 +463,40 @@ public class WebWindowManager extends WindowManager {
                         TabSheet.Tab newTab = tabSheet.getTab(newTabPosition);
                         tabSheet.setSelectedTab(newTab.getComponent());
 
-                        app.getAppWindow().focus();
+                        moveFocus(newTab);
                     }
                 }
             };
         }
 
         return null;
+    }
+
+    protected void moveFocus(TabSheet.Tab tab) {
+        Window window = tabs.get(tab.getComponent()).getCurrentWindow();
+
+        if (window != null) {
+            String focusComponentId = window.getFocusComponent();
+
+            boolean focused = false;
+            if (focusComponentId != null) {
+                com.haulmont.cuba.gui.components.Component focusComponent = window.getComponent(focusComponentId);
+                if (focusComponent != null) {
+                    if (focusComponent.isEnabled() && focusComponent.isVisible()) {
+                        focusComponent.requestFocus();
+                        focused = true;
+                    }
+                }
+            }
+
+            if (!focused && window instanceof Window.Wrapper) {
+                Window.Wrapper wrapper = (Window.Wrapper) window;
+                focused = ((WebWindow) wrapper.getWrappedWindow()).findAndFocusChildComponent();
+                if (!focused) {
+                    app.getAppWindow().focus();
+                }
+            }
+        }
     }
 
     protected boolean hasDialogWindows() {

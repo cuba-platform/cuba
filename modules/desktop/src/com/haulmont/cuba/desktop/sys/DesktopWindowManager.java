@@ -13,6 +13,7 @@ import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.DesktopConfig;
 import com.haulmont.cuba.desktop.TopLevelFrame;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
+import com.haulmont.cuba.desktop.gui.components.DesktopWindow;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.ScreenHistorySupport;
@@ -345,7 +346,10 @@ public class DesktopWindowManager extends WindowManager {
                     int selectedIndex = getSelectedTabIndex();
 
                     int newIndex = (selectedIndex + tabsPane.getTabCount() - 1) % tabsPane.getTabCount();
-                    tabsPane.setSelectedComponent(tabsPane.getComponentAt(newIndex));
+                    java.awt.Component newTab = tabsPane.getComponentAt(newIndex);
+                    tabsPane.setSelectedComponent(newTab);
+
+                    moveFocus(newTab);
                 }
             }
         });
@@ -363,10 +367,40 @@ public class DesktopWindowManager extends WindowManager {
                     int selectedIndex = getSelectedTabIndex();
 
                     int newIndex = (selectedIndex + 1) % tabsPane.getTabCount();
-                    tabsPane.setSelectedComponent(tabsPane.getComponentAt(newIndex));
+                    java.awt.Component newTab = tabsPane.getComponentAt(newIndex);
+                    tabsPane.setSelectedComponent(newTab);
+
+                    moveFocus(newTab);
                 }
             }
         });
+    }
+
+    protected void moveFocus(java.awt.Component tab) {
+        Window window = tabs.get(tab).getCurrentWindow();
+
+        if (window != null) {
+            String focusComponentId = window.getFocusComponent();
+
+            boolean focused = false;
+            if (focusComponentId != null) {
+                com.haulmont.cuba.gui.components.Component focusComponent = window.getComponent(focusComponentId);
+                if (focusComponent != null) {
+                    if (focusComponent.isEnabled() && focusComponent.isVisible()) {
+                        focusComponent.requestFocus();
+                        focused = true;
+                    }
+                }
+            }
+
+            if (!focused && window instanceof Window.Wrapper) {
+                Window.Wrapper wrapper = (Window.Wrapper) window;
+                focused = ((DesktopWindow) wrapper.getWrappedWindow()).findAndFocusChildComponent();
+                if (!focused) {
+                    tabsPane.requestFocus();
+                }
+            }
+        }
     }
 
     protected int getSelectedTabIndex() {
