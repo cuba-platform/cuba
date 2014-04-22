@@ -32,7 +32,7 @@ public class DesktopTimer extends DesktopAbstractComponent<JLabel> implements co
     protected List<TimerListener> timerListeners = new ArrayList<>();
     protected Timer timer;
 
-    protected volatile boolean started = false;
+    protected boolean started = false;
 
     public DesktopTimer() {
         impl = new JLabel();
@@ -76,6 +76,8 @@ public class DesktopTimer extends DesktopAbstractComponent<JLabel> implements co
             });
             timer.setRepeats(repeating);
             timer.start();
+
+            this.started = true;
         }
     }
 
