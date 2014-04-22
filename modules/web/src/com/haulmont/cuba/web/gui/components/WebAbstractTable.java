@@ -11,6 +11,7 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
@@ -1070,19 +1071,28 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                 loadedIds.add(colElem.attributeValue("id"));
             }
 
-            if (CollectionUtils.isEqualCollection(modelIds, loadedIds)) {
-                applyColumnSettings(columnsElem);
+            Configuration configuration = AppBeans.get(Configuration.NAME);
+            ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
+
+            if (clientConfig.getLoadObsoleteSettingsForTable()
+                    || CollectionUtils.isEqualCollection(modelIds, loadedIds)) {
+                applyColumnSettings(element);
             }
         }
     }
 
-    protected void applyColumnSettings(Element columnsElem) {
+    protected void applyColumnSettings(Element element) {
+        final Element columnsElem = element.element("columns");
+
         Object[] oldColumns = component.getVisibleColumns();
+        List<Object> newColumns = new ArrayList<>();
 
         // add columns from saved settings
         for (Element colElem : Dom4j.elements(columnsElem, "columns")) {
             for (Object column : oldColumns) {
                 if (column.toString().equals(colElem.attributeValue("id"))) {
+                    newColumns.add(column);
+
                     String width = colElem.attributeValue("width");
                     if (width != null) {
                         component.setColumnWidth(column, Integer.valueOf(width));
@@ -1098,7 +1108,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                 }
             }
         }
-        List<Object> newColumns = new ArrayList<>();
         // add columns not saved in settings (perhaps new)
         for (Object column : oldColumns) {
             if (!newColumns.contains(column)) {

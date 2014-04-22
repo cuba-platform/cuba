@@ -11,6 +11,7 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
@@ -1046,13 +1047,19 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                 loadedIds.add(colElem.attributeValue("id"));
             }
 
-            if (CollectionUtils.isEqualCollection(modelIds, loadedIds)) {
-                applyColumnSettings(columnsElem);
+            Configuration configuration = AppBeans.get(Configuration.NAME);
+            ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
+
+            if (clientConfig.getLoadObsoleteSettingsForTable()
+                    || CollectionUtils.isEqualCollection(modelIds, loadedIds)) {
+                applyColumnSettings(element);
             }
         }
     }
 
-    protected void applyColumnSettings(Element columnsElem) {
+    protected void applyColumnSettings(Element element) {
+        final Element columnsElem = element.element("columns");
+
         Object[] oldColumns = component.getVisibleColumns();
         List<Object> newColumns = new ArrayList<>();
         // add columns from saved settings

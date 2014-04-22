@@ -6,6 +6,7 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.bali.util.Dom4j;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.desktop.DesktopConfig;
@@ -125,12 +126,17 @@ public class SwingXTableSettings implements TableSettings {
             loadedIds.add(id);
         }
 
-        if (CollectionUtils.isEqualCollection(modelIds, loadedIds)) {
-            applyColumnSettings(sortable, columnsElem);
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
+
+        if (clientConfig.getLoadObsoleteSettingsForTable()
+                || CollectionUtils.isEqualCollection(modelIds, loadedIds)) {
+            applyColumnSettings(element, sortable);
         }
     }
 
-    protected void applyColumnSettings(boolean sortable, Element columnsElem) {
+    protected void applyColumnSettings(Element element, boolean sortable) {
+        final Element columnsElem = element.element("columns");
         // do not allow dublicates
         Collection<Table.Column> sequence = new LinkedHashSet<>();
         List<TableColumnExt> invisible = new ArrayList<>();

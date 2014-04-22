@@ -16,9 +16,8 @@ import com.haulmont.cuba.core.config.defaults.DefaultString;
 /**
  * Configuration parameters interface used by the WEB and DESKTOP layers.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 @Source(type = SourceType.APP)
 public interface ClientConfig extends Config {
@@ -180,4 +179,8 @@ public interface ClientConfig extends Config {
     @Property("cuba.gui.useSaveConfirmation")
     @DefaultBoolean(true)
     boolean getUseSaveConfirmation();
+
+    @Property("cuba.gui.loadObsoleteSettingsForTable")
+    @DefaultBoolean(false)
+    boolean getLoadObsoleteSettingsForTable();
 }
