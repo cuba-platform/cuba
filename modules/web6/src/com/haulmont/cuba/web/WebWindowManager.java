@@ -516,6 +516,8 @@ public class WebWindowManager extends WindowManager {
                     if (tabSheet != null) {
                         VerticalLayout layout = (VerticalLayout) tabSheet.getSelectedTab();
                         if (layout != null) {
+                            app.getAppWindow().focus();
+
                             WindowBreadCrumbs breadCrumbs = tabs.get(layout);
                             if (stacks.get(breadCrumbs).empty()) {
                                 final Component previousTab = ((AppWindow.AppTabSheet) tabSheet).getPreviousTab(layout);
@@ -535,6 +537,8 @@ public class WebWindowManager extends WindowManager {
                         }
                     }
                 } else {
+                    app.getAppWindow().focus();
+
                     Iterator<WindowBreadCrumbs> it = tabs.values().iterator();
                     if (it.hasNext()) {
                         it.next().getCurrentWindow().close(Window.CLOSE_ACTION_ID);
