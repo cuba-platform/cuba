@@ -8,7 +8,10 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.gui.data.*;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.DatasourceListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
@@ -16,8 +19,6 @@ import com.vaadin.data.Property;
 import com.vaadin.ui.UI;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 
@@ -30,8 +31,6 @@ import java.util.*;
 public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetChangeNotifier {
 
     private static final long serialVersionUID = 1440434590495905389L;
-
-    private static final Log log = LogFactory.getLog(OptionsDsWrapper.class);
 
     protected boolean autoRefresh;
     protected boolean ignoreListeners;
@@ -79,7 +78,7 @@ public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetCha
         ignoreListeners = true;
 
         if (UI.getCurrent().getConnectorTracker().isWritingResponse()) {
-            log.debug("Suppress containerItemSetChange listeners during painting, undefined behavior may be occured");
+            // Suppress containerItemSetChange listeners during painting, undefined behavior may be occurred
             return;
         }
 

@@ -20,8 +20,6 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 
@@ -32,8 +30,6 @@ import java.util.*;
  * @version $Id$
  */
 class ConditionsContainer implements Container.Hierarchical, Container.Sortable, Container.ItemSetChangeNotifier {
-
-    private static final Log log = LogFactory.getLog(ConditionsContainer.class);
 
     public static final String NAME_PROP_ID = "name";
     public static final String OP_PROP_ID = "op";
@@ -263,7 +259,7 @@ class ConditionsContainer implements Container.Hierarchical, Container.Sortable,
 
     private void fireItemSetChanged() {
         if (UI.getCurrent().getConnectorTracker().isWritingResponse()) {
-            log.debug("Suppress containerItemSetChange listeners during painting, undefined behavior may be occured");
+            // Suppress containerItemSetChange listeners during painting, undefined behavior may be occurred
             return;
         }
 

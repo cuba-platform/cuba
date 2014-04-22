@@ -14,8 +14,6 @@ import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.ui.UI;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 
@@ -26,8 +24,6 @@ import java.util.*;
 public class CollectionDsWrapper implements Container, Container.ItemSetChangeNotifier {
 
     private static final long serialVersionUID = 1440434590495905389L;
-
-    private static final Log log = LogFactory.getLog(CollectionDsWrapper.class);
 
     protected boolean autoRefresh;
     protected boolean ignoreListeners;
@@ -85,7 +81,7 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
         ignoreListeners = true;
 
         if (UI.getCurrent().getConnectorTracker().isWritingResponse()) {
-            log.debug("Suppress containerItemSetChange listeners during painting, undefined behavior may be occured");
+            // Suppress containerItemSetChange listeners during painting, undefined behavior may be occurred
             return;
         }
 
