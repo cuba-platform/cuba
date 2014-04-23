@@ -99,18 +99,22 @@ public class Presentation extends BaseUuidEntity implements Updatable {
         this.xml = xml;
     }
 
+    @Override
     public String getUpdatedBy() {
         return updatedBy;
     }
 
+    @Override
     public Date getUpdateTs() {
         return updateTs;
     }
 
+    @Override
     public void setUpdateTs(Date updateTs) {
         this.updateTs = updateTs;
     }
 
+    @Override
     public void setUpdatedBy(String updatedBy) {
         this.updatedBy = updatedBy;
     }

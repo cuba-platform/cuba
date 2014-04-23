@@ -8,8 +8,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.components.AbstractAction;
-import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.presentations.PresentationsChangeListener;
@@ -19,7 +18,12 @@ import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebPopupButton;
 import com.haulmont.cuba.web.toolkit.ui.CubaEnhancedTable;
 import com.haulmont.cuba.web.toolkit.ui.CubaMenuBar;
+import com.vaadin.data.Property;
+import com.vaadin.data.util.AbstractProperty;
 import com.vaadin.ui.*;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Label;
 import org.dom4j.Element;
 
 import java.util.ArrayList;
@@ -35,6 +39,7 @@ public class TablePresentations extends VerticalLayout {
 
     protected CubaMenuBar menuBar;
     protected WebPopupButton button;
+    protected CheckBox textSelectionCheckBox;
 
     protected Table table;
     protected CubaEnhancedTable tableImpl;
@@ -79,6 +84,8 @@ public class TablePresentations extends VerticalLayout {
 
                     buildActions();
                 }
+
+                textSelectionCheckBox.setValue(tableImpl.isTextSelectionEnabled());
             }
 
             @Override
@@ -101,10 +108,11 @@ public class TablePresentations extends VerticalLayout {
     protected void initLayout() {
         setSpacing(true);
 
-        Label label = new Label(getMessage("PresentationsPopup.title"));
-        label.setStyleName("cuba-table-presentations-title");
-        label.setWidth("-1px");
-        addComponent(label);
+        Label titleLabel = new Label(getMessage("PresentationsPopup.title"));
+        titleLabel.setStyleName("cuba-table-presentations-title");
+        titleLabel.setWidth("-1px");
+        addComponent(titleLabel);
+        setComponentAlignment(titleLabel, Alignment.MIDDLE_CENTER);
 
         menuBar = new CubaMenuBar();
         menuBar.setStyleName("cuba-table-presentations-list");
@@ -118,7 +126,29 @@ public class TablePresentations extends VerticalLayout {
         addComponent(button.<Component>getComponent());
         setComponentAlignment(button.<Component>getComponent(), Alignment.MIDDLE_CENTER);
 
-        setExpandRatio(menuBar, 1);
+        textSelectionCheckBox = new CheckBox();
+        textSelectionCheckBox.setImmediate(true);
+        textSelectionCheckBox.setInvalidCommitted(true);
+        textSelectionCheckBox.setCaption(getMessage("PresentationsPopup.textSelection"));
+        addComponent(textSelectionCheckBox);
+        textSelectionCheckBox.setPropertyDataSource(new AbstractProperty() {
+            @Override
+            public Object getValue() {
+                return tableImpl.isTextSelectionEnabled();
+            }
+
+            @Override
+            public void setValue(Object newValue) throws Property.ReadOnlyException {
+                if (newValue instanceof Boolean) {
+                    tableImpl.setTextSelectionEnabled((Boolean) newValue);
+                }
+            }
+
+            @Override
+            public Class getType() {
+                return Boolean.class;
+            }
+        });
     }
 
     public void build() {
@@ -171,6 +201,13 @@ public class TablePresentations extends VerticalLayout {
                 openEditor(presentation);
             }
         });
+        button.addAction(new AbstractAction(getMessage("PresentationsPopup.reset")) {
+            @Override
+            public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
+                table.resetPresentation();
+            }
+        });
+
         final boolean allowGlobalPresentations = AppBeans.get(UserSessionSource.class).getUserSession()
                 .isSpecificPermitted("cuba.gui.presentations.global");
         if (current != null && (!p.isGlobal(current) || allowGlobalPresentations)) {

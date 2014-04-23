@@ -137,6 +137,10 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
         return new CubaScrollTableHead();
     }
 
+    public void updateTextSelection() {
+        Tools.textSelectionEnable(scrollBody.getElement(), textSelectionEnabled);
+    }
+
     protected class CubaScrollTableHead extends TableHead {
 
         protected final SimplePanel presentationsEditIcon = GWT.create(SimplePanel.class);

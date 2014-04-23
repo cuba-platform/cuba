@@ -49,6 +49,10 @@ public class CubaTreeTableConnector extends TreeTableConnector {
 
         if (stateChangeEvent.hasPropertyChanged("textSelectionEnabled")) {
             getWidget().textSelectionEnabled = getState().textSelectionEnabled;
+
+            if (getWidget().getTotalRows() > 0) {
+                getWidget().updateTextSelection();
+            }
         }
         if (stateChangeEvent.hasPropertyChanged("allowPopupMenu")){
             getWidget().allowPopupMenu = getState().allowPopupMenu;

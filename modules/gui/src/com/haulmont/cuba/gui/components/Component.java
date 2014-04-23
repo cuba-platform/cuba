@@ -279,6 +279,7 @@ public interface Component {
         void usePresentations(boolean b);
         boolean isUsePresentations();
 
+        void resetPresentation();
         void loadPresentations();
 
         Presentations getPresentations();

@@ -295,7 +295,11 @@
     color: #000;
 }
 
-.v-customcomponent-table-presentations .v-menubar .v-menubar-menuitem:hover .v-menubar-menuitem-caption {
+.v-customcomponent-table-presentations .v-menubar .v-menubar-menuitem.v-menubar-menuitem-current .v-menubar-menuitem-caption {
+  color: #000;
+}
+
+.v-customcomponent-table-presentations .v-menubar .v-menubar-menuitem-selected .v-menubar-menuitem-caption {
     color: #fff;
 }
 

@@ -137,9 +137,8 @@ public class SwingXTableSettings implements TableSettings {
 
     protected void applyColumnSettings(Element element, boolean sortable) {
         final Element columnsElem = element.element("columns");
-        // do not allow dublicates
+        // do not allow duplicates
         Collection<Table.Column> sequence = new LinkedHashSet<>();
-        List<TableColumnExt> invisible = new ArrayList<>();
 
         for (Element colElem : Dom4j.elements(columnsElem, "column")) {
             String id = colElem.attributeValue("id");
@@ -149,22 +148,20 @@ public class SwingXTableSettings implements TableSettings {
 
                 TableColumnExt tableColumn = table.getColumnExt(column);
 
-                String width = colElem.attributeValue("width");
-                if ((width != null) && (tableColumn != null)) {
-                    tableColumn.setPreferredWidth(Integer.valueOf(width));
-                }
+                if (tableColumn != null) {
+                    String width = colElem.attributeValue("width");
+                    if (StringUtils.isNotEmpty(width)) {
+                        tableColumn.setPreferredWidth(Integer.valueOf(width));
+                    }
 
-                String visible = colElem.attributeValue("visible");
-                if (visible != null && !Boolean.valueOf(visible)) {
-                    invisible.add(tableColumn);
+                    String visible = colElem.attributeValue("visible");
+                    if (StringUtils.isNotEmpty(visible)) {
+                        tableColumn.setVisible(Boolean.valueOf(visible));
+                    }
                 }
             }
         }
         table.setColumnSequence(sequence.toArray(new Object[sequence.size()]));
-
-        for (TableColumnExt invisibleTableColumn : invisible) {
-            invisibleTableColumn.setVisible(false);
-        }
 
         if (sortable && table.getRowSorter() != null) {
             String sortColumn = columnsElem.attributeValue("sortColumn");
@@ -185,8 +182,13 @@ public class SwingXTableSettings implements TableSettings {
                 if (sortColumnIndex >= 0) {
                     table.getRowSorter().setSortKeys(Collections.singletonList(new RowSorter.SortKey(sortColumnIndex, sortOrder)));
                 }
+            } else {
+                table.getRowSorter().setSortKeys(null);
             }
         }
+
+        table.revalidate();
+        table.repaint();
     }
 
     protected void saveFontPreferences(Element element) {

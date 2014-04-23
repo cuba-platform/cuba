@@ -4,8 +4,10 @@
  */
 package com.haulmont.cuba.web.gui.components.presentations;
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Action;
@@ -18,6 +20,8 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebPopupButton;
 import com.haulmont.cuba.web.toolkit.ui.MenuBar;
+import com.vaadin.data.Property;
+import com.vaadin.data.util.AbstractProperty;
 import com.vaadin.ui.*;
 import org.dom4j.Element;
 
@@ -26,24 +30,33 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 @ClientWidget(TablePresentationsPopup.class)
 public class TablePresentations extends CustomComponent {
-    private MenuBar menuBar;
-    private WebPopupButton button;
-
-    private Table table;
-
     private static final long serialVersionUID = -8633565024508836913L;
 
-    private Map<Object, com.vaadin.ui.MenuBar.MenuItem> presentationsMenuMap;
+    protected MenuBar menuBar;
+    protected WebPopupButton button;
+
+    protected CheckBox textSelectionCheckBox;
+
+    protected Table table;
+    protected com.haulmont.cuba.web.toolkit.ui.Table tableImpl;
+
+    protected Map<Object, com.vaadin.ui.MenuBar.MenuItem> presentationsMenuMap;
 
     public TablePresentations(Table component) {
         this.table = component;
+        this.tableImpl = (com.haulmont.cuba.web.toolkit.ui.Table) WebComponentsHelper.unwrap(component);
+
         initLayout();
         setWidth("100%");
         setStyleName("table-presentations");
 
-        setParent(WebComponentsHelper.unwrap(component));
+        setParent(tableImpl);
 
         table.getPresentations().addListener(new PresentationsChangeListener() {
             @Override
@@ -69,6 +82,8 @@ public class TablePresentations extends CustomComponent {
 
                     buildActions();
                 }
+
+                textSelectionCheckBox.setValue(tableImpl.isTextSelectionEnabled());
             }
 
             @Override
@@ -101,10 +116,10 @@ public class TablePresentations extends CustomComponent {
         setCompositionRoot(root);
         root.setSpacing(true);
 
-        Label label = new Label(getMessage("PresentationsPopup.title"));
-        label.setStyleName("title");
-        label.setWidth("-1px");
-        root.addComponent(label);
+        Label titleLabel = new Label(getMessage("PresentationsPopup.title"));
+        titleLabel.setStyleName("title");
+        titleLabel.setWidth("-1px");
+        root.addComponent(titleLabel);
 
         menuBar = new MenuBar();
         menuBar.setStyleName("list");
@@ -117,7 +132,18 @@ public class TablePresentations extends CustomComponent {
         root.addComponent(button.<Component>getComponent());
         root.setComponentAlignment(button.<Component>getComponent(), Alignment.MIDDLE_CENTER);
 
-        root.setExpandRatio(menuBar, 1);
+        textSelectionCheckBox = new CheckBox();
+        textSelectionCheckBox.setImmediate(true);
+        textSelectionCheckBox.setInvalidCommitted(true);
+        textSelectionCheckBox.setCaption(getMessage("PresentationsPopup.textSelection"));
+        root.addComponent(textSelectionCheckBox);
+        textSelectionCheckBox.setValue(tableImpl.isTextSelectionEnabled());
+        textSelectionCheckBox.addListener(new Property.ValueChangeListener() {
+            @Override
+            public void valueChange(Property.ValueChangeEvent event) {
+                tableImpl.setTextSelectionEnabled((Boolean)textSelectionCheckBox.getValue());
+            }
+        });
     }
 
     public void build() {
@@ -168,8 +194,15 @@ public class TablePresentations extends CustomComponent {
                 openEditor(presentation);
             }
         });
-        final boolean allowGlobalPresentations = UserSessionProvider.getUserSession()
-                .isSpecificPermitted("cuba.gui.presentations.global");
+        button.addAction(new AbstractAction(getMessage("PresentationsPopup.reset")) {
+            @Override
+            public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
+                table.resetPresentation();
+            }
+        });
+
+        UserSessionSource uss = AppBeans.get(UserSessionSource.NAME);
+        final boolean allowGlobalPresentations = uss.getUserSession().isSpecificPermitted("cuba.gui.presentations.global");
         if (current != null && (!p.isGlobal(current) || allowGlobalPresentations)) {
             button.addAction(new AbstractAction(getMessage("PresentationsPopup.save")) {
                 @Override

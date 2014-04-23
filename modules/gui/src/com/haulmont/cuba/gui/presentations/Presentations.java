@@ -14,6 +14,9 @@ import java.util.Collection;
  * <br><br> A component must implement {@link com.haulmont.cuba.gui.components.Component.HasPresentations} interface
  *
  * @see com.haulmont.cuba.security.entity.Presentation
+ *
+ * @author gorodnov
+ * @version $Id$
  */
 public interface Presentations {
 
@@ -66,7 +69,7 @@ public interface Presentations {
     void commit();
 
     /**
-     * Returns a pressentation by its name with ignored case.
+     * Returns a presentation by its name with ignored case.
      * It returns <code>null</code> if a presentation with such name doesn't exist
      */
     Presentation getPresentationByName(String name);

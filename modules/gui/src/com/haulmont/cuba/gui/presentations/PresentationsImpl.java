@@ -64,7 +64,11 @@ public class PresentationsImpl implements Presentations {
     @Override
     public void setCurrent(Presentation p) {
         checkLoad();
-        if (presentations.containsKey(p.getId())) {
+        if (p == null) {
+            Object old = current;
+            current = null;
+            fireCurrentPresentationChanged(old);
+        } else if (presentations.containsKey(p.getId())) {
             Object old = current;
             current = p;
             fireCurrentPresentationChanged(old);

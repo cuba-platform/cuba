@@ -59,6 +59,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.LogFactory;
+import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
@@ -111,6 +112,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
     protected Presentations presentations;
     protected TablePresentations tablePresentations;
+    protected Document defaultSettings;
 
     protected List<ColumnCollapseListener> columnCollapseListeners = new ArrayList<>();
 
@@ -1035,6 +1037,19 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
     @Override
     public void applySettings(Element element) {
+        if (defaultSettings == null) {
+            // save default view before apply custom
+            defaultSettings = DocumentHelper.createDocument();
+            defaultSettings.setRootElement(defaultSettings.addElement("presentation"));
+
+            saveSettings(defaultSettings.getRootElement());
+        }
+
+        String textSelection = element.attributeValue("textSelection");
+        if (StringUtils.isNotEmpty(textSelection)) {
+            component.setTextSelectionEnabled(Boolean.valueOf(textSelection));
+        }
+
         final Element columnsElem = element.element("columns");
         if (columnsElem != null) {
             Collection<String> modelIds = new LinkedList<>();
@@ -1129,9 +1144,12 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
     @Override
     public boolean saveSettings(Element element) {
+        element.addAttribute("textSelection", String.valueOf(component.isTextSelectionEnabled()));
+
         Element columnsElem = element.element("columns");
-        if (columnsElem != null)
+        if (columnsElem != null) {
             element.remove(columnsElem);
+        }
         columnsElem = element.addElement("columns");
 
         Object[] visibleColumns = component.getVisibleColumns();
@@ -1911,6 +1929,15 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     }
 
     @Override
+    public void resetPresentation() {
+        if (defaultSettings != null) {
+            applySettings(defaultSettings.getRootElement());
+
+            presentations.setCurrent(null);
+        }
+    }
+
+    @Override
     public void loadPresentations() {
         if (isUsePresentations()) {
             presentations = new PresentationsImpl(this);
@@ -1954,9 +1981,9 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     }
 
     protected void applyPresentation(Presentation p) {
-        presentations.setCurrent(p);
         Element settingsElement  = presentations.getSettings(p);
         applySettings(settingsElement);
+        presentations.setCurrent(p);
         component.requestRepaint();
     }
 

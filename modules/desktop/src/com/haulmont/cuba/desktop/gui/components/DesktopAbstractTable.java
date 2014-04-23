@@ -38,6 +38,7 @@ import com.haulmont.cuba.security.global.UserSession;
 import net.miginfocom.layout.CC;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.jdesktop.swingx.JXTable;
@@ -131,6 +132,8 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
     // Manual control for content repaint process
     protected boolean contentRepaintEnabled = true;
+
+    protected Document defaultSettings;
 
     protected DesktopAbstractTable() {
         shortcutsDelegate = new ShortcutsDelegate<KeyCombination>() {
@@ -263,6 +266,17 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                             }
                         });
                         fontDialog.open();
+                    }
+                });
+
+        // Ability to reset settings
+        String resetSettingsLabel = messages.getMessage(
+                DesktopTable.class, "DesktopTable.resetSettings");
+        impl.getActionMap().put(ColumnControlButton.COLUMN_CONTROL_MARKER + "resetSettings",
+                new AbstractAction(resetSettingsLabel) {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        resetPresentation();
                     }
                 });
 
@@ -1562,6 +1576,13 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     }
 
     @Override
+    public void resetPresentation() {
+        if (defaultSettings != null) {
+            applySettings(defaultSettings.getRootElement());
+        }
+    }
+
+    @Override
     public void loadPresentations() {
     }
 
@@ -1585,6 +1606,14 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
     @Override
     public void applySettings(Element element) {
+        if (defaultSettings == null) {
+            // save default view before apply custom
+            defaultSettings = DocumentHelper.createDocument();
+            defaultSettings.setRootElement(defaultSettings.addElement("presentation"));
+
+            saveSettings(defaultSettings.getRootElement());
+        }
+
         tableSettings.apply(element, isSortable());
     }
 
