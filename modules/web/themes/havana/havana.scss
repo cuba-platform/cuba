@@ -19,6 +19,7 @@
 // Components
 @import "components/tree/tree";
 @import "components/label/label";
+@import "components/label/boldLabel";
 @import "components/table/table";
 @import "components/panel/panel";
 @import "components/window/window";
@@ -59,6 +60,7 @@
 @import "components/tokenlist/tokenlist";
 @import "components/twincolumn/twincolumn";
 @import "components/richtextarea/richtextarea";
+@import "components/boxlayout/onHoverVisible";
 
 // Application specific
 @import "app/app-window";

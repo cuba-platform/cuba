@@ -124,6 +124,9 @@
 .v-table-row:hover,
 .v-table-row-odd:hover {
 	background-color: #f5f4b9;
+   .on-hover-visible-layout{
+      visibility: visible;
+   }
 }
 .v-table-row .v-table-cell,
 .v-table-row-odd .v-table-cell,

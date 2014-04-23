@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.core.entity;
 
+import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -12,6 +13,7 @@ import com.haulmont.cuba.core.global.UuidProvider;
 import com.haulmont.cuba.core.sys.CubaEnhanced;
 import org.apache.commons.lang.ObjectUtils;
 
+import javax.persistence.MappedSuperclass;
 import java.util.UUID;
 
 /**
@@ -20,6 +22,7 @@ import java.util.UUID;
  * @author Grachev
  * @version $Id$
  */
+@MappedSuperclass
 public abstract class AbstractNotPersistentEntity extends AbstractInstance implements Entity<UUID> {
 
     private static final long serialVersionUID = -2846020822531467401L;
@@ -50,6 +53,7 @@ public abstract class AbstractNotPersistentEntity extends AbstractInstance imple
         return AppBeans.get(Metadata.class).getSession().getClass(getClass());
     }
 
+    @MetaProperty
     @Override
     public UUID getId() {
         return uuid;

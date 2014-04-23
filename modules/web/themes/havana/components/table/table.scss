@@ -11,7 +11,7 @@
   background-position: center center;
 }
 
-@mixin havana-table($primaryStyleName : v-table) {
+@mixin havana-table($primaryStyleName: v-table) {
   .#{$primaryStyleName} {
     text-align: left;
 
@@ -132,6 +132,9 @@
     .#{$primaryStyleName}-row:hover,
     .#{$primaryStyleName}-row-odd:hover {
       background-color: $theme_tableRowHoverBackgroundColor;
+      .on-hover-visible-layout {
+        visibility: visible;
+      }
     }
 
     .#{$primaryStyleName}-caption-row {
@@ -176,11 +179,11 @@
     }
 
     .#{$primaryStyleName}-header-cell-asc .#{$primaryStyleName}-sort-indicator {
-      background-image: url(sprites/sort-asc.png);      /** sprite-ref: components; */
+      background-image: url(sprites/sort-asc.png); /** sprite-ref: components; */
     }
 
     .#{$primaryStyleName}-header-cell-desc .#{$primaryStyleName}-sort-indicator {
-      background-image: url(sprites/sort-desc.png);    /** sprite-ref: components; */
+      background-image: url(sprites/sort-desc.png); /** sprite-ref: components; */
     }
 
     .#{$primaryStyleName}-column-selector {
@@ -190,7 +193,7 @@
       margin-right: 2px;
       background: transparent;
       background-repeat: no-repeat;
-      background-image: url(sprites/column-selector.png);  /** sprite-ref: components; */
+      background-image: url(sprites/column-selector.png); /** sprite-ref: components; */
     }
 
     .#{$primaryStyleName}-scrollposition {
@@ -202,14 +205,14 @@
       background-origin: content-box;
       background-clip: content-box;
       background-repeat: no-repeat;
-      background-image: url(sprites/scroll-position-bg.png);  /** sprite-ref: components-large; */
+      background-image: url(sprites/scroll-position-bg.png); /** sprite-ref: components-large; */
     }
 
     .#{$primaryStyleName}-scrollposition span {
       display: block;
       margin-top: 8px;
       text-align: center;
-      font-weight:bold;
+      font-weight: bold;
       border: 0;
     }
   }
