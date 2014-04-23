@@ -21,6 +21,7 @@ import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.vaadin.data.Property;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -112,8 +113,10 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
 
     @Override
     public void setValue(Object value) {
-        if (component.isReadOnly())
+        if (component.isReadOnly()) {
+            LogFactory.getLog(getClass()).debug("Set value for non editable field ignored");
             return;
+        }
         component.setValue(value);
     }
 

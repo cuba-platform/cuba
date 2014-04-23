@@ -166,8 +166,10 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implemen
 
     @Override
     public void setValue(Object value) {
-        if (!isEditable())
+        if (!isEditable()) {
+            LogFactory.getLog(getClass()).debug("Set value for non editable field ignored");
             return;
+        }
 
         Preconditions.checkArgument(value == null || value instanceof Date, "Value must be an instance of Date");
         if (datasource == null && value != null) {
