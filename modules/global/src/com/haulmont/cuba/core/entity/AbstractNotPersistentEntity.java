@@ -22,7 +22,6 @@ import java.util.UUID;
  * @author Grachev
  * @version $Id$
  */
-@MappedSuperclass
 public abstract class AbstractNotPersistentEntity extends AbstractInstance implements Entity<UUID> {
 
     private static final long serialVersionUID = -2846020822531467401L;
