@@ -13,6 +13,10 @@ import java.io.File;
 import java.net.URL;
 
 /**
+ * A component for embedding external objects, such as images or PDF documents.
+ * <p>
+ * Web implementation may require a browser plugin. Only images support is mandatory for all implementations.
+ *
  * @author gorodnov
  * @version $Id$
  */

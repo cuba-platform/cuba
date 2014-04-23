@@ -724,6 +724,15 @@
         <xs:attributeGroup ref="hasEnableProp"/>
     </xs:complexType>
 
+    <!-- Embedded -->
+    <xs:complexType name="embeddedComponent">
+        <xs:attributeGroup ref="hasId"/>
+        <xs:attributeGroup ref="hasSize"/>
+        <xs:attributeGroup ref="hasAlign"/>
+        <xs:attributeGroup ref="hasVisibility"/>
+        <xs:attribute name="src" type="xs:string"/>
+    </xs:complexType>
+
     <!-- Tree -->
     <xs:complexType name="treeComponent">
         <xs:sequence>
@@ -1451,6 +1460,7 @@
 
                 <xs:element name="upload" type="uploadComponent"/>
                 <xs:element name="multiUpload" type="multiuploadComponent"/>
+                <xs:element name="embedded" type="embeddedComponent"/>
 
                 <xs:element name="tree" type="treeComponent"/>
                 <xs:element name="table" type="tableComponent"/>
