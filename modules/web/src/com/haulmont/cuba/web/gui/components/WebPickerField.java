@@ -233,15 +233,7 @@ public class WebPickerField
 
     @Override
     public void addAction(Action action) {
-        Action oldAction = null;
-        // find action with same id
-        Iterator<Action> actionIterator = actions.iterator();
-        while (actionIterator.hasNext() && oldAction == null) {
-            Action iterationAction = actionIterator.next();
-            if (StringUtils.equals(iterationAction.getId(), action.getId())) {
-                oldAction = iterationAction;
-            }
-        }
+        Action oldAction = getAction(action.getId());
 
         // get button for old action
         Button oldButton = null;

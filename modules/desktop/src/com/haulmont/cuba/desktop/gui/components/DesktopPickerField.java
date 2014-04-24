@@ -395,15 +395,7 @@ public class DesktopPickerField extends DesktopAbstractField<Picker> implements 
 
     @Override
     public void addAction(final Action action) {
-        Action oldAction = null;
-        // find action with same id
-        Iterator<Action> actionIterator = actionsOrder.iterator();
-        while (actionIterator.hasNext() && oldAction == null) {
-            Action iterationAction = actionIterator.next();
-            if (StringUtils.equals(action.getId(), iterationAction.getId())) {
-                oldAction = iterationAction;
-            }
-        }
+        Action oldAction = getAction(action.getId());
 
         // get button for old action
         JButton oldButton = null;
