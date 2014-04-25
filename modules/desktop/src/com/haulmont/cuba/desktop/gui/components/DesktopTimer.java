@@ -110,7 +110,7 @@ public class DesktopTimer extends DesktopAbstractComponent<JLabel> implements co
 
     protected void handleTimerException(RuntimeException ex) {
         if (ExceptionUtils.indexOfType(ex, java.net.ConnectException.class) > -1) {
-            // If a ConnectException occured, just log it and ignore
+            // If a ConnectException occurred, just log it and ignore
             log.warn("onTimer error: " + ex.getMessage());
         } else {
             // Otherwise throw the exception, but first search for NoUserSessionException in chain,
@@ -119,6 +119,7 @@ public class DesktopTimer extends DesktopAbstractComponent<JLabel> implements co
             if (reIdx > -1) {
                 RemoteException re = (RemoteException) ExceptionUtils.getThrowableList(ex).get(reIdx);
                 for (RemoteException.Cause cause : re.getCauses()) {
+                    //noinspection ThrowableResultOfMethodCallIgnored
                     if (cause.getThrowable() instanceof NoUserSessionException) {
                         log.warn("NoUserSessionException in timer, timer will be stopped");
                         disposeTimer();
