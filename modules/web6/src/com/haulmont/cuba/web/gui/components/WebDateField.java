@@ -224,7 +224,7 @@ public class WebDateField extends WebAbstractField<DateFieldWrapper> implements 
         updatingInstance = true;
         try {
             dateField.setValue(value);
-            timeField.setValue(value);
+            timeField.setValueInternal(value);
         } finally {
             updatingInstance = false;
         }
@@ -234,12 +234,13 @@ public class WebDateField extends WebAbstractField<DateFieldWrapper> implements 
 
     protected void setValueFromDs(Object value) {
         boolean isEditable = editable;
-        if (!editable)
+        if (!editable) {
             setEditable(true);
+        }
         updatingInstance = true;
         try {
             dateField.setValue(value);
-            timeField.setValue(value);
+            timeField.setValueInternal(value);
         } finally {
             updatingInstance = false;
         }

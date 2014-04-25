@@ -45,7 +45,9 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implemen
     protected static final int DIGIT_WIDTH = 23;
     
     public WebTimeField() {
-        timeFormat = Datatypes.getFormatStrings(AppBeans.get(UserSessionSource.class).getLocale()).getTimeFormat();
+        UserSessionSource uss = AppBeans.get(UserSessionSource.NAME);
+
+        timeFormat = Datatypes.getFormatStrings(uss.getLocale()).getTimeFormat();
         resolution = DateField.Resolution.MIN;
 
         component = new CubaMaskedTextField();
@@ -166,11 +168,6 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implemen
 
     @Override
     public void setValue(Object value) {
-        if (!isEditable()) {
-            LogFactory.getLog(getClass()).debug("Set value for non editable field ignored");
-            return;
-        }
-
         Preconditions.checkArgument(value == null || value instanceof Date, "Value must be an instance of Date");
         if (datasource == null && value != null) {
             SimpleDateFormat format = new SimpleDateFormat(this.timeFormat);
@@ -179,6 +176,15 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implemen
             super.setValue(format.format(value));
         } else
             super.setValue(value);
+    }
+
+    protected void setValueInternal(Object value) {
+        boolean editable = isEditable();
+        setEditable(true);
+
+        setValue(value);
+
+        setEditable(editable);
     }
 
     @Override

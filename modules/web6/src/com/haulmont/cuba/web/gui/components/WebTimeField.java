@@ -7,7 +7,8 @@ package com.haulmont.cuba.web.gui.components;
 import com.google.common.base.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.components.TimeField;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -44,7 +45,9 @@ public class WebTimeField extends WebAbstractField<MaskedTextField> implements T
     protected static final int DIGIT_WIDTH = 23;
     
     public WebTimeField() {
-        timeFormat = Datatypes.getFormatStrings(UserSessionProvider.getLocale()).getTimeFormat();
+        UserSessionSource uss = AppBeans.get(UserSessionSource.NAME);
+
+        timeFormat = Datatypes.getFormatStrings(uss.getLocale()).getTimeFormat();
         resolution = DateField.Resolution.MIN;
         component = new MaskedTextField();
         component.setImmediate(true);
@@ -165,6 +168,15 @@ public class WebTimeField extends WebAbstractField<MaskedTextField> implements T
             super.setValue(s);
         } else
             super.setValue(value);
+    }
+
+    protected void setValueInternal(Object value) {
+        boolean editable = isEditable();
+        setEditable(true);
+
+        setValue(value);
+
+        setEditable(editable);
     }
 
     @Override

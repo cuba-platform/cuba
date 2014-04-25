@@ -190,7 +190,7 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
         updatingInstance = true;
         try {
             dateField.setValue((Date) value);
-            timeField.setValue(value);
+            timeField.setValueInternal(value);
         } finally {
             updatingInstance = false;
         }
@@ -227,7 +227,7 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
         updatingInstance = true;
         try {
             dateField.setValue((Date) value);
-            timeField.setValue(value);
+            timeField.setValueInternal(value);
         } finally {
             updatingInstance = false;
         }

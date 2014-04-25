@@ -303,7 +303,7 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
 
     protected void setDateParts(Date value) {
         datePicker.setDate(value);
-        timeField.setValue(value);
+        timeField.setValueInternal(value);
     }
 
     @Override
@@ -400,7 +400,6 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
             c.set(Calendar.HOUR_OF_DAY, 0);
             c.set(Calendar.MINUTE, 0);
             c.set(Calendar.SECOND, 0);
-
         } else {
             Calendar c2 = Calendar.getInstance(locale);
             c2.setTime(timeField.<Date>getValue());

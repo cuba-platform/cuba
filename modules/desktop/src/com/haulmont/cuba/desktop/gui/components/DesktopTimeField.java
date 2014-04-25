@@ -11,10 +11,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.MessageTools;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.DateField;
@@ -51,7 +48,6 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
     private MetaProperty metaProperty;
     private MetaPropertyPath metaPropertyPath;
     private Object prevValue;
-    private boolean valid = true;
     private String caption;
     private DateField.Resolution resolution;
     private boolean editable = true;
@@ -59,7 +55,9 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
     protected static final int DIGIT_WIDTH = 23;
 
     public DesktopTimeField() {
-        timeFormat = Datatypes.getFormatStrings(UserSessionProvider.getLocale()).getTimeFormat();
+        UserSessionSource uss = AppBeans.get(UserSessionSource.NAME);
+
+        timeFormat = Datatypes.getFormatStrings(uss.getLocale()).getTimeFormat();
         resolution = DateField.Resolution.MIN;
         formatter = new MaskFormatter();
         formatter.setPlaceholderCharacter('_');
@@ -92,7 +90,7 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
 
     private void showValidationMessage() {
         DesktopComponentsHelper.getTopLevelFrame(this).showNotification(
-                MessageProvider.getMessage(AppConfig.getMessagesPack(), "validationFail"),
+                AppBeans.get(Messages.class).getMessage(AppConfig.getMessagesPack(), "validationFail"),
                 IFrame.NotificationType.TRAY
         );
     }
@@ -262,18 +260,25 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
         }
     }
 
+    protected void setValueInternal(Object value) {
+        boolean editable = isEditable();
+        setEditable(true);
+
+        setValue(value);
+
+        setEditable(editable);
+    }
+
     protected void updateComponent(Object value) {
         updatingInstance = true;
         if (value == null) {
             impl.setValue("");
-            valid = true;
             updatingInstance = false;
         } else {
             try {
                 if (value instanceof Date) {
                     SimpleDateFormat sdf = new SimpleDateFormat(timeFormat);
                     impl.setValue(sdf.format(value));
-                    valid = true;
                 }
             } finally {
                 updatingInstance = false;
