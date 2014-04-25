@@ -23,16 +23,8 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.FormElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.FileUpload;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.FormPanel;
-import com.google.gwt.user.client.ui.Hidden;
-import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.*;
+import com.google.gwt.user.client.ui.*;
 import com.vaadin.terminal.gwt.client.*;
 
 /**
@@ -45,6 +37,11 @@ import com.vaadin.terminal.gwt.client.*;
 public class VUpload extends SimplePanel implements Paintable {
 
     private final class MyFileUpload extends FileUpload {
+
+        private MyFileUpload() {
+            sinkEvents(DOM.getEventsSunk(getElement()) | Event.ONMOUSEOVER | Event.ONMOUSEOUT);
+        }
+
         @Override
         public void onBrowserEvent(Event event) {
             super.onBrowserEvent(event);
@@ -61,6 +58,10 @@ public class VUpload extends SimplePanel implements Paintable {
                 // also remove focus to enable hack if user presses cancel
                 // button
                 fireNativeBlur(fu.getElement());
+            } else if (event.getTypeInt() == Event.ONMOUSEOVER) {
+                submitButton.addStyleName("v-upload-hover");
+            } else if (event.getTypeInt() == Event.ONMOUSEOUT) {
+                submitButton.removeStyleName("v-upload-hover");
             }
         }
     }
