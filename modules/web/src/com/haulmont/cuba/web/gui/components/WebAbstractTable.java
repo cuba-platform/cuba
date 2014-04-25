@@ -1649,19 +1649,25 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             com.vaadin.ui.Component cell;
 
             String stringValue = value.toString();
+            String cellValue = stringValue;
+            boolean isMultiLineCell = StringUtils.contains(stringValue, "\n");
+            if (isMultiLineCell) {
+                cellValue = StringUtils.replace(cellValue, "\n", " ");
+            }
+
             int maxTextLength = column.getMaxTextLength();
-            if (stringValue.length() > maxTextLength + MAX_TEXT_LENGTH_GAP)  {
+            if (stringValue.length() > maxTextLength + MAX_TEXT_LENGTH_GAP || isMultiLineCell) {
                 TextArea content = new TextArea(null, stringValue);
                 content.setWidth("100%");
                 content.setHeight("100%");
                 content.setReadOnly(true);
                 CssLayout cssLayout = new CssLayout();
                 cssLayout.addComponent(content);
-                cell = new PopupView(StringEscapeUtils.escapeHtml(StringUtils.abbreviate(stringValue, maxTextLength)),
+                cell = new PopupView(StringEscapeUtils.escapeHtml(StringUtils.abbreviate(cellValue, maxTextLength)),
                         cssLayout);
                 cell.addStyleName("abbreviated");
             } else {
-                cell = new Label(stringValue);
+                cell = new Label(cellValue);
             }
             return cell;
         }
