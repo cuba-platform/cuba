@@ -36,3 +36,52 @@
     }
   }
 }
+
+@mixin havana-cuba-contextmenu($primaryStyleName: cuba-context-menu) {
+  .#{$primaryStyleName} {
+    background: #fff;
+    overflow: auto;
+    padding: 3px;
+    border: 1px solid $theme_fieldFocusedBorderColor;
+
+    .v-button {
+      background: transparent;
+      height: 20px;
+      width: 100%;
+      border: 1px solid transparent;
+      padding: 0 2px;
+
+      .v-button-wrap {
+        text-align: left;
+        margin-top: 0px;
+
+        .v-button-caption {
+          vertical-align: text-top;
+          color: #000;
+          padding: 1px 3px;
+          text-decoration: none;
+        }
+      }
+    }
+
+    .v-button:hover {
+      background: $theme_fieldSelectionColor;
+
+      .v-button-caption {
+        color: #fff;
+      }
+    }
+
+    .v-disabled.v-button:hover {
+      background: transparent;
+
+      .v-button-caption {
+        color: #000;
+      }
+    }
+
+    .v-button-link:focus {
+      border: 1px solid transparent;
+    }
+  }
+}

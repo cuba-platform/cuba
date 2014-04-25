@@ -17,11 +17,7 @@ import org.apache.commons.lang.StringUtils;
  * @author gorodnov
  * @version $Id$
  */
-public class WebWidgetsTree
-        extends
-            WebAbstractList<CubaWidgetsTree>
-        implements
-            WidgetsTree {
+public class WebWidgetsTree extends WebAbstractList<CubaWidgetsTree> implements WidgetsTree {
 
     protected String hierarchyProperty;
 
@@ -29,6 +25,21 @@ public class WebWidgetsTree
         component = new CubaWidgetsTree();
         component.setSelectable(false);
         component.setImmediate(true); 
+    }
+
+    @Override
+    protected ContextMenuButton createContextMenuButton() {
+        return new ContextMenuButton() {
+            @Override
+            protected void performAction(Action action) {
+                action.actionPerform(WebWidgetsTree.this);
+            }
+
+            @Override
+            protected void beforeActionPerformed() {
+                WebWidgetsTree.this.component.hideContextMenuPopup();
+            }
+        };
     }
 
     @Override

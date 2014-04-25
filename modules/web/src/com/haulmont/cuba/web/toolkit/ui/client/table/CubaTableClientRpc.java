@@ -14,4 +14,6 @@ import com.vaadin.shared.communication.ClientRpc;
 public interface CubaTableClientRpc extends ClientRpc {
 
     void hidePresentationsPopup();
+
+    void hideContextMenuPopup();
 }

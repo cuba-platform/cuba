@@ -17,7 +17,7 @@ import java.util.*;
  * @author artamonov
  * @version $Id$
  */
-public class CubaWidgetsTree extends com.vaadin.ui.Tree implements ComponentContainer {
+public class CubaWidgetsTree extends CubaTree implements ComponentContainer {
 
     protected WidgetBuilder widgetBuilder;
 
@@ -100,7 +100,7 @@ public class CubaWidgetsTree extends com.vaadin.ui.Tree implements ComponentCont
     ) throws PaintException {
         super.paintItem(target, itemId, selectedKeys, expandedKeys);
 
-        if (itemIds != null && itemIds.indexOf(itemId) >= 0) {
+        if (itemIds.indexOf(itemId) >= 0) {
             target.addAttribute("widgetIndex", itemIds.indexOf(itemId));
         }
     }

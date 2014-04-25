@@ -5,11 +5,12 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.widgetstree;
 
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.haulmont.cuba.web.toolkit.ui.CubaWidgetsTree;
-import com.vaadin.client.*;
+import com.haulmont.cuba.web.toolkit.ui.client.tree.CubaTreeConnector;
+import com.vaadin.client.ComponentConnector;
+import com.vaadin.client.HasComponentsConnector;
+import com.vaadin.client.UIDL;
 import com.vaadin.client.ui.VTree;
-import com.vaadin.client.ui.tree.TreeConnector;
 import com.vaadin.shared.ui.Connect;
 
 import java.util.Collections;
@@ -20,7 +21,7 @@ import java.util.List;
  * @version $Id$
  */
 @Connect(CubaWidgetsTree.class)
-public class CubaWidgetsTreeConnector extends TreeConnector
+public class CubaWidgetsTreeConnector extends CubaTreeConnector
         implements HasComponentsConnector {
 
     List<ComponentConnector> nodeWidgets;
@@ -42,17 +43,6 @@ public class CubaWidgetsTreeConnector extends TreeConnector
     @Override
     public void setChildComponents(List<ComponentConnector> childComponents) {
         this.nodeWidgets = childComponents;
-    }
-
-    @Override
-    public void updateCaption(ComponentConnector connector) {
-    }
-
-    @Override
-    public HandlerRegistration addConnectorHierarchyChangeHandler(
-            ConnectorHierarchyChangeEvent.ConnectorHierarchyChangeHandler handler) {
-        return ensureHandlerManager().addHandler(
-                ConnectorHierarchyChangeEvent.TYPE, handler);
     }
 
     @Override

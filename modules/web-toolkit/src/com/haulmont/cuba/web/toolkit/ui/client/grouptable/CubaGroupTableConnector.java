@@ -34,19 +34,17 @@ public class CubaGroupTableConnector extends CubaScrollTableConnector {
 
     @Override
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
-        if (uidl.hasVariable("groupColumns"))
+        if (uidl.hasVariable("groupColumns")) {
             getWidget().updateGroupColumns(uidl.getStringArrayVariableAsSet("groupColumns"));
-        else
+        } else {
             getWidget().updateGroupColumns(null);
+        }
 
         super.updateFromUIDL(uidl, client);
     }
 
     @Override
     public TooltipInfo getTooltipInfo(Element element) {
-
-        TooltipInfo info = null;
-
         if (element != getWidget().getElement()) {
             Object node = Util.findWidget(
                     (com.google.gwt.user.client.Element) element,
@@ -55,8 +53,7 @@ public class CubaGroupTableConnector extends CubaScrollTableConnector {
             if (node != null) {
                 CubaGroupTableWidget.CubaGroupTableBody.CubaGroupTableRow row
                         = (CubaGroupTableWidget.CubaGroupTableBody.CubaGroupTableRow) node;
-                info = row.getTooltip(element);
-                return info;
+                return row.getTooltip(element);
             }
 
             node = Util.findWidget(
@@ -66,15 +63,10 @@ public class CubaGroupTableConnector extends CubaScrollTableConnector {
             if (node != null) {
                 CubaGroupTableWidget.CubaGroupTableBody.CubaGroupTableGroupRow row
                         = (CubaGroupTableWidget.CubaGroupTableBody.CubaGroupTableGroupRow) node;
-                info = row.getTooltip(element);
-                return info;
+                return row.getTooltip(element);
             }
         }
 
-        if (info == null) {
-            info = super.getTooltipInfo(element);
-        }
-
-        return info;
+        return super.getTooltipInfo(element);
     }
 }

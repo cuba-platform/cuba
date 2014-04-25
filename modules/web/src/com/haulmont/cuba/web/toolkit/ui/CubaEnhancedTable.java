@@ -6,6 +6,7 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.web.gui.components.presentations.TablePresentations;
+import com.vaadin.ui.Layout;
 import com.vaadin.ui.Table;
 
 /**
@@ -16,6 +17,9 @@ import com.vaadin.ui.Table;
  */
 public interface CubaEnhancedTable {
     TablePresentations getPresentations();
+
+    void setContextMenuPopup(Layout contextMenu);
+    void hideContextMenuPopup();
 
     void setPresentations(TablePresentations presentations);
     void hidePresentationsPopup();

@@ -5,16 +5,13 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.tree;
 
-import com.vaadin.shared.Connector;
-import com.vaadin.shared.ui.tree.TreeState;
+import com.vaadin.shared.communication.ClientRpc;
 
 /**
  * @author artamonov
  * @version $Id$
  */
-public class CubaTreeState extends TreeState {
+public interface CubaTreeClientRpc extends ClientRpc {
 
-    public boolean doubleClickMode = false;
-
-    public Connector contextMenu;
+    void hideContextMenuPopup();
 }

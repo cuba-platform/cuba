@@ -18,4 +18,5 @@ public class CubaTreeTableState extends TreeTableState {
     public boolean allowPopupMenu = true;
 
     public Connector presentations;
+    public Connector contextMenu;
 }

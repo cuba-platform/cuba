@@ -117,8 +117,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     // Map column id to Printable representation
     protected Map<String, Printable> printables = new HashMap<>();
 
-    protected ShortcutsDelegate<ShortcutListener> shortcutsDelegate;
-
     // Use weak map and references for loyal GC support
     protected Map<Entity, List<WeakReference<ReadOnlyCheckBox>>> booleanCells = new WeakHashMap<>();
 
@@ -129,40 +127,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     protected static final int MAX_TEXT_LENGTH_GAP = 10;
 
     protected Security security = AppBeans.get(Security.class);
-
-    protected WebAbstractTable() {
-        shortcutsDelegate = new ShortcutsDelegate<ShortcutListener>() {
-            @Override
-            protected ShortcutListener attachShortcut(final String actionId, KeyCombination keyCombination) {
-                ShortcutListener shortcut = new ShortcutListener(actionId, keyCombination.getKey().getCode(),
-                        KeyCombination.Modifier.codes(keyCombination.getModifiers())) {
-
-                    @Override
-                    public void handleAction(Object sender, Object target) {
-                        if (target == component) {
-                            Action action = getAction(actionId);
-                            if (action != null && action.isEnabled() && action.isVisible()) {
-                                action.actionPerform(WebAbstractTable.this);
-                            }
-                        }
-                    }
-                };
-                component.addShortcutListener(shortcut);
-                return shortcut;
-            }
-
-            @Override
-            protected void detachShortcut(Action action, ShortcutListener shortcutDescriptor) {
-                component.removeShortcutListener(shortcutDescriptor);
-            }
-
-            @Override
-            protected Collection<Action> getActions() {
-                return WebAbstractTable.this.getActions();
-            }
-        };
-        shortcutsDelegate.setAllowEnterShortcut(false);
-    }
 
     @Override
     public java.util.List<Table.Column> getColumns() {
@@ -489,13 +453,14 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         component.setNullSelectionAllowed(false);
         component.setImmediate(true);
         component.setValidationVisible(false);
-//        vaadin7
-//        component.setStoreColWidth(true);
         component.setPageLength(15);
         // CAUTION: vaadin considers null as row header property id;
         component.setColumnWidth(null, 16);
 
-        component.addActionHandler(new ActionsAdapter());
+        contextMenuPopup.setParent(component);
+        component.setContextMenuPopup(contextMenuPopup);
+
+        shortcutsDelegate.setAllowEnterShortcut(false);
 
         component.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
@@ -571,21 +536,19 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     }
 
     @Override
-    public void addAction(Action action) {
-        checkNotNullArgument(action, "action must be non null");
+    protected ContextMenuButton createContextMenuButton() {
+        return new ContextMenuButton() {
+            @Override
+            protected void beforeActionPerformed() {
+                WebAbstractTable.this.component.hideContextMenuPopup();
+            }
 
-        Action oldAction = getAction(action.getId());
-
-        super.addAction(action);
-
-        shortcutsDelegate.addAction(oldAction, action);
-    }
-
-    @Override
-    public void removeAction(Action action) {
-        super.removeAction(action);
-
-        shortcutsDelegate.removeAction(action);
+            @Override
+            protected void performAction(Action action) {
+                // do action for table component
+                action.actionPerform(WebAbstractTable.this);
+            }
+        };
     }
 
     protected void handleClickAction() {
@@ -813,14 +776,15 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
         setVisibleColumns(getPropertyColumns());
 
-        if (AppBeans.get(UserSessionSource.class).getUserSession().isSpecificPermitted(ShowInfoAction.ACTION_PERMISSION)) {
+        // todo remove
+        /*if (AppBeans.get(UserSessionSource.class).getUserSession().isSpecificPermitted(ShowInfoAction.ACTION_PERMISSION)) {
             ShowInfoAction action = (ShowInfoAction) getAction(ShowInfoAction.ACTION_ID);
             if (action == null) {
                 action = new ShowInfoAction();
                 addAction(action);
             }
             action.setDatasource(datasource);
-        }
+        }*/
 
         if (rowsCount != null)
             rowsCount.setDatasource(datasource);
@@ -1999,4 +1963,5 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     public void removeColumnCollapseListener(ColumnCollapseListener columnCollapseListener) {
         columnCollapseListeners.remove(columnCollapseListener);
     }
+
 }

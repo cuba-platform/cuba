@@ -20,16 +20,13 @@ import java.beans.PropertyChangeListener;
  * @author abramov
  * @version $Id$
  */
-public class WebButton
-        extends
-            WebAbstractComponent<com.vaadin.ui.Button>
-        implements
-            Button {
+public class WebButton extends WebAbstractComponent<com.vaadin.ui.Button> implements Button {
 
     protected Action action;
     protected String icon;
 
     public static final String ICON_STYLE = "icon";
+    private PropertyChangeListener actionPropertyChangeListener;
 
     public WebButton() {
         if (AppBeans.get(Configuration.class).getConfig(WebConfig.class).getUseNativeButtons()) {
@@ -42,19 +39,24 @@ public class WebButton
             public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
                 beforeActionPerformed();
                 if (action != null) {
-                    action.actionPerform(WebButton.this);
+                    performAction(action);
                 }
                 afterActionPerformed();
             }
         });
     }
 
+    protected void performAction(Action action) {
+        action.actionPerform(this);
+    }
+
+    // override in descendants if needed
     protected void beforeActionPerformed() {
     }
 
+    // override in descendants if needed
     protected void afterActionPerformed() {
     }
-
 
     @Override
     public String getCaption() {
@@ -83,29 +85,35 @@ public class WebButton
 
     @Override
     public void setAction(Action action) {
-        this.action = action;
+        if (action != this.action) {
+            if (this.action != null) {
+                this.action.removeOwner(this);
+                this.action.removePropertyChangeListener(actionPropertyChangeListener);
+            }
 
-        String caption = action.getCaption();
-        if (!StringUtils.isEmpty(caption) && StringUtils.isEmpty(component.getCaption())) {
-            component.setCaption(caption);
-        }
+            this.action = action;
 
-        String description = action.getDescription();
-        if (!StringUtils.isEmpty(description) && StringUtils.isEmpty(component.getDescription())) {
-            component.setDescription(description);
-        }
+            if (action != null) {
+                String caption = action.getCaption();
+                if (!StringUtils.isEmpty(caption) && StringUtils.isEmpty(component.getCaption())) {
+                    component.setCaption(caption);
+                }
 
-        component.setEnabled(action.isEnabled());
-        component.setVisible(action.isVisible());
+                String description = action.getDescription();
+                if (!StringUtils.isEmpty(description) && StringUtils.isEmpty(component.getDescription())) {
+                    component.setDescription(description);
+                }
 
-        if (action.getIcon() != null) {
-            setIcon(action.getIcon());
-        }
+                component.setEnabled(action.isEnabled());
+                component.setVisible(action.isVisible());
 
-        action.addOwner(this);
+                if (action.getIcon() != null) {
+                    setIcon(action.getIcon());
+                }
 
-        action.addPropertyChangeListener(
-                new PropertyChangeListener() {
+                action.addOwner(this);
+
+                actionPropertyChangeListener = new PropertyChangeListener() {
                     @Override
                     public void propertyChange(PropertyChangeEvent evt) {
                         if (Action.PROP_ICON.equals(evt.getPropertyName())) {
@@ -120,10 +128,12 @@ public class WebButton
                             setVisible(WebButton.this.action.isVisible());
                         }
                     }
-                }
-        );
+                };
+                action.addPropertyChangeListener(actionPropertyChangeListener);
 
-        assignAutoDebugId();
+                assignAutoDebugId();
+            }
+        }
     }
 
     @Override

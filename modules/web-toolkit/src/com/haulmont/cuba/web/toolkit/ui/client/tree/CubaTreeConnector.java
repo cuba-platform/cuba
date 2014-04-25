@@ -5,23 +5,37 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.tree;
 
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.haulmont.cuba.web.toolkit.ui.CubaTree;
-import com.vaadin.client.ApplicationConnection;
-import com.vaadin.client.UIDL;
+import com.vaadin.client.*;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.VTree;
 import com.vaadin.client.ui.tree.TreeConnector;
 import com.vaadin.shared.ui.Connect;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * @author devyatkin
  * @version $Id$
  */
 @Connect(value = CubaTree.class, loadStyle = Connect.LoadStyle.LAZY)
-public class CubaTreeConnector extends TreeConnector {
+public class CubaTreeConnector extends TreeConnector implements HasComponentsConnector {
 
     protected boolean contextMenuSelection = false;
+
+    public CubaTreeConnector() {
+        registerRpc(CubaTreeClientRpc.class, new CubaTreeClientRpc() {
+            @Override
+            public void hideContextMenuPopup() {
+                if (getWidget().customContextMenuPopup != null) {
+                    getWidget().customContextMenuPopup.hide();
+                }
+            }
+        });
+    }
 
     @Override
     public CubaTreeWidget getWidget() {
@@ -65,6 +79,14 @@ public class CubaTreeConnector extends TreeConnector {
         if (stateChangeEvent.hasPropertyChanged("doubleClickMode")) {
             getWidget().doubleClickMode = getState().doubleClickMode;
         }
+        if (stateChangeEvent.hasPropertyChanged("contextMenu")) {
+            if (getState().contextMenu != null) {
+                ComponentConnector contextMenu = (ComponentConnector) getState().contextMenu;
+                getWidget().customContextMenu = contextMenu.getWidget();
+            } else {
+                getWidget().customContextMenu = null;
+            }
+        }
     }
 
     @Override
@@ -82,5 +104,25 @@ public class CubaTreeConnector extends TreeConnector {
     @Override
     protected VTree.TreeNode createNode(UIDL childUidl) {
         return getWidget().new CubaTreeNode();
+    }
+
+    @Override
+    public void updateCaption(ComponentConnector connector) {
+        // NOP, not rendered
+    }
+
+    @Override
+    public List<ComponentConnector> getChildComponents() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public void setChildComponents(List<ComponentConnector> children) {
+    }
+
+    @Override
+    public HandlerRegistration addConnectorHierarchyChangeHandler(ConnectorHierarchyChangeEvent.ConnectorHierarchyChangeHandler handler) {
+        return ensureHandlerManager().addHandler(
+                ConnectorHierarchyChangeEvent.TYPE, handler);
     }
 }

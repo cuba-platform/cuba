@@ -20,6 +20,7 @@ import com.vaadin.server.PaintException;
 import com.vaadin.server.PaintTarget;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
+import com.vaadin.ui.Layout;
 
 import java.util.*;
 
@@ -32,7 +33,10 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
  */
 public class CubaTable extends com.vaadin.ui.Table implements TableContainer, CubaEnhancedTable {
 
-    protected LinkedList<Object> editableColumns = null;
+    protected LinkedList<Object> editableColumns;
+
+    public CubaTable() {
+    }
 
     /**
      * Keeps track of the ShortcutListeners added to this component, and manages the painting and handling as well.
@@ -64,6 +68,16 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
     @Override
     public void hidePresentationsPopup() {
         getRpcProxy(CubaTableClientRpc.class).hidePresentationsPopup();
+    }
+
+    @Override
+    public void setContextMenuPopup(Layout contextMenu) {
+        getState().contextMenu = contextMenu;
+    }
+
+    @Override
+    public void hideContextMenuPopup() {
+        getRpcProxy(CubaTableClientRpc.class).hideContextMenuPopup();
     }
 
     @Override
@@ -276,16 +290,25 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
 
     @Override
     public Iterator<Component> iterator() {
-        if (getState().presentations != null) {
-            if (visibleComponents != null) {
-                // add presentations to rendered components for client reference
-                return Iterables.concat(visibleComponents,
-                        Collections.singleton((Component) getState().presentations)).iterator();
-            } else {
-                return Collections.singleton((Component) getState().presentations).iterator();
+        List<Component> additionalConnectors = null;
+
+        if (getState(false).presentations != null) {
+            additionalConnectors = new LinkedList<>();
+            additionalConnectors.add((Component) getState().presentations);
+        }
+        if (getState(false).contextMenu != null) {
+            if (additionalConnectors == null) {
+                additionalConnectors = new LinkedList<>();
             }
-        } else {
+            additionalConnectors.add((Component) getState().contextMenu);
+        }
+
+        if (additionalConnectors == null) {
             return super.iterator();
+        } else if (visibleComponents != null) {
+            return Iterables.concat(visibleComponents, additionalConnectors).iterator();
+        } else {
+            return additionalConnectors.iterator();
         }
     }
 }

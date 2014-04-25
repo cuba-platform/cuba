@@ -28,6 +28,13 @@ public class CubaScrollTableConnector extends TableConnector {
                     getWidget().presentationsEditorPopup.hide();
                 }
             }
+
+            @Override
+            public void hideContextMenuPopup() {
+                if (getWidget().customContextMenuPopup != null) {
+                    getWidget().customContextMenuPopup.hide();
+                }
+            }
         });
     }
 
@@ -63,13 +70,18 @@ public class CubaScrollTableConnector extends TableConnector {
                 getWidget().setPresentationsMenu(null);
             }
         }
+        if (stateChangeEvent.hasPropertyChanged("contextMenu")) {
+            if (getState().contextMenu != null) {
+                ComponentConnector contextMenu = (ComponentConnector) getState().contextMenu;
+                getWidget().customContextMenu = contextMenu.getWidget();
+            } else {
+                getWidget().customContextMenu = null;
+            }
+        }
     }
 
     @Override
     public TooltipInfo getTooltipInfo(Element element) {
-
-        TooltipInfo info = null;
-
         if (element != getWidget().getElement()) {
             Object node = Util.findWidget(
                     (com.google.gwt.user.client.Element) element,
@@ -78,15 +90,11 @@ public class CubaScrollTableConnector extends TableConnector {
             if (node != null) {
                 CubaScrollTableWidget.CubaScrollTableBody.CubaScrollTableRow row
                         = (CubaScrollTableWidget.CubaScrollTableBody.CubaScrollTableRow) node;
-                info = row.getTooltip(element);
+                return row.getTooltip(element);
             }
         }
 
-        if (info == null) {
-            info = super.getTooltipInfo(element);
-        }
-
-        return info;
+        return super.getTooltipInfo(element);
     }
 
     @Override

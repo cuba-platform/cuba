@@ -37,13 +37,13 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
     protected boolean textSelectionEnabled = false;
     protected boolean allowPopupMenu = true;
 
-    protected int sortClickCounter = 0;
-
     protected ClientLogger logger = ClientLoggerFactory.getLogger("CubaScrollTableWidget");
 
     protected VOverlay presentationsEditorPopup;
+    protected VOverlay customContextMenuPopup;
 
     protected Widget presentationsMenu;
+    protected Widget customContextMenu;
 
     protected CubaScrollTableWidget() {
         // handle shortcuts
@@ -105,7 +105,21 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
     @Override
     public void handleBodyContextMenu(ContextMenuEvent event) {
         if (allowPopupMenu) {
-            super.handleBodyContextMenu(event);
+            if (customContextMenu == null) {
+                super.handleBodyContextMenu(event);
+            } else if (enabled) {
+                int left = Util.getTouchOrMouseClientX(event.getNativeEvent());
+                int top = Util.getTouchOrMouseClientY(event.getNativeEvent());
+                top += Window.getScrollTop();
+                left += Window.getScrollLeft();
+
+                showContextMenuPopup(left, top);
+
+                // Only prevent browser context menu if there are action handlers
+                // registered
+                event.stopPropagation();
+                event.preventDefault();
+            }
         }
     }
 
@@ -139,6 +153,19 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
 
     public void updateTextSelection() {
         Tools.textSelectionEnable(scrollBody.getElement(), textSelectionEnabled);
+    }
+
+    @Override
+    protected void onDetach() {
+        super.onDetach();
+
+        if (presentationsEditorPopup != null) {
+            presentationsEditorPopup.hide();
+        }
+
+        if (customContextMenuPopup != null) {
+            customContextMenuPopup.hide();
+        }
     }
 
     protected class CubaScrollTableHead extends TableHead {
@@ -185,6 +212,8 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
     }
 
     protected class CubaScrollTableHeaderCell extends HeaderCell {
+
+        protected int sortClickCounter = 0;
 
         public CubaScrollTableHeaderCell(String colId, String headerText) {
             super(colId, headerText);
@@ -419,7 +448,7 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
 
             @Override
             public void showContextMenu(Event event) {
-                if (allowPopupMenu && enabled && actionKeys != null) {
+                if (allowPopupMenu && enabled && (customContextMenu != null || actionKeys != null)) {
                     // Show context menu if there are registered action handlers
                     int left = Util.getTouchOrMouseClientX(event)
                             + Window.getScrollLeft();
@@ -428,6 +457,15 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
 
                     selectRowForContextMenuActions(event);
 
+                    showContextMenu(left, top);
+                }
+            }
+
+            @Override
+            public void showContextMenu(int left, int top) {
+                if (customContextMenu != null) {
+                    showContextMenuPopup(left, top);
+                } else {
                     super.showContextMenu(left, top);
                 }
             }
@@ -482,5 +520,30 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
                 return focusedRow != null;
             }
         }
+    }
+
+    protected void showContextMenuPopup(int left, int top) {
+        if (customContextMenu instanceof HasWidgets) {
+            if (!((HasWidgets) customContextMenu).iterator().hasNext()) {
+                // there are no actions to show
+                return;
+            }
+        }
+
+        customContextMenuPopup = new VOverlay();
+        customContextMenuPopup.setStyleName("cuba-context-menu");
+        customContextMenuPopup.setOwner(this);
+        customContextMenuPopup.setWidget(customContextMenu);
+
+        customContextMenuPopup.addCloseHandler(new CloseHandler<PopupPanel>() {
+            @Override
+            public void onClose(CloseEvent<PopupPanel> event) {
+                customContextMenuPopup = null;
+            }
+        });
+
+        customContextMenuPopup.setAutoHideEnabled(true);
+        customContextMenuPopup.setPopupPosition(left, top);
+        customContextMenuPopup.show();
     }
 }

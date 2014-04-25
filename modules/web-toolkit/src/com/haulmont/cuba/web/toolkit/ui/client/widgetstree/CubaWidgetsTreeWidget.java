@@ -10,14 +10,14 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.haulmont.cuba.web.toolkit.ui.client.tree.CubaTreeWidget;
 import com.vaadin.client.BrowserInfo;
-import com.vaadin.client.ui.VTree;
 
 /**
  * @author artamonov
  * @version $Id$
  */
-public class CubaWidgetsTreeWidget extends VTree {
+public class CubaWidgetsTreeWidget extends CubaTreeWidget {
 
     public class WidgetTreeNode extends TreeNode {
         protected Widget nodeWidget;

@@ -8,12 +8,12 @@ import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.KeyCombination;
+import com.haulmont.cuba.gui.components.PopupButton;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.StringUtils;
-import org.vaadin.hene.popupbutton.PopupButton;
 
 import java.beans.PropertyChangeListener;
 import java.util.Collection;
@@ -25,11 +25,7 @@ import java.util.List;
  * @author pavlov
  * @version $Id$
  */
-public class WebPopupButton
-        extends
-            WebAbstractComponent<org.vaadin.hene.popupbutton.PopupButton>
-        implements
-            com.haulmont.cuba.gui.components.PopupButton {
+public class WebPopupButton extends WebAbstractComponent<org.vaadin.hene.popupbutton.PopupButton> implements PopupButton {
 
     private Component popupComponent;
     private com.vaadin.ui.Component vPopupComponent;
@@ -38,7 +34,7 @@ public class WebPopupButton
     private List<Action> actionOrder = new LinkedList<>();
 
     public WebPopupButton() {
-        component = new PopupButton();
+        component = new org.vaadin.hene.popupbutton.PopupButton();
         component.setImmediate(true);
 
         vPopupComponent = new VerticalLayout();
@@ -137,8 +133,6 @@ public class WebPopupButton
             WebButton button = new WebButton() {
                 @Override
                 protected void beforeActionPerformed() {
-                    super.beforeActionPerformed();
-
                     WebPopupButton.this.requestFocus();
                 }
             };
@@ -154,11 +148,11 @@ public class WebPopupButton
             component.markAsDirty();
             actionOrder.add(action);
 
-            String debugId = getDebugId();
-            if (debugId != null) {
-                button.setDebugId(AppUI.getCurrent().getTestIdManager().getTestId(debugId + "_" + action.getId()));
-            }
             if (AppUI.getCurrent().isTestMode()) {
+                String debugId = getDebugId();
+                if (debugId != null) {
+                    button.setDebugId(AppUI.getCurrent().getTestIdManager().getTestId(debugId + "_" + action.getId()));
+                }
                 button.setId(action.getId());
             }
         }
@@ -183,7 +177,12 @@ public class WebPopupButton
     @Override
     public void removeAction(Action action) {
         if (vPopupComponent instanceof com.vaadin.ui.Layout && actionOrder.remove(action)) {
-            ((com.vaadin.ui.Layout) vPopupComponent).removeComponent(WebComponentsHelper.unwrap((Component) action.getOwner()));
+            Component button = (Component) action.getOwner();
+            if (button instanceof WebButton) {
+                ((WebButton) button).setAction(null);
+            }
+
+            ((com.vaadin.ui.Layout) vPopupComponent).removeComponent(WebComponentsHelper.unwrap(button));
         }
     }
 

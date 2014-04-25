@@ -7,11 +7,19 @@ package com.haulmont.cuba.web.toolkit.ui.client.tree;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.ContextMenuEvent;
 import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.logical.shared.CloseEvent;
+import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.client.ConnectorMap;
 import com.vaadin.client.ui.ShortcutActionHandler;
+import com.vaadin.client.ui.VOverlay;
 import com.vaadin.client.ui.VTree;
 
 /**
@@ -27,6 +35,9 @@ public class CubaTreeWidget extends VTree implements ShortcutActionHandler.Short
     protected long lastDoubleClickHandled = 0;
 
     protected boolean doubleClickMode = false;
+
+    protected VOverlay customContextMenuPopup;
+    protected Widget customContextMenu;
 
     @Override
     public ShortcutActionHandler getShortcutActionHandler() {
@@ -61,7 +72,19 @@ public class CubaTreeWidget extends VTree implements ShortcutActionHandler.Short
 
                     toggleSelection();
                 }
-                super.showContextMenu(event);
+                if (customContextMenu == null) {
+                    super.showContextMenu(event);
+                } else {
+                    int left = event.getClientX();
+                    int top = event.getClientY();
+                    top += Window.getScrollTop();
+                    left += Window.getScrollLeft();
+
+                    showContextMenuPopup(left, top);
+
+                    event.stopPropagation();
+                    event.preventDefault();
+                }
             }
         }
 
@@ -161,5 +184,56 @@ public class CubaTreeWidget extends VTree implements ShortcutActionHandler.Short
         super.onBlur(event);
 
         removeStyleDependentName("focus");
+    }
+
+    @Override
+    protected void onDetach() {
+        super.onDetach();
+
+        if (customContextMenuPopup != null) {
+            customContextMenuPopup.hide();
+        }
+    }
+
+    @Override
+    protected void handleBodyContextMenu(ContextMenuEvent event) {
+        if (customContextMenu == null) {
+            super.handleBodyContextMenu(event);
+        } else {
+            int left = event.getNativeEvent().getClientX();
+            int top = event.getNativeEvent().getClientY();
+            top += Window.getScrollTop();
+            left += Window.getScrollLeft();
+
+            showContextMenuPopup(left, top);
+
+            event.stopPropagation();
+            event.preventDefault();
+        }
+    }
+
+    protected void showContextMenuPopup(int left, int top) {
+        if (customContextMenu instanceof HasWidgets) {
+            if (!((HasWidgets) customContextMenu).iterator().hasNext()) {
+                // there are no actions to show
+                return;
+            }
+        }
+
+        customContextMenuPopup = new VOverlay();
+        customContextMenuPopup.setStyleName("cuba-context-menu");
+        customContextMenuPopup.setOwner(this);
+        customContextMenuPopup.setWidget(customContextMenu);
+
+        customContextMenuPopup.addCloseHandler(new CloseHandler<PopupPanel>() {
+            @Override
+            public void onClose(CloseEvent<PopupPanel> event) {
+                customContextMenuPopup = null;
+            }
+        });
+
+        customContextMenuPopup.setAutoHideEnabled(true);
+        customContextMenuPopup.setPopupPosition(left, top);
+        customContextMenuPopup.show();
     }
 }

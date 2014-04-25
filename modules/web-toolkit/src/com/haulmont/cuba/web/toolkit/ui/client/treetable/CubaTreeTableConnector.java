@@ -5,13 +5,13 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.treetable;
 
+import com.google.gwt.dom.client.Element;
 import com.haulmont.cuba.web.toolkit.ui.CubaTreeTable;
 import com.haulmont.cuba.web.toolkit.ui.client.table.CubaTableClientRpc;
 import com.vaadin.client.*;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.treetable.TreeTableConnector;
-import com.google.gwt.dom.client.Element;
 import com.vaadin.shared.ui.Connect;
 
 /**
@@ -28,6 +28,13 @@ public class CubaTreeTableConnector extends TreeTableConnector {
             public void hidePresentationsPopup() {
                 if (getWidget().presentationsEditorPopup != null) {
                     getWidget().presentationsEditorPopup.hide();
+                }
+            }
+
+            @Override
+            public void hideContextMenuPopup() {
+                if (getWidget().customContextMenuPopup != null) {
+                    getWidget().customContextMenuPopup.hide();
                 }
             }
         });
@@ -64,13 +71,18 @@ public class CubaTreeTableConnector extends TreeTableConnector {
                 getWidget().setPresentationsMenu(null);
             }
         }
+        if (stateChangeEvent.hasPropertyChanged("contextMenu")) {
+            if (getState().contextMenu != null) {
+                ComponentConnector contextMenu = (ComponentConnector) getState().contextMenu;
+                getWidget().customContextMenu = contextMenu.getWidget();
+            } else {
+                getWidget().customContextMenu = null;
+            }
+        }
     }
 
     @Override
     public TooltipInfo getTooltipInfo(Element element) {
-
-        TooltipInfo info = null;
-
         if (element != getWidget().getElement()) {
             Object node = Util.findWidget(
                     (com.google.gwt.user.client.Element) element,
@@ -79,15 +91,11 @@ public class CubaTreeTableConnector extends TreeTableConnector {
             if (node != null) {
                 CubaTreeTableWidget.CubaTreeTableBody.CubaTreeTableRow row
                         = (CubaTreeTableWidget.CubaTreeTableBody.CubaTreeTableRow) node;
-                info = row.getTooltip(element);
+                return row.getTooltip(element);
             }
         }
 
-        if (info == null) {
-            info = super.getTooltipInfo(element);
-        }
-
-        return info;
+        return super.getTooltipInfo(element);
     }
 
     @Override
