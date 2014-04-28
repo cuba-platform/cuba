@@ -74,6 +74,8 @@ public class UserSessionManager {
         }
         UserSession session = new UserSession(uuidSource.createUuid(), user, roles, locale, system);
         compilePermissions(session, roles);
+        if (user.getGroup() == null)
+            throw new IllegalStateException("User is not in a Group");
         compileConstraints(session, user.getGroup());
         compileSessionAttributes(session, user.getGroup());
         return session;
@@ -95,6 +97,8 @@ public class UserSessionManager {
         }
         UserSession session = new UserSession(src, user, roles, src.getLocale());
         compilePermissions(session, roles);
+        if (user.getGroup() == null)
+            throw new IllegalStateException("User is not in a Group");
         compileConstraints(session, user.getGroup());
         compileSessionAttributes(session, user.getGroup());
         return session;
