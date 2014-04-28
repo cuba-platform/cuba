@@ -32,16 +32,6 @@ public abstract class AbstractNotPersistentEntity extends AbstractInstance imple
         uuid = UuidProvider.createUuid();
     }
 
-    public static <T extends AbstractNotPersistentEntity> T create(Class<T> clazz, Entity<UUID> entity) {
-        try {
-            T t = clazz.newInstance();
-            t.uuid = entity.getId();
-            return t;
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     @Override
     public UUID getUuid() {
         return uuid;
