@@ -478,7 +478,7 @@ configure(webToolkitModule) {
     task webArchive(dependsOn: buildWidgetSet, type: Zip) {
         from file('web')
         from webOutDir
-        exclude '**/web.xml', '**/app.properties', '**/gwt-unitCache/'
+        exclude '**/web.xml', '**/app.properties'
         classifier = 'web'
     }
 
@@ -493,7 +493,6 @@ configure(webToolkitModule) {
         copy {
             from "$buildDir/web"
             into "$tomcatDir/webapps/cuba"
-            exclude '**/gwt-unitCache/'
         }
     }
 }
