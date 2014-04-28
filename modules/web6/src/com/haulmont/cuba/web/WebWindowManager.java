@@ -265,24 +265,22 @@ public class WebWindowManager extends WindowManager {
                     }
                 } else {
                     final Integer hashCode = getWindowHashCode(window);
-                    Layout tab = null;
-                    if (hashCode != null && !multipleOpen) {
+                    ComponentContainer tab = null;
+                    if (hashCode != null && !multipleOpen)
                         tab = findTab(hashCode);
-                    }
-                    final Layout oldLayout = tab;
-                    final WindowBreadCrumbs oldBreadCrumbs = getTabs().get(oldLayout);
+                    ComponentContainer oldLayout = tab;
+                    final WindowBreadCrumbs oldBreadCrumbs = tabs.get(oldLayout);
 
                     if (oldBreadCrumbs != null &&
-                            windowOpenMode.containsKey(oldBreadCrumbs.getCurrentWindow().<IFrame>getFrame()) &&
+                            windowOpenMode.containsKey(oldBreadCrumbs.getCurrentWindow().<Window>getFrame()) &&
                             !multipleOpen) {
                         final Window oldWindow = oldBreadCrumbs.getCurrentWindow();
+                        Layout l = new VerticalLayout();
+                        appWindow.getTabSheet().replaceComponent(tab, l);
+                        fakeTabs.put(l, oldBreadCrumbs);
                         oldWindow.closeAndRun(MAIN_MENU_ACTION_ID, new Runnable() {
                             @Override
                             public void run() {
-                                Layout l = new VerticalLayout();
-                                appWindow.getTabSheet().replaceComponent(oldLayout, l);
-                                fakeTabs.put(l, oldBreadCrumbs);
-
                                 putToWindowMap(oldWindow, hashCode);
                                 oldBreadCrumbs.addWindow(oldWindow);
                                 showWindow(window, caption, description, OpenType.NEW_TAB, multipleOpen);
