@@ -6,7 +6,6 @@ package com.haulmont.cuba.web.gui.components.presentations;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.AbstractAction;
@@ -21,7 +20,6 @@ import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebPopupButton;
 import com.haulmont.cuba.web.toolkit.ui.MenuBar;
 import com.vaadin.data.Property;
-import com.vaadin.data.util.AbstractProperty;
 import com.vaadin.ui.*;
 import org.dom4j.Element;
 
@@ -53,7 +51,7 @@ public class TablePresentations extends CustomComponent {
         this.tableImpl = (com.haulmont.cuba.web.toolkit.ui.Table) WebComponentsHelper.unwrap(component);
 
         initLayout();
-        setWidth("100%");
+        setSizeUndefined();
         setStyleName("table-presentations");
 
         setParent(tableImpl);

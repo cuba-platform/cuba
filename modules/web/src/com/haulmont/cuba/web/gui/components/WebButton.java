@@ -22,11 +22,11 @@ import java.beans.PropertyChangeListener;
  */
 public class WebButton extends WebAbstractComponent<com.vaadin.ui.Button> implements Button {
 
+    public static final String ICON_STYLE = "icon";
+
     protected Action action;
     protected String icon;
-
-    public static final String ICON_STYLE = "icon";
-    private PropertyChangeListener actionPropertyChangeListener;
+    protected PropertyChangeListener actionPropertyChangeListener;
 
     public WebButton() {
         if (AppBeans.get(Configuration.class).getConfig(WebConfig.class).getUseNativeButtons()) {

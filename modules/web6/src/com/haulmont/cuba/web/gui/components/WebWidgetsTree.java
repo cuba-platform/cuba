@@ -31,6 +31,15 @@ public class WebWidgetsTree
     }
 
     @Override
+    protected ContextMenuButton createContextMenuButton() {
+        return new ContextMenuButton() {
+            @Override
+            protected void performAction(Action action) {
+            }
+        };
+    }
+
+    @Override
     public String getHierarchyProperty() {
         return hierarchyProperty;
     }

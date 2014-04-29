@@ -12,6 +12,10 @@ import com.vaadin.terminal.gwt.client.ui.VOverlay;
 import java.util.Iterator;
 import java.util.Set;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 public class PopupContainer extends VOverlay implements Container {
 
     private ApplicationConnection client;
@@ -39,7 +43,20 @@ public class PopupContainer extends VOverlay implements Container {
 
         this.uidl = paintableUidl;
 
+        updateInternalComponents();
+
         updateShadowSizeAndPosition();
+    }
+
+    protected void updateInternalComponents() {
+        setVisible(false);
+        show();
+        if (uidl != null) {
+            ((Paintable) component).updateFromUIDL(uidl, client);
+            uidl = null;
+        }
+        setVisible(true);
+        hide();
     }
 
     public void showAt(final int left, final int top) {
@@ -60,6 +77,7 @@ public class PopupContainer extends VOverlay implements Container {
                         l = 0;
                     }
                 }
+
                 offsetHeight = component.getOffsetHeight();
                 if (offsetHeight + top > Window.getClientHeight()) {
                     t = top - offsetHeight;
@@ -67,9 +85,12 @@ public class PopupContainer extends VOverlay implements Container {
                         t = 0;
                     }
                 }
+
                 setPopupPosition(l, t);
 
-                client.updateComponentSize(component, "", "");
+                client.handleComponentRelativeSize(component);
+
+                addStyleName("cuba-popup-open");
             }
         });
     }

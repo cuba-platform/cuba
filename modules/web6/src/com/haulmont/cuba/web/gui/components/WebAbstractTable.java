@@ -79,6 +79,8 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.Table>
         extends WebAbstractList<T> implements Table {
 
+    protected static final int MAX_TEXT_LENGTH_GAP = 10;
+
     protected static final String REQUIRED_TABLE_STYLE = "table";
 
     protected Map<Object, Table.Column> columns = new HashMap<>();
@@ -119,8 +121,6 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     // Map column id to Printable representation
     protected Map<String, Printable> printables = new HashMap<>();
 
-    protected ShortcutsDelegate<ShortcutListener> shortcutsDelegate;
-
     // Use weak map and references for loyal GC support
     protected Map<Entity, List<WeakReference<ReadOnlyCheckBox>>> booleanCells = new WeakHashMap<>();
 
@@ -132,38 +132,9 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
     protected Security security = AppBeans.get(Security.class);
 
-    protected static final int MAX_TEXT_LENGTH_GAP = 10;
+    protected boolean sendHideContextMenuPopup = false;
 
     protected WebAbstractTable() {
-        shortcutsDelegate = new ShortcutsDelegate<ShortcutListener>() {
-            @Override
-            protected ShortcutListener attachShortcut(final String actionId, KeyCombination keyCombination) {
-                ShortcutListener shortcut = new ShortcutListener(actionId, keyCombination.getKey().getCode(),
-                        KeyCombination.Modifier.codes(keyCombination.getModifiers())) {
-                    @Override
-                    public void handleAction(Object sender, Object target) {
-                        if (target == component) {
-                            Action action = getAction(actionId);
-                            if (action != null && action.isEnabled() && action.isVisible()) {
-                                action.actionPerform(WebAbstractTable.this);
-                            }
-                        }
-                    }
-                };
-                component.addShortcutListener(shortcut);
-                return shortcut;
-            }
-
-            @Override
-            protected void detachShortcut(Action action, ShortcutListener shortcutDescriptor) {
-                component.removeShortcutListener(shortcutDescriptor);
-            }
-
-            @Override
-            protected Collection<Action> getActions() {
-                return WebAbstractTable.this.getActions();
-            }
-        };
         shortcutsDelegate.setAllowEnterShortcut(false);
     }
 
@@ -523,7 +494,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         component.setStyleName(REQUIRED_TABLE_STYLE); //It helps us to manage a caption style
         component.setPageLength(15);
 
-        component.addActionHandler(new ActionsAdapter());
+        contextMenuPopup.setParent(component);
 
         component.addListener(new Property.ValueChangeListener() {
             @Override
@@ -593,21 +564,24 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     }
 
     @Override
-    public void addAction(Action action) {
-        checkNotNullArgument(action, "action must be non null");
+    protected ContextMenuButton createContextMenuButton() {
+        return new ContextMenuButton() {
+            @Override
+            protected void beforeActionPerformed() {
+                WebAbstractTable.this.hideContextMenuPopup();
+            }
 
-        Action oldAction = getAction(action.getId());
-
-        super.addAction(action);
-
-        shortcutsDelegate.addAction(oldAction, action);
+            @Override
+            protected void performAction(Action action) {
+                // do action for table component
+                action.actionPerform(WebAbstractTable.this);
+            }
+        };
     }
 
-    @Override
-    public void removeAction(Action action) {
-        super.removeAction(action);
-
-        shortcutsDelegate.removeAction(action);
+    protected void hideContextMenuPopup() {
+        this.sendHideContextMenuPopup = true;
+        this.component.requestRepaint();
     }
 
     protected void handleClickAction() {
@@ -1899,12 +1873,21 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     }
 
     protected void paintSpecificContent(PaintTarget target) throws PaintException {
+        if (sendHideContextMenuPopup) {
+            target.addAttribute("hideContextMenu", true);
+            sendHideContextMenuPopup = false;
+        }
+
         target.addVariable(component, "presentations", isUsePresentations());
         if (isUsePresentations()) {
             target.startTag("presentations");
             tablePresentations.paint(target);
             target.endTag("presentations");
         }
+
+        target.startTag("cm");
+        contextMenuPopup.paint(target);
+        target.endTag("cm");
     }
 
     @Override

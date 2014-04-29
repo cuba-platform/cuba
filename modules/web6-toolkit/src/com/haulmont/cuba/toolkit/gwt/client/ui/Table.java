@@ -68,7 +68,7 @@ public abstract class Table
 
     protected final int TABLE_MAX_WIDTH = 30000;
 
-    protected int sortClickCounter = 0;
+    protected PopupContainer customContextMenuPopup;
 
     //[6.6]
     private KeyPressHandler navKeyPressHandler = new KeyPressHandler() {
@@ -569,7 +569,18 @@ public abstract class Table
                 tHead.updateCellsFromUIDL(c);
             } else if (c.getTag().equals("presentations")) {
                 tHead.updatePresentationsPopup(c);
+            } else if (c.getTag().equals("cm")) {
+                if (customContextMenuPopup == null) {
+                    customContextMenuPopup = new PopupContainer();
+                    // Do not use default style, it is suitable only for presentation popup
+                    customContextMenuPopup.setStylePrimaryName("cuba-context-menu");
+                }
+                customContextMenuPopup.updateFromUIDL(c, client);
             }
+        }
+
+        if (uidl.hasAttribute("hideContextMenu") && customContextMenuPopup != null && customContextMenuPopup.isShowing()) {
+            customContextMenuPopup.hide();
         }
 
         updateHeader(uidl.getStringArrayAttribute("vcolorder"));
@@ -594,6 +605,15 @@ public abstract class Table
             } else {
                 getElement().setPropertyJSO("onselectstart", null);
             }
+        }
+    }
+
+    @Override
+    protected void onDetach() {
+        super.onDetach();
+
+        if (customContextMenuPopup != null && customContextMenuPopup.isShowing()) {
+            customContextMenuPopup.hide();
         }
     }
 
@@ -1326,6 +1346,8 @@ public abstract class Table
     }
 
     public class HeaderCell extends Widget {
+
+        protected int sortClickCounter = 0;
 
         private static final int DRAG_WIDGET_WIDTH = 4;
 
@@ -3217,13 +3239,18 @@ public abstract class Table
             }
 
             public void showContextMenu(Event event) {
-                if (enabled && actionKeys != null && actionKeys.length > 0) {
+                if (enabled) {
                     int left = event.getClientX();
                     int top = event.getClientY();
                     top += Window.getScrollTop();
                     left += Window.getScrollLeft();
-                    client.getContextMenu().removeStyleName("v-tableColumnSelector");
-                    client.getContextMenu().showAt(this, left, top);
+
+                    if (customContextMenuPopup != null) {
+                        customContextMenuPopup.showAt(left, top);
+                    } else if (actionKeys != null && actionKeys.length > 0) {
+                        client.getContextMenu().removeStyleName("v-tableColumnSelector");
+                        client.getContextMenu().showAt(this, left, top);
+                    }
                 }
                 event.stopPropagation();
                 event.preventDefault();

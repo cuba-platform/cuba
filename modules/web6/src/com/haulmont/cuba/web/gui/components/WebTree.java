@@ -8,20 +8,23 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.CaptionMode;
+import com.haulmont.cuba.gui.components.ShowInfoAction;
+import com.haulmont.cuba.gui.components.Tree;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
 import com.haulmont.cuba.web.gui.data.HierarchicalDsWrapper;
 import com.vaadin.data.Property;
-import com.vaadin.event.ShortcutListener;
 import com.vaadin.ui.AbstractSelect;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.*;
-
-import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author krivopustov
@@ -33,14 +36,11 @@ public class WebTree extends WebAbstractList<com.haulmont.cuba.web.toolkit.ui.Tr
     protected CaptionMode captionMode = CaptionMode.ITEM;
     protected String captionProperty;
 
-    protected ShortcutsDelegate<ShortcutListener> shortcutsDelegate;
-
     public WebTree() {
         component = new com.haulmont.cuba.web.toolkit.ui.Tree();
         component.setMultiSelect(false);
         component.setImmediate(true);
 
-        component.addActionHandler(new ActionsAdapter());
         component.addListener(
                 new Property.ValueChangeListener() {
                     @SuppressWarnings("unchecked")
@@ -62,53 +62,24 @@ public class WebTree extends WebAbstractList<com.haulmont.cuba.web.toolkit.ui.Tr
                 }
         );
 
-        shortcutsDelegate = new ShortcutsDelegate<ShortcutListener>() {
+        component.setComboBoxMenu(contextMenuPopup);
+        contextMenuPopup.setParent(component);
+    }
+
+    @Override
+    protected ContextMenuButton createContextMenuButton() {
+        return new ContextMenuButton() {
             @Override
-            protected ShortcutListener attachShortcut(final String actionId, KeyCombination keyCombination) {
-                ShortcutListener shortcut = new ShortcutListener(actionId, keyCombination.getKey().getCode(),
-                        KeyCombination.Modifier.codes(keyCombination.getModifiers())) {
-                    @Override
-                    public void handleAction(Object sender, Object target) {
-                        if (target == component) {
-                            Action action = getAction(actionId);
-                            if (action != null && action.isEnabled() && action.isVisible()) {
-                                action.actionPerform(WebTree.this);
-                            }
-                        }
-                    }
-                };
-                component.addShortcutListener(shortcut);
-                return shortcut;
+            protected void beforeActionPerformed() {
+                WebTree.this.component.hideContextMenu();
             }
 
             @Override
-            protected void detachShortcut(Action action, ShortcutListener shortcutDescriptor) {
-                component.removeShortcutListener(shortcutDescriptor);
-            }
-
-            @Override
-            protected Collection<Action> getActions() {
-                return WebTree.this.getActions();
+            protected void performAction(Action action) {
+                // do action for table component
+                action.actionPerform(WebTree.this);
             }
         };
-    }
-
-    @Override
-    public void addAction(Action action) {
-        checkNotNullArgument(action, "action must be non null");
-
-        Action oldAction = getAction(action.getId());
-
-        super.addAction(action);
-
-        shortcutsDelegate.addAction(oldAction, action);
-    }
-
-    @Override
-    public void removeAction(Action action) {
-        super.removeAction(action);
-
-        shortcutsDelegate.removeAction(action);
     }
 
     @Override

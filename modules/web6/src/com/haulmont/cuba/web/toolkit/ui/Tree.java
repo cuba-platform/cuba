@@ -6,12 +6,20 @@ package com.haulmont.cuba.web.toolkit.ui;
 
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
+import com.vaadin.ui.Layout;
 
 import java.util.LinkedList;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 @SuppressWarnings("serial")
 public class Tree extends com.vaadin.ui.Tree {
     private boolean doubleClickMode = false;
+
+    protected Layout comboBoxMenu;
+    protected boolean sendHideContextMenu = false;
 
     @Override
     public void paintContent(PaintTarget target) throws PaintException {
@@ -19,6 +27,17 @@ public class Tree extends com.vaadin.ui.Tree {
 
         if (isDoubleClickMode()) {
             target.addAttribute("doubleClickMode", isDoubleClickMode());
+        }
+
+        if (comboBoxMenu != null) {
+            target.startTag("cm");
+            comboBoxMenu.paint(target);
+            target.endTag("cm");
+        }
+
+        if (sendHideContextMenu) {
+            target.addAttribute("hideContextMenu", true);
+            sendHideContextMenu = false;
         }
     }
 
@@ -37,6 +56,19 @@ public class Tree extends com.vaadin.ui.Tree {
 
     public void setDoubleClickMode(boolean doubleClickMode) {
         this.doubleClickMode = doubleClickMode;
+        requestRepaint();
+    }
+
+    public Layout getComboBoxMenu() {
+        return comboBoxMenu;
+    }
+
+    public void setComboBoxMenu(Layout comboBoxMenu) {
+        this.comboBoxMenu = comboBoxMenu;
+    }
+
+    public void hideContextMenu() {
+        sendHideContextMenu = true;
         requestRepaint();
     }
 }

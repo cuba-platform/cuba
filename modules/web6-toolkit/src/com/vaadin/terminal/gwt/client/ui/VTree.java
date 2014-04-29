@@ -27,6 +27,7 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.haulmont.cuba.toolkit.gwt.client.TextSelectionManager;
 import com.haulmont.cuba.toolkit.gwt.client.ui.IScrollablePanel;
+import com.haulmont.cuba.toolkit.gwt.client.ui.PopupContainer;
 import com.vaadin.terminal.gwt.client.*;
 import com.vaadin.terminal.gwt.client.ui.dd.*;
 import com.vaadin.terminal.gwt.client.ui.layout.CellBasedLayout;
@@ -57,6 +58,8 @@ public class VTree extends FocusElementPanel implements Paintable, VHasDropHandl
     private int multiSelectMode = MULTISELECT_MODE_DEFAULT;
 
     protected final HashMap<String, TreeNode> keyToNode = new HashMap<String, TreeNode>();
+
+    protected PopupContainer customContextMenuPopup;
 
     /**
      * This map contains captions and icon urls for actions like: * "33_c" ->
@@ -198,6 +201,7 @@ public class VTree extends FocusElementPanel implements Paintable, VHasDropHandl
         return actionMap.get(actionKey + "_i");
     }
 
+    @Override
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
         // Ensure correct implementation and let container manage caption
         if (client.updateComponent(this, uidl, true)) {
@@ -230,6 +234,10 @@ public class VTree extends FocusElementPanel implements Paintable, VHasDropHandl
 
         content.clear();
 
+        if (uidl.hasAttribute("hideContextMenu") && customContextMenuPopup != null && customContextMenuPopup.isShowing()) {
+            customContextMenuPopup.hide();
+        }
+
         TreeNode childTree = null;
         for (final Iterator i = uidl.getChildIterator(); i.hasNext();) {
             final UIDL childUidl = (UIDL) i.next();
@@ -239,7 +247,16 @@ public class VTree extends FocusElementPanel implements Paintable, VHasDropHandl
             } else if ("-ac".equals(childUidl.getTag())) {
                 updateDropHandler(childUidl);
                 continue;
+            } else if ("cm".equals(childUidl.getTag())) {
+                if (customContextMenuPopup == null) {
+                    customContextMenuPopup = new PopupContainer();
+                    // Do not use default style, it is suitable only for presentation popup
+                    customContextMenuPopup.setStylePrimaryName("cuba-context-menu");
+                }
+                customContextMenuPopup.updateFromUIDL(childUidl, client);
+                continue;
             }
+
             childTree = createTreeNode(childUidl);
             content.add(childTree);
             childTree.updateFromUIDL(childUidl, client);
@@ -256,7 +273,15 @@ public class VTree extends FocusElementPanel implements Paintable, VHasDropHandl
         selectedIds = uidl.getStringArrayVariableAsSet("selected");
 
         rendering = false;
+    }
 
+    @Override
+    protected void onDetach() {
+        super.onDetach();
+
+        if (customContextMenuPopup != null && customContextMenuPopup.isShowing()) {
+            customContextMenuPopup.hide();
+        }
     }
 
      /**
@@ -1140,16 +1165,19 @@ public class VTree extends FocusElementPanel implements Paintable, VHasDropHandl
             return isGrandParent;
         }
 
-
         public void showContextMenu(Event event) {
             if (!readonly && !disabled) {
+                int left = event.getClientX();
+                int top = event.getClientY();
+                top += Window.getScrollTop();
+                left += Window.getScrollLeft();
+
                 if (actionKeys != null) {
-                    int left = event.getClientX();
-                    int top = event.getClientY();
-                    top += Window.getScrollTop();
-                    left += Window.getScrollLeft();
                     client.getContextMenu().showAt(this, left, top);
+                } else if (customContextMenuPopup != null) {
+                    customContextMenuPopup.showAt(left, top);
                 }
+
                 if (!isSelected()) {
                     toggleSelection();
                 }
