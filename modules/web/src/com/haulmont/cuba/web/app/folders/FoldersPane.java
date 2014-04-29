@@ -403,10 +403,43 @@ public class FoldersPane extends VerticalLayout {
         folderUpdateBackgroundTaskWrapper.restart();
     }
 
+    protected Collection<AppFolder> getRecursivelyChildAppFolders(AppFolder parentFolder) {
+        Collection<AppFolder> result = new LinkedList<>();
+        Collection<AppFolder> childFolders = (Collection<AppFolder>) appFoldersTree.getChildren(parentFolder);
+        if (childFolders != null) {
+            result.addAll(childFolders);
+            for (AppFolder folder : childFolders)
+                result.addAll(getRecursivelyChildAppFolders(folder));
+        }
+        return result;
+    }
+
+    protected void updateQuantityAndItemStyleAppFolder(AppFolder parentFolder) {
+        Collection<AppFolder> childFolders = getRecursivelyChildAppFolders(parentFolder);
+        int sumOfChildQuantity = 0;
+        Set<String> childFoldersStyleSet = new HashSet<>();
+        for (AppFolder childFolder : childFolders) {
+            sumOfChildQuantity += !StringUtils.isBlank(childFolder.getQuantityScript()) ? childFolder.getQuantity() : 0;
+            if (childFolder.getItemStyle() != null)
+                childFoldersStyleSet.add(childFolder.getItemStyle());
+        }
+        parentFolder.setQuantity(sumOfChildQuantity);
+        if (!childFoldersStyleSet.isEmpty()) {
+            parentFolder.setItemStyle(StringUtils.join(childFoldersStyleSet, " "));
+        }
+    }
+
     protected List<AppFolder> getReloadedFolders() {
         List<AppFolder> folders = new ArrayList(appFoldersTree.getItemIds());
         FoldersService service = AppBeans.get(FoldersService.NAME);
-        return service.reloadAppFolders(folders);
+        folders = service.reloadAppFolders(folders);
+
+        for (AppFolder folder : folders) {
+            if (StringUtils.isBlank(folder.getQuantityScript()) && folder.getQuantity() != null)
+                updateQuantityAndItemStyleAppFolder(folder);
+        }
+
+        return folders;
     }
 
     protected void updateFolders(List<AppFolder> reloadedFolders) {
@@ -432,6 +465,25 @@ public class FoldersPane extends VerticalLayout {
 
         appFoldersTree = new CubaTree();
         appFoldersTree.setItemStyleGenerator(new FolderTreeStyleProvider());
+        appFoldersTree.addExpandListener(new Tree.ExpandListener() {
+            @Override
+            public void nodeExpand(Tree.ExpandEvent event) {
+                AppFolder folder = (AppFolder) event.getItemId();
+                if (StringUtils.isBlank(folder.getQuantityScript())) {
+                    folder.setQuantity(null);
+                    folder.setItemStyle(null);
+                    appFoldersTree.setItemCaption(folder, folder.getCaption());
+                }
+            }
+        });
+        appFoldersTree.addCollapseListener(new Tree.CollapseListener() {
+            @Override
+            public void nodeCollapse(Tree.CollapseEvent event) {
+                AppFolder folder = (AppFolder) event.getItemId();
+                if (StringUtils.isBlank(folder.getQuantityScript()))
+                    updateQuantityAndItemStyleAppFolder(folder);
+            }
+        });
 
         appFoldersRoot = messages.getMainMessage("folders.appFoldersRoot");
         fillTree(appFoldersTree, appFolders, isNeedRootAppFolder() ? appFoldersRoot : null);
