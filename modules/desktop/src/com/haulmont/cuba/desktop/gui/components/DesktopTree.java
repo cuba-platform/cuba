@@ -11,7 +11,9 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.data.TreeModelAdapter;
 import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.CaptionMode;
+import com.haulmont.cuba.gui.components.ShowInfoAction;
+import com.haulmont.cuba.gui.components.Tree;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
@@ -19,7 +21,6 @@ import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
-import javax.swing.AbstractAction;
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -47,8 +48,6 @@ public class DesktopTree extends DesktopAbstractActionsHolderComponent<JTree> im
     protected CaptionMode captionMode = CaptionMode.ITEM;
     protected String captionProperty;
     protected TreeModelAdapter model;
-
-    protected ShortcutsDelegate<KeyCombination> shortcutsDelegate;
 
     public DesktopTree() {
         impl = new JTree();
@@ -86,34 +85,6 @@ public class DesktopTree extends DesktopAbstractActionsHolderComponent<JTree> im
                     }
                 }
         );
-
-        shortcutsDelegate = new ShortcutsDelegate<KeyCombination>() {
-            @Override
-            protected KeyCombination attachShortcut(final String actionId, KeyCombination keyCombination) {
-                impl.getInputMap().put(DesktopComponentsHelper.convertKeyCombination(keyCombination), actionId);
-                impl.getActionMap().put(actionId, new AbstractAction() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        Action action = getAction(actionId);
-                        if ((action != null) && (action.isEnabled())) {
-                            action.actionPerform(DesktopTree.this);
-                        }
-                    }
-                });
-                return keyCombination;
-            }
-
-            @Override
-            protected void detachShortcut(Action action, KeyCombination shortcutDescriptor) {
-                impl.getInputMap().remove(DesktopComponentsHelper.convertKeyCombination(shortcutDescriptor));
-                impl.getActionMap().remove(action.getId());
-            }
-
-            @Override
-            protected Collection<Action> getActions() {
-                return DesktopTree.this.getActions();
-            }
-        };
     }
 
     @Override
@@ -189,24 +160,6 @@ public class DesktopTree extends DesktopAbstractActionsHolderComponent<JTree> im
         }
 
         return impl.isExpanded(model.getTreePath(item));
-    }
-
-    @Override
-    public void addAction(Action action) {
-        checkNotNullArgument(action, "action must be non null");
-
-        Action oldAction = getAction(action.getId());
-
-        super.addAction(action);
-
-        shortcutsDelegate.addAction(oldAction, action);
-    }
-
-    @Override
-    public void removeAction(Action action) {
-        super.removeAction(action);
-
-        shortcutsDelegate.removeAction(action);
     }
 
     @Override

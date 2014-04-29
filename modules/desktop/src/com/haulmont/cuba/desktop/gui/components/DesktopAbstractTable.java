@@ -109,8 +109,6 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
     protected Map<Table.Column, String> requiredColumns = new HashMap<>();
 
-    protected ShortcutsDelegate<KeyCombination> shortcutsDelegate;
-
     protected Security security = AppBeans.get(Security.class);
 
     protected boolean columnAdjustRequired = false;
@@ -136,33 +134,6 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     protected Document defaultSettings;
 
     protected DesktopAbstractTable() {
-        shortcutsDelegate = new ShortcutsDelegate<KeyCombination>() {
-            @Override
-            protected KeyCombination attachShortcut(final String actionId, KeyCombination keyCombination) {
-                impl.getInputMap().put(DesktopComponentsHelper.convertKeyCombination(keyCombination), actionId);
-                impl.getActionMap().put(actionId, new AbstractAction() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        Action action = getAction(actionId);
-                        if ((action != null) && (action.isEnabled()) && (action.isVisible())) {
-                            action.actionPerform(DesktopAbstractTable.this);
-                        }
-                    }
-                });
-                return keyCombination;
-            }
-
-            @Override
-            protected void detachShortcut(Action action, KeyCombination shortcutDescriptor) {
-                impl.getInputMap().remove(DesktopComponentsHelper.convertKeyCombination(shortcutDescriptor));
-                impl.getActionMap().remove(action.getId());
-            }
-
-            @Override
-            protected Collection<Action> getActions() {
-                return DesktopAbstractTable.this.getActions();
-            }
-        };
         shortcutsDelegate.setAllowEnterShortcut(false);
     }
 
@@ -307,24 +278,6 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         CC cc = new CC().grow();
         MigLayoutHelper.applyWidth(cc, (int) widthSize.value, widthSize.unit, false);
         layout.setComponentConstraints(scrollPane, cc);
-    }
-
-    @Override
-    public void addAction(Action action) {
-        checkNotNullArgument(action, "action must be non null");
-
-        Action oldAction = getAction(action.getId());
-
-        super.addAction(action);
-
-        shortcutsDelegate.addAction(oldAction, action);
-    }
-
-    @Override
-    public void removeAction(Action action) {
-        super.removeAction(action);
-
-        shortcutsDelegate.removeAction(action);
     }
 
     protected void handleClickAction() {

@@ -23,23 +23,19 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
-public class DesktopPopupButton
-        extends DesktopAbstractActionsHolderComponent<JButton>
-        implements PopupButton
-{
-    private JPopupMenu popup;
-
-    private String icon;
-
+public class DesktopPopupButton extends DesktopAbstractActionsHolderComponent<JButton> implements PopupButton {
     public static final String DEFAULT_ICON = "/components/popupbutton/open-popup.png";
 
-    private DesktopResources resources = App.getInstance().getResources();
+    protected JPopupMenu popup;
 
-    private List<Action> initializedActions = new ArrayList<Action>();
+    protected String icon;
+
+    protected DesktopResources resources = App.getInstance().getResources();
+
+    protected List<Action> initializedActions = new ArrayList<>();
 
     public DesktopPopupButton() {
         popup = new JPopupMenu();
@@ -60,7 +56,7 @@ public class DesktopPopupButton
         DesktopComponentsHelper.adjustSize(impl);
     }
 
-    private void showPopup() {
+    protected void showPopup() {
         popup.removeAll();
         for (final Action action : actionList) {
             final JMenuItem menuItem = new JMenuItem(action.getCaption());
@@ -95,7 +91,7 @@ public class DesktopPopupButton
         popup.show(impl, 0, y);
     }
 
-    private void initAction(final Action action, final JMenuItem menuItem) {
+    protected void initAction(final Action action, final JMenuItem menuItem) {
         if (initializedActions.contains(action))
             return;
 
@@ -183,9 +179,9 @@ public class DesktopPopupButton
     /**
      * This class is only needed to serve as a pseudo-owner for actions.
      */
-    private class ButtonStub implements Button {
+    protected class ButtonStub implements Button {
 
-        private Action action;
+        protected Action action;
 
         public ButtonStub(Action action) {
             this.action = action;
