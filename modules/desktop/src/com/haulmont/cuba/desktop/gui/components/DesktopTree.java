@@ -15,9 +15,10 @@ import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.ShowInfoAction;
 import com.haulmont.cuba.gui.components.Tree;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
-import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
+import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
@@ -33,8 +34,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.*;
 import java.util.List;
-
-import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 /**
  * @author krivopustov
@@ -214,9 +213,9 @@ public class DesktopTree extends DesktopAbstractActionsHolderComponent<JTree> im
         }
 
         datasource.addListener(
-                new CollectionDsListenerAdapter<Entity>() {
+                new CollectionDsActionsNotifier(this) {
                     @Override
-                    public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
+                    public void collectionChanged(CollectionDatasource ds, CollectionDatasourceListener.Operation operation, List<Entity> items) {
                         // #PL-2035, reload selection from ds
                         Set<Entity> selectedItems = getSelected();
                         if (selectedItems == null) {
