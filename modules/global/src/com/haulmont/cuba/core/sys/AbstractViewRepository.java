@@ -12,6 +12,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.annotation.Extends;
 import com.haulmont.cuba.core.global.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.BooleanUtils;
@@ -298,8 +299,10 @@ public class AbstractViewRepository implements ViewRepository {
 
         View v = retrieveView(metaClass, viewName, true);
         boolean overwrite = BooleanUtils.toBoolean(viewElem.attributeValue("overwrite"));
-        if (v != null && !overwrite)
+
+        if (v != null && !overwrite) {
             return v;
+        }
 
         String systemProperties = viewElem.attributeValue("systemProperties");
 
@@ -321,10 +324,62 @@ public class AbstractViewRepository implements ViewRepository {
             replaceOverridden(view);
         }
 
+        Class extendedClass = (Class) metaClass.getAnnotations().get(Extends.class.getName());
+        if (extendedClass != null) {
+            View viewToExtend = retrieveView(metadata.getClass(extendedClass), viewName, true);
+            if (viewToExtend != null) {
+                replaceEntityExtends(view, viewToExtend);
+            }
+        }
+
         return view;
     }
 
-    private void replaceOverridden(View replacementView) {
+    protected void replaceEntityExtends(View replacementView, View viewToExtend) {
+        Log4JStopWatch replaceTiming = new Log4JStopWatch("ViewRepository.replaceEntityExtends");
+
+        HashSet<View> checked = new HashSet<>();
+
+        // replace old view
+        storeView(metadata.getClass(viewToExtend.getEntityClass()), replacementView);
+
+        for (View view : getAll()) {
+            if (!checked.contains(view)) {
+                replaceExtended(view, replacementView, viewToExtend, checked);
+            }
+        }
+
+        replaceTiming.stop();
+    }
+
+    protected void replaceExtended(View root, View replacementView, View viewToExtend, HashSet<View> checked) {
+        checked.add(root);
+
+        List<ViewProperty> replacements = null;
+
+        for (ViewProperty property : root.getProperties()) {
+            View propertyView = property.getView();
+
+            if (propertyView != null) {
+                if (propertyView == viewToExtend) {
+                    if (replacements == null) {
+                        replacements = new LinkedList<>();
+                    }
+                    replacements.add(new ViewProperty(property.getName(), replacementView, property.isLazy()));
+                } else if (propertyView.getEntityClass() != null && !checked.contains(propertyView)) {
+                    replaceExtended(propertyView, replacementView, viewToExtend, checked);
+                }
+            }
+        }
+
+        if (replacements != null) {
+            for (ViewProperty replacement : replacements) {
+                root.addProperty(replacement.getName(), replacement.getView(), replacement.isLazy());
+            }
+        }
+    }
+
+    protected void replaceOverridden(View replacementView) {
         Log4JStopWatch replaceTiming = new Log4JStopWatch("ViewRepository.replaceOverridden");
 
         HashSet<View> checked = new HashSet<>();
@@ -338,7 +393,7 @@ public class AbstractViewRepository implements ViewRepository {
         replaceTiming.stop();
     }
 
-    private void replaceOverridden(View root, View replacementView, HashSet<View> checked) {
+    protected void replaceOverridden(View root, View replacementView, HashSet<View> checked) {
         checked.add(root);
 
         List<ViewProperty> replacements = null;
@@ -366,7 +421,7 @@ public class AbstractViewRepository implements ViewRepository {
         }
     }
 
-    private View getAncestorView(MetaClass metaClass, String ancestor) {
+    protected View getAncestorView(MetaClass metaClass, String ancestor) {
         View ancestorView = retrieveView(metaClass, ancestor, false);
         if (ancestorView == null) {
             ExtendedEntities extendedEntities = metadata.getExtendedEntities();
@@ -487,7 +542,7 @@ public class AbstractViewRepository implements ViewRepository {
         return metaClass;
     }
 
-    private MetaClass getMetaClass(String entityName, String entityClass) {
+    protected MetaClass getMetaClass(String entityName, String entityClass) {
         if (entityName != null) {
             return metadata.getExtendedEntities().getEffectiveMetaClass(metadata.getClassNN(entityName));
         } else {
@@ -495,7 +550,7 @@ public class AbstractViewRepository implements ViewRepository {
         }
     }
 
-    private MetaClass getMetaClass(Element propElem, Range range) {
+    protected MetaClass getMetaClass(Element propElem, Range range) {
         MetaClass refMetaClass;
         String refEntityName = propElem.attributeValue("entity"); // this attribute is deprecated
         if (refEntityName == null) {
