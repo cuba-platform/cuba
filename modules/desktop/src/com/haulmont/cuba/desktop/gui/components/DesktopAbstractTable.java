@@ -776,18 +776,18 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
                 if (!selection.isEmpty()) {
                     if (focused) {
-                        TableFocusManager focusManager = ((FocusableTable) impl).getFocusManager();
-                        if (focusManager != null) {
-                            focusManager.focusSelectedRow(minimalSelectionRowIndex);
-                        }
+                        impl.requestFocus();
                     } else {
                         if (impl.getCellEditor() != null) {
                             if (!impl.getCellEditor().stopCellEditing()) {
                                 impl.getCellEditor().cancelCellEditing();
                             }
                         }
+                    }
 
-                        impl.scrollCellToVisible(minimalSelectionRowIndex, 0);
+                    TableFocusManager focusManager = ((FocusableTable) impl).getFocusManager();
+                    if (focusManager != null) {
+                        focusManager.scrollToSelectedRow(minimalSelectionRowIndex);
                     }
                 }
             }

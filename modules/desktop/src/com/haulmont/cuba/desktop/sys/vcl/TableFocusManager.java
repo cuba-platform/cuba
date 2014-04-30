@@ -5,6 +5,8 @@
 
 package com.haulmont.cuba.desktop.sys.vcl;
 
+import org.perf4j.StopWatch;
+import org.perf4j.log4j.Log4JStopWatch;
 import sun.awt.CausedFocusEvent;
 
 import javax.swing.*;
@@ -242,6 +244,17 @@ public class TableFocusManager {
         }
     }
 
+    /**
+     * Scroll to first cell in specified row
+     *
+     * @param selectedRow row
+     */
+    public void scrollToSelectedRow(int selectedRow) {
+        if (impl.getModel().getRowCount() > 0) {
+            scrollTo(selectedRow, 0);
+        }
+    }
+
     protected void moveTo(int row, int col) {
         Component editorComp = impl.getEditorComponent();
 
@@ -267,7 +280,26 @@ public class TableFocusManager {
 
             impl.getSelectionModel().setSelectionInterval(row, row);
             impl.getColumnModel().getSelectionModel().setSelectionInterval(col, col);
-            impl.scrollRectToVisible(impl.getCellRect(row, col, true));
+
+            scrollTo(row, col);
+        }
+    }
+
+    protected void scrollTo(int row, int col) {
+        if (row >= 0) {
+            StopWatch sw = new Log4JStopWatch("TABLE scroll to selected");
+
+            Rectangle cellRect = impl.getCellRect(row, col, true);
+            int yPosition = 0;
+            for (int i = 0; i < row; i++) {
+                yPosition += impl.getRowHeight(i);
+            }
+
+            cellRect.setLocation(cellRect.x, yPosition);
+
+            impl.scrollRectToVisible(cellRect);
+
+            sw.stop();
         }
     }
 
