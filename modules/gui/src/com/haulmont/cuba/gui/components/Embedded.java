@@ -7,10 +7,9 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.gui.export.ExportDataProvider;
 
-import java.util.Map;
 import java.io.InputStream;
-import java.io.File;
 import java.net.URL;
+import java.util.Map;
 
 /**
  * A component for embedding external objects, such as images or PDF documents.
@@ -20,9 +19,8 @@ import java.net.URL;
  * @author gorodnov
  * @version $Id$
  */
-public interface Embedded
-        extends Component, Component.BelongToFrame
-{
+public interface Embedded extends Component, Component.BelongToFrame {
+
     String NAME = "embedded";
 
     void setMIMEType(String mt);

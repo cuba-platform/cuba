@@ -64,7 +64,6 @@ public interface EntitySnapshotAPI {
      */
     EntitySnapshot createSnapshot(BaseEntity entity, View view, Date snapshotDate);
 
-
     /**
      * Create snapshot for Entity with specific date and author and store it to database
      *
@@ -90,7 +89,7 @@ public interface EntitySnapshotAPI {
      * @param snapshot Snapshot
      * @return View instance
      */
-    public View extractView(EntitySnapshot snapshot);
+    View extractView(EntitySnapshot snapshot);
 
     /**
      * Diff two versions of entity

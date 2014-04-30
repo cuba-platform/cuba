@@ -9,15 +9,13 @@ import com.haulmont.cuba.gui.components.filter.AbstractConditionDescriptor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collection;
 import java.util.List;
 
 /**
  * Interface to be implemented by nodes in generic filter condition adding dialogs.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public interface ModelItem {
 

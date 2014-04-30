@@ -17,8 +17,6 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-import java.util.Collections;
-
 /**
  * @author gorodnov
  * @version $Id$

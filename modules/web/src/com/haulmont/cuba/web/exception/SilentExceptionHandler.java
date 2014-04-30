@@ -6,7 +6,6 @@ package com.haulmont.cuba.web.exception;
 
 import com.haulmont.cuba.core.global.SilentException;
 import com.haulmont.cuba.web.App;
-import com.vaadin.ui.UI;
 
 import javax.annotation.Nullable;
 

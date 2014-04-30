@@ -8,8 +8,11 @@ import com.haulmont.cuba.gui.xml.ParameterInfo;
 
 import java.util.List;
 import java.util.Set;
-import java.util.ArrayList;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public abstract class Condition implements Cloneable {
 
     public Condition copy() {

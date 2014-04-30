@@ -5,11 +5,11 @@
 package com.haulmont.cuba.web.exception;
 
 import com.haulmont.cuba.core.global.AccessDeniedException;
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.web.App;
+import com.vaadin.server.Page;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.Window;
 
 import javax.annotation.Nullable;
 
@@ -27,8 +27,8 @@ public class AccessDeniedHandler extends AbstractExceptionHandler {
 
     @Override
     protected void doHandle(App app, String className, String message, @Nullable Throwable throwable) {
-        String msg = MessageProvider.getMessage(getClass(), "accessDenied.message");
-        app.getAppUI().showNotification(msg, Notification.TYPE_ERROR_MESSAGE);
+        String msg = AppBeans.get(Messages.class).getMessage(getClass(), "accessDenied.message");
+        new Notification(msg, Notification.Type.ERROR_MESSAGE).show(Page.getCurrent());
     }
 
     public void handle(AccessDeniedException e, App app) {

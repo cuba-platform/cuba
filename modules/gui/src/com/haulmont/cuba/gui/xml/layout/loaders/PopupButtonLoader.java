@@ -6,12 +6,10 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.PopupButton;
-import com.haulmont.cuba.gui.xml.layout.*;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
-
-import java.util.Iterator;
-import java.lang.reflect.Constructor;
 
 /**
  * @author pavlov

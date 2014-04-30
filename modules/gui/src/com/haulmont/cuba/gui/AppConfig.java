@@ -9,8 +9,6 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.gui.components.AbstractFrame;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.gui.export.ExportDisplay;
@@ -68,7 +66,7 @@ public abstract class AppConfig {
     /**
      * Create an ExportDisplay implementation.
      *
-     * @param frame current frame. It is needed for desktop implementation to corrrectly show dialog inside of currently
+     * @param frame current frame. It is needed for desktop implementation to correctly show dialog inside of currently
      *              active main window. Can be null, but in this case a position of the dialog is not guaranteed.
      * @return  a new ExportDisplay instance
      */

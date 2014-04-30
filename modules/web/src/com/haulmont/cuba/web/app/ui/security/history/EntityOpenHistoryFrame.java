@@ -11,7 +11,6 @@ import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.AbstractFrame;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
-import org.apache.commons.lang.StringUtils;
 
 import java.util.Collections;
 import java.util.Map;

@@ -11,8 +11,6 @@ import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
-import com.vaadin.server.VaadinSession;
-import com.vaadin.ui.UI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -25,10 +23,13 @@ import java.util.UUID;
  * @author gorodnov
  * @version $Id$
  */
-public abstract class ControllerUtils {
+public final class ControllerUtils {
     private static final String DISPATCHER = "dispatch";
 
     private static final Log log = LogFactory.getLog(ControllerUtils.class);
+
+    private ControllerUtils() {
+    }
 
     public static String getLocationWithoutParams() {
         URI location = AppUI.getCurrent().getPage().getLocation();
@@ -63,7 +64,7 @@ public abstract class ControllerUtils {
         if (mapping == null) throw new IllegalArgumentException("Mapping cannot be null");
         GlobalConfig globalConfig = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class);
 
-        StringBuilder sb = new StringBuilder(globalConfig.getWebAppUrl()).append(getContollerPrefix());
+        StringBuilder sb = new StringBuilder(globalConfig.getWebAppUrl()).append(getControllerPrefix());
         if (!mapping.startsWith("/")) {
             sb.append("/");
         }
@@ -75,14 +76,14 @@ public abstract class ControllerUtils {
         return DISPATCHER;
     }
 
-    public static String getContollerPrefix() {
+    public static String getControllerPrefix() {
         return "/" + DISPATCHER;
     }
 
     public static String getControllerPath(HttpServletRequest request) {
         String path = request.getServletPath();
-        if (path.startsWith(getContollerPrefix())) {
-            path = path.substring(getContollerPrefix().length());
+        if (path.startsWith(getControllerPrefix())) {
+            path = path.substring(getControllerPrefix().length());
         }
         return path;
     }

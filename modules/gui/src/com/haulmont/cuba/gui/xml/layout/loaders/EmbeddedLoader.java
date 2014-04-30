@@ -13,7 +13,6 @@ import org.dom4j.Element;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Collections;
 
 /**
  * @author gorodnov

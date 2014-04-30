@@ -4,19 +4,21 @@
  */
 package com.haulmont.cuba.gui.aggregation;
 
-import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.math.NumberUtils;
 
-import java.util.Set;
-import java.util.HashSet;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 public class NumberAggregationHelper {
     private final List<Double> items;
 
     public NumberAggregationHelper() {
-        items = new ArrayList<Double>();
+        items = new ArrayList<>();
     }
 
     public void addItem(Double newItem) {

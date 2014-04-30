@@ -6,7 +6,6 @@
 package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.global.Resources;
-import com.haulmont.cuba.core.global.ScriptingProvider;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;

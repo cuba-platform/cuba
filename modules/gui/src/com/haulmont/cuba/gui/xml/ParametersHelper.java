@@ -13,7 +13,11 @@ import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
 
-public class ParametersHelper {
+/**
+ * @author abramov
+ * @version $Id$
+ */
+public final class ParametersHelper {
 
     public static final String QUERY_PARAMETERS_RE = ":(\\(\\?i\\))?([\\w\\.\\$]+)";
     public static final Pattern QUERY_PARAMETERS_PATTERN = Pattern.compile(QUERY_PARAMETERS_RE);
@@ -34,6 +38,9 @@ public class ParametersHelper {
         }
         sb.append(")").append("\\$[\\w\\.]+");
         TEMPL_PARAM_PATTERN = Pattern.compile(sb.toString());
+    }
+
+    private ParametersHelper() {
     }
 
     public static Set<String> extractNames(String text) {

@@ -13,7 +13,6 @@ import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import org.apache.commons.lang.ArrayUtils;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 /**
  * @author abramov

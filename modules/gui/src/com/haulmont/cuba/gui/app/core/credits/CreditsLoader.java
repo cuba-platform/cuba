@@ -6,9 +6,9 @@
 package com.haulmont.cuba.gui.app.core.credits;
 
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.cuba.core.global.ScriptingProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.sys.AppContext;
-import freemarker.template.utility.StringUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
 import org.apache.commons.logging.Log;
@@ -18,17 +18,16 @@ import org.dom4j.Element;
 import java.util.*;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class CreditsLoader {
 
     private Log log = LogFactory.getLog(getClass());
 
-    private List<CreditsItem> items = new ArrayList<CreditsItem>();
+    private List<CreditsItem> items = new ArrayList<>();
 
-    private Map<String, String> licenses = new HashMap<String, String>();
+    private Map<String, String> licenses = new HashMap<>();
 
     public List<CreditsItem> getItems() {
         return items;
@@ -45,7 +44,7 @@ public class CreditsLoader {
         String[] locations = tokenizer.getTokenArray();
 
         for (String location : locations) {
-            String xml = ScriptingProvider.getResourceAsString(location);
+            String xml = AppBeans.get(Resources.class).getResourceAsString(location);
             if (xml == null) {
                 log.debug("Resource " + location + " not found, ignore it");
                 continue;

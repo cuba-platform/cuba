@@ -10,7 +10,6 @@ import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
 
 import java.sql.*;
-import java.util.UUID;
 
 /**
  * @author krivopustov

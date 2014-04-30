@@ -6,7 +6,6 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.ProgressBar;
-import com.vaadin.ui.ProgressIndicator;
 
 /**
  * Web realization of progress bar depending on vaadin {@link ProgressBar} component.

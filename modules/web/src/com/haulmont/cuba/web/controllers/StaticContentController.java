@@ -24,16 +24,20 @@ import java.net.URL;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 @Controller
 @RequestMapping(value = "/static/**")
 public class StaticContentController implements LastModified {
 
-    public static interface LookupResult {
-        public void respondGet(HttpServletRequest req, HttpServletResponse resp) throws IOException;
+    public interface LookupResult {
+        void respondGet(HttpServletRequest req, HttpServletResponse resp) throws IOException;
 
-        public void respondHead(HttpServletRequest req, HttpServletResponse resp) throws IOException;
+        void respondHead(HttpServletRequest req, HttpServletResponse resp) throws IOException;
 
-        public long getLastModified();
+        long getLastModified();
     }
 
     public static class Error implements LookupResult {
@@ -45,14 +49,17 @@ public class StaticContentController implements LastModified {
             this.message = message;
         }
 
+        @Override
         public long getLastModified() {
             return -1;
         }
 
+        @Override
         public void respondGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
             resp.sendError(statusCode, message);
         }
 
+        @Override
         public void respondHead(HttpServletRequest req, HttpServletResponse resp) throws IOException {
             throw new UnsupportedOperationException();
         }
@@ -133,6 +140,7 @@ public class StaticContentController implements LastModified {
         return null;
     }
 
+    @Override
     public long getLastModified(HttpServletRequest req) {
         return lookup(req).getLastModified();
     }

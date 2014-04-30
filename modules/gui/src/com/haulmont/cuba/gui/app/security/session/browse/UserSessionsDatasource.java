@@ -10,7 +10,6 @@ import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.gui.data.impl.GroupDatasourceImpl;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.entity.UserSessionEntity;
-import org.apache.commons.lang.StringUtils;
 
 import java.util.Collection;
 import java.util.Date;

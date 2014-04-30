@@ -9,24 +9,25 @@ import com.google.common.base.Predicate;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.security.RestorablePermissionDatasource;
-import com.haulmont.cuba.security.entity.Permission;
-import com.haulmont.cuba.security.entity.PermissionType;
-import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.gui.security.entity.AttributePermissionVariant;
 import com.haulmont.cuba.gui.security.entity.PermissionVariant;
 import com.haulmont.cuba.gui.security.entity.UiPermissionVariant;
+import com.haulmont.cuba.security.entity.Permission;
+import com.haulmont.cuba.security.entity.PermissionType;
+import com.haulmont.cuba.security.entity.Role;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
 import java.util.UUID;
 
 /**
- * <p>$Id$</p>
- *
  * @author artamonov
+ * @version $Id$
  */
-public class PermissionUiHelper {
+public final class PermissionUiHelper {
+
+    private PermissionUiHelper() {
+    }
 
     public static PermissionVariant getCheckBoxVariant(Object value, PermissionVariant activeVariant) {
         PermissionVariant permissionVariant;

@@ -5,10 +5,14 @@
 
 package com.haulmont.cuba.gui.aggregation;
 
-import com.haulmont.chile.core.datatypes.Datatype;
-
 import java.util.Collection;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ *
+ * @param <T>
+ */
 public interface Aggregation<T> {
 
     T sum(Collection<T> items);
