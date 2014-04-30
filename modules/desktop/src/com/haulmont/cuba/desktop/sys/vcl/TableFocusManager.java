@@ -120,8 +120,11 @@ public class TableFocusManager {
         int editingColumn = getActiveColumn();
         int editingRow = getActiveRow();
         int nextRow = editingRow + 1;
-        if (editingColumn == -1 || editingRow == -1) {
+        if (editingRow == -1) {
             return;
+        }
+        if (editingColumn == -1) {
+            editingColumn = 0;
         }
         if (nextRow > impl.getRowCount() - 1) {
             nextRow = 0;
@@ -136,8 +139,11 @@ public class TableFocusManager {
         int editingColumn = getActiveColumn();
         int editingRow = getActiveRow();
         int nextRow = editingRow - 1;
-        if (editingColumn == -1 || editingRow == -1) {
+        if (editingRow == -1) {
             return;
+        }
+        if (editingColumn == -1) {
+            editingColumn = 0;
         }
         if (nextRow == -1) {
             nextRow = impl.getRowCount() - 1;
@@ -153,8 +159,11 @@ public class TableFocusManager {
         int selectedRow = getActiveRow();
         int prevColumn = selectedColumn - 1;
         int prevRow = selectedRow;
+        if (selectedColumn == -1) {
+            selectedColumn = 0;
+        }
 
-        if (selectedColumn == -1 || selectedRow == -1) {
+        if (selectedRow == -1) {
             if (impl.getModel().getRowCount() > 0) {
                 moveToEnd(impl.getRowCount() - 1, impl.getColumnCount() - 1);
             } else
@@ -189,7 +198,11 @@ public class TableFocusManager {
         int selectedRow = getActiveRow();
         int nextColumn = selectedColumn + 1;
         int nextRow = selectedRow;
-        if (selectedColumn == -1 || selectedRow == -1) {
+        if (selectedColumn == -1) {
+            selectedColumn = 0;
+        }
+
+        if (selectedRow == -1) {
             if (impl.getModel().getRowCount() > 0) {
                 moveToStart(0, 0);
             } else
@@ -224,8 +237,9 @@ public class TableFocusManager {
     public void focusSelectedRow(int selectedRow) {
         if (impl.getModel().getRowCount() > 0) {
             focusTo(selectedRow, 0);
-        } else
+        } else {
             moveFocusToNextControl();
+        }
     }
 
     protected void moveTo(int row, int col) {
@@ -248,18 +262,13 @@ public class TableFocusManager {
     }
 
     protected void focusTo(int row, int col) {
-        Component editorComp = impl.getEditorComponent();
-
-        if (editorComp != null) {
-            editorComp.dispatchEvent(new FocusEvent(editorComp, FocusEvent.FOCUS_LOST, false, impl));
-        }
-        impl.scrollRectToVisible(impl.getCellRect(row, col, true));
-
-        if (row >= 0 && col >= 0)
+        if (row >= 0) {
             impl.requestFocus();
 
-        impl.getSelectionModel().setSelectionInterval(row, row);
-        impl.getColumnModel().getSelectionModel().setSelectionInterval(col, col);
+            impl.getSelectionModel().setSelectionInterval(row, row);
+            impl.getColumnModel().getSelectionModel().setSelectionInterval(col, col);
+            impl.scrollRectToVisible(impl.getCellRect(row, col, true));
+        }
     }
 
     protected void moveToStart(int row, int col) {

@@ -762,41 +762,34 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
             @SuppressWarnings("unchecked")
             private void applySelection(Set<Entity> selection) {
-                if (focused && !selection.isEmpty()) {
-                    int minimalSelectionRowIndex = Integer.MAX_VALUE;
-
-                    if (datasource instanceof CollectionDatasource.Ordered) {
-                        CollectionDatasource.Ordered orderedDs = (CollectionDatasource.Ordered) datasource;
-                        Object itemId = orderedDs.firstItemId();
-
-                        int entityIndex = 0;
-                        while (itemId != null && minimalSelectionRowIndex == Integer.MAX_VALUE) {
-                            if (selection.contains(datasource.getItem(itemId))) {
-                                minimalSelectionRowIndex = entityIndex;
-                            }
-                            itemId = orderedDs.nextItemId(itemId);
-                            entityIndex++;
+                int minimalSelectionRowIndex = Integer.MAX_VALUE;
+                if (!selection.isEmpty()) {
+                    for (Entity entity : selection) {
+                        int rowIndex = tableModel.getRowIndex(entity);
+                        if (rowIndex < minimalSelectionRowIndex && rowIndex >= 0) {
+                            minimalSelectionRowIndex = rowIndex;
                         }
-                    } else {
-                        for (Entity entity : selection) {
-                            int rowIndex = tableModel.getRowIndex(entity);
-                            if (rowIndex < minimalSelectionRowIndex && rowIndex >= 0) {
-                                minimalSelectionRowIndex = rowIndex;
-                            }
-                        }
-                    }
-
-                    TableFocusManager focusManager = ((FocusableTable) impl).getFocusManager();
-                    if (focusManager != null) {
-                        focusManager.focusSelectedRow(minimalSelectionRowIndex);
-                    }
-                } else if (impl.getCellEditor() != null) {
-                    if (!impl.getCellEditor().stopCellEditing()) {
-                        impl.getCellEditor().cancelCellEditing();
                     }
                 }
 
                 setSelected(selection);
+
+                if (!selection.isEmpty()) {
+                    if (focused) {
+                        TableFocusManager focusManager = ((FocusableTable) impl).getFocusManager();
+                        if (focusManager != null) {
+                            focusManager.focusSelectedRow(minimalSelectionRowIndex);
+                        }
+                    } else {
+                        if (impl.getCellEditor() != null) {
+                            if (!impl.getCellEditor().stopCellEditing()) {
+                                impl.getCellEditor().cancelCellEditing();
+                            }
+                        }
+
+                        impl.scrollCellToVisible(minimalSelectionRowIndex, 0);
+                    }
+                }
             }
 
             @Override
