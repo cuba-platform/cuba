@@ -3,12 +3,11 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-// Version: $Id$
-
 // Havana - Generic Platform SCSS theme for Vaadin 6
 // Version: $Id$
 
 @import "components/accordion/accordion";
+@import "components/label/label";
 @import "components/autocompletetextfield/autocompletetextfield";
 @import "components/button/button";
 @import "components/caption/caption";
@@ -42,7 +41,6 @@
 @import "components/textfield/textfield";
 @import "components/tokenlist/tokenlist";
 @import "components/tree/tree";
-@import "components/label/boldLabel";
 @import "components/twincolumn/twincolumn";
 @import "components/upload/upload";
 @import "components/widgetstree/widgetstree";
