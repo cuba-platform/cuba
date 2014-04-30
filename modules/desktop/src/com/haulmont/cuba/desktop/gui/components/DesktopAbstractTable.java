@@ -641,10 +641,27 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                             newSelection.add(ds.getItem());
                         }
 
+                        int minimalSelectionRowIndex = Integer.MAX_VALUE;
+                        if (!newSelection.isEmpty()) {
+                            for (Entity entity : newSelection) {
+                                int rowIndex = tableModel.getRowIndex(entity);
+                                if (rowIndex < minimalSelectionRowIndex && rowIndex >= 0) {
+                                    minimalSelectionRowIndex = rowIndex;
+                                }
+                            }
+                        }
+
                         if (newSelection.isEmpty()) {
                             setSelected((Entity) null);
                         } else {
                             setSelected(newSelection);
+                        }
+
+                        if (!newSelection.isEmpty()) {
+                            TableFocusManager focusManager = ((FocusableTable) impl).getFocusManager();
+                            if (focusManager != null) {
+                                focusManager.scrollToSelectedRow(minimalSelectionRowIndex);
+                            }
                         }
                     }
 
@@ -744,6 +761,16 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                 isAdjusting = false;
                 applySelection(filterSelection(selectionBackup.get()));
                 selectionBackup.remove();
+
+                if (focused) {
+                    impl.requestFocus();
+                } else {
+                    if (impl.getCellEditor() != null) {
+                        if (!impl.getCellEditor().stopCellEditing()) {
+                            impl.getCellEditor().cancelCellEditing();
+                        }
+                    }
+                }
             }
 
             @SuppressWarnings("unchecked")
@@ -1778,14 +1805,28 @@ public abstract class DesktopAbstractTable<C extends JXTable>
             return;
         }
 
+        int preferredRowHeight = -1;
+        boolean equalsRowHeight = true;
+
         StopWatch sw = new Log4JStopWatch("DAT packRows " + id);
         for (int r = 0; r < impl.getRowCount(); r++) {
             int h = getPreferredRowHeight(r);
+
+            if (preferredRowHeight == -1) {
+                preferredRowHeight = h;
+            } else if (preferredRowHeight != h) {
+                equalsRowHeight = false;
+            }
 
             if (impl.getRowHeight(r) != h) {
                 impl.setRowHeight(r, h);
             }
         }
+
+        if (equalsRowHeight && preferredRowHeight > 0) {
+            impl.setRowHeight(preferredRowHeight);
+        }
+
         sw.stop();
     }
 
