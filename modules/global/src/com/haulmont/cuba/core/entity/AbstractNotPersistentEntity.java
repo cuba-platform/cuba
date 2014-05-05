@@ -22,7 +22,8 @@ import java.util.UUID;
  * @author Grachev
  * @version $Id$
  */
-public abstract class AbstractNotPersistentEntity extends AbstractInstance implements Entity<UUID> {
+@com.haulmont.chile.core.annotations.MetaClass(name = "AbstractNotPersistentEntity")
+public abstract class AbstractNotPersistentEntity extends AbstractInstance implements Entity<UUID>, CubaEnhanced {
 
     private static final long serialVersionUID = -2846020822531467401L;
 

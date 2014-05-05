@@ -75,7 +75,13 @@ public class ChileAnnotationsLoader implements MetaClassLoader {
 
         for (Class<?> aClass : classes) {
             if (aClass.getName().startsWith(packageName)) {
-                tasks.addAll(loadClass(packageName, aClass).getTasks());
+                MetadataObjectInfo<MetaClass> info = loadClass(packageName, aClass);
+                if (info != null) {
+                    tasks.addAll(info.getTasks());
+                } else if (classNames != null) {
+                    // If the class name is specified explicitly, print a warning
+                    log.warn("Class " + aClass.getName() + " is not loaded into metadata");
+                }
             }
         }
 
@@ -134,6 +140,7 @@ public class ChileAnnotationsLoader implements MetaClassLoader {
         return new MetaClassImpl(model, className);
     }
 
+    @Nullable
     protected MetaClassImpl createClass(Class<?> clazz, String packageName) {
         if (Object.class.equals(clazz))
             return null;
@@ -174,6 +181,7 @@ public class ChileAnnotationsLoader implements MetaClassLoader {
         return Collection.class.isAssignableFrom(type);
     }
 
+    @Nullable
     protected MetadataObjectInfo<MetaClass> loadClass(String packageName, Class<?> clazz) {
         final MetaClassImpl metaClass = createClass(clazz, packageName);
         if (metaClass == null)
