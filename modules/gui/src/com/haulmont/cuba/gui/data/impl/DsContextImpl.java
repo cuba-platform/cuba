@@ -4,10 +4,13 @@
  */
 package com.haulmont.cuba.gui.data.impl;
 
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.CommitContext;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.FrameContext;
 import com.haulmont.cuba.gui.components.Component;
@@ -34,6 +37,8 @@ public class DsContextImpl implements DsContextImplementation {
 
     protected Map<Datasource, Datasource> dependencies = new HashMap<>();
 
+    protected Metadata metadata;
+
     // TODO implement ContextListeners
 //    private Map<String, Collection<Datasource>> contextListeners =
 //            new HashMap<String, Collection<Datasource>>();
@@ -44,6 +49,7 @@ public class DsContextImpl implements DsContextImplementation {
 
     public DsContextImpl(DataSupplier dataservice) {
         this.dataservice = dataservice;
+        this.metadata = AppBeans.get(Metadata.NAME);
     }
 
     @Override
@@ -266,17 +272,20 @@ public class DsContextImpl implements DsContextImplementation {
         MetaProperty metaProperty = datasource.getProperty();
         if (masterDs != null && metaProperty != null) {
             MetaProperty inverseProp = metaProperty.getInverse();
-            if (inverseProp != null && inverseProp.getDomain().equals(datasource.getMetaClass())
-                    && entity.getValue(inverseProp.getName()) != null) // replace master only if it's already set
-            {
-                Object masterItem;
-                if (masterDs instanceof CollectionDatasource) {
-                    Object id = ((Entity) entity.getValue(inverseProp.getName())).getId();
-                    masterItem = ((CollectionDatasource) masterDs).getItem(id);
-                } else {
-                    masterItem = masterDs.getItem();
+            if (inverseProp != null) {
+                MetaClass metaClass = metadata.getExtendedEntities().getEffectiveMetaClass(inverseProp.getDomain());
+                if (metaClass.equals(datasource.getMetaClass())
+                        && entity.getValue(inverseProp.getName()) != null) // replace master only if it's already set
+                {
+                    Object masterItem;
+                    if (masterDs instanceof CollectionDatasource) {
+                        Object id = ((Entity) entity.getValue(inverseProp.getName())).getId();
+                        masterItem = ((CollectionDatasource) masterDs).getItem(id);
+                    } else {
+                        masterItem = masterDs.getItem();
+                    }
+                    ((AbstractInstance) entity).setValue(inverseProp.getName(), masterItem, false);
                 }
-                ((AbstractInstance) entity).setValue(inverseProp.getName(), masterItem, false);
             }
         }
     }

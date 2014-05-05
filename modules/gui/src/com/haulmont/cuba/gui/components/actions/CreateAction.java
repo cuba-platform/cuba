@@ -4,11 +4,13 @@
  */
 package com.haulmont.cuba.gui.components.actions;
 
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.*;
@@ -42,6 +44,8 @@ public class CreateAction extends AbstractAction {
 
     protected boolean permissionFlag = false;
 
+    protected Metadata metadata;
+
     /**
      * The simplest constructor. The action has default name and opens the editor screen in THIS tab.
      * @param owner    component containing this action
@@ -71,6 +75,7 @@ public class CreateAction extends AbstractAction {
         this.openType = openType;
         this.caption = messages.getMainMessage("actions.Create");
         this.icon = "icons/create.png";
+        this.metadata = AppBeans.get(Metadata.NAME);
         ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
         setShortcut(clientConfig.getTableInsertShortcut());
 
@@ -161,8 +166,11 @@ public class CreateAction extends AbstractAction {
             MetaProperty metaProperty = ((NestedDatasource) datasource).getProperty();
             if (masterDs != null && metaProperty != null) {
                 MetaProperty inverseProp = metaProperty.getInverse();
-                if (inverseProp != null && inverseProp.getDomain().equals(datasource.getMetaClass())) {
-                    item.setValue(inverseProp.getName(), masterDs.getItem());
+                if (inverseProp != null) {
+                    MetaClass metaClass = metadata.getExtendedEntities().getEffectiveMetaClass(inverseProp.getDomain());
+                    if (metaClass.equals(datasource.getMetaClass())) {
+                        item.setValue(inverseProp.getName(), masterDs.getItem());
+                    }
                 }
             }
         }
