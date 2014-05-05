@@ -34,7 +34,7 @@
                         <label id="methodNameLabel"
                                value="msg://com.haulmont.cuba.core.entity/ScheduledTask.methodName" align="MIDDLE_LEFT"/>
                         <lookupField id="methodNameField" width="400px" captionProperty="methodSignature"
-                                     required="true" align="MIDDLE_LEFT"/>
+                                     required="true" align="MIDDLE_LEFT" requiredMessage="msg://validation.methodNameMissing"/>
                         <groupBox id="methodParamsBox" caption="msg://methodParams" width="400px">
                         </groupBox>
                     </row>
