@@ -499,10 +499,17 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
                             // for backward compatibility
                             params.put("multiSelect", "true");
                         }
-                        if (lookupScreenParams != null)
+                        if (lookupScreenParams != null) {
                             params.putAll(lookupScreenParams);
+                        }
 
                         WindowManager wm = App.getInstance().getWindowManager();
+                        if (lookupOpenMode == WindowManager.OpenType.DIALOG) {
+                            wm.getDialogParams().setResizable(true);
+                            wm.getDialogParams().setWidth(800);
+                            wm.getDialogParams().setHeight(600);
+                        }
+
                         wm.openLookup(windowInfo, new Window.Lookup.Handler() {
                             @Override
                             public void handleLookup(Collection items) {

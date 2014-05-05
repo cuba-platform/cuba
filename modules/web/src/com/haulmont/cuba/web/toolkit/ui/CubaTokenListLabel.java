@@ -35,6 +35,7 @@ public class CubaTokenListLabel extends Panel {
         registerRpc(rpc);
     }
 
+    @Override
     protected CubaTokenListLabelState getState() {
         return (CubaTokenListLabelState) super.getState();
     }
