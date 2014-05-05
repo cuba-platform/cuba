@@ -11,13 +11,18 @@ import com.vaadin.ui.Button;
 import java.util.Collection;
 import java.util.Collections;
 
-class SelectAction implements Button.ClickListener {
-    private Window.Lookup window;
+/**
+ * @author abramov
+ * @version $Id$
+ */
+public class SelectAction implements Button.ClickListener {
+    protected Window.Lookup window;
 
-    SelectAction(Window.Lookup window) {
+    public SelectAction(Window.Lookup window) {
         this.window = window;
     }
 
+    @Override
     public void buttonClick(Button.ClickEvent event) {
         Window.Lookup.Validator validator = window.getLookupValidator();
         if (validator != null && !validator.validate()) return;

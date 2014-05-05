@@ -12,13 +12,13 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * @author
+ * @author abramov
  * @version $Id$
  */
-class SelectAction implements Button.ClickListener {
-    private Window.Lookup window;
+public class SelectAction implements Button.ClickListener {
+    protected Window.Lookup window;
 
-    SelectAction(Window.Lookup window) {
+    public SelectAction(Window.Lookup window) {
         this.window = window;
     }
 

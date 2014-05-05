@@ -1192,8 +1192,9 @@ public class DesktopWindow implements Window, Component.Disposable,
         private class SelectListener implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (validator != null && !validator.validate())
+                if (getLookupValidator() != null && !getLookupValidator().validate()) {
                     return;
+                }
 
                 Collection selected;
                 if (lookupComponent instanceof com.haulmont.cuba.gui.components.Table) {
