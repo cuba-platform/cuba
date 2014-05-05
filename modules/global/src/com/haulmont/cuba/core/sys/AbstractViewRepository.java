@@ -506,12 +506,14 @@ public class AbstractViewRepository implements ViewRepository {
             if (range.isClass() && refView == null && inlineView) {
                 // try to import anonymous views
                 String ancestorViewName = propElem.attributeValue("view");
+                Class effectiveClass = metadata.getExtendedEntities().getEffectiveClass(range.asClass().getJavaClass());
+
                 if (ancestorViewName == null) {
-                    refView = new View(range.asClass().getJavaClass());
+                    refView = new View(effectiveClass);
                 } else {
                     refMetaClass = getMetaClass(propElem, range);
                     View ancestorView = getAncestorView(refMetaClass, ancestorViewName);
-                    refView = new View(ancestorView, range.asClass().getJavaClass(), "", true);
+                    refView = new View(ancestorView, effectiveClass, "", true);
                 }
                 loadView(rootElem, propElem, refView);
             }
