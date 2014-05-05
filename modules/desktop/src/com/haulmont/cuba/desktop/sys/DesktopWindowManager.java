@@ -207,7 +207,7 @@ public class DesktopWindowManager extends WindowManager {
     }
 
     @Override
-    protected void showWindow(Window window, String caption, String description, OpenType openType, boolean multipleOpen) {
+    protected void showWindow(final Window window, final String caption, final String description, OpenType openType, boolean multipleOpen) {
         boolean forciblyDialog = false;
         boolean addWindowData = true;
         if (openType != OpenType.DIALOG && hasModalWindow()) {
@@ -234,15 +234,28 @@ public class DesktopWindowManager extends WindowManager {
                     Integer hashCode = getWindowHashCode(window);
                     JComponent tab;
                     if (hashCode != null && !multipleOpen && (tab = findTab(hashCode)) != null) {
-                        int oldTabPosition = -1;
-                        for (int i = 0; i < tabsPane.getTabCount(); i++) {
-                            if (tab.equals(tabsPane.getComponentAt(i))) {
-                                oldTabPosition = i;
-                            }
-                        }
                         WindowBreadCrumbs oldBreadCrumbs = tabs.get(tab);
-                        oldBreadCrumbs.getCurrentWindow().close(MAIN_MENU_ACTION_ID);
-                        windowData = showWindowNewTab(window, caption, description, oldTabPosition);
+
+                        final Window oldWindow = oldBreadCrumbs.getCurrentWindow();
+                        selectWindowTab(((Window.Wrapper) oldBreadCrumbs.getCurrentWindow()).getWrappedWindow());
+
+                        final int finalTabPosition = getTabPosition(tab);
+                        oldWindow.closeAndRun(MAIN_MENU_ACTION_ID, new Runnable() {
+                            @Override
+                            public void run() {
+                                showWindow(window, caption, description, OpenType.NEW_TAB, false);
+
+                                Window wrappedWindow = window;
+                                if (window instanceof Window.Wrapper) {
+                                    wrappedWindow = ((Window.Wrapper) window).getWrappedWindow();
+                                }
+
+                                if (finalTabPosition >= 0 && finalTabPosition < tabsPane.getComponentCount() - 1) {
+                                    moveWindowTab(wrappedWindow, finalTabPosition);
+                                }
+                            }
+                        });
+                        return;
                     } else {
                         windowData = showWindowNewTab(window, caption, description, null);
                     }
@@ -266,6 +279,60 @@ public class DesktopWindowManager extends WindowManager {
             addWindowData(window, windowData, openType);
         }
         afterShowWindow(window);
+    }
+
+    protected int getTabPosition(JComponent tab) {
+        int position = -1;
+        for (int i = 0; i < tabsPane.getTabCount(); i++) {
+            if (tab.equals(tabsPane.getComponentAt(i))) {
+                position = i;
+            }
+        }
+        return position;
+    }
+
+    /**
+     * @param window Window implementation (DesktopWindow)
+     * @param position new tab position
+     */
+    protected void moveWindowTab(Window window, int position) {
+        if (isMainWindowManager && position >= 0 && position < tabsPane.getComponentCount()) {
+            WindowOpenMode openMode = windowOpenMode.get(window);
+            if (openMode != null) {
+                OpenType openType = openMode.getOpenType();
+                if (openType == OpenType.NEW_TAB || openType == OpenType.THIS_TAB) {
+                    // show in tabsheet
+                    JComponent layout = (JComponent) openMode.getData();
+
+                    int currentPosition = getTabPosition(layout);
+
+                    String label = tabsPane.getTitleAt(currentPosition);
+                    Icon icon = tabsPane.getIconAt(currentPosition);
+                    Icon iconDis = tabsPane.getDisabledIconAt(currentPosition);
+                    String tooltip = tabsPane.getToolTipTextAt(currentPosition);
+                    boolean enabled = tabsPane.isEnabledAt(currentPosition);
+                    int keycode = tabsPane.getMnemonicAt(currentPosition);
+                    int mnemonicLoc = tabsPane.getDisplayedMnemonicIndexAt(currentPosition);
+                    Color fg = tabsPane.getForegroundAt(currentPosition);
+                    Color bg = tabsPane.getBackgroundAt(currentPosition);
+                    java.awt.Component tabHeaderComponent = tabsPane.getTabComponentAt(currentPosition);
+
+                    tabsPane.remove(layout);
+
+                    tabsPane.insertTab(label, icon, layout, tooltip, position);
+
+                    tabsPane.setDisabledIconAt(position, iconDis);
+                    tabsPane.setEnabledAt(position, enabled);
+                    tabsPane.setMnemonicAt(position, keycode);
+                    tabsPane.setDisplayedMnemonicIndexAt(position, mnemonicLoc);
+                    tabsPane.setForegroundAt(position, fg);
+                    tabsPane.setBackgroundAt(position, bg);
+                    tabsPane.setTabComponentAt(position, tabHeaderComponent);
+
+                    tabsPane.setSelectedComponent(layout);
+                }
+            }
+        }
     }
 
     private void showInMainWindowManager(Window window, String caption, String description, OpenType openType, boolean multipleOpen) {
@@ -299,7 +366,7 @@ public class DesktopWindowManager extends WindowManager {
 
         WindowBreadCrumbs breadCrumbs = createBreadCrumbs();
         breadCrumbs.addWindow(window);
-        JComponent tabContent = createTabSheetPanel(window, breadCrumbs);
+        JComponent tabContent = createTabPanel(window, breadCrumbs);
 
         WindowOpenMode openMode = new WindowOpenMode(window, OpenType.NEW_WINDOW);
         openMode.setData(tabContent);
@@ -560,12 +627,12 @@ public class DesktopWindowManager extends WindowManager {
         final WindowBreadCrumbs breadCrumbs = createBreadCrumbs();
         stacks.put(breadCrumbs, new Stack<Map.Entry<Window, Integer>>());
         breadCrumbs.addWindow(window);
-        JComponent tabContent = createNewTabSheet(window, caption, description, breadCrumbs, tabPosition);
+        JComponent tabContent = createNewTab(window, caption, description, breadCrumbs, tabPosition);
         tabs.put(tabContent, breadCrumbs);
         return tabContent;
     }
 
-    protected JPanel createTabSheetPanel(Window window, WindowBreadCrumbs breadCrumbs) {
+    protected JPanel createTabPanel(Window window, WindowBreadCrumbs breadCrumbs) {
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(breadCrumbs, BorderLayout.NORTH);
         JComponent composition = DesktopComponentsHelper.getComposition(window);
@@ -573,8 +640,8 @@ public class DesktopWindowManager extends WindowManager {
         return panel;
     }
 
-    protected JComponent createNewTabSheet(Window window, String caption, String description, WindowBreadCrumbs breadCrumbs, Integer tabPosition) {
-        JPanel panel = createTabSheetPanel(window, breadCrumbs);
+    protected JComponent createNewTab(Window window, String caption, String description, WindowBreadCrumbs breadCrumbs, Integer tabPosition) {
+        JPanel panel = createTabPanel(window, breadCrumbs);
         int idx;
         if (tabPosition != null) {
             idx = tabPosition;

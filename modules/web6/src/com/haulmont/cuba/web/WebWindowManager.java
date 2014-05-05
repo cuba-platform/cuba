@@ -52,7 +52,6 @@ public class WebWindowManager extends WindowManager {
     protected final Map<WindowBreadCrumbs, Stack<Map.Entry<Window, Integer>>> stacks = new HashMap<>();
     protected final Map<Window, WindowOpenMode> windowOpenMode = new LinkedHashMap<>();
     protected final Map<Window, Integer> windows = new HashMap<>();
-    protected final Map<Layout, WindowBreadCrumbs> fakeTabs = new HashMap<>();
 
     protected App app;
     protected AppWindow appWindow;
@@ -82,10 +81,6 @@ public class WebWindowManager extends WindowManager {
 
     protected Map<Layout, WindowBreadCrumbs> getTabs() {
         return tabs;
-    }
-
-    protected Map<Layout, WindowBreadCrumbs> getFakeTabs() {
-        return fakeTabs;
     }
 
     private Map<Window, WindowOpenMode> getWindowOpenMode() {
@@ -188,14 +183,7 @@ public class WebWindowManager extends WindowManager {
     }
 
     protected Layout findTab(Integer hashCode) {
-        Set<Map.Entry<Layout, WindowBreadCrumbs>> set = getFakeTabs().entrySet();
-        for (Map.Entry<Layout, WindowBreadCrumbs> entry : set) {
-            Window currentWindow = entry.getValue().getCurrentWindow();
-            if (hashCode.equals(getWindowHashCode(currentWindow))) {
-                return entry.getKey();
-            }
-        }
-        set = getTabs().entrySet();
+        Set<Map.Entry<Layout, WindowBreadCrumbs>> set = getTabs().entrySet();
         for (Map.Entry<Layout, WindowBreadCrumbs> entry : set) {
             Window currentWindow = entry.getValue().getCurrentWindow();
             if (hashCode.equals(getWindowHashCode(currentWindow))) {
@@ -266,24 +254,39 @@ public class WebWindowManager extends WindowManager {
                 } else {
                     final Integer hashCode = getWindowHashCode(window);
                     ComponentContainer tab = null;
-                    if (hashCode != null && !multipleOpen)
+                    if (hashCode != null && !multipleOpen) {
                         tab = findTab(hashCode);
+                    }
                     ComponentContainer oldLayout = tab;
                     final WindowBreadCrumbs oldBreadCrumbs = tabs.get(oldLayout);
 
-                    if (oldBreadCrumbs != null &&
-                            windowOpenMode.containsKey(oldBreadCrumbs.getCurrentWindow().<Window>getFrame()) &&
-                            !multipleOpen) {
+                    if (oldBreadCrumbs != null
+                            && windowOpenMode.containsKey(oldBreadCrumbs.getCurrentWindow().<Window>getFrame())
+                            && !multipleOpen) {
                         final Window oldWindow = oldBreadCrumbs.getCurrentWindow();
-                        Layout l = new VerticalLayout();
-                        appWindow.getTabSheet().replaceComponent(tab, l);
-                        fakeTabs.put(l, oldBreadCrumbs);
+
+                        selectWindowTab(((Window.Wrapper) oldBreadCrumbs.getCurrentWindow()).getWrappedWindow());
+
+                        int tabPosition = -1;
+                        TabSheet.Tab oldWindowTab = appWindow.getTabSheet().getTab(tab);
+                        if (oldWindowTab != null) {
+                            tabPosition = appWindow.getTabSheet().getTabPosition(oldWindowTab);
+                        }
+
+                        final int finalTabPosition = tabPosition;
                         oldWindow.closeAndRun(MAIN_MENU_ACTION_ID, new Runnable() {
                             @Override
                             public void run() {
-                                putToWindowMap(oldWindow, hashCode);
-                                oldBreadCrumbs.addWindow(oldWindow);
-                                showWindow(window, caption, description, OpenType.NEW_TAB, multipleOpen);
+                                showWindow(window, caption, description, OpenType.NEW_TAB, false);
+
+                                Window wrappedWindow = window;
+                                if (window instanceof Window.Wrapper) {
+                                    wrappedWindow = ((Window.Wrapper) window).getWrappedWindow();
+                                }
+
+                                if (finalTabPosition >= 0 && finalTabPosition < appWindow.getTabSheet().getComponentCount() - 1) {
+                                    moveWindowTab(wrappedWindow, finalTabPosition);
+                                }
                             }
                         });
                         return;
@@ -374,8 +377,6 @@ public class WebWindowManager extends WindowManager {
                 tabSheet.replaceComponent(tab, layout);
                 tabSheet.removeComponent(tab);
                 getTabs().put(layout, (WindowBreadCrumbs) components[0]);
-                removeFromWindowMap(getFakeTabs().get(tab).getCurrentWindow());
-                getFakeTabs().remove(tab);
                 newTab = tabSheet.getTab(layout);
             } else {
                 getTabs().put(layout, (WindowBreadCrumbs) components[0]);
@@ -410,6 +411,29 @@ public class WebWindowManager extends WindowManager {
         }
 
         return layout;
+    }
+
+    /**
+     * @param window Window implementation (WebWindow)
+     * @param position new tab position
+     */
+    protected void moveWindowTab(Window window, int position) {
+        // move tab to
+        if (position >= 0 && position < appWindow.getTabSheet().getComponentCount()) {
+            WindowOpenMode openMode = windowOpenMode.get(window);
+            if (openMode != null) {
+                OpenType openType = openMode.getOpenType();
+                if (openType == OpenType.NEW_TAB || openType == OpenType.THIS_TAB) {
+                    // show in tabsheet
+                    Layout layout = (Layout) openMode.getData();
+
+                    AppWindow.AppTabSheet webTabsheet = (AppWindow.AppTabSheet) appWindow.getTabSheet();
+
+                    webTabsheet.moveTab(layout, position);
+                    webTabsheet.setSelectedTab(layout);
+                }
+            }
+        }
     }
 
     public ShortcutListener createNextWindowTabShortcut() {

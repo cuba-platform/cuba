@@ -997,6 +997,24 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
             }
         }
 
+        public void moveTab(Component c, int position) {
+            Tab oldTab = getTab(c);
+
+            // do not detach close handler
+            // call super
+            super.removeComponent(oldTab.getComponent());
+
+            Tab newTab = addTab(c, position);
+
+            newTab.setCaption(oldTab.getCaption());
+            newTab.setDescription(oldTab.getDescription());
+            newTab.setClosable(oldTab.isClosable());
+            newTab.setEnabled(oldTab.isEnabled());
+            newTab.setVisible(oldTab.isVisible());
+            newTab.setIcon(oldTab.getIcon());
+            newTab.setStyleName(oldTab.getStyleName());
+        }
+
         public void setTabCloseHandler(Component tabContent, TabCloseHandler closeHandler) {
             if (closeHandlers == null) {
                 closeHandlers = new LinkedHashMap<>();
