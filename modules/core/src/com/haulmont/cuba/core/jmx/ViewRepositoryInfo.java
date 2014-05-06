@@ -13,7 +13,7 @@ import org.apache.commons.lang.StringUtils;
 
 /**
  * @author artamonov
- * @version $id$
+ * @version $Id$
  */
 public class ViewRepositoryInfo {
     protected final AbstractViewRepository viewRepository;
