@@ -10,9 +10,7 @@ import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
-import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.entity.annotation.Extends;
 import com.haulmont.cuba.core.global.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.BooleanUtils;
@@ -165,8 +163,9 @@ public class AbstractViewRepository implements ViewRepository {
 
         View view = findView(metaClass, name);
 
-        if (view == null)
+        if (view == null) {
             throw new ViewNotFoundException(String.format("View %s/%s not found", metaClass.getName(), name));
+        }
         return view;
     }
 
@@ -179,8 +178,9 @@ public class AbstractViewRepository implements ViewRepository {
     @Override
     @Nullable
     public View findView(MetaClass metaClass, String name) {
-        if (metaClass == null || name == null)
+        if (metaClass == null || name == null) {
             return null;
+        }
 
         checkInitialized();
         ExtendedEntities extendedEntities = metadata.getExtendedEntities();
@@ -189,32 +189,13 @@ public class AbstractViewRepository implements ViewRepository {
         MetaClass effectiveMetaClass = extendedEntities.getEffectiveMetaClass(metaClass);
 
         View view = retrieveView(effectiveMetaClass, name, false);
-
-        if (view == null) {
-            // If not found for effective metaclass, try to find for original
-            MetaClass originalMetaClass = extendedEntities.getOriginalMetaClass(effectiveMetaClass);
-            if (originalMetaClass != null) {
-                view = retrieveView(originalMetaClass, name, false);
-            }
-            if (view == null) {
-                // Last resort - search for all ancestors
-                for (MetaClass ancestorMetaClass : effectiveMetaClass.getAncestors()) {
-                    if (extendedEntities.getEffectiveMetaClass(ancestorMetaClass).equals(effectiveMetaClass)) {
-                        view = retrieveView(ancestorMetaClass, name, false);
-                        if (view != null)
-                            break;
-                    }
-                }
-            }
-        }
-        if (view != null)
-            view = copyView(view);
-        return view;
+        return copyView(view);
     }
 
-    protected View copyView(View view) {
-        if (view == null)
+    protected View copyView(@Nullable View view) {
+        if (view == null) {
             return null;
+        }
 
         View copy = new View(view.getEntityClass(), view.getName(), view.isIncludeSystemProperties());
         for (ViewProperty property : view.getProperties()) {
@@ -227,7 +208,7 @@ public class AbstractViewRepository implements ViewRepository {
     protected View deployDefaultView(MetaClass metaClass, String name) {
         metaClass = metadata.getExtendedEntities().getEffectiveMetaClass(metaClass);
 
-        Class<? extends BaseEntity> javaClass = metaClass.getJavaClass();
+        Class<? extends Entity> javaClass = metaClass.getJavaClass();
         View view = new View(javaClass, name, false);
         if (View.LOCAL.equals(name)) {
             for (MetaProperty property : metaClass.getProperties()) {
@@ -300,6 +281,11 @@ public class AbstractViewRepository implements ViewRepository {
         View v = retrieveView(metaClass, viewName, true);
         boolean overwrite = BooleanUtils.toBoolean(viewElem.attributeValue("overwrite"));
 
+        String ancestor = viewElem.attributeValue("extends");
+        if (!overwrite) {
+            overwrite = StringUtils.equals(ancestor, viewName);
+        }
+
         if (v != null && !overwrite) {
             return v;
         }
@@ -307,7 +293,6 @@ public class AbstractViewRepository implements ViewRepository {
         String systemProperties = viewElem.attributeValue("systemProperties");
 
         View view;
-        String ancestor = viewElem.attributeValue("extends");
         if (ancestor != null) {
             View ancestorView = getAncestorView(metaClass, ancestor);
 
@@ -324,59 +309,7 @@ public class AbstractViewRepository implements ViewRepository {
             replaceOverridden(view);
         }
 
-        Class extendedClass = (Class) metaClass.getAnnotations().get(Extends.class.getName());
-        if (extendedClass != null) {
-            View viewToExtend = retrieveView(metadata.getClass(extendedClass), viewName, true);
-            if (viewToExtend != null) {
-                replaceEntityExtends(view, viewToExtend);
-            }
-        }
-
         return view;
-    }
-
-    protected void replaceEntityExtends(View replacementView, View viewToExtend) {
-        Log4JStopWatch replaceTiming = new Log4JStopWatch("ViewRepository.replaceEntityExtends");
-
-        HashSet<View> checked = new HashSet<>();
-
-        // replace old view
-        storeView(metadata.getClass(viewToExtend.getEntityClass()), replacementView);
-
-        for (View view : getAll()) {
-            if (!checked.contains(view)) {
-                replaceExtended(view, replacementView, viewToExtend, checked);
-            }
-        }
-
-        replaceTiming.stop();
-    }
-
-    protected void replaceExtended(View root, View replacementView, View viewToExtend, HashSet<View> checked) {
-        checked.add(root);
-
-        List<ViewProperty> replacements = null;
-
-        for (ViewProperty property : root.getProperties()) {
-            View propertyView = property.getView();
-
-            if (propertyView != null) {
-                if (propertyView == viewToExtend) {
-                    if (replacements == null) {
-                        replacements = new LinkedList<>();
-                    }
-                    replacements.add(new ViewProperty(property.getName(), replacementView, property.isLazy()));
-                } else if (propertyView.getEntityClass() != null && !checked.contains(propertyView)) {
-                    replaceExtended(propertyView, replacementView, viewToExtend, checked);
-                }
-            }
-        }
-
-        if (replacements != null) {
-            for (ViewProperty replacement : replacements) {
-                root.addProperty(replacement.getName(), replacement.getView(), replacement.isLazy());
-            }
-        }
     }
 
     protected void replaceOverridden(View replacementView) {
@@ -541,7 +474,7 @@ public class AbstractViewRepository implements ViewRepository {
         } else {
             metaClass = metadata.getSession().getClassNN(entity);
         }
-        return metaClass;
+        return metadata.getExtendedEntities().getEffectiveMetaClass(metaClass);
     }
 
     protected MetaClass getMetaClass(String entityName, String entityClass) {
