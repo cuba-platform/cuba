@@ -7,7 +7,6 @@ package com.haulmont.cuba.core.jmx;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.*;
-import com.haulmont.cuba.security.app.Authenticated;
 import com.haulmont.cuba.core.app.PersistenceConfig;
 import com.haulmont.cuba.core.app.PersistenceManagerAPI;
 import com.haulmont.cuba.core.app.ServerConfig;
@@ -16,8 +15,10 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.QueryParser;
 import com.haulmont.cuba.core.global.QueryTransformerFactory;
+import com.haulmont.cuba.core.sys.AbstractViewRepository;
 import com.haulmont.cuba.core.sys.DBNotInitializedException;
 import com.haulmont.cuba.core.sys.DbUpdater;
+import com.haulmont.cuba.security.app.Authenticated;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang.text.StrBuilder;
@@ -118,6 +119,16 @@ public class PersistenceManager implements PersistenceManagerMBean {
             sb.append(table).append("\n");
         }
         return sb.toString();
+    }
+
+    @Override
+    public String printViewRepositoryDump() {
+        return new ViewRepositoryInfo(metadata).dump();
+    }
+
+    @Override
+    public String printViewRepositoryDumpHtml() {
+        return new ViewRepositoryInfo(metadata).dumpHtml();
     }
 
     @Override

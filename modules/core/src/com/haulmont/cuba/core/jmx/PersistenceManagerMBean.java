@@ -37,6 +37,12 @@ public interface PersistenceManagerMBean {
     @ManagedOperation(description = "Show list of tables supporting soft deletion")
     String printSoftDeleteTables();
 
+    @ManagedOperation(description = "Show list of views with properties from ViewRepository")
+    String printViewRepositoryDump();
+
+    @ManagedOperation(description = "Print list of views with properties from ViewRepository as HTML markup")
+    String printViewRepositoryDumpHtml();
+
     /**
      * Start the database update.
      * @param token 'update' string must be passed to avoid accidental invocation
