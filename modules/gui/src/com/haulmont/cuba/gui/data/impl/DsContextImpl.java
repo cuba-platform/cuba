@@ -181,17 +181,9 @@ public class DsContextImpl implements DsContextImplementation {
                 list.add(datasource);
             }
         }
-        Collections.sort(list, new Comparator<Datasource>() {
-            @Override
-            public int compare(Datasource ds1, Datasource ds2) {
-                if (ds1 instanceof NestedDatasource && ((NestedDatasource) ds1).getMaster() == ds2)
-                    return 1;
-                if (ds2 instanceof NestedDatasource && ((NestedDatasource) ds2).getMaster() == ds1)
-                    return -1;
-                return 0;
-            }
-        });
-        for (Datasource datasource : list) {
+
+        List<Datasource> sortedList = new DsTree(list).toDsList();
+        for (Datasource datasource : sortedList) {
             datasource.commit();
         }
         return !list.isEmpty();
@@ -199,7 +191,7 @@ public class DsContextImpl implements DsContextImplementation {
 
     private void notifyAllDsCommited(DataSupplier dataservice, Set<Entity> committedEntities) {
         // Notify all datasources in context
-        Collection<Datasource> datasources = new LinkedList<>();
+        List<Datasource> datasources = new LinkedList<>();
         for (DsContext childDsContext : children) {
             for (Datasource ds : childDsContext.getAll()) {
                 if (ObjectUtils.equals(ds.getDataSupplier(), dataservice)
@@ -212,7 +204,8 @@ public class DsContextImpl implements DsContextImplementation {
                     && ds.getCommitMode() == Datasource.CommitMode.DATASTORE)
                 datasources.add(ds);
 
-        for (Datasource datasource : datasources) {
+        List<Datasource> sortedList = new DsTree(datasources).toDsList();
+        for (Datasource datasource : sortedList) {
             ((DatasourceImplementation) datasource).committed(committedEntities);
         }
     }

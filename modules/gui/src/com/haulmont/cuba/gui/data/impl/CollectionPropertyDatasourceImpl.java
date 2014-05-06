@@ -562,9 +562,10 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
                             set.remove(item);
                             set.add(entity);
                         }
-                        attachListener(entity);
                     }
                 }
+                detachListener(item); // to avoid duplication in any case
+                attachListener(item);
             }
         }
 
