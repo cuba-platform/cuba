@@ -6,7 +6,6 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.desktop.sys.vcl.Flushable;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.TextField;
@@ -20,9 +19,6 @@ import java.awt.*;
  * @version $Id$
  */
 public class DesktopTextField extends DesktopAbstractTextField<JTextComponent> implements TextField {
-
-    public DesktopTextField() {
-    }
 
     @Override
     protected JTextField createTextComponentImpl() {
@@ -62,41 +58,6 @@ public class DesktopTextField extends DesktopAbstractTextField<JTextComponent> i
     public void setDatatype(Datatype datatype) {
         this.datatype = datatype;
         this.valueFormatter.setDatatype(datatype);
-    }
-
-    @Override
-    public boolean isEditable() {
-        return editable;
-    }
-
-    @Override
-    public void setEditable(boolean editable) {
-        this.editable = editable;
-        if (impl != null) {
-            impl.setEditable(editable);
-            updateMissingValueState();
-        }
-    }
-
-    @Override
-    public String getCaption() {
-        return caption;
-    }
-
-    @Override
-    public void setCaption(String caption) {
-        this.caption = caption;
-    }
-
-    @Override
-    public String getDescription() {
-        return getImpl().getToolTipText();
-    }
-
-    @Override
-    public void setDescription(String description) {
-        getImpl().setToolTipText(description);
-        DesktopToolTipManager.getInstance().registerTooltip(impl);
     }
 
     @Override

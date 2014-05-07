@@ -102,8 +102,10 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
     @Override
     public void setEditable(boolean editable) {
         this.editable = editable;
-        impl.setEditable(editable);
-        updateMissingValueState();
+        if (impl != null) {
+            impl.setEditable(editable);
+            updateMissingValueState();
+        }
     }
 
     @Override
@@ -114,8 +116,9 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
     @Override
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
-        if (impl != null)
+        if (impl != null) {
             impl.setEnabled(enabled);
+        }
         requestContainerUpdate();
     }
 
