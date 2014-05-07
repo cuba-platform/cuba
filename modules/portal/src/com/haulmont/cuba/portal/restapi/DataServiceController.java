@@ -104,7 +104,7 @@ public class DataServiceController {
             }
         } catch (Throwable e) {
             log.error("Error processing request: " + request.getRequestURI() + "?" + request.getQueryString(), e);
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
         } finally {
             authentication.end();
         }
@@ -129,11 +129,11 @@ public class DataServiceController {
             response.addHeader("Access-Control-Allow-Origin", "*");
             MetaClass metaClass = getMetaClass(entityName);
             if (metaClass == null) {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Unknown entity name " + entityName);
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Persistent entity " + entityName + " does not exist");
+                return;
             }
 
-            EntityOp queryEntityOp = getQueryEntityOp(queryStr);
-            if (!entityOpPermitted(metaClass, queryEntityOp)) {
+            if (!entityOpPermitted(metaClass, EntityOp.READ)) {
                 response.sendError(HttpServletResponse.SC_FORBIDDEN);
                 return;
             }
@@ -176,7 +176,7 @@ public class DataServiceController {
             convertor.write(response, result);
         } catch (Throwable e) {
             log.error("Error processing request: " + request.getRequestURI() + "?" + request.getQueryString(), e);
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
         } finally {
             authentication.end();
         }
@@ -226,7 +226,7 @@ public class DataServiceController {
             convertor.write(response, converted);
         } catch (Throwable e) {
             log.error("Error processing request: " + request.getRequestURI() + "?" + request.getQueryString(), e);
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
         } finally {
             authentication.end();
         }
@@ -249,7 +249,7 @@ public class DataServiceController {
             ((AbstractViewRepository) viewRepository).deployViews(new StringReader(requestContent));
         } catch (Throwable e) {
             log.error("Error processing request: " + request.getRequestURI() + "?" + request.getQueryString(), e);
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
         } finally {
             authentication.end();
         }
@@ -276,7 +276,7 @@ public class DataServiceController {
 
         } catch (Throwable e) {
             log.error("Error processing request: " + request.getRequestURI() + "?" + request.getQueryString(), e);
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
         } finally {
             authentication.end();
         }
@@ -427,31 +427,5 @@ public class DataServiceController {
     private boolean entityOpPermitted(MetaClass metaClass, EntityOp entityOp) {
         UserSession session = userSessionSource.getUserSession();
         return session.isEntityOpPermitted(metaClass, entityOp);
-    }
-
-    /**
-     * Returns EntityOp query requests to
-     *
-     * @param query JPQL query
-     * @return EntityOp.READ or EntityOp.UPDATE or EntityOp.DELETE or null
-     */
-    private static EntityOp getQueryEntityOp(String query) {
-        if (query == null)
-            return null;
-
-        query = query.trim().toLowerCase();
-        if (query.isEmpty())
-            return null;
-
-        int firstSpaceIndex = query.indexOf(' ');
-        int endIndex = firstSpaceIndex != -1 ? firstSpaceIndex : query.length();
-        String op = query.substring(0, endIndex);
-        if ("select".equals(op))
-            return EntityOp.READ;
-        else if ("update".equals(op))
-            return EntityOp.UPDATE;
-        else if ("delete".equals(op))
-            return EntityOp.DELETE;
-        return null;
     }
 }
