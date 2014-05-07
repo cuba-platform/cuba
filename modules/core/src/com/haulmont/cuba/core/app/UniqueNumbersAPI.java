@@ -38,4 +38,11 @@ public interface UniqueNumbersAPI {
      * @param value     value
      */
     void setCurrentNumber(String domain, long value);
+
+    /**
+     * Removes database sequence with specified identifier
+     * Sequence exist check is not performed, so database can throw an exception
+     * @param domain sequence identifier
+     */
+    void deleteDbSequence(String domain);
 }

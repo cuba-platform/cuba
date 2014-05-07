@@ -68,6 +68,21 @@ public class UniqueNumbers implements UniqueNumbersAPI {
         }
     }
 
+    @Override
+    public void deleteDbSequence(String domain) {
+        String seqName = getSequenceName(domain);
+        SequenceSupport support = getSequenceSqlProvider();
+        String sqlScript = support.deleteSequenceSql(seqName);
+
+        Transaction tx = persistence.getTransaction();
+        try {
+            executeScript(sqlScript);
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+    }
+
     private long getResult(String seqName, String sqlScript) {
         Transaction tx = persistence.getTransaction();
         try {

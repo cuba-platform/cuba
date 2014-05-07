@@ -30,6 +30,11 @@ public class HsqlDbDialect extends DbDialect implements SequenceSupport {
     }
 
     @Override
+    public String deleteSequenceSql(String sequenceName) {
+        return "drop sequence " + (sequenceName != null ? sequenceName.toLowerCase() : sequenceName);
+    }
+
+    @Override
     public String getNextValueSql(String sequenceName) {
         return "select next value for " + sequenceName + " from dual";
     }

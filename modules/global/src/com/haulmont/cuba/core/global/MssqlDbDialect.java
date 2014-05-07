@@ -54,6 +54,11 @@ public class MssqlDbDialect extends DbDialect implements SequenceSupport {
     }
 
     @Override
+    public String deleteSequenceSql(String sequenceName) {
+        return "drop sequence " + (sequenceName != null ? sequenceName.toLowerCase() : sequenceName);
+    }
+
+    @Override
     public String getNextValueSql(String sequenceName) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         return String.format("insert into %s (CREATE_TS) values ({ts '%s'}) ^ select ident_current('%s') as NEXT_VALUE",

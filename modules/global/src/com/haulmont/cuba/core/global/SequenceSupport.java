@@ -25,6 +25,8 @@ public interface SequenceSupport {
 
     String modifySequenceSql(String sequenceName, long startWith);
 
+    String deleteSequenceSql(String sequenceName);
+
     String getNextValueSql(String sequenceName);
 
     String getCurrentValueSql(String sequenceName);
