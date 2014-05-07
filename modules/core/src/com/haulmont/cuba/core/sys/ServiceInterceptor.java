@@ -79,11 +79,16 @@ public class ServiceInterceptor {
     }
 
     private void logException(Throwable e, ProceedingJoinPoint ctx) {
-        Logging annotation = e.getClass().getAnnotation(Logging.class);
-        if (annotation == null || annotation.value() == Logging.Type.FULL) {
-            log.error("Exception: ", e);
-        } else if (annotation.value() == Logging.Type.BRIEF) {
-            log.error("Exception in " + ctx.getSignature().toShortString() + ": " + e.toString());
+        if (e instanceof NoUserSessionException) {
+            // If you don't want NoUserSessionException in log, set level higher than INFO for ServiceInterceptor logger
+            log.info("Exception in " + ctx.getSignature().toShortString() + ": " + e.toString());
+        } else {
+            Logging annotation = e.getClass().getAnnotation(Logging.class);
+            if (annotation == null || annotation.value() == Logging.Type.FULL) {
+                log.error("Exception: ", e);
+            } else if (annotation.value() == Logging.Type.BRIEF) {
+                log.error("Exception in " + ctx.getSignature().toShortString() + ": " + e.toString());
+            }
         }
     }
 }
