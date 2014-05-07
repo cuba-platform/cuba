@@ -74,8 +74,12 @@ public interface DsContext {
      * <li>collectionChanged with Operation.REFRESH
      * <li>valueChanged with the specified property
      * </ul>
+     * @param ds            dependent datasource
+     * @param dependFrom    master datasource
+     * @param property      property of master datasource. If specified, the dependent datasource will be refreshed
+     *                      also on this property value change
      */
-    void registerDependency(Datasource ds, Datasource dependFrom, String property);
+    void registerDependency(Datasource ds, Datasource dependFrom, @Nullable String property);
 
     /**
      * Add commit events listener.
