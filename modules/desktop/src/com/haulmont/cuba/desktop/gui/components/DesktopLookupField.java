@@ -86,6 +86,9 @@ public class DesktopLookupField
                 @Override
                 public void focusGained(FocusEvent e) {
                     initOptions();
+
+                    // update text representation based on entity properties
+                    updateTextRepresentation();
                 }
 
                 @Override
@@ -174,6 +177,16 @@ public class DesktopLookupField
             if (value == null && nullOption != null)
                 value = new NullOption();
 
+            comboBox.getEditor().setItem(value);
+        } finally {
+            disableActionListener = false;
+        }
+    }
+
+    protected void updateTextRepresentation() {
+        disableActionListener = true;
+        try {
+            Object value = comboBox.getSelectedItem();
             comboBox.getEditor().setItem(value);
         } finally {
             disableActionListener = false;
