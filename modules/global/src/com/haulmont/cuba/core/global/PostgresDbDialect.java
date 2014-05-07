@@ -36,7 +36,7 @@ public class PostgresDbDialect extends DbDialect implements SequenceSupport {
 
     @Override
     public String getCurrentValueSql(String sequenceName) {
-        return "select currval('" + (sequenceName != null ? sequenceName.toLowerCase() : sequenceName) + "')";
+        return "select last_value from " + (sequenceName != null ? sequenceName.toLowerCase() : sequenceName);
     }
 
     @Override
