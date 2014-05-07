@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.core.sys;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Query;
@@ -182,7 +183,8 @@ public class EntityManagerImpl implements EntityManager {
 
     @Override
     public void fetch(Entity entity, View view) {
-        Objects.requireNonNull(view, "View is null");
+        Preconditions.checkNotNullArgument(view, "View is null");
+        Preconditions.checkNotNullArgument(entity, "Entity instance is null");
         if (!PersistenceHelper.isManaged(entity))
             throw new IllegalArgumentException("Can not fetch detached entity. Merge first.");
 
@@ -199,8 +201,8 @@ public class EntityManagerImpl implements EntityManager {
     @Nullable
     @Override
     public <T extends Entity> T reload(Class<T> entityClass, Object id, String... viewNames) {
-        Objects.requireNonNull(entityClass, "entityClass is null");
-        Objects.requireNonNull(id, "id is null");
+        Preconditions.checkNotNullArgument(entityClass, "entityClass is null");
+        Preconditions.checkNotNullArgument(id, "id is null");
 
         T entity = find(entityClass, id, viewNames);
         if (entity != null) {
@@ -218,7 +220,7 @@ public class EntityManagerImpl implements EntityManager {
     @Nullable
     @Override
     public <T extends Entity> T reload(T entity, String... viewNames) {
-        Objects.requireNonNull(entity, "entity is null");
+        Preconditions.checkNotNullArgument(entity, "entity is null");
 
         Entity resultEntity = reload(entity.getClass(), entity.getId(), viewNames);
         return (T) resultEntity;
