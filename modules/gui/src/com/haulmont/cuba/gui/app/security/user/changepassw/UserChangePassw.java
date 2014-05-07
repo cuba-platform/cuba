@@ -7,18 +7,16 @@ package com.haulmont.cuba.gui.app.security.user.changepassw;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.PasswordEncryption;
-import com.haulmont.cuba.gui.components.AbstractEditor;
-import com.haulmont.cuba.gui.components.Button;
-import com.haulmont.cuba.gui.components.PasswordField;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.security.app.UserManagementService;
 import com.haulmont.cuba.security.entity.User;
 import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * @author krivopustov
@@ -32,10 +30,16 @@ public class UserChangePassw extends AbstractEditor {
     protected PasswordField confirmPasswField;
 
     @Inject
-    protected Datasource<User> userDs;
+    protected PasswordField currentPasswordField;
+
+    @Inject
+    protected Label currentPasswordLabel;
 
     @Named("windowActions.windowClose")
     protected Button closeBtn;
+
+    @Inject
+    protected Datasource<User> userDs;
 
     @Inject
     protected Configuration configuration;
@@ -47,6 +51,7 @@ public class UserChangePassw extends AbstractEditor {
     protected UserManagementService userManagementService;
 
     protected boolean cancelEnabled = true;
+    protected boolean currentPasswordRequired = false;
 
     @Override
     protected void postInit() {
@@ -63,35 +68,70 @@ public class UserChangePassw extends AbstractEditor {
         if (Boolean.FALSE.equals(cancelEnabled)) {
             this.cancelEnabled = false;
         }
+
+        Boolean currentPasswordRequired = (Boolean) params.get("currentPasswordRequired");
+        if (Boolean.TRUE.equals(currentPasswordRequired)) {
+            currentPasswordField.setVisible(true);
+            currentPasswordLabel.setVisible(true);
+
+            this.currentPasswordRequired = true;
+        }
     }
 
     @Override
-    public void commitAndClose() {
-        String passw = passwField.getValue();
-        String confPassw = confirmPasswField.getValue();
-        if (StringUtils.isBlank(passw) || StringUtils.isBlank(confPassw)) {
-            showNotification(getMessage("emptyPassword"), NotificationType.WARNING);
-        } else if (userManagementService.checkEqualsOfNewAndOldPassword(
-                userDs.getItem().getId(), passwordEncryption.getPlainHash(passw))) {
-            // old password equals to new password
-            showNotification(getMessage("oldPassword"), NotificationType.WARNING);
-        } else if (ObjectUtils.equals(passw, confPassw)) {
-            ClientConfig passwordPolicyConfig = configuration.getConfig(ClientConfig.class);
-            if (passwordPolicyConfig.getPasswordPolicyEnabled()) {
-                String regExp = passwordPolicyConfig.getPasswordPolicyRegExp();
-                if (passw.matches(regExp)) {
-                    assignPasswordToUser(passw);
-                    super.commitAndClose();
-                } else {
-                    showNotification(getMessage("simplePassword"), NotificationType.WARNING);
-                }
-            } else {
-                assignPasswordToUser(passw);
-                super.commitAndClose();
-            }
-        } else {
-            showNotification(getMessage("passwordsDoNotMatch"), NotificationType.WARNING);
+    public void ready() {
+        super.ready();
+
+        if (currentPasswordField.isVisible() && currentPasswordField.isEnabled()) {
+            currentPasswordField.requestFocus();
         }
+    }
+
+    @Override
+    protected void postValidate(ValidationErrors errors) {
+        super.postValidate(errors);
+
+        String password = passwField.getValue();
+
+        if (errors.isEmpty()) {
+            String currentPassword = currentPasswordField.getValue();
+            String passwordConfirmation = confirmPasswField.getValue();
+
+            UUID userId = userDs.getItem().getId();
+
+            if (currentPasswordRequired
+                    && !userManagementService.checkPassword(userId, passwordEncryption.getPlainHash(currentPassword))) {
+                errors.add(currentPasswordField, getMessage("wrongCurrentPassword"));
+
+            } else if (userManagementService.checkPassword(userId, passwordEncryption.getPlainHash(password))) {
+                errors.add(passwField, getMessage("currentPasswordWarning"));
+
+            } else if (!ObjectUtils.equals(password, passwordConfirmation)) {
+                errors.add(confirmPasswField, getMessage("passwordsDoNotMatch"));
+
+            } else {
+                ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
+                if (clientConfig.getPasswordPolicyEnabled()) {
+                    String regExp = clientConfig.getPasswordPolicyRegExp();
+                    if (!password.matches(regExp)) {
+                        errors.add(passwField, getMessage("simplePassword"));
+                    }
+                }
+            }
+        }
+
+        if (errors.isEmpty()) {
+            assignPasswordToUser(password);
+        }
+    }
+
+    @Override
+    protected boolean postCommit(boolean committed, boolean close) {
+        if (committed) {
+            showNotification(getMessage("passwordChanged"), NotificationType.HUMANIZED);
+        }
+
+        return super.postCommit(committed, close);
     }
 
     protected void assignPasswordToUser(String passw) {

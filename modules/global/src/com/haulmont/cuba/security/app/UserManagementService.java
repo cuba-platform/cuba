@@ -58,9 +58,18 @@ public interface UserManagementService {
     Map<UUID, String> changePasswordsAtLogon(List<UUID> userIds, boolean generatePassword);
 
     /**
+     * @param userId       User id
+     * @param passwordHash Plain hash of new password
+     * @return True if the new and old passwords are equal
+     */
+    boolean checkPassword(UUID userId, String passwordHash);
+
+    /**
      * @param userId          User id
      * @param newPasswordHash Plain hash of new password
      * @return True if the new and old passwords are equal
+     * @deprecated Use ${@link com.haulmont.cuba.security.app.UserManagementService#checkPassword(java.util.UUID, String)}
      */
+    @Deprecated
     boolean checkEqualsOfNewAndOldPassword(UUID userId, String newPasswordHash);
 }

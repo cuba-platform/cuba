@@ -15,6 +15,7 @@ import com.haulmont.cuba.web.app.UserSettingsTools;
 
 import javax.inject.Inject;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -83,7 +84,8 @@ public class SettingsWindow extends AbstractWindow {
                 new AbstractAction("changePassw") {
                     @Override
                     public void actionPerform(Component component) {
-                        Window passwordDialog = openEditor("sec$User.changePassw", user, WindowManager.OpenType.DIALOG);
+                        Window passwordDialog = openEditor("sec$User.changePassw", user, WindowManager.OpenType.DIALOG,
+                                Collections.<String, Object>singletonMap("currentPasswordRequired", true));
                         passwordDialog.addListener(new CloseListener() {
                             @Override
                             public void windowClosed(String actionId) {

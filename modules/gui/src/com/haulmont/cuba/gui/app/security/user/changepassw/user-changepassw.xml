@@ -3,19 +3,17 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<window
-        xmlns="http://schemas.haulmont.com/cuba/5.2/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/5.2/window.xsd"
         datasource="userDs"
         caption="msg://caption"
         class="com.haulmont.cuba.gui.app.security.user.changepassw.UserChangePassw"
         messagesPack="com.haulmont.cuba.gui.app.security.user.changepassw"
-        focusComponent="passwField"
-        >
+        focusComponent="passwField">
+
     <dsContext>
         <datasource id="userDs"
                     class="com.haulmont.cuba.security.entity.User"
-                    view="user.changepassw">
-        </datasource>
+                    view="user.changepassw"/>
     </dsContext>
 
     <layout spacing="true">
@@ -26,12 +24,17 @@
             </columns>
             <rows>
                 <row>
+                    <label id="currentPasswordLabel" value="msg://currentPassword" visible="false"/>
+                    <passwordField id="currentPasswordField" width="200px" visible="false"
+                                   required="true" requiredMessage="msg://currentPasswordRequired"/>
+                </row>
+                <row>
                     <label id="passwLab" value="msg://password"/>
-                    <passwordField id="passwField" width="200px" required="true"/>
+                    <passwordField id="passwField" width="200px" required="true" requiredMessage="msg://passwordRequired"/>
                 </row>
                 <row>
                     <label id="confirmPasswLab" value="msg://confirmPassword"/>
-                    <passwordField id="confirmPasswField" width="200px" required="true"/>
+                    <passwordField id="confirmPasswField" width="200px" required="true" requiredMessage="msg://passwordConfirmRequired"/>
                 </row>
             </rows>
         </grid>

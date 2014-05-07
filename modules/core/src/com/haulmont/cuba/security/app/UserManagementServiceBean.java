@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.*;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 /**
  * @author artamonov
@@ -73,7 +73,7 @@ public class UserManagementServiceBean implements UserManagementService {
 
     @Override
     public Group copyAccessGroup(UUID accessGroupId) {
-        checkNotNull(accessGroupId, "Null access group id");
+        checkNotNullArgument(accessGroupId, "Null access group id");
         checkUpdatePermission(Group.class);
 
         Group clone = null;
@@ -98,7 +98,7 @@ public class UserManagementServiceBean implements UserManagementService {
 
     @Override
     public Integer moveUsersToGroup(List<UUID> userIds, @Nullable UUID targetAccessGroupId) {
-        checkNotNull(userIds, "Null users list");
+        checkNotNullArgument(userIds, "Null users list");
         checkUpdatePermission(User.class);
 
         if (userIds.isEmpty())
@@ -141,7 +141,7 @@ public class UserManagementServiceBean implements UserManagementService {
 
     @Override
     public Integer changePasswordsAtLogonAndSendEmails(List<UUID> userIds) {
-        checkNotNull(userIds, "Null users list");
+        checkNotNullArgument(userIds, "Null users list");
         checkUpdatePermission(User.class);
 
         if (userIds.isEmpty())
@@ -181,7 +181,8 @@ public class UserManagementServiceBean implements UserManagementService {
 
     @Override
     public Map<UUID, String> changePasswordsAtLogon(List<UUID> userIds, boolean generatePassword) {
-        checkNotNull(userIds, "Null users list");
+        checkNotNullArgument(userIds, "Null users list");
+
         checkUpdatePermission(User.class);
 
         if (userIds.isEmpty())
@@ -196,9 +197,9 @@ public class UserManagementServiceBean implements UserManagementService {
     }
 
     @Override
-    public boolean checkEqualsOfNewAndOldPassword(UUID userId, String newPasswordHash) {
-        checkNotNull(userId, "Null userId");
-        checkNotNull(newPasswordHash, "Null new password hash");
+    public boolean checkPassword(UUID userId, String passwordHash) {
+        checkNotNullArgument(userId, "Null userId");
+        checkNotNullArgument(passwordHash, "Null new password hash");
 
         User user;
 
@@ -215,7 +216,13 @@ public class UserManagementServiceBean implements UserManagementService {
             tx.end();
         }
 
-        return passwordEncryption.checkPassword(user, newPasswordHash);
+        return passwordEncryption.checkPassword(user, passwordHash);
+    }
+
+    @Deprecated
+    @Override
+    public boolean checkEqualsOfNewAndOldPassword(UUID userId, String newPasswordHash) {
+        return checkPassword(userId, newPasswordHash);
     }
 
     protected EmailTemplate getResetPasswordTemplate(User user,
