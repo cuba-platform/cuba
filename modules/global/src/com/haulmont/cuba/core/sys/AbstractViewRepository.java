@@ -95,10 +95,13 @@ public class AbstractViewRepository implements ViewRepository {
     protected void checkDuplicates(Element rootElem) {
         Set<String> checked = new HashSet<>();
         for (Element viewElem : Dom4j.elements(rootElem, "view")) {
-            String key = getMetaClass(viewElem) + "/" + getViewName(viewElem);
+            String viewName = getViewName(viewElem);
+            String key = getMetaClass(viewElem) + "/" + viewName;
             if (!BooleanUtils.toBoolean(viewElem.attributeValue("overwrite"))) {
-                if (checked.contains(key))
-                    log.warn("Duplicate view definition without 'overwrite' attribute: " + key);
+                String extend = viewElem.attributeValue("extends");
+                if (!StringUtils.equals(extend, viewName) && checked.contains(key)) {
+                    log.warn("Duplicate view definition without 'overwrite' attribute and not extending parent view: " + key);
+                }
             }
             checked.add(key);
         }
