@@ -14,6 +14,7 @@ import org.dom4j.Element;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.*;
+import javax.swing.plaf.synth.SynthSplitPaneUI;
 import java.awt.*;
 import java.util.*;
 
@@ -21,12 +22,12 @@ import java.util.*;
  * @author krivopustov
  * @version $Id$
  */
-public class DesktopSplitPanel
-        extends DesktopAbstractComponent<JSplitPane>
-        implements SplitPanel, Component.HasSettings {
+public class DesktopSplitPanel extends DesktopAbstractComponent<JSplitPane> implements SplitPanel, Component.HasSettings {
 
     protected boolean applyNewPosition = true;
     protected int position = 50;
+
+    protected boolean positionChanged = false;
 
     protected Map<String, Component> componentByIds = new HashMap<>();
     protected Collection<Component> ownComponents = new LinkedHashSet<>();
@@ -46,6 +47,16 @@ public class DesktopSplitPanel
                 }
             }
         };
+
+        impl.setUI(new SynthSplitPaneUI() {
+                       @Override
+                       protected void dragDividerTo(int location) {
+                           super.dragDividerTo(location);
+
+                           // user touched split divider
+                           positionChanged = true;
+                       }
+                   });
 
         impl.getLeftComponent().setMinimumSize(new Dimension());
         impl.getRightComponent().setMinimumSize(new Dimension());
@@ -163,6 +174,7 @@ public class DesktopSplitPanel
             if (!StringUtils.isBlank(value)) {
                 // ignore defaults
                 this.applyNewPosition = false;
+                this.positionChanged = true;
 
                 impl.setDividerLocation(Integer.valueOf(value));
                 impl.setResizeWeight(position / 100.0);
@@ -172,14 +184,15 @@ public class DesktopSplitPanel
 
     @Override
     public boolean saveSettings(Element element) {
-        int location = impl.getLastDividerLocation();
-        if (location < 0) {
+        if (!positionChanged) {
             return false; // most probably user didn't change the divider location
         }
 
+        int location = impl.getUI().getDividerLocation(impl);
         Element e = element.element("position");
-        if (e == null)
+        if (e == null) {
             e = element.addElement("position");
+        }
         e.addAttribute("value", String.valueOf(location));
         return true;
     }
