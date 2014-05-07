@@ -37,7 +37,7 @@ import java.util.*;
 class MappingFileCreator {
 
     private static final String XMLNS = "http://java.sun.com/xml/ns/persistence/orm";
-    private static final String PERSISTENCE_VER = "1.0";
+    private static final String PERSISTENCE_VER = "2.0";
 
     private Collection<String> classNames;
     private Map<String, String> properties;
@@ -168,6 +168,13 @@ class MappingFileCreator {
                 Element entityEl = rootEl.addElement("entity", XMLNS);
                 entityEl.addAttribute("class", entry.getKey().getName());
                 entityEl.addAttribute("name", entry.getKey().getAnnotation(Entity.class).name());
+                createAttributes(entry, entityEl);
+            }
+        }
+        for (Map.Entry<Class<?>, List<Attr>> entry : mappings.entrySet()) {
+            if (entry.getKey().getAnnotation(Embeddable.class) != null) {
+                Element entityEl = rootEl.addElement("embeddable", XMLNS);
+                entityEl.addAttribute("class", entry.getKey().getName());
                 createAttributes(entry, entityEl);
             }
         }
