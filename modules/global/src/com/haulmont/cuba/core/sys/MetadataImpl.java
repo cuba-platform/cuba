@@ -21,6 +21,8 @@ import org.apache.commons.logging.LogFactory;
 import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -95,9 +97,20 @@ public class MetadataImpl implements Metadata {
         Class<T> extClass = extendedEntities.getEffectiveClass(entityClass);
         try {
             T obj = extClass.newInstance();
+            invokePostConstructMethods((Entity) obj);
             return obj;
-        } catch (InstantiationException | IllegalAccessException e) {
+        } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    protected void invokePostConstructMethods(Entity entity) throws InvocationTargetException, IllegalAccessException {
+        Method[] methods = entity.getClass().getMethods();
+        for (int i = methods.length - 1; i >= 0; i--) {
+            Method method = methods[i];
+            if (method.isAnnotationPresent(PostConstruct.class)) {
+                method.invoke(entity);
+            }
         }
     }
 
@@ -224,9 +237,9 @@ public class MetadataImpl implements Metadata {
     /**
      * Add a meta-annotation from class annotation.
      *
-     * @param metaClass         entity's meta-class
-     * @param name              meta-annotation name
-     * @param annotationValue   annotation value extractor instance
+     * @param metaClass       entity's meta-class
+     * @param name            meta-annotation name
+     * @param annotationValue annotation value extractor instance
      */
     protected void addMetaAnnotation(MetaClass metaClass, String name, AnnotationValue annotationValue) {
         Object value = annotationValue.get(metaClass.getJavaClass());
@@ -246,8 +259,8 @@ public class MetadataImpl implements Metadata {
      * Initialize entity annotations from definition in <code>metadata.xml</code>.
      * <p>Can be overridden in application projects to handle application-specific annotations.</p>
      *
-     * @param xmlAnnotations    map of class name to annotations map
-     * @param metaClass MetaClass instance to assign annotations
+     * @param xmlAnnotations map of class name to annotations map
+     * @param metaClass      MetaClass instance to assign annotations
      */
     protected void addMetaAnnotationsFromXml(Map<String, Map<String, String>> xmlAnnotations, MetaClass metaClass) {
         Map<String, String> classAnnotations = xmlAnnotations.get(metaClass.getJavaClass().getName());
