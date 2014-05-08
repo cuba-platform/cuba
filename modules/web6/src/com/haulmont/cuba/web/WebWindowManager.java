@@ -322,6 +322,8 @@ public class WebWindowManager extends WindowManager {
 
     protected Component showWindowNewTab(final Window window, final boolean multipleOpen, final String caption,
                                          final String description) {
+        getDialogParams().reset();
+
         final WindowBreadCrumbs breadCrumbs = createWindowBreadCrumbs();
         breadCrumbs.addListener(
                 new WindowBreadCrumbs.Listener() {
@@ -612,8 +614,9 @@ public class WebWindowManager extends WindowManager {
     }
 
     protected Component showWindowThisTab(final Window window, final String caption, final String description) {
-        VerticalLayout layout;
+        getDialogParams().reset();
 
+        VerticalLayout layout;
         if (AppWindow.Mode.TABBED.equals(appWindow.getMode())) {
             TabSheet tabSheet = appWindow.getTabSheet();
             layout = (VerticalLayout) tabSheet.getSelectedTab();
@@ -677,7 +680,7 @@ public class WebWindowManager extends WindowManager {
 
         Layout layout = (Layout) WebComponentsHelper.getComposition(window);
 
-        // surrond window layout with outer layout to prevent double painting
+        // surround window layout with outer layout to prevent double painting
         VerticalLayout outerLayout = new VerticalLayout();
         outerLayout.addComponent(layout);
         outerLayout.setExpandRatio(layout, 1);

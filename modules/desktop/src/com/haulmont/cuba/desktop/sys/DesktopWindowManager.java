@@ -362,6 +362,8 @@ public class DesktopWindowManager extends WindowManager {
     }
 
     private JComponent showNewWindow(Window window, String caption) {
+        getDialogParams().reset();
+
         TopLevelFrame windowFrame = createTopLevelFrame(caption);
 
         WindowBreadCrumbs breadCrumbs = createBreadCrumbs();
@@ -548,6 +550,8 @@ public class DesktopWindowManager extends WindowManager {
     }
 
     private JComponent showWindowThisTab(Window window, String caption, String description) {
+        getDialogParams().reset();
+
         JComponent layout;
         if (isMainWindowManager) {
             layout = (JComponent) tabsPane.getSelectedComponent();
@@ -624,6 +628,8 @@ public class DesktopWindowManager extends WindowManager {
     }
 
     protected JComponent showWindowNewTab(Window window, String caption, String description, Integer tabPosition) {
+        getDialogParams().reset();
+
         final WindowBreadCrumbs breadCrumbs = createBreadCrumbs();
         stacks.put(breadCrumbs, new Stack<Map.Entry<Window, Integer>>());
         breadCrumbs.addWindow(window);

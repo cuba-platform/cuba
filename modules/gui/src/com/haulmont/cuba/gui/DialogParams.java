@@ -12,7 +12,7 @@ package com.haulmont.cuba.gui;
  * getDialogParams().setWidth(500);
  * openEditor("sales$Customer.edit", customer, WindowManager.OpenType.DIALOG, params);
  * </pre>
- * Parameters are reset to default values by the framework after opening of each modal dialog.
+ * Parameters are reset to default values by the framework after opening of each window.
  *
  * @author degtyarjov
  * @version $Id$
