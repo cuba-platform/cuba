@@ -55,7 +55,7 @@ public class MssqlDbDialect extends DbDialect implements SequenceSupport {
 
     @Override
     public String deleteSequenceSql(String sequenceName) {
-        return "drop sequence " + (sequenceName != null ? sequenceName.toLowerCase() : sequenceName);
+        return "drop table " + (sequenceName != null ? sequenceName.toLowerCase() : sequenceName);
     }
 
     @Override
