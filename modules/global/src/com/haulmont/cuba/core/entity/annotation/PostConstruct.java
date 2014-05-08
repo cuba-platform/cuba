@@ -1,11 +1,14 @@
+/*
+ * Copyright (c) 2008-2014 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+ */
+
 package com.haulmont.cuba.core.entity.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-
 
 /**
  * The PostConstruct annotation is used on a public no-args method, that needs to be executed by
