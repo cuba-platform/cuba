@@ -70,6 +70,10 @@
     padding-bottom: 10px;
   }
 
+  .#{$primaryStyleName}-light.#{$primaryStyleName}-border > .#{$primaryStyleName}-content {
+    border: 0;
+  }
+
   .#{$primaryStyleName}-border > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-caption-start-deco div,
   .#{$primaryStyleName}-border > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-caption-end-deco div {
     height: 10px;
@@ -81,9 +85,17 @@
     border-top-width: 1px;
   }
 
+  .#{$primaryStyleName}-light.#{$primaryStyleName}-border > .#{$primaryStyleName}-captionwrap  .#{$primaryStyleName}-caption-start-deco div {
+    border-left: 0;
+  }
+
   .#{$primaryStyleName}-border > .#{$primaryStyleName}-captionwrap  .#{$primaryStyleName}-caption-end-deco div {
     border-right-width: 1px;
     border-top-width: 1px;
+  }
+
+  .#{$primaryStyleName}-light.#{$primaryStyleName}-border > .#{$primaryStyleName}-captionwrap  .#{$primaryStyleName}-caption-end-deco div {
+    border-right: 0;
   }
 
   .#{$primaryStyleName}-border.#{$primaryStyleName}-nocaption > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-caption-start-deco div,

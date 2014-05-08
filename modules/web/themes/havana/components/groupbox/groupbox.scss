@@ -17,6 +17,11 @@
     padding-bottom: 5px;
   }
 
+  .#{$primaryStyleName}.collapsed > .#{$primaryStyleName}-content,
+  .#{$primaryStyleName}-light > .#{$primaryStyleName}-content {
+    border: 0;
+  }
+
   .#{$primaryStyleName}-captionwrap {
     display: block;
     font-size: 0;
@@ -33,6 +38,16 @@
       border-left: 1px solid $theme_groupBoxBorderColor;
       border-top: 1px solid $theme_groupBoxBorderColor;
     }
+  }
+
+  .#{$primaryStyleName}.collapsed > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-caption-start-deco div,
+  .#{$primaryStyleName}-light > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-caption-start-deco div {
+    border-left: 0;
+  }
+
+  .#{$primaryStyleName}.collapsed > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-caption-end-deco div,
+  .#{$primaryStyleName}-light > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-caption-end-deco div {
+    border-right: 0;
   }
 
   .#{$primaryStyleName}-caption {
@@ -71,8 +86,16 @@
     background-image: url(sprites/expand.png); /** sprite-ref: components; */
   }
 
+  .#{$primaryStyleName}-caption-text {
+    cursor: pointer;
+  }
+
   .#{$primaryStyleName}-nocollapsable > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-expander {
     display: none;
+  }
+
+  .#{$primaryStyleName}-nocollapsable > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-caption-text {
+    cursor: default;
   }
 
   .#{$primaryStyleName}-expander.expanded {
