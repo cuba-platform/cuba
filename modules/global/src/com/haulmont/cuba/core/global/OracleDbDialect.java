@@ -19,7 +19,7 @@ public class OracleDbDialect extends DbDialect implements SequenceSupport {
 
     @Override
     public String createSequenceSql(String sequenceName, long startValue, long increment) {
-        return "create sequence " + sequenceName + " increment by " + increment + " start with " + startValue + " nocache";
+        return "create sequence " + sequenceName + " increment by " + increment + " start with " + startValue + " nocache minvalue 0";
     }
 
     @Override

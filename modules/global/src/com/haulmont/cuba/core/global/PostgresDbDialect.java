@@ -21,7 +21,7 @@ public class PostgresDbDialect extends DbDialect implements SequenceSupport {
     @Override
     public String createSequenceSql(String sequenceName, long startValue, long increment) {
         return "create sequence " + (sequenceName != null ? sequenceName.toLowerCase() : sequenceName)
-                + " increment by " + increment + " start with " + startValue;
+                + " increment by " + increment + " start with " + startValue + " minvalue 0";
     }
 
     @Override
