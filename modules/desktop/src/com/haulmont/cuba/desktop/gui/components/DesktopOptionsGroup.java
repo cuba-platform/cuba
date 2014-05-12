@@ -6,6 +6,7 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.OptionsGroup;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -172,6 +173,26 @@ public class DesktopOptionsGroup
     public void updateMissingValueState() {
         boolean state = required && getSelectedItem() == null;
         decorateMissingValue(impl, state);
+    }
+
+    private void refreshCaptions() {
+        for (Map.Entry<ValueWrapper, JToggleButton> entry : items.entrySet()) {
+            entry.getValue().setText(entry.getKey().toString());
+        }
+    }
+
+    @Override
+    public void setCaptionMode(CaptionMode captionMode) {
+        super.setCaptionMode(captionMode);
+
+        refreshCaptions();
+    }
+
+    @Override
+    public void setCaptionProperty(String captionProperty) {
+        super.setCaptionProperty(captionProperty);
+
+        refreshCaptions();
     }
 
     private void removeAllItems() {

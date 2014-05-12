@@ -74,6 +74,7 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
     @Override
     public void setOptionsList(List optionsList) {
         this.optionsList = optionsList;
+        this.captionMode = CaptionMode.ITEM; // works as web version
     }
 
     @Override
