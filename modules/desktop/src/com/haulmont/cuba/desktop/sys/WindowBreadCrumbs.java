@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.desktop.sys;
 
+import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.gui.components.Window;
 import org.jdesktop.swingx.JXHyperlink;
 
@@ -90,6 +91,8 @@ public class WindowBreadCrumbs extends JPanel {
                     new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
+                            DesktopComponentsHelper.flushCurrentInputField();
+
                             Window win = btn2win.get((JButton)e.getSource());
                             if (win != null)
                                 fireListeners(win);

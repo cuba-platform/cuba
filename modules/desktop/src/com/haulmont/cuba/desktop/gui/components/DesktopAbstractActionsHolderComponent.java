@@ -36,6 +36,8 @@ public class DesktopAbstractActionsHolderComponent<C extends JComponent> extends
                 impl.getActionMap().put(actionId, new AbstractAction() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
+                        DesktopComponentsHelper.flushCurrentInputField();
+
                         Action action = getAction(actionId);
                         if ((action != null) && (action.isEnabled()) && (action.isVisible())) {
                             action.actionPerform(DesktopAbstractActionsHolderComponent.this);

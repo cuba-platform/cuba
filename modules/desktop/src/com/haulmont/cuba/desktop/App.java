@@ -11,6 +11,7 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.remoting.ClusterInvocationSupport;
 import com.haulmont.cuba.desktop.exception.ExceptionHandlers;
 import com.haulmont.cuba.desktop.gui.SessionMessagesNotifier;
+import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.desktop.sys.*;
 import com.haulmont.cuba.desktop.theme.DesktopTheme;
 import com.haulmont.cuba.desktop.theme.DesktopThemeLoader;
@@ -241,6 +242,8 @@ public class App implements ConnectionListener {
                 new WindowAdapter() {
                     @Override
                     public void windowClosing(WindowEvent e) {
+                        DesktopComponentsHelper.flushCurrentInputField();
+
                         exit();
                     }
                 }
@@ -329,6 +332,8 @@ public class App implements ConnectionListener {
                 new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
+                        DesktopComponentsHelper.flushCurrentInputField();
+
                         exit();
                     }
                 }
@@ -365,6 +370,8 @@ public class App implements ConnectionListener {
                 new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
+                        DesktopComponentsHelper.flushCurrentInputField();
+
                         logout();
                     }
                 }
@@ -374,7 +381,10 @@ public class App implements ConnectionListener {
         item = new JMenuItem(messages.getMessage(AppConfig.getMessagesPack(), "mainMenu.exit"));
         item.addActionListener(
                 new ActionListener() {
+                    @Override
                     public void actionPerformed(ActionEvent e) {
+                        DesktopComponentsHelper.flushCurrentInputField();
+
                         exit();
                     }
                 }

@@ -14,12 +14,12 @@ import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
-import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
 import com.haulmont.cuba.desktop.sys.layout.MigBoxLayoutAdapter;
 import com.haulmont.cuba.desktop.sys.vcl.DatePicker.DatePicker;
+import com.haulmont.cuba.desktop.sys.vcl.Flushable;
 import com.haulmont.cuba.desktop.sys.vcl.FocusableComponent;
 import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.components.RequiredValueMissingException;
@@ -70,7 +70,9 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
 
         initComponentParts();
         setResolution(Resolution.MIN);
-        setDateFormat(Datatypes.getFormatStrings(UserSessionProvider.getLocale()).getDateTimeFormat());
+
+        Locale locale = AppBeans.get(UserSessionSource.class).getLocale();
+        setDateFormat(Datatypes.getFormatStrings(locale).getDateTimeFormat());
         DesktopComponentsHelper.adjustDateFieldSize(impl);
     }
 
@@ -81,7 +83,7 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
         adapter.setExpandLayout(true);
         impl.setLayout(adapter.getLayout());
 
-        datePicker = new DatePicker();
+        datePicker = new FlushableDatePicker();
 
         Dimension size = new Dimension(100, DesktopComponentsHelper.FIELD_HEIGHT);
         datePicker.setPreferredSize(size);
@@ -361,6 +363,12 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
         try {
             if (datasource != null && metaPropertyPath != null) {
                 Date value = constructDate();
+
+                if (ObjectUtils.equals(prevValue, value)) {
+                    valid = true;
+                    return;
+                }
+
                 if (datasource.getItem() != null) {
                     Object obj = value;
                     Datatype<Object> datatype = metaProperty.getRange().asDatatype();
@@ -439,11 +447,37 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
         }
     }
 
-    public class FocusableComposition extends JPanel implements FocusableComponent {
+    protected void flush() {
+        if (isEditable() && isEnabled()) {
+            try {
+                datePicker.getEditor().commitEdit();
+            } catch (ParseException e) {
+                return;
+            }
+
+            updateInstance();
+            updateMissingValueState();
+        }
+    }
+
+    public class FocusableComposition extends JPanel implements FocusableComponent, Flushable {
 
         @Override
         public void focus() {
             DesktopDateField.this.requestFocus();
+        }
+
+        @Override
+        public void flushValue() {
+            flush();
+        }
+    }
+
+    public class FlushableDatePicker extends DatePicker implements Flushable {
+
+        @Override
+        public void flushValue() {
+            flush();
         }
     }
 }

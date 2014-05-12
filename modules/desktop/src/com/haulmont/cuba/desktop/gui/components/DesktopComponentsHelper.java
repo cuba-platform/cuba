@@ -8,6 +8,7 @@ package com.haulmont.cuba.desktop.gui.components;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.DetachedFrame;
 import com.haulmont.cuba.desktop.TopLevelFrame;
+import com.haulmont.cuba.desktop.sys.vcl.Flushable;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.AbstractFrame;
 import com.haulmont.cuba.gui.components.Component;
@@ -311,5 +312,17 @@ public class DesktopComponentsHelper {
         testFrame.dispose();
 
         return new Dimension(size);
+    }
+
+    /**
+     * Flush changes in current focus owner if needed
+     */
+    public static void flushCurrentInputField() {
+        java.awt.Component focusOwner = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
+        if (focusOwner instanceof Flushable) {
+            ((Flushable) focusOwner).flushValue();
+        } else if (focusOwner.getParent() instanceof Flushable) {
+            ((Flushable) focusOwner.getParent()).flushValue();
+        }
     }
 }

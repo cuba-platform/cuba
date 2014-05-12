@@ -85,6 +85,8 @@ public class DesktopWindowManager extends WindowManager {
                 new AbstractAction() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
+                        DesktopComponentsHelper.flushCurrentInputField();
+
                         closeTab((JComponent) tabsPane.getSelectedComponent());
                     }
                 }
@@ -398,6 +400,8 @@ public class DesktopWindowManager extends WindowManager {
         window.addAction(new com.haulmont.cuba.gui.components.AbstractAction("closeWindowShortcutAction", closeShortcut) {
             @Override
             public void actionPerform(Component component) {
+                DesktopComponentsHelper.flushCurrentInputField();
+
                 window.close("close");
             }
         });
@@ -412,6 +416,8 @@ public class DesktopWindowManager extends WindowManager {
                 }
 
                 if (isMainWindowManager && getLastDialogWindow() == null && tabsPane.getTabCount() > 1) {
+                    DesktopComponentsHelper.flushCurrentInputField();
+
                     int selectedIndex = getSelectedTabIndex();
 
                     int newIndex = (selectedIndex + tabsPane.getTabCount() - 1) % tabsPane.getTabCount();
@@ -433,6 +439,8 @@ public class DesktopWindowManager extends WindowManager {
                 }
 
                 if (isMainWindowManager && getLastDialogWindow() == null && tabsPane.getTabCount() > 1) {
+                    DesktopComponentsHelper.flushCurrentInputField();
+
                     int selectedIndex = getSelectedTabIndex();
 
                     int newIndex = (selectedIndex + 1) % tabsPane.getTabCount();
@@ -496,6 +504,8 @@ public class DesktopWindowManager extends WindowManager {
                     new WindowAdapter() {
                         @Override
                         public void windowClosing(WindowEvent e) {
+                            DesktopComponentsHelper.flushCurrentInputField();
+
                             if (window.close("close", false)) {
                                 dialog.dispose();
                             }
@@ -661,6 +671,8 @@ public class DesktopWindowManager extends WindowManager {
                 new ButtonTabComponent.CloseListener() {
                     @Override
                     public void onTabClose(int tabIndex) {
+                        DesktopComponentsHelper.flushCurrentInputField();
+
                         JComponent tabContent = (JComponent) tabsPane.getComponentAt(tabIndex);
                         closeTab(tabContent);
                     }
@@ -668,8 +680,9 @@ public class DesktopWindowManager extends WindowManager {
                 new ButtonTabComponent.DetachListener() {
                     @Override
                     public void onDetach(int tabIndex) {
-                        detachTab(tabIndex);
+                        DesktopComponentsHelper.flushCurrentInputField();
 
+                        detachTab(tabIndex);
                     }
                 }
         );
@@ -720,6 +733,8 @@ public class DesktopWindowManager extends WindowManager {
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
+                DesktopComponentsHelper.flushCurrentInputField();
+
                 closeTab(tabContent);
             }
         });

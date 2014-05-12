@@ -32,6 +32,9 @@ public class DesktopButton extends DesktopAbstractComponent<JButton> implements 
                 new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
+                        // it is unnecessary for DesktopButton but needed for DesktopLinkButton
+                        DesktopComponentsHelper.flushCurrentInputField();
+
                         if (action != null) {
                             action.actionPerform(DesktopButton.this);
                         }

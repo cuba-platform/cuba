@@ -13,6 +13,7 @@ import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
+import com.haulmont.cuba.desktop.sys.vcl.Flushable;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.components.IFrame;
@@ -61,7 +62,7 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
         resolution = DateField.Resolution.MIN;
         formatter = new MaskFormatter();
         formatter.setPlaceholderCharacter('_');
-        impl = new JFormattedTextField(formatter);
+        impl = new FlushableFormattedTextField(formatter);
         FieldListener listener = new FieldListener();
         impl.addFocusListener(listener);
         impl.addKeyListener(listener);
@@ -379,22 +380,38 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
         }
 
         private void fireEvent() {
-            if (isEditable() && isEnabled()) {
-                Object newValue;
-                try {
-                    newValue = validateRawValue(getImpl().getText());
-                } catch (Exception e) {
-                    showValidationMessage();
-                    newValue = prevValue;
-                }
-                if ("".equals(newValue))
-                    newValue = null;
+            flush();
+        }
+    }
 
-                if (!ObjectUtils.equals(prevValue, newValue))
-                    setValue(newValue);
-                else
-                    updateComponent(newValue);
+    protected void flush() {
+        if (isEditable() && isEnabled()) {
+            Object newValue;
+            try {
+                newValue = validateRawValue(getImpl().getText());
+            } catch (Exception e) {
+                showValidationMessage();
+                newValue = prevValue;
             }
+            if ("".equals(newValue))
+                newValue = null;
+
+            if (!ObjectUtils.equals(prevValue, newValue))
+                setValue(newValue);
+            else
+                updateComponent(newValue);
+        }
+    }
+
+    protected class FlushableFormattedTextField extends JFormattedTextField implements Flushable {
+
+        public FlushableFormattedTextField(MaskFormatter formatter) {
+            super(formatter);
+        }
+
+        @Override
+        public void flushValue() {
+            flush();
         }
     }
 }

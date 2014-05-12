@@ -96,6 +96,8 @@ public class MenuBuilder {
                 new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
+                        DesktopComponentsHelper.flushCurrentInputField();
+
                         command.execute();
                     }
                 }

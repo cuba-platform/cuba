@@ -316,8 +316,9 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
         if (updatingInstance)
             return;
 
-        if (ObjectUtils.equals(prevValue, value))
+        if (ObjectUtils.equals(prevValue, value)) {
             return;
+        }
 
         updatingInstance = true;
         try {
@@ -342,8 +343,6 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
     }
 
     protected class TextFieldListener implements FocusListener, KeyListener {
-        private static final int ENTER_CODE = 10;
-
         @Override
         public void focusGained(FocusEvent e) {
         }
@@ -359,8 +358,9 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
 
         @Override
         public void keyPressed(KeyEvent e) {
-            if (ENTER_CODE == e.getKeyCode())
+            if (KeyEvent.VK_ENTER == e.getKeyCode()) {
                 flush();
+            }
         }
 
         @Override
