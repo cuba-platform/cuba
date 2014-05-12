@@ -24,8 +24,8 @@ import javax.annotation.Nullable;
 public class EntityNameFilter<T extends AssignableTarget> implements Predicate<T> {
 
     protected Metadata metadata;
-    protected final CheckBox assignedOnlyCheckBox;
 
+    protected final CheckBox assignedOnlyCheckBox;
     protected final CheckBox systemLevelCheckBox;
 
     protected final TextField entityFilter;
@@ -41,25 +41,31 @@ public class EntityNameFilter<T extends AssignableTarget> implements Predicate<T
     @Override
     public boolean apply(@Nullable T target) {
         if (target != null) {
-            if (Boolean.TRUE.equals(assignedOnlyCheckBox.getValue()) && !target.isAssigned())
+            if (Boolean.TRUE.equals(assignedOnlyCheckBox.getValue()) && !target.isAssigned()) {
                 return false;
+            }
 
-            if (Boolean.FALSE.equals(systemLevelCheckBox.getValue()) && (target instanceof EntityPermissionTarget)) {
-                MetaClass metaClass = metadata.getSession().getClassNN(
-                        ((EntityPermissionTarget) target).getEntityClass());
-                if (metadata.getTools().isSystemLevel(metaClass))
+            if (Boolean.FALSE.equals(systemLevelCheckBox.getValue())
+                    && (target instanceof EntityPermissionTarget)
+                    && !target.isAssigned()) {
+                Class entityClass = ((EntityPermissionTarget) target).getEntityClass();
+                MetaClass metaClass = metadata.getSession().getClassNN(entityClass);
+                if (metadata.getTools().isSystemLevel(metaClass)) {
                     return false;
+                }
             }
 
             String filterValue = StringUtils.trimToEmpty(entityFilter.<String>getValue());
             if (StringUtils.isNotBlank(filterValue)) {
                 String permissionValue = target.getPermissionValue();
-                int delimeterIndex = permissionValue.indexOf(Permission.TARGET_PATH_DELIMETER);
-                if (delimeterIndex >= 0)
-                    permissionValue = permissionValue.substring(0, delimeterIndex);
+                int delimiterIndex = permissionValue.indexOf(Permission.TARGET_PATH_DELIMETER);
+                if (delimiterIndex >= 0) {
+                    permissionValue = permissionValue.substring(0, delimiterIndex);
+                }
                 return StringUtils.containsIgnoreCase(permissionValue, filterValue);
-            } else
+            } else {
                 return true;
+            }
         }
         return false;
     }
