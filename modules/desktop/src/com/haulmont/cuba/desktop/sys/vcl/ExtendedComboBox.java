@@ -17,13 +17,13 @@ public class ExtendedComboBox extends JComboBox<Object> {
     private static final int MAX_LIST_WIDTH = 350;
 
     private boolean layingOut = false;
-    private int widestLengh = 0;
+    private int widestLength = 0;
 
     public ExtendedComboBox() {
     }
 
     public void updatePopupWidth() {
-        widestLengh = getWidestItemWidth();
+        widestLength = getWidestItemWidth();
     }
 
     @Override
@@ -60,7 +60,7 @@ public class ExtendedComboBox extends JComboBox<Object> {
     public Dimension getSize() {
         Dimension dim = super.getSize();
         if (!layingOut) {
-            dim.width = Math.max(widestLengh, dim.width);
+            dim.width = Math.max(widestLength, dim.width);
             dim.width = Math.min(MAX_LIST_WIDTH, dim.width);
             dim.width = Math.max(getWidth(), dim.width);
         }
