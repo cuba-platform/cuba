@@ -18,12 +18,13 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 /**
  * Panel with border and collapse/expand button
- * <p>$Id$</p>
  *
  * @author artamonov
+ * @version $Id$
  */
 public class CollapsiblePanel extends JPanel {
 
@@ -39,6 +40,8 @@ public class CollapsiblePanel extends JPanel {
 
     private Dimension preferredSize;
 
+    private java.util.List<Runnable> postPaintActions = new LinkedList<>();
+
     public interface CollapseListener extends java.util.EventListener {
 
         public void collapsed();
@@ -46,7 +49,7 @@ public class CollapsiblePanel extends JPanel {
         public void expanded();
     }
 
-    java.util.List<CollapseListener> collapseListeners;
+    private java.util.List<CollapseListener> collapseListeners;
 
     private Icon expandedIcon;
     private Icon collapsedIcon;
@@ -98,12 +101,14 @@ public class CollapsiblePanel extends JPanel {
 
     private void refreshTitleIcon() {
         if (collapsable) {
-            if (expanded)
+            if (expanded) {
                 titleBtn.setIcon(expandedIcon);
-            else
+            } else {
                 titleBtn.setIcon(collapsedIcon);
-        } else
+            }
+        } else {
             titleBtn.setIcon(null);
+        }
     }
 
     private void placeTitleComponent() {
@@ -125,27 +130,57 @@ public class CollapsiblePanel extends JPanel {
     }
 
     private void expandPanel() {
-        add(composition, BorderLayout.CENTER);
+        postPaintActions.add(new Runnable() {
+            @Override
+            public void run() {
+                add(composition, BorderLayout.CENTER);
 
-        titleBtn.setIcon(expandedIcon);
-        setPreferredSize(preferredSize);
-        updateUI();
+                titleBtn.setIcon(expandedIcon);
+                setPreferredSize(preferredSize);
+                updateUI();
+            }
+        });
 
         fireExpandListeners();
+
+        repaint();
     }
 
     private void collapsePanel() {
-        int collapsedWidth = getWidth();
-        int collapsedHeight = COLLAPSED_HEIGHT;
+        postPaintActions.add(new Runnable() {
+            @Override
+            public void run() {
+                int collapsedWidth = getWidth();
+                int collapsedHeight = COLLAPSED_HEIGHT;
 
-        preferredSize = getPreferredSize();
+                preferredSize = getPreferredSize();
 
-        titleBtn.setIcon(collapsedIcon);
-        remove(composition);
-        setPreferredSize(new Dimension(collapsedWidth, collapsedHeight));
-        updateUI();
+                titleBtn.setIcon(collapsedIcon);
+                remove(composition);
+                setPreferredSize(new Dimension(collapsedWidth, collapsedHeight));
+                updateUI();
+            }
+        });
 
         fireCollapseListeners();
+
+        repaint();
+    }
+
+    @Override
+    public void paint(Graphics g) {
+        super.paint(g);
+
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                for (Runnable action : postPaintActions) {
+                    action.run();
+                }
+
+                postPaintActions.clear();
+            }
+        });
     }
 
     public boolean isExpanded() {
@@ -153,12 +188,15 @@ public class CollapsiblePanel extends JPanel {
     }
 
     public void setExpanded(boolean expanded) {
-        this.expanded = expanded;
-        if (collapsable) {
-            if (expanded)
-                expandPanel();
-            else
-                collapsePanel();
+        if (this.expanded != expanded) {
+            this.expanded = expanded;
+            if (collapsable) {
+                if (expanded) {
+                    expandPanel();
+                } else {
+                    collapsePanel();
+                }
+            }
         }
     }
 
@@ -167,15 +205,26 @@ public class CollapsiblePanel extends JPanel {
     }
 
     public void setCollapsible(boolean collapsable) {
-        this.collapsable = collapsable;
-        if (collapsable) {
-            setExpanded(true);
-        }
+        if (this.collapsable != collapsable) {
+            if (!collapsable && !expanded) {
+                setExpanded(true);
+            }
+            this.collapsable = collapsable;
 
-        refreshTitleIcon();
-        titleBtn.updateUI();
-        placeTitleComponent();
-        updateUI();
+            revalidate();
+            repaint();
+
+            postPaintActions.add(new Runnable() {
+                @Override
+                public void run() {
+                    refreshTitleIcon();
+                    placeTitleComponent();
+
+                    titleBtn.validate();
+                    titleBtn.repaint();
+                }
+            });
+        }
     }
 
     public boolean isBorderVisible() {
@@ -188,10 +237,11 @@ public class CollapsiblePanel extends JPanel {
             setBorder(createBorderImplementation());
             placeTitleComponent();
         } else {
-            if (titleBtn.isVisible())
+            if (titleBtn.isVisible()) {
                 this.setBorder(new EmptyBorder(12, 2, 2, 2));
-            else
+            } else {
                 this.setBorder(new EmptyBorder(0, 0, 0, 0));
+            }
             placeTitleComponent();
         }
         this.repaint();
@@ -228,7 +278,7 @@ public class CollapsiblePanel extends JPanel {
 
     public void addCollapseListener(CollapseListener collapseListener) {
         if (collapseListeners == null)
-            collapseListeners = new ArrayList<CollapseListener>();
+            collapseListeners = new ArrayList<>();
         collapseListeners.add(collapseListener);
     }
 

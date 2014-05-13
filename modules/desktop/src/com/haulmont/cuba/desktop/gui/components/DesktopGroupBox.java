@@ -19,9 +19,8 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class DesktopGroupBox extends DesktopAbstractBox implements GroupBoxLayout, AutoExpanding {
 
@@ -45,6 +44,8 @@ public class DesktopGroupBox extends DesktopAbstractBox implements GroupBoxLayou
                 fireExpandListeners();
             }
         });
+
+        setWidth("100%");
     }
 
     @Override
@@ -70,7 +71,7 @@ public class DesktopGroupBox extends DesktopAbstractBox implements GroupBoxLayou
     @Override
     public void addListener(ExpandListener listener) {
         if (expandListeners == null) {
-            expandListeners = new ArrayList<ExpandListener>();
+            expandListeners = new ArrayList<>();
         }
         expandListeners.add(listener);
     }
@@ -96,7 +97,7 @@ public class DesktopGroupBox extends DesktopAbstractBox implements GroupBoxLayou
     @Override
     public void addListener(CollapseListener listener) {
         if (collapseListeners == null) {
-            collapseListeners = new ArrayList<CollapseListener>();
+            collapseListeners = new ArrayList<>();
         }
         collapseListeners.add(listener);
     }
@@ -207,6 +208,11 @@ public class DesktopGroupBox extends DesktopAbstractBox implements GroupBoxLayou
             layoutAdapter.setFlowDirection(BoxLayoutAdapter.FlowDirection.X);
         }
         this.orientation = orientation;
+
+        requestContainerUpdate();
+
+        collapsiblePanel.revalidate();
+        collapsiblePanel.repaint();
     }
 
     @Override
