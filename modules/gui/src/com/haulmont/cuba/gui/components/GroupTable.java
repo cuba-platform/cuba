@@ -7,6 +7,8 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.data.GroupInfo;
 
+import javax.annotation.Nullable;
+
 /**
  * @author gorodnov
  * @version $Id$
@@ -32,4 +34,18 @@ public interface GroupTable extends Table {
 
     boolean isFixedGrouping();
     void setFixedGrouping(boolean fixedGrouping);
+
+    /**
+     * Allows to define different styles for table cells.
+     */
+    interface GroupStyleProvider<E extends Entity> extends StyleProvider<E> {
+        /**
+         * Called by {@link GroupTable} to get a style for group row.
+         *
+         * @param info   an group represented by the current row
+         * @return style name or null to apply the default
+         */
+        @Nullable
+        String getStyleName(GroupInfo info);
+    }
 }

@@ -200,6 +200,45 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
         component.setFixedGrouping(fixedGrouping);
     }
 
+    @Override
+    public void setStyleProvider(final Table.StyleProvider styleProvider) {
+        this.styleProvider = styleProvider;
+        if (styleProvider == null) {
+            component.setCellStyleGenerator(null);
+            return;
+        }
+
+        if (styleProvider instanceof GroupStyleProvider) {
+            final GroupStyleProvider groupStyleProvider = (GroupStyleProvider) styleProvider;
+            component.setCellStyleGenerator(new com.vaadin.ui.Table.CellStyleGenerator() {
+                @Override
+                public String getStyle(com.vaadin.ui.Table source, Object itemId, Object propertyId) {
+                    if (itemId instanceof GroupInfo) {
+                        return groupStyleProvider.getStyleName((GroupInfo) itemId);
+                    }
+                    @SuppressWarnings({"unchecked"})
+                    final Entity item = datasource.getItem(itemId);
+                    if (item != null) {
+                        return styleProvider.getStyleName(item, propertyId == null ? null : propertyId.toString());
+                    }
+                    return null;
+                }
+            });
+        } else {
+            component.setCellStyleGenerator(new com.vaadin.ui.Table.CellStyleGenerator() {
+                @Override
+                public String getStyle(com.vaadin.ui.Table source, Object itemId, Object propertyId) {
+                    @SuppressWarnings({"unchecked"})
+                    final Entity item = datasource.getItem(itemId);
+                    if (item != null) {
+                        return styleProvider.getStyleName(item, propertyId == null ? null : propertyId.toString());
+                    }
+                    return null;
+                }
+            });
+        }
+    }
+
     protected class GroupTableDsWrapper extends SortableCollectionDsWrapper
             implements GroupTableContainer,
             AggregationContainer {
