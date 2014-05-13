@@ -158,6 +158,9 @@ public class DesktopLookupField
         impl = comboBox;
 
         DesktopComponentsHelper.adjustSize(comboBox);
+        DesktopComponentsHelper.adjustSize(textField);
+
+        textField.setMinimumSize(new Dimension(comboBox.getMinimumSize().width, textField.getPreferredSize().height));
     }
 
     protected void restorePreviousItemText() {
@@ -392,7 +395,12 @@ public class DesktopLookupField
             impl = comboBox;
         }
         this.editable = editable;
+
         updateMissingValueState();
+        requestContainerUpdate();
+
+        composition.revalidate();
+        composition.repaint();
     }
 
     protected JComponent getInputComponent() {

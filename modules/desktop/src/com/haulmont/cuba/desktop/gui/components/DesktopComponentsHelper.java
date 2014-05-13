@@ -116,6 +116,10 @@ public class DesktopComponentsHelper {
         comboBox.setPreferredSize(new Dimension(0, FIELD_HEIGHT));
     }
 
+    public static void adjustSize(JTextField textField) {
+        textField.setPreferredSize(new Dimension(0, FIELD_HEIGHT));
+    }
+
     public static void adjustDateFieldSize(JPanel dateFieldComposition) {
         dateFieldComposition.setPreferredSize(new Dimension(0, FIELD_HEIGHT));
     }
