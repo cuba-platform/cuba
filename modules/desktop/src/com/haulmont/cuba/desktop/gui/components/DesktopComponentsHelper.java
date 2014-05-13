@@ -325,7 +325,7 @@ public class DesktopComponentsHelper {
         java.awt.Component focusOwner = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
         if (focusOwner instanceof Flushable) {
             ((Flushable) focusOwner).flushValue();
-        } else if (focusOwner.getParent() instanceof Flushable) {
+        } else if (focusOwner != null && focusOwner.getParent() instanceof Flushable) {
             ((Flushable) focusOwner.getParent()).flushValue();
         }
     }
