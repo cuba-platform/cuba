@@ -20,6 +20,7 @@ import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -105,12 +106,25 @@ public class MetadataImpl implements Metadata {
     }
 
     protected void invokePostConstructMethods(Entity entity) throws InvocationTargetException, IllegalAccessException {
-        Method[] methods = entity.getClass().getMethods();
-        for (int i = methods.length - 1; i >= 0; i--) {
-            Method method = methods[i];
-            if (method.isAnnotationPresent(PostConstruct.class)) {
-                method.invoke(entity);
+        List<Method> postConstructMethods = new ArrayList<>(4);
+        List<String> methodNames = new ArrayList<>(4);
+        Class clazz = entity.getClass();
+        while (clazz != Object.class) {
+            Method[] classMethods = clazz.getDeclaredMethods();
+            for (Method method : classMethods) {
+                if (method.isAnnotationPresent(PostConstruct.class) && !methodNames.contains(method.getName())) {
+                    postConstructMethods.add(method);
+                    methodNames.add(method.getName());
+                }
             }
+            clazz = clazz.getSuperclass();
+        }
+
+        for (Method method : postConstructMethods) {
+            if (!method.isAccessible()) {
+                method.setAccessible(true);
+            }
+            method.invoke(entity);
         }
     }
 
