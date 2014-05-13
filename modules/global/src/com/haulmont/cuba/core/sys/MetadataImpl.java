@@ -24,10 +24,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -120,7 +117,9 @@ public class MetadataImpl implements Metadata {
             clazz = clazz.getSuperclass();
         }
 
-        for (Method method : postConstructMethods) {
+        ListIterator<Method> iterator = postConstructMethods.listIterator(postConstructMethods.size());
+        while (iterator.hasPrevious()) {
+            Method method = iterator.previous();
             if (!method.isAccessible()) {
                 method.setAccessible(true);
             }
