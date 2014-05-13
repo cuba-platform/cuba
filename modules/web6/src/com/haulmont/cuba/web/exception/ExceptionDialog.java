@@ -18,6 +18,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.annotation.Nullable;
 import java.text.SimpleDateFormat;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -51,7 +52,11 @@ public class ExceptionDialog extends Window {
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.class);
 
     public ExceptionDialog(Throwable throwable) {
-        setCaption(messages.getMessage(getClass(), "exceptionDialog.caption"));
+        this(throwable, null, null);
+    }
+
+    public ExceptionDialog(Throwable throwable, @Nullable String caption, @Nullable String message) {
+        setCaption(caption != null ? caption : messages.getMessage(getClass(), "exceptionDialog.caption"));
         setWidth(600, UNITS_PIXELS);
         setHeight(175, UNITS_PIXELS);
         center();
@@ -60,7 +65,7 @@ public class ExceptionDialog extends Window {
             setCubaId("exceptionDialog");
         }
 
-        final String text = getText(throwable);
+        final String text = message != null ? message : getText(throwable);
         final String stackTrace = getStackTrace(throwable);
 
         mainLayout = new VerticalLayout();
