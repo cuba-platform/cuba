@@ -34,6 +34,8 @@ public abstract class DesktopAbstractBox
     protected Map<Component, ComponentCaption> captions = new HashMap<>();
     protected Map<Component, Pair<JPanel, BoxLayoutAdapter>> wrappers = new HashMap<>();
 
+    protected boolean scheduledRepaint = false;
+
     public DesktopAbstractBox() {
         impl = new JPanel();
         impl.setFocusable(false);
@@ -82,6 +84,8 @@ public abstract class DesktopAbstractBox
         ownComponents.add(component);
 
         DesktopContainerHelper.assignContainer(component, this);
+
+        requestRepaint();
     }
 
     @Override
@@ -108,13 +112,23 @@ public abstract class DesktopAbstractBox
             expandedComponent = null;
         }
 
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                impl.revalidate();
-                impl.repaint();
-            }
-        });
+        requestRepaint();
+    }
+
+    protected void requestRepaint() {
+        if (!scheduledRepaint) {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    impl.revalidate();
+                    impl.repaint();
+
+                    scheduledRepaint = false;
+                }
+            });
+
+            scheduledRepaint = true;
+        }
     }
 
     @Override
