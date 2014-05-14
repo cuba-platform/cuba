@@ -28,8 +28,7 @@
 
         <collectionDatasource id="entityLogDs"
                               class="com.haulmont.cuba.security.entity.EntityLogItem"
-                              view="logView"
-                              >
+                              view="logView">
             <query>
                 select e from sec$EntityLog e order by e.entity
                 <filter>
@@ -104,7 +103,7 @@
                 </split>
             </tab>
             <tab id="setup" spacing="true"  expand="split2" margin="true"  caption="msg://setup">
-                <split id="split2" orientation="horizontal" pos="50" width="100%">
+                <split id="split2" orientation="horizontal" pos="70" width="100%">
                     <vbox width="100%" height="100%" margin="false;true;false;false" expand="loggedEntityTable" spacing="true">
                         <groupTable  id="loggedEntityTable" width="100%">
                             <actions>
@@ -128,12 +127,12 @@
 
                     <vbox expand="expandableLabel" width="100%" margin="false;false;false;true" spacing="true">
                         <label value="msg://name"/>
-                        <lookupField width="310px" datasource="loggedEntityDs" id="entityNameField" property="name"/>
-                        <hbox width="50%">
+                        <lookupField width="100%" datasource="loggedEntityDs" id="entityNameField" property="name"/>
+                        <hbox width="100%">
                             <checkBox id="autoCheckBox" caption="msg://auto" datasource="loggedEntityDs" property="auto"/>
                             <checkBox id="manualCheckBox" caption="msg://manual" datasource="loggedEntityDs" property="manual"/>
                         </hbox>
-                        <groupBox id="attributesBox" width="30%" orientation="vertical" caption="msg://attributes" spacing="true" >
+                        <groupBox id="attributesBox" width="100%" orientation="vertical" caption="msg://attributes" spacing="true" >
                             <checkBox id="selectAllCheckBox" caption="msg://[all]"/>
                         </groupBox>
 
@@ -149,6 +148,5 @@
                 <button invoke="reloadConfiguration" caption="msg://reloadConfiguration"/>
             </tab>
         </tabSheet>
-
     </layout>
 </window>

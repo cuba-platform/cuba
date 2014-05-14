@@ -237,6 +237,9 @@ public class EntityLogBrowser extends AbstractWindow {
                 if (item != null) {
                     fillAttributes(item.getName(), item, false);
                     checkAllCheckboxes();
+                } else {
+                    setSelectAllCheckBox(false);
+                    clearAttributes();
                 }
             }
         });
@@ -251,6 +254,12 @@ public class EntityLogBrowser extends AbstractWindow {
                     instancePicker.setEnabled(false);
                 }
                 instancePicker.setValue(null);
+            }
+        });
+        selectAllCheckBox.addListener(new ValueListener() {
+            @Override
+            public void valueChanged(Object source, String property, Object prevValue, Object value) {
+                enableAllCheckBoxes((boolean) value);
             }
         });
     }
@@ -314,12 +323,6 @@ public class EntityLogBrowser extends AbstractWindow {
                     attributesBox.add(checkBox);
                 }
             }
-            selectAllCheckBox.addListener(new ValueListener() {
-                @Override
-                public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                    enableAllCheckBoxes((boolean) value);
-                }
-            });
         }
     }
 
@@ -382,8 +385,7 @@ public class EntityLogBrowser extends AbstractWindow {
                 entityLogDs.setMaxResults(maxRows);
             else
                 throw new NumberFormatException();
-        }
-        catch (Exception e){
+        } catch (Exception e){
             showNotification(messages.getMessage(getClass(),"invalidNumber"),NotificationType.HUMANIZED);
             return;
         }
