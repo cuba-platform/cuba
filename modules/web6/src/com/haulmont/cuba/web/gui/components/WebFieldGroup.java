@@ -21,6 +21,7 @@ import com.haulmont.cuba.web.toolkit.ui.FieldGroupLayout;
 import com.haulmont.cuba.web.toolkit.ui.FieldWrapper;
 import com.vaadin.ui.AbstractComponent;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
 import java.util.*;
@@ -179,6 +180,26 @@ public class WebFieldGroup
     public void setCaptionAlignment(FieldCaptionAlignment captionAlignment) {
         FieldGroupLayout layout = component.getContent();
         layout.setCaptionAlignment(WebComponentsHelper.convertFieldGroupCaptionAlignment(captionAlignment));
+    }
+
+    @Override
+    public int getFixedCaptionWidth() {
+        return -1;
+    }
+
+    @Override
+    public void setFixedCaptionWidth(int fixedCaptionWidth) {
+        LogFactory.getLog(getClass()).warn("setFixedCaptionWidth not implemented for web 6");
+    }
+
+    @Override
+    public int getFixedCaptionWidth(int column) {
+        return -1;
+    }
+
+    @Override
+    public void setFixedCaptionWidth(int column, int width) {
+        LogFactory.getLog(getClass()).warn("setFixedCaptionWidth not implemented for web 6");
     }
 
     @Override

@@ -26,6 +26,7 @@ import net.miginfocom.layout.CC;
 import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
 import javax.swing.*;
@@ -437,6 +438,27 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
     @Override
     public void setCaptionAlignment(FieldCaptionAlignment captionAlignment) {
+        log.warn("setCaptionAlignment not implemented for desktop");
+    }
+
+    @Override
+    public int getFixedCaptionWidth() {
+        return -1;
+    }
+
+    @Override
+    public void setFixedCaptionWidth(int fixedCaptionWidth) {
+        log.warn("setFixedCaptionWidth not implemented for desktop");
+    }
+
+    @Override
+    public int getFixedCaptionWidth(int column) {
+        return -1;
+    }
+
+    @Override
+    public void setFixedCaptionWidth(int column, int width) {
+        LogFactory.getLog(getClass()).warn("setFixedCaptionWidth not implemented for desktop");
     }
 
     protected int rowsCount() {

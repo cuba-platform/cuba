@@ -15,4 +15,8 @@ public class CubaFieldGroupLayoutState extends GridLayoutState {
     {
         primaryStyleName = "cuba-fieldgrouplayout";
     }
+
+    public boolean useInlineCaption = true;
+    public int[] fixedColumnCaptionWidth = null;
+    public int fixedCaptionWidth = -1;
 }

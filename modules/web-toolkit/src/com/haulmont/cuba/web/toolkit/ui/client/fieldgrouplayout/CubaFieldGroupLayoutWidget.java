@@ -17,19 +17,23 @@ public class CubaFieldGroupLayoutWidget extends CubaGridLayoutWidget {
 
     public static final String CLASSNAME = "cuba-fieldgrouplayout";
 
+    protected boolean useInlineCaption = true;
+
     public CubaFieldGroupLayoutWidget() {
         setStyleName(CLASSNAME);
     }
 
     public class CubaFieldGroupLayoutCell extends CubaGridLayoutCell {
-
         public CubaFieldGroupLayoutCell(int row, int col) {
             super(row, col);
         }
 
         @Override
         protected ComponentConnectorLayoutSlot createComponentConnectorLayoutSlot(ComponentConnector component) {
-            return new CubaFieldGroupLayoutComponentSlot(CubaFieldGroupLayoutWidget.CLASSNAME, component, getConnector());
+            CubaFieldGroupLayoutComponentSlot slot =
+                    new CubaFieldGroupLayoutComponentSlot(CubaFieldGroupLayoutWidget.CLASSNAME, component, getConnector());
+            slot.setCaptionInline(useInlineCaption);
+            return slot;
         }
     }
 

@@ -71,6 +71,12 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
 
     void setCaptionAlignment(FieldCaptionAlignment captionAlignment);
 
+    int getFixedCaptionWidth();
+    void setFixedCaptionWidth(int fixedCaptionWidth);
+
+    int getFixedCaptionWidth(int column);
+    void setFixedCaptionWidth(int column, int width);
+
     int getColumns();
     void setColumns(int cols);
 

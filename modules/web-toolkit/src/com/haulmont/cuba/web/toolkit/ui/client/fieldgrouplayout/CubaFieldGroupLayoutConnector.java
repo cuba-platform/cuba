@@ -12,6 +12,7 @@ import com.haulmont.cuba.web.toolkit.ui.client.caption.CubaCaptionWidget;
 import com.haulmont.cuba.web.toolkit.ui.client.gridlayout.CubaGridLayoutConnector;
 import com.vaadin.client.ApplicationConnection;
 import com.vaadin.client.ComponentConnector;
+import com.vaadin.client.ConnectorHierarchyChangeEvent;
 import com.vaadin.client.UIDL;
 import com.vaadin.client.ui.VGridLayout;
 import com.vaadin.shared.ui.Connect;
@@ -32,7 +33,7 @@ public class CubaFieldGroupLayoutConnector extends CubaGridLayoutConnector {
 
     @Override
     protected Widget createWidget() {
-        return GWT.create(CubaFieldGroupLayoutWidget.class);
+        return GWT.<CubaFieldGroupLayoutWidget>create(CubaFieldGroupLayoutWidget.class);
     }
 
     @Override
@@ -67,40 +68,72 @@ public class CubaFieldGroupLayoutConnector extends CubaGridLayoutConnector {
     protected void setDefaultCaptionParameters(CubaCaptionWidget widget) {
         super.setDefaultCaptionParameters(widget);
 
-        widget.setCaptionPlacedAfterComponentByDefault(false);
+        if (getState().useInlineCaption) {
+            widget.setCaptionPlacedAfterComponentByDefault(false);
+        }
     }
 
     @Override
     public void updateCaption(ComponentConnector childConnector) {
         super.updateCaption(childConnector);
-        needUpdateCaptionSizes = true;
 
-        // always relayout after caption changes
-        getLayoutManager().setNeedsLayout(this);
-    }
+        if (getState().useInlineCaption) {
+            needUpdateCaptionSizes = true;
 
-    public void updateCaptionSizes() {
-        for (VGridLayout.Cell[] column : getWidget().getCellMatrix()) {
-            if (column != null) {
-                updateCaptionSizes(column);
-            }
+            // always relayout after caption changes
+            getLayoutManager().setNeedsLayout(this);
         }
     }
 
-    protected void updateCaptionSizes(VGridLayout.Cell[] column) {
+    public void updateCaptionSizes() {
+        int index = 0;
+        for (VGridLayout.Cell[] column : getWidget().getCellMatrix()) {
+            if (column != null) {
+                updateCaptionSizes(index, column);
+            }
+            index++;
+        }
+    }
+
+    @Override
+    public void onConnectorHierarchyChange(ConnectorHierarchyChangeEvent event) {
+        // construct component cells with known caption alignment
+        getWidget().useInlineCaption = getState().useInlineCaption;
+
+        super.onConnectorHierarchyChange(event);
+    }
+
+    protected void updateCaptionSizes(int index, VGridLayout.Cell[] column) {
         // reset indicators width
         resetIndicatorsWidth(column);
 
-        int maxCaptionWidth = 0;
+        int fixedCaptionWidth = -1;
+        if (getState().fixedCaptionWidth > 0) {
+            fixedCaptionWidth = getState().fixedCaptionWidth;
+        }
+        int[] columnCaptionWidth = getState().fixedColumnCaptionWidth;
+        if (columnCaptionWidth != null
+                && index < columnCaptionWidth.length
+                && columnCaptionWidth[index] > 0) {
+            fixedCaptionWidth = columnCaptionWidth[index];
+        }
+
         int maxIndicatorsWidth = 0;
+        int maxCaptionWidth = 0;
 
         // calculate max widths
         for (VGridLayout.Cell cell : column) {
             if (cell != null && isCaptionInlineApplicable(cell)) {
-                maxCaptionWidth = Math.max(maxCaptionWidth, cell.slot.getCaption().getRenderedWidth());
+                if (fixedCaptionWidth == -1) {
+                    maxCaptionWidth = Math.max(maxCaptionWidth, cell.slot.getCaption().getRenderedWidth());
+                }
 
                 maxIndicatorsWidth = Math.max(maxIndicatorsWidth, ((CubaFieldGroupLayoutComponentSlot) cell.slot).getIndicatorsWidth());
             }
+        }
+
+        if (fixedCaptionWidth > 0) {
+            maxCaptionWidth = fixedCaptionWidth;
         }
 
         // apply max widths

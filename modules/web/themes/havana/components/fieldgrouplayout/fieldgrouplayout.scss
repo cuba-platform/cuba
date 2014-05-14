@@ -13,21 +13,22 @@
     padding-top: 4px;
   }
 
-  .#{$primaryStyleName}-slot > .v-caption {
+  .#{$primaryStyleName}-slot.inline > .v-caption {
     margin-right: 5px;
     vertical-align: top;
     line-height: 18px;
+    overflow: hidden;
   }
 
   .#{$primaryStyleName}-slot > .v-checkbox {
     vertical-align: middle;
   }
 
-  .#{$primaryStyleName}-slot > .v-caption.caption-indicators {
+  .#{$primaryStyleName}-slot.inline > .v-caption.caption-indicators {
     margin-right: 0;
   }
 
-  .#{$primaryStyleName}-slot > .v-caption .v-captiontext {
+  .#{$primaryStyleName}-slot.inline > .v-caption .v-captiontext {
     padding-bottom: 0px;
   }
 

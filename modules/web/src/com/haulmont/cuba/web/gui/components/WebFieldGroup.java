@@ -181,9 +181,28 @@ public class WebFieldGroup
 
     @Override
     public void setCaptionAlignment(FieldCaptionAlignment captionAlignment) {
-//        vaadin7
-//        CubaFieldGroupLayout layout = component.getLayout();
-//        layout.setCaptionAlignment(WebComponentsHelper.convertFieldGroupCaptionAlignment(captionAlignment));
+        CubaFieldGroupLayout layout = component.getLayout();
+        layout.setUseInlineCaption(WebComponentsHelper.convertFieldGroupCaptionAlignment(captionAlignment));
+    }
+
+    @Override
+    public int getFixedCaptionWidth() {
+        return component.getLayout().getFixedCaptionWidth();
+    }
+
+    @Override
+    public void setFixedCaptionWidth(int fixedCaptionWidth) {
+        component.getLayout().setFixedCaptionWidth(fixedCaptionWidth);
+    }
+
+    @Override
+    public int getFixedCaptionWidth(int column) {
+        return component.getLayout().getFixedCaptionWidth(column);
+    }
+
+    @Override
+    public void setFixedCaptionWidth(int column, int width) {
+        component.getLayout().setFixedCaptionWidth(column, width);
     }
 
     @Override

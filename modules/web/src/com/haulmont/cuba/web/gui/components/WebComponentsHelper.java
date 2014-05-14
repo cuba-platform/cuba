@@ -339,17 +339,11 @@ public class WebComponentsHelper {
                 isComponentVisible(child);
     }
 
-    public static int convertFieldGroupCaptionAlignment(FieldGroup.FieldCaptionAlignment captionAlignment) {
-
-        return 0;
-        // vaadin7
-//        switch (captionAlignment) {
-//            case TOP:
-//                return FieldGroupLayout.CAPTION_ALIGN_TOP;
-//            case LEFT:
-//            default:
-//                return FieldGroupLayout.CAPTION_ALIGN_LEFT;
-//        }
+    public static boolean convertFieldGroupCaptionAlignment(FieldGroup.FieldCaptionAlignment captionAlignment) {
+        if (captionAlignment == FieldGroup.FieldCaptionAlignment.LEFT)
+            return true;
+        else
+            return false;
     }
 
     public static Resolution convertDateFieldResolution(com.haulmont.cuba.gui.components.DateField.Resolution resolution) {

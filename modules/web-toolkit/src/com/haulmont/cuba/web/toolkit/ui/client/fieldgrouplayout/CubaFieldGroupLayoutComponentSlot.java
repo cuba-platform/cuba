@@ -36,12 +36,28 @@ public class CubaFieldGroupLayoutComponentSlot extends CubaGridLayoutSlot implem
 
     protected Element rightCaption = null;
 
+    protected boolean useInlineCaption = true;
+
     public CubaFieldGroupLayoutComponentSlot(String baseClassName, ComponentConnector child, ManagedLayout layout) {
         super(baseClassName, child, layout);
 
         if (!(child instanceof CheckBoxConnector || child instanceof LabelConnector)) {
             // set line-height 25px for all captions exclude captions for CheckBox and Label
             getWrapperElement().addClassName("cuba-full-height-widget");
+        }
+    }
+
+    protected boolean isCaptionInline() {
+        return useInlineCaption;
+    }
+
+    public void setCaptionInline(boolean useInlineCaption) {
+        this.useInlineCaption = useInlineCaption;
+
+        if (useInlineCaption) {
+            getWrapperElement().addClassName("inline");
+        } else {
+            getWrapperElement().removeClassName("inline");
         }
     }
 
@@ -95,9 +111,7 @@ public class CubaFieldGroupLayoutComponentSlot extends CubaGridLayoutSlot implem
         boolean captionAboveCompnent;
         if (caption == null) {
             captionAboveCompnent = false;
-            if (isCaptionInline()) {
-                style.clearPaddingLeft();
-            }
+            style.clearPaddingLeft();
 
             clearCaptionRight = true;
         } else {
@@ -111,13 +125,11 @@ public class CubaFieldGroupLayoutComponentSlot extends CubaGridLayoutSlot implem
                 captionStyle.setRight(0, Style.Unit.PX);
                 style.setPaddingRight(captionWidth, Style.Unit.PX);
             } else {
-                if (isCaptionInline()) {
-                    availableWidth -= captionWidth;
-                    if (availableWidth < 0) {
-                        availableWidth = 0;
-                    }
-                    style.setPaddingLeft(captionWidth, Style.Unit.PX);
+                availableWidth -= captionWidth;
+                if (availableWidth < 0) {
+                    availableWidth = 0;
                 }
+                style.setPaddingLeft(captionWidth, Style.Unit.PX);
                 captionStyle.setLeft(0, Style.Unit.PX);
                 captionStyle.clearRight();
 
@@ -342,7 +354,7 @@ public class CubaFieldGroupLayoutComponentSlot extends CubaGridLayoutSlot implem
                 requiredElement = captionWidget.getRequiredIndicatorElement();
                 rightCaption.appendChild(requiredElement);
             }
-        } else if (captionWidget.getRequiredIndicatorElement() == null && requiredElement != null) {
+        } else if (requiredElement != null) {
             requiredElement.removeFromParent();
             requiredElement = null;
         }
@@ -354,7 +366,7 @@ public class CubaFieldGroupLayoutComponentSlot extends CubaGridLayoutSlot implem
                 tooltipElement = captionWidget.getTooltipElement();
                 rightCaption.appendChild(tooltipElement);
             }
-        } else if (captionWidget.getTooltipElement() == null && tooltipElement != null) {
+        } else if (tooltipElement != null) {
             tooltipElement.removeFromParent();
             tooltipElement = null;
         }
@@ -366,7 +378,7 @@ public class CubaFieldGroupLayoutComponentSlot extends CubaGridLayoutSlot implem
                 errorIndicatorElement = captionWidget.getErrorIndicatorElement();
                 rightCaption.appendChild(errorIndicatorElement);
             }
-        } else if (captionWidget.getErrorIndicatorElement() == null && errorIndicatorElement != null) {
+        } else if (errorIndicatorElement != null) {
             errorIndicatorElement.removeFromParent();
             errorIndicatorElement = null;
         }
@@ -383,10 +395,5 @@ public class CubaFieldGroupLayoutComponentSlot extends CubaGridLayoutSlot implem
         rightCaption.getStyle().setPosition(Style.Position.ABSOLUTE);
 
         return rightCaption;
-    }
-
-    protected boolean isCaptionInline() {
-        // todo artamonov implement vertical/horizontal option for captions
-        return true;
     }
 }
