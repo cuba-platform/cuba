@@ -8,6 +8,7 @@ package com.haulmont.cuba.gui.app.core.entityinspector;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Session;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
@@ -24,6 +25,7 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.global.UserSession;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
 
@@ -54,6 +56,9 @@ public class EntityInspectorBrowse extends AbstractLookup {
 
     @Inject
     protected Filter filter;
+
+    @Inject
+    protected Configuration configuration;
 
     protected LookupField entities;
     protected Button showButton;
@@ -90,10 +95,20 @@ public class EntityInspectorBrowse extends AbstractLookup {
 
             showButton = componentsFactory.createComponent(Button.NAME);
             showButton.setIcon("icons/refresh.png");
-            showButton.setAction(new ShowButtonAction("show"));
+            Action showEntitiesAction = new ShowEntitiesAction("applyFilter",
+                    configuration.getConfig(ClientConfig.class).getFilterApplyShortcut());
+            showButton.setAction(showEntitiesAction);
             showButton.setCaption(messages.getMessage(EntityInspectorBrowse.class, "show"));
             showButton.setId("showButton");
             showButton.setFrame(frame);
+
+            //rewrite standard filter action
+            IFrame frame = getFrame();
+            Action applyFilterAction = frame.getAction("applyFilter");
+            if (applyFilterAction != null) {
+                frame.removeAction(applyFilterAction);
+            }
+            frame.addAction(showEntitiesAction);
 
             lookupBox.add(entities);
             lookupBox.add(showButton);
@@ -115,20 +130,24 @@ public class EntityInspectorBrowse extends AbstractLookup {
         return options;
     }
 
-    protected class ShowButtonAction extends AbstractAction {
-        protected ShowButtonAction(String id) {
-            super(id);
+    protected class ShowEntitiesAction extends AbstractAction {
+        protected ShowEntitiesAction(String id, @Nullable String shortcut) {
+            super(id, shortcut);
         }
 
         @Override
         public void actionPerform(Component component) {
-            selectedMeta = entities.getValue();
-            if (selectedMeta != null) {
-                createEntitiesTable(selectedMeta);
+            showEntities();
+        }
+    }
 
-                //TODO: set tab caption
-                //EntityInspectorBrowse.this.setCaption(selectedMeta.getName());
-            }
+    private void showEntities() {
+        selectedMeta = entities.getValue();
+        if (selectedMeta != null) {
+            createEntitiesTable(selectedMeta);
+
+            //TODO: set tab caption
+            //EntityInspectorBrowse.this.setCaption(selectedMeta.getName());
         }
     }
 
