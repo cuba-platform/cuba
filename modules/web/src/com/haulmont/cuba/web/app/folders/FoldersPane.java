@@ -480,8 +480,10 @@ public class FoldersPane extends VerticalLayout {
             @Override
             public void nodeCollapse(Tree.CollapseEvent event) {
                 AppFolder folder = (AppFolder) event.getItemId();
-                if (StringUtils.isBlank(folder.getQuantityScript()))
+                if (StringUtils.isBlank(folder.getQuantityScript())) {
                     updateQuantityAndItemStyleAppFolder(folder);
+                    appFoldersTree.setItemCaption(folder, folder.getCaption());
+                }
             }
         });
 
