@@ -211,7 +211,7 @@ public final class UserSessions implements UserSessionsAPI {
         sb.append("\n======================================================")
                 .append("\nCUBA platform license type: ").append(objects[0])
                 .append("\nLicensed To: ").append(objects[1])
-                .append("\nNumber of licensed sessions: ").append(objects[2] == 0 ? "unlimited" : objects[2])
+                .append("\nNumber of licensed sessions: ").append(((int) objects[2]) == 0 ? "unlimited" : objects[2])
                 .append("\n======================================================");
         log.warn(sb.toString());
 
