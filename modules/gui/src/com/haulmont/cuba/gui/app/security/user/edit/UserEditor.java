@@ -116,6 +116,22 @@ public class UserEditor extends AbstractEditor<User> {
     }
 
     @Override
+    protected void postInit() {
+        // Do not show roles which are not allowed by security constraints
+        LoadContext lc = new LoadContext(Role.class);
+        lc.setQueryString("select r from sec$Role r");
+        lc.setView(View.MINIMAL);
+        List<Role> allowedRoles = dataSupplier.loadList(lc);
+
+        Collection<UserRole> items = rolesDs.getItems();
+        for (UserRole userRole : items) {
+            if (!allowedRoles.contains(userRole.getRole())) {
+                rolesDs.excludeItem(userRole);
+            }
+        }
+    }
+
+    @Override
     protected void initNewItem(User item) {
         addDefaultRoles(item);
         item.setLanguage(messages.getTools().localeToString(userSession.getLocale()));
@@ -209,16 +225,16 @@ public class UserEditor extends AbstractEditor<User> {
     @Override
     protected boolean preCommit() {
         if (rolesDs.isModified()) {
-            DatasourceImplementation rolesDsImpl = (DatasourceImplementation) rolesDs;
+            DatasourceImplementation<UserRole> rolesDsImpl = (DatasourceImplementation) rolesDs;
 
             CommitContext ctx = new CommitContext(Collections.emptyList(), rolesDsImpl.getItemsToDelete());
             dataSupplier.commit(ctx);
 
-            ArrayList modifiedRoles = new ArrayList(rolesDsImpl.getItemsToCreate());
+            List<UserRole> modifiedRoles = new ArrayList<>(rolesDsImpl.getItemsToCreate());
             modifiedRoles.addAll(rolesDsImpl.getItemsToUpdate());
             rolesDsImpl.committed(Collections.<Entity>emptySet());
-            for (Object userRole : modifiedRoles) {
-                rolesDsImpl.modified((Entity) userRole);
+            for (UserRole userRole : modifiedRoles) {
+                rolesDsImpl.modified(userRole);
             }
         }
 

@@ -9,7 +9,10 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.actions.*;
+import com.haulmont.cuba.gui.components.actions.CreateAction;
+import com.haulmont.cuba.gui.components.actions.EditAction;
+import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
+import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
@@ -34,9 +37,6 @@ public class GroupBrowser extends AbstractWindow {
 
     @Inject
     protected UserManagementService userManagementService;
-
-    @Named("groupsTree.create")
-    protected CreateAction groupCreateAction;
 
     @Named("groupsTree.copy")
     protected Action groupCopyAction;
@@ -76,12 +76,19 @@ public class GroupBrowser extends AbstractWindow {
 
     @Override
     public void init(final Map<String, Object> params) {
-        groupCreateAction.setCaption(getMessage("action.create"));
+        CreateAction createAction = new CreateAction(groupsTree) {
+            @Override
+            protected void afterCommit(Entity entity) {
+                groupsTree.expandTree();
+            }
+        };
+        groupsTree.addAction(createAction);
+        createAction.setCaption(getMessage("action.create"));
 
-        groupCreateAction.setOpenType(WindowManager.OpenType.DIALOG);
+        createAction.setOpenType(WindowManager.OpenType.DIALOG);
         groupEditAction.setOpenType(WindowManager.OpenType.DIALOG);
 
-        groupCreateButton.addAction(groupCreateAction);
+        groupCreateButton.addAction(createAction);
         groupCreateButton.addAction(groupCopyAction);
 
         userCreateAction = new GroupPropertyCreateAction(usersTable) {
