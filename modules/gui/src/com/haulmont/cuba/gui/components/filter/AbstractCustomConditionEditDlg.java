@@ -202,6 +202,9 @@ public abstract class AbstractCustomConditionEditDlg<T> {
         String whereStr = whereText.getValue();
         CollectionDatasource ds = (CollectionDatasource) condition.getDatasource();
 
+        // the magic entity name!  The length is three character to match "{E}" length in query
+        String entityAlias = "a39";
+
         int queryPosition = -1;
         String queryStart = "select " + entityAlias + " from " + ds.getMetaClass().getName() + " " + entityAlias + " ";
 
@@ -219,6 +222,7 @@ public abstract class AbstractCustomConditionEditDlg<T> {
             queryBuilder.append(WHERE).append(whereStr);
         }
         String query = queryBuilder.toString();
+        query = query.replace("{E}", entityAlias);
 
         return JpqlSuggestionFactory.requestHint(query, queryPosition, sender.getAutoCompleteSupport(), senderCursorPosition);
     }
