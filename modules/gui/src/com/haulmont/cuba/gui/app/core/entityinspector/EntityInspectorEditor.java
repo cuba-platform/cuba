@@ -793,9 +793,9 @@ public class EntityInspectorEditor extends AbstractWindow {
     private View createView(MetaClass meta) {
         View view = new View(meta.getJavaClass(), false);
         for (MetaProperty metaProperty : meta.getProperties()) {
-//            if (metaProperty.isReadOnly()) {
-//                continue;
-//            }
+            if (metaProperty.isReadOnly()) {
+                continue;
+            }
 
             switch (metaProperty.getType()) {
                 case DATATYPE:
