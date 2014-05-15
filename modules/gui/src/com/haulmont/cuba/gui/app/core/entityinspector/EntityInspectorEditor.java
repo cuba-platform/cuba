@@ -864,13 +864,7 @@ public class EntityInspectorEditor extends AbstractWindow {
 
         @Override
         public void actionPerform(Component component) {
-            if (createRequest) {
-                //remove added item
-                datasource.setItem(null);
-                if (datasource instanceof CollectionDatasource)
-                    ((CollectionDatasource) datasource).removeItem(item);
-            }
-            close(Window.COMMIT_ACTION_ID);
+            close(Window.CLOSE_ACTION_ID);
         }
     }
 
