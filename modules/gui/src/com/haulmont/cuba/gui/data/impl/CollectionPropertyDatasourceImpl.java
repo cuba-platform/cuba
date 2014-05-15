@@ -47,6 +47,8 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     protected CollectionDatasourceListener.Operation lastCollectionChangeOperation;
     protected List<Entity> lastCollectionChangeItems;
 
+    protected boolean doNotModify;
+
     private AggregatableDelegate<K> aggregatableDelegate = new AggregatableDelegate<K>() {
         @Override
         public Object getItem(K itemId) {
@@ -247,7 +249,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     }
 
     @Override
-    public void addItem(T item) throws UnsupportedOperationException {
+    public void addItem(T item) {
         checkState();
         checkPermission();
 
@@ -314,7 +316,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     }
 
     @Override
-    public void removeItem(T item) throws UnsupportedOperationException {
+    public void removeItem(T item) {
         checkState();
         checkPermission();
 
@@ -344,7 +346,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     }
 
     @Override
-    public void excludeItem(T item) throws UnsupportedOperationException {
+    public void excludeItem(T item) {
         checkState();
         checkPermission();
 
@@ -352,63 +354,78 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
             setItem(null);
         }
 
-        __getCollection().remove(item);
-
-        MetaProperty inverseProperty = metaProperty.getInverse();
-        if (inverseProperty != null)
-            item.setValue(inverseProperty.getName(), null);
-
-        // detach listener only after setting value to the link property
-        detachListener(item);
-
-        fireCollectionChanged(CollectionDatasourceListener.Operation.REMOVE, Collections.<Entity>singletonList(item));
-    }
-
-    @Override
-    public void includeItem(T item) throws UnsupportedOperationException {
-        checkState();
-        checkPermission();
-
-        // Don't add the same object instance twice
-        if (!containsObjectInstance(item))
-            __getCollection().add(item);
-
-        MetaProperty inverseProperty = metaProperty.getInverse();
-        if (inverseProperty != null)
-            item.setValue(inverseProperty.getName(), masterDs.getItem());
-
-        // attach listener only after setting value to the link property
-        attachListener(item);
-
-        fireCollectionChanged(CollectionDatasourceListener.Operation.ADD, Collections.<Entity>singletonList(item));
-    }
-
-    @Override
-    public void clear() throws UnsupportedOperationException {
-        checkState();
-        // Get items
-        Collection<Object> collectionItems = new ArrayList<Object>(__getCollection());
-        // Clear collection
-        __getCollection().clear();
-        // Notify listeners
-        for (Object obj : collectionItems) {
-            T item = (T) obj;
+        doNotModify = true;
+        try {
+            __getCollection().remove(item);
 
             MetaProperty inverseProperty = metaProperty.getInverse();
-            if (inverseProperty == null)
-                throw new UnsupportedOperationException("No inverse property for " + metaProperty);
-
-            item.setValue(inverseProperty.getName(), null);
+            if (inverseProperty != null)
+                item.setValue(inverseProperty.getName(), null);
 
             // detach listener only after setting value to the link property
             detachListener(item);
-        }
 
-        fireCollectionChanged(CollectionDatasourceListener.Operation.CLEAR, Collections.<Entity>emptyList());
+            fireCollectionChanged(CollectionDatasourceListener.Operation.REMOVE, Collections.<Entity>singletonList(item));
+        } finally {
+            doNotModify = false;
+        }
     }
 
     @Override
-    public void revert() throws UnsupportedOperationException {
+    public void includeItem(T item) {
+        checkState();
+        checkPermission();
+
+        doNotModify = true;
+        try {
+            // Don't add the same object instance twice
+            if (!containsObjectInstance(item))
+                __getCollection().add(item);
+
+            MetaProperty inverseProperty = metaProperty.getInverse();
+            if (inverseProperty != null)
+                item.setValue(inverseProperty.getName(), masterDs.getItem());
+
+            // attach listener only after setting value to the link property
+            attachListener(item);
+
+            fireCollectionChanged(CollectionDatasourceListener.Operation.ADD, Collections.<Entity>singletonList(item));
+        } finally {
+            doNotModify = false;
+        }
+    }
+
+    @Override
+    public void clear() {
+        checkState();
+        // Get items
+        Collection<Object> collectionItems = new ArrayList<Object>(__getCollection());
+        doNotModify = true;
+        try {
+            // Clear collection
+            __getCollection().clear();
+            // Notify listeners
+            for (Object obj : collectionItems) {
+                T item = (T) obj;
+
+                MetaProperty inverseProperty = metaProperty.getInverse();
+                if (inverseProperty == null)
+                    throw new UnsupportedOperationException("No inverse property for " + metaProperty);
+
+                item.setValue(inverseProperty.getName(), null);
+
+                // detach listener only after setting value to the link property
+                detachListener(item);
+            }
+
+            fireCollectionChanged(CollectionDatasourceListener.Operation.CLEAR, Collections.<Entity>emptyList());
+        } finally {
+            doNotModify = false;
+        }
+    }
+
+    @Override
+    public void revert() {
         refresh();
     }
 
@@ -445,6 +462,8 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void modified(T item) {
+        if (doNotModify)
+            return;
         // Never modify not new objects linked as ManyToMany. CollectionPropertyDatasource should only handle adding
         // and removing of ManyToMany items.
         if (!PersistenceHelper.isNew(item) && metaProperty.getAnnotatedElement().getAnnotation(ManyToMany.class) != null)
@@ -497,7 +516,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     }
 
     @Override
-    public LoadContext getCompiledLoadContext() throws UnsupportedOperationException {
+    public LoadContext getCompiledLoadContext() {
         return null;
     }
 
