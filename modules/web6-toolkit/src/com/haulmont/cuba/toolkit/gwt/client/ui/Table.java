@@ -132,9 +132,6 @@ public abstract class Table
                 }
                 cancelScrollingVelocityTimer();
                 navKeyDown = false;
-            } else if (KeyCodes.KEY_ENTER == keyCode && !keyUpEvent.isAnyModifierKeyDown()) {
-                event.stopPropagation();
-                client.updateVariable(paintableId, "enterPressed", "", immediate);
             }
         }
     };
@@ -358,6 +355,23 @@ public abstract class Table
         bodyContainer.addBlurHandler(this);
         bodyContainer.addScrollHandler(this);
 
+        // handle enter key down separately
+        bodyContainer.addKeyDownHandler(new KeyDownHandler() {
+            @Override
+            public void onKeyDown(KeyDownEvent keyDownEvent) {
+                NativeEvent event = keyDownEvent.getNativeEvent();
+                int keyCode = event.getKeyCode();
+
+                if (hasFocus && enabled && !isNavigationKey(event.getKeyCode())) {
+                    if (KeyCodes.KEY_ENTER == keyCode && !keyDownEvent.isAnyModifierKeyDown()) {
+                        event.stopPropagation();
+                        event.preventDefault();
+
+                        client.updateVariable(paintableId, "enterPressed", "", true);
+                    }
+                }
+            }
+        });
         /*
          * Firefox auto-repeat works correctly only if we use a key press
          * handler, other browsers handle it correctly when using a key down
