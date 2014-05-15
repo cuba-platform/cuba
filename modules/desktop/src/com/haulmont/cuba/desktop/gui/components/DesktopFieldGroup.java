@@ -638,6 +638,10 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
             if (fieldConf.getRequiredError() != null) {
                 cubaField.setRequiredMessage(fieldConf.getRequiredError());
             }
+
+            if (cubaField.isEditable()) {
+                cubaField.setEditable(fieldConf.isEditable());
+            }
         }
 
         if (fieldComponent instanceof HasFormatter) {

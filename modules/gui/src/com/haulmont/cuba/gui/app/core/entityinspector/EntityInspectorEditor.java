@@ -324,9 +324,9 @@ public class EntityInspectorEditor extends AbstractWindow {
 
         contentPane.add(fieldGroup);
         fieldGroup.setFrame(frame);
-        boolean custom;
         for (MetaProperty metaProperty : metaClass.getProperties()) {
             boolean isRequired = isRequired(metaProperty);
+            boolean isReadonly = metaProperty.isReadOnly();
             switch (metaProperty.getType()) {
                 case DATATYPE:
                 case ENUM:
@@ -334,8 +334,7 @@ public class EntityInspectorEditor extends AbstractWindow {
                     if (metadata.getTools().isSystem(metaProperty) && !showSystemFields) {
                         continue;
                     }
-                    custom = false;
-                    addField(metaClass, metaProperty, fieldGroup, isRequired, custom, customFields);
+                    addField(metaClass, metaProperty, fieldGroup, isRequired, false, isReadonly, customFields);
                     break;
                 case COMPOSITION:
                 case ASSOCIATION:
@@ -345,8 +344,7 @@ public class EntityInspectorEditor extends AbstractWindow {
                         if (isEmbedded(metaProperty))
                             addEmbeddedFieldGroup(metaProperty);
                         else {
-                            custom = true;
-                            addField(metaClass, metaProperty, fieldGroup, isRequired, custom, customFields);
+                            addField(metaClass, metaProperty, fieldGroup, isRequired, true, isReadonly, customFields);
                         }
                     }
                     break;
@@ -373,9 +371,9 @@ public class EntityInspectorEditor extends AbstractWindow {
         fieldGroup.setCaption(getPropertyCaption(meta, embeddedMetaProperty));
         MetaClass embeddableMetaClass = embeddedMetaProperty.getRange().asClass();
         Collection<FieldGroup.FieldConfig> customFields = new LinkedList<>();
-        boolean custom;
         for (MetaProperty metaProperty : embeddableMetaClass.getProperties()) {
             boolean isRequired = isRequired(metaProperty) || metaProperty.equals(nullIndicatorProperty);
+            boolean isReadonly = metaProperty.isReadOnly();
             switch (metaProperty.getType()) {
                 case DATATYPE:
                 case ENUM:
@@ -383,8 +381,7 @@ public class EntityInspectorEditor extends AbstractWindow {
                     if (metadata.getTools().isSystem(metaProperty) && !showSystemFields) {
                         continue;
                     }
-                    custom = false;
-                    addField(embeddableMetaClass, metaProperty, fieldGroup, isRequired, custom, customFields);
+                    addField(embeddableMetaClass, metaProperty, fieldGroup, isRequired, false, isReadonly, customFields);
                     break;
                 case COMPOSITION:
                 case ASSOCIATION:
@@ -394,8 +391,7 @@ public class EntityInspectorEditor extends AbstractWindow {
                         if (isEmbedded(metaProperty)) {
                             addEmbeddedFieldGroup(metaProperty);
                         } else {
-                            custom = true;
-                            addField(embeddableMetaClass, metaProperty, fieldGroup, isRequired, custom, customFields);
+                            addField(embeddableMetaClass, metaProperty, fieldGroup, isRequired, true, isReadonly, customFields);
                         }
                     }
                     break;
@@ -493,7 +489,7 @@ public class EntityInspectorEditor extends AbstractWindow {
      * @param custom       true if the field is custom
      */
     private void addField(MetaClass meta, MetaProperty metaProperty,
-                          FieldGroup fieldGroup, boolean required, boolean custom,
+                          FieldGroup fieldGroup, boolean required, boolean custom, boolean readOnly,
                           Collection<FieldGroup.FieldConfig> customFields) {
         if (!attrViewPermitted(metaProperty))
             return;
@@ -510,6 +506,8 @@ public class EntityInspectorEditor extends AbstractWindow {
         field.setWidth(DEFAULT_FIELD_WIDTH);
         field.setCustom(custom);
         field.setRequired(required);
+        field.setEditable(!readOnly);
+
         if (required) {
             MessageTools messageTools = AppBeans.get(MessageTools.NAME);
             field.setRequiredError(messageTools.getDefaultRequiredMessage(metaProperty));
@@ -795,6 +793,10 @@ public class EntityInspectorEditor extends AbstractWindow {
     private View createView(MetaClass meta) {
         View view = new View(meta.getJavaClass(), false);
         for (MetaProperty metaProperty : meta.getProperties()) {
+//            if (metaProperty.isReadOnly()) {
+//                continue;
+//            }
+
             switch (metaProperty.getType()) {
                 case DATATYPE:
                 case ENUM:

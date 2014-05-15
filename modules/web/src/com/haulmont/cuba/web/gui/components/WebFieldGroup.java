@@ -271,6 +271,9 @@ public class WebFieldGroup
                     if (fieldConf.getRequiredError() != null) {
                         cubaField.setRequiredMessage(fieldConf.getRequiredError());
                     }
+                    if (!fieldConf.isEditable()) {
+                        cubaField.setEditable(fieldConf.isEditable());
+                    }
                 }
 
                 // some components (e.g. LookupPickerField) have width from the creation, so I commented out this check
@@ -450,6 +453,9 @@ public class WebFieldGroup
             }
             if (fieldConf.getRequiredError() != null) {
                 cubaField.setRequiredMessage(fieldConf.getRequiredError());
+            }
+            if (!fieldConf.isEditable()) {
+                cubaField.setEditable(fieldConf.isEditable());
             }
         }
 

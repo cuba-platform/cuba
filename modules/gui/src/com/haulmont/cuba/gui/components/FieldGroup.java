@@ -102,12 +102,14 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
         private String requiredError;
         
         private boolean custom;
-        private boolean required; 
+        private boolean required;
+        private boolean editable;
         
         private Class type;
         
         public FieldConfig(String id) {
             this.id = id;
+            editable = true;
         }
 
         public String getId() {
@@ -192,6 +194,14 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
 
         public void setRequired(boolean required) {
             this.required = required;
+        }
+
+        public boolean isEditable() {
+            return editable;
+        }
+
+        public void setEditable(boolean editable) {
+            this.editable = editable;
         }
 
         public String getRequiredError() {
