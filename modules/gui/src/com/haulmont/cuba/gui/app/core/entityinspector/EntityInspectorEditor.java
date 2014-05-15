@@ -20,6 +20,8 @@ import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.*;
+import com.haulmont.cuba.gui.filter.Condition;
+import com.haulmont.cuba.gui.filter.QueryFilter;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
@@ -542,6 +544,7 @@ public class EntityInspectorEditor extends AbstractWindow {
                     PickerField field = componentsFactory.createComponent(PickerField.NAME);
                     String caption = getPropertyCaption(metaProperty.getDomain(), metaProperty);
                     field.setCaption(caption);
+                    field.setMetaClass(propertyMeta);
 
                     PickerField.LookupAction lookupAction = field.addLookupAction();
                     //forwards lookup to the EntityInspectorBrowse window
@@ -722,21 +725,33 @@ public class EntityInspectorEditor extends AbstractWindow {
         return addAction;
     }
 
+    @SuppressWarnings("unchecked")
     private Lookup.Handler createAddHandler(final MetaProperty metaProperty, final CollectionDatasource propertyDs) {
         Lookup.Handler result = new Lookup.Handler() {
             @Override
             public void handleLookup(Collection items) {
                 for (Object item : items) {
                     Entity entity = (Entity) item;
-                    //set currently editing item to the child's parent property
-                    if (!propertyDs.getItems().contains(entity)) {
-                        MetaProperty inverseProperty = metaProperty.getInverse();
-                        entity.setValue(inverseProperty.getName(), datasource.getItem());
-                        propertyDs.addItem(entity);
-                    }
+//                    if (!propertyDs.getItems().contains(entity)) {
+//                        MetaProperty inverseProperty = metaProperty.getInverse();
+//                        if (!metaProperty.getRange().getCardinality().isMany()) {
+//                            //set currently editing item to the child's parent property
+//                            entity.setValue(inverseProperty.getName(), datasource.getItem());
+//                            propertyDs.addItem(entity);
+//                        } else {
+//                            Collection properties = entity.getValue(inverseProperty.getName());
+//                            if (properties != null) {
+//                                properties.add(datasource.getItem());
+//                                propertyDs.addItem(entity);
+//                            }
+//                        }
+//                    }
+
+                    propertyDs.addItem(entity);
                 }
             }
         };
+
         propertyDs.refresh();
         return result;
     }
@@ -787,7 +802,7 @@ public class EntityInspectorEditor extends AbstractWindow {
                     break;
                 case ASSOCIATION:
                 case COMPOSITION:
-                    View propView = createReferredPropertyView(metaProperty);
+                    View propView = viewRepository.getView(metaProperty.getRange().asClass(), View.LOCAL);
                     view.addProperty(metaProperty.getName(), propView);
                     break;
                 default:
@@ -879,7 +894,6 @@ public class EntityInspectorEditor extends AbstractWindow {
         public void actionPerform(Component component) {
             Map<String, Object> editorParams = new HashMap<>();
             editorParams.put("metaClass", entityMeta.getName());
-            editorParams.put("datasource", entitiesDs);
             editorParams.put("autocommit", Boolean.FALSE);
             MetaProperty inverseProperty = metaProperty.getInverse();
             if (inverseProperty != null)
@@ -921,7 +935,6 @@ public class EntityInspectorEditor extends AbstractWindow {
             editorParams.put("metaClass", editItem.getMetaClass());
             editorParams.put("item", editItem);
             editorParams.put("parent", item);
-            editorParams.put("datasource", entitiesDs);
             editorParams.put("autocommit", Boolean.FALSE);
             MetaProperty inverseProperty = metaProperty.getInverse();
             if (inverseProperty != null)
@@ -931,7 +944,7 @@ public class EntityInspectorEditor extends AbstractWindow {
             window.addListener(new CloseListener() {
                 @Override
                 public void windowClosed(String actionId) {
-                    entitiesDs.updateItem(entitiesDs.getItem());
+                    entitiesDs.refresh();
                 }
             });
         }
