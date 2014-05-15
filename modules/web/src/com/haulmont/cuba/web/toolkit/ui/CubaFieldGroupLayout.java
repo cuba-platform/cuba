@@ -8,11 +8,16 @@ package com.haulmont.cuba.web.toolkit.ui;
 import com.haulmont.cuba.web.toolkit.ui.client.fieldgrouplayout.CubaFieldGroupLayoutState;
 import com.vaadin.ui.GridLayout;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author artamonov
  * @version $Id$
  */
 public class CubaFieldGroupLayout extends GridLayout {
+
+    protected Map<Integer, Integer> columnFieldCaptionWidth = null;
 
     @Override
     protected CubaFieldGroupLayoutState getState() {
@@ -25,42 +30,47 @@ public class CubaFieldGroupLayout extends GridLayout {
     }
 
     public int getFixedCaptionWidth() {
-        return getState(false).fixedCaptionWidth;
+        return getState(false).fieldCaptionWidth;
     }
 
     public void setFixedCaptionWidth(int fixedCaptionWidth) {
-        if (getState(false).fixedCaptionWidth != fixedCaptionWidth) {
-            getState().fixedCaptionWidth = fixedCaptionWidth;
+        if (getState(false).fieldCaptionWidth != fixedCaptionWidth) {
+            getState().fieldCaptionWidth = fixedCaptionWidth;
         }
     }
 
-    public int getFixedCaptionWidth(int column) {
-        if (column >= getColumns()) {
+    @Override
+    public void beforeClientResponse(boolean initial) {
+        super.beforeClientResponse(initial);
+
+        if (initial && columnFieldCaptionWidth != null) {
+            int[] newColumnFieldCaptionWidth = new int[getColumns()];
+            for (Map.Entry<Integer, Integer> entry : columnFieldCaptionWidth.entrySet()) {
+                int index = entry.getKey();
+                int width = entry.getValue();
+
+                if (index >= 0 && index < getColumns() && width > 0) {
+                    newColumnFieldCaptionWidth[index] = width;
+                }
+            }
+            getState().columnFieldCaptionWidth = newColumnFieldCaptionWidth;
+        }
+    }
+
+    public int getFieldCaptionWidth(int column) {
+        if (columnFieldCaptionWidth == null) {
             return -1;
         }
-        int[] columnCaptionWidth = getState(false).fixedColumnCaptionWidth;
-        if (columnCaptionWidth != null && column < columnCaptionWidth.length) {
-            return columnCaptionWidth[column];
-        }
-        return -1;
+
+        Integer value = columnFieldCaptionWidth.get(column);
+        return value != null ? value : -1;
     }
 
-    public void setFixedCaptionWidth(int column, int width) {
-        if (column >= getColumns()) {
-            throw new IllegalArgumentException("Could not find column with index " + column);
+    public void setFieldCaptionWidth(int column, int width) {
+        if (columnFieldCaptionWidth == null) {
+            columnFieldCaptionWidth = new HashMap<>();
         }
-        int[] columnCaptionWidth = getState(false).fixedColumnCaptionWidth;
-        if (columnCaptionWidth == null || column >= columnCaptionWidth.length) {
-            int[] newColumnCaptionWidth = new int[getColumns()];
-            if (columnCaptionWidth != null) {
-                System.arraycopy(columnCaptionWidth, 0, newColumnCaptionWidth, 0, columnCaptionWidth.length);
-            }
-
-            getState().fixedColumnCaptionWidth = newColumnCaptionWidth;
-            columnCaptionWidth = newColumnCaptionWidth;
-        }
-
-        columnCaptionWidth[column] = width;
+        columnFieldCaptionWidth.put(column, width);
     }
 
     public boolean isUseInlineCaption() {

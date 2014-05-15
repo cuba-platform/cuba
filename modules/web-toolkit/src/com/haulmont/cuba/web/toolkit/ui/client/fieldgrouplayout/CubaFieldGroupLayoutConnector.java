@@ -108,10 +108,10 @@ public class CubaFieldGroupLayoutConnector extends CubaGridLayoutConnector {
         resetIndicatorsWidth(column);
 
         int fixedCaptionWidth = -1;
-        if (getState().fixedCaptionWidth > 0) {
-            fixedCaptionWidth = getState().fixedCaptionWidth;
+        if (getState().fieldCaptionWidth > 0) {
+            fixedCaptionWidth = getState().fieldCaptionWidth;
         }
-        int[] columnCaptionWidth = getState().fixedColumnCaptionWidth;
+        int[] columnCaptionWidth = getState().columnFieldCaptionWidth;
         if (columnCaptionWidth != null
                 && index < columnCaptionWidth.length
                 && columnCaptionWidth[index] > 0) {

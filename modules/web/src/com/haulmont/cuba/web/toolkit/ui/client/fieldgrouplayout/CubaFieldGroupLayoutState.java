@@ -17,6 +17,6 @@ public class CubaFieldGroupLayoutState extends GridLayoutState {
     }
 
     public boolean useInlineCaption = true;
-    public int[] fixedColumnCaptionWidth = null;
-    public int fixedCaptionWidth = -1;
+    public int[] columnFieldCaptionWidth = null;
+    public int fieldCaptionWidth = -1;
 }

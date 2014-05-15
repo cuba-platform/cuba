@@ -986,7 +986,7 @@
 
     <!-- FieldGroup -->
     <xs:complexType name="fieldGroupComponent">
-        <xs:choice maxOccurs="unbounded">
+        <xs:choice maxOccurs="unbounded" minOccurs="0">
             <xs:element name="field" type="fieldGroupField"/>
             <xs:element name="column">
                 <xs:complexType>
@@ -994,8 +994,10 @@
                         <xs:element name="field" minOccurs="1" maxOccurs="unbounded" type="fieldGroupField"/>
                     </xs:sequence>
                     <xs:attributeGroup ref="hasId"/>
+
                     <xs:attribute name="width" type="xs:string"/>
                     <xs:attribute name="flex" type="xs:string"/>
+                    <xs:attribute name="fieldCaptionWidth" type="xs:string"/>
                 </xs:complexType>
             </xs:element>
         </xs:choice>
@@ -1009,6 +1011,7 @@
         <xs:attributeGroup ref="hasEditState"/>
 
         <xs:attribute name="captionAlignment" type="fieldGroupCaptionAlignment"/>
+        <xs:attribute name="fieldCaptionWidth" type="xs:string"/>
 
         <xs:attribute name="datasource" type="xs:string"/>
         <xs:attribute name="border" type="borderMode" default="hidden"/>

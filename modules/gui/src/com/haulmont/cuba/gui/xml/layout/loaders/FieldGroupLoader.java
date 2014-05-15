@@ -7,6 +7,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Field;
@@ -73,6 +74,19 @@ public class FieldGroupLoader extends AbstractFieldLoader {
                         field.setWidth(width);
                     }
                 }
+
+                String columnFieldCaptionWidth = columnElement.attributeValue("fieldCaptionWidth");
+                if (StringUtils.isNotEmpty(columnFieldCaptionWidth)) {
+                    if (columnFieldCaptionWidth.startsWith(MessageTools.MARK)) {
+                        columnFieldCaptionWidth = loadResourceString(columnFieldCaptionWidth);
+                    }
+                    if (columnFieldCaptionWidth.endsWith("px")) {
+                        columnFieldCaptionWidth = columnFieldCaptionWidth.substring(0, columnFieldCaptionWidth.indexOf("px"));
+                    }
+
+                    component.setFieldCaptionWidth(colIndex, Integer.valueOf(columnFieldCaptionWidth));
+                }
+
                 colIndex++;
             }
         }
@@ -92,6 +106,8 @@ public class FieldGroupLoader extends AbstractFieldLoader {
 
         loadCaptionAlignment(component, element);
 
+        loadFieldCaptionWidth(component, element);
+
         context.addPostInitTask(new PostInitTask() {
             @Override
             public void execute(Context context, IFrame window) {
@@ -109,6 +125,20 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         return component;
     }
 
+    protected void loadFieldCaptionWidth(FieldGroup component, Element element) {
+        String fieldCaptionWidth = element.attributeValue("fieldCaptionWidth");
+        if (StringUtils.isNotEmpty(fieldCaptionWidth)) {
+            if (fieldCaptionWidth.startsWith(MessageTools.MARK)) {
+                fieldCaptionWidth = loadResourceString(fieldCaptionWidth);
+            }
+            if (fieldCaptionWidth.endsWith("px")) {
+                fieldCaptionWidth = fieldCaptionWidth.substring(0, fieldCaptionWidth.indexOf("px"));
+            }
+
+            component.setFieldCaptionWidth(Integer.valueOf(fieldCaptionWidth));
+        }
+    }
+
     protected Datasource loadDatasource(Element element) {
         final String datasource = element.attributeValue("datasource");
         if (!StringUtils.isBlank(datasource)) {
@@ -122,6 +152,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
     }
 
     protected List<FieldGroup.FieldConfig> loadFields(FieldGroup component, Element element, Datasource ds) {
+        @SuppressWarnings("unchecked")
         final List<Element> fieldElements = element.elements("field");
         if (!fieldElements.isEmpty()) {
             return loadFields(component, fieldElements, ds);

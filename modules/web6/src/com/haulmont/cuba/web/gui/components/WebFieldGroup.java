@@ -183,23 +183,23 @@ public class WebFieldGroup
     }
 
     @Override
-    public int getFixedCaptionWidth() {
+    public int getFieldCaptionWidth() {
         return -1;
     }
 
     @Override
-    public void setFixedCaptionWidth(int fixedCaptionWidth) {
-        LogFactory.getLog(getClass()).warn("setFixedCaptionWidth not implemented for web 6");
+    public void setFieldCaptionWidth(int fixedCaptionWidth) {
+        LogFactory.getLog(getClass()).warn("setFieldCaptionWidth not implemented for web 6");
     }
 
     @Override
-    public int getFixedCaptionWidth(int column) {
+    public int getFieldCaptionWidth(int column) {
         return -1;
     }
 
     @Override
-    public void setFixedCaptionWidth(int column, int width) {
-        LogFactory.getLog(getClass()).warn("setFixedCaptionWidth not implemented for web 6");
+    public void setFieldCaptionWidth(int column, int width) {
+        LogFactory.getLog(getClass()).warn("setFieldCaptionWidth not implemented for web 6");
     }
 
     @Override

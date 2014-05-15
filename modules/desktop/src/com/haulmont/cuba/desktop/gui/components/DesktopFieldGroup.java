@@ -63,8 +63,10 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
     protected Security security = AppBeans.get(Security.NAME);
 
-    protected int[] fixedColumnCaptionWidth = null;
-    protected int fixedCaptionWidth = -1;
+    protected Map<Integer, Integer> columnFieldCaptionWidth = null;
+    protected int fieldCaptionWidth = -1;
+
+    protected boolean requestUpdateCaptionWidth = false;
 
     public DesktopFieldGroup() {
         LC lc = new LC();
@@ -444,75 +446,73 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     }
 
     @Override
-    public int getFixedCaptionWidth() {
-        return fixedCaptionWidth;
+    public int getFieldCaptionWidth() {
+        return fieldCaptionWidth;
     }
 
     @Override
-    public void setFixedCaptionWidth(int fixedCaptionWidth) {
-        this.fixedCaptionWidth = fixedCaptionWidth;
+    public void setFieldCaptionWidth(int fixedCaptionWidth) {
+        this.fieldCaptionWidth = fixedCaptionWidth;
 
         updateCaptionWidths();
     }
 
     @Override
-    public int getFixedCaptionWidth(int column) {
-        if (column >= getColumns()) {
-            return -1;
-        }
-        if (fixedColumnCaptionWidth != null && column < fixedColumnCaptionWidth.length) {
-            return fixedColumnCaptionWidth[column];
+    public int getFieldCaptionWidth(int column) {
+        if (columnFieldCaptionWidth != null) {
+            Integer value = columnFieldCaptionWidth.get(column);
+            return value != null ? value : -1;
         }
         return -1;
     }
 
     @Override
-    public void setFixedCaptionWidth(int column, int width) {
-        if (column >= getColumns()) {
-            throw new IllegalArgumentException("Could not find column with index " + column);
+    public void setFieldCaptionWidth(int column, int width) {
+        if (columnFieldCaptionWidth == null) {
+            columnFieldCaptionWidth = new HashMap<>();
         }
-        int[] columnCaptionWidth = this.fixedColumnCaptionWidth;
-        if (columnCaptionWidth == null || column >= columnCaptionWidth.length) {
-            int[] newColumnCaptionWidth = new int[getColumns()];
-            if (columnCaptionWidth != null) {
-                System.arraycopy(columnCaptionWidth, 0, newColumnCaptionWidth, 0, columnCaptionWidth.length);
-            }
-
-            this.fixedColumnCaptionWidth = newColumnCaptionWidth;
-            columnCaptionWidth = newColumnCaptionWidth;
-        }
-
-        columnCaptionWidth[column] = width;
+        columnFieldCaptionWidth.put(column, width);
 
         updateCaptionWidths();
     }
 
     protected void updateCaptionWidths() {
-        for (FieldConfig fieldConfig : fields.values()) {
-            JLabel label = fieldLabels.get(fieldConfig);
-            Integer col = fieldsColumn.get(fieldConfig);
+        if (!requestUpdateCaptionWidth) {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    requestUpdateCaptionWidth = false;
 
-            if (col != null && label != null) {
-                int preferredCaptionWidth = -1;
-                if (fixedCaptionWidth > 0) {
-                    preferredCaptionWidth = fixedCaptionWidth;
-                }
-                int[] columnCaptionWidth = this.fixedColumnCaptionWidth;
-                if (columnCaptionWidth != null
-                        && col < columnCaptionWidth.length
-                        && columnCaptionWidth[col] > 0) {
-                    preferredCaptionWidth = columnCaptionWidth[col];
-                }
+                    for (FieldConfig fieldConfig : fields.values()) {
+                        JLabel label = fieldLabels.get(fieldConfig);
+                        Integer col = fieldsColumn.get(fieldConfig);
 
-                if (preferredCaptionWidth > 0) {
-                    label.setPreferredSize(new Dimension(preferredCaptionWidth, 25));
-                    label.setMaximumSize(new Dimension(preferredCaptionWidth, 25));
-                } else {
-                    // todo reset default width if was changed before
-                    label.setPreferredSize(new Dimension(label.getPreferredSize().width, 25));
+                        if (col != null && label != null) {
+                            int preferredCaptionWidth = getPreferredCaptionWidth(col);
+
+                            if (preferredCaptionWidth > 0) {
+                                label.setPreferredSize(new Dimension(preferredCaptionWidth, 25));
+                                label.setMaximumSize(new Dimension(preferredCaptionWidth, 25));
+                                label.setMinimumSize(new Dimension(preferredCaptionWidth, 25));
+                            }
+                        }
+                    }
                 }
-            }
+            });
+            requestUpdateCaptionWidth = true;
         }
+    }
+
+    protected int getPreferredCaptionWidth(int col) {
+        int preferredCaptionWidth = -1;
+        if (fieldCaptionWidth > 0) {
+            preferredCaptionWidth = fieldCaptionWidth;
+        }
+        if (columnFieldCaptionWidth != null
+                && columnFieldCaptionWidth.containsKey(col)) {
+            preferredCaptionWidth = columnFieldCaptionWidth.get(col);
+        }
+        return preferredCaptionWidth;
     }
 
     protected int rowsCount() {
@@ -655,19 +655,11 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
         JLabel label = new JLabel(caption);
 
-        int preferredCaptionWidth = -1;
-        if (fixedCaptionWidth > 0) {
-            preferredCaptionWidth = fixedCaptionWidth;
-        }
-        int[] columnCaptionWidth = this.fixedColumnCaptionWidth;
-        if (columnCaptionWidth != null
-                && col < columnCaptionWidth.length
-                && columnCaptionWidth[col] > 0) {
-            preferredCaptionWidth = columnCaptionWidth[col];
-        }
+        int preferredCaptionWidth = getPreferredCaptionWidth(col);
         if (preferredCaptionWidth > 0) {
             label.setPreferredSize(new Dimension(preferredCaptionWidth, 25));
             label.setMaximumSize(new Dimension(preferredCaptionWidth, 25));
+            label.setMinimumSize(new Dimension(preferredCaptionWidth, 25));
         } else {
             label.setPreferredSize(new Dimension(label.getPreferredSize().width, 25));
         }

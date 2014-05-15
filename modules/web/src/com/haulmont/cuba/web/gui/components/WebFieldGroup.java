@@ -186,23 +186,23 @@ public class WebFieldGroup
     }
 
     @Override
-    public int getFixedCaptionWidth() {
+    public int getFieldCaptionWidth() {
         return component.getLayout().getFixedCaptionWidth();
     }
 
     @Override
-    public void setFixedCaptionWidth(int fixedCaptionWidth) {
+    public void setFieldCaptionWidth(int fixedCaptionWidth) {
         component.getLayout().setFixedCaptionWidth(fixedCaptionWidth);
     }
 
     @Override
-    public int getFixedCaptionWidth(int column) {
-        return component.getLayout().getFixedCaptionWidth(column);
+    public int getFieldCaptionWidth(int column) {
+        return component.getLayout().getFieldCaptionWidth(column);
     }
 
     @Override
-    public void setFixedCaptionWidth(int column, int width) {
-        component.getLayout().setFixedCaptionWidth(column, width);
+    public void setFieldCaptionWidth(int column, int width) {
+        component.getLayout().setFieldCaptionWidth(column, width);
     }
 
     @Override
