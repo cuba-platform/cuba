@@ -43,6 +43,9 @@ public class EntityInspectorBrowse extends AbstractLookup {
     protected Metadata metadata;
 
     @Inject
+    protected MessageTools messageTools;
+
+    @Inject
     protected BoxLayout lookupBox;
 
     @Inject
@@ -170,7 +173,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
 
             Table.Column column = new Table.Column(meta.getPropertyPath(metaProperty.getName()));
             if (!metadata.getTools().isSystem(metaProperty)) {
-                column.setCaption(getPropertyCaption(meta, metaProperty));
+                column.setCaption(getPropertyCaption(metaProperty));
                 nonSystemPropertyColumns.add(column);
             } else {
                 column.setCaption(metaProperty.getName());
@@ -339,10 +342,8 @@ public class EntityInspectorBrowse extends AbstractLookup {
         }
     }
 
-    protected String getPropertyCaption(MetaClass meta, MetaProperty metaProperty) {
-        int idx = meta.getName().indexOf('$') + 1;
-        return messages.getMessage(meta.getJavaClass(), meta.getName().substring(idx)
-                + "." + metaProperty.getFullName());
+    protected String getPropertyCaption(MetaProperty metaProperty) {
+        return messageTools.getPropertyCaption(metaProperty);
     }
 
     protected boolean readPermitted(MetaClass metaClass) {

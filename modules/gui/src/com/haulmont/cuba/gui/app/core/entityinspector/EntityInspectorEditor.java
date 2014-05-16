@@ -48,6 +48,9 @@ public class EntityInspectorEditor extends AbstractWindow {
     protected Metadata metadata;
 
     @Inject
+    protected MessageTools messageTools;
+
+    @Inject
     protected ViewRepository viewRepository;
 
     @Inject
@@ -388,7 +391,7 @@ public class EntityInspectorEditor extends AbstractWindow {
         FieldGroup fieldGroup = componentsFactory.createComponent(FieldGroup.NAME);
         contentPane.add(fieldGroup);
         fieldGroup.setFrame(frame);
-        fieldGroup.setCaption(getPropertyCaption(meta, embeddedMetaProperty));
+        fieldGroup.setCaption(getPropertyCaption(embeddedMetaProperty));
         MetaClass embeddableMetaClass = embeddedMetaProperty.getRange().asClass();
         Collection<FieldGroup.FieldConfig> customFields = new LinkedList<>();
         for (MetaProperty metaProperty : embeddableMetaClass.getProperties()) {
@@ -520,7 +523,7 @@ public class EntityInspectorEditor extends AbstractWindow {
             return;
 
         FieldGroup.FieldConfig field = new FieldGroup.FieldConfig(metaProperty.getName());
-        String caption = getPropertyCaption(meta, metaProperty);
+        String caption = getPropertyCaption(metaProperty);
         field.setCaption(caption);
         field.setType(metaProperty.getJavaType());
         field.setWidth(DEFAULT_FIELD_WIDTH);
@@ -565,7 +568,7 @@ public class EntityInspectorEditor extends AbstractWindow {
                     MetaProperty metaProperty = datasource.getMetaClass().getPropertyNN(propertyId);
                     MetaClass propertyMeta = metaProperty.getRange().asClass();
                     PickerField field = componentsFactory.createComponent(PickerField.NAME);
-                    String caption = getPropertyCaption(metaProperty.getDomain(), metaProperty);
+                    String caption = getPropertyCaption(metaProperty);
                     field.setCaption(caption);
                     field.setMetaClass(propertyMeta);
 
@@ -613,10 +616,8 @@ public class EntityInspectorEditor extends AbstractWindow {
         }
     }
 
-    private String getPropertyCaption(MetaClass meta, MetaProperty metaProperty) {
-        int idx = meta.getName().indexOf('$') + 1;
-        String caption = messages.getMessage(meta.getJavaClass(), meta.getName().substring(idx)
-                + "." + metaProperty.getFullName());
+    private String getPropertyCaption(MetaProperty metaProperty) {
+        String caption = messageTools.getPropertyCaption(metaProperty);
         if (caption.length() < CAPTION_MAX_LENGTH)
             return caption;
         else
@@ -641,7 +642,7 @@ public class EntityInspectorEditor extends AbstractWindow {
         CollectionDatasource propertyDs = (CollectionDatasource) datasources.get(childMeta.getName());
 
         Label label = componentsFactory.createComponent(Label.NAME);
-        label.setValue(getPropertyCaption(childMeta.getDomain(), childMeta));
+        label.setValue(getPropertyCaption(childMeta));
         label.setStyleName("h2");
 
         Table table = componentsFactory.createComponent(Table.NAME);
@@ -653,7 +654,7 @@ public class EntityInspectorEditor extends AbstractWindow {
         for (MetaProperty metaProperty : meta.getProperties()) {
             Table.Column column = new Table.Column(meta.getPropertyPath(metaProperty.getName()));
             if (!metadata.getTools().isSystem(metaProperty)) {
-                column.setCaption(getPropertyCaption(meta, metaProperty));
+                column.setCaption(getPropertyCaption(metaProperty));
                 nonSystemPropertyColumns.add(column);
             } else {
                 column.setCaption(metaProperty.getName());
