@@ -481,6 +481,7 @@ public class VTree extends FocusElementPanel implements Paintable, VHasDropHandl
                     return VTree.this;
                 }
 
+                @Override
                 public ApplicationConnection getApplicationConnection() {
                     return client;
                 }
@@ -1070,6 +1071,8 @@ public class VTree extends FocusElementPanel implements Paintable, VHasDropHandl
                 // but current node's actions
                 if ("actions".equals(childUidl.getTag())) {
                     updateActionMap(childUidl);
+                    continue;
+                } else if ("cm".equals(childUidl.getTag())) {
                     continue;
                 }
                 childTree = createTreeNode(childUidl);
