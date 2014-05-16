@@ -201,8 +201,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
         entitiesTable.setWidth("100%");
         tableBox.expand(entitiesTable);
 
-        ButtonsPanel buttonsPanel = createButtonsPanel();
-        entitiesTable.setButtonsPanel(buttonsPanel);
+        createButtonsPanel(entitiesTable);
 
         RowsCount rowsCount = componentsFactory.createComponent(RowsCount.NAME);
         rowsCount.setDatasource(entitiesDs);
@@ -221,12 +220,14 @@ public class EntityInspectorBrowse extends AbstractLookup {
         return metaProperty.getAnnotatedElement().isAnnotationPresent(javax.persistence.Embedded.class);
     }
 
-    protected ButtonsPanel createButtonsPanel() {
+    protected void createButtonsPanel(Table table) {
         ButtonsPanel buttonsPanel = componentsFactory.createComponent("buttonsPanel");
 
         createButton = componentsFactory.createComponent(Button.NAME);
         createButton.setCaption(messages.getMessage(EntityInspectorBrowse.class, "create"));
-        createButton.setAction(new CreateAction());
+        CreateAction createAction = new CreateAction();
+        createButton.setAction(createAction);
+        table.addAction(createAction);
         createButton.setIcon("icons/create.png");
         createButton.setFrame(frame);
 
@@ -242,6 +243,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
         removeButton.setCaption(messages.getMessage(EntityInspectorBrowse.class, "remove"));
         RemoveAction removeAction = new RemoveAction(entitiesTable);
         entitiesDs.addListener(removeAction);
+        table.addAction(removeAction);
         removeButton.setAction(removeAction);
         removeButton.setIcon("icons/remove.png");
         removeButton.setFrame(frame);
@@ -263,7 +265,8 @@ public class EntityInspectorBrowse extends AbstractLookup {
         buttonsPanel.addButton(removeButton);
         buttonsPanel.addButton(excelButton);
         buttonsPanel.addButton(refreshButton);
-        return buttonsPanel;
+
+        table.setButtonsPanel(buttonsPanel);
     }
 
     protected View createView(MetaClass meta) {
@@ -292,6 +295,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
 
         public CreateAction() {
             super("create");
+            setShortcut(configuration.getConfig(ClientConfig.class).getTableInsertShortcut());
         }
 
         @Override

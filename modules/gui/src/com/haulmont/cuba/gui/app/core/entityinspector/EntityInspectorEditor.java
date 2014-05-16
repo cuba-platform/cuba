@@ -7,6 +7,7 @@ package com.haulmont.cuba.gui.app.core.entityinspector;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.CategorizedEntity;
 import com.haulmont.cuba.core.entity.Category;
 import com.haulmont.cuba.core.entity.Entity;
@@ -20,8 +21,6 @@ import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.*;
-import com.haulmont.cuba.gui.filter.Condition;
-import com.haulmont.cuba.gui.filter.QueryFilter;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
@@ -72,6 +71,9 @@ public class EntityInspectorEditor extends AbstractWindow {
     @Inject
     protected ComponentsFactory componentsFactory;
 
+    @Inject
+    protected Configuration configuration;
+
     @WindowParam(name = "item")
     protected Entity item;
 
@@ -99,6 +101,8 @@ public class EntityInspectorEditor extends AbstractWindow {
     protected ButtonsPanel buttonsPanel;
     protected Button commitButton;
     protected Button cancelButton;
+    protected FieldGroup focusFieldGroup;
+    protected String focusFieldId;
 
     private boolean createRequest;
     private final String TABLE_MAX_HEIGHT;
@@ -124,6 +128,7 @@ public class EntityInspectorEditor extends AbstractWindow {
             throw new IllegalStateException("Entity or entity's MetaClass must be specified");
 
         setCaption(meta.getName());
+        initShortcuts();
 
         View view = createView(meta);
 
@@ -176,6 +181,21 @@ public class EntityInspectorEditor extends AbstractWindow {
         createCommitButtons();
         setCaption(meta.getName());
         layout();
+
+        if (focusFieldGroup != null && focusFieldId != null) {
+            focusFieldGroup.requestFocus(focusFieldId);
+        }
+    }
+
+    private void initShortcuts() {
+        final String commitShortcut =  configuration.getConfig(ClientConfig.class).getCommitShortcut();
+        Action commitAction = new AbstractAction("commitAndClose", commitShortcut) {
+            @Override
+            public void actionPerform(Component component) {
+                commitAndClose();
+            }
+        };
+        addAction(commitAction);
     }
 
     private void setParentField(Entity item, String parentProperty, Entity parent) {
@@ -508,6 +528,11 @@ public class EntityInspectorEditor extends AbstractWindow {
         field.setRequired(required);
         field.setEditable(!readOnly);
 
+        if (focusFieldId == null && !readOnly) {
+            focusFieldId = field.getId();
+            focusFieldGroup = fieldGroup;
+        }
+
         if (required) {
             MessageTools messageTools = AppBeans.get(MessageTools.NAME);
             field.setRequiredError(messageTools.getDefaultRequiredMessage(metaProperty));
@@ -675,12 +700,15 @@ public class EntityInspectorEditor extends AbstractWindow {
         ButtonsPanel propertyButtonsPanel = componentsFactory.createComponent(ButtonsPanel.NAME);
 
         Button createButton = componentsFactory.createComponent(Button.NAME);
-        createButton.setAction(new CreateAction(metaProperty, propertyDs, propertyMetaClass));
+        CreateAction createAction = new CreateAction(metaProperty, propertyDs, propertyMetaClass);
+        createButton.setAction(createAction);
+        table.addAction(createAction);
         createButton.setCaption(messages.getMessage(EntityInspectorEditor.class, "create"));
         createButton.setIcon("icons/create.png");
 
         Button addButton = componentsFactory.createComponent(Button.NAME);
         AddAction addAction = createAddAction(metaProperty, propertyDs, table, propertyMetaClass);
+        table.addAction(addAction);
         addButton.setAction(addAction);
         addButton.setCaption(messages.getMessage(EntityInspectorEditor.class, "add"));
         addButton.setIcon("icons/add.png");
@@ -698,6 +726,7 @@ public class EntityInspectorEditor extends AbstractWindow {
         propertyDs.addListener(removeAction);
         Button removeButton = componentsFactory.createComponent(Button.NAME);
         removeButton.setAction(removeAction);
+        table.addAction(removeAction);
         removeButton.setCaption(messages.getMessage(EntityInspectorEditor.class, "remove"));
         removeButton.setIcon("icons/remove.png");
 
@@ -720,6 +749,7 @@ public class EntityInspectorEditor extends AbstractWindow {
             params.put("parentProperty", inverseProperty.getName());
         addAction.setWindowParams(params);
         addAction.setOpenType(OPEN_TYPE);
+        addAction.setShortcut(configuration.getConfig(ClientConfig.class).getTableAddShortcut());
         return addAction;
     }
 
@@ -730,20 +760,22 @@ public class EntityInspectorEditor extends AbstractWindow {
             public void handleLookup(Collection items) {
                 for (Object item : items) {
                     Entity entity = (Entity) item;
-//                    if (!propertyDs.getItems().contains(entity)) {
-//                        MetaProperty inverseProperty = metaProperty.getInverse();
-//                        if (!metaProperty.getRange().getCardinality().isMany()) {
-//                            //set currently editing item to the child's parent property
-//                            entity.setValue(inverseProperty.getName(), datasource.getItem());
-//                            propertyDs.addItem(entity);
-//                        } else {
-//                            Collection properties = entity.getValue(inverseProperty.getName());
-//                            if (properties != null) {
-//                                properties.add(datasource.getItem());
-//                                propertyDs.addItem(entity);
-//                            }
-//                        }
-//                    }
+                    if (!propertyDs.getItems().contains(entity)) {
+                        MetaProperty inverseProperty = metaProperty.getInverse();
+                        if (inverseProperty != null) {
+                            if (!inverseProperty.getRange().getCardinality().isMany()) {
+                                //set currently editing item to the child's parent property
+                                entity.setValue(inverseProperty.getName(), datasource.getItem());
+                                propertyDs.addItem(entity);
+                            } else {
+                                Collection properties = entity.getValue(inverseProperty.getName());
+                                if (properties != null) {
+                                    properties.add(datasource.getItem());
+                                    propertyDs.addItem(entity);
+                                }
+                            }
+                        }
+                    }
 
                     propertyDs.addItem(entity);
                 }
@@ -775,6 +807,7 @@ public class EntityInspectorEditor extends AbstractWindow {
                 break;
             case ASSOCIATION:
                 result = new com.haulmont.cuba.gui.components.actions.ExcludeAction(table);
+                result.setShortcut(configuration.getConfig(ClientConfig.class).getTableRemoveShortcut());
                 break;
             default:
                 throw new IllegalArgumentException("property must contain an entity");
@@ -886,6 +919,7 @@ public class EntityInspectorEditor extends AbstractWindow {
             this.entitiesDs = entitiesDs;
             this.entityMeta = entityMeta;
             this.metaProperty = metaProperty;
+            setShortcut(configuration.getConfig(ClientConfig.class).getTableInsertShortcut());
         }
 
         @Override
