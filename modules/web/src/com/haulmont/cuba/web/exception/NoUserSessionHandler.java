@@ -12,8 +12,10 @@ import com.haulmont.cuba.gui.components.DialogAction;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.controllers.ControllerUtils;
 import com.vaadin.server.Page;
+import com.vaadin.ui.Notification;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -29,6 +31,7 @@ import java.util.Locale;
 public class NoUserSessionHandler extends AbstractExceptionHandler {
 
     private static Log log = LogFactory.getLog(NoUserSessionHandler.class);
+
     private Locale locale;
 
     public NoUserSessionHandler() {
@@ -42,14 +45,15 @@ public class NoUserSessionHandler extends AbstractExceptionHandler {
         try {
             Messages messages = AppBeans.get(Messages.class);
 
-            App.getInstance().getWindowManager().showOptionDialog(
+            WebWindowManager wm = app.getWindowManager();
+            wm.showOptionDialog(
                     messages.getMessage(getClass(), "dialogs.Information", locale),
                     messages.getMessage(getClass(), "noUserSession.message", locale),
                     IFrame.MessageType.CONFIRMATION,
-                    new Action[] {new LoginAction()}
+                    new Action[]{new LoginAction()}
             );
         } catch (Throwable th) {
-            log.error(th);
+            log.error("Unable to handle NoUserSessionException", th);
         }
     }
 
