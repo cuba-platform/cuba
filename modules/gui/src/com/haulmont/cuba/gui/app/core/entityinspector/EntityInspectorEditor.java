@@ -12,7 +12,6 @@ import com.haulmont.cuba.core.entity.CategorizedEntity;
 import com.haulmont.cuba.core.entity.Category;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.sys.AbstractViewRepository;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.*;
@@ -26,6 +25,8 @@ import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.openjpa.persistence.jdbc.EmbeddedMapping;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 
 import javax.inject.Inject;
 import javax.persistence.Column;
@@ -44,6 +45,7 @@ public class EntityInspectorEditor extends AbstractWindow {
     public static final int MAX_TEXT_LENGTH = 50;
 
     public static final WindowManager.OpenType OPEN_TYPE = WindowManager.OpenType.THIS_TAB;
+    public static final int MAX_TEXTFIELD_STRING_LENGTH = 255;
 
     @Inject
     protected Metadata metadata;
@@ -99,6 +101,7 @@ public class EntityInspectorEditor extends AbstractWindow {
     protected Boolean showSystemFields;
     protected Collection<Table> tables;
 
+    protected Collection<Field> reserveLineSeparatorFields;
     protected RuntimePropsDatasource rDS;
     protected CollectionDatasource categoriesDs;
 
@@ -107,8 +110,6 @@ public class EntityInspectorEditor extends AbstractWindow {
     protected Button cancelButton;
     protected FieldGroup focusFieldGroup;
     protected String focusFieldId;
-
-    private boolean createRequest;
     private final String TABLE_MAX_HEIGHT;
 
     public EntityInspectorEditor() {
@@ -140,7 +141,7 @@ public class EntityInspectorEditor extends AbstractWindow {
         dsContext.setFrameContext(getDsContext().getFrameContext());
         setDsContext(dsContext);
 
-        createRequest = item == null || item.getId() == null;
+        boolean createRequest = item == null || item.getId() == null;
         if (createRequest) {
             item = metadata.create(meta);
             createEmbeddedFields(meta, item);
@@ -167,7 +168,8 @@ public class EntityInspectorEditor extends AbstractWindow {
 
         datasource.refresh();
 
-        createDataComponents(meta);
+        reserveLineSeparatorFields = new LinkedList<>();
+        createDataComponents(meta, item);
         if (categorizedEntity) {
             createRuntimeDataComponents();
         }
@@ -231,7 +233,11 @@ public class EntityInspectorEditor extends AbstractWindow {
         rDS = new RuntimePropsDatasourceImpl(dsContext, dataSupplier, "rDS", datasource.getId());
         MetaClass categoriesMeta = metadata.getSession().getClass(Category.class);
         categoriesDs = new CollectionDatasourceImpl();
-        categoriesDs.setup(dsContext, dataSupplier, "categoriesDs", categoriesMeta, view.getProperty("category").getView());
+        ViewProperty categoryProperty = view.getProperty("category");
+        if (categoryProperty == null) {
+            throw new IllegalArgumentException("Category property not found. Not a categorized entity?");
+        }
+        categoriesDs.setup(dsContext, dataSupplier, "categoriesDs", categoriesMeta, categoryProperty.getView());
         categoriesDs.setQuery(String.format("select c from sys$Category c where c.entityType='%s'", meta.getName()));
         categoriesDs.refresh();
         dsContext.register(rDS);
@@ -342,7 +348,7 @@ public class EntityInspectorEditor extends AbstractWindow {
      *
      * @param metaClass item meta class
      */
-    private void createDataComponents(MetaClass metaClass) {
+    private void createDataComponents(MetaClass metaClass, Entity item) {
         FieldGroup fieldGroup = componentsFactory.createComponent(FieldGroup.NAME);
         LinkedList<FieldGroup.FieldConfig> customFields = new LinkedList<>();
 
@@ -358,7 +364,7 @@ public class EntityInspectorEditor extends AbstractWindow {
                     if (metadata.getTools().isSystem(metaProperty) && !showSystemFields) {
                         continue;
                     }
-                    addField(metaClass, metaProperty, fieldGroup, isRequired, false, isReadonly, customFields);
+                    addField(metaProperty, item, fieldGroup, isRequired, false, isReadonly, customFields);
                     break;
                 case COMPOSITION:
                 case ASSOCIATION:
@@ -366,9 +372,9 @@ public class EntityInspectorEditor extends AbstractWindow {
                         addTable(metaProperty);
                     } else {
                         if (isEmbedded(metaProperty))
-                            addEmbeddedFieldGroup(metaProperty);
+                            addEmbeddedFieldGroup(metaProperty, (Entity) item.getValue(metaProperty.getName()));
                         else {
-                            addField(metaClass, metaProperty, fieldGroup, isRequired, true, isReadonly, customFields);
+                            addField(metaProperty, item, fieldGroup, isRequired, true, isReadonly, customFields);
                         }
                     }
                     break;
@@ -386,7 +392,7 @@ public class EntityInspectorEditor extends AbstractWindow {
      *
      * @param embeddedMetaProperty meta property of the embedded property
      */
-    private void addEmbeddedFieldGroup(MetaProperty embeddedMetaProperty) {
+    private void addEmbeddedFieldGroup(MetaProperty embeddedMetaProperty, Entity item) {
         MetaProperty nullIndicatorProperty = getNullIndicatorProperty(embeddedMetaProperty);
         Datasource embedDs = datasources.get(embeddedMetaProperty.getName());
         FieldGroup fieldGroup = componentsFactory.createComponent(FieldGroup.NAME);
@@ -405,7 +411,7 @@ public class EntityInspectorEditor extends AbstractWindow {
                     if (metadata.getTools().isSystem(metaProperty) && !showSystemFields) {
                         continue;
                     }
-                    addField(embeddableMetaClass, metaProperty, fieldGroup, isRequired, false, isReadonly, customFields);
+                    addField(metaProperty, item, fieldGroup, isRequired, false, isReadonly, customFields);
                     break;
                 case COMPOSITION:
                 case ASSOCIATION:
@@ -413,9 +419,9 @@ public class EntityInspectorEditor extends AbstractWindow {
                         throw new IllegalStateException("tables for the embeddable entities are not supported");
                     } else {
                         if (isEmbedded(metaProperty)) {
-                            addEmbeddedFieldGroup(metaProperty);
+                            addEmbeddedFieldGroup(metaProperty, (Entity) item.getValue(metaProperty.getName()));
                         } else {
-                            addField(embeddableMetaClass, metaProperty, fieldGroup, isRequired, true, isReadonly, customFields);
+                            addField(metaProperty, item, fieldGroup, isRequired, true, isReadonly, customFields);
                         }
                     }
                     break;
@@ -436,10 +442,7 @@ public class EntityInspectorEditor extends AbstractWindow {
             return true;
 
         OneToOne one2one = metaProperty.getAnnotatedElement().getAnnotation(OneToOne.class);
-        if (one2one != null && !one2one.optional())
-            return true;
-
-        return false;
+        return one2one != null && !one2one.optional();
     }
 
     /**
@@ -505,14 +508,13 @@ public class EntityInspectorEditor extends AbstractWindow {
      * If the field should be custom, adds it to the specified customFields collection
      * which can be used later to create fieldGenerators
      *
-     * @param meta         meta class of item
      * @param metaProperty meta property of the item's property which field is creating
      * @param fieldGroup   field group to which created field will be added
      * @param customFields if the field is custom it will be added to this collection
      * @param required     true if the field is required
      * @param custom       true if the field is custom
      */
-    private void addField(MetaClass meta, MetaProperty metaProperty,
+    private void addField(MetaProperty metaProperty, Entity item,
                           FieldGroup fieldGroup, boolean required, boolean custom, boolean readOnly,
                           Collection<FieldGroup.FieldConfig> customFields) {
         if (!attrViewPermitted(metaProperty))
@@ -532,6 +534,12 @@ public class EntityInspectorEditor extends AbstractWindow {
         field.setRequired(required);
         field.setEditable(!readOnly);
 
+        if (requireTextArea(metaProperty, item)) {
+            Element root = DocumentHelper.createElement("textArea");
+            root.addAttribute("rows", "3");
+            field.setXmlDescriptor(root);
+        }
+
         if (focusFieldId == null && !readOnly) {
             focusFieldId = field.getId();
             focusFieldGroup = fieldGroup;
@@ -544,6 +552,28 @@ public class EntityInspectorEditor extends AbstractWindow {
         fieldGroup.addField(field);
         if (custom)
             customFields.add(field);
+    }
+
+    /**
+     * @param metaProperty meta property
+     * @param item entity containing property of the given meta property
+     * @return true if property require text area component; that is if it either too long or contains line separators
+     */
+    private boolean requireTextArea(MetaProperty metaProperty, Entity item) {
+        if (!String.class.equals(metaProperty.getJavaType())) {
+            return false;
+        }
+
+        Column columnAnnotation = metaProperty.getAnnotatedElement().getAnnotation(Column.class);
+        boolean isLong = columnAnnotation != null && columnAnnotation.length() > MAX_TEXTFIELD_STRING_LENGTH;
+        Object value = item.getValue(metaProperty.getName());
+        boolean isContainsSeparator = value != null && containsSeparator((String) value);
+
+        return isLong || isContainsSeparator;
+    }
+
+    private boolean containsSeparator(String s) {
+        return s.indexOf('\n') >=0 || s.indexOf('\r') >= 0;
     }
 
     /**
@@ -697,6 +727,7 @@ public class EntityInspectorEditor extends AbstractWindow {
      * @param table        table
      * @return buttons panel
      */
+    @SuppressWarnings("unchecked")
     private ButtonsPanel createButtonsPanel(final MetaProperty metaProperty,
                                             final CollectionDatasource propertyDs, Table table) {
         MetaClass propertyMetaClass = metaProperty.getRange().asClass();
@@ -826,6 +857,7 @@ public class EntityInspectorEditor extends AbstractWindow {
      * @param meta meta class
      * @return View instance
      */
+    @SuppressWarnings("unchecked")
     private View createView(MetaClass meta) {
         View view = new View(meta.getJavaClass(), false);
         for (MetaProperty metaProperty : meta.getProperties()) {
@@ -849,38 +881,6 @@ public class EntityInspectorEditor extends AbstractWindow {
                     throw new IllegalStateException("unknown property type");
             }
         }
-        return view;
-    }
-
-    /**
-     * Creates a view that includes all of the properties. Related entities will be loaded with a local view.
-     *
-     * @param property
-     * @return
-     */
-    private View createReferredPropertyView(MetaProperty property) {
-        if (property.getType() != MetaProperty.Type.COMPOSITION &&
-                property.getType() != MetaProperty.Type.ASSOCIATION)
-            throw new RuntimeException("cannot create view for basic type property");
-
-        MetaClass propertyMeta = property.getRange().asClass();
-        View view = new View(propertyMeta.getJavaClass(), true);
-        for (MetaProperty metaProperty : propertyMeta.getProperties()) {
-            switch (metaProperty.getType()) {
-                case DATATYPE:
-                case ENUM:
-                    view.addProperty(metaProperty.getName());
-                    break;
-                case ASSOCIATION:
-                case COMPOSITION:
-                    View propView = viewRepository.getView(metaProperty.getRange().asClass(), View.MINIMAL);
-                    view.addProperty(metaProperty.getName(), propView);
-                    break;
-                default:
-                    throw new IllegalStateException("unknown property type");
-            }
-        }
-        ((AbstractViewRepository) viewRepository).storeView(propertyMeta, view);
         return view;
     }
 
