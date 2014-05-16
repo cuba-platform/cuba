@@ -38,6 +38,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
     public static final String SCREEN_NAME = "entityInspector.browse";
     public static final WindowManager.OpenType WINDOW_OPEN_TYPE = WindowManager.OpenType.THIS_TAB;
     public static final String DEFAULT_FIELD_WIDTH = "300";
+    public static final int MAX_TEXT_LENGTH = 50;
 
     @Inject
     protected Metadata metadata;
@@ -172,6 +173,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
                 continue;
 
             Table.Column column = new Table.Column(meta.getPropertyPath(metaProperty.getName()));
+            column.setMaxTextLength(MAX_TEXT_LENGTH);
             if (!metadata.getTools().isSystem(metaProperty)) {
                 column.setCaption(getPropertyCaption(metaProperty));
                 nonSystemPropertyColumns.add(column);

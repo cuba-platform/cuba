@@ -41,6 +41,7 @@ public class EntityInspectorEditor extends AbstractWindow {
 
     public static final String DEFAULT_FIELD_WIDTH = "300";
     public static final int CAPTION_MAX_LENGTH = 100;
+    public static final int MAX_TEXT_LENGTH = 50;
 
     public static final WindowManager.OpenType OPEN_TYPE = WindowManager.OpenType.THIS_TAB;
 
@@ -660,6 +661,7 @@ public class EntityInspectorEditor extends AbstractWindow {
                 column.setCaption(metaProperty.getName());
                 systemPropertyColumns.add(column);
             }
+            column.setMaxTextLength(MAX_TEXT_LENGTH);
         }
         for (Table.Column column : nonSystemPropertyColumns)
             table.addColumn(column);
