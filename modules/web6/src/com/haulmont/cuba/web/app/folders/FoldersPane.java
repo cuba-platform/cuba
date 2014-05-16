@@ -53,6 +53,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.*;
 
@@ -427,11 +428,14 @@ public class FoldersPane extends VerticalLayout {
         return result;
     }
 
-    protected void updateQuantityAndItemStyleAppFolder(AppFolder parentFolder) {
+    protected void updateQuantityAndItemStyleAppFolder(AppFolder parentFolder, @Nullable List<AppFolder> reloadedFolders) {
         Collection<AppFolder> childFolders = getRecursivelyChildAppFolders(parentFolder);
         int sumOfChildQuantity = 0;
         Set<String> childFoldersStyleSet = new HashSet<>();
         for (AppFolder childFolder : childFolders) {
+            if (reloadedFolders != null) {
+                childFolder = reloadedFolders.get(reloadedFolders.indexOf(childFolder));
+            }
             sumOfChildQuantity += !StringUtils.isBlank(childFolder.getQuantityScript()) ? childFolder.getQuantity() : 0;
             if (childFolder.getItemStyle() != null)
                 childFoldersStyleSet.add(childFolder.getItemStyle());
@@ -439,7 +443,8 @@ public class FoldersPane extends VerticalLayout {
         parentFolder.setQuantity(sumOfChildQuantity);
         if (!childFoldersStyleSet.isEmpty()) {
             parentFolder.setItemStyle(StringUtils.join(childFoldersStyleSet, " "));
-        }
+        } else
+            parentFolder.setItemStyle("");
     }
 
     protected List<AppFolder> getReloadedFolders() {
@@ -449,7 +454,7 @@ public class FoldersPane extends VerticalLayout {
 
         for (AppFolder folder : folders) {
             if (StringUtils.isBlank(folder.getQuantityScript()) && folder.getQuantity() != null)
-                updateQuantityAndItemStyleAppFolder(folder);
+                updateQuantityAndItemStyleAppFolder(folder, folders);
         }
 
         return folders;
@@ -495,7 +500,7 @@ public class FoldersPane extends VerticalLayout {
             public void nodeCollapse(Tree.CollapseEvent event) {
                 AppFolder folder = (AppFolder) event.getItemId();
                 if (StringUtils.isBlank(folder.getQuantityScript())) {
-                    updateQuantityAndItemStyleAppFolder(folder);
+                    updateQuantityAndItemStyleAppFolder(folder, null);
                     appFoldersTree.setItemCaption(folder, folder.getCaption());
                 }
             }
