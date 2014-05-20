@@ -608,7 +608,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
                 }
             });
 
-            Button searchBtn = new Button();
+            Button searchBtn = new CubaButton();
             searchBtn.setStyleName(BaseTheme.BUTTON_LINK);
             searchBtn.addStyleName("cuba-fts-button");
             searchBtn.setIcon(new VersionedThemeResource("app/images/fts-button.png"));
@@ -808,10 +808,11 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
 
     protected Button createLogoutButton() {
         String buttonTitle = "";
-        if (!webConfig.getUseLightHeader())
+        if (!webConfig.getUseLightHeader()) {
             buttonTitle = messages.getMessage(getMessagesPack(), "logoutBtn");
+        }
 
-        Button logoutBtn = new Button(buttonTitle, new LogoutBtnClickListener());
+        Button logoutBtn = new CubaButton(buttonTitle, new LogoutBtnClickListener());
 
         logoutBtn.setDescription(messages.getMessage(getMessagesPack(), "logoutBtnDescription"));
         logoutBtn.setStyleName("cuba-buttons-white-border");
@@ -831,10 +832,11 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
 
     protected Button createNewWindowButton() {
         String buttonTitle = "";
-        if (!webConfig.getUseLightHeader())
+        if (!webConfig.getUseLightHeader()) {
             buttonTitle = messages.getMessage(getMessagesPack(), "newWindowBtn");
+        }
 
-        Button newWindowBtn = new Button(buttonTitle);
+        Button newWindowBtn = new CubaButton(buttonTitle);
 
         URL pageUrl = null;
         try {

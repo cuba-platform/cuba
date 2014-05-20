@@ -10,6 +10,8 @@ import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
+import com.vaadin.terminal.PaintException;
+import com.vaadin.terminal.PaintTarget;
 import com.vaadin.ui.NativeButton;
 import org.apache.commons.lang.StringUtils;
 
@@ -29,16 +31,33 @@ public class WebButton extends WebAbstractComponent<com.vaadin.ui.Button> implem
 
     protected PropertyChangeListener actionPropertyChangeListener;
 
+    protected boolean clicked = false;
+    protected boolean useResponsePending = true;
+
     public WebButton() {
         if (AppBeans.get(Configuration.class).getConfig(WebConfig.class).getUseNativeButtons()) {
             component = new NativeButton();
         } else {
-            component = new com.vaadin.ui.Button();
+            component = new com.vaadin.ui.Button() {
+                @Override
+                public void paintContent(PaintTarget target) throws PaintException {
+                    super.paintContent(target);
+
+                    target.addAttribute("useResponsePending", useResponsePending);
+                    if (useResponsePending && clicked) {
+                        target.addVariable(this, "clicked", true);
+                        clicked = false;
+                    }
+                }
+            };
         }
 
         component.addListener(new com.vaadin.ui.Button.ClickListener() {
             @Override
             public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+                clicked = true;
+                component.requestRepaint();
+
                 beforeActionPerformed();
                 if (action != null) {
                     performAction(action);
@@ -56,6 +75,14 @@ public class WebButton extends WebAbstractComponent<com.vaadin.ui.Button> implem
     }
 
     protected void afterActionPerformed() {
+    }
+
+    public boolean isUseResponsePending() {
+        return useResponsePending;
+    }
+
+    public void setUseResponsePending(boolean useResponsePending) {
+        this.useResponsePending = useResponsePending;
     }
 
     @Override

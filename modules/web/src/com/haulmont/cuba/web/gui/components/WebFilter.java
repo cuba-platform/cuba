@@ -48,10 +48,7 @@ import com.haulmont.cuba.web.app.folders.FolderEditWindow;
 import com.haulmont.cuba.web.app.folders.FoldersPane;
 import com.haulmont.cuba.web.gui.components.filter.*;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
-import com.haulmont.cuba.web.toolkit.ui.CubaCheckBox;
-import com.haulmont.cuba.web.toolkit.ui.CubaComboBox;
-import com.haulmont.cuba.web.toolkit.ui.CubaGroupBox;
-import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
+import com.haulmont.cuba.web.toolkit.ui.*;
 import com.haulmont.cuba.web.toolkit.ui.converters.SimpleStringToIntegerConverter;
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
@@ -275,7 +272,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         Label label = new Label(lastAppliedFilter.getText());
         layout.addComponent(label);
 
-        Button button = new Button();
+        Button button = new CubaButton();
         button.setStyleName(BaseTheme.BUTTON_LINK);
         button.addStyleName("remove-applied-filter");
         button.setIcon(new VersionedThemeResource("icons/item-remove.png"));

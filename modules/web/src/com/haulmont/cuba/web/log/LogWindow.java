@@ -8,6 +8,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
+import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.shared.ui.MarginInfo;
@@ -82,7 +83,7 @@ public class LogWindow extends Window {
         topLayout.setWidth("100%");
         topLayout.setHeight(SIZE_UNDEFINED, Unit.PIXELS);
 
-        Button refreshBtn = new Button(AppBeans.get(Messages.class).getMessage(getClass(), "logWindow.refreshBtn"),
+        Button refreshBtn = new CubaButton(AppBeans.get(Messages.class).getMessage(getClass(), "logWindow.refreshBtn"),
                 new Button.ClickListener() {
                     @Override
                     public void buttonClick(Button.ClickEvent event) {

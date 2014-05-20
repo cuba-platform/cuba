@@ -10,6 +10,7 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.AppWindow;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
+import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -43,7 +44,7 @@ public class WindowBreadCrumbs extends HorizontalLayout {
 
     public WindowBreadCrumbs() {
         setWidth(100, Unit.PERCENTAGE);
-        setHeight(-1, Unit.PIXELS); // TODO (abramov) This is a bit tricky
+        setHeight(-1, Unit.PIXELS);
         setStyleName("cuba-headline-container");
 
         tabbedMode = AppWindow.Mode.TABBED.equals(App.getInstance().getAppWindow().getMode());
@@ -61,7 +62,7 @@ public class WindowBreadCrumbs extends HorizontalLayout {
         linksLayout.setSizeUndefined();
 
         if (!tabbedMode) {
-            closeBtn = new Button("", new Button.ClickListener() {
+            closeBtn = new CubaButton("", new Button.ClickListener() {
                 @Override
                 public void buttonClick(Button.ClickEvent event) {
                     final Window window = getCurrentWindow();
@@ -152,7 +153,7 @@ public class WindowBreadCrumbs extends HorizontalLayout {
         btn2win.clear();
         for (Iterator<Window> it = windows.iterator(); it.hasNext();) {
             Window window = it.next();
-            Button button = new Button(window.getCaption().trim(), new BtnClickListener());
+            Button button = new CubaButton(window.getCaption().trim(), new BtnClickListener());
             button.setSizeUndefined();
             button.setStyleName(BaseTheme.BUTTON_LINK);
             button.setTabIndex(-1);

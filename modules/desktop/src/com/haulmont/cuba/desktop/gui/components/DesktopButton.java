@@ -23,8 +23,10 @@ import java.beans.PropertyChangeListener;
  */
 public class DesktopButton extends DesktopAbstractComponent<JButton> implements Button {
 
-    private Action action;
-    private String icon;
+    protected Action action;
+    protected String icon;
+
+    protected long responseEndTs = 0;
 
     public DesktopButton() {
         impl = createImplementation();
@@ -32,11 +34,19 @@ public class DesktopButton extends DesktopAbstractComponent<JButton> implements 
                 new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        // it is unnecessary for DesktopButton but needed for DesktopLinkButton
-                        DesktopComponentsHelper.flushCurrentInputField();
+                        if (e.getWhen() <= responseEndTs) {
+                            return;
+                        }
 
-                        if (action != null) {
-                            action.actionPerform(DesktopButton.this);
+                        try {
+                            // it is unnecessary for DesktopButton but needed for DesktopLinkButton
+                            DesktopComponentsHelper.flushCurrentInputField();
+
+                            if (action != null) {
+                                action.actionPerform(DesktopButton.this);
+                            }
+                        } finally {
+                            responseEndTs = System.currentTimeMillis();
                         }
                     }
                 }

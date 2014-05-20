@@ -10,6 +10,7 @@ import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
+import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.vaadin.ui.NativeButton;
 import org.apache.commons.lang.StringUtils;
 
@@ -29,10 +30,11 @@ public class WebButton extends WebAbstractComponent<com.vaadin.ui.Button> implem
     protected PropertyChangeListener actionPropertyChangeListener;
 
     public WebButton() {
-        if (AppBeans.get(Configuration.class).getConfig(WebConfig.class).getUseNativeButtons()) {
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        if (configuration.getConfig(WebConfig.class).getUseNativeButtons()) {
             component = new NativeButton();
         } else {
-            component = new com.vaadin.ui.Button();
+            component = new CubaButton();
         }
         component.addClickListener(new com.vaadin.ui.Button.ClickListener() {
             @Override

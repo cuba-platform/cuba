@@ -37,6 +37,7 @@ import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
+import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.haulmont.cuba.web.toolkit.ui.CubaEnhancedTable;
 import com.haulmont.cuba.web.toolkit.ui.CubaFieldWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaPlaceHolder;
@@ -1486,7 +1487,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             final Property property = item.getItemProperty(columnId);
             final Object value = property.getValue();
 
-            final com.vaadin.ui.Button component = new com.vaadin.ui.Button();
+            final com.vaadin.ui.Button component = new CubaButton();
             component.setData(value);
             component.setCaption(value == null ? "" : ((PropertyWrapper)property).getFormattedValue());
             component.setStyleName(BaseTheme.BUTTON_LINK);

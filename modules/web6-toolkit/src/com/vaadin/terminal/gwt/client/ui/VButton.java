@@ -72,6 +72,8 @@ public class VButton extends FocusWidget implements Paintable, ClickHandler,
 
     private int tabIndex = 0;
 
+    private boolean responsePending = false;
+
     /*
      * BELOW PRIVATE MEMBERS COPY-PASTED FROM GWT CustomButton
      */
@@ -98,6 +100,8 @@ public class VButton extends FocusWidget implements Paintable, ClickHandler,
 
     private int clickShortcut = 0;
 
+    protected boolean useResponsePending = false;
+
     public VButton() {
         super(DOM.createDiv());
         setTabIndex(0);
@@ -120,11 +124,19 @@ public class VButton extends FocusWidget implements Paintable, ClickHandler,
 
     @Override
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
-
         // Ensure correct implementation,
         // but don't let container manage caption etc.
         if (client.updateComponent(this, uidl, false)) {
             return;
+        }
+
+        if (uidl.hasAttribute("useResponsePending")) {
+            useResponsePending = uidl.getBooleanAttribute("useResponsePending");
+        }
+
+        if (useResponsePending && uidl.hasVariable("clicked")) {
+            responsePending = false;
+            removeStyleDependentName("wait");
         }
 
         focusHandlerRegistration = EventHelper.updateFocusHandler(this, client,
@@ -368,6 +380,16 @@ public class VButton extends FocusWidget implements Paintable, ClickHandler,
         if (BrowserInfo.get().isSafari()) {
             VButton.this.setFocus(true);
         }
+
+        if (responsePending) {
+            return;
+        }
+
+        if (useResponsePending) {
+            responsePending = true;
+            addStyleDependentName("wait");
+        }
+
         client.updateVariable(id, "state", true, false);
 
         // Add mouse details
@@ -385,7 +407,7 @@ public class VButton extends FocusWidget implements Paintable, ClickHandler,
     /**
      * Called internally when the user finishes clicking on this button. The
      * default behavior is to fire the click event to listeners. Subclasses that
-     * override {@link #onClickStart()} should override this method to restore
+     * override onClickStart() should override this method to restore
      * the normal widget display.
      * <p>
      * To add custom code for a click event, override

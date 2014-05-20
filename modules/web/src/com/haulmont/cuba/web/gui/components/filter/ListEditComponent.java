@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.web.gui.components.filter;
 
+import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
@@ -22,6 +23,7 @@ import com.haulmont.cuba.web.gui.components.WebDateField;
 import com.haulmont.cuba.web.gui.components.WebLookupField;
 import com.haulmont.cuba.web.gui.components.WebPickerField;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
+import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
 import com.vaadin.data.util.converter.Converter;
@@ -76,7 +78,7 @@ public class ListEditComponent extends CustomField {
         field.setWidth("100%");
         field.setNullRepresentation("");
 
-        pickerButton = new Button();
+        pickerButton = new CubaButton();
         pickerButton.addStyleName("pickButton");
         pickerButton.addClickListener(
                 new Button.ClickListener() {
@@ -92,7 +94,7 @@ public class ListEditComponent extends CustomField {
                 }
         );
 
-        clearButton = new Button();
+        clearButton = new CubaButton();
         clearButton.addStyleName("clearButton");
         clearButton.addClickListener(
                 new Button.ClickListener() {
@@ -481,7 +483,7 @@ public class ListEditComponent extends CustomField {
                 field = dateField.getComponent();
                 dateFieldLayout = new HorizontalLayout();
                 this.setWidth(350, Unit.PIXELS);
-                addButton = new Button(messages.getMessage(getClass(), "actions.Add"));
+                addButton = new CubaButton(messages.getMessage(getClass(), "actions.Add"));
                 addButton.addClickListener(new Button.ClickListener() {
                     @Override
                     public void buttonClick(Button.ClickEvent event) {
@@ -521,7 +523,7 @@ public class ListEditComponent extends CustomField {
             bottomLayout.setMargin(new MarginInfo(true, false, true, false));
             bottomLayout.setSpacing(true);
 
-            Button okBtn = new Button(messages.getMessage(AppConfig.getMessagesPack(), "actions.Ok"));
+            Button okBtn = new CubaButton(messages.getMessage(AppConfig.getMessagesPack(), "actions.Ok"));
             okBtn.setIcon(new VersionedThemeResource("icons/ok.png"));
             okBtn.setStyleName(WebButton.ICON_STYLE);
             okBtn.addClickListener(
@@ -534,7 +536,7 @@ public class ListEditComponent extends CustomField {
             );
             bottomLayout.addComponent(okBtn);
 
-            Button cancelBtn = new Button(messages.getMessage(AppConfig.getMessagesPack(), "actions.Cancel"));
+            Button cancelBtn = new CubaButton(messages.getMessage(AppConfig.getMessagesPack(), "actions.Cancel"));
             cancelBtn.setIcon(new VersionedThemeResource("icons/cancel.png"));
             cancelBtn.setStyleName(WebButton.ICON_STYLE);
             cancelBtn.addClickListener(
@@ -589,7 +591,7 @@ public class ListEditComponent extends CustomField {
             itemLayout.addComponent(itemLab);
             itemLayout.setComponentAlignment(itemLab, Alignment.MIDDLE_LEFT);
 
-            Button delItemBtn = new Button();
+            Button delItemBtn = new CubaButton();
             delItemBtn.setStyleName(BaseTheme.BUTTON_LINK);
             delItemBtn.setIcon(new VersionedThemeResource("icons/item-remove.png"));
             delItemBtn.addStyleName("filter-param-list-edit-del");
@@ -609,8 +611,10 @@ public class ListEditComponent extends CustomField {
         }
 
         private String addDate(Date date) {
-            String str = Datatypes.get(itemClass).format(date,
-                    AppBeans.get(UserSessionSource.class).getUserSession().getLocale());
+            Locale locale = AppBeans.get(UserSessionSource.class).getUserSession().getLocale();
+            Datatype datatype = Datatypes.get(itemClass);
+
+            String str = datatype.format(date, locale);
 
             values.put(date, str);
             return str;

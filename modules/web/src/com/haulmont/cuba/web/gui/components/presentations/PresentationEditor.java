@@ -15,6 +15,7 @@ import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.security.entity.Presentation;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -98,7 +99,7 @@ public class PresentationEditor extends Window {
         root.addComponent(buttons);
         root.setComponentAlignment(buttons, Alignment.MIDDLE_LEFT);
 
-        Button commitButton = new Button(getMessage("PresentationsEditor.save"));
+        Button commitButton = new CubaButton(getMessage("PresentationsEditor.save"));
         commitButton.addClickListener(new Button.ClickListener() {
 
             @Override
@@ -164,7 +165,7 @@ public class PresentationEditor extends Window {
         });
         buttons.addComponent(commitButton);
 
-        Button closeButton = new Button(getMessage("PresentationsEditor.close"));
+        Button closeButton = new CubaButton(getMessage("PresentationsEditor.close"));
         closeButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {

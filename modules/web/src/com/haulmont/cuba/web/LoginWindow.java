@@ -14,6 +14,7 @@ import com.haulmont.cuba.web.auth.ActiveDirectoryHelper;
 import com.haulmont.cuba.web.auth.DomainAliasesResolver;
 import com.haulmont.cuba.web.sys.Browser;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
+import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.haulmont.cuba.web.toolkit.ui.CubaCheckBox;
 import com.vaadin.data.Property;
 import com.vaadin.event.Action;
@@ -127,7 +128,7 @@ public class LoginWindow extends UIView implements Action.Handler {
         passwordField.setImmediate(true);
         localesSelect.setImmediate(true);
 
-        okButton = new Button();
+        okButton = new CubaButton();
 
         rememberMeAllowed = !ActiveDirectoryHelper.useActiveDirectory() ||
                 !ActiveDirectoryHelper.activeDirectorySupportedBySession();

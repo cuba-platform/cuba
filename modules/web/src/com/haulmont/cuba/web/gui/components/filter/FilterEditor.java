@@ -20,6 +20,7 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebFilter;
+import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.haulmont.cuba.web.toolkit.ui.CubaTreeTable;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
@@ -278,7 +279,7 @@ public class FilterEditor extends AbstractFilterEditor {
     }
 
     protected void initAddDialog(HorizontalLayout addLayout) {
-        Button addBtn = new Button(getMessage("FilterEditor.addCondition"));
+        Button addBtn = new CubaButton(getMessage("FilterEditor.addCondition"));
         addBtn.addClickListener(new AddConditionClickListener());
         addLayout.addComponent(addBtn);
 
@@ -340,7 +341,7 @@ public class FilterEditor extends AbstractFilterEditor {
         });
         layout.addComponent(addSelect);
 
-        Button addBtn = new Button(getMessage("FilterEditor.addMoreConditions"));
+        Button addBtn = new CubaButton(getMessage("FilterEditor.addMoreConditions"));
         addBtn.addClickListener(new AddConditionClickListener());
         layout.addComponent(addBtn);
 

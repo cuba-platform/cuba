@@ -11,6 +11,7 @@ import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
+import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.shared.ui.window.WindowMode;
@@ -92,7 +93,7 @@ public class ExceptionDialog extends Window {
         buttonsLayout.addComponent(leftButtonsLayout);
         buttonsLayout.setComponentAlignment(leftButtonsLayout, Alignment.MIDDLE_LEFT);
 
-        Button closeButton = new Button(messages.getMessage(getClass(), "exceptionDialog.closeBtn"));
+        Button closeButton = new CubaButton(messages.getMessage(getClass(), "exceptionDialog.closeBtn"));
         closeButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
@@ -101,7 +102,7 @@ public class ExceptionDialog extends Window {
         });
         leftButtonsLayout.addComponent(closeButton);
 
-        showStackTraceButton = new Button(messages.getMessage(getClass(), "exceptionDialog.showStackTrace"));
+        showStackTraceButton = new CubaButton(messages.getMessage(getClass(), "exceptionDialog.showStackTrace"));
         showStackTraceButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
@@ -111,7 +112,7 @@ public class ExceptionDialog extends Window {
         leftButtonsLayout.addComponent(showStackTraceButton);
 
         if (!StringUtils.isBlank(webConfig.getSupportEmail()) && userSessionSource.getUserSession() != null) {
-            final Button reportButton = new Button(messages.getMessage(getClass(), "exceptionDialog.reportBtn"));
+            final Button reportButton = new CubaButton(messages.getMessage(getClass(), "exceptionDialog.reportBtn"));
             reportButton.addClickListener(new Button.ClickListener() {
                 @Override
                 public void buttonClick(Button.ClickEvent event) {

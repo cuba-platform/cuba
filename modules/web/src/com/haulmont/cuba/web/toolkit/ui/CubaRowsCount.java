@@ -36,7 +36,7 @@ public class CubaRowsCount extends CustomComponent {
         contentLayout.setSpacing(true);
         contentLayout.setHeight("-1px");
 
-        prevButton = new Button("<");
+        prevButton = new CubaButton("<");
         prevButton.setWidth("-1px");
         prevButton.setStyleName("cuba-paging-change-page");
         prevButton.addStyleName("cuba-paging-prev");
@@ -47,14 +47,14 @@ public class CubaRowsCount extends CustomComponent {
         label.setStyleName("cuba-paging-status");
         contentLayout.addComponent(label);
 
-        countButton = new Button("[?]");
+        countButton = new CubaButton("[?]");
         countButton.setWidth("-1px");
         countButton.setStyleName(BaseTheme.BUTTON_LINK);
         countButton.addStyleName("cuba-paging-count");
         countButton.setTabIndex(-1);
         contentLayout.addComponent(countButton);
 
-        nextButton = new Button(">");
+        nextButton = new CubaButton(">");
         nextButton.setWidth("-1px");
         nextButton.setStyleName("cuba-paging-change-page");
         nextButton.addStyleName("cuba-paging-next");

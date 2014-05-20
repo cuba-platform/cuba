@@ -23,6 +23,7 @@ import com.haulmont.cuba.gui.components.filter.addcondition.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.haulmont.cuba.web.toolkit.ui.CubaTree;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
@@ -50,7 +51,7 @@ public class AddConditionDlg extends Window {
 
     protected SelectionHandler selectionHandler;
     protected ModelItem selectedItem;
-    private Button cancelBtn;
+    protected Button cancelBtn;
 
     public AddConditionDlg(MetaClass metaClass,
                            List<AbstractConditionDescriptor> propertyDescriptors,
@@ -174,7 +175,7 @@ public class AddConditionDlg extends Window {
         buttonsLayout.setExpandRatio(spacer, 1);
 
         Messages messages = AppBeans.get(Messages.class);
-        okBtn = new Button(messages.getMessage(AppConfig.getMessagesPack(), "actions.Select"));
+        okBtn = new CubaButton(messages.getMessage(AppConfig.getMessagesPack(), "actions.Select"));
         okBtn.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
@@ -183,7 +184,7 @@ public class AddConditionDlg extends Window {
         });
         buttonsLayout.addComponent(okBtn);
 
-        cancelBtn = new Button(messages.getMessage(AppConfig.getMessagesPack(), "actions.Cancel"));
+        cancelBtn = new CubaButton(messages.getMessage(AppConfig.getMessagesPack(), "actions.Cancel"));
         cancelBtn.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {

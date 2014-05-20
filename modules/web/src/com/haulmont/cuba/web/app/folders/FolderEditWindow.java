@@ -18,6 +18,7 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
+import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.haulmont.cuba.web.toolkit.ui.CubaCheckBox;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
@@ -136,14 +137,14 @@ public class FolderEditWindow extends Window {
         buttonsLayout.setSpacing(true);
         layout.addComponent(buttonsLayout);
 
-        okBtn = new Button(getMessage("actions.Ok"));
+        okBtn = new CubaButton(getMessage("actions.Ok"));
         okBtn.setIcon(new VersionedThemeResource("icons/ok.png"));
         okBtn.addStyleName(WebButton.ICON_STYLE);
 
         initButtonOkListener();
         buttonsLayout.addComponent(okBtn);
 
-        Button cancelBtn = new Button(getMessage("actions.Cancel"));
+        Button cancelBtn = new CubaButton(getMessage("actions.Cancel"));
         cancelBtn.setIcon(new VersionedThemeResource("icons/cancel.png"));
         cancelBtn.addStyleName(WebButton.ICON_STYLE);
         cancelBtn.addClickListener(new Button.ClickListener() {
