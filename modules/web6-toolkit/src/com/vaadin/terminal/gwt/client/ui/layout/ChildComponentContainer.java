@@ -15,6 +15,7 @@
  */
 package com.vaadin.terminal.gwt.client.ui.layout;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.*;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
@@ -126,7 +127,6 @@ public class ChildComponentContainer extends Panel {
         setOrientation(orientation);
 
         setWidget(widget);
-
     }
 
     public void setWidget(Widget w) {
@@ -153,6 +153,13 @@ public class ChildComponentContainer extends Panel {
             widgetDIV.appendChild(widget.getElement());
             adopt(w);
         }
+
+        VSchedulerImpl.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+            @Override
+            public void execute() {
+                containerDIV.setScrollLeft(0);
+            }
+        });
     }
 
     private static void setFloat(Element div, String floatString) {
