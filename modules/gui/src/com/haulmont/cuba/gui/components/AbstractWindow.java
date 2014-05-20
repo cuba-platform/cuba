@@ -147,7 +147,7 @@ public class AbstractWindow extends AbstractFrame
      * support additional validation.
      * <p>You should override this method in subclasses ONLY if you want to completely replace the validation process,
      * otherwise use {@link #postValidate(ValidationErrors)}.
-     * @return true if the validation was succesful, false if there were any problems
+     * @return true if the validation was successful, false if there were any problems
      */
     @Override
     public boolean validateAll() {
