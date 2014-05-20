@@ -2852,6 +2852,7 @@ public abstract class Table
                                 Event.ONMOUSEOUT == eventType ||
                                 Event.ONMOUSEMOVE == eventType))
                             && !(targetWidget instanceof VEmbedded)
+                            && !(targetWidget instanceof Panel)
                             && !(targetWidget instanceof VTextField && ((VTextField) targetWidget)
                             .isReadOnly())) {
                         return;
