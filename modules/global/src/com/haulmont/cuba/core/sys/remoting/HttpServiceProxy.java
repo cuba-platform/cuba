@@ -18,7 +18,6 @@ import java.lang.reflect.InvocationTargetException;
 public class HttpServiceProxy extends HttpInvokerProxyFactoryBean {
 
     public HttpServiceProxy(ClusterInvocationSupport support) {
-        super();
         setRemoteInvocationFactory(new CubaRemoteInvocationFactory());
 
         ClusteredHttpInvokerRequestExecutor executor = new ClusteredHttpInvokerRequestExecutor(support);
@@ -35,7 +34,7 @@ public class HttpServiceProxy extends HttpInvokerProxyFactoryBean {
             if (throwable instanceof RemoteException) {
                 Exception exception = ((RemoteException) throwable).getFirstCauseException();
                 // This is a checked exception declared in a service method
-                // or rumtime exception supported by client
+                // or runtime exception supported by client
                 if (exception != null)
                     throw exception;
             }
