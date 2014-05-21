@@ -88,10 +88,11 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
             public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
                 if (lookupPickerField != null) {
                     if (isLookup()) {
-                        if (getLookupScreen() != null)
+                        if (getLookupScreen() != null) {
                             lookupAction.setLookupScreen(getLookupScreen());
-                        else
+                        } else {
                             lookupAction.setLookupScreen(null);
+                        }
 
                         lookupAction.setLookupScreenOpenType(lookupOpenMode);
                         lookupAction.setLookupScreenParams(lookupScreenParams);
@@ -242,10 +243,17 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
     @Override
     public void setLookup(boolean lookup) {
         if (this.lookup != lookup) {
-            if (lookup)
+            if (lookup) {
                 lookupAction = lookupPickerField.addLookupAction();
-            else
+
+                if (getLookupScreen() != null) {
+                    lookupAction.setLookupScreen(getLookupScreen());
+                }
+                lookupAction.setLookupScreenOpenType(lookupOpenMode);
+                lookupAction.setLookupScreenParams(lookupScreenParams);
+            } else {
                 lookupPickerField.removeAction(lookupAction);
+            }
         }
         this.lookup = lookup;
         component.refreshComponent();
@@ -259,11 +267,17 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
     @Override
     public void setLookupScreen(String lookupScreen) {
         this.lookupScreen = lookupScreen;
+        if (lookupAction != null) {
+            lookupAction.setLookupScreen(lookupScreen);
+        }
     }
 
     @Override
     public void setLookupScreenParams(Map<String, Object> params) {
         this.lookupScreenParams = params;
+        if (lookupAction != null) {
+            lookupAction.setLookupScreenParams(params);
+        }
     }
 
     @Override
@@ -279,6 +293,7 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
     @Override
     public void setMultiSelect(boolean multiselect) {
         this.multiselect = multiselect;
+        component.refreshComponent();
     }
 
     @Override
@@ -330,6 +345,8 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
     @Override
     public void setPosition(Position position) {
         this.position = position;
+
+        component.refreshComponent();
     }
 
     @Override
@@ -340,6 +357,8 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
     @Override
     public void setInline(boolean inline) {
         this.inline = inline;
+
+        component.refreshComponent();
     }
 
     @Override
@@ -386,17 +405,19 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
     }
 
     protected String instanceCaption(Instance instance) {
-        if (instance == null)
+        if (instance == null) {
             return "";
+        }
         if (captionProperty != null) {
             if (instance.getMetaClass().getPropertyPath(captionProperty) != null) {
                 Object o = instance.getValueEx(captionProperty);
                 return o != null ? o.toString() : " ";
             }
-            throw new IllegalArgumentException(String.format("Couldn't find property with name '%s'",
-                    captionProperty));
-        } else
+
+            throw new IllegalArgumentException(String.format("Couldn't find property with name '%s'", captionProperty));
+        } else {
             return instance.getInstanceName();
+        }
     }
 
     public class CubaTokenList extends CustomField {
@@ -426,7 +447,7 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
 
             composition.addComponent(scrollContainer);
             composition.setExpandRatio(scrollContainer, 1);
-            setStyleName("cuba-tokenlist");
+            setPrimaryStyleName("cuba-tokenlist");
         }
 
         @Override
@@ -475,12 +496,10 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
                         }
                     }
                 });
-
             } else {
                 wrappedButton.addClickListener(new Button.ClickListener() {
                     @Override
                     public void buttonClick(Button.ClickEvent event) {
-
                         String windowAlias;
                         if (getLookupScreen() != null) {
                             windowAlias = getLookupScreen();
@@ -536,6 +555,8 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
         public void refreshComponent() {
             if (inline) {
                 addStyleName("inline");
+            } else {
+                removeStyleName("inline");
             }
 
             if (editor != null) {
@@ -555,7 +576,6 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
 
             Layout layout = (Layout) scrollContainer.getContent();
             layout.removeAllComponents();
-
 
             if (datasource != null) {
                 List<Instance> usedItems = new ArrayList<>();
@@ -594,16 +614,16 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
                     Instance item = datasource.getItem(id);
                     final CubaTokenListLabel label = itemComponents.get(item);
                     if (label != null) {
-                        if (listener != null)
+                        if (listener != null) {
                             label.setClickListener(new CubaTokenListLabel.ClickListener() {
                                 @Override
                                 public void onClick(CubaTokenListLabel source) {
                                     doClick(label);
                                 }
                             });
-                        else
+                        } else {
                             label.setClickListener(null);
-
+                        }
                     }
                 }
             }

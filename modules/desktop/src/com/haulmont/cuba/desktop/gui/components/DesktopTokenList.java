@@ -206,10 +206,17 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
     @Override
     public void setLookup(boolean lookup) {
         if (this.lookup != lookup) {
-            if (lookup)
+            if (lookup) {
                 lookupAction = lookupPickerField.addLookupAction();
-            else
+
+                if (getLookupScreen() != null) {
+                    lookupAction.setLookupScreen(getLookupScreen());
+                }
+                lookupAction.setLookupScreenOpenType(lookupOpenMode);
+                lookupAction.setLookupScreenParams(lookupScreenParams);
+            } else {
                 lookupPickerField.removeAction(lookupAction);
+            }
         }
         this.lookup = lookup;
         impl.refreshComponent();
@@ -265,6 +272,8 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
     @Override
     public void setPosition(Position position) {
         this.position = position;
+        this.impl.editor = null;
+        this.impl.refreshComponent();
     }
 
     @Override
@@ -285,6 +294,8 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
     @Override
     public void setInline(boolean inline) {
         this.inline = inline;
+        this.impl.editor = null;
+        this.impl.refreshComponent();
     }
 
     @Override
@@ -438,10 +449,8 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
             composition = new DesktopHBox();
             composition.setSpacing(true);
             composition.add(label);
-            composition.expand(label);
             removeButton = new DesktopButton();
             removeButton.setAction(new AbstractAction("actions.Remove") {
-
                 @Override
                 public String getCaption() {
                     return "";
@@ -510,7 +519,7 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
 
         public void addListener(RemoveTokenListener listener) {
             if (listeners == null) {
-                listeners = new ArrayList<RemoveTokenListener>();
+                listeners = new ArrayList<>();
             }
             listeners.add(listener);
         }
@@ -653,8 +662,8 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
 
         private String caption;
 
-        private Map<Instance, TokenListLabel> itemComponents = new HashMap<Instance, TokenListLabel>();
-        private Map<TokenListLabel, Instance> componentItems = new HashMap<TokenListLabel, Instance>();
+        private Map<Instance, TokenListLabel> itemComponents = new HashMap<>();
+        private Map<TokenListLabel, Instance> componentItems = new HashMap<>();
 
         private TokenListImpl() {
             BoxLayout layout = new BoxLayout(this, BoxLayout.Y_AXIS);
@@ -667,6 +676,8 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
             scrollContainer = new DesktopScrollBoxLayout();
             scrollContainer.setWidth("100%");
             scrollContainer.setHeight("100%");
+
+            scrollContainer.setScrollBarPolicy(ScrollBoxLayout.ScrollBarPolicy.BOTH);
 
             tokensContainer = new DesktopVBox();
             tokensContainer.setWidth("-1px");
@@ -760,7 +771,6 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
                     f.setEditable(isEditable());
                     f.setValue(instanceCaption(item));
                     f.setHeight("24px");
-                    f.setWidth("100%");
                     setTokenStyle(f, itemId);
                     tokensContainer.add(f);
                     usedItems.add(item);
@@ -798,7 +808,7 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
 
         protected TokenListLabel createToken() {
             final TokenListLabel label = new TokenListLabel();
-            label.setWidth("100%");
+            label.setWidth(Component.AUTO_SIZE);
             label.addListener(new RemoveTokenListener() {
                 @Override
                 public void removeToken(final TokenListLabel source) {
