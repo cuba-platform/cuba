@@ -95,10 +95,11 @@ public class TableFocusManager {
             if (e instanceof CausedFocusEvent) {
                 if (((CausedFocusEvent) e).getCause() == CausedFocusEvent.Cause.TRAVERSAL_FORWARD) {
                     if (impl.getModel().getRowCount() > 0) {
-                        if (e.getSource() == impl && impl.getSelectedRow() >= 0 && impl.getSelectedColumn() >= 0)
-                            // if focus from cell editor
-                            focusTo(impl.getSelectedRow(), impl.getSelectedColumn());
-                        else
+                        // if focus from cell editor
+                        if (e.getSource() == impl && impl.getSelectedRow() >= 0) {
+                            int selectedColumn = impl.getSelectedColumn();
+                            focusTo(impl.getSelectedRow(), selectedColumn >= 0 ? selectedColumn : 0);
+                        } else
                             moveToStart(0, 0);
                     } else
                         impl.transferFocus();
