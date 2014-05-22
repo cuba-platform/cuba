@@ -117,11 +117,21 @@
     background-color: $theme_groupBoxNoCaptionBackgroundColor;
   }
 
+  .#{$primaryStyleName}-nocaption.#{$primaryStyleName}-light > .#{$primaryStyleName}-content {
+    background-color: transparent;
+  }
+
   .#{$primaryStyleName}-nocaption > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-caption-start-deco div,
   .#{$primaryStyleName}-nocaption > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-caption-end-deco div {
     border-color: $theme_groupBoxNoCaptionBorderColor;
     background-color: $theme_groupBoxNoCaptionBackgroundColor;
     height: 5px;
+  }
+
+  .#{$primaryStyleName}-nocaption > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-caption-start-deco div,
+  .#{$primaryStyleName}-nocaption > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-caption-end-deco div {
+    border-color: $theme_groupBoxBorderColor;
+    background-color: transparent;
   }
 
   .#{$primaryStyleName}-nocaption > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-caption-start-deco ,
