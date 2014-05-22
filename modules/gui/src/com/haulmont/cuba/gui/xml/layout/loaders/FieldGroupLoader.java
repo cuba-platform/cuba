@@ -108,16 +108,30 @@ public class FieldGroupLoader extends AbstractFieldLoader {
 
         loadFieldCaptionWidth(component, element);
 
+        final List<FieldGroup.FieldConfig> fields = component.getFields();
+        for (final FieldGroup.FieldConfig field : fields) {
+            if (!field.isCustom()) {
+                loadValidators(component, field);
+                loadRequired(component, field);
+                loadEditable(component, field);
+                loadEnabled(component, field);
+                loadVisible(component, field);
+            }
+        }
+
+        // deffer attribute loading for custom fields
         context.addPostInitTask(new PostInitTask() {
             @Override
             public void execute(Context context, IFrame window) {
                 final List<FieldGroup.FieldConfig> fields = component.getFields();
                 for (final FieldGroup.FieldConfig field : fields) {
-                    loadValidators(component, field);
-                    loadRequired(component, field);
-                    loadEditable(component, field);
-                    loadEnabled(component, field);
-                    loadVisible(component, field);
+                    if (field.isCustom()) {
+                        loadValidators(component, field);
+                        loadRequired(component, field);
+                        loadEditable(component, field);
+                        loadEnabled(component, field);
+                        loadVisible(component, field);
+                    }
                 }
             }
         });
