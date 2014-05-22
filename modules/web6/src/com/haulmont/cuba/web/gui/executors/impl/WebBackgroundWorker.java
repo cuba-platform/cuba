@@ -263,26 +263,23 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
         @Override
         public final boolean cancelExecution() {
-            boolean canceled = super.isAlive();
+            boolean canceled = false;
 
             if (!closed) {
                 log.debug("Cancel task. User: " + userId);
 
                 // Interrupt
-                if (super.isAlive())
-                    interrupt();
-
-                // Check
-                canceled = isInterrupted() || isDone();
+                interrupt();
 
                 // Remove task from execution
-                if (canceled)
-                    app.removeBackgroundTask(this);
+                app.removeBackgroundTask(this);
 
-                this.canceled = canceled;
-                this.closed = canceled;
+                this.canceled = true;
+                this.closed = true;
 
                 stopTimer();
+
+                canceled = true;
             }
             return canceled;
         }
