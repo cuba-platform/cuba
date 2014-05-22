@@ -1241,6 +1241,7 @@
         <xs:attributeGroup ref="hasCaptionProp"/>
         <xs:attributeGroup ref="hasSize"/>
         <xs:attributeGroup ref="hasStyle"/>
+        <xs:attributeGroup ref="hasAlign"/>
         <xs:attributeGroup ref="hasExpand"/>
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasEnableProp"/>
