@@ -18,7 +18,8 @@
   }
 
   .#{$primaryStyleName}.collapsed > .#{$primaryStyleName}-content,
-  .#{$primaryStyleName}-light > .#{$primaryStyleName}-content {
+  .#{$primaryStyleName}-light > .#{$primaryStyleName}-content,
+  .#{$primaryStyleName}-nocaption.#{$primaryStyleName}-light > .#{$primaryStyleName}-content {
     border: 0;
   }
 
