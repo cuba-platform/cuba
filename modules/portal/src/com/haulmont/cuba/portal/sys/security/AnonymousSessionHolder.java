@@ -24,8 +24,6 @@ import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Objects;
@@ -86,8 +84,9 @@ public class AnonymousSessionHolder {
 
             String portalLocationString = getPortalNetworkLocation();
             String portalClientInfo = "Portal Anonymous Session";
-            if (StringUtils.isNotBlank(portalLocationString))
-                portalClientInfo += " from : " + portalLocationString;
+            if (StringUtils.isNotBlank(portalLocationString)) {
+                portalClientInfo += " (" + portalLocationString + ")";
+            }
 
             userSessionService.setSessionClientInfo(userSession.getId(), portalClientInfo);
             AppContext.setSecurityContext(null);
@@ -100,17 +99,10 @@ public class AnonymousSessionHolder {
     }
 
     private String getPortalNetworkLocation() {
-        String portalLocationString = "";
-        try {
-            InetAddress addr = InetAddress.getLocalHost();
-            // Get IP Address
-            String ipAddr = addr.getHostAddress();
-            // Get hostname
-            String hostname = addr.getHostName();
-            portalLocationString = hostname + " " + ipAddr;
-        } catch (UnknownHostException ignored) {
-        }
-        return portalLocationString;
+        GlobalConfig globalConfig = configuration.getConfig(GlobalConfig.class);
+        return globalConfig.getWebHostName() + ":" +
+               globalConfig.getWebPort() + "/" +
+               globalConfig.getWebContextName();
     }
 
     /**

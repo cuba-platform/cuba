@@ -6,8 +6,8 @@
 package com.haulmont.cuba.portal.sys;
 
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.portal.App;
 import com.haulmont.cuba.portal.Connection;
 import com.haulmont.cuba.portal.ConnectionListener;
@@ -63,7 +63,14 @@ public class PortalConnection implements Connection {
         // middleware service is called just below
         AppContext.setSecurityContext(portalSecurityContext);
         session.setAddress(ipAddress);
-        session.setClientInfo(clientInfo);
+
+        GlobalConfig globalConfig = configuration.getConfig(GlobalConfig.class);
+        String serverInfo = "Portal (" +
+                globalConfig.getWebHostName() + ":" +
+                globalConfig.getWebPort() + "/" +
+                globalConfig.getWebContextName() + ") ";
+
+        session.setClientInfo(serverInfo + clientInfo);
         session.setAuthenticated(true);
 
         connected = true;

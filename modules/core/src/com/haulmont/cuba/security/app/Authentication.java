@@ -94,6 +94,7 @@ public class Authentication {
                 if (session == null) {
                     try {
                         session = loginWorker.loginSystem(login);
+                        session.setClientInfo("System authentication");
                     } catch (LoginException e) {
                         throw new RuntimeException(e);
                     }

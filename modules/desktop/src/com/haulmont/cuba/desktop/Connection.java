@@ -61,15 +61,16 @@ public class Connection {
 
     protected String makeClientInfo() {
         StringBuilder sb = new StringBuilder();
-        sb.append("os{");
-        sb.append("name=").append(System.getProperty("os.name"));
-        sb.append(", arch=").append(System.getProperty("os.arch"));
-        sb.append(", version=").append(System.getProperty("os.version"));
-        sb.append("}, ");
-        sb.append("java{");
-        sb.append("vendor=").append(System.getProperty("java.vendor"));
-        sb.append(", version=").append(System.getProperty("java.version"));
-        sb.append("}");
+        sb.append("Desktop ")
+                .append("os{")
+                .append("name=").append(System.getProperty("os.name"))
+                .append(", arch=").append(System.getProperty("os.arch"))
+                .append(", version=").append(System.getProperty("os.version"))
+                .append("}, ")
+                .append("java{")
+                .append("vendor=").append(System.getProperty("java.vendor"))
+                .append(", version=").append(System.getProperty("java.version"))
+                .append("}");
         return sb.toString();
     }
 

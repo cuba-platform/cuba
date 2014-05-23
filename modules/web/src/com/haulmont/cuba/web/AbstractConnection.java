@@ -6,6 +6,8 @@ package com.haulmont.cuba.web;
 
 import com.haulmont.cuba.client.ClientUserSession;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.app.LoginService;
@@ -106,7 +108,13 @@ public abstract class AbstractConnection implements Connection {
         Page page = AppUI.getCurrent().getPage();
         WebBrowser webBrowser = page.getWebBrowser();
 
-        return webBrowser.getBrowserApplication();
+        GlobalConfig globalConfig = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class);
+        String serverInfo = "Web (" +
+                globalConfig.getWebHostName() + ":" +
+                globalConfig.getWebPort() + "/" +
+                globalConfig.getWebContextName() + ") ";
+
+        return serverInfo + webBrowser.getBrowserApplication();
     }
 
     @Override
