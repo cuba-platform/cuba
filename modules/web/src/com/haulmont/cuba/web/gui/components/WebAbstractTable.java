@@ -777,15 +777,14 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
         setVisibleColumns(getPropertyColumns());
 
-        // todo remove
-        /*if (AppBeans.get(UserSessionSource.class).getUserSession().isSpecificPermitted(ShowInfoAction.ACTION_PERMISSION)) {
+        if (AppBeans.get(UserSessionSource.class).getUserSession().isSpecificPermitted(ShowInfoAction.ACTION_PERMISSION)) {
             ShowInfoAction action = (ShowInfoAction) getAction(ShowInfoAction.ACTION_ID);
             if (action == null) {
                 action = new ShowInfoAction();
                 addAction(action);
             }
             action.setDatasource(datasource);
-        }*/
+        }
 
         if (rowsCount != null)
             rowsCount.setDatasource(datasource);
