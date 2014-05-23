@@ -117,15 +117,16 @@ public class AbstractViewRepository implements ViewRepository {
         InputStream stream = null;
         try {
             stream = resources.getResourceAsStream(fileName);
-            if (stream == null)
+            if (stream == null) {
                 throw new IllegalStateException("Resource is not found: " + fileName);
+            }
 
             SAXReader reader = new SAXReader();
             Document doc;
             try {
                 doc = reader.read(new InputStreamReader(stream));
             } catch (DocumentException e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException("Unable to parse view file " + fileName, e);
             }
             Element rootElem = doc.getRootElement();
 
