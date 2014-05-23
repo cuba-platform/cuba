@@ -42,7 +42,7 @@ public class MenuConfig {
 
     private static Log log = LogFactory.getLog(MenuConfig.class);
     
-    private List<MenuItem> rootItems = new ArrayList<MenuItem>();
+    private List<MenuItem> rootItems = new ArrayList<>();
 
     /**
      * Localized menu item caption.
@@ -117,15 +117,16 @@ public class MenuConfig {
                 }
 
                 menuItem = new MenuItem(currentParentItem, id);
+                menuItem.setMenu(true);
                 menuItem.setDescriptor(element);
 
                 loadShortcut(menuItem, element);
                 loadMenuItems(element, menuItem);
 
-                if (menuItem.getChildren().isEmpty()) {
+//                if (menuItem.getChildren().isEmpty()) {
                     // do not add empty branches
                     //menuItem = null;
-                }
+//                }
             } else if ("item".equals(element.getName())) {
                 String id = element.attributeValue("id");
                 if (!StringUtils.isBlank(id)) {

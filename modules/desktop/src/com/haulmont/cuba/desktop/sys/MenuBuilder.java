@@ -54,7 +54,7 @@ public class MenuBuilder {
 
     private void createMenuBarItem(JMenuBar menuBar, MenuItem item) {
         String caption = MenuConfig.getMenuItemCaption(item.getId());
-        if (!item.getChildren().isEmpty()) {
+        if (!item.getChildren().isEmpty() || item.isMenu()) {
             final JMenu jMenu = new JMenu(caption);
             jMenu.addMenuListener(new MenuListener() {
                 @Override

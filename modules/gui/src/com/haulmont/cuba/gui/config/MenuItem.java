@@ -16,21 +16,33 @@ import java.util.List;
 
 /**
  * Main menu item descriptor
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 public class MenuItem {
 
     private MenuItem parent;
-    private List<MenuItem> children = new ArrayList<MenuItem>();
+    private List<MenuItem> children = new ArrayList<>();
 
     private String id;
     private Element descriptor;
     private boolean separator = false;
 
     private KeyCombination shortcut;
+    private boolean isMenu = false;
 
     public MenuItem(MenuItem parent, String id) {
         this.parent = parent;
         this.id = id;
+    }
+
+    public boolean isMenu() {
+        return isMenu;
+    }
+
+    public void setMenu(boolean isMenu) {
+        this.isMenu = isMenu;
     }
 
     /** Parent item. Null if this is root item. */

@@ -121,7 +121,7 @@ public class MenuBuilder {
     }
 
     private MenuBar.Command createMenuBarCommand(final MenuItem item) {
-        if (!item.getChildren().isEmpty())     //check item is menu
+        if (!item.getChildren().isEmpty() || item.isMenu())     //check item is menu
             return null;
 
         WindowInfo windowInfo = null;
