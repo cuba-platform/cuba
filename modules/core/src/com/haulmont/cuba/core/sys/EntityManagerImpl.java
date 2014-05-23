@@ -227,7 +227,7 @@ public class EntityManagerImpl implements EntityManager {
     }
 
     private void setFetchPlan(List<View> views) {
-        if (views == null)
+        if (views == null || views.isEmpty())
             fetchPlanMgr.setView(delegate.getFetchPlan(), null);
         else {
             for (int i = 0; i < views.size(); i++) {
