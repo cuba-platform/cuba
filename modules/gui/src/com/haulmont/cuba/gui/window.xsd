@@ -1540,7 +1540,7 @@
                                         <xs:attribute name="id" type="xs:string"/>
                                         <xs:attribute name="delay" type="xs:integer" use="required"/>
                                         <xs:attribute name="repeating" type="xs:boolean"/>
-                                        <xs:attribute name="onTimer" type="xs:string" default="invoke:"/>
+                                        <xs:attribute name="onTimer" type="xs:string"/>
                                         <xs:attribute name="autostart" type="xs:boolean" default="false"/>
                                     </xs:complexType>
                                 </xs:element>
