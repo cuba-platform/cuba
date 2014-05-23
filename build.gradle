@@ -209,6 +209,10 @@ configure(globalModule) {
 }
 
 configure(coreModule) {
+    configurations {
+        dbscripts
+    }
+
     dependencies {
         compile(globalModule)
         compile(sharedLibModule)
@@ -270,11 +274,8 @@ configure(coreModule) {
         classifier = 'tests'
     }
 
-    assembleDbScripts << {
-        copy {
-            from new File(projectDir, 'db')
-            into "$buildDir/db/10-cuba"
-        }
+    assembleDbScripts {
+        moduleAlias = '10-cuba'
     }
 
     artifacts {
