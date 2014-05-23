@@ -641,27 +641,10 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                             newSelection.add(ds.getItem());
                         }
 
-                        int minimalSelectionRowIndex = Integer.MAX_VALUE;
-                        if (!newSelection.isEmpty()) {
-                            for (Entity entity : newSelection) {
-                                int rowIndex = tableModel.getRowIndex(entity);
-                                if (rowIndex < minimalSelectionRowIndex && rowIndex >= 0) {
-                                    minimalSelectionRowIndex = rowIndex;
-                                }
-                            }
-                        }
-
                         if (newSelection.isEmpty()) {
                             setSelected((Entity) null);
                         } else {
                             setSelected(newSelection);
-                        }
-
-                        if (!newSelection.isEmpty()) {
-                            TableFocusManager focusManager = ((FocusableTable) impl).getFocusManager();
-                            if (focusManager != null) {
-                                focusManager.scrollToSelectedRow(minimalSelectionRowIndex);
-                            }
                         }
                     }
 
@@ -742,6 +725,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
             private boolean focused = false;
             private ThreadLocal<Set<Entity>> selectionBackup = new ThreadLocal<>();
+            private int scrollRowIndex = -1;
 
             @Override
             public void beforeChange(boolean structureChanged) {
@@ -751,6 +735,10 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                 isAdjusting = true;
                 focused = impl.isFocusOwner();
                 selectionBackup.set(selectedItems);
+
+                JViewport viewport = (JViewport)impl.getParent();
+                Point scrollPoint = viewport.getViewPosition();
+                scrollRowIndex = impl.rowAtPoint(scrollPoint);
             }
 
             @Override
@@ -770,6 +758,11 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                             impl.getCellEditor().cancelCellEditing();
                         }
                     }
+                }
+
+                TableFocusManager focusManager = ((FocusableTable) impl).getFocusManager();
+                if (focusManager != null && scrollRowIndex >= 0) {
+                    focusManager.scrollToSelectedRow(scrollRowIndex);
                 }
             }
 
