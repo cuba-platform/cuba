@@ -15,5 +15,5 @@ public class CubaTabSheetState extends TabsheetState {
 
     private static final long serialVersionUID = 4132538424243246049L;
 
-    public boolean hasActionsHanlders = false;
+    public boolean hasActionsHandlers = false;
 }

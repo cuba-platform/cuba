@@ -77,7 +77,7 @@ public class CubaTabSheetConnector extends TabsheetConnector {
                 event.stopPropagation();
                 event.preventDefault();
 
-                if (getState().hasActionsHanlders)
+                if (getState().hasActionsHandlers)
                     rpc.onTabContextMenu(tabIndex);
             }
         };

@@ -103,7 +103,7 @@ public class CubaTabSheet extends com.vaadin.ui.TabSheet implements Action.Conta
     public void beforeClientResponse(boolean initial) {
         super.beforeClientResponse(initial);
 
-        getState().hasActionsHanlders = !actionHandlers.isEmpty();
+        getState().hasActionsHandlers = !actionHandlers.isEmpty();
     }
 
     public Component getPreviousTab(Component tab) {
