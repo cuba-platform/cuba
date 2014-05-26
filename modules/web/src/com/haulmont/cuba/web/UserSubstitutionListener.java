@@ -6,6 +6,9 @@ package com.haulmont.cuba.web;
 
 /**
  * Listener of user substitution events. See {@link com.haulmont.cuba.web.Connection}.
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 public interface UserSubstitutionListener {
 
