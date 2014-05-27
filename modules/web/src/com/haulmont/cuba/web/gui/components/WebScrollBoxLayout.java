@@ -7,6 +7,8 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ScrollBoxLayout;
+import com.haulmont.cuba.web.toolkit.ui.CubaHorizontalActionsLayout;
+import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
@@ -36,7 +38,7 @@ public class WebScrollBoxLayout extends WebAbstractComponent<Panel> implements S
         component = new Panel();
         component.setStyleName("cuba-scrollbox");
 
-        VerticalLayout content = new VerticalLayout();
+        CubaVerticalActionsLayout content = new CubaVerticalActionsLayout();
         content.setStyleName(CUBA_SCROLLBOX_CONTENT_STYLE);
         component.setContent(content);
 
@@ -50,15 +52,21 @@ public class WebScrollBoxLayout extends WebAbstractComponent<Panel> implements S
     @Override
     public void add(Component childComponent) {
         AbstractOrderedLayout newContent = null;
-        if (orientation == Orientation.VERTICAL && !(getContent() instanceof VerticalLayout))
-            newContent = new VerticalLayout();
-        else if (orientation == Orientation.HORIZONTAL && !(getContent() instanceof HorizontalLayout))
-            newContent = new HorizontalLayout();
+        if (orientation == Orientation.VERTICAL && !(getContent() instanceof CubaVerticalActionsLayout)) {
+            newContent = new CubaVerticalActionsLayout();
+        } else if (orientation == Orientation.HORIZONTAL && !(getContent() instanceof CubaHorizontalActionsLayout)) {
+            newContent = new CubaHorizontalActionsLayout();
+        }
 
         if (newContent != null) {
             newContent.setMargin((getContent()).getMargin());
             newContent.setSpacing((getContent()).isSpacing());
             newContent.setStyleName(CUBA_SCROLLBOX_CONTENT_STYLE);
+
+            com.vaadin.ui.Component oldContent = component.getContent();
+            newContent.setWidth(oldContent.getWidth(), oldContent.getWidthUnits());
+            newContent.setHeight(oldContent.getHeight(), oldContent.getHeightUnits());
+
             component.setContent(newContent);
 
             applyScrollBarsPolicy(scrollBarPolicy);
@@ -106,8 +114,9 @@ public class WebScrollBoxLayout extends WebAbstractComponent<Panel> implements S
     @Override
     public <T extends Component> T getOwnComponent(String id) {
         for (Component component : components) {
-            if (ObjectUtils.equals(component.getId(), id))
+            if (ObjectUtils.equals(component.getId(), id)) {
                 return (T) component;
+            }
         }
         return null;
     }
@@ -146,8 +155,9 @@ public class WebScrollBoxLayout extends WebAbstractComponent<Panel> implements S
     @Override
     public void setOrientation(Orientation orientation) {
         if (!ObjectUtils.equals(orientation, this.orientation)) {
-            if (!components.isEmpty())
+            if (!components.isEmpty()) {
                 throw new IllegalStateException("Unable to change scrollBox orientation after adding components to it");
+            }
 
             this.orientation = orientation;
         }
