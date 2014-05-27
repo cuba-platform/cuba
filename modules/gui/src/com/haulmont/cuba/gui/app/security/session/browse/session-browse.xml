@@ -3,8 +3,7 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<window
-        xmlns="http://schemas.haulmont.com/cuba/5.2/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/5.2/window.xsd"
         class="com.haulmont.cuba.gui.app.security.session.browse.SessionBrowser"
         caption="msg://caption"
         messagesPack="com.haulmont.cuba.gui.app.security.session.browse"
@@ -20,13 +19,27 @@
     <layout expand="sessionsTable" spacing="true">
         <hbox spacing="true" expand="spacer" width="100%">
             <groupBox caption="msg://filter" orientation="horizontal" spacing="true" width="AUTO">
-                <textField width="150px" id="userLogin" caption="msg://login"/>
-                <textField width="150px" id="userName" caption="msg://userName"/>
-                <textField width="150px" id="userAddress" caption="msg://address"/>
-                <textField width="150px" id="userInfo" caption="msg://clientInfo"/>
+                <grid spacing="true">
+                    <columns count="4"/>
+                    <rows>
+                        <row>
+                            <label value="msg://login"/>
+                            <label value="msg://userName"/>
+                            <label value="msg://address"/>
+                            <label value="msg://clientInfo"/>
+                        </row>
+                        <row>
+                            <textField width="150px" id="userLogin"/>
+                            <textField width="150px" id="userName"/>
+                            <textField width="150px" id="userAddress"/>
+                            <textField width="150px" id="userInfo"/>
+                        </row>
+                    </rows>
+                </grid>
+
                 <button id="clearButton" caption="msg://clear" align="BOTTOM_RIGHT" invoke="clearTextFields"/>
             </groupBox>
-            <label id="spacer" width="100%"/>
+            <label id="spacer"/>
             <label id="sessionsInfo" width="AUTO"/>
         </hbox>
         <groupTable id="sessionsTable" multiselect="true" width="100%">
