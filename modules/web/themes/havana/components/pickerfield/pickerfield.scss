@@ -27,7 +27,6 @@
       border-left: 0;
       height: 25px;
       line-height: 18px;
-      background: white;
       min-width: 24px;
 
       .v-button-wrap {
@@ -45,6 +44,19 @@
           display: none;
         }
       }
+    }
+
+    .v-disabled.v-button:focus {
+      border: 1px solid $theme_fieldBorderColor;
+      border-left: 0;
+    }
+
+    .v-disabled.v-button {
+      opacity: 1;
+    }
+
+    .v-disabled.v-button .v-button-wrap {
+      opacity: 0.3;
     }
 
     .v-readonly.v-textfield.v-textfield-focus,

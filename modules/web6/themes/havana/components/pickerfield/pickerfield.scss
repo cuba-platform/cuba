@@ -18,6 +18,10 @@
     background: url(images/lookup-picker-btn.png) right white;
 }
 
+.pickerfield .v-disabled.v-button.v-button-link:hover {
+  background: url(images/lookup-picker-btn.png) right white;
+}
+
 .pickerfield.v-readonly .v-button,
 .pickerfield.v-readonly .v-disabled.v-button,
 .pickerfield.v-readonly .v-disabled.v-button.v-button-link:hover,
@@ -25,7 +29,8 @@
     background: url(images/lookup-picker-btn-readonly.png) right;
 }
 
-.pickerfield .v-horizontallayout-childfocus .v-button {
+.pickerfield .v-horizontallayout-childfocus .v-button,
+.pickerfield .v-horizontallayout-childfocus .v-disabled.v-button.v-button-link:hover {
     background: url(images/lookup-picker-btn-focus.png) right white;
 }
 
