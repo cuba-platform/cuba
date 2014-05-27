@@ -128,8 +128,8 @@
     height: 5px;
   }
 
-  .#{$primaryStyleName}-nocaption > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-caption-start-deco div,
-  .#{$primaryStyleName}-nocaption > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-caption-end-deco div {
+  .#{$primaryStyleName}-nocaption.#{$primaryStyleName}-light > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-caption-start-deco div,
+  .#{$primaryStyleName}-nocaption.#{$primaryStyleName}-light > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-caption-end-deco div {
     border-color: $theme_groupBoxBorderColor;
     background-color: transparent;
   }
