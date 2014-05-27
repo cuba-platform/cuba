@@ -176,6 +176,10 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
             updateComponent(newValue);
             fireChangeListeners(newValue);
         }
+
+        if (metaProperty.isReadOnly()) {
+            setEditable(false);
+        }
     }
 
     protected void fireChangeListeners(Object newValue) {

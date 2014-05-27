@@ -78,6 +78,10 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
         }
         
         component.setPropertyDataSource(itemProperty);
+
+        if (metaProperty.isReadOnly()) {
+            setEditable(false);
+        }
     }
 
     protected EnumerationContainer createEnumContainer(List options) {

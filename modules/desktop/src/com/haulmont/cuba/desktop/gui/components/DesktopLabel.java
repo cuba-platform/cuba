@@ -113,7 +113,8 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
 
         if ((datasource.getState() == Datasource.State.VALID) && (datasource.getItem() != null)) {
             Object newValue = InstanceUtils.getValueEx(datasource.getItem(), metaPropertyPath.getPath());
-            setValue(newValue);
+            updateComponent(newValue);
+            fireChangeListeners(newValue);
         }
     }
 

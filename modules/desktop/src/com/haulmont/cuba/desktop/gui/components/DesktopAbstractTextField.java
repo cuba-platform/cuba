@@ -240,6 +240,10 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
         if (maxLength != null && this instanceof TextInputField.MaxLengthLimited) {
             ((TextInputField.MaxLengthLimited)this).setMaxLength(maxLength);
         }
+
+        if (metaProperty.isReadOnly()) {
+            setEditable(false);
+        }
     }
 
     @Override

@@ -276,6 +276,10 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
             MessageTools messageTools = AppBeans.get(MessageTools.NAME);
             setRequiredMessage(messageTools.getDefaultRequiredMessage(metaProperty));
         }
+
+        if (metaProperty.isReadOnly()) {
+            setEditable(false);
+        }
     }
 
     protected Date getEntityValue(Entity item) {

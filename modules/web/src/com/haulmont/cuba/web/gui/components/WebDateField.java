@@ -333,6 +333,10 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
             MessageTools messageTools = AppBeans.get(MessageTools.NAME);
             setRequiredMessage(messageTools.getDefaultRequiredMessage(metaProperty));
         }
+
+        if (metaProperty.isReadOnly()) {
+            setEditable(false);
+        }
     }
 
     protected Date getEntityValue(Entity item) {

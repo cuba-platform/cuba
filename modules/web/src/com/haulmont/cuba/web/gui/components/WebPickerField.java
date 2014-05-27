@@ -209,6 +209,10 @@ public class WebPickerField
             MessageTools messageTools = AppBeans.get(MessageTools.NAME);
             setRequiredMessage(messageTools.getDefaultRequiredMessage(metaProperty));
         }
+
+        if (metaProperty.isReadOnly()) {
+            setEditable(false);
+        }
     }
 
     @Override

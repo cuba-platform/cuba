@@ -295,6 +295,10 @@ public class DesktopPickerField extends DesktopAbstractField<Picker> implements 
             MessageTools messageTools = AppBeans.get(MessageTools.NAME);
             setRequiredMessage(messageTools.getDefaultRequiredMessage(metaProperty));
         }
+
+        if (metaProperty.isReadOnly()) {
+            setEditable(false);
+        }
     }
 
     protected void fireChangeListeners() {

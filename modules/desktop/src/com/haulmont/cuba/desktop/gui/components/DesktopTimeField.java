@@ -206,6 +206,10 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
             MessageTools messageTools = AppBeans.get(MessageTools.NAME);
             setRequiredMessage(messageTools.getDefaultRequiredMessage(metaProperty));
         }
+
+        if (metaProperty.isReadOnly()) {
+            setEditable(false);
+        }
     }
 
     public void setFormat(String timeFormat) {
