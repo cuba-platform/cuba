@@ -40,7 +40,7 @@
                 <button id="clearButton" caption="msg://clear" align="BOTTOM_RIGHT" invoke="clearTextFields"/>
             </groupBox>
             <label id="spacer"/>
-            <label id="sessionsInfo" width="AUTO"/>
+            <label id="sessionsInfo" align="TOP_RIGHT"/>
         </hbox>
         <groupTable id="sessionsTable" multiselect="true" width="100%">
             <actions>
