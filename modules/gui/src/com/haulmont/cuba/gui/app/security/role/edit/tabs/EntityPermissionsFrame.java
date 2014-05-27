@@ -375,8 +375,18 @@ public class EntityPermissionsFrame extends AbstractFrame {
                             control.getAllowChecker(), control.getDenyChecker());
                 }
 
-                allAllowCheck.setValue(item.isAllowedAll());
-                allDenyCheck.setValue(item.isDeniedAll());
+                boolean isAllowedAll = true;
+                boolean isDenyAll = true;
+
+                for (EntityOperationControl control : operationControls) {
+                    if (control.isControlVisible()) {
+                        isAllowedAll &= Boolean.TRUE.equals(control.getAllowChecker().getValue());
+                        isDenyAll &= Boolean.TRUE.equals(control.getDenyChecker().getValue());
+                    }
+                }
+
+                allAllowCheck.setValue(isAllowedAll);
+                allDenyCheck.setValue(isDenyAll);
             } else {
                 deselectAllCheckers();
             }
@@ -477,8 +487,10 @@ public class EntityPermissionsFrame extends AbstractFrame {
                     boolean isDenyAll = true;
 
                     for (EntityOperationControl control : operationControls) {
-                        isAllowedAll &= Boolean.TRUE.equals(control.getAllowChecker().getValue());
-                        isDenyAll &= Boolean.TRUE.equals(control.getDenyChecker().getValue());
+                        if (control.isControlVisible()) {
+                            isAllowedAll &= Boolean.TRUE.equals(control.getAllowChecker().getValue());
+                            isDenyAll &= Boolean.TRUE.equals(control.getDenyChecker().getValue());
+                        }
                     }
 
                     allAllowCheck.setValue(isAllowedAll);
