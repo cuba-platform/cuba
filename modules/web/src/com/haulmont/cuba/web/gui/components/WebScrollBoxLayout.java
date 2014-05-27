@@ -39,6 +39,7 @@ public class WebScrollBoxLayout extends WebAbstractComponent<Panel> implements S
         component.setStyleName("cuba-scrollbox");
 
         CubaVerticalActionsLayout content = new CubaVerticalActionsLayout();
+        content.setWidth("100%");
         content.setStyleName(CUBA_SCROLLBOX_CONTENT_STYLE);
         component.setContent(content);
 
@@ -54,6 +55,7 @@ public class WebScrollBoxLayout extends WebAbstractComponent<Panel> implements S
         AbstractOrderedLayout newContent = null;
         if (orientation == Orientation.VERTICAL && !(getContent() instanceof CubaVerticalActionsLayout)) {
             newContent = new CubaVerticalActionsLayout();
+            newContent.setWidth("100%");
         } else if (orientation == Orientation.HORIZONTAL && !(getContent() instanceof CubaHorizontalActionsLayout)) {
             newContent = new CubaHorizontalActionsLayout();
         }
