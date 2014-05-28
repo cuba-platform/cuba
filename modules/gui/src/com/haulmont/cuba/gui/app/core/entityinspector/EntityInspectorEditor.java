@@ -28,6 +28,7 @@ import org.apache.openjpa.persistence.jdbc.EmbeddedMapping;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.persistence.Column;
 import javax.persistence.ManyToOne;
@@ -371,9 +372,14 @@ public class EntityInspectorEditor extends AbstractWindow {
                     if (metaProperty.getRange().getCardinality().isMany()) {
                         addTable(metaProperty);
                     } else {
-                        if (isEmbedded(metaProperty))
-                            addEmbeddedFieldGroup(metaProperty, (Entity) item.getValue(metaProperty.getName()));
-                        else {
+                        if (isEmbedded(metaProperty)) {
+                            Entity propertyValue = item.getValue(metaProperty.getName());
+                            if (propertyValue == null) {
+                                propertyValue = (Entity) metadata.create(metaProperty.getJavaType());
+                                item.setValue(metaProperty.getName(), propertyValue);
+                            }
+                            addEmbeddedFieldGroup(metaProperty, propertyValue);
+                        } else {
                             addField(metaProperty, item, fieldGroup, isRequired, true, isReadonly, customFields);
                         }
                     }
@@ -391,8 +397,9 @@ public class EntityInspectorEditor extends AbstractWindow {
      * Creates field group for the embedded property
      *
      * @param embeddedMetaProperty meta property of the embedded property
+     * @param embeddedItem current value of the embedded property
      */
-    private void addEmbeddedFieldGroup(MetaProperty embeddedMetaProperty, Entity item) {
+    private void addEmbeddedFieldGroup(MetaProperty embeddedMetaProperty, Entity embeddedItem) {
         MetaProperty nullIndicatorProperty = getNullIndicatorProperty(embeddedMetaProperty);
         Datasource embedDs = datasources.get(embeddedMetaProperty.getName());
         FieldGroup fieldGroup = componentsFactory.createComponent(FieldGroup.NAME);
@@ -411,7 +418,7 @@ public class EntityInspectorEditor extends AbstractWindow {
                     if (metadata.getTools().isSystem(metaProperty) && !showSystemFields) {
                         continue;
                     }
-                    addField(metaProperty, item, fieldGroup, isRequired, false, isReadonly, customFields);
+                    addField(metaProperty, embeddedItem, fieldGroup, isRequired, false, isReadonly, customFields);
                     break;
                 case COMPOSITION:
                 case ASSOCIATION:
@@ -419,9 +426,14 @@ public class EntityInspectorEditor extends AbstractWindow {
                         throw new IllegalStateException("tables for the embeddable entities are not supported");
                     } else {
                         if (isEmbedded(metaProperty)) {
-                            addEmbeddedFieldGroup(metaProperty, (Entity) item.getValue(metaProperty.getName()));
+                            Entity propertyValue = embeddedItem.getValue(metaProperty.getName());
+                            if (propertyValue == null) {
+                                propertyValue = (Entity) metadata.create(metaProperty.getJavaType());
+                                embeddedItem.setValue(metaProperty.getName(), propertyValue);
+                            }
+                            addEmbeddedFieldGroup(metaProperty, propertyValue);
                         } else {
-                            addField(metaProperty, item, fieldGroup, isRequired, true, isReadonly, customFields);
+                            addField(metaProperty, embeddedItem, fieldGroup, isRequired, true, isReadonly, customFields);
                         }
                     }
                     break;
@@ -509,6 +521,7 @@ public class EntityInspectorEditor extends AbstractWindow {
      * which can be used later to create fieldGenerators
      *
      * @param metaProperty meta property of the item's property which field is creating
+     * @param item entity instance containing given property
      * @param fieldGroup   field group to which created field will be added
      * @param customFields if the field is custom it will be added to this collection
      * @param required     true if the field is required
