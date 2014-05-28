@@ -5,6 +5,8 @@
 
 package com.haulmont.cuba.gui.app.core.entityinspector;
 
+import com.haulmont.chile.core.datatypes.impl.ByteArrayDatatype;
+import com.haulmont.chile.core.datatypes.impl.UUIDDatatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.client.ClientConfig;
@@ -358,6 +360,10 @@ public class EntityInspectorEditor extends AbstractWindow {
                     if (metadata.getTools().isSystem(metaProperty) && !showSystemFields) {
                         continue;
                     }
+                    if (metaProperty.getType() != MetaProperty.Type.ENUM
+                            && (isByteArray(metaProperty) || isUuid(metaProperty)))  {
+                        continue;
+                    }
                     addField(metaProperty, item, fieldGroup, isRequired, false, isReadonly, customFields);
                     break;
                 case COMPOSITION:
@@ -414,6 +420,10 @@ public class EntityInspectorEditor extends AbstractWindow {
                     if (metadata.getTools().isSystem(metaProperty) && !showSystemFields) {
                         continue;
                     }
+                    if (metaProperty.getType() != MetaProperty.Type.ENUM
+                            && (isByteArray(metaProperty) || isUuid(metaProperty)))  {
+                        continue;
+                    }
                     addField(metaProperty, embeddedItem, fieldGroup, isRequired, false, isReadonly, customFields);
                     break;
                 case COMPOSITION:
@@ -435,6 +445,14 @@ public class EntityInspectorEditor extends AbstractWindow {
         }
         fieldGroup.setDatasource(embedDs);
         fieldGroup.setBorderVisible(true);
+    }
+
+    private boolean isByteArray(MetaProperty metaProperty) {
+        return ByteArrayDatatype.NAME.equals(metaProperty.getRange().asDatatype().getName());
+    }
+
+    private boolean isUuid(MetaProperty metaProperty) {
+        return UUIDDatatype.NAME.equals(metaProperty.getRange().asDatatype().getName());
     }
 
     private boolean isRequired(MetaProperty metaProperty) {
