@@ -11,7 +11,7 @@
         <scrollBox id="fieldsScrollBox" height="100%" width="100%" spacing="true">
             <vbox id="contentPane" spacing="true" width="600px"/>
             <vbox id="runtimePane" spacing="true" width="600px"/>
-            <vbox id="tablesBox" spacing="true" width="600px"/>
+            <vbox id="tablesBox" spacing="true" width="100%"/>
         </scrollBox>
         <vbox id="buttonsBox"/>
     </layout>
