@@ -284,10 +284,12 @@ public class EntityInspectorBrowse extends AbstractLookup {
                     break;
                 case ASSOCIATION:
                 case COMPOSITION:
-                    View minimal = metadata.getViewRepository()
-                            .getView(metaProperty.getRange().asClass(), View.MINIMAL);
-                    View propView = new View(minimal, metaProperty.getName() + "Ds", false);
-                    view.addProperty(metaProperty.getName(), propView);
+                    if (!metaProperty.getRange().getCardinality().isMany()) {
+                        View minimal = metadata.getViewRepository()
+                                .getView(metaProperty.getRange().asClass(), View.MINIMAL);
+                        View propView = new View(minimal, metaProperty.getName() + "Ds", false);
+                        view.addProperty(metaProperty.getName(), propView);
+                    }
                     break;
                 default:
                     throw new IllegalStateException("unknown property type");
