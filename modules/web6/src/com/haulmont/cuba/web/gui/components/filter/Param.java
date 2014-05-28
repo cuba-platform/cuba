@@ -19,7 +19,10 @@ import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.filter.AbstractParam;
-import com.haulmont.cuba.gui.data.*;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.DsBuilder;
+import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.web.App;
@@ -146,19 +149,15 @@ public class Param extends AbstractParam<Component> {
                 }
             }
         });
+
         if (value instanceof List) {
-            StringBuilder stringValue = new StringBuilder();
-            boolean firstPart = true;
-            for (String val : (List<String>) value) {
-                if (firstPart)
-                    firstPart = false;
-                else
-                    stringValue.append(',');
-                stringValue.append(val);
-            }
-            field.setValue(stringValue.toString());
-        } else
+            field.setValue(StringUtils.join((Collection) value, ","));
+        } else if (value instanceof String) {
             field.setValue(value);
+        } else {
+            field.setValue("");
+        }
+
         return field;
     }
 
@@ -321,7 +320,14 @@ public class Param extends AbstractParam<Component> {
             }
         });
 
-        field.setValue(value);
+        if (value instanceof List) {
+            field.setValue(StringUtils.join((Collection) value, ","));
+        } else if (value instanceof String) {
+            field.setValue(value);
+        } else {
+            field.setValue(null);
+        }
+
         return field;
     }
 

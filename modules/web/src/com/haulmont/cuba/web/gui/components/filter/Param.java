@@ -155,19 +155,15 @@ public class Param extends AbstractParam<Component> {
                 }
             }
         });
+
         if (value instanceof List) {
-            StringBuilder stringValue = new StringBuilder();
-            boolean firstPart = true;
-            for (String val : (List<String>) value) {
-                if (firstPart)
-                    firstPart = false;
-                else
-                    stringValue.append(',');
-                stringValue.append(val);
-            }
-            field.setValue(stringValue.toString());
-        } else
+            field.setValue(StringUtils.join((Collection) value, ","));
+        } else if (value instanceof String) {
             field.setValue((String) value);
+        } else {
+            field.setValue("");
+        }
+
         return field;
     }
 
@@ -333,7 +329,14 @@ public class Param extends AbstractParam<Component> {
             }
         });
 
-        field.setValue((String) value);
+        if (value instanceof List) {
+            field.setValue(StringUtils.join((Collection) value, ","));
+        } else if (value instanceof String) {
+            field.setValue((String) value);
+        } else {
+            field.setValue("");
+        }
+
         return field;
     }
 

@@ -156,19 +156,14 @@ public class Param extends AbstractParam<ParamEditorComponent> {
                 }
             }
         });
-        if (value instanceof java.util.List) {
-            StringBuilder stringValue = new StringBuilder();
-            boolean firstPart = true;
-            for (String val : (java.util.List<String>) value) {
-                if (firstPart)
-                    firstPart = false;
-                else
-                    stringValue.append(',');
-                stringValue.append(val);
-            }
-            field.setValue(stringValue.toString());
-        } else
+
+        if (value instanceof List) {
+            field.setValue(StringUtils.join((Collection) value, ","));
+        } else if (value instanceof String) {
             field.setValue(value);
+        } else {
+            field.setValue("");
+        }
 
         return new FieldParamEditorComponent(field);
     }
@@ -335,7 +330,13 @@ public class Param extends AbstractParam<ParamEditorComponent> {
             }
         });
 
-        field.setValue(value == null ? "" : value.toString());
+        if (value instanceof List) {
+            field.setValue(StringUtils.join((Collection) value, ","));
+        } else if (value instanceof String) {
+            field.setValue(value);
+        } else {
+            field.setValue("");
+        }
 
         return new FieldParamEditorComponent(field);
     }
