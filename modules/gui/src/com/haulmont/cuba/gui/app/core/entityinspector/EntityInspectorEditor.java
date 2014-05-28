@@ -28,7 +28,6 @@ import org.apache.openjpa.persistence.jdbc.EmbeddedMapping;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.persistence.Column;
 import javax.persistence.ManyToOne;
@@ -145,13 +144,13 @@ public class EntityInspectorEditor extends AbstractWindow {
         boolean createRequest = item == null || item.getId() == null;
         if (createRequest) {
             item = metadata.create(meta);
-            createEmbeddedFields(meta, item);
             setParentField(item, parentProperty, parent);
         } else {
             //edit request
             if (!isNew)
                 item = loadSingleItem(meta, item.getId(), view);
         }
+        createEmbeddedFields(meta, item);
 
         boolean categorizedEntity = item instanceof CategorizedEntity;
 
@@ -255,19 +254,13 @@ public class EntityInspectorEditor extends AbstractWindow {
     private void createEmbeddedFields(MetaClass metaClass, Entity item) {
         for (MetaProperty metaProperty : metaClass.getProperties()) {
             if (isEmbedded(metaProperty)) {
-                Entity embedded;
                 MetaClass embeddedMetaClass = metaProperty.getRange().asClass();
-                if (item.getValue(metaProperty.getName()) != null)
-                    continue;
-                try {
-                    embedded = embeddedMetaClass.createInstance();
-                } catch (InstantiationException e) {
-                    throw new RuntimeException("cannot create instance of the embedded property", e);
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
+                Entity embedded = item.getValue(metaProperty.getName());
+                if (embedded == null) {
+                    embedded = metadata.create(embeddedMetaClass);
+                    item.setValue(metaProperty.getName(), embedded);
                 }
                 createEmbeddedFields(embeddedMetaClass, embedded);
-                item.setValue(metaProperty.getName(), embedded);
             }
         }
     }
@@ -374,11 +367,7 @@ public class EntityInspectorEditor extends AbstractWindow {
                     } else {
                         if (isEmbedded(metaProperty)) {
                             Entity propertyValue = item.getValue(metaProperty.getName());
-                            if (propertyValue == null) {
-                                propertyValue = (Entity) metadata.create(metaProperty.getJavaType());
-                                item.setValue(metaProperty.getName(), propertyValue);
-                            }
-                            addEmbeddedFieldGroup(metaProperty, propertyValue);
+                            addEmbeddedFieldGroup(metaProperty, "", propertyValue);
                         } else {
                             addField(metaProperty, item, fieldGroup, isRequired, true, isReadonly, customFields);
                         }
@@ -399,15 +388,22 @@ public class EntityInspectorEditor extends AbstractWindow {
      * @param embeddedMetaProperty meta property of the embedded property
      * @param embeddedItem current value of the embedded property
      */
-    private void addEmbeddedFieldGroup(MetaProperty embeddedMetaProperty, Entity embeddedItem) {
-        MetaProperty nullIndicatorProperty = getNullIndicatorProperty(embeddedMetaProperty);
-        Datasource embedDs = datasources.get(embeddedMetaProperty.getName());
+    private void addEmbeddedFieldGroup(MetaProperty embeddedMetaProperty, String fqnPrefix, Entity embeddedItem) {
+        String fqn = fqnPrefix.isEmpty() ? embeddedMetaProperty.getName()
+                : fqnPrefix + "." + embeddedMetaProperty.getName();
+        Datasource embedDs = datasources.get(fqn);
+        if (embedDs == null) {
+            throw new IllegalStateException(String.format("Datasource %s for property %s not found", fqn,
+                    embeddedMetaProperty.getName()));
+        }
         FieldGroup fieldGroup = componentsFactory.createComponent(FieldGroup.NAME);
         contentPane.add(fieldGroup);
         fieldGroup.setFrame(frame);
         fieldGroup.setCaption(getPropertyCaption(embeddedMetaProperty));
+
         MetaClass embeddableMetaClass = embeddedMetaProperty.getRange().asClass();
         Collection<FieldGroup.FieldConfig> customFields = new LinkedList<>();
+        MetaProperty nullIndicatorProperty = getNullIndicatorProperty(embeddedMetaProperty);
         for (MetaProperty metaProperty : embeddableMetaClass.getProperties()) {
             boolean isRequired = isRequired(metaProperty) || metaProperty.equals(nullIndicatorProperty);
             boolean isReadonly = metaProperty.isReadOnly();
@@ -427,11 +423,7 @@ public class EntityInspectorEditor extends AbstractWindow {
                     } else {
                         if (isEmbedded(metaProperty)) {
                             Entity propertyValue = embeddedItem.getValue(metaProperty.getName());
-                            if (propertyValue == null) {
-                                propertyValue = (Entity) metadata.create(metaProperty.getJavaType());
-                                embeddedItem.setValue(metaProperty.getName(), propertyValue);
-                            }
-                            addEmbeddedFieldGroup(metaProperty, propertyValue);
+                            addEmbeddedFieldGroup(metaProperty, fqn, propertyValue);
                         } else {
                             addField(metaProperty, embeddedItem, fieldGroup, isRequired, true, isReadonly, customFields);
                         }
@@ -479,11 +471,31 @@ public class EntityInspectorEditor extends AbstractWindow {
                         }
                     }
                     propertyDs.setup(metaProperty.getName() + "Ds", masterDs, metaProperty.getName());
+                    if (isEmbedded(metaProperty)) {
+                        createNestedEmbeddedDatasources(metaProperty.getRange().asClass(), metaProperty.getName(), propertyDs);
+                    }
                     datasources.put(metaProperty.getName(), propertyDs);
                     dsContext.register(propertyDs);
                     break;
                 default:
                     break;
+            }
+        }
+    }
+
+    private void createNestedEmbeddedDatasources(MetaClass metaClass, String fqnPrefix, Datasource masterDs) {
+        for (MetaProperty metaProperty : metaClass.getProperties()) {
+            if (MetaProperty.Type.ASSOCIATION == metaProperty.getType()
+                    || MetaProperty.Type.COMPOSITION == metaProperty.getType()) {
+                if (isEmbedded(metaProperty)) {
+                    String fqn = fqnPrefix + "." + metaProperty.getName();
+                    MetaClass propertyMetaClass = metaProperty.getRange().asClass();
+                    NestedDatasource propertyDs = new EmbeddedDatasourceImpl();
+                    propertyDs.setup(fqn + "Ds", masterDs, metaProperty.getName());
+                    createNestedEmbeddedDatasources(propertyMetaClass, fqn, propertyDs);
+                    datasources.put(fqn, propertyDs);
+                    dsContext.register(propertyDs);
+                }
             }
         }
     }
