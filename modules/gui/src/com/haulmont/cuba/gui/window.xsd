@@ -1294,6 +1294,28 @@
         <xs:attribute name="param" type="xs:string"/>
     </xs:complexType>
 
+    <xs:complexType name="relatedComponent">
+        <xs:sequence>
+            <xs:element name="property" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:attribute name="name" type="xs:string" use="required"/>
+                    <xs:attribute name="screen" type="xs:string"/>
+                    <xs:attribute name="caption" type="xs:string" default="msg://"/>
+                    <xs:attribute name="filterCaption" type="xs:string" default="msg://"/>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+
+        <xs:attributeGroup ref="hasId"/>
+
+        <xs:attributeGroup ref="hasCaption"/>
+        <xs:attributeGroup ref="hasSize"/>
+
+        <xs:attribute name="openType" type="openType"/>
+        <xs:attribute name="for" type="xs:string" use="required"/>
+        <xs:attribute name="exclude" type="xs:string"/>
+    </xs:complexType>
+
     <!-- Datasources -->
 
     <!-- CollectionDatasource -->
@@ -1478,6 +1500,7 @@
                 <xs:element name="tokenList" type="tokenListComponent"/>
                 <xs:element name="widgetsTree" type="widgetsTreeComponent"/>
                 <xs:element name="twinColumn" type="twinColumnComponent"/>
+                <xs:element name="relatedEntities" type="relatedComponent"/>
             </xs:choice>
         </xs:sequence>
     </xs:group>

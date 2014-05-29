@@ -213,6 +213,51 @@ public abstract class ComponentsHelper {
     }
 
     /**
+     * Find first component by predicate
+     *
+     * @param container container to start from
+     * @param finder   finder instance
+     */
+    public static boolean walkComponents(com.haulmont.cuba.gui.components.Component.Container container,
+                                      ComponentFinder finder) {
+        return __walkComponents(container, finder);
+    }
+
+    private static boolean __walkComponents(com.haulmont.cuba.gui.components.Component.Container container,
+                                            ComponentFinder finder) {
+        for (com.haulmont.cuba.gui.components.Component component : container.getOwnComponents()) {
+            if (finder.visit(component)) {
+                return true;
+            }
+
+            if (component instanceof com.haulmont.cuba.gui.components.Component.Container) {
+                if (__walkComponents(((com.haulmont.cuba.gui.components.Component.Container) component), finder)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public static String getFilterComponentPath(Filter filter) {
+        StringBuilder sb = new StringBuilder(filter.getId() != null ? filter.getId() : "filterWithoutId");
+        IFrame frame = filter.getFrame();
+        while (frame != null) {
+            sb.insert(0, ".");
+            String s = frame.getId();
+            if (s.contains(".")) {
+                s = "[" + s + "]";
+            }
+            sb.insert(0, s);
+            if (frame instanceof Window) {
+                break;
+            }
+            frame = frame.getFrame();
+        }
+        return sb.toString();
+    }
+
+    /**
      * Get the topmost window for the specified component.
      * @param component component instance
      * @return          topmost window in the hierarchy of frames for this component.

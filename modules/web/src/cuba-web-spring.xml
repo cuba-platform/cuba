@@ -76,6 +76,7 @@
                 <entry key="cuba_TestingService" value="com.haulmont.cuba.core.app.TestingService"/>
                 <entry key="cuba_ObjectsCacheManagerService" value="com.haulmont.cuba.core.app.cache.ObjectsCacheManagerService"/>
                 <entry key="cuba_DomainDescriptionService" value="com.haulmont.cuba.core.app.DomainDescriptionService"/>
+                <entry key="cuba_RelatedEntitiesService" value="com.haulmont.cuba.core.app.RelatedEntitiesService"/>
             </map>
         </property>
     </bean>

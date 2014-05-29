@@ -99,6 +99,7 @@ public class LayoutLoaderConfig {
         config.register(TwinColumn.NAME, TwinColumnLoader.class);
         config.register(ProgressBar.NAME, ProgressBarLoader.class);
         config.register(SearchField.NAME, SearchFieldLoader.class);
+        config.register(RelatedEntities.NAME, RelatedEntitiesLoader.class);
     }
 
     public static void registerLoader(String tagName, Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> aClass) {

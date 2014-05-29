@@ -27,11 +27,11 @@ import java.util.List;
  */
 public class WebPopupButton extends WebAbstractComponent<org.vaadin.hene.popupbutton.PopupButton> implements PopupButton {
 
-    private Component popupComponent;
-    private com.vaadin.ui.Component vPopupComponent;
-    private String icon;
+    protected Component popupComponent;
+    protected com.vaadin.ui.Component vPopupComponent;
+    protected String icon;
 
-    private List<Action> actionOrder = new LinkedList<>();
+    protected List<Action> actionOrder = new LinkedList<>();
 
     public WebPopupButton() {
         component = new org.vaadin.hene.popupbutton.PopupButton();

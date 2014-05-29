@@ -75,6 +75,7 @@ public class DesktopComponentsFactory implements ComponentsFactory {
         classes.put(ProgressBar.NAME, DesktopProgressBar.class);
         classes.put(TimeField.NAME, DesktopTimeField.class);
         classes.put(TokenList.NAME, DesktopTokenList.class);
+        classes.put(RelatedEntities.NAME, DesktopRelatedEntities.class);
     }
 
     public static void registerComponent(String element, Class<? extends Component> componentClass) {

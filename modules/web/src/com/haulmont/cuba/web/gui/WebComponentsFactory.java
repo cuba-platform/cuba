@@ -78,6 +78,7 @@ public class WebComponentsFactory implements ComponentsFactory {
         classes.put(TwinColumn.NAME, WebTwinColumn.class);
         classes.put(ProgressBar.NAME, WebProgressBar.class);
         classes.put(RowsCount.NAME, WebRowsCount.class);
+        classes.put(RelatedEntities.NAME, WebRelatedEntities.class);
     }
 
     public static void registerComponent(String element, Class<? extends Component> componentClass) {

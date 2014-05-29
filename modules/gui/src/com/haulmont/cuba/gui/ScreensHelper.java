@@ -5,6 +5,10 @@
 
 package com.haulmont.cuba.gui;
 
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 
 import java.util.Collections;
@@ -36,5 +40,26 @@ public class ScreensHelper {
                 }
             }
         });
+    }
+
+    public static WindowInfo getAvailableBrowseScreen(MetaClass metaClass) {
+        UserSessionSource uss = AppBeans.get(UserSessionSource.NAME);
+        WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
+
+        WindowInfo browseWindow = windowConfig.findWindowInfo(metaClass.getName() + ".browse");
+        if (browseWindow != null) {
+            if (uss.getUserSession().isScreenPermitted(browseWindow.getId())) {
+                return browseWindow;
+            }
+        }
+
+        WindowInfo lookupWindow = windowConfig.findWindowInfo(metaClass.getName() + ".lookup");
+        if (lookupWindow != null) {
+            if (uss.getUserSession().isScreenPermitted(lookupWindow.getId())) {
+                return lookupWindow;
+            }
+        }
+
+        return null;
     }
 }
