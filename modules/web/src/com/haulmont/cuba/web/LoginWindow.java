@@ -21,6 +21,7 @@ import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.Sizeable;
 import com.vaadin.server.VaadinService;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.server.WebBrowser;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
@@ -509,6 +510,8 @@ public class LoginWindow extends UIView implements Action.Handler {
 
         if (webConfig.getUseSessionFixationProtection()) {
             VaadinService.reinitializeSession(VaadinService.getCurrentRequest());
+
+            VaadinSession.getCurrent().getSession().setMaxInactiveInterval(webConfig.getHttpSessionExpirationTimeoutSec());
         }
     }
 

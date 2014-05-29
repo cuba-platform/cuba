@@ -475,6 +475,8 @@ public class LoginWindow extends Window implements Action.Handler {
         if (webConfig.getUseSessionFixationProtection()) {
             CubaApplicationContext context = (CubaApplicationContext) App.getInstance().getContext();
             context.reinitializeSession();
+
+            context.getHttpSession().setMaxInactiveInterval(webConfig.getHttpSessionExpirationTimeoutSec());
         }
     }
 
