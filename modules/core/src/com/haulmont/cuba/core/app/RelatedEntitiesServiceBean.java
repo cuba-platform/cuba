@@ -7,10 +7,7 @@ package com.haulmont.cuba.core.app;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.Persistence;
-import com.haulmont.cuba.core.Transaction;
-import com.haulmont.cuba.core.TypedQuery;
+import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.ExtendedEntities;
@@ -46,18 +43,14 @@ public class RelatedEntitiesServiceBean implements RelatedEntitiesService {
     @SuppressWarnings("unchecked")
     @Override
     public List<UUID> getRelatedIds(List<UUID> parents, String parentMetaClass, String relationProperty) {
-        checkNotNullArgument(parents, "Please specify parents set");
-        checkNotNullArgument(parentMetaClass, "Please specify parent meta class");
-        checkNotNullArgument(relationProperty, "Please specify relation property");
+        checkNotNullArgument(parents, "parents argument is null");
+        checkNotNullArgument(parentMetaClass, "parentMetaClass argument is null");
+        checkNotNullArgument(relationProperty, "relationProperty argument is null");
 
-        MetaClass metaClass = extendedEntities.getEffectiveMetaClass(metadata.getClass(parentMetaClass));
-        checkNotNullArgument(metaClass, "Could not find meta class '%s'", parentMetaClass);
-
+        MetaClass metaClass = extendedEntities.getEffectiveMetaClass(metadata.getClassNN(parentMetaClass));
         Class parentClass = metaClass.getJavaClass();
 
-        MetaProperty metaProperty = metaClass.getProperty(relationProperty);
-        checkNotNullArgument(metaClass,
-                "Could not find meta property '%s' for meta class '%s'", relationProperty, parentMetaClass);
+        MetaProperty metaProperty = metaClass.getPropertyNN(relationProperty);
 
         // return empty list only after all argument checks
         if (parents.isEmpty()) {
@@ -73,7 +66,7 @@ public class RelatedEntitiesServiceBean implements RelatedEntitiesService {
         try {
             EntityManager em = persistence.getEntityManager();
             String queryString = "select x from " + parentMetaClass + " x where x.id in :ids";
-            TypedQuery query = em.createQuery(queryString, parentClass);
+            Query query = em.createQuery(queryString);
 
             View view = new View(parentClass);
             view.addProperty(relationProperty, new View(propertyClass).addProperty("id"));

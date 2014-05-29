@@ -18,7 +18,7 @@ import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.RelatedEntities;
 import com.haulmont.cuba.gui.components.actions.RelatedAction;
 import com.haulmont.cuba.gui.config.WindowInfo;
-import com.haulmont.cuba.gui.related.RelatedEntitiesSecurity;
+import com.haulmont.cuba.gui.components.RelatedEntitiesSecurity;
 import com.haulmont.cuba.security.global.UserSession;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.Label;
@@ -81,7 +81,7 @@ public class WebRelatedEntities extends WebPopupButton implements RelatedEntitie
     @Override
     public void addPropertyOption(String property, @Nullable String screen, @Nullable String caption, @Nullable String filterCaption) {
         if (StringUtils.isBlank(property)) {
-            throw new IllegalArgumentException("Empty property argument for custom route");
+            throw new IllegalArgumentException("Empty name for custom property option");
         }
 
         propertyOptions.put(property, new PropertyOption(screen, caption, filterCaption));

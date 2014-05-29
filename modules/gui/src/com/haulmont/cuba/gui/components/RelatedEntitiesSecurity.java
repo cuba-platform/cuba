@@ -3,7 +3,7 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-package com.haulmont.cuba.gui.related;
+package com.haulmont.cuba.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;

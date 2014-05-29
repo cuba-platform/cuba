@@ -15,7 +15,7 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.RelatedAction;
 import com.haulmont.cuba.gui.config.WindowInfo;
-import com.haulmont.cuba.gui.related.RelatedEntitiesSecurity;
+import com.haulmont.cuba.gui.components.RelatedEntitiesSecurity;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.StringUtils;
 
@@ -76,7 +76,7 @@ public class DesktopRelatedEntities extends DesktopPopupButton implements Relate
     @Override
     public void addPropertyOption(String property, @Nullable String screen, @Nullable String caption, @Nullable String filterCaption) {
         if (StringUtils.isBlank(property)) {
-            throw new IllegalArgumentException("Empty property argument for custom route");
+            throw new IllegalArgumentException("Empty name for custom property option");
         }
 
         propertyOptions.put(property, new PropertyOption(screen, caption, filterCaption));

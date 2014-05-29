@@ -52,7 +52,7 @@ public class RelatedEntitiesLoader extends ComponentLoader {
 
             String property = routeElement.attributeValue("name");
             if (StringUtils.isEmpty(property)) {
-                throw new GuiDevelopmentException("Please specify name attribute for related entities property",
+                throw new GuiDevelopmentException("Name attribute for related entities property is not specified",
                         context.getFullFrameId(), "componentId", component.getId());
             }
 
@@ -63,7 +63,7 @@ public class RelatedEntitiesLoader extends ComponentLoader {
             if (StringUtils.isNotEmpty(screen)) {
                 WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
                 if (windowConfig.findWindowInfo(screen) == null) {
-                    throw new GuiDevelopmentException("Not found screen for custom route in related entities",
+                    throw new GuiDevelopmentException("Screen for custom route in related entities not found",
                             context.getFullFrameId(), "componentId", component.getId());
                 }
             }
@@ -73,7 +73,7 @@ public class RelatedEntitiesLoader extends ComponentLoader {
 
         final String listComponent = element.attributeValue("for");
         if (StringUtils.isEmpty(listComponent)) {
-            throw new GuiDevelopmentException("Please specify 'for' attribute of related entities",
+            throw new GuiDevelopmentException("for' attribute of related entities is not specified",
                     context.getFullFrameId(), "componentId", component.getId());
         }
 
@@ -83,7 +83,7 @@ public class RelatedEntitiesLoader extends ComponentLoader {
                 if (component.getListComponent() == null) {
                     Component bindComponent = component.getFrame().getComponent(listComponent);
                     if (!(bindComponent instanceof ListComponent)) {
-                        throw new GuiDevelopmentException("Please properly specify for attribute: id of table or tree",
+                        throw new GuiDevelopmentException("Specify 'for' attribute: id of table or tree",
                                 context.getFullFrameId(), "componentId", component.getId());
                     }
 

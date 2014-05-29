@@ -11,6 +11,7 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 
+import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -42,6 +43,7 @@ public class ScreensHelper {
         });
     }
 
+    @Nullable
     public static WindowInfo getAvailableBrowseScreen(MetaClass metaClass) {
         UserSessionSource uss = AppBeans.get(UserSessionSource.NAME);
         WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);

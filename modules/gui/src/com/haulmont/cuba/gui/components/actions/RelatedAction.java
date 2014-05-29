@@ -38,6 +38,10 @@ public class RelatedAction extends AbstractAction {
 
     protected WindowManager.OpenType openType;
 
+    protected ExtendedEntities extendedEntities = AppBeans.get(ExtendedEntities.class);
+    protected RelatedEntitiesService relatedEntitiesService = AppBeans.get(RelatedEntitiesService.NAME);
+    protected RelatedEntitiesAssistant assistant = AppBeans.get(RelatedEntitiesAssistant.NAME);
+
     public RelatedAction(String id, ListComponent owner, MetaProperty metaProperty) {
         super(id);
 
@@ -78,8 +82,6 @@ public class RelatedAction extends AbstractAction {
         if (!selected.isEmpty()) {
             Window window = owner.getFrame().openWindow(getScreen(), openType);
 
-            final ExtendedEntities extendedEntities = AppBeans.get(ExtendedEntities.class);
-
             boolean found = ComponentsHelper.walkComponents(window, new ComponentFinder() {
                 @Override
                 public boolean visit(Component component) {
@@ -119,10 +121,8 @@ public class RelatedAction extends AbstractAction {
                     " " + messageTools.getPropertyCaption(metaProperty));
         }
 
-        ExtendedEntities extendedEntities = AppBeans.get(ExtendedEntities.class);
         MetaClass effectiveMetaClass = extendedEntities.getEffectiveMetaClass(metaProperty.getRange().asClass());
 
-        RelatedEntitiesAssistant assistant = AppBeans.get(RelatedEntitiesAssistant.NAME);
         filterEntity.setXml(assistant.getRelatedEntitiesFilterXml(effectiveMetaClass, relatedIds, component));
 
         component.setFilterEntity(filterEntity);
@@ -139,7 +139,6 @@ public class RelatedAction extends AbstractAction {
 
             String parentMetaClass = metaProperty.getDomain().getFullName();
 
-            RelatedEntitiesService relatedEntitiesService = AppBeans.get(RelatedEntitiesService.NAME);
             return relatedEntitiesService.getRelatedIds(parentIds, parentMetaClass, metaProperty.getName());
         }
     }
