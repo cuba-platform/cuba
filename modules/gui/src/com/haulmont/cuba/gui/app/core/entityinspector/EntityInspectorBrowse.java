@@ -173,7 +173,10 @@ public class EntityInspectorBrowse extends AbstractLookup {
                 continue;
 
             Table.Column column = new Table.Column(meta.getPropertyPath(metaProperty.getName()));
-            column.setMaxTextLength(MAX_TEXT_LENGTH);
+            if (metaProperty.getJavaType().equals(String.class)) {
+                column.setMaxTextLength(MAX_TEXT_LENGTH);
+            }
+
             if (!metadata.getTools().isSystem(metaProperty)) {
                 column.setCaption(getPropertyCaption(metaProperty));
                 nonSystemPropertyColumns.add(column);
