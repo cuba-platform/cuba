@@ -151,7 +151,7 @@ public class MessageTools {
      * Checks whether a localized name of the property exists.
      * @param property  MetaProperty
      * @return          true if {@link #getPropertyCaption(com.haulmont.chile.core.model.MetaProperty)} returns a
-     * string which has no dots inside or the first part befor a dot is not equal to the declaring class
+     * string which has no dots inside or the first part before a dot is not equal to the declaring class
      */
     public boolean hasPropertyCaption(MetaProperty property) {
         Class<?> declaringClass = property.getDeclaringClass();
