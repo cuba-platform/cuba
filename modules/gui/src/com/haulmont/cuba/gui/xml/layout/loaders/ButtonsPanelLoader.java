@@ -6,7 +6,6 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
-import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.gui.components.ButtonsPanel;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -65,11 +64,12 @@ public class ButtonsPanelLoader extends ContainerLoader {
         return component;
     }
 
-    private void applyButtonsProvider(ComponentsFactory factory, ButtonsPanel panel, ButtonsPanel.Provider buttonsProvider)
+    protected void applyButtonsProvider(ComponentsFactory factory, ButtonsPanel panel, ButtonsPanel.Provider buttonsProvider)
             throws IllegalAccessException, InstantiationException {
-        final Collection<Button> buttons = buttonsProvider.getButtons();
-        for (final Button button : buttons) {
-            panel.addButton(button);
+
+        Collection<Component> buttons = buttonsProvider.getButtons();
+        for (final Component button : buttons) {
+            panel.add(button);
         }
     }
 }

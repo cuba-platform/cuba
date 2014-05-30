@@ -268,11 +268,11 @@ public class EntityInspectorBrowse extends AbstractLookup {
         refreshButton.setIcon("icons/refresh.png");
         refreshButton.setFrame(frame);
 
-        buttonsPanel.addButton(createButton);
-        buttonsPanel.addButton(editButton);
-        buttonsPanel.addButton(removeButton);
-        buttonsPanel.addButton(excelButton);
-        buttonsPanel.addButton(refreshButton);
+        buttonsPanel.add(createButton);
+        buttonsPanel.add(editButton);
+        buttonsPanel.add(removeButton);
+        buttonsPanel.add(excelButton);
+        buttonsPanel.add(refreshButton);
 
         table.setButtonsPanel(buttonsPanel);
     }

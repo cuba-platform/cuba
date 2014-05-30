@@ -106,7 +106,7 @@ public class EntityRestore extends AbstractWindow {
                 restoreButton.setCaption(getMessage("entityRestore.restore"));
 
                 ButtonsPanel buttonsPanel = componentsFactory.createComponent(ButtonsPanel.NAME);
-                buttonsPanel.addButton(restoreButton);
+                buttonsPanel.add(restoreButton);
                 entitiesTable.setButtonsPanel(buttonsPanel);
 
                 RowsCount rowsCount = componentsFactory.createComponent(RowsCount.NAME);

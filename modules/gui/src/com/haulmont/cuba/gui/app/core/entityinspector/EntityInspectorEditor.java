@@ -807,10 +807,10 @@ public class EntityInspectorEditor extends AbstractWindow {
         removeButton.setCaption(messages.getMessage(EntityInspectorEditor.class, "remove"));
         removeButton.setIcon("icons/remove.png");
 
-        propertyButtonsPanel.addButton(createButton);
-        propertyButtonsPanel.addButton(addButton);
-        propertyButtonsPanel.addButton(editButton);
-        propertyButtonsPanel.addButton(removeButton);
+        propertyButtonsPanel.add(createButton);
+        propertyButtonsPanel.add(addButton);
+        propertyButtonsPanel.add(editButton);
+        propertyButtonsPanel.add(removeButton);
         return propertyButtonsPanel;
     }
 

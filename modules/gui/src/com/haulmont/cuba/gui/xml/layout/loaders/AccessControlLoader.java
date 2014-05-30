@@ -109,7 +109,7 @@ public class AccessControlLoader extends ContainerLoader {
         if (component instanceof Component.HasButtonsPanel && !editable) {
             ButtonsPanel buttonsPanel = ((Component.HasButtonsPanel) component).getButtonsPanel();
             if (buttonsPanel != null) {
-                Collection<Component> buttons = new ArrayList<Component>(buttonsPanel.getButtons());
+                Collection<Component> buttons = new ArrayList<>(buttonsPanel.getComponents());
                 for (Component button : buttons) {
                     applyToComponent(button, editable, data, buttons);
                 }

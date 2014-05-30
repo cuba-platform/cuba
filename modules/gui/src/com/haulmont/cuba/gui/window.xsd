@@ -803,8 +803,7 @@
     <xs:complexType name="buttonsPanelComponent">
         <xs:sequence>
             <xs:choice minOccurs="0" maxOccurs="unbounded">
-                <xs:element name="button" minOccurs="0" maxOccurs="unbounded" type="buttonComponent"/>
-                <xs:element name="popupButton" minOccurs="0" maxOccurs="unbounded" type="popupButtonComponent"/>
+                <xs:group ref="layoutOrComponent"/>
             </xs:choice>
         </xs:sequence>
 

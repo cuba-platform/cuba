@@ -718,9 +718,9 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         if (buttons == null) {
             return; // in lookup windows, there is no button panel
         }
-        com.haulmont.cuba.gui.components.Button addToSetBtn = buttons.getButton("addToSetBtn");
-        com.haulmont.cuba.gui.components.Button addToCurSetBtn = buttons.getButton("addToCurSetBtn");
-        com.haulmont.cuba.gui.components.Button removeFromCurSetBtn = buttons.getButton("removeFromCurSetBtn");
+        com.haulmont.cuba.gui.components.Button addToSetBtn = buttons.getComponent("addToSetBtn");
+        com.haulmont.cuba.gui.components.Button addToCurSetBtn = buttons.getComponent("addToCurSetBtn");
+        com.haulmont.cuba.gui.components.Button removeFromCurSetBtn = buttons.getComponent("removeFromCurSetBtn");
 
         Action addToSet = table.getAction("addToSet");
 
@@ -750,7 +750,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
                 addToCurSetBtn = new WebButton();
                 addToCurSetBtn.setId("addToCurSetBtn");
                 addToCurSetBtn.setCaption(messages.getMessage(MESSAGES_PACK, "addToCurSet"));
-                buttons.addButton(addToCurSetBtn);
+                buttons.add(addToCurSetBtn);
             } else {
                 addToCurSetBtn.setVisible(true);
             }
@@ -765,7 +765,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
                 removeFromCurSetBtn = new WebButton();
                 removeFromCurSetBtn.setId("removeFromCurSetBtn");
                 removeFromCurSetBtn.setCaption(messages.getMessage(MESSAGES_PACK, "removeFromCurSet"));
-                buttons.addButton(removeFromCurSetBtn);
+                buttons.add(removeFromCurSetBtn);
             } else {
                 removeFromCurSetBtn.setVisible(true);
             }
@@ -781,7 +781,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
                 addToSetBtn = new WebButton();
                 addToSetBtn.setId("addToSetBtn");
                 addToSetBtn.setCaption(messages.getMessage(MESSAGES_PACK, "addToSet"));
-                buttons.addButton(addToSetBtn);
+                buttons.add(addToSetBtn);
             } else {
                 addToSetBtn.setVisible(true);
             }

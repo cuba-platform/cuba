@@ -24,45 +24,15 @@ public class DesktopButtonsPanel extends DesktopHBox implements ButtonsPanel {
     }
 
     @Override
-    public void addButton(Button actionButton) {
-        add(actionButton);
-    }
-
-    @Override
-    public void removeButton(Button actionButton) {
-        remove(actionButton);
-    }
-
-    @Override
-    public Collection<Button> getButtons() {
-        final Collection<Component> components = getComponents();
-        final Collection<Button> buttons = new ArrayList<>(components.size());
-        for (final Component component : components) {
-            if (component instanceof Button)
-                buttons.add((Button) component);
-        }
-        return buttons;
-    }
-
-    @Override
-    public Button getButton(String id) {
-        Component component = getComponent(id);
-        if (component instanceof Button)
-            return (Button) component;
-        else
-            return null;
-    }
-
-    @Override
     public void setEnabled(boolean enabled) {
-        Collection<Button> buttons = getButtons();
-        for (Button button : buttons) {
+        Collection<Component> components = getComponents();
+        for (Component button : components) {
             button.setEnabled(enabled);
         }
     }
 
     public void setFocusableForAllButtons(boolean focusable) {
-        for (Button button : getButtons()) {
+        for (Component button : getComponents()) {
             JComponent jButton = DesktopComponentsHelper.unwrap(button);
             jButton.setFocusable(focusable);
         }

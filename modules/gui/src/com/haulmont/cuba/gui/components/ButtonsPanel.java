@@ -14,15 +14,7 @@ public interface ButtonsPanel extends BoxLayout {
 
     String NAME = "buttonsPanel";
 
-    void addButton(Button actionButton);
-
-    void removeButton(Button actionButton);
-
-    Collection<Button> getButtons();
-
-    Button getButton(String id);
-
     public interface Provider {
-        Collection<Button> getButtons();
+        Collection<Component> getButtons();
     }
 }
