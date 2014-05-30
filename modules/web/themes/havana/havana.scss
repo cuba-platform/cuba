@@ -71,6 +71,7 @@
 @import "app/folders-pane";
 @import "app/log-control";
 @import "app/jmx-console";
+@import "app/report-wizard";
 
 @mixin havana {
   @include base;
@@ -131,4 +132,5 @@
   @include cuba-breadcrumbs;
   @include cuba-log-control;
   @include cuba-jmx-console;
+  @include cuba-report-wizard;
 }
