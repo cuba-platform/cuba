@@ -5,6 +5,9 @@
 
 package com.haulmont.cuba.desktop.gui.data;
 
+import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.gui.components.Table;
+
 import javax.swing.*;
 import java.util.Collections;
 import java.util.List;
@@ -29,8 +32,12 @@ public class RowSorterImpl extends RowSorter<AnyTableModelAdapter> {
 
     @Override
     public void toggleSortOrder(int column) {
-        if (model.isGeneratedColumn(model.getColumn(column)))
-            return;
+        Table.Column modelColumn = model.getColumn(column);
+        if (model.isGeneratedColumn(modelColumn)) {
+            if (!(modelColumn.getId() instanceof MetaPropertyPath)) {
+                return;
+            }
+        }
 
         SortKey key;
         if (sortKey != null && sortKey.getColumn() == column) {
