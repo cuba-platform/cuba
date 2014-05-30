@@ -12,6 +12,7 @@ import org.jdesktop.swingx.JXTable;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 
 /**
@@ -47,7 +48,8 @@ public class DesktopTable extends DesktopAbstractTable<JXTable> {
                     if (editingColumn >= 0) {
                         Column editColumn = tableComponent.getColumns().get(editingColumn);
 
-                        if (!(editor instanceof DesktopAbstractTable.EditableColumnTableCellEditor)) {
+                        if (!(editor instanceof DesktopAbstractTable.EditableColumnTableCellEditor)
+                                && !(editor instanceof DesktopAbstractTable.CellProviderEditor)) {
                             if (tableComponent.isEditable() && editColumn.isEditable() &&
                                     !tableModel.isGeneratedColumn(editColumn)) {
                                 setValueAt(value, editingRow, editingColumn);
@@ -59,7 +61,31 @@ public class DesktopTable extends DesktopAbstractTable<JXTable> {
             }
 
             @Override
+            public TableCellRenderer getCellRenderer(int row, int column) {
+                TableCellRenderer columnRenderer = DesktopTable.this.getColumnRenderer(column);
+                if (columnRenderer != null) {
+                    return columnRenderer;
+                }
+
+                return super.getCellRenderer(row, column);
+            }
+
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                if (DesktopTable.this.isColumnEditable(column)) {
+                    return true;
+                }
+
+                return super.isCellEditable(row, column);
+            }
+
+            @Override
             public TableCellEditor getCellEditor(int row, int column) {
+                TableCellEditor cellEditor = getColumnEditor(column);
+                if (cellEditor != null) {
+                    return cellEditor;
+                }
+
                 TableCellEditor tableCellEditor = DesktopTable.this.getCellEditor(row, column);
                 if (tableCellEditor != null)
                     return tableCellEditor;
@@ -85,4 +111,5 @@ public class DesktopTable extends DesktopAbstractTable<JXTable> {
         super.setSortable(sortable);
         impl.setSortable(sortable);
     }
+
 }

@@ -30,9 +30,7 @@ import java.util.*;
  * @author krivopustov
  * @version $Id$
  */
-public class DesktopTreeTable
-        extends DesktopAbstractTable<JXTreeTableExt>
-        implements TreeTable {
+public class DesktopTreeTable extends DesktopAbstractTable<JXTreeTableExt> implements TreeTable {
 
     protected String hierarchyProperty;
 
@@ -42,6 +40,11 @@ public class DesktopTreeTable
         impl = new JXTreeTableExt() {
             @Override
             public TableCellRenderer getCellRenderer(int row, int column) {
+                TableCellRenderer columnRenderer = DesktopTreeTable.this.getColumnRenderer(column);
+                if (columnRenderer != null) {
+                    return columnRenderer;
+                }
+
                 TableCellRenderer cellRenderer = cellRenderers.get(column);
                 if (cellRenderer != null) {
                     return cellRenderer;
@@ -55,6 +58,11 @@ public class DesktopTreeTable
 
             @Override
             public TableCellEditor getCellEditor(int row, int column) {
+                TableCellEditor cellEditor = getColumnEditor(column);
+                if (cellEditor != null) {
+                    return cellEditor;
+                }
+
                 TableCellRenderer cellRenderer = cellRenderers.get(column);
                 if (cellRenderer instanceof TableCellEditor) {
                     TableCellEditor tableCellEditor = DesktopTreeTable.this.getCellEditor(row, column);
@@ -75,8 +83,13 @@ public class DesktopTreeTable
 
             @Override
             public boolean isCellEditable(int row, int column) {
-                if (column < 0 || row < 0)
+                if (column < 0 || row < 0) {
                     return false;
+                }
+
+                if (DesktopTreeTable.this.isColumnEditable(column)) {
+                    return true;
+                }
 
                 DesktopTreeTable treeTable = DesktopTreeTable.this;
                 Column editColumn = treeTable.getColumns().get(column);

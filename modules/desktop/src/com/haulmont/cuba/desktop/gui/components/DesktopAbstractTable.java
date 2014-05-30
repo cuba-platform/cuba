@@ -1033,9 +1033,6 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         this.editableColumns.addAll(editableColumns);
     }
 
-//    protected void setColumnHeader(Object propertyPath, String caption) {
-//    }
-
     @Override
     public void setRequired(Table.Column column, boolean required, String message) {
         if (required)
@@ -1777,8 +1774,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     }
 
     /**
-     * Sets the height of each row into the preferred height of the
-     * tallest cell in that row.
+     * Sets the height of each row into the preferred height of the tallest cell in that row.
      */
     public void packRows() {
         if (!contentRepaintEnabled) {
@@ -1913,6 +1909,66 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         return styleProvider.getStyleName(item, property.toString());
     }
 
+    protected TableCellEditor getColumnEditor(int column) {
+        TableColumn tableColumn = impl.getColumnModel().getColumn(column);
+        if (tableColumn.getIdentifier() instanceof Table.Column) {
+            Table.Column columnConf = (Table.Column) tableColumn.getIdentifier();
+
+            if (columnConf.getId() instanceof MetaPropertyPath
+                    && !(isEditable() && columnConf.isEditable())
+                    && !getTableModel().isGeneratedColumn(columnConf)) {
+                MetaPropertyPath propertyPath = (MetaPropertyPath) columnConf.getId();
+
+                final CellProvider cellProvider = getCustomCellEditor(propertyPath);
+                if (cellProvider != null) {
+                    return new CellProviderEditor(cellProvider);
+                }
+            }
+        }
+        return null;
+    }
+
+    protected TableCellRenderer getColumnRenderer(int column) {
+        TableColumn tableColumn = impl.getColumnModel().getColumn(column);
+        if (tableColumn.getIdentifier() instanceof Table.Column) {
+            Table.Column columnConf = (Table.Column) tableColumn.getIdentifier();
+            if (columnConf.getId() instanceof MetaPropertyPath
+                    && !(isEditable() && columnConf.isEditable())
+                    && !getTableModel().isGeneratedColumn(columnConf)) {
+                MetaPropertyPath propertyPath = (MetaPropertyPath) columnConf.getId();
+
+                final CellProvider cellViewProvider = getCustomCellView(propertyPath);
+                if (cellViewProvider != null) {
+                    return new CellProviderRenderer(cellViewProvider);
+                }
+            }
+        }
+        return null;
+    }
+
+    protected boolean isColumnEditable(int column) {
+        TableColumn tableColumn = impl.getColumnModel().getColumn(column);
+        if (tableColumn.getIdentifier() instanceof Table.Column) {
+            Table.Column columnConf = (Table.Column) tableColumn.getIdentifier();
+            if (columnConf.getId() instanceof MetaPropertyPath && !getTableModel().isGeneratedColumn(columnConf)) {
+                return isCustomCellEditable((MetaPropertyPath) columnConf.getId());
+            }
+        }
+        return false;
+    }
+
+    protected CellProvider getCustomCellView(MetaPropertyPath mpp) {
+        return null;
+    }
+
+    protected CellProvider getCustomCellEditor(MetaPropertyPath mpp) {
+        return null;
+    }
+
+    protected boolean isCustomCellEditable(MetaPropertyPath mpp) {
+        return false;
+    }
+
     /**
      * Uses delegate renderer to create cell component.
      * Then applies desktop styles to cell component.
@@ -1945,6 +2001,70 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                 String style = getStylename(table, row, column);
                 applyStylename(isSelected, hasFocus, component, style);
             }
+            return component;
+        }
+    }
+
+    protected class CellProviderEditor extends AbstractCellEditor implements TableCellEditor {
+        private final CellProvider cellProvider;
+
+        public CellProviderEditor(CellProvider cellProvider) {
+            this.cellProvider = cellProvider;
+        }
+
+        @Override
+        public Component getTableCellEditorComponent(JTable table, Object value,
+                                                     boolean isSelected, int row, int column) {
+            Entity item = getTableModel().getItem(row);
+            TableColumn tableColumn = impl.getColumnModel().getColumn(column);
+            Column columnConf = (Column) tableColumn.getIdentifier();
+
+            Component component = cellProvider.generateCell(item, (MetaPropertyPath) columnConf.getId());
+
+            if (component == null) {
+                return new JLabel("");
+            }
+
+            if (component instanceof JComponent) {
+                ((JComponent) component).putClientProperty(DesktopTableCellEditor.CELL_EDITOR_TABLE, impl);
+            }
+
+            return component;
+        }
+
+        @Override
+        public Object getCellEditorValue() {
+            DesktopComponentsHelper.flushCurrentInputField();
+            return "";
+        }
+    }
+
+    protected class CellProviderRenderer implements TableCellRenderer {
+        private final CellProvider cellViewProvider;
+
+        public CellProviderRenderer(CellProvider cellViewProvider) {
+            this.cellViewProvider = cellViewProvider;
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Entity item = getTableModel().getItem(row);
+            TableColumn tableColumn = impl.getColumnModel().getColumn(column);
+            Column columnConf = (Column) tableColumn.getIdentifier();
+
+            Component component = cellViewProvider.generateCell(item, (MetaPropertyPath) columnConf.getId());
+
+            if (component == null) {
+                return new JLabel("");
+            }
+
+            if (component instanceof JComponent) {
+                ((JComponent) component).putClientProperty(DesktopTableCellEditor.CELL_EDITOR_TABLE, impl);
+            }
+
+            String style = getStylename(table, row, column);
+            applyStylename(isSelected, hasFocus, component, style);
+
             return component;
         }
     }
