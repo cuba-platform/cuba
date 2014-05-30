@@ -244,13 +244,14 @@ public class WebFieldGroup
 
                 assignTypicalAttributes(fieldComponent);
 
-                MetaPropertyPath propertyPath = fieldDatasource.getMetaClass().getPropertyPath(id);
-
                 if (fieldComponent instanceof Field) {
                     Field cubaField = (Field) fieldComponent;
 
                     String caption = fieldConf.getCaption();
                     if (caption == null) {
+                        MetaPropertyPath propertyPath =
+                                fieldDatasource != null ? fieldDatasource.getMetaClass().getPropertyPath(id) : null;
+
                         if (propertyPath != null) {
                             caption = messageTools.getPropertyCaption(propertyPath.getMetaClass(), fieldConf.getId());
                         }

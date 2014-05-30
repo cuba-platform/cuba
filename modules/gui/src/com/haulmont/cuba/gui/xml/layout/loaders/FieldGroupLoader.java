@@ -202,14 +202,16 @@ public class FieldGroupLoader extends AbstractFieldLoader {
 
         MetaPropertyPath metaPropertyPath = null;
 
-        final MetaClass metaClass = ds.getMetaClass();
-        if (metaClass.getPropertyPath(id) == null) {
-            if (!customField) {
-                throw new GuiDevelopmentException(String.format("Property '%s' is not found in entity '%s'",
-                        id, metaClass.getName()), context.getFullFrameId());
+        if (ds != null) {
+            final MetaClass metaClass = ds.getMetaClass();
+            if (metaClass.getPropertyPath(id) == null) {
+                if (!customField) {
+                    throw new GuiDevelopmentException(String.format("Property '%s' is not found in entity '%s'",
+                            id, metaClass.getName()), context.getFullFrameId());
+                }
+            } else {
+                metaPropertyPath = metaClass.getPropertyPath(id);
             }
-        } else {
-            metaPropertyPath = metaClass.getPropertyPath(id);
         }
 
         final FieldGroup.FieldConfig field = new FieldGroup.FieldConfig(id);
