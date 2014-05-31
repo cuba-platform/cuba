@@ -110,7 +110,14 @@ public class WebWindowManager extends WindowManager {
         }
         WindowOpenMode openMode = windowOpenMode.get(webWindow);
 
-        String formattedCaption = formatTabCaption(caption, description);
+        String formattedCaption;
+        if (openMode != null
+                && (openMode.getOpenType() == OpenType.NEW_TAB || openMode.getOpenType() == OpenType.THIS_TAB)) {
+            formattedCaption = formatTabCaption(caption, description);
+        } else {
+            formattedCaption = formatTabDescription(caption, description);
+        }
+
         window.setCaption(formattedCaption);
 
         if (openMode != null) {
