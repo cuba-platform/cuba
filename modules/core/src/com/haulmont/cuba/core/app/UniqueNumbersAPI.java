@@ -23,7 +23,7 @@ public interface UniqueNumbersAPI {
     long getNextNumber(String domain);
 
     /**
-     * Returns the current value of the sequence. For some implementations (particularly PostgreSQL)
+     * Returns the current value of the sequence. For some implementations
      * {@link #getNextNumber(String)} must be called at least once beforehand.
      *
      * @param domain    sequence identifier
@@ -33,6 +33,8 @@ public interface UniqueNumbersAPI {
 
     /**
      * Set current value for the sequence.
+     * Next {@link #getCurrentNumber(String)} invocation will return {@code value}
+     * Next {@link #getNextNumber(String)} invocation will return {@code value + increment}
      *
      * @param domain    sequence identifier
      * @param value     value

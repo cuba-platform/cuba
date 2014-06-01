@@ -49,8 +49,11 @@ public class MssqlDbDialect extends DbDialect implements SequenceSupport {
 
     @Override
     public String modifySequenceSql(String sequenceName, long startWith) {
-        return String.format("drop table %s ^ create table %s (ID bigint identity(%d,1), CREATE_TS datetime)",
-                sequenceName.toUpperCase(), sequenceName.toUpperCase(), startWith);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        return String.format("drop table %1$s ^ " +
+                "create table %1$s (ID bigint identity(%2$d,1), CREATE_TS datetime) ^ " +
+                "insert into %1$s (CREATE_TS) values ({ts '%3$s'})",
+                sequenceName.toUpperCase(), startWith, dateFormat.format(TimeProvider.currentTimestamp()));
     }
 
     @Override
