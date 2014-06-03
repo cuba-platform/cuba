@@ -357,7 +357,7 @@ public class DesktopTreeTable extends DesktopAbstractTable<JXTreeTableExt> imple
                 cellRenderer = ((DesktopAbstractTable.StylingCellRenderer) cellRenderer).getDelegate();
             }
             if (cellRenderer instanceof JXTree) {
-                // default JXTreeTable renderer for hiehrhical column is JXTree
+                // default JXTreeTable renderer for hierarchical column is JXTree
                 ((JXTree) cellRenderer).setFont(font);
             }
         }
