@@ -211,7 +211,8 @@ public class JPAAnnotationsLoader extends ChileAnnotationsLoader {
             metaProperty.getAnnotations().put("embedded", true);
 
         Column column = field.getAnnotation(Column.class);
-        if (column != null && column.length() != 0) {
+        Lob lob = field.getAnnotation(Lob.class);
+        if (column != null && column.length() != 0 && lob == null) {
             metaProperty.getAnnotations().put("length", column.length());
         }
 
