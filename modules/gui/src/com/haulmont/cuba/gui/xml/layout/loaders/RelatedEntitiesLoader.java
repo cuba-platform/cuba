@@ -35,6 +35,11 @@ public class RelatedEntitiesLoader extends ComponentLoader {
         loadCaption(component, element);
         loadWidth(component, element);
 
+        loadStyleName(component, element);
+        loadEnable(component, element);
+        loadVisible(component, element);
+        loadAlign(component, element);
+
         assignFrame(component);
 
         String openType = element.attributeValue("openType");
