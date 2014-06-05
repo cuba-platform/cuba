@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2008-2013 Haulmont. All rights reserved.
+  ~ Copyright (c) 2008-2014 Haulmont. All rights reserved.
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
@@ -141,4 +141,7 @@
 
     <screen id="sys$SendingMessage.browse"
             template="/com/haulmont/cuba/gui/app/core/sendingmessage/browse/sending-message-browse.xml"/>
+
+    <screen id="bulkEditor"
+            template="/com/haulmont/cuba/gui/app/core/bulk/bulk-edit.xml"/>
 </screen-config>

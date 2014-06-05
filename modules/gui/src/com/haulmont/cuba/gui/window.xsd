@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2008-2013 Haulmont. All rights reserved.
+  ~ Copyright (c) 2008-2014 Haulmont. All rights reserved.
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
@@ -1308,7 +1308,31 @@
         <xs:attributeGroup ref="hasId"/>
 
         <xs:attributeGroup ref="hasCaption"/>
-        <xs:attributeGroup ref="hasSize"/>
+        <xs:attributeGroup ref="hasWidthProp"/>
+        <xs:attributeGroup ref="hasEnableProp"/>
+        <xs:attributeGroup ref="hasStyle"/>
+        <xs:attributeGroup ref="hasVisibility"/>
+        <xs:attributeGroup ref="hasGridConstraints"/>
+        <xs:attributeGroup ref="hasAlign"/>
+
+        <xs:attribute name="openType" type="openType"/>
+        <xs:attribute name="for" type="xs:string" use="required"/>
+        <xs:attribute name="exclude" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:complexType name="bulkEditorComponent">
+        <xs:attributeGroup ref="hasId"/>
+
+        <xs:attributeGroup ref="hasCaption"/>
+        <xs:attributeGroup ref="hasWidthProp"/>
+        <xs:attributeGroup ref="hasEnableProp"/>
+        <xs:attributeGroup ref="hasStyle"/>
+        <xs:attributeGroup ref="hasVisibility"/>
+        <xs:attributeGroup ref="hasWidthProp"/>
+        <xs:attributeGroup ref="hasGridConstraints"/>
+        <xs:attributeGroup ref="hasAlign"/>
+
+        <xs:attribute name="icon" type="xs:string"/>
 
         <xs:attribute name="openType" type="openType"/>
         <xs:attribute name="for" type="xs:string" use="required"/>
@@ -1500,6 +1524,7 @@
                 <xs:element name="widgetsTree" type="widgetsTreeComponent"/>
                 <xs:element name="twinColumn" type="twinColumnComponent"/>
                 <xs:element name="relatedEntities" type="relatedComponent"/>
+                <xs:element name="bulkEditor" type="bulkEditorComponent"/>
             </xs:choice>
         </xs:sequence>
     </xs:group>

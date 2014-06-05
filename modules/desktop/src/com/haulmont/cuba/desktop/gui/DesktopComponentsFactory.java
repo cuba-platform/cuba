@@ -76,6 +76,7 @@ public class DesktopComponentsFactory implements ComponentsFactory {
         classes.put(TimeField.NAME, DesktopTimeField.class);
         classes.put(TokenList.NAME, DesktopTokenList.class);
         classes.put(RelatedEntities.NAME, DesktopRelatedEntities.class);
+        classes.put(BulkEditor.NAME, DesktopBulkEditor.class);
     }
 
     public static void registerComponent(String element, Class<? extends Component> componentClass) {

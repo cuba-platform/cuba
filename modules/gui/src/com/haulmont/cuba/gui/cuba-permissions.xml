@@ -21,6 +21,7 @@
                 <category id="cuba.gui.administration">
                     <permission id="cuba.gui.administration.downloadlogs"/>
                 </category>
+                <permission id="cuba.gui.bulkEdit"/>
             </category>
         </category>
     </specific>

@@ -1,0 +1,22 @@
+<!--
+  ~ Copyright (c) 2008-2014 Haulmont. All rights reserved.
+  ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+  -->
+
+<window xmlns="http://schemas.haulmont.com/cuba/5.2/window.xsd"
+        class="com.haulmont.cuba.gui.app.core.bulk.BulkEditorWindow"
+        caption="msg://bulkEditor.caption">
+    <layout expand="fieldsScrollBox" spacing="true">
+        <groupBox>
+            <label id="infoLabel" value="msg://bulkEditor.description"/>
+        </groupBox>
+
+        <scrollBox id="fieldsScrollBox" width="100%" spacing="true" scrollBars="both">
+            <vbox id="contentPane" width="AUTO"/>
+        </scrollBox>
+        <hbox spacing="true">
+            <button id="applyButton" caption="msg://actions.Apply" icon="icons/ok.png" invoke="applyChanges"/>
+            <button caption="msg://actions.Close" icon="icons/cancel.png" invoke="cancelChanges"/>
+        </hbox>
+    </layout>
+</window>

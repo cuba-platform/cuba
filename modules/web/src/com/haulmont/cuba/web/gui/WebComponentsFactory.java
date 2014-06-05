@@ -79,6 +79,7 @@ public class WebComponentsFactory implements ComponentsFactory {
         classes.put(ProgressBar.NAME, WebProgressBar.class);
         classes.put(RowsCount.NAME, WebRowsCount.class);
         classes.put(RelatedEntities.NAME, WebRelatedEntities.class);
+        classes.put(BulkEditor.NAME, WebBulkEditor.class);
     }
 
     public static void registerComponent(String element, Class<? extends Component> componentClass) {
