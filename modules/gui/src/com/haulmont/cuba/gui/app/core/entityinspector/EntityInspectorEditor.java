@@ -607,8 +607,9 @@ public class EntityInspectorEditor extends AbstractWindow {
             return false;
         }
 
-        Column columnAnnotation = metaProperty.getAnnotatedElement().getAnnotation(Column.class);
-        boolean isLong = columnAnnotation != null && columnAnnotation.length() > MAX_TEXTFIELD_STRING_LENGTH;
+        Integer textLength = (Integer) metaProperty.getAnnotations().get("length");
+        boolean isLong = textLength == null || textLength > MAX_TEXTFIELD_STRING_LENGTH;
+
         Object value = item.getValue(metaProperty.getName());
         boolean isContainsSeparator = value != null && containsSeparator((String) value);
 
