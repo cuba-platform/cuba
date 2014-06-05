@@ -146,7 +146,12 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
     @Override
     public <T> T getValue() {
         String text = getImpl().getText();
-        return (T) validateRawValue(text);
+        Object rawValue = validateRawValue(text);
+        if (rawValue instanceof String) {
+            rawValue = StringUtils.trimToNull((String) rawValue);
+        }
+
+        return (T) rawValue;
     }
 
     @Override
@@ -291,9 +296,6 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
                 showValidationMessage();
                 return prevValue;
             }
-        }
-        if (StringUtils.isEmpty(rawValue)) {
-            return null;
         }
         return rawValue;
     }
