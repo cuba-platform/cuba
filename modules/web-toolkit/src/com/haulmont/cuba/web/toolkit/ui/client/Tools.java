@@ -174,6 +174,7 @@ public class Tools {
     public static void showContextPopup(VOverlay customContextMenuPopup, int left, int top) {
         customContextMenuPopup.setAutoHideEnabled(true);
         customContextMenuPopup.setVisible(false);
+        customContextMenuPopup.show();
 
         // mac FF gets bad width due GWT popups overflow hacks,
         // re-determine width
@@ -193,7 +194,6 @@ public class Tools {
         }
 
         customContextMenuPopup.setPopupPosition(left, top);
-        customContextMenuPopup.show();
         customContextMenuPopup.setVisible(true);
     }
 }
