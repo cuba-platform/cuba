@@ -542,8 +542,6 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
             }
         });
 
-        customContextMenuPopup.setAutoHideEnabled(true);
-        customContextMenuPopup.setPopupPosition(left, top);
-        customContextMenuPopup.show();
+        Tools.showContextPopup(customContextMenuPopup, left, top);
     }
 }

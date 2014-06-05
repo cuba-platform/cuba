@@ -17,6 +17,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.haulmont.cuba.web.toolkit.ui.client.Tools;
 import com.vaadin.client.ConnectorMap;
 import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.VOverlay;
@@ -232,8 +233,6 @@ public class CubaTreeWidget extends VTree implements ShortcutActionHandler.Short
             }
         });
 
-        customContextMenuPopup.setAutoHideEnabled(true);
-        customContextMenuPopup.setPopupPosition(left, top);
-        customContextMenuPopup.show();
+        Tools.showContextPopup(customContextMenuPopup, left, top);
     }
 }

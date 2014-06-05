@@ -8,9 +8,11 @@ package com.haulmont.cuba.web.toolkit.ui.client;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Window;
 import com.haulmont.cuba.web.toolkit.ui.client.sys.ToolsImpl;
 import com.vaadin.client.BrowserInfo;
 import com.vaadin.client.RenderInformation;
+import com.vaadin.client.ui.VOverlay;
 
 /**
  * @author gorodnov
@@ -169,4 +171,29 @@ public class Tools {
         }
     }
 
+    public static void showContextPopup(VOverlay customContextMenuPopup, int left, int top) {
+        customContextMenuPopup.setAutoHideEnabled(true);
+        customContextMenuPopup.setVisible(false);
+
+        // mac FF gets bad width due GWT popups overflow hacks,
+        // re-determine width
+        int offsetWidth = customContextMenuPopup.getOffsetWidth();
+        int offsetHeight = customContextMenuPopup.getOffsetHeight();
+        if (offsetWidth + left > Window.getClientWidth()) {
+            left = left - offsetWidth;
+            if (left < 0) {
+                left = 0;
+            }
+        }
+        if (offsetHeight + top > Window.getClientHeight()) {
+            top = top - offsetHeight;
+            if (top < 0) {
+                top = 0;
+            }
+        }
+
+        customContextMenuPopup.setPopupPosition(left, top);
+        customContextMenuPopup.show();
+        customContextMenuPopup.setVisible(true);
+    }
 }
