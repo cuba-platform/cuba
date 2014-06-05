@@ -58,12 +58,7 @@ public class PropertyWrapper extends AbstractPropertyWrapper {
     @Override
     public Object getValue() {
         final Instance instance = getInstance();
-        Object value = instance == null ? null : InstanceUtils.getValueEx(instance, propertyPath.getPath());
-        if (value == null && propertyPath.getRange().isDatatype()
-                && propertyPath.getRange().asDatatype().equals(Datatypes.get(Boolean.class))) {
-            value = Boolean.FALSE;
-        }
-        return value;
+        return instance == null ? null : InstanceUtils.getValueEx(instance, propertyPath.getPath());
     }
 
     protected Instance getInstance() {

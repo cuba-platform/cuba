@@ -4,8 +4,15 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.gui.components.CheckBox;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.web.gui.data.ItemWrapper;
+import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaCheckBox;
+
+import java.util.Collection;
 
 /**
  * @author abramov
@@ -18,6 +25,26 @@ public class WebCheckBox extends WebAbstractField<com.vaadin.ui.CheckBox> implem
         attachListener(component);
         component.setImmediate(true);
         component.setInvalidCommitted(true);
+    }
+
+    @Override
+    protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {
+        return new ItemWrapper(datasource, propertyPaths) {
+            @Override
+            protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
+                return new PropertyWrapper(item, propertyPath) {
+                    @Override
+                    public Object getValue() {
+                        Object value = super.getValue();
+                        if (value == null && propertyPath.getRange().isDatatype()
+                                && propertyPath.getRange().asDatatype().equals(Datatypes.get(Boolean.class))) {
+                            value = Boolean.FALSE;
+                        }
+                        return value;
+                    }
+                };
+            }
+        };
     }
 
     @Override

@@ -4,12 +4,12 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.gui.components.CheckBox;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
-import org.apache.commons.lang.BooleanUtils;
 
 import java.util.Collection;
 
@@ -18,9 +18,9 @@ import java.util.Collection;
  * @version $Id$
  */
 public class WebCheckBox
-    extends
+        extends
         WebAbstractField<com.haulmont.cuba.web.toolkit.ui.CheckBox>
-    implements
+        implements
         CheckBox {
 
     public WebCheckBox() {
@@ -38,7 +38,12 @@ public class WebCheckBox
                 return new PropertyWrapper(item, propertyPath) {
                     @Override
                     public Object getValue() {
-                        return BooleanUtils.toBoolean((Boolean) super.getValue());
+                        Object value = super.getValue();
+                        if (value == null && propertyPath.getRange().isDatatype()
+                                && propertyPath.getRange().asDatatype().equals(Datatypes.get(Boolean.class))) {
+                            value = Boolean.FALSE;
+                        }
+                        return value;
                     }
                 };
             }
@@ -47,9 +52,10 @@ public class WebCheckBox
 
     @Override
     public void setValue(Object value) {
-        if (value == null)
+        if (value == null) {
             super.setValue(Boolean.FALSE);
-        else
+        } else {
             super.setValue(value);
+        }
     }
 }
