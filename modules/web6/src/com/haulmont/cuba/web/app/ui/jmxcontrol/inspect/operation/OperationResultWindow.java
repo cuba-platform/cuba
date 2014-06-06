@@ -54,6 +54,7 @@ public class OperationResultWindow extends AbstractWindow {
             }
 
             Label trace = componentsFactory.createComponent(Label.NAME);
+            trace.setFrame(getFrame());
             trace.setValue(msg);
 
             resultLabel.setValue(getMessage("operationResult.exception"));
@@ -61,6 +62,7 @@ public class OperationResultWindow extends AbstractWindow {
 
         } else if (result != null) {
             Label valueHolder = componentsFactory.createComponent(Label.NAME);
+            valueHolder.setFrame(getFrame());
             com.vaadin.ui.Label vaadinLbl = (com.vaadin.ui.Label) WebComponentsHelper.unwrap(valueHolder);
             vaadinLbl.setContentMode(com.vaadin.ui.Label.CONTENT_PREFORMATTED);
             valueHolder.setValue(AttributeHelper.convertToString(result));
