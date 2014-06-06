@@ -15,7 +15,6 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.QueryParser;
 import com.haulmont.cuba.core.global.QueryTransformerFactory;
-import com.haulmont.cuba.core.sys.AbstractViewRepository;
 import com.haulmont.cuba.core.sys.DBNotInitializedException;
 import com.haulmont.cuba.core.sys.DbUpdater;
 import com.haulmont.cuba.security.app.Authenticated;
@@ -131,6 +130,7 @@ public class PersistenceManager implements PersistenceManagerMBean {
         return new ViewRepositoryInfo(metadata).dumpHtml();
     }
 
+    @Authenticated
     @Override
     public String updateDatabase(String token) {
         if (!"update".equals(token))
