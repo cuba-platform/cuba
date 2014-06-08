@@ -29,7 +29,7 @@ public class OracleDbDialect extends DbDialect implements SequenceSupport {
 
     @Override
     public String deleteSequenceSql(String sequenceName) {
-        return "drop sequence " + (sequenceName != null ? sequenceName.toLowerCase() : sequenceName);
+        return "drop sequence " + (sequenceName != null ? sequenceName.toUpperCase() : sequenceName);
     }
 
     @Override
@@ -39,7 +39,7 @@ public class OracleDbDialect extends DbDialect implements SequenceSupport {
 
     @Override
     public String getCurrentValueSql(String sequenceName) {
-        return "select LAST_NUMBER from USER_SEQUENCES where SEQUENCE_NAME = '" + sequenceName.toUpperCase() + "'";
+        return "select GET_SEQ_VAL('" + sequenceName.toUpperCase() + "') from DUAL";
     }
 
     @Override

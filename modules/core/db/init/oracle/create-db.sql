@@ -664,6 +664,19 @@ begin
 end;
 ^
 
+create or replace function GET_SEQ_VAL(seqname varchar2) return NUMBER
+as
+    ln number;
+    ib number;
+begin
+    select LAST_NUMBER, INCREMENT_BY
+    into ln, ib
+    from USER_SEQUENCES
+    where SEQUENCE_NAME = upper(seqname);
+
+    return ln - ib;
+end;
+^
 --------------------------------------------------------------------------------------------------------------
 
 insert into SEC_GROUP (ID, CREATE_TS, VERSION, NAME, PARENT_ID)
