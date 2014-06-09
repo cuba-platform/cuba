@@ -105,9 +105,8 @@ public class ScreenHistorySupport {
             String item = metadata.getSession().getClassNN(entity.getClass()).getName() + "-" + entity.getId();
             url += "&" + "item=" + item + "&" + "params=item:" + item;
         }
-        Map<String, Object> params = window.getContext().getParams();
+        Map<String, Object> params = getWindowParams(window);
         StringBuilder sb = new StringBuilder();
-        sb.append(",openFromScreenHistory:true");
         if (params != null) {
             for (Map.Entry<String, Object> param : params.entrySet()) {
                 Object value = param.getValue();
@@ -131,4 +130,9 @@ public class ScreenHistorySupport {
 
         return url;
     }
+
+    protected Map<String, Object> getWindowParams(Window window) {
+        return window.getContext().getParams();
+    }
+
 }
