@@ -6,9 +6,9 @@
 package com.haulmont.cuba.web.toolkit.ui.client.grouptable;
 
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.TableCellElement;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.haulmont.cuba.web.toolkit.ui.client.Tools;
 import com.haulmont.cuba.web.toolkit.ui.client.table.CubaScrollTableWidget;
@@ -359,13 +359,20 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
                 });
             }
 
-            private void setWidthForSpannedCell() {
+            protected void setWidthForSpannedCell() {
                 int spanWidth = 0;
-                for (int ix = colIndex; ix < tHead.getVisibleCellCount(); ix++) {
-                    spanWidth += tHead.getHeaderCell(ix).getOffsetWidth();
+                for (int ix = getElement().getChildCount() - 1; ix < tHead.getVisibleCellCount(); ix++) {
+                    HeaderCell headerCell = tHead.getHeaderCell(ix);
+
+                    if (headerCell != null) {
+                        spanWidth += headerCell.getOffsetWidth();
+                    }
                 }
-                Util.setWidthExcludingPaddingAndBorder((Element) getElement().getChild(colIndex),
-                        spanWidth, 13, false);
+
+                Element child = (Element) getElement().getChild(getElement().getChildCount() - 1);
+                if (child != null) {
+                    Util.setWidthExcludingPaddingAndBorder(child, spanWidth, 13, false);
+                }
             }
 
             @Override
@@ -407,10 +414,11 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
 
             @Override
             protected void setCellWidth(int cellIx, int width) {
-                if (this.colIndex > cellIx)
+                if (this.colIndex > cellIx) {
                     super.setCellWidth(cellIx, width);
-                else
+                } else {
                     setWidthForSpannedCell();
+                }
             }
 
             protected void addGroupCell(String text) {
@@ -427,7 +435,8 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
                 container.setInnerHTML("");
 
                 Element groupDiv = DOM.createDiv();
-                DOM.setInnerHTML(groupDiv, "&nbsp;");
+                groupDiv.setInnerHTML("&nbsp;");
+
                 Tools.setStyleName(groupDiv, CLASSNAME + "-group-cell-expander");
                 DOM.appendChild(container, groupDiv);
 
@@ -462,8 +471,8 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
             }
 
             @Override
-            protected boolean handleClickEvent(Event event, Element targetTdOrTr,
-                                            boolean immediate) {
+            protected boolean handleClickEvent(Event event, com.google.gwt.dom.client.Element targetTdOrTr,
+                                               boolean immediate) {
                 return false;
             }
 

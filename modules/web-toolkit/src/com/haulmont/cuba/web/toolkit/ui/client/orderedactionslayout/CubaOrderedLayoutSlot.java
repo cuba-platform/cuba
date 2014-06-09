@@ -7,11 +7,12 @@ package com.haulmont.cuba.web.toolkit.ui.client.orderedactionslayout;
 
 import com.google.gwt.aria.client.Roles;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.client.StyleConstants;
+import com.vaadin.client.ui.ImageIcon;
 import com.vaadin.client.ui.orderedlayout.CaptionPosition;
 import com.vaadin.client.ui.orderedlayout.Slot;
-import com.google.gwt.user.client.Element;
 import com.vaadin.client.ui.orderedlayout.VAbstractOrderedLayout;
 
 import java.util.List;
@@ -76,7 +77,7 @@ public class CubaOrderedLayoutSlot extends Slot {
         // Icon
         if (iconUrl != null) {
             if (icon == null) {
-                icon = new Icon();
+                icon = new ImageIcon();
                 caption.insertFirst(icon.getElement());
             }
             icon.setUri(iconUrl);

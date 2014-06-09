@@ -47,7 +47,7 @@ public class CubaGroupTableConnector extends CubaScrollTableConnector {
     public TooltipInfo getTooltipInfo(Element element) {
         if (element != getWidget().getElement()) {
             Object node = Util.findWidget(
-                    (com.google.gwt.user.client.Element) element,
+                    element,
                     CubaGroupTableWidget.CubaGroupTableBody.CubaGroupTableRow.class);
 
             if (node != null) {
@@ -57,7 +57,7 @@ public class CubaGroupTableConnector extends CubaScrollTableConnector {
             }
 
             node = Util.findWidget(
-                    (com.google.gwt.user.client.Element) element,
+                    element,
                     CubaGroupTableWidget.CubaGroupTableBody.CubaGroupTableGroupRow.class);
 
             if (node != null) {

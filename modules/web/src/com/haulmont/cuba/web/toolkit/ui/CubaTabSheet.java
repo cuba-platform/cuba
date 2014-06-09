@@ -10,8 +10,6 @@ import com.haulmont.cuba.web.toolkit.ui.client.tabsheet.CubaTabSheetServerRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.tabsheet.CubaTabSheetState;
 import com.vaadin.event.Action;
 import com.vaadin.server.KeyMapper;
-import com.vaadin.server.PaintException;
-import com.vaadin.server.PaintTarget;
 import com.vaadin.ui.Component;
 
 import java.util.*;
@@ -29,9 +27,6 @@ public class CubaTabSheet extends com.vaadin.ui.TabSheet implements Action.Conta
     protected HashSet<Action.Handler> actionHandlers = new HashSet<>();
 
     protected KeyMapper<Action> actionMapper = null;
-
-    protected Map<Tab, String> testIds = new HashMap<>();
-    protected Map<Tab, String> cubaIds = new HashMap<>();
 
     protected CubaTabSheetServerRpc rpc = new CubaTabSheetServerRpc() {
         @Override
@@ -151,23 +146,13 @@ public class CubaTabSheet extends com.vaadin.ui.TabSheet implements Action.Conta
     }
 
     public void setTestId(Tab tab, String testId) {
-        testIds.put(tab, testId);
+        int tabPosition = getTabPosition(tab);
+        getState(true).tabs.get(tabPosition).id = testId;
     }
 
     public void setCubaId(Tab tab, String id) {
-        cubaIds.put(tab, id);
-    }
-
-    @Override
-    protected void paintAdditionalTabAttributes(PaintTarget target, Tab tab) throws PaintException {
-        super.paintAdditionalTabAttributes(target, tab);
-
-        if (testIds.containsKey(tab)) {
-            target.addAttribute("testId", testIds.get(tab));
-        }
-        if (cubaIds.containsKey(tab)) {
-            target.addAttribute("cubaId", cubaIds.get(tab));
-        }
+        int tabPosition = getTabPosition(tab);
+        getState(true).tabs.get(tabPosition).cubaId = id;
     }
 
     @Override

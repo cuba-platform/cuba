@@ -9,10 +9,9 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ContextMenuEvent;
 import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.CubaTabSheet;
-import com.vaadin.client.ApplicationConnection;
-import com.vaadin.client.UIDL;
 import com.vaadin.client.Util;
 import com.vaadin.client.communication.RpcProxy;
+import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.Action;
 import com.vaadin.client.ui.tabsheet.TabsheetConnector;
 import com.vaadin.shared.ui.Connect;
@@ -33,7 +32,7 @@ public class CubaTabSheetConnector extends TabsheetConnector {
         registerRpc(CubaTabSheetClientRpc.class, new CubaTabSheetClientRpc() {
             @Override
             public void showTabContextMenu(final int tabIndex, ClientAction[] actions) {
-                StaticActionOwner actionOwner = new StaticActionOwner(getConnection(), getWidget().id);
+                StaticActionOwner actionOwner = new StaticActionOwner(getConnection(), getConnectorId());
 
                 Action[] contextMenuActions = new Action[actions.length];
 
@@ -85,11 +84,12 @@ public class CubaTabSheetConnector extends TabsheetConnector {
     }
 
     @Override
-    public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
-        super.updateFromUIDL(uidl, client);
+    public void onStateChanged(StateChangeEvent stateChangeEvent) {
+        super.onStateChanged(stateChangeEvent);
 
-        if (!getWidget().waitingForResponse)
+        if (!getWidget().waitingForResponse) {
             getWidget().removeStyleName("adjusting");
+        }
     }
 
     @Override

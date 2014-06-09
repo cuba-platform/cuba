@@ -6,7 +6,7 @@
 package com.haulmont.cuba.web.toolkit.ui.client.widgetstree;
 
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -33,8 +33,8 @@ public class CubaWidgetsTreeWidget extends CubaTreeWidget {
             addStyleName(CLASSNAME);
 
             nodeCaptionDiv = DOM.createDiv();
-            DOM.setElementProperty(nodeCaptionDiv, "className", CLASSNAME
-                    + "-caption");
+            nodeCaptionDiv.setPropertyString("className", CLASSNAME + "-caption");
+
             Element wrapper = DOM.createDiv();
             nodeCaptionSpan = DOM.createSpan();
             DOM.appendChild(getElement(), nodeCaptionDiv);

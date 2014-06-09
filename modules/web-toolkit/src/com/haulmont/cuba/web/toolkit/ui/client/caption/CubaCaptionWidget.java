@@ -7,13 +7,13 @@ package com.haulmont.cuba.web.toolkit.ui.client.caption;
 
 import com.google.gwt.aria.client.Roles;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
+import com.google.gwt.dom.client.Element;
 import com.vaadin.client.ApplicationConnection;
 import com.vaadin.client.ComponentConnector;
 import com.vaadin.client.Util;
 import com.vaadin.client.VCaption;
 import com.vaadin.client.ui.AbstractFieldConnector;
-import com.vaadin.client.ui.Icon;
+import com.vaadin.client.ui.ImageIcon;
 import com.vaadin.client.ui.aria.AriaHelper;
 import com.vaadin.shared.AbstractFieldState;
 import com.vaadin.shared.ComponentConstants;
@@ -79,7 +79,7 @@ public class CubaCaptionWidget extends VCaption {
 
         if (hasIcon) {
             if (icon == null) {
-                icon = new Icon(client);
+                icon = new ImageIcon();
                 icon.setWidth("0");
                 icon.setHeight("0");
 
@@ -94,7 +94,7 @@ public class CubaCaptionWidget extends VCaption {
 
         } else if (icon != null) {
             // Remove existing
-            DOM.removeChild(getElement(), icon.getElement());
+            getElement().removeChild(icon.getElement());
             icon = null;
         }
 
@@ -126,12 +126,12 @@ public class CubaCaptionWidget extends VCaption {
                     captionText.setInnerHTML("&nbsp;");
                 }
             } else {
-                DOM.setInnerText(captionText, c);
+                captionText.setInnerText(c);
             }
 
         } else if (captionText != null) {
             // Remove existing
-            DOM.removeChild(getElement(), captionText);
+            getElement().removeChild(captionText);
             captionText = null;
         }
 
@@ -140,9 +140,8 @@ public class CubaCaptionWidget extends VCaption {
         if (showRequired) {
             if (requiredFieldIndicator == null) {
                 requiredFieldIndicator = DOM.createDiv();
-                requiredFieldIndicator
-                        .setClassName("v-required-field-indicator");
-                DOM.setInnerText(requiredFieldIndicator, "*");
+                requiredFieldIndicator.setClassName("v-required-field-indicator");
+                requiredFieldIndicator.setInnerText("*");
 
                 DOM.insertChild(getElement(), requiredFieldIndicator,
                         getInsertPosition(InsertPosition.REQUIRED));
@@ -180,9 +179,9 @@ public class CubaCaptionWidget extends VCaption {
         if (showError) {
             if (errorIndicatorElement == null) {
                 errorIndicatorElement = DOM.createDiv();
-                DOM.setInnerHTML(errorIndicatorElement, "&nbsp;");
-                DOM.setElementProperty(errorIndicatorElement, "className",
-                        "v-errorindicator");
+
+                errorIndicatorElement.setInnerHTML("&nbsp;");
+                errorIndicatorElement.setClassName("v-errorindicator");
 
                 DOM.insertChild(getElement(), errorIndicatorElement,
                         getInsertPosition(InsertPosition.ERROR));
@@ -229,7 +228,8 @@ public class CubaCaptionWidget extends VCaption {
     }
 
     @Override
-    public Element getTextElement() {
+    @SuppressWarnings("deprecation")
+    public com.google.gwt.user.client.Element getTextElement() {
         return super.getTextElement();
     }
 

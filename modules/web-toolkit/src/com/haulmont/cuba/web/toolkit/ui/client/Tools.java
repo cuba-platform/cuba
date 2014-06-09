@@ -6,8 +6,9 @@
 package com.haulmont.cuba.web.toolkit.ui.client;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Window;
 import com.haulmont.cuba.web.toolkit.ui.client.sys.ToolsImpl;
 import com.vaadin.client.BrowserInfo;
@@ -37,7 +38,7 @@ public class Tools {
         int childCount = DOM.getChildCount(e);
         if (childCount > 0) {
             for (int i = 0; i < childCount; i++) {
-                DOM.removeChild(e, DOM.getChild(e, 0));
+                e.removeChild(DOM.getChild(e, 0));
             }
         }
     }
@@ -67,38 +68,46 @@ public class Tools {
     }
 
     public static String setStyleName(Element el, String style) {
-        if (style == null) throw new RuntimeException("Style cannot be null");
+        if (style == null) {
+            throw new RuntimeException("Style cannot be null");
+        }
         style = style.trim();
-        DOM.setElementProperty(el, "className", style);
+        el.setPropertyString("className", style);
         return style;
     }
 
     public static String getStyleName(Element el) {
-        return DOM.getElementProperty(el, "className");
+        return el.getPropertyString("className");
     }
 
     public static String addStyleName(Element el, String style) {
-        if (style == null) throw new RuntimeException("Style cannot be null");
+        if (style == null) {
+            throw new RuntimeException("Style cannot be null");
+        }
         style = style.trim();
         el.addClassName(style);
         return style;
     }
 
     public static void removeStyleName(Element el, String style) {
-        if (style == null) throw new RuntimeException("Style cannot be null");
+        if (style == null) {
+            throw new RuntimeException("Style cannot be null");
+        }
         style = style.trim();
         el.removeClassName(style);
     }
 
     public static String setStylePrimaryName(Element el, String style) {
-        if (style == null) throw new RuntimeException("Style cannot be null");
+        if (style == null) {
+            throw new RuntimeException("Style cannot be null");
+        }
         style = style.trim();
         impl.updatePrimaryAndDependentStyleNames(el, style);
         return style;
     }
 
     public static String getStylePrimaryName(Element el) {
-        String className = DOM.getElementProperty(el, "className");
+        String className = el.getClassName();
         int spaceIdx = className.indexOf(' ');
         if (spaceIdx >= 0) {
             return className.substring(0, spaceIdx);
@@ -121,7 +130,9 @@ public class Tools {
     }
 
     public static boolean hasStyleName(Element el, String style) {
-        if (style == null) throw new RuntimeException("Style cannot be null");
+        if (style == null) {
+            throw new RuntimeException("Style cannot be null");
+        }
         style = style.trim();
         return impl.hasStyleName(el, style);
     }
@@ -131,33 +142,36 @@ public class Tools {
     }
 
     public static RenderInformation.Size definePaddingBorders(Element el) {
-        String w = DOM.getStyleAttribute(el, "width");
-        String h = DOM.getStyleAttribute(el, "height");
+        Style style = el.getStyle();
 
-        DOM.setStyleAttribute(el, "overflow", "hidden");
-        DOM.setStyleAttribute(el, "width", "0px");
-        DOM.setStyleAttribute(el, "height", "0px");
+        String w = style.getProperty("width");
+        String h = style.getProperty("height");
+
+        style.setProperty("overflow", "hidden");
+        style.setProperty("width", "0px");
+        style.setProperty("height", "0px");
 
         RenderInformation.Size s = new RenderInformation.Size();
         s.setWidth(el.getOffsetWidth());
         s.setHeight(el.getOffsetHeight());
 
-        DOM.setStyleAttribute(el, "width", w);
-        DOM.setStyleAttribute(el, "height", h);
-        DOM.setStyleAttribute(el, "overflow", "");
+        style.setProperty("width", w);
+        style.setProperty("height", h);
+        style.setProperty("overflow", "");
 
         return s;
     }
 
-    public static void replaceClassNames(Element element, String from, String to){
+    public static void replaceClassNames(Element element, String from, String to) {
         String className = element.getClassName();
         String newClassName = "";
         String[] classNames = className.split(" ");
         for (String classNamePart : classNames) {
-            if (classNamePart.startsWith(from + "-"))
+            if (classNamePart.startsWith(from + "-")) {
                 classNamePart = classNamePart.replace(from + "-", to + "-");
-            else if (classNamePart.equals(from))
+            } else if (classNamePart.equals(from)) {
                 classNamePart = to;
+            }
 
             newClassName = newClassName + " " + classNamePart;
         }
@@ -170,7 +184,6 @@ public class Tools {
             impl.fixFlashTitleIEJS();
         }
     }
-
     public static void showContextPopup(VOverlay customContextMenuPopup, int left, int top) {
         customContextMenuPopup.setAutoHideEnabled(true);
         customContextMenuPopup.setVisible(false);

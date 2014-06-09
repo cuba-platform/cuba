@@ -83,9 +83,7 @@ public class CubaScrollTableConnector extends TableConnector {
     @Override
     public TooltipInfo getTooltipInfo(Element element) {
         if (element != getWidget().getElement()) {
-            Object node = Util.findWidget(
-                    (com.google.gwt.user.client.Element) element,
-                    CubaScrollTableWidget.CubaScrollTableBody.CubaScrollTableRow.class);
+            Object node = Util.findWidget(element, CubaScrollTableWidget.CubaScrollTableBody.CubaScrollTableRow.class);
 
             if (node != null) {
                 CubaScrollTableWidget.CubaScrollTableBody.CubaScrollTableRow row

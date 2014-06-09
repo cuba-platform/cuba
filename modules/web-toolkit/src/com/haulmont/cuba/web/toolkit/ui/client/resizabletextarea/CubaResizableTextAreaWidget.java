@@ -5,9 +5,10 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.resizabletextarea;
 
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
+import  com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.EventListener;
 import com.vaadin.client.ComponentConnector;
@@ -36,7 +37,7 @@ public class CubaResizableTextAreaWidget extends VTextArea {
     protected static final int MINIMAL_HEIGHT = 17;
 
     public CubaResizableTextAreaWidget() {
-        DOM.setStyleAttribute(getElement(), "resize", "none");
+        getElement().getStyle().setProperty("resize", "none");
         sinkEvents(Event.ONKEYDOWN);
     }
 
@@ -49,9 +50,11 @@ public class CubaResizableTextAreaWidget extends VTextArea {
         if (!composed) {
             if (resizable) {
                 Element parentDiv = DOM.createDiv();
-                DOM.setStyleAttribute(parentDiv, "position", "relative");
-                DOM.setStyleAttribute(parentDiv, "overflow", "hidden");
-                DOM.setStyleAttribute(parentDiv, "display", "inline");
+                Style style = parentDiv.getStyle();
+
+                style.setProperty("position", "relative");
+                style.setProperty("overflow", "hidden");
+                style.setProperty("display", "inline");
                 parentDiv.setClassName(TEXT_AREA_WRAPPER);
 
                 getElement().getParentElement().replaceChild(parentDiv,getElement());
@@ -86,16 +89,17 @@ public class CubaResizableTextAreaWidget extends VTextArea {
     }
 
     protected void handleMouseStyle(Event event) {
+        Style resizeElementStyle = resizeElement.getStyle();
         if (isResizeRegion(event)) {
-            DOM.setStyleAttribute(resizeElement, "cursor", "se-resize");
+            resizeElementStyle.setCursor(Style.Cursor.SE_RESIZE);
         } else {
-            DOM.setStyleAttribute(resizeElement, "cursor", "default");
+            resizeElementStyle.setCursor(Style.Cursor.DEFAULT);
         }
     }
 
     protected void captureEvents(Event event) {
         event.preventDefault();
-        if (isResizeRegion(event) && DOM.eventGetButton(event) == Event.BUTTON_LEFT) {
+        if (isResizeRegion(event) && event.getButton() == Event.BUTTON_LEFT) {
             if (!dragDrop) {
                 dragDrop = true;
                 DOM.setCapture(resizeElement);
@@ -104,7 +108,7 @@ public class CubaResizableTextAreaWidget extends VTextArea {
     }
 
     protected void releaseCapture(Event event) {
-        if (DOM.eventGetButton(event) == Event.BUTTON_LEFT && dragDrop) {
+        if (event.getButton() == Event.BUTTON_LEFT && dragDrop) {
             dragDrop = false;
             DOM.releaseCapture(resizeElement);
             ComponentConnector connector = ConnectorMap.get(client).getConnector(this);
@@ -117,13 +121,14 @@ public class CubaResizableTextAreaWidget extends VTextArea {
     }
 
     protected void handleResize(Event event) {
-        if (!isResizeRegion(event))
-            DOM.setStyleAttribute(resizeElement, "cursor", "default");
+        if (!isResizeRegion(event)) {
+            resizeElement.getStyle().setCursor(Style.Cursor.DEFAULT);
+        }
 
         //calculate and set the new size
         if (dragDrop) {
-            int mouseX = DOM.eventGetClientX(event);
-            int mouseY = DOM.eventGetClientY(event);
+            int mouseX = event.getClientX();
+            int mouseY = event.getClientY();
             int absoluteLeft = getAbsoluteLeft();
             int absoluteTop = getAbsoluteTop();
 
@@ -143,11 +148,11 @@ public class CubaResizableTextAreaWidget extends VTextArea {
     }
 
     protected boolean isResizeRegion(Event event) {
-        int mouseX = DOM.eventGetClientX(event);
-        int mouseY = DOM.eventGetClientY(event);
+        int mouseX = event.getClientX();
+        int mouseY = event.getClientY();
 
-        int regionEndY = DOM.getAbsoluteTop(resizeElement) + resizeElement.getOffsetHeight();
-        int regionEndX = DOM.getAbsoluteLeft(resizeElement) + resizeElement.getOffsetWidth();
+        int regionEndY = resizeElement.getAbsoluteTop() + resizeElement.getOffsetHeight();
+        int regionEndX = resizeElement.getAbsoluteLeft() + resizeElement.getOffsetWidth();
 
         return regionEndX - mouseX < RESIZE_REGION && regionEndY - mouseY < RESIZE_REGION;
     }

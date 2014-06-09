@@ -12,7 +12,7 @@ import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
@@ -168,14 +168,14 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
         protected final SimplePanel presentationsEditIcon = GWT.create(SimplePanel.class);
 
         public CubaTreeTableTableHead() {
-            presentationsEditIcon.getElement().setClassName("cuba-table-presentations-icon");
-
-            DOM.setStyleAttribute(presentationsEditIcon.getElement(), "display", "none");
+            Element iconElement = presentationsEditIcon.getElement();
+            iconElement.setClassName("cuba-table-presentations-icon");
+            iconElement.getStyle().setDisplay(Style.Display.NONE);
 
             Element columnSelector = (Element) getElement().getLastChild();
-            DOM.insertChild(getElement(), presentationsEditIcon.getElement(), DOM.getChildIndex(getElement(), columnSelector));
+            DOM.insertChild(getElement(), iconElement, DOM.getChildIndex(getElement(), columnSelector));
 
-            DOM.sinkEvents(presentationsEditIcon.getElement(), Event.ONCLICK);
+            DOM.sinkEvents(iconElement, Event.ONCLICK);
         }
 
         @Override

@@ -8,11 +8,11 @@ package com.haulmont.cuba.web.toolkit.ui.client.multiupload;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.ScriptInjector;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.haulmont.cuba.web.toolkit.ui.client.Properties;
 import com.haulmont.cuba.web.toolkit.ui.client.Tools;
@@ -84,7 +84,7 @@ public class CubaMultiUploadWidget extends FormPanel {
     }
 
     protected void attachProgressWindow() {
-        Element parentDoc = (Element) getElement().getOwnerDocument().getElementsByTagName("body").getItem(0);
+        Element parentDoc = getElement().getOwnerDocument().getElementsByTagName("body").getItem(0);
         themeDiv = DOM.createDiv();
 
         DOM.appendChild(themeDiv, progressDiv);

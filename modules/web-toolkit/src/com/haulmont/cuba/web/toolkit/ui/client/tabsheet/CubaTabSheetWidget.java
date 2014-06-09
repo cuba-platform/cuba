@@ -8,7 +8,6 @@ package com.haulmont.cuba.web.toolkit.ui.client.tabsheet;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.ContextMenuEvent;
 import com.google.gwt.event.dom.client.FocusEvent;
-import com.vaadin.client.UIDL;
 import com.vaadin.client.ui.VTabsheet;
 
 /**
@@ -44,23 +43,12 @@ public class CubaTabSheetWidget extends VTabsheet {
     }
 
     @Override
-    protected void updateAdditionalProperties(UIDL tabUidl, Tab tab) {
-        super.updateAdditionalProperties(tabUidl, tab);
+    protected boolean canSelectTab(int tabIndex) {
+        boolean result = super.canSelectTab(tabIndex);
 
-        if (tabUidl.hasAttribute("testId")) {
-            tab.getElement().setId(tabUidl.getStringAttribute("testId"));
-        }
-        if (tabUidl.hasAttribute("cubaId")) {
-            tab.getElement().setAttribute("cuba-id", tabUidl.getStringAttribute("cubaId"));
-        }
-    }
-
-
-    @Override
-    protected boolean onTabSelected(int tabIndex) {
-        boolean result = super.onTabSelected(tabIndex);
-        if (waitingForResponse)
+        if (waitingForResponse) {
             addStyleName("adjusting");
+        }
         return result;
     }
 }

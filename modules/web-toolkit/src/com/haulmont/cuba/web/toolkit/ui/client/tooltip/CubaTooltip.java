@@ -7,9 +7,10 @@ package com.haulmont.cuba.web.toolkit.ui.client.tooltip;
 
 import com.google.gwt.aria.client.Id;
 import com.google.gwt.aria.client.Roles;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -50,12 +51,13 @@ public class CubaTooltip extends VTooltip {
     }
 
     /* CAUTION copied from super class with small changes */
+    @Override
     protected void show(TooltipInfo info) {
         boolean hasContent = false;
         boolean isErrorMsgEmpty = info.getErrorMessage() == null || info.getErrorMessage().isEmpty();
         if (!isErrorMsgEmpty) {
             Element errorMsgTestEl = DOM.createDiv();
-            DOM.setInnerHTML(errorMsgTestEl, info.getErrorMessage());
+            errorMsgTestEl.setInnerHTML(info.getErrorMessage());
             isErrorMsgEmpty = DOM.getChild(errorMsgTestEl, 0).getInnerHTML().isEmpty();
         }
         if (!isErrorMsgEmpty) {
@@ -65,14 +67,16 @@ public class CubaTooltip extends VTooltip {
         } else {
             em.setVisible(false);
         }
+
         if (info.getTitle() != null && !"".equals(info.getTitle())) {
-            DOM.setInnerHTML(description, info.getTitle());
-            DOM.setStyleAttribute(description, "display", "");
+            description.setInnerHTML(info.getTitle());
+            description.getStyle().clearDisplay();
             hasContent = true;
         } else {
-            DOM.setInnerHTML(description, "");
-            DOM.setStyleAttribute(description, "display", "none");
+            description.setInnerHTML("");
+            description.getStyle().setDisplay(Style.Display.NONE);
         }
+
         if (hasContent) {
             // Issue #8454: With IE7 the tooltips size is calculated based on
             // the last tooltip's position, causing problems if the last one was
@@ -129,6 +133,7 @@ public class CubaTooltip extends VTooltip {
                     || element.getClassName().equals(CubaCaptionWidget.TOOLTIP_CLASSNAME));
         }
 
+        @Override
         protected boolean resolveConnector(Element element) {
 
             if (isTooltipElement(element)) {
@@ -192,17 +197,17 @@ public class CubaTooltip extends VTooltip {
             }
         }
 
+        @Override
         protected void handleShowHide(DomEvent domEvent, boolean isFocused) {
             Event event = Event.as(domEvent.getNativeEvent());
-            com.google.gwt.dom.client.Element element = Element.as(event
-                    .getEventTarget());
+            Element element = Element.as(event.getEventTarget());
 
             // We can ignore move event if it's handled by move or over already
-            if (currentElement == element && currentIsFocused == isFocused && domEvent instanceof MouseMoveEvent) {
+            if (currentElement == element && handledByFocus) {
                 return;
             }
 
-            boolean connectorAndTooltipFound = resolveConnector((com.google.gwt.user.client.Element) element);
+            boolean connectorAndTooltipFound = resolveConnector(element);
             if (!connectorAndTooltipFound) {
                 //close tooltip only if it is from button or checkbox
                 if (currentConnector instanceof ButtonConnector || currentConnector instanceof CheckBoxConnector) {
@@ -215,7 +220,6 @@ public class CubaTooltip extends VTooltip {
                         currentConnector = null;
                     }
                 }
-
             } else {
                 updatePosition(event, isFocused);
                 if ((domEvent instanceof ClickEvent && !isStandardTooltip(currentConnector))
@@ -237,7 +241,7 @@ public class CubaTooltip extends VTooltip {
                 }
             }
 
-            currentIsFocused = isFocused;
+            handledByFocus = isFocused;
             currentElement = element;
         }
 

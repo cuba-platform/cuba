@@ -5,7 +5,6 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.textfield;
 
-import com.google.gwt.user.client.DOM;
 import com.vaadin.client.ui.VTextField;
 
 /**
@@ -15,7 +14,7 @@ import com.vaadin.client.ui.VTextField;
 public class CubaPickerTextFieldWidget extends VTextField {
     @Override
     public void setReadOnly(boolean readOnly) {
-        DOM.setElementPropertyBoolean(getElement(), "readOnly", readOnly);
+        getElement().setPropertyBoolean("readOnly", readOnly);
         String readOnlyStyle = "readonly";
         if (readOnly) {
             addStyleDependentName(readOnlyStyle);

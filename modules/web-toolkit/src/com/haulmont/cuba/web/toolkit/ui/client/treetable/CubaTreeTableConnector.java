@@ -85,7 +85,7 @@ public class CubaTreeTableConnector extends TreeTableConnector {
     public TooltipInfo getTooltipInfo(Element element) {
         if (element != getWidget().getElement()) {
             Object node = Util.findWidget(
-                    (com.google.gwt.user.client.Element) element,
+                    element,
                     CubaTreeTableWidget.CubaTreeTableBody.CubaTreeTableRow.class);
 
             if (node != null) {

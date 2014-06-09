@@ -46,8 +46,7 @@ public class ToolsImpl {
             elem.removeChild(elem.firstChild);
         }
         if (text != null) {
-            var arr = new Array();
-            arr = text.replace(/\r/g, "").split("\n");
+            var arr = text.replace(/\r/g, "").split("\n");
             if (arr.length > 0) {
                 for (var i = 0; i < arr.length; i++) {
                     if (arr[i]) {

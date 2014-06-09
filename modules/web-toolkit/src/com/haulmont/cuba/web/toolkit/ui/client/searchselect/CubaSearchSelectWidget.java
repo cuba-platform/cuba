@@ -11,12 +11,9 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.user.client.DOM;
-import com.haulmont.cuba.web.toolkit.ui.client.logging.ActiveClientLogger;
 import com.haulmont.cuba.web.toolkit.ui.client.logging.ClientLogger;
 import com.haulmont.cuba.web.toolkit.ui.client.logging.ClientLoggerFactory;
-import com.vaadin.client.VConsole;
 import com.vaadin.client.ui.VFilterSelect;
-import com.vaadin.client.ui.VVerticalLayout;
 import com.vaadin.client.ui.menubar.MenuItem;
 
 /**
@@ -33,7 +30,7 @@ public class CubaSearchSelectWidget extends VFilterSelect {
 
     protected boolean keyboardNavigation = false;
 
-    protected ClientLogger logger = new ActiveClientLogger("CSS"); // ClientLoggerFactory.getLogger("CubaSearchSelect");
+    protected ClientLogger logger = ClientLoggerFactory.getLogger("CubaSearchSelect");
 
     @Override
     public void filterOptions(int page, String filter) {

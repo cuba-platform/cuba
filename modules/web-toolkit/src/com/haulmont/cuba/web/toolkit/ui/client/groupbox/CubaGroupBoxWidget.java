@@ -5,8 +5,9 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.groupbox;
 
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Event;
 import com.haulmont.cuba.web.toolkit.ui.client.Tools;
 import com.vaadin.client.ui.VPanel;
@@ -100,12 +101,13 @@ public class CubaGroupBoxWidget extends VPanel {
     }
 
     public void setCollapsable(boolean collapsable) {
+        Style expanderStyle = expander.getStyle();
         if (collapsable) {
-            DOM.setStyleAttribute(expander, "display", "");
+            expanderStyle.clearProperty("display");
             removeStyleDependentName("nocollapsable");
         } else {
             addStyleDependentName("nocollapsable");
-            DOM.setStyleAttribute(expander, "display", "none");
+            expanderStyle.setDisplay(Style.Display.NONE);
         }
 
         Tools.textSelectionEnable(captionNode, !collapsable);

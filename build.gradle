@@ -60,7 +60,7 @@ def webToolkitLegacyModule = project(':cuba-web6-toolkit')
 def webModuleThemes = project(':cuba-web-themes')
 def webLegacyModuleThemes = project(':cuba-web6-themes')
 
-def vaadinVersion = '7.1.12.cuba.4'
+def vaadinVersion = '7.2.0.cuba.2'
 def vaadinLegacyVersion = '6.6.1.144'
 def springVersion = '3.2.8.RELEASE'
 def springSecurityVersion = '3.2.3.RELEASE'
@@ -112,7 +112,7 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
         compile(group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.1.6')
         compile(group: 'antlr', name: 'antlr', version: '2.7.7')
         compile(asm)
-        compile(group: 'com.google.guava', name: 'guava', version: '13.0.1')
+        compile(group: 'com.google.guava', name: 'guava', version: '16.0.1')
         compile(group: 'org.apache.openjpa', name: 'openjpa', version: '2.2.2')
         compile(group: 'net.sourceforge.serp', name: 'serp', version: '1.13.1')
         compile(group: 'org.antlr', name: 'antlr-runtime', version: '3.2')
@@ -224,7 +224,6 @@ configure(coreModule) {
         compile(group: 'org.aspectj', name: 'aspectjweaver', version: '1.6.12')
         compile(group: 'org.mybatis', name: 'mybatis', version: '3.0.5')
         compile(group: 'org.mybatis', name: 'mybatis-spring', version: '1.0.1')
-        compile(group: 'org.json', name: 'json', version: '20090211')
         compile(group: 'org.springframework', name: 'spring-context-support', version: springVersion)
         compile(group: 'org.springframework', name: 'spring-orm', version: springVersion)
         compile(group: 'org.springframework', name: 'spring-tx', version: springVersion)
@@ -369,8 +368,11 @@ configure(webModule) {
         compile(commonsUpload)
         compile(casClient)
         compile(group: 'org.springframework', name: 'spring-webmvc', version: springVersion)
+        compile(group: 'org.json', name: 'json', version: '20090211')
 
-        compile(group: 'com.vaadin', name: 'vaadin-server', version: vaadinVersion)
+        compile(group: 'com.vaadin', name: 'vaadin-server', version: vaadinVersion) {
+            exclude(group: 'com.vaadin', module: 'vaadin-sass-compiler')
+        }
         /* Vaadin addons */
         compile(group: 'com.haulmont.thirdparty', name: 'appletintegration', version: '1.2.10')
         compile(group: 'com.haulmont.thirdparty', name: 'popupbutton', version: '2.2.1')

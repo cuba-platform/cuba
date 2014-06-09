@@ -5,9 +5,9 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.fieldgrouplayout;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
 import com.haulmont.cuba.web.toolkit.ui.client.caption.CaptionHolder;
 import com.haulmont.cuba.web.toolkit.ui.client.caption.CubaCaptionWidget;
 import com.haulmont.cuba.web.toolkit.ui.client.gridlayout.CubaGridLayoutSlot;
@@ -323,7 +323,7 @@ public class CubaFieldGroupLayoutComponentSlot extends CubaGridLayoutSlot implem
 
     public void setIndicatorsWidth(String width) {
         if (rightCaption != null) {
-            DOM.setStyleAttribute(rightCaption, "width", width);
+            rightCaption.getStyle().setProperty("width", width);
         }
     }
 
