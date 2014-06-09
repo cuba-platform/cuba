@@ -1946,12 +1946,12 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         return null;
     }
 
-    protected boolean isColumnEditable(int column) {
+    protected boolean isCustomCellEditable(int row, int column) {
         TableColumn tableColumn = impl.getColumnModel().getColumn(column);
         if (tableColumn.getIdentifier() instanceof Table.Column) {
             Table.Column columnConf = (Table.Column) tableColumn.getIdentifier();
             if (columnConf.getId() instanceof MetaPropertyPath && !getTableModel().isGeneratedColumn(columnConf)) {
-                return isCustomCellEditable((MetaPropertyPath) columnConf.getId());
+                return isCustomCellEditable(tableModel.getItem(row), (MetaPropertyPath) columnConf.getId());
             }
         }
         return false;
@@ -1965,7 +1965,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         return null;
     }
 
-    protected boolean isCustomCellEditable(MetaPropertyPath mpp) {
+    protected boolean isCustomCellEditable(Entity e, MetaPropertyPath mpp) {
         return false;
     }
 

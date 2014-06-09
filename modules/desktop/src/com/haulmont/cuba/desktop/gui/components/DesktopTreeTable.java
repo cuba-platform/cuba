@@ -87,7 +87,7 @@ public class DesktopTreeTable extends DesktopAbstractTable<JXTreeTableExt> imple
                     return false;
                 }
 
-                if (DesktopTreeTable.this.isColumnEditable(column)) {
+                if (DesktopTreeTable.this.isCustomCellEditable(row, column)) {
                     return true;
                 }
 

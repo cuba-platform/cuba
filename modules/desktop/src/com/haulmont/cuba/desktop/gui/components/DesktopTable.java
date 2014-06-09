@@ -72,7 +72,7 @@ public class DesktopTable extends DesktopAbstractTable<JXTable> {
 
             @Override
             public boolean isCellEditable(int row, int column) {
-                if (DesktopTable.this.isColumnEditable(column)) {
+                if (DesktopTable.this.isCustomCellEditable(row, column)) {
                     return true;
                 }
 
