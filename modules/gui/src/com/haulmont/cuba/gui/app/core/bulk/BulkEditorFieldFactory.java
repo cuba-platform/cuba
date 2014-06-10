@@ -92,24 +92,19 @@ public class BulkEditorFieldFactory {
     }
 
     protected Field createDateField(Datasource datasource, MetaProperty property) {
-        TemporalType tt;
-        if (property.getRange().asDatatype().equals(Datatypes.get(DateDatatype.NAME))) {
-            tt = TemporalType.DATE;
-        } else if (property.getAnnotations() != null) {
-            tt = (TemporalType) property.getAnnotations().get("temporal");
-        } else {
-            tt = TemporalType.TIMESTAMP;
-        }
+        Datatype<?> datatype = property.getRange().asDatatype();
 
         DateField dateField = componentsFactory.createComponent(DateField.NAME);
         dateField.setDatasource(datasource, property.getName());
 
-        if (tt == TemporalType.TIMESTAMP) {
+        if (datatype.equals(Datatypes.get(DateTimeDatatype.NAME))) {
             dateField.setResolution(DateField.Resolution.DAY);
             dateField.setDateFormat(messages.getMainMessage("dateTimeFormat"));
-        } else if (tt == TemporalType.DATE) {
+        } else if (datatype.equals(Datatypes.get(DateDatatype.NAME))) {
             dateField.setResolution(DateField.Resolution.SEC);
             dateField.setDateFormat(messages.getMainMessage("dateFormat"));
+        } else {
+            throw new RuntimeException("Unknown datatype for " + property);
         }
 
         return dateField;

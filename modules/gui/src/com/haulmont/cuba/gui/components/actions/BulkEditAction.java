@@ -22,15 +22,16 @@ public class BulkEditAction extends AbstractAction {
     protected String exclude;
 
     public BulkEditAction(ListComponent owner) {
-        super("actions.BulkEdit");
+        super("bulkEdit");
 
         this.owner = owner;
+        this.icon = "icons/bulk-edit.png";
+        this.caption = messages.getMessage(getClass(), "actions.BulkEdit");
 
         boolean permitted = userSession.isSpecificPermitted(BulkEditor.PERMISSION);
 
         setVisible(permitted);
         setEnabled(permitted);
-        setIcon("icons/bulk-edit.png");
     }
 
     public WindowManager.OpenType getOpenType() {

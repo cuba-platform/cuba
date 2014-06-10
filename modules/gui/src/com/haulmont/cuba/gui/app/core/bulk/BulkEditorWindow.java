@@ -195,13 +195,13 @@ public class BulkEditorWindow extends AbstractWindow {
                                 setIcon("icons/edit.png");
                                 clearButton.setDescription(getMessage("bulk.editAttribute"));
                             } else {
-                                setIcon("icons/remove.png");
+                                setIcon("icons/erase.png");
                                 clearButton.setDescription(getMessage("bulk.clearAttribute"));
                             }
                         }
                     };
                     action.setCaption("");
-                    action.setIcon("icons/remove.png");
+                    action.setIcon("icons/erase.png");
 
                     clearButton.setAction(action);
                     clearButton.setDescription(getMessage("bulk.clearAttribute"));
