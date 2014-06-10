@@ -140,6 +140,7 @@ public class EntityParamsDatasource extends CollectionDatasourceImpl<KeyValueEnt
         }
 
         LoadContext loadContext = new LoadContext(instance.getMetaClass());
+        loadContext.setSoftDeletion(false);
         loadContext.setId(instance.getId());
         loadContext.setView(reloadView);
 
