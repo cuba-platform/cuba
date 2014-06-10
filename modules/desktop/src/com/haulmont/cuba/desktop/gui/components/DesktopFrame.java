@@ -355,6 +355,16 @@ public class DesktopFrame
     }
 
     @Override
+    public void removeAction(String id) {
+        actionsHolder.removeAction(id);
+    }
+
+    @Override
+    public void removeAllActions() {
+        actionsHolder.removeAllActions();
+    }
+
+    @Override
     public Collection<Action> getActions() {
         return actionsHolder.getActions();
     }

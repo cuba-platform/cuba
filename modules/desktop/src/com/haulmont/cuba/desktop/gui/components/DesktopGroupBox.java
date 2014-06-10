@@ -13,10 +13,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.dom4j.Element;
 
 import javax.swing.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author krivopustov
@@ -129,8 +126,16 @@ public class DesktopGroupBox extends DesktopAbstractBox implements GroupBoxLayou
     }
 
     @Override
+    public void removeAction(String id) {
+    }
+
+    @Override
+    public void removeAllActions() {
+    }
+
+    @Override
     public Collection<Action> getActions() {
-        return null;
+        return Collections.emptyList();
     }
 
     @Override

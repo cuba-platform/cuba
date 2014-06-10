@@ -440,6 +440,16 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
     }
 
     @Override
+    public void removeAction(String id) {
+        frame.removeAction(id);
+    }
+
+    @Override
+    public void removeAllActions() {
+        frame.removeAllActions();
+    }
+
+    @Override
     public Collection<Action> getActions() {
         return frame.getActions();
     }

@@ -267,6 +267,16 @@ public class WebFrame extends WebVBoxLayout implements IFrame, WrappedFrame {
     }
 
     @Override
+    public void removeAction(String id) {
+        actionsHolder.removeAction(id);
+    }
+
+    @Override
+    public void removeAllActions() {
+        actionsHolder.removeAllActions();
+    }
+
+    @Override
     public Collection<com.haulmont.cuba.gui.components.Action> getActions() {
         return actionsHolder.getActions();
     }

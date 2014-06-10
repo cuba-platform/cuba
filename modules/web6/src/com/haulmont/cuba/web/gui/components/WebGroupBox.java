@@ -237,6 +237,20 @@ public class WebGroupBox extends WebAbstractComponent<GroupBox> implements Group
     }
 
     @Override
+    public void removeAction(String id) {
+        Action action = getAction(id);
+        if (action != null) {
+            removeAction(action);
+        }
+    }
+
+    @Override
+    public void removeAllActions() {
+        actionsOrder.clear();
+        actions.clear();
+    }
+
+    @Override
     public Collection<Action> getActions() {
         return Collections.unmodifiableCollection(actionsOrder);
     }

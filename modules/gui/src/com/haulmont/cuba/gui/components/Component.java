@@ -189,14 +189,37 @@ public interface Component {
     }
 
     /**
-     * Component containing {@link Action}s
+     * A component containing {@link Action}s
      */
     interface ActionsHolder extends Component {
+        /**
+         * Add an action to the component
+         */
         void addAction(Action action);
+
+        /**
+         * Remove the action from the component
+         */
         void removeAction(Action action);
 
+        /**
+         * Remove the action by its ID. If there is no action with that ID, nothing happens.
+         */
+        void removeAction(String id);
+
+        /**
+         * Remove all actions from the component
+         */
+        void removeAllActions();
+
+        /**
+         * @return unmodifiable collection of actions
+         */
         Collection<Action> getActions();
 
+        /**
+         * @return an action by its ID, or null if not found
+         */
         Action getAction(String id);
     }
 

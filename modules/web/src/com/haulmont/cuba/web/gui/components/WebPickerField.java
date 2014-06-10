@@ -307,6 +307,21 @@ public class WebPickerField
     }
 
     @Override
+    public void removeAction(String id) {
+        Action action = getAction(id);
+        if (action != null) {
+            removeAction(action);
+        }
+    }
+
+    @Override
+    public void removeAllActions() {
+        for (Action action : new ArrayList<>(actions)) {
+            removeAction(action);
+        }
+    }
+
+    @Override
     public void addFieldListener(FieldListener listener) {
         component.addFieldListener(listener);
     }

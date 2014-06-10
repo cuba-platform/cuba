@@ -44,6 +44,18 @@ public class WebFrameActionsHolder {
         actions.inverse().remove(action);
     }
 
+    public void removeAction(String id) {
+        Action action = getAction(id);
+        if (action != null) {
+            removeAction(action);
+        }
+    }
+
+    public void removeAllActions() {
+        actionList.clear();
+        actions.clear();
+    }
+
     public Collection<Action> getActions() {
         return Collections.unmodifiableCollection(actionList);
     }

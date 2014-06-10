@@ -15,10 +15,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
@@ -161,6 +158,19 @@ public abstract class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.
         }
 
         shortcutsDelegate.removeAction(action);
+    }
+
+    public void removeAction(String id) {
+        Action action = getAction(id);
+        if (action != null) {
+            removeAction(action);
+        }
+    }
+
+    public void removeAllActions() {
+        for (Action action : new ArrayList<>(actionList)) {
+            removeAction(action);
+        }
     }
 
     public Collection<Action> getActions() {

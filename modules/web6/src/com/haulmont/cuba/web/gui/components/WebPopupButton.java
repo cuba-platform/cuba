@@ -12,10 +12,7 @@ import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.StringUtils;
 import org.vaadin.hene.popupbutton.PopupButton;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author pavlov
@@ -157,6 +154,21 @@ public class WebPopupButton
         if (vPopupComponent instanceof com.vaadin.ui.Layout && actionOrder.remove(action)) {
             vPopupComponent.setVisible(false); // do not requestRepaint
             ((com.vaadin.ui.Layout) vPopupComponent).removeComponent(WebComponentsHelper.unwrap((Component) action.getOwner()));
+        }
+    }
+
+    @Override
+    public void removeAction(String id) {
+        Action action = getAction(id);
+        if (action != null) {
+            removeAction(action);
+        }
+    }
+
+    @Override
+    public void removeAllActions() {
+        for (Action action : new ArrayList<>(actionOrder)) {
+            removeAction(action);
         }
     }
 

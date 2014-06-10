@@ -84,6 +84,16 @@ public class DesktopSearchPickerField extends DesktopSearchField implements Sear
     }
 
     @Override
+    public void removeAction(String id) {
+        pickerField.removeAction(id);
+    }
+
+    @Override
+    public void removeAllActions() {
+        pickerField.removeAllActions();
+    }
+
+    @Override
     public Collection<com.haulmont.cuba.gui.components.Action> getActions() {
         return pickerField.getActions();
     }

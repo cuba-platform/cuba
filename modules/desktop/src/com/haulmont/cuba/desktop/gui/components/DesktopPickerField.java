@@ -485,6 +485,21 @@ public class DesktopPickerField extends DesktopAbstractField<Picker> implements 
     }
 
     @Override
+    public void removeAction(String id) {
+        Action action = getAction(id);
+        if (action != null) {
+            removeAction(action);
+        }
+    }
+
+    @Override
+    public void removeAllActions() {
+        for (Action action : new ArrayList<>(actionsOrder)) {
+            removeAction(action);
+        }
+    }
+
+    @Override
     public Collection<Action> getActions() {
         return Collections.unmodifiableCollection(actionsOrder);
     }

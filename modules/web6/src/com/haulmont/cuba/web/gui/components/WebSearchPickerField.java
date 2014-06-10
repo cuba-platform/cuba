@@ -101,6 +101,16 @@ public class WebSearchPickerField extends WebSearchField implements SearchPicker
     }
 
     @Override
+    public void removeAction(String id) {
+        pickerField.removeAction(id);
+    }
+
+    @Override
+    public void removeAllActions() {
+        pickerField.removeAllActions();
+    }
+
+    @Override
     public Collection<Action> getActions() {
         return pickerField.getActions();
     }

@@ -184,6 +184,16 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
     }
 
     @Override
+    public void removeAction(String id) {
+        actionsHolder.removeAction(id);
+    }
+
+    @Override
+    public void removeAllActions() {
+        actionsHolder.removeAllActions();
+    }
+
+    @Override
     public Collection<com.haulmont.cuba.gui.components.Action> getActions() {
         return actionsHolder.getActions();
     }
