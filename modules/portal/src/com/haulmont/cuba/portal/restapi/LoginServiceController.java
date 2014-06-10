@@ -6,10 +6,12 @@
 package com.haulmont.cuba.portal.restapi;
 
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.PasswordEncryption;
 import com.haulmont.cuba.security.app.LoginService;
+import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.LoginException;
-import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -43,6 +46,12 @@ public class LoginServiceController {
     @Inject
     protected Authentication authentication;
 
+    @Inject
+    protected Configuration configuration;
+
+    @Inject
+    protected UserSessionService userSessionService;
+
     private static Log log = LogFactory.getLog(LoginServiceController.class);
     private static MimeType FORM_TYPE;
 
@@ -57,6 +66,7 @@ public class LoginServiceController {
     @RequestMapping(value = "/api/login", method = RequestMethod.POST)
     public void loginByPost(@RequestBody String requestBody,
                             @RequestHeader(value = "Content-Type") MimeType contentType,
+                            HttpServletRequest request,
                             HttpServletResponse response) throws IOException, JSONException {
 
         response.addHeader("Access-Control-Allow-Origin", "*");
@@ -97,6 +107,8 @@ public class LoginServiceController {
         try {
             LoginService loginService = AppBeans.get(LoginService.NAME);
             UserSession userSession = loginService.login(username, passwordEncryption.getPlainHash(password), locale);
+            setSessionInfo(request, userSession);
+
             response.setStatus(HttpServletResponse.SC_OK);
             PrintWriter writer = new PrintWriter(response.getOutputStream());
             writer.write(userSession.getId().toString());
@@ -112,6 +124,7 @@ public class LoginServiceController {
     public void loginByGet(@RequestParam(value = "u") String username,
                            @RequestParam(value = "p") String password,
                            @RequestParam(value = "l", required = false) String localeStr,
+                           HttpServletRequest request,
                            HttpServletResponse response) throws IOException, JSONException {
 
         response.addHeader("Access-Control-Allow-Origin", "*");
@@ -120,6 +133,8 @@ public class LoginServiceController {
             LoginService loginService = AppBeans.get(LoginService.NAME);
 
             UserSession userSession = loginService.login(username, passwordEncryption.getPlainHash(password), locale);
+            setSessionInfo(request, userSession);
+
             response.setStatus(HttpServletResponse.SC_OK);
             PrintWriter writer = new PrintWriter(response.getOutputStream());
             writer.write(userSession.getId().toString());
@@ -129,6 +144,17 @@ public class LoginServiceController {
         } catch (LoginException e) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         }
+    }
+
+    protected void setSessionInfo(HttpServletRequest request, UserSession userSession) {
+        userSessionService.setSessionAddress(userSession.getId(), request.getRemoteAddr());
+
+        GlobalConfig globalConfig = configuration.getConfig(GlobalConfig.class);
+        String serverInfo = "REST API (" +
+                globalConfig.getWebHostName() + ":" +
+                globalConfig.getWebPort() + "/" +
+                globalConfig.getWebContextName() + ") ";
+        userSessionService.setSessionClientInfo(userSession.getId(), serverInfo + request.getHeader("User-Agent"));
     }
 
     @RequestMapping(value = "/api/logout", method = RequestMethod.POST)
