@@ -8,6 +8,7 @@ package com.haulmont.cuba.core.sys;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaModel;
 import com.haulmont.chile.core.model.Session;
+import com.haulmont.chile.core.model.impl.MetaModelImpl;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,10 +33,10 @@ public class CachingMetadataSession implements Session {
         classByClass = new HashMap<>();
 
         for (MetaModel model : delegate.getModels()) {
-            for (MetaClass metaClass : model.getClasses()) {
-                classByName.put(metaClass.getName(), metaClass);
-                classByClass.put(metaClass.getJavaClass(), metaClass);
-            }
+            MetaModelImpl modelImpl = (MetaModelImpl) model;
+
+            classByClass.putAll(modelImpl.getClassByClass());
+            classByName.putAll(modelImpl.getClassByName());
         }
     }
 
@@ -57,8 +58,9 @@ public class CachingMetadataSession implements Session {
     @Override
     public MetaClass getClassNN(String name) {
         MetaClass metaClass = getClass(name);
-        if (metaClass == null)
+        if (metaClass == null) {
             throw new IllegalArgumentException("MetaClass not found for " + name);
+        }
         return metaClass;
     }
 
@@ -70,13 +72,14 @@ public class CachingMetadataSession implements Session {
     @Override
     public MetaClass getClassNN(Class<?> clazz) {
         MetaClass metaClass = getClass(clazz);
-        if (metaClass == null)
+        if (metaClass == null) {
             throw new IllegalArgumentException("MetaClass not found for " + clazz);
+        }
         return metaClass;
     }
 
     @Override
     public Collection<MetaClass> getClasses() {
-        return new ArrayList(classByClass.values());
+        return new ArrayList<>(classByClass.values());
     }
 }

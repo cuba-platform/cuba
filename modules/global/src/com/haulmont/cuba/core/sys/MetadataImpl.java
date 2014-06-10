@@ -5,18 +5,25 @@
 
 package com.haulmont.cuba.core.sys;
 
+import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.chile.core.loader.MetadataLoader;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaModel;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Session;
+import com.haulmont.chile.core.model.impl.ClassRange;
+import com.haulmont.chile.core.model.impl.MetaModelImpl;
+import com.haulmont.chile.core.model.impl.MetaPropertyImpl;
 import com.haulmont.chile.core.model.impl.SessionImpl;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.annotation.*;
 import com.haulmont.cuba.core.global.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.perf4j.StopWatch;
+import org.perf4j.log4j.Log4JStopWatch;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
@@ -80,6 +87,7 @@ public class MetadataImpl implements Metadata {
         return extendedEntities;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public MetadataTools getTools() {
         return tools;
@@ -92,6 +100,7 @@ public class MetadataImpl implements Metadata {
     }
 
     protected <T> T __create(Class<T> entityClass) {
+        @SuppressWarnings("unchecked")
         Class<T> extClass = extendedEntities.getEffectiveClass(entityClass);
         try {
             T obj = extClass.newInstance();
@@ -129,14 +138,16 @@ public class MetadataImpl implements Metadata {
 
     @Override
     public <T> T create(Class<T> entityClass) {
-        return (T) __create(entityClass);
+        return __create(entityClass);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T create(MetaClass metaClass) {
         return (T) __create(metaClass.getJavaClass());
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T create(String entityName) {
         MetaClass metaClass = getSession().getClassNN(entityName);
@@ -160,11 +171,63 @@ public class MetadataImpl implements Metadata {
             addMetaAnnotationsFromXml(xmlAnnotations, metaClass);
         }
 
+        replaceExtendedMetaClasses(session);
+
         this.session = new CachingMetadataSession(session);
 
         SessionImpl.setSerializationSupportSession(this.session);
 
         log.info("Metadata initialized in " + (System.currentTimeMillis() - startTime) + "ms");
+    }
+
+    protected void replaceExtendedMetaClasses(Session session) {
+        StopWatch sw = new Log4JStopWatch("Metadata.replaceExtendedMetaClasses");
+
+        for (MetaModel model : session.getModels()) {
+            MetaModelImpl modelImpl = (MetaModelImpl) model;
+
+            List<Pair<MetaClass, MetaClass>> replaceMap = new ArrayList<>();
+            for (MetaClass metaClass : modelImpl.getClasses()) {
+                MetaClass effectiveMetaClass = session.getClass(extendedEntities.getEffectiveClass(metaClass));
+
+                if (effectiveMetaClass != metaClass) {
+                    replaceMap.add(new Pair<>(metaClass, effectiveMetaClass));
+                }
+
+                for (MetaProperty metaProperty : metaClass.getOwnProperties()) {
+                    MetaPropertyImpl propertyImpl = (MetaPropertyImpl) metaProperty;
+
+                    // replace domain
+                    Class effectiveDomainClass = extendedEntities.getEffectiveClass(metaProperty.getDomain());
+                    MetaClass effectiveDomainMeta = session.getClass(effectiveDomainClass);
+                    if (metaProperty.getDomain() != effectiveDomainMeta) {
+                        propertyImpl.setDomain(effectiveDomainMeta);
+                    }
+
+                    if (metaProperty.getRange().isClass()) {
+                        // replace range class
+                        ClassRange range = (ClassRange) metaProperty.getRange();
+
+                        Class effectiveRangeClass = extendedEntities.getEffectiveClass(range.asClass());
+                        MetaClass effectiveRangeMeta = session.getClass(effectiveRangeClass);
+                        if (effectiveRangeMeta != range.asClass()) {
+                            ClassRange newRange = new ClassRange(effectiveRangeMeta);
+                            newRange.setCardinality(range.getCardinality());
+                            newRange.setOrdered(range.isOrdered());
+
+                            ((MetaPropertyImpl) metaProperty).setRange(newRange);
+                        }
+                    }
+                }
+            }
+
+            for (Pair<MetaClass, MetaClass> replace : replaceMap) {
+                modelImpl.registerClass(replace.getFirst().getName(), replace.getFirst().getJavaClass(),
+                        (com.haulmont.chile.core.model.impl.MetaClassImpl) replace.getSecond());
+            }
+        }
+
+        sw.stop();
     }
 
     /**
@@ -288,7 +351,7 @@ public class MetadataImpl implements Metadata {
         Object val;
         if (str != null && (str.equalsIgnoreCase("true") || str.equalsIgnoreCase("false")))
             val = Boolean.valueOf(str);
-        else if (JAVA_CLASS_PATTERN.matcher(str).matches()) {
+        else if (str != null && JAVA_CLASS_PATTERN.matcher(str).matches()) {
             try {
                 val = ReflectionHelper.loadClass(str);
             } catch (ClassNotFoundException e) {

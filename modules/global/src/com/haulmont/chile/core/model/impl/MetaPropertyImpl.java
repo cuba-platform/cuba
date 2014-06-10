@@ -20,7 +20,7 @@ import java.lang.reflect.Proxy;
 @SuppressWarnings({"TransientFieldNotInitialized"})
 public class MetaPropertyImpl extends MetadataObjectImpl<MetaProperty> implements MetaProperty {
 
-    private final MetaClass domain;
+    private MetaClass domain;
     private transient final MetaModel model;
 
     private transient boolean mandatory;
@@ -37,7 +37,6 @@ public class MetaPropertyImpl extends MetadataObjectImpl<MetaProperty> implement
     private static final long serialVersionUID = -2827471157045502206L;
 
     public MetaPropertyImpl(MetaClass domain, String name) {
-        super();
         this.domain = domain;
         this.model = domain.getModel();
         this.name = name;
@@ -61,6 +60,10 @@ public class MetaPropertyImpl extends MetadataObjectImpl<MetaProperty> implement
     @Override
     public MetaClass getDomain() {
         return domain;
+    }
+
+    public void setDomain(MetaClass domain) {
+        this.domain = domain;
     }
 
     @Override

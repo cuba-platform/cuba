@@ -6,6 +6,7 @@
 package com.haulmont.chile.core.model.impl;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,5 +50,18 @@ public class MetaModelImpl extends MetadataObjectImpl<MetaModel> implements Meta
         if (clazz.getJavaClass() != null) {
             classByClass.put(clazz.getJavaClass(), clazz);
         }
+    }
+
+    public void registerClass(String name, Class javaClass, MetaClassImpl clazz) {
+        classByName.put(name, clazz);
+        classByClass.put(javaClass, clazz);
+    }
+
+    public Map<String, MetaClass> getClassByName() {
+        return Collections.unmodifiableMap(classByName);
+    }
+
+    public Map<Class, MetaClass> getClassByClass() {
+        return Collections.unmodifiableMap(classByClass);
     }
 }

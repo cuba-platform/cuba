@@ -23,6 +23,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
 
 import javax.annotation.Nullable;
@@ -71,7 +72,7 @@ public class AbstractViewRepository implements ViewRepository {
     }
 
     protected void init() {
-        Log4JStopWatch initTiming = new Log4JStopWatch("ViewRepository.init." + getClass().getSimpleName());
+        StopWatch initTiming = new Log4JStopWatch("ViewRepository.init." + getClass().getSimpleName());
 
         String configName = AppContext.getProperty("cuba.viewsConfig");
         if (!StringUtils.isBlank(configName)) {
@@ -152,7 +153,7 @@ public class AbstractViewRepository implements ViewRepository {
      */
     @Override
     public View getView(Class<? extends Entity> entityClass, String name) {
-        return getView(metadata.getSession().getClassNN(entityClass), name);
+        return getView(metadata.getClassNN(entityClass), name);
     }
 
     /**
@@ -187,12 +188,8 @@ public class AbstractViewRepository implements ViewRepository {
         }
 
         checkInitialized();
-        ExtendedEntities extendedEntities = metadata.getExtendedEntities();
 
-        // Replace with extended entity if such one exists
-        MetaClass effectiveMetaClass = extendedEntities.getEffectiveMetaClass(metaClass);
-
-        View view = retrieveView(effectiveMetaClass, name, false);
+        View view = retrieveView(metaClass, name, false);
         return copyView(view);
     }
 
@@ -209,9 +206,8 @@ public class AbstractViewRepository implements ViewRepository {
         return copy;
     }
 
+    @SuppressWarnings("unchecked")
     protected View deployDefaultView(MetaClass metaClass, String name) {
-        metaClass = metadata.getExtendedEntities().getEffectiveMetaClass(metaClass);
-
         Class<? extends Entity> javaClass = metaClass.getJavaClass();
         View view = new View(javaClass, name, false);
         if (View.LOCAL.equals(name)) {
@@ -227,8 +223,9 @@ public class AbstractViewRepository implements ViewRepository {
             for (MetaProperty metaProperty : metaProperties) {
                 view.addProperty(metaProperty.getName());
             }
-        } else
+        } else {
             throw new UnsupportedOperationException("Unsupported default view: " + name);
+        }
 
         storeView(metaClass, view);
         return view;
@@ -278,6 +275,7 @@ public class AbstractViewRepository implements ViewRepository {
         return view;
     }
 
+    @SuppressWarnings("unchecked")
     public View deployView(Element rootElem, Element viewElem) {
         String viewName = getViewName(viewElem);
         MetaClass metaClass = getMetaClass(viewElem);
@@ -369,7 +367,7 @@ public class AbstractViewRepository implements ViewRepository {
             if (ancestorView == null) {
                 // Last resort - search for all ancestors
                 for (MetaClass ancestorMetaClass : metaClass.getAncestors()) {
-                    if (extendedEntities.getEffectiveMetaClass(ancestorMetaClass).equals(metaClass)) {
+                    if (ancestorMetaClass.equals(metaClass)) {
                         ancestorView = retrieveView(ancestorMetaClass, ancestor, false);
                         if (ancestorView != null)
                             break;
@@ -382,8 +380,9 @@ public class AbstractViewRepository implements ViewRepository {
         return ancestorView;
     }
 
+    @SuppressWarnings("unchecked")
     protected void loadView(Element rootElem, Element viewElem, View view) {
-        final MetaClass metaClass = metadata.getSession().getClassNN(view.getEntityClass());
+        final MetaClass metaClass = metadata.getClassNN(view.getEntityClass());
         final String viewName = view.getName();
 
         for (Element propElem : (List<Element>) viewElem.elements("property")) {
@@ -443,14 +442,14 @@ public class AbstractViewRepository implements ViewRepository {
             if (range.isClass() && refView == null && inlineView) {
                 // try to import anonymous views
                 String ancestorViewName = propElem.attributeValue("view");
-                Class effectiveClass = metadata.getExtendedEntities().getEffectiveClass(range.asClass().getJavaClass());
+                Class rangeClass = range.asClass().getJavaClass();
 
                 if (ancestorViewName == null) {
-                    refView = new View(effectiveClass);
+                    refView = new View(rangeClass);
                 } else {
                     refMetaClass = getMetaClass(propElem, range);
                     View ancestorView = getAncestorView(refMetaClass, ancestorViewName);
-                    refView = new View(ancestorView, effectiveClass, "", true);
+                    refView = new View(ancestorView, rangeClass, "", true);
                 }
                 loadView(rootElem, propElem, refView);
             }
@@ -474,18 +473,18 @@ public class AbstractViewRepository implements ViewRepository {
             if (StringUtils.isBlank(className))
                 throw new DevelopmentException("Invalid view definition: no 'entity' or 'class' attribute present");
             Class entityClass = ReflectionHelper.getClass(className);
-            metaClass = metadata.getSession().getClassNN(entityClass);
+            metaClass = metadata.getClassNN(entityClass);
         } else {
-            metaClass = metadata.getSession().getClassNN(entity);
+            metaClass = metadata.getClassNN(entity);
         }
-        return metadata.getExtendedEntities().getEffectiveMetaClass(metaClass);
+        return metaClass;
     }
 
     protected MetaClass getMetaClass(String entityName, String entityClass) {
         if (entityName != null) {
-            return metadata.getExtendedEntities().getEffectiveMetaClass(metadata.getClassNN(entityName));
+            return metadata.getClassNN(entityName);
         } else {
-            return metadata.getExtendedEntities().getEffectiveMetaClass(ReflectionHelper.getClass(entityClass));
+            return metadata.getClassNN(ReflectionHelper.getClass(entityClass));
         }
     }
 
@@ -493,9 +492,9 @@ public class AbstractViewRepository implements ViewRepository {
         MetaClass refMetaClass;
         String refEntityName = propElem.attributeValue("entity"); // this attribute is deprecated
         if (refEntityName == null) {
-            refMetaClass = metadata.getExtendedEntities().getEffectiveMetaClass(range.asClass());
+            refMetaClass = range.asClass();
         } else {
-            refMetaClass = metadata.getSession().getClass(refEntityName);
+            refMetaClass = metadata.getClassNN(refEntityName);
         }
         return refMetaClass;
     }
