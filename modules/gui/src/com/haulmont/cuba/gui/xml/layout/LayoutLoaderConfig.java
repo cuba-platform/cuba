@@ -91,7 +91,6 @@ public class LayoutLoaderConfig {
         config.register(Filter.NAME, FilterLoader.class);
         config.register(AccessControl.NAME, AccessControlLoader.class);
         config.register(ButtonsPanel.NAME, ButtonsPanelLoader.class);
-        config.register(ActionsField.NAME, ActionsFieldLoader.class);
         config.register(PopupButton.NAME, PopupButtonLoader.class);
         config.register(FieldGroup.NAME, FieldGroupLoader.class);
         config.register(TokenList.NAME, TokenListLoader.class);
