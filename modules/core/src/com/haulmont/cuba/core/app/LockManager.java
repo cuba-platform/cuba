@@ -4,9 +4,15 @@
  */
 package com.haulmont.cuba.core.app;
 
-import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.TypedQuery;
 import com.haulmont.cuba.core.entity.LockDescriptor;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.LockInfo;
+import com.haulmont.cuba.core.global.LockNotSupported;
+import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -64,6 +70,9 @@ public class LockManager implements LockManagerAPI, ClusterListener<LockInfo> {
     private Map<LockKey, LockInfo> locks = new ConcurrentHashMap<>();
 
     @Inject
+    private Persistence persistence;
+
+    @Inject
     private UserSessionSource userSessionSource;
 
     private ClusterManagerAPI clusterManager;
@@ -75,16 +84,16 @@ public class LockManager implements LockManagerAPI, ClusterListener<LockInfo> {
     }
 
     private Map<String, LockDescriptor> getConfig() {
-        if (config == null) {
+        if (this.config == null) {
             synchronized (this) {
-                if (config == null) {
-                    config = new ConcurrentHashMap<>();
+                if (this.config == null) {
+                    Map<String, LockDescriptor> config = new ConcurrentHashMap<>();
 
-                    Persistence persistence = AppBeans.get(Persistence.NAME);
                     Transaction tx = persistence.createTransaction();
                     try {
                         EntityManager em = persistence.getEntityManager();
-                        Query q = em.createQuery("select d from sys$LockDescriptor d");
+                        TypedQuery<LockDescriptor> q = em.createQuery(
+                                "select d from sys$LockDescriptor d", LockDescriptor.class);
                         List<LockDescriptor> list = q.getResultList();
                         for (LockDescriptor ld : list) {
                             config.put(ld.getName(), ld);
@@ -93,6 +102,7 @@ public class LockManager implements LockManagerAPI, ClusterListener<LockInfo> {
                     } finally {
                         tx.end();
                     }
+                    this.config = config;
                 }
             }
         }
