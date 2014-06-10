@@ -11,6 +11,7 @@ import com.haulmont.cuba.web.gui.components.WebCheckBox;
 import com.haulmont.cuba.web.gui.components.WebTextField;
 import com.haulmont.cuba.web.gui.components.WebVBoxLayout;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * @author budarov
@@ -66,15 +67,19 @@ public class AttributeEditor {
         return layout;
     }
 
-    public Object getAttributeValue() {
+    public Object getAttributeValue(boolean allowNull) {
         if (checkBox != null) {
             Boolean value = checkBox.getValue();
             return BooleanUtils.isTrue(value);
         } else if (textField != null) {
             String strValue = textField.getValue();
-            if (strValue == null)
-                strValue = "";
-            return AttributeHelper.convert(type, strValue);
+            if (allowNull && StringUtils.isBlank(strValue)) {
+                return null;
+            } else {
+                if (strValue == null)
+                    strValue = "";
+                return AttributeHelper.convert(type, strValue);
+            }
         }
         // array
         return null;

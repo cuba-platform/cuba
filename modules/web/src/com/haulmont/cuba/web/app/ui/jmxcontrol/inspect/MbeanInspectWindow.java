@@ -196,7 +196,7 @@ public class MbeanInspectWindow extends AbstractEditor {
         Object[] paramValues = new Object[attrProviders.size()];
         try {
             for (int i = 0; i < attrProviders.size(); i++) {
-                paramValues[i] = attrProviders.get(i).getAttributeValue();
+                paramValues[i] = attrProviders.get(i).getAttributeValue(true);
             }
         } catch (Exception e) {
             log.error("Conversion error", e);

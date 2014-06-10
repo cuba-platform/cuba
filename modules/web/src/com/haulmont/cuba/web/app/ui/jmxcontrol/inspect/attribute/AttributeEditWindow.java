@@ -54,7 +54,7 @@ public class AttributeEditWindow extends AbstractEditor<ManagedBeanAttribute> {
 
         Object oldValue = mba.getValue();
         try {
-            Object newValue = valueHolder != null ? valueHolder.getAttributeValue() : null;
+            Object newValue = valueHolder != null ? valueHolder.getAttributeValue(false) : null;
             if (newValue != null) {
                 if (!ObjectUtils.equals(mba.getValue(), newValue)) {
                     mba.setValue(newValue);
