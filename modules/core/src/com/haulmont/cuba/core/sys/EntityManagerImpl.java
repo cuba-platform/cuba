@@ -93,6 +93,7 @@ public class EntityManagerImpl implements EntityManager {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends Entity> T find(Class<T> clazz, Object key) {
         Class<T> effectiveClass = metadata.getExtendedEntities().getEffectiveClass(clazz);
@@ -125,9 +126,12 @@ public class EntityManagerImpl implements EntityManager {
         return find(entityClass, primaryKey, viewArray);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends Entity> T getReference(Class<T> clazz, Object key) {
-        return delegate.getReference(clazz, key);
+        Class<T> effectiveClass = metadata.getExtendedEntities().getEffectiveClass(clazz);
+
+        return delegate.getReference(effectiveClass, key);
     }
 
     @Override
@@ -161,6 +165,7 @@ public class EntityManagerImpl implements EntityManager {
         return query;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> TypedQuery<T> createNativeQuery(String sql, Class<T> resultClass) {
         QueryImpl query = new QueryImpl(this, true, resultClass, metadata, fetchPlanMgr);
@@ -217,6 +222,7 @@ public class EntityManagerImpl implements EntityManager {
         return entity;
     }
 
+    @SuppressWarnings("unchecked")
     @Nullable
     @Override
     public <T extends Entity> T reload(T entity, String... viewNames) {

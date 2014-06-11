@@ -21,7 +21,7 @@ public interface EntityManager {
     /**
      * Make an instance managed and persistent.
      *
-     * @param entity
+     * @param entity entity instance
      * @throws javax.persistence.EntityExistsException
      *                                  if the entity already exists.
      *                                  (The EntityExistsException may be thrown when the persist
@@ -104,8 +104,8 @@ public interface EntityManager {
      * be available upon detachment, unless it was accessed by the
      * application while the entity manager was open.
      *
-     * @param entityClass
-     * @param primaryKey
+     * @param entityClass entity class
+     * @param primaryKey entity id
      * @return the found entity instance
      * @throws IllegalArgumentException if the first argument does
      *                                  not denote an entity type or the second argument is not a valid type for that entity's primary key
