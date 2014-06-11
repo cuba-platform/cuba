@@ -63,6 +63,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.*;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.*;
 import org.vaadin.hene.popupbutton.PopupButton;
 
@@ -541,18 +542,22 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
     }
 
     protected void applyDatasourceFilter() {
-        if (filterEntity != null && filterEntity.getXml() != null) {
-            Element element = Dom4j.readDocument(filterEntity.getXml()).getRootElement();
-            QueryFilter queryFilter = new QueryFilter(element, datasource.getMetaClass().getName());
+        if (datasource != null) {
+            if (filterEntity != null && filterEntity.getXml() != null) {
+                Element element = Dom4j.readDocument(filterEntity.getXml()).getRootElement();
+                QueryFilter queryFilter = new QueryFilter(element, datasource.getMetaClass().getName());
 
-            if (dsQueryFilter != null) {
-                queryFilter = new QueryFilter(dsQueryFilter, queryFilter);
+                if (dsQueryFilter != null) {
+                    queryFilter = new QueryFilter(dsQueryFilter, queryFilter);
+                }
+
+                datasource.setQueryFilter(queryFilter);
+
+            } else {
+                datasource.setQueryFilter(dsQueryFilter);
             }
-
-            datasource.setQueryFilter(queryFilter);
-
         } else {
-            datasource.setQueryFilter(dsQueryFilter);
+            LogFactory.getLog(WebFilter.class).warn("Unable to apply datasource filter with null datasource");
         }
     }
 
@@ -1137,7 +1142,9 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         frame.addAction(new AbstractAction("applyFilter", clientConfig.getFilterApplyShortcut()) {
             @Override
             public void actionPerform(Component component) {
-                apply(false);
+                if (isVisible() && datasource != null) {
+                    apply(false);
+                }
             }
         });
     }

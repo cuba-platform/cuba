@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.gui.app.core.restore;
 
+import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
@@ -22,6 +23,7 @@ import com.haulmont.cuba.gui.data.GroupDatasource;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import javax.inject.Inject;
@@ -43,9 +45,6 @@ public class EntityRestore extends AbstractWindow {
 
     @Inject
     protected Button refreshButton;
-
-    @Inject
-    protected Filter primaryFilter;
 
     @Inject
     protected BoxLayout tablePanel;
@@ -162,11 +161,12 @@ public class EntityRestore extends AbstractWindow {
                 entitiesDs.refresh();
                 entitiesTable.setDatasource(entitiesDs);
 
+                String filterId = metaClass.getName().replace("$", "") + "GenericFilter";
+
                 filter = componentsFactory.createComponent(Filter.NAME);
-                String filterId = metaClass.getName().replace("$", "");
-                filter.setId(filterId + "GenericFilter");
+                filter.setId(filterId);
                 filter.setFrame(getFrame());
-                filter.setStyleName(primaryFilter.getStyleName());
+
                 StringBuilder sb = new StringBuilder("");
                 for (MetaProperty property : metaClass.getProperties()) {
                     AnnotatedElement annotatedElement = property.getAnnotatedElement();
@@ -174,12 +174,16 @@ public class EntityRestore extends AbstractWindow {
                         sb.append(property.getName()).append("|");
                     }
                 }
-                Element filterElement = primaryFilter.getXmlDescriptor();
-                String exclProperties = sb.toString();
-                if (!"".equals(exclProperties)) {
+                Element filterElement = Dom4j.readDocument(String.format(
+                        "<filter id=\"%s\">\n" +
+                        "    <properties include=\".*\" exclude=\"\"/>\n" +
+                        "</filter>", filterId)).getRootElement();
+
+                String excludedProperties = sb.toString();
+                if (StringUtils.isNotEmpty(excludedProperties)) {
                     Element properties = filterElement.element("properties");
-                    properties.attribute("exclude").setValue(exclProperties
-                            .substring(0, exclProperties.lastIndexOf("|")));
+                    properties.attribute("exclude").setValue(excludedProperties
+                            .substring(0, excludedProperties.lastIndexOf("|")));
                 }
                 filter.setXmlDescriptor(filterElement);
                 filter.setUseMaxResults(true);

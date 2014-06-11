@@ -19,11 +19,7 @@
             <button id="refreshButton" icon="icons/refresh.png"/>
         </hbox>
 
-        <filter id="primaryFilter" margin="false,false,true,false" visible="false">
-            <properties include=".*" exclude=""/>
-        </filter>
-
-        <vbox id="tablePanel" spacing="true" height="100%">
+        <vbox id="tablePanel" spacing="true">
         </vbox>
     </layout>
 </window>

@@ -53,6 +53,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Attribute;
 import org.dom4j.Element;
 
@@ -170,7 +171,9 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         applyBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                apply(false);
+                if (isVisible() && datasource != null) {
+                    apply(false);
+                }
             }
         });
         impl.add(applyBtn, new CC().hideMode(3));
@@ -244,7 +247,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         editor = null;
 
         if (filterEntity == null) {
-            ItemWrapper<FilterEntity> selected = (ItemWrapper<FilterEntity>) select.getValue();
+            ItemWrapper<FilterEntity> selected = select.getValue();
             filterEntity = selected == null ? null : selected.getItem();
 
             if (noFilter.equals(filterEntity)) {
@@ -708,17 +711,21 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     }
 
     protected void applyDatasourceFilter() {
-        if (filterEntity != null && filterEntity.getXml() != null) {
-            Element element = Dom4j.readDocument(filterEntity.getXml()).getRootElement();
-            QueryFilter queryFilter = new QueryFilter(element, datasource.getMetaClass().getName());
+        if (datasource != null) {
+            if (filterEntity != null && filterEntity.getXml() != null) {
+                Element element = Dom4j.readDocument(filterEntity.getXml()).getRootElement();
+                QueryFilter queryFilter = new QueryFilter(element, datasource.getMetaClass().getName());
 
-            if (dsQueryFilter != null) {
-                queryFilter = new QueryFilter(dsQueryFilter, queryFilter);
+                if (dsQueryFilter != null) {
+                    queryFilter = new QueryFilter(dsQueryFilter, queryFilter);
+                }
+                datasource.setQueryFilter(queryFilter);
+
+            } else {
+                datasource.setQueryFilter(dsQueryFilter);
             }
-            datasource.setQueryFilter(queryFilter);
-
         } else {
-            datasource.setQueryFilter(dsQueryFilter);
+            LogFactory.getLog(DesktopFilter.class).warn("Unable to apply datasource filter with null datasource");
         }
     }
 
@@ -1081,7 +1088,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
 
     @Override
     public Collection<Component> getOwnComponents() {
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     @Override
