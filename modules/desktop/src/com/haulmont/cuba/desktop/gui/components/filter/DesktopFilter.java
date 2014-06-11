@@ -103,11 +103,10 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     protected boolean changingFilter;
     protected boolean applyingDefault;
     protected boolean editing = false;
-    protected boolean initialized = false;
 
     protected boolean useMaxResults;
     protected JCheckBox maxResultsCb;
-    //private DesktopTextField maxResultsField;
+
     protected MaxResultsField maxResultsField;
     protected Boolean manualApplyRequired;
 
@@ -1279,12 +1278,15 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
 
     protected class SelectListener implements ValueListener {
 
+        protected String initialWindowCaption;
+
         @Override
         public void valueChanged(Object source, String property, Object prevValue, Object value) {
-            if (changingFilter)
+            if (changingFilter) {
                 return;
+            }
 
-            ItemWrapper<FilterEntity> selected = (ItemWrapper<FilterEntity>) select.getValue();
+            ItemWrapper<FilterEntity> selected = select.getValue();
 
             filterEntity = selected == null ? null : selected.getItem();
             if (noFilter.equals(filterEntity)) {
@@ -1303,25 +1305,30 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
 
             if (!applyingDefault) {
                 Window window = ComponentsHelper.getWindow(DesktopFilter.this);
-                String descr;
-                if (filterEntity != null)
+                String filterTitle;
+                if (filterEntity != null) {
                     if (filterEntity.getCode() != null) {
-                        descr = messages.getMainMessage(filterEntity.getCode());
-                    } else
-                        descr = filterEntity.getName();
-                else
-                    descr = null;
-                if (!initialized) {
-                    window.setDescription(descr);
-                    initialized = true;
+                        filterTitle = messages.getMainMessage(filterEntity.getCode());
+                    } else {
+                        filterTitle = filterEntity.getName();
+                    }
                 } else {
-                    DesktopWindowManager wManager = DesktopComponentsHelper.getTopLevelFrame(
-                            DesktopFilter.this.getComposition()).getWindowManager();
-                    wManager.setWindowCaption(window, window.getCaption(), descr);
+                    filterTitle = null;
                 }
+                window.setDescription(filterTitle);
+
+                if (initialWindowCaption == null) {
+                    initialWindowCaption = window.getCaption();
+                }
+
+                DesktopWindowManager wm = DesktopComponentsHelper.getTopLevelFrame(
+                        DesktopFilter.this.getComposition()).getWindowManager();
+
+                wm.setWindowCaption(window, initialWindowCaption, filterTitle);
             }
-            if (useMaxResults)
+            if (useMaxResults) {
                 maxResultsCb.setSelected(true);
+            }
             paramsPanel.revalidate();
             paramsPanel.repaint();
         }

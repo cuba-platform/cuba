@@ -1696,10 +1696,14 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
     }
 
     protected class SelectListener implements Property.ValueChangeListener {
+
+        protected String initialWindowCaption;
+
         @Override
         public void valueChange(Property.ValueChangeEvent event) {
-            if (changingFilter)
+            if (changingFilter) {
                 return;
+            }
 
             filterEntity = (FilterEntity) select.getValue();
             if ((filterEntity != null) && (applyTo != null) && (Table.class.isAssignableFrom(applyTo.getClass()))) {
@@ -1712,28 +1716,39 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
             component.removeComponent(paramsLayout);
             createParamsLayout(true);
 
-            if (paramsLayout.getComponentCount() > 0)
+            if (paramsLayout.getComponentCount() > 0) {
                 component.addComponent(paramsLayout);
+            }
 
             if (!applyingDefault) {
                 Window window = ComponentsHelper.getWindow(WebFilter.this);
-                String descr;
-                if (filterEntity != null)
+                String filterTitle;
+                if (filterEntity != null) {
                     if (filterEntity.getCode() != null) {
-                        descr = messages.getMainMessage(filterEntity.getCode());
-                    } else
-                        descr = filterEntity.getName();
-                else
-                    descr = null;
-                window.setDescription(descr);
-                App.getInstance().getWindowManager().setWindowCaption(window, window.getCaption(), descr);
+                        filterTitle = messages.getMainMessage(filterEntity.getCode());
+                    } else {
+                        filterTitle = filterEntity.getName();
+                    }
+                } else {
+                    filterTitle = null;
+                }
+                window.setDescription(filterTitle);
+
+                if (initialWindowCaption == null) {
+                    initialWindowCaption = window.getCaption();
+                }
+
+                WebWindowManager wm = App.getInstance().getWindowManager();
+                wm.setWindowCaption(window, initialWindowCaption, filterTitle);
             }
 
-            if (useMaxResults)
+            if (useMaxResults) {
                 maxResultsCb.setValue(true);
+            }
 
-            if (pinAppliedFilterBtn != null)
+            if (pinAppliedFilterBtn != null) {
                 pinAppliedFilterBtn.setEnabled(false);
+            }
         }
     }
 
