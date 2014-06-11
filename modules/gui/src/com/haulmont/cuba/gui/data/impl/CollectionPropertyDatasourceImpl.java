@@ -289,9 +289,12 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
      * @return true if the collection already contains the instance
      */
     protected boolean containsObjectInstance(T instance) {
-        for (T item : __getCollection()) {
-            if (instance == item)
-                return true;
+        Collection<T> collection = __getCollection();
+        if (collection != null) {
+            for (T item : __getCollection()) {
+                if (instance == item)
+                    return true;
+            }
         }
         return false;
     }
@@ -350,24 +353,27 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         checkState();
         checkPermission();
 
-        if (this.item != null && this.item.equals(item)) {
-            setItem(null);
-        }
+        Collection<T> collection = __getCollection();
+        if (collection != null) {
+            if (this.item != null && this.item.equals(item)) {
+                setItem(null);
+            }
 
-        doNotModify = true;
-        try {
-            __getCollection().remove(item);
+            doNotModify = true;
+            try {
+                collection.remove(item);
 
-            MetaProperty inverseProperty = metaProperty.getInverse();
-            if (inverseProperty != null)
-                item.setValue(inverseProperty.getName(), null);
+                MetaProperty inverseProperty = metaProperty.getInverse();
+                if (inverseProperty != null)
+                    item.setValue(inverseProperty.getName(), null);
 
-            // detach listener only after setting value to the link property
-            detachListener(item);
+                // detach listener only after setting value to the link property
+                detachListener(item);
 
-            fireCollectionChanged(CollectionDatasourceListener.Operation.REMOVE, Collections.<Entity>singletonList(item));
-        } finally {
-            doNotModify = false;
+                fireCollectionChanged(CollectionDatasourceListener.Operation.REMOVE, Collections.<Entity>singletonList(item));
+            } finally {
+                doNotModify = false;
+            }
         }
     }
 
@@ -375,6 +381,10 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     public void includeItem(T item) {
         checkState();
         checkPermission();
+
+        if (__getCollection() == null) {
+            initCollection();
+        }
 
         doNotModify = true;
         try {
@@ -398,29 +408,31 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     @Override
     public void clear() {
         checkState();
-        // Get items
-        Collection<Object> collectionItems = new ArrayList<Object>(__getCollection());
-        doNotModify = true;
-        try {
-            // Clear collection
-            __getCollection().clear();
-            // Notify listeners
-            for (Object obj : collectionItems) {
-                T item = (T) obj;
+        Collection<T> collection = __getCollection();
+        if (collection != null) {
+            Collection<Object> collectionItems = new ArrayList<Object>(collection);
+            doNotModify = true;
+            try {
+                // Clear collection
+                collection.clear();
+                // Notify listeners
+                for (Object obj : collectionItems) {
+                    T item = (T) obj;
 
-                MetaProperty inverseProperty = metaProperty.getInverse();
-                if (inverseProperty == null)
-                    throw new UnsupportedOperationException("No inverse property for " + metaProperty);
+                    MetaProperty inverseProperty = metaProperty.getInverse();
+                    if (inverseProperty == null)
+                        throw new UnsupportedOperationException("No inverse property for " + metaProperty);
 
-                item.setValue(inverseProperty.getName(), null);
+                    item.setValue(inverseProperty.getName(), null);
 
-                // detach listener only after setting value to the link property
-                detachListener(item);
+                    // detach listener only after setting value to the link property
+                    detachListener(item);
+                }
+
+                fireCollectionChanged(CollectionDatasourceListener.Operation.CLEAR, Collections.<Entity>emptyList());
+            } finally {
+                doNotModify = false;
             }
-
-            fireCollectionChanged(CollectionDatasourceListener.Operation.CLEAR, Collections.<Entity>emptyList());
-        } finally {
-            doNotModify = false;
         }
     }
 
@@ -431,33 +443,39 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void modifyItem(T item) {
-        for (T t : __getCollection()) {
-            if (t.equals(item)) {
-                EntityCopyUtils.copyCompositionsBack(item, t);
+        Collection<T> collection = __getCollection();
+        if (collection != null) {
+            for (T t : collection) {
+                if (t.equals(item)) {
+                    EntityCopyUtils.copyCompositionsBack(item, t);
 
-                modified = true;
-                if (cascadeProperty) {
-                    final Entity parentItem = masterDs.getItem();
-                    ((DatasourceImplementation) masterDs).modified(parentItem);
-                } else {
-                    modified(t);
+                    modified = true;
+                    if (cascadeProperty) {
+                        final Entity parentItem = masterDs.getItem();
+                        ((DatasourceImplementation) masterDs).modified(parentItem);
+                    } else {
+                        modified(t);
+                    }
                 }
             }
+            fireCollectionChanged(CollectionDatasourceListener.Operation.UPDATE, Collections.<Entity>singletonList(item));
         }
-        fireCollectionChanged(CollectionDatasourceListener.Operation.UPDATE, Collections.<Entity>singletonList(item));
     }
 
     @Override
     public void updateItem(T item) {
-        // this method must not change the "modified" state by contract
-        boolean saveModified = modified;
-        for (T t : __getCollection()) {
-            if (t.equals(item)) {
-                InstanceUtils.copy(item, t);
+        Collection<T> collection = __getCollection();
+        if (collection != null) {
+            // this method must not change the "modified" state by contract
+            boolean saveModified = modified;
+            for (T t : collection) {
+                if (t.equals(item)) {
+                    InstanceUtils.copy(item, t);
+                }
             }
+            modified = saveModified;
+            fireCollectionChanged(CollectionDatasourceListener.Operation.UPDATE, Collections.<Entity>singletonList(item));
         }
-        modified = saveModified;
-        fireCollectionChanged(CollectionDatasourceListener.Operation.UPDATE, Collections.<Entity>singletonList(item));
     }
 
     @Override
@@ -473,35 +491,36 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     public void replaceItem(T item) {
         Collection<T> collection = __getCollection();
-        for (T t : collection) {
-            if (t.equals(item)) {
-                detachListener(t);
-                collection.remove(t);
-                collection.add(item);
-                attachListener(item);
+        if (collection != null) {
+            for (T t : collection) {
+                if (t.equals(item)) {
+                    detachListener(t);
+                    collection.remove(t);
+                    collection.add(item);
+                    attachListener(item);
 
-                if (item.equals(this.item)) {
-                    this.item = item;
+                    if (item.equals(this.item)) {
+                        this.item = item;
+                    }
+                    break;
                 }
-                break;
             }
-        }
-        if (sortInfos != null)
-            doSort();
+            if (sortInfos != null)
+                doSort();
 
-        fireCollectionChanged(CollectionDatasourceListener.Operation.UPDATE, Collections.<Entity>singletonList(item));
+            fireCollectionChanged(CollectionDatasourceListener.Operation.UPDATE, Collections.<Entity>singletonList(item));
+        }
     }
 
     @Override
     public boolean containsItem(K itemId) {
-        Collection<T> coll = __getCollection();
-        if (coll == null)
+        Collection<T> collection = __getCollection();
+        if (collection == null)
             return false;
 
         if (itemId instanceof Entity)
-            return __getCollection().contains(itemId);
+            return collection.contains(itemId);
         else {
-            Collection<T> collection = __getCollection();
             for (T item : collection) {
                 if (item.getId().equals(itemId))
                     return true;
