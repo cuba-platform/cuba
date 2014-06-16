@@ -39,6 +39,8 @@ public interface CubaEnhancedTable {
     boolean isAutowirePropertyDsForFields();
     void setAutowirePropertyDsForFields(boolean autowirePropertyDsForFields);
 
+    void refreshCellStyles();
+
     /**
      * Just add generated column to table without checks and without cells refresh. <br/>
      * <b>For internal use only.</b>

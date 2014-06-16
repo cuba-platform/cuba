@@ -372,4 +372,9 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
             return additionalConnectors.iterator();
         }
     }
+
+    @Override
+    public void refreshCellStyles() {
+        super.refreshRenderedCells();
+    }
 }

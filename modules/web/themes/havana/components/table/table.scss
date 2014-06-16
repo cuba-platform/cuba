@@ -5,23 +5,21 @@
 
 // Version: $Id$
 
-@mixin readonly-checkbox {
-  width: 13px;
-  height: 13px;
-  background-position: center center;
-}
-
 @mixin havana-table($primaryStyleName: v-table) {
   .#{$primaryStyleName} {
     text-align: left;
 
-    .checkbox-checked {
-      @include readonly-checkbox;
+    .boolean-cell-true .v-table-cell-wrapper {
+      color: transparent;
+      height: 13px;
+      background: no-repeat left center;
       background-image: url(sprites/checkbox-checked.png); /** sprite-ref: components; */
     }
 
-    .checkbox-unchecked {
-      @include readonly-checkbox;
+    .boolean-cell-false .v-table-cell-wrapper {
+      color: transparent;
+      height: 13px;
+      background: no-repeat left center;
       background-image: url(sprites/checkbox-unchecked.png); /** sprite-ref: components; */
     }
 

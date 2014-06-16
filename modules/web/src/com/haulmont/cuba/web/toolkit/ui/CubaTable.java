@@ -311,4 +311,9 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
             return additionalConnectors.iterator();
         }
     }
+
+    @Override
+    public void refreshCellStyles() {
+        super.refreshRenderedCells();
+    }
 }

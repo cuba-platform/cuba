@@ -849,6 +849,10 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer, 
         refreshRenderedCells();
     }
 
+    public void refreshCellStyles() {
+        refreshRenderedCells();
+    }
+
     @Override
     protected void refreshRenderedCells() {
         if (getParent() == null) {

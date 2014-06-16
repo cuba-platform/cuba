@@ -137,7 +137,7 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
 //        } else {
 //            return super.__handleAggregationResults(context, results);
 //        }
-        return Collections.EMPTY_MAP;
+        return Collections.emptyMap();
     }
 
     @Override
@@ -162,6 +162,7 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
         }
     }
 
+    @SuppressWarnings("unchecked")
     protected void expandGroupsFor(Collection<GroupInfo> groupSlice, Object itemId) {
         for (GroupInfo g: groupSlice) {
             if (component.getGroupItemIds(g).contains(itemId)) {
@@ -201,42 +202,15 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
     }
 
     @Override
-    public void setStyleProvider(final Table.StyleProvider styleProvider) {
-        this.styleProvider = styleProvider;
-        if (styleProvider == null) {
-            component.setCellStyleGenerator(null);
-            return;
-        }
-
-        if (styleProvider instanceof GroupStyleProvider) {
-            final GroupStyleProvider groupStyleProvider = (GroupStyleProvider) styleProvider;
-            component.setCellStyleGenerator(new com.vaadin.ui.Table.CellStyleGenerator() {
-                @Override
-                public String getStyle(com.vaadin.ui.Table source, Object itemId, Object propertyId) {
-                    if (itemId instanceof GroupInfo) {
-                        return groupStyleProvider.getStyleName((GroupInfo) itemId);
-                    }
-                    @SuppressWarnings({"unchecked"})
-                    final Entity item = datasource.getItem(itemId);
-                    if (item != null) {
-                        return styleProvider.getStyleName(item, propertyId == null ? null : propertyId.toString());
-                    }
-                    return null;
-                }
-            });
+    protected String getGeneratedCellStyle(Object itemId, Object propertyId) {
+        if (itemId instanceof GroupInfo) {
+            if (styleProvider instanceof GroupStyleProvider) {
+                return  ((GroupStyleProvider) styleProvider).getStyleName((GroupInfo) itemId);
+            }
         } else {
-            component.setCellStyleGenerator(new com.vaadin.ui.Table.CellStyleGenerator() {
-                @Override
-                public String getStyle(com.vaadin.ui.Table source, Object itemId, Object propertyId) {
-                    @SuppressWarnings({"unchecked"})
-                    final Entity item = datasource.getItem(itemId);
-                    if (item != null) {
-                        return styleProvider.getStyleName(item, propertyId == null ? null : propertyId.toString());
-                    }
-                    return null;
-                }
-            });
+            super.getGeneratedCellStyle(itemId, propertyId);
         }
+        return null;
     }
 
     protected class GroupTableDsWrapper extends SortableCollectionDsWrapper
@@ -584,10 +558,12 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
             return super.isLastId(itemId);
         }
 
+        @Override
         public Object addItemAfter(Object previousItemId) throws UnsupportedOperationException {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public Item addItemAfter(Object previousItemId, Object newItemId) throws UnsupportedOperationException {
             throw new UnsupportedOperationException();
         }
@@ -628,6 +604,7 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
         private void collectItemIds(GroupInfo groupId, final List<Object> itemIds) {
             if (expanded.contains(groupId)) {
                 if (((GroupDatasource) datasource).hasChildren(groupId)) {
+                    @SuppressWarnings("unchecked")
                     final List<GroupInfo> children = ((GroupDatasource) datasource).getChildren(groupId);
                     for (final GroupInfo child : children) {
                         itemIds.add(child);
@@ -697,6 +674,7 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
 
         protected Messages messages = AppBeans.get(Messages.class);
 
+        @SuppressWarnings("unchecked")
         @Override
         public String format(Object groupId, @Nullable Object value) {
             if (value == null) {
@@ -762,6 +740,7 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
         public void valueChanged(Entity source, String property, Object prevValue, Object value) {
             super.valueChanged(source, property, prevValue, value);
             GroupDatasource ds = (GroupDatasource) WebGroupTable.this.getDatasource();
+            @SuppressWarnings("unchecked")
             Collection<GroupInfo> roots = ds.rootGroups();
             for (final GroupInfo root : roots) {
                 recalcAggregation(root);

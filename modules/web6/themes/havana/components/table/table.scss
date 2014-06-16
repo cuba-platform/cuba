@@ -552,3 +552,15 @@
 .v-table-cell .v-label {
   word-wrap: normal;
 }
+
+.v-table div.v-table-cell-content.boolean-cell-true {
+  color: transparent;
+  background: no-repeat 5px center;
+  background-image: url(images/checkbox-checked.png);
+}
+
+.v-table div.v-table-cell-content.boolean-cell-false {
+  color: transparent;
+  background: no-repeat 5px center;
+  background-image: url(images/checkbox-unchecked.png);
+}

@@ -205,42 +205,15 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
     }
 
     @Override
-    public void setStyleProvider(final Table.StyleProvider styleProvider) {
-        this.styleProvider = styleProvider;
-        if (styleProvider == null) {
-            component.setCellStyleGenerator(null);
-            return;
-        }
-
-        if (styleProvider instanceof GroupStyleProvider) {
-            final GroupStyleProvider groupStyleProvider = (GroupStyleProvider) styleProvider;
-            component.setCellStyleGenerator(new com.vaadin.ui.Table.CellStyleGenerator() {
-                @Override
-                public String getStyle(Object itemId, Object propertyId) {
-                    if (itemId instanceof GroupInfo) {
-                        return groupStyleProvider.getStyleName((GroupInfo) itemId);
-                    }
-                    @SuppressWarnings({"unchecked"})
-                    final Entity item = datasource.getItem(itemId);
-                    if (item != null) {
-                        return styleProvider.getStyleName(item, propertyId == null ? null : propertyId.toString());
-                    }
-                    return null;
-                }
-            });
+    protected String getGeneratedCellStyle(Object itemId, Object propertyId) {
+        if (itemId instanceof GroupInfo) {
+            if (styleProvider instanceof GroupStyleProvider) {
+                return  ((GroupStyleProvider) styleProvider).getStyleName((GroupInfo) itemId);
+            }
         } else {
-            component.setCellStyleGenerator(new com.vaadin.ui.Table.CellStyleGenerator() {
-                @Override
-                public String getStyle(Object itemId, Object propertyId) {
-                    @SuppressWarnings({"unchecked"})
-                    final Entity item = datasource.getItem(itemId);
-                    if (item != null) {
-                        return styleProvider.getStyleName(item, propertyId == null ? null : propertyId.toString());
-                    }
-                    return null;
-                }
-            });
+            super.getGeneratedCellStyle(itemId, propertyId);
         }
+        return null;
     }
 
     protected class GroupTableDsWrapper extends SortableCollectionDsWrapper
@@ -293,6 +266,7 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
             };
         }
 
+        @Override
         public void groupBy(Object[] properties) {
             if (groupDatasource) {
                 doGroup(properties);
@@ -308,7 +282,7 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
             if (aggregationCells != null) {
                 if (hasGroups()) {
                     if (groupAggregationCells == null) {
-                        groupAggregationCells = new HashMap<Column, GroupAggregationCells>();
+                        groupAggregationCells = new HashMap<>();
                     } else {
                         groupAggregationCells.clear();
                     }
@@ -583,10 +557,12 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
             return super.isLastId(itemId);
         }
 
+        @Override
         public Object addItemAfter(Object previousItemId) throws UnsupportedOperationException {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public Item addItemAfter(Object previousItemId, Object newItemId) throws UnsupportedOperationException {
             throw new UnsupportedOperationException();
         }
@@ -694,8 +670,8 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
     }
 
     protected class DefaultGroupPropertyValueFormatter
-            implements com.haulmont.cuba.web.toolkit.ui.GroupTable.GroupPropertyValueFormatter
-    {
+            implements com.haulmont.cuba.web.toolkit.ui.GroupTable.GroupPropertyValueFormatter {
+        @Override
         public String format(Object groupId, Object value) {
             if (value == null) {
                 return "";

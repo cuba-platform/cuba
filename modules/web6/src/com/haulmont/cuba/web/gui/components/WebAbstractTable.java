@@ -5,8 +5,6 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.datatypes.impl.BooleanDatatype;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -55,7 +53,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.TextArea;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.LogFactory;
@@ -64,7 +61,6 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import javax.annotation.Nullable;
-import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -120,9 +116,6 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
     // Map column id to Printable representation
     protected Map<String, Printable> printables = new HashMap<>();
-
-    // Use weak map and references for loyal GC support
-    protected Map<Entity, List<WeakReference<ReadOnlyCheckBox>>> booleanCells = new WeakHashMap<>();
 
 //  disabled for #PL-2035
     // Disable listener that points component value to follow the ds item.
@@ -319,10 +312,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                                     if (!isLookup && !StringUtils.isEmpty(clickAction)) {
                                         addGeneratedColumn(propertyId, new CodePropertyGenerator(column));
                                     } else {
-                                        final Datatype datatype = propertyId.getRange().asDatatype();
-                                        if (BooleanDatatype.NAME.equals(datatype.getName()) && column.getFormatter() == null) {
-                                            addGeneratedColumn(propertyId, new ReadOnlyBooleanDatatypeGenerator());
-                                        } else if (column.getMaxTextLength() != null) {
+                                        if (column.getMaxTextLength() != null) {
                                             addGeneratedColumn(propertyId, new AbbreviatedColumnGenerator(column));
                                         }
                                     }
@@ -561,6 +551,15 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         componentComposition.setWidth("-1px");
         component.setSizeFull();
         componentComposition.setExpandRatio(component, 1);
+
+        component.setCellStyleGenerator(new StyleGeneratorAdapter());
+    }
+
+    @SuppressWarnings("unchecked")
+    protected String getGeneratedCellStyle(Object itemId, Object propertyId) {
+        final Entity item = datasource.getItem(itemId);
+
+        return styleProvider.getStyleName(item, propertyId == null ? null : propertyId.toString());
     }
 
     @Override
@@ -652,38 +651,19 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                     } else if (editable && BooleanUtils.isTrue(column.isCalculatable())) {
                         addGeneratedColumn(propertyPath, new CalculatableColumnGenerator());
                     } else {
-                        final Datatype datatype = propertyPath.getRange().asDatatype();
-                        if (BooleanDatatype.NAME.equals(datatype.getName()) && column.getFormatter() == null) {
-                            addGeneratedColumn(propertyPath, new ReadOnlyBooleanDatatypeGenerator());
-                        } else if (column.getMaxTextLength() != null) {
+                        if (column.getMaxTextLength() != null) {
                             addGeneratedColumn(propertyPath, new AbbreviatedColumnGenerator(column));
                         }
                     }
-                } else if (propertyPath.getRange().isEnum()) {
+                } /*else if (propertyPath.getRange().isEnum()) {
                     // TODO (abramov)
-                } else {
+                } */else if (!propertyPath.getRange().isEnum()) {
                     throw new UnsupportedOperationException();
                 }
             }
         }
 
         return properties;
-    }
-
-    protected void updateReadonlyBooleanCell(Entity source, String property, Object value) {
-        List<WeakReference<ReadOnlyCheckBox>> booleanProperties = booleanCells.get(source);
-        if (booleanProperties != null) {
-            for (WeakReference<ReadOnlyCheckBox> booleanBox : new LinkedList<>(booleanProperties)) {
-                ReadOnlyCheckBox checkbox = booleanBox.get();
-                if (checkbox != null) {
-                    if (ObjectUtils.equals(property, String.valueOf(checkbox.getColumnId()))) {
-                        checkbox.updateValue((Boolean) value);
-                    }
-                } else {
-                    booleanProperties.remove(booleanBox);
-                }
-            }
-        }
     }
 
     @Override
@@ -723,23 +703,14 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                     case CLEAR:
                     case REFRESH:
                         fieldDatasources.clear();
-                        booleanCells.clear();
                         break;
 
                     case UPDATE:
                     case REMOVE:
                         for (Entity entity : items) {
                             fieldDatasources.remove(entity);
-                            booleanCells.remove(entity);
                         }
                         break;
-                }
-            }
-
-            @Override
-            public void valueChanged(Entity source, String property, @Nullable Object prevValue, @Nullable Object value) {
-                if (!booleanCells.isEmpty() && value instanceof Boolean) {
-                    updateReadonlyBooleanCell(source, property, value);
                 }
             }
         });
@@ -956,18 +927,8 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     @Override
     public void setStyleProvider(final Table.StyleProvider styleProvider) {
         this.styleProvider = styleProvider;
-        if (styleProvider == null) {
-            component.setCellStyleGenerator(null);
-            return;
-        }
 
-        component.setCellStyleGenerator(new com.vaadin.ui.Table.CellStyleGenerator() {
-            public String getStyle(Object itemId, Object propertyId) {
-                @SuppressWarnings({"unchecked"})
-                final Entity item = datasource.getItem(itemId);
-                return styleProvider.getStyleName(item, propertyId == null ? null : propertyId.toString());
-            }
-        });
+        component.refreshCellStyles();
     }
 
     @Override
@@ -1567,46 +1528,6 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         }
     }
 
-    protected class ReadOnlyBooleanDatatypeGenerator implements SystemTableColumnGenerator {
-        @Override
-        public com.vaadin.ui.Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
-            return generateCell((AbstractSelect) source, itemId, columnId);
-        }
-
-        protected com.vaadin.ui.Component generateCell(AbstractSelect source, Object itemId, final Object columnId) {
-            Item item = source.getItem(itemId);
-            final Property property = item.getItemProperty(columnId);
-            final Object value = property.getValue();
-
-            ReadOnlyCheckBox checkPoxImage = new ReadOnlyCheckBox(columnId);
-            checkPoxImage.setSizeUndefined();
-            checkPoxImage.updateValue((Boolean) value);
-
-            Entity key = ((ItemWrapper) item).getItem();
-
-            List<WeakReference<ReadOnlyCheckBox>> booleanProperties = booleanCells.get(key);
-            if (booleanProperties == null) {
-                booleanProperties = new LinkedList<>();
-                booleanCells.put(key, booleanProperties);
-            } else {
-                for (WeakReference<ReadOnlyCheckBox> checkBoxRef: new LinkedList<>(booleanProperties)) {
-                    ReadOnlyCheckBox readOnlyCheckBox = checkBoxRef.get();
-                    if (readOnlyCheckBox != null) {
-                        // remove old
-                        if (ObjectUtils.equals(columnId, readOnlyCheckBox.getColumnId())) {
-                            booleanProperties.remove(checkBoxRef);
-                        }
-                    } else {
-                        booleanProperties.remove(checkBoxRef);
-                    }
-                }
-            }
-            booleanProperties.add(new WeakReference<>(checkPoxImage));
-
-            return checkPoxImage;
-        }
-    }
-
     protected static class ReadOnlyCheckBox extends Embedded {
         public final Object columnId;
 
@@ -2002,5 +1923,39 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         }
 
         return getClass().getSimpleName();
+    }
+
+    protected class StyleGeneratorAdapter implements com.vaadin.ui.Table.CellStyleGenerator {
+        @SuppressWarnings({"unchecked"})
+        @Override
+        public String getStyle(Object itemId, Object propertyId) {
+            String style = null;
+            if (propertyId != null && itemId != null && component.getColumnGenerator(propertyId) == null) {
+                MetaPropertyPath property = datasource.getMetaClass().getPropertyPath(propertyId.toString());
+                if (property != null && property.getRangeJavaClass() == Boolean.class) {
+                    Entity item = datasource.getItem(itemId);
+                    if (item != null) {
+                        Boolean value = item.getValue(propertyId.toString());
+                        if (BooleanUtils.isTrue(value)) {
+                            style = "boolean-cell boolean-cell-true";
+                        } else {
+                            style = "boolean-cell boolean-cell-false";
+                        }
+                    }
+                }
+            }
+
+            if (styleProvider != null) {
+                String generatedStyle = getGeneratedCellStyle(itemId, propertyId);
+                if (style != null) {
+                    if (generatedStyle != null) {
+                        style = generatedStyle + " " + style;
+                    }
+                } else {
+                    style = generatedStyle;
+                }
+            }
+            return style;
+        }
     }
 }
