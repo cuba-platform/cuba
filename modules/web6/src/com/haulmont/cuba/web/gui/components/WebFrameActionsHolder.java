@@ -70,8 +70,14 @@ public class WebFrameActionsHolder {
     }
 
     public com.vaadin.event.Action[] getActionImplementations() {
-        final Set<com.vaadin.event.Action> keys = actions.keySet();
-        return keys.toArray(new com.vaadin.event.Action[keys.size()]);
+        List<com.vaadin.event.Action> orderedActions = new LinkedList<>();
+        for (Action action : actionList) {
+            com.vaadin.event.Action e = actions.inverse().get(action);
+            if (e != null) {
+                orderedActions.add(e);
+            }
+        }
+        return orderedActions.toArray(new com.vaadin.event.Action[orderedActions.size()]);
     }
 
     public Action getAction(com.vaadin.event.Action actionImpl) {
