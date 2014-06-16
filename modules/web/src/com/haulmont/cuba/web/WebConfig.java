@@ -280,4 +280,8 @@ public interface WebConfig extends Config {
     @Property("cuba.web.useSessionFixationProtection")
     @DefaultBoolean(true)
     boolean getUseSessionFixationProtection();
+
+    @Property("cuba.web.rememberMeEnabled")
+    @DefaultBoolean(true)
+    boolean getRememberMeEnabled();
 }

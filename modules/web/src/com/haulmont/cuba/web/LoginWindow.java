@@ -131,8 +131,8 @@ public class LoginWindow extends UIView implements Action.Handler {
 
         okButton = new CubaButton();
 
-        rememberMeAllowed = !ActiveDirectoryHelper.useActiveDirectory() ||
-                !ActiveDirectoryHelper.activeDirectorySupportedBySession();
+        rememberMeAllowed = webConfig.getRememberMeEnabled()
+                && (!ActiveDirectoryHelper.useActiveDirectory() || !ActiveDirectoryHelper.activeDirectorySupportedBySession());
 
         if (rememberMeAllowed) {
             rememberMe = new CubaCheckBox();

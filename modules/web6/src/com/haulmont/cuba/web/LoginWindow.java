@@ -110,7 +110,7 @@ public class LoginWindow extends Window implements Action.Handler {
         passwordField.setImmediate(true);
         localesSelect.setImmediate(true);
 
-        if (app.isCookiesEnabled()) {
+        if (app.isCookiesEnabled() && webConfig.getRememberMeEnabled()) {
             if (!ActiveDirectoryHelper.useActiveDirectory() ||
                     !ActiveDirectoryHelper.activeDirectorySupportedBySession()) {
                 rememberMe = new CheckBox();
