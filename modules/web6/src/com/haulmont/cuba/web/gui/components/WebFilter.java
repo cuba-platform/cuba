@@ -522,7 +522,8 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         boolean haveCorrectCondition = false;
 
         for (AbstractCondition condition : conditions.toConditionsList()) {
-            if ((condition.getParam() != null) && (condition.getParam().getValue() != null)) {
+            if ((condition.getParam() != null) && (condition.getParam().getValue() != null)
+                    || condition instanceof CustomCondition && condition.isHidden()) {
                 haveCorrectCondition = true;
                 break;
             }
