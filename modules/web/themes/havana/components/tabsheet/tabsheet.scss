@@ -373,7 +373,7 @@
   }
 
   // hide focus while tab updating content
-  .#{$primaryStyleName}-focus.adjusting > .#{$primaryStyleName}-tabcontainer {
+  .#{$primaryStyleName}-focus.#{$primaryStyleName}-loading > .#{$primaryStyleName}-tabcontainer {
     .#{$primaryStyleName}-tabitem.#{$primaryStyleName}-tabitem-selected .v-caption .v-captiontext {
       border: 1px solid transparent;
     }
