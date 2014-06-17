@@ -11,7 +11,6 @@ import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.CubaTabSheet;
 import com.vaadin.client.Util;
 import com.vaadin.client.communication.RpcProxy;
-import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.Action;
 import com.vaadin.client.ui.tabsheet.TabsheetConnector;
 import com.vaadin.shared.ui.Connect;
@@ -81,15 +80,6 @@ public class CubaTabSheetConnector extends TabsheetConnector {
             }
         };
         return widget;
-    }
-
-    @Override
-    public void onStateChanged(StateChangeEvent stateChangeEvent) {
-        super.onStateChanged(stateChangeEvent);
-
-        if (!getWidget().waitingForResponse) {
-            getWidget().removeStyleName("adjusting");
-        }
     }
 
     @Override

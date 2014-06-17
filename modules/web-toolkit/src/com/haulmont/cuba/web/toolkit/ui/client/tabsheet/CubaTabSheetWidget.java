@@ -41,14 +41,4 @@ public class CubaTabSheetWidget extends VTabsheet {
 
         removeStyleDependentName("focus");
     }
-
-    @Override
-    protected boolean canSelectTab(int tabIndex) {
-        boolean result = super.canSelectTab(tabIndex);
-
-        if (waitingForResponse) {
-            addStyleName("adjusting");
-        }
-        return result;
-    }
 }
