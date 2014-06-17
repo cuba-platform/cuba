@@ -60,7 +60,7 @@ def webToolkitLegacyModule = project(':cuba-web6-toolkit')
 def webModuleThemes = project(':cuba-web-themes')
 def webLegacyModuleThemes = project(':cuba-web6-themes')
 
-def vaadinVersion = '7.2.0.cuba.2'
+def vaadinVersion = '7.2.2.cuba.2'
 def vaadinLegacyVersion = '6.6.1.144'
 def springVersion = '3.2.8.RELEASE'
 def springSecurityVersion = '3.2.3.RELEASE'
@@ -475,7 +475,7 @@ configure(webToolkitModule) {
         widgetSetsDir = "$webOutDir/VAADIN/widgetsets"
         widgetSetClass = 'com.haulmont.cuba.web.toolkit.ui.WidgetSet'
         //jvmArgs('-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000')
-//        compilerArgs = ['-style': 'PRETTY', '-logLevel': 'INFO', '-localWorkers': '2']
+        compilerArgs = ['-style': 'DETAILED', '-logLevel': 'INFO', '-localWorkers': '4']
     }
 
     task webArchive(dependsOn: buildWidgetSet, type: Zip) {

@@ -5,14 +5,11 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.tooltip;
 
-import com.google.gwt.aria.client.Id;
-import com.google.gwt.aria.client.Roles;
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.event.dom.client.*;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.DomEvent;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.haulmont.cuba.web.toolkit.ui.client.caption.CubaCaptionWidget;
 import com.haulmont.cuba.web.toolkit.ui.client.resizabletextarea.CubaResizableTextAreaWidget;
@@ -33,10 +30,9 @@ public class CubaTooltip extends VTooltip {
         tooltipEventHandler = new CubaTooltipEventHandler();
     }
 
-
     protected void showTooltip(boolean forceShow) {
         // Close current tooltip
-        if (isShowing()) {
+        if (isActuallyVisible()) {
             closeNow();
         }
 
@@ -50,80 +46,6 @@ public class CubaTooltip extends VTooltip {
         opening = true;
     }
 
-    /* CAUTION copied from super class with small changes */
-    @Override
-    protected void show(TooltipInfo info) {
-        boolean hasContent = false;
-        boolean isErrorMsgEmpty = info.getErrorMessage() == null || info.getErrorMessage().isEmpty();
-        if (!isErrorMsgEmpty) {
-            Element errorMsgTestEl = DOM.createDiv();
-            errorMsgTestEl.setInnerHTML(info.getErrorMessage());
-            isErrorMsgEmpty = DOM.getChild(errorMsgTestEl, 0).getInnerHTML().isEmpty();
-        }
-        if (!isErrorMsgEmpty) {
-            em.setVisible(true);
-            em.updateMessage(info.getErrorMessage());
-            hasContent = true;
-        } else {
-            em.setVisible(false);
-        }
-
-        if (info.getTitle() != null && !"".equals(info.getTitle())) {
-            description.setInnerHTML(info.getTitle());
-            description.getStyle().clearDisplay();
-            hasContent = true;
-        } else {
-            description.setInnerHTML("");
-            description.getStyle().setDisplay(Style.Display.NONE);
-        }
-
-        if (hasContent) {
-            // Issue #8454: With IE7 the tooltips size is calculated based on
-            // the last tooltip's position, causing problems if the last one was
-            // in the right or bottom edge. For this reason the tooltip is moved
-            // first to 0,0 position so that the calculation goes correctly.
-            setPopupPosition(0, 0);
-            setPopupPositionAndShow(new PositionCallback() {
-                @Override
-                public void setPosition(int offsetWidth, int offsetHeight) {
-
-                    if (offsetWidth > getMaxWidth()) {
-                        setWidth(getMaxWidth() + "px");
-
-                        // Check new height and width with reflowed content
-                        offsetWidth = getOffsetWidth();
-                        offsetHeight = getOffsetHeight();
-                    }
-
-                    int x = tooltipEventMouseX + 10 + Window.getScrollLeft();
-                    int y = tooltipEventMouseY + 10 + Window.getScrollTop();
-
-                    if (x + offsetWidth + MARGIN - Window.getScrollLeft() > Window
-                            .getClientWidth()) {
-                        x = Window.getClientWidth() - offsetWidth - MARGIN
-                                + Window.getScrollLeft();
-                    }
-
-                    if (y + offsetHeight + MARGIN - Window.getScrollTop() > Window
-                            .getClientHeight()) {
-                        y = tooltipEventMouseY - 5 - offsetHeight
-                                + Window.getScrollTop();
-                        if (y - Window.getScrollTop() < 0) {
-                            // tooltip does not fit on top of the mouse either,
-                            // put it at the top of the screen
-                            y = Window.getScrollTop();
-                        }
-                    }
-
-                    setPopupPosition(x, y);
-                    sinkEvents(Event.ONMOUSEOVER | Event.ONMOUSEOUT);
-                }
-            });
-        } else {
-            hide();
-        }
-    }
-
     public class CubaTooltipEventHandler extends TooltipEventHandler {
 
         private ComponentConnector currentConnector = null;
@@ -134,8 +56,7 @@ public class CubaTooltip extends VTooltip {
         }
 
         @Override
-        protected boolean resolveConnector(Element element) {
-
+        protected TooltipInfo getTooltipFor(Element element) {
             if (isTooltipElement(element)) {
                 element = element.getParentElement().cast();
 
@@ -159,7 +80,6 @@ public class CubaTooltip extends VTooltip {
             // Try to find first connector with proper tooltip info
             TooltipInfo info = null;
             while (connector != null) {
-
                 info = connector.getTooltipInfo(element);
 
                 if (info != null && info.hasMessage()) {
@@ -178,13 +98,12 @@ public class CubaTooltip extends VTooltip {
                 assert connector.hasTooltip() : "getTooltipInfo for "
                         + Util.getConnectorString(connector)
                         + " returned a tooltip even though hasTooltip claims there are no tooltips for the connector.";
-                currentTooltipInfo = info;
                 currentConnector = connector;
 
-                return true;
+                return info;
             }
 
-            return false;
+            return null;
         }
 
         @Override
@@ -207,37 +126,31 @@ public class CubaTooltip extends VTooltip {
                 return;
             }
 
-            boolean connectorAndTooltipFound = resolveConnector(element);
-            if (!connectorAndTooltipFound) {
-                //close tooltip only if it is from button or checkbox
+            TooltipInfo info = getTooltipFor(element);
+            if (info == null) {
+                // close tooltip only if it is from button or checkbox
                 if (currentConnector instanceof ButtonConnector || currentConnector instanceof CheckBoxConnector) {
-                    if (isShowing()) {
+                    if (isActuallyVisible()) {
                         handleHideEvent();
-                        Roles.getButtonRole()
-                                .removeAriaDescribedbyProperty(element);
                     } else {
-                        currentTooltipInfo = null;
                         currentConnector = null;
                     }
                 }
             } else {
-                updatePosition(event, isFocused);
                 if ((domEvent instanceof ClickEvent && !isStandardTooltip(currentConnector))
                         || (!(domEvent instanceof ClickEvent) && isStandardTooltip(currentConnector))) {
-                    if (isShowing()) {
-                        replaceCurrentTooltip();
-                        Roles.getTooltipRole().removeAriaDescribedbyProperty(
-                                currentElement);
-                    } else {
-                        if (isStandardTooltip(currentConnector)) {
-                            showTooltip(false);
-                        } else {
-                            showTooltip(true);
-                        }
+                    setTooltipText(info);
+                    updatePosition(event, isFocused);
+
+                    if (isActuallyVisible()) {
+                        closeNow();
                     }
 
-                    Roles.getTooltipRole().setAriaDescribedbyProperty(element,
-                            Id.of(uniqueId));
+                    if (isStandardTooltip(currentConnector)) {
+                        showTooltip(false);
+                    } else {
+                        showTooltip(true);
+                    }
                 }
             }
 
@@ -245,11 +158,10 @@ public class CubaTooltip extends VTooltip {
             currentElement = element;
         }
 
-        private boolean isStandardTooltip(ComponentConnector connector) {
+        protected boolean isStandardTooltip(ComponentConnector connector) {
             return (connector instanceof ButtonConnector
                     || connector instanceof CheckBoxConnector
                     || connector instanceof TableConnector);
         }
-
     }
 }
