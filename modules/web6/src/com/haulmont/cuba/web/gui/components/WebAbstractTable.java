@@ -1935,7 +1935,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                 if (property != null && property.getRangeJavaClass() == Boolean.class) {
                     Entity item = datasource.getItem(itemId);
                     if (item != null) {
-                        Boolean value = item.getValue(propertyId.toString());
+                        Boolean value = item.getValueEx(propertyId.toString());
                         if (BooleanUtils.isTrue(value)) {
                             style = "boolean-cell boolean-cell-true";
                         } else {
