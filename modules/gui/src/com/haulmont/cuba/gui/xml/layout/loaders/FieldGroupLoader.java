@@ -55,6 +55,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
                 component.addField(field);
             }
         } else {
+            @SuppressWarnings("unchecked")
             final List<Element> columnElements = element.elements("column");
             component.setColumns(columnElements.size());
 
@@ -114,7 +115,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
                 loadValidators(component, field);
                 loadRequired(component, field);
                 loadEditable(component, field);
-                loadEnabled(component, field);
+                loadEnable(component, field);
                 loadVisible(component, field);
             }
         }
@@ -129,7 +130,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
                         loadValidators(component, field);
                         loadRequired(component, field);
                         loadEditable(component, field);
-                        loadEnabled(component, field);
+                        loadEnable(component, field);
                         loadVisible(component, field);
                     }
                 }
@@ -394,11 +395,11 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         return datasource.getMetaClass();
     }
 
-    protected void loadEnabled(FieldGroup component, FieldGroup.FieldConfig field) {
+    protected void loadEnable(FieldGroup component, FieldGroup.FieldConfig field) {
         Element element = field.getXmlDescriptor();
-        final String enabled = element.attributeValue("enabled");
-        if (!StringUtils.isEmpty(enabled)) {
-            component.setEnabled(field, component.isEnabled() && BooleanUtils.toBoolean(enabled));
+        final String enable = element.attributeValue("enable");
+        if (!StringUtils.isEmpty(enable)) {
+            component.setEnabled(field, component.isEnabled() && BooleanUtils.toBoolean(enable));
         }
     }
 
