@@ -113,7 +113,9 @@ public class VCustomLayout extends ComplexPanel implements Paintable,
                     + " found");
         }
 
-        DOM.setStyleAttribute(elem, "display", "");
+        if (elem != null) {
+            DOM.setStyleAttribute(elem, "display", "");
+        }
 
         // Get previous widget
         final Widget previous = locationToWidget.get(location);
@@ -137,6 +139,7 @@ public class VCustomLayout extends ComplexPanel implements Paintable,
     }
 
     /** Update the layout from UIDL */
+    @Override
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
         this.client = client;
         // ApplicationConnection manages generic component features
