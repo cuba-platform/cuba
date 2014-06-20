@@ -201,7 +201,7 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
             }
         }
 
-        // Grouping sypport
+        // Grouping support
         if (groupColumns != null) {
             // collect new grouped columns
             final String[] groupedColumns = new String[groupColumns.size()];
