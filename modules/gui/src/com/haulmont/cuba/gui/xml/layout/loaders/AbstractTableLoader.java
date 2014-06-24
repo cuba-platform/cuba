@@ -315,7 +315,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         if (formatterElement != null) {
             final String className = formatterElement.attributeValue("class");
 
-            if (className == null) {
+            if (StringUtils.isEmpty(className)) {
                 throw new GuiDevelopmentException("Formatter's attribute 'class' is not specified", context.getCurrentIFrameId());
             }
 
