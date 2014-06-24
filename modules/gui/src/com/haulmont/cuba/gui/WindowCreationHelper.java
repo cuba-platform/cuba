@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
+import javax.annotation.Nullable;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -33,7 +34,7 @@ import java.util.regex.Pattern;
  * @author artamonov
  * @version $Id$
  */
-public class WindowCreationHelper {
+public final class WindowCreationHelper {
 
     private static Log log = LogFactory.getLog(WindowCreationHelper.class);
 
@@ -47,73 +48,85 @@ public class WindowCreationHelper {
      */
     public static void applyUiPermissions(IFrame container) {
         Window window = container instanceof Window ? (Window) container : ComponentsHelper.getWindow(container);
+        if (window == null) {
+            log.warn(String.format("Unable to find window for container %s with id '%s'", container.getClass(), container.getId()));
+            return;
+        }
+
         UserSession userSession = AppBeans.get(UserSessionSource.class).getUserSession();
 
         String screenId = window.getId();
         Map<String, Integer> uiPermissions = userSession.getPermissionsByType(PermissionType.UI);
         for (Map.Entry<String, Integer> permissionEntry : uiPermissions.entrySet()) {
             String target = permissionEntry.getKey();
-            if (StringUtils.isNotBlank(target)) {
-                int delimeterIndex = target.indexOf(Permission.TARGET_PATH_DELIMETER);
-                if (delimeterIndex >= 0) {
-
-                    // Target screen
-                    String targetScreenId = target.substring(0, delimeterIndex);
-                    if (StringUtils.equals(screenId, targetScreenId)) {
-
-                        // Target component
-                        String componentId = target.substring(delimeterIndex + 1);
-                        if (componentId.contains("[")) {//custom process for tabsheet & fieldgroup
-                            processCustomComponents(window, screenId, permissionEntry, componentId);
-                        } else {
-                            Component component = window.getComponent(componentId);
-
-                            if (component != null) {
-                                Integer permissionValue = permissionEntry.getValue();
-                                if (permissionValue == UiPermissionValue.HIDE.getValue())
-                                    component.setVisible(false);
-                                else if (permissionValue == UiPermissionValue.READ_ONLY.getValue()) {
-                                    if (component instanceof Component.Editable) {
-                                        ((Component.Editable) component).setEditable(false);
-                                    } else {
-                                        component.setEnabled(false);
-                                    }
-                                }
-
-                            } else {
-                                log.info(String.format("Couldn't find component %s in window %s", componentId, screenId));
-                            }
-                        }
-                    }
+            String targetComponentId = getTargetComponentId(target, screenId);
+            if (targetComponentId != null) {
+                if (!targetComponentId.contains("[")) {
+                    applyComponentPermission(window, screenId, permissionEntry.getValue(), targetComponentId);
+                } else {
+                    applyCompositeComponentPermission(window, screenId, permissionEntry.getValue(), targetComponentId);
                 }
             }
         }
     }
 
-    private static void processCustomComponents(Window window, String screenId, Map.Entry<String, Integer> permissionEntry, String componentId) {
+    @Nullable
+    private static String getTargetComponentId(String target, String screenId) {
+        if (StringUtils.isNotBlank(target)) {
+            int delimeterIndex = target.indexOf(Permission.TARGET_PATH_DELIMETER);
+            if (delimeterIndex >= 0) {
+                String targetScreenId = target.substring(0, delimeterIndex);
+                if (StringUtils.equals(screenId, targetScreenId)) {
+                    return target.substring(delimeterIndex + 1);
+                }
+            }
+        }
+        return null;
+    }
+
+    private static void applyComponentPermission(Window window, String screenId,
+                                                 Integer permissionValue, String targetComponentId) {
+        Component component = window.getComponent(targetComponentId);
+
+        if (component != null) {
+            if (permissionValue == UiPermissionValue.HIDE.getValue()) {
+                component.setVisible(false);
+            } else if (permissionValue == UiPermissionValue.READ_ONLY.getValue()) {
+                if (component instanceof Component.Editable) {
+                    ((Component.Editable) component).setEditable(false);
+                } else {
+                    component.setEnabled(false);
+                }
+            }
+        } else {
+            log.info(String.format("Couldn't find component %s in window %s", targetComponentId, screenId));
+        }
+    }
+
+    // custom process for tabsheet & fieldgroup
+    private static void applyCompositeComponentPermission(Window window, String screenId,
+                                                          Integer permissionValue, String componentId) {
         final Pattern pattern = Pattern.compile("(.+?)\\[(.+?)\\]");
         final Matcher matcher = pattern.matcher(componentId);
         if (matcher.find()) {
             final String customComponentId = matcher.group(1);
             final String subComponentId = matcher.group(2);
-            final Component customComponent = window.getComponent(customComponentId);
-            if (customComponent != null) {
-                if (customComponent instanceof TabSheet) {
-                    final TabSheet tabsheet = (TabSheet) customComponent;
+            final Component compositeComponent = window.getComponent(customComponentId);
+            if (compositeComponent != null) {
+                if (compositeComponent instanceof TabSheet) {
+                    final TabSheet tabsheet = (TabSheet) compositeComponent;
                     final TabSheet.Tab tab = tabsheet.getTab(subComponentId);
                     if (tab != null) {
-                        Integer permissionValue = permissionEntry.getValue();
                         if (permissionValue == UiPermissionValue.HIDE.getValue())
                             tab.setVisible(false);
                         else if (permissionValue == UiPermissionValue.READ_ONLY.getValue()) {
                             tab.setEnabled(false);
                         }
                     }
-                } else if (customComponent instanceof FieldGroup) {
-                    FieldGroup fieldGroup = (FieldGroup) customComponent;
+                } else if (compositeComponent instanceof FieldGroup) {
+                    FieldGroup fieldGroup = (FieldGroup) compositeComponent;
                     final FieldGroup.FieldConfig field = fieldGroup.getField(subComponentId);
                     if (field != null) {
-                        Integer permissionValue = permissionEntry.getValue();
                         if (permissionValue == UiPermissionValue.HIDE.getValue()) {
                             fieldGroup.setVisible(field, false);
                         } else if (permissionValue == UiPermissionValue.READ_ONLY.getValue()) {
@@ -134,7 +147,7 @@ public class WindowCreationHelper {
     public static void deployViews(Element rootElement) {
         Element metadataContextEl = rootElement.element("metadataContext");
         if (metadataContextEl != null) {
-            AbstractViewRepository viewRepository = (AbstractViewRepository) AppBeans.get(ViewRepository.NAME);
+            AbstractViewRepository viewRepository = AppBeans.get(ViewRepository.NAME);
             for (Element fileEl : Dom4j.elements(metadataContextEl, "deployViews")) {
                 String resource = fileEl.attributeValue("name");
                 InputStream resourceInputStream = AppBeans.get(Resources.class).getResourceAsStream(resource);
