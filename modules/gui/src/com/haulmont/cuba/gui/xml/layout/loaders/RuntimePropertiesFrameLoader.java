@@ -80,12 +80,15 @@ public class RuntimePropertiesFrameLoader extends IFrameLoader {
         }
 
         final IFrame component;
+        String currentIFrameId = context.getCurrentIFrameId();
         try {
             context.setCurrentIFrameId(frameId);
             component = (IFrame) loader.loadComponent(stream, parent, context.getParams());
         } finally {
+            context.setCurrentIFrameId(currentIFrameId);
             IOUtils.closeQuietly(stream);
         }
+
         if (component.getMessagesPack() == null) {
             component.setMessagesPack(messagesPack);
         }
