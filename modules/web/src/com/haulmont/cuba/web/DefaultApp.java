@@ -79,11 +79,10 @@ public class DefaultApp extends App implements ConnectionListener {
 
     @Override
     protected void initView(AppUI ui) {
-        if (!connection.isConnected()) {
-            if (!loginOnStart())
-                ui.showView(createLoginWindow(ui));
-        } else {
+        if (connection.isConnected() || loginOnStart()) {
             ui.showView(createAppWindow(ui));
+        } else {
+            ui.showView(createLoginWindow(ui));
         }
     }
 
