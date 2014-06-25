@@ -252,6 +252,11 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
     }
 
     @Override
+    public boolean isColumnEditable(Object columnId) {
+        return isColumnEditable(columnId, isEditable());
+    }
+
+    @Override
     public void addGeneratedColumn(Object id, ColumnGenerator generatedColumn) {
         if (generatedColumn == null) {
             throw new IllegalArgumentException(

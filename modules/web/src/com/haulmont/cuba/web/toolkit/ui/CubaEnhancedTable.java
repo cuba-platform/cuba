@@ -27,6 +27,8 @@ public interface CubaEnhancedTable {
     Object[] getEditableColumns();
     void setEditableColumns(Object[] editableColumns);
 
+    boolean isColumnEditable(Object columnId);
+
     boolean isAllowPopupMenu();
     void setAllowPopupMenu(boolean allowPopupMenu);
 

@@ -359,7 +359,7 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer, 
         this.autowirePropertyDsForFields = autowirePropertyDsForFields;
     }
 
-    protected boolean isColumnEditable(Object columnId) {
+    public boolean isColumnEditable(Object columnId) {
         return isEditable() &&
                 editableColumns != null && editableColumns.contains(columnId);
     }

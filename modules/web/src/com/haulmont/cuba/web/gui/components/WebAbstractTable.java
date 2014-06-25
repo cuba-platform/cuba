@@ -1878,7 +1878,9 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         @Override
         public String getStyle(com.vaadin.ui.Table source, Object itemId, Object propertyId) {
             String style = null;
-            if (propertyId != null && itemId != null && component.getColumnGenerator(propertyId) == null) {
+            if (propertyId != null && itemId != null
+                    && !component.isColumnEditable(propertyId)
+                    && component.getColumnGenerator(propertyId) == null) {
                 MetaPropertyPath property = datasource.getMetaClass().getPropertyPath(propertyId.toString());
                 if (property != null && property.getRangeJavaClass() == Boolean.class) {
                     Entity item = datasource.getItem(itemId);
