@@ -10,33 +10,55 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.List;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class DesktopResources {
 
+    private Log log = LogFactory.getLog(DesktopResources.class);
+
     protected List<String> roots;
 
-    protected Map<String, byte[]> cache = new HashMap<String, byte[]>();
+    protected Map<String, byte[]> cache = new HashMap<>();
 
-    private Resources resources;
-
-    private Log log = LogFactory.getLog(DesktopResources.class);
+    protected Resources resources;
 
     public DesktopResources(List<String> roots, Resources resources) {
         this.resources = resources;
-        this.roots = new ArrayList<String>(roots);
+        this.roots = new ArrayList<>(roots);
+
         Collections.reverse(this.roots);
     }
 
+    public Image getImage(String name) {
+        byte[] bytes = getImageBytes(name);
+
+        try {
+            return ImageIO.read(new ByteArrayInputStream(bytes));
+        } catch (IOException e) {
+            log.warn("Unable to read image from bytes", e);
+            return null;
+        }
+    }
+
     public Icon getIcon(String name) {
+        byte[] bytes = getImageBytes(name);
+
+        return new ImageIcon(bytes);
+    }
+
+    protected byte[] getImageBytes(String name) {
         if (!name.startsWith("/"))
             name = "/" + name;
 
@@ -70,7 +92,6 @@ public class DesktopResources {
                 }
             }
         }
-
-        return new ImageIcon(bytes);
+        return bytes;
     }
 }

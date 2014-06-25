@@ -47,6 +47,14 @@ public class TopLevelFrame extends JFrame {
         glassPane = new DisabledGlassPane();
         JRootPane rootPane = SwingUtilities.getRootPane(this);
         rootPane.setGlassPane(glassPane);
+
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        DesktopConfig config = configuration.getConfig(DesktopConfig.class);
+
+        DesktopResources resources = App.getInstance().getResources();
+        if (StringUtils.isNotEmpty(config.getWindowIcon())) {
+            setIconImage(resources.getImage(config.getWindowIcon()));
+        }
     }
 
     public void deactivate(@Nullable String message) {
