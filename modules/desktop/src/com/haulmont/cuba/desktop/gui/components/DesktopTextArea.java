@@ -6,12 +6,17 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.desktop.sys.vcl.Flushable;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.TextArea;
+import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.Collections;
+import java.util.Set;
+
+import static javax.swing.KeyStroke.getKeyStroke;
 
 /**
  * @author artamonov
@@ -23,7 +28,31 @@ public class DesktopTextArea extends DesktopAbstractTextField<JTextArea> impleme
 
     @Override
     protected JTextArea createTextComponentImpl() {
-        JTextArea impl = new TextAreaFlushableField();
+        final JTextArea impl = new TextAreaFlushableField();
+
+        if (isTabTraversal()) {
+            Set<KeyStroke> forwardFocusKey = Collections.singleton(getKeyStroke(KeyEvent.VK_TAB, 0));
+            impl.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, forwardFocusKey);
+
+            Set<KeyStroke> backwardFocusKey = Collections.singleton(getKeyStroke(KeyEvent.VK_TAB, KeyEvent.SHIFT_MASK));
+            impl.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, backwardFocusKey);
+
+            impl.addKeyListener(new KeyAdapter() {
+                @Override
+                public void keyPressed(KeyEvent e) {
+                    if (isEnabled() && isEditable()
+                            && e.getKeyCode() == KeyEvent.VK_TAB
+                            && e.getModifiers() == KeyEvent.CTRL_MASK) {
+
+                        if (StringUtils.isEmpty(impl.getText())) {
+                            impl.setText("\t");
+                        } else {
+                            impl.append("\t");
+                        }
+                    }
+                }
+            });
+        }
 
         impl.setLineWrap(true);
         impl.setWrapStyleWord(true);
@@ -38,6 +67,10 @@ public class DesktopTextArea extends DesktopAbstractTextField<JTextArea> impleme
         doc.putProperty("filterNewlines", false);
 
         return impl;
+    }
+
+    protected boolean isTabTraversal() {
+        return true;
     }
 
     @Override
@@ -122,7 +155,7 @@ public class DesktopTextArea extends DesktopAbstractTextField<JTextArea> impleme
         this.trimming = trimming;
     }
 
-    private class TextAreaFlushableField extends JTextArea implements Flushable {
+    protected class TextAreaFlushableField extends JTextArea implements Flushable {
 
         @Override
         public void flushValue() {

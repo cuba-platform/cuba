@@ -13,8 +13,7 @@ import com.haulmont.cuba.gui.components.SourceCodeEditor;
  * @author krivopustov
  * @version $Id$
  */
-public class DesktopSourceCodeEditor extends DesktopResizableTextArea
-        implements SourceCodeEditor {
+public class DesktopSourceCodeEditor extends DesktopResizableTextArea implements SourceCodeEditor {
 
     protected Suggester suggester;
     protected Mode mode;
@@ -22,6 +21,11 @@ public class DesktopSourceCodeEditor extends DesktopResizableTextArea
     protected boolean showGutter = true;
     protected boolean showPrintMargin = true;
     protected boolean highlightActiveLine = true;
+
+    @Override
+    protected boolean isTabTraversal() {
+        return false;
+    }
 
     @Override
     public Mode getMode() {
