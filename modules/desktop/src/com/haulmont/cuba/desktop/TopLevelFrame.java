@@ -22,6 +22,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
  * Represents Top level application frame
@@ -92,20 +94,33 @@ public class TopLevelFrame extends JFrame {
         PopupFactory factory = PopupFactory.getSharedInstance();
         final Popup popup = factory.getPopup(this, panel, x, y);
         popup.show();
-        final Point location = MouseInfo.getPointerInfo().getLocation();
-        final Timer timer = new Timer(3000, null);
-        timer.addActionListener(
-                new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        if (!MouseInfo.getPointerInfo().getLocation().equals(location)) {
-                            popup.hide();
-                            timer.stop();
+
+        panel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                popup.hide();
+            }
+        });
+
+        PointerInfo pointerInfo = MouseInfo.getPointerInfo();
+        if (pointerInfo != null) {
+            final Point location = pointerInfo.getLocation();
+            final Timer timer = new Timer(3000, null);
+            timer.addActionListener(
+                    new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            PointerInfo currentPointer = MouseInfo.getPointerInfo();
+                            if (currentPointer == null) {
+                                timer.stop();
+                            } else if (!currentPointer.getLocation().equals(location)) {
+                                popup.hide();
+                                timer.stop();
+                            }
                         }
-                    }
-                }
-        );
-        timer.start();
+                    });
+            timer.start();
+        }
     }
 
     protected String preparePopupText(String title, String caption) {
