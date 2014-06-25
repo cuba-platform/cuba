@@ -15,6 +15,7 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.CheckBox;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Window;
@@ -1683,7 +1684,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
             if (columnConf.getWidth() != null) {
                 columnComponent.setWidth(columnConf.getWidth() + "px");
-            } else {
+            } else if (!(columnComponent instanceof CheckBox)) {
                 columnComponent.setWidth("100%");
             }
 
