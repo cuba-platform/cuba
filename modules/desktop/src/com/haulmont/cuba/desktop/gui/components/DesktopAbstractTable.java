@@ -577,6 +577,13 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 //            setColumnHeader(property, caption);
 
             if (column != null) {
+                if (column.isCollapsed() && getColumnControlVisible()) {
+                    TableColumn tableColumn = getColumn(column);
+                    if (tableColumn instanceof TableColumnExt) {
+                        ((TableColumnExt) tableColumn).setVisible(false);
+                    }
+                }
+
                 if (editableColumns != null && column.isEditable() && (property instanceof MetaPropertyPath)) {
                     MetaProperty colMetaProperty = ((MetaPropertyPath) property).getMetaProperty();
                     MetaClass colMetaClass = colMetaProperty.getDomain();

@@ -52,10 +52,12 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
 
         assignFrame(component);
 
+        loadEnable(component, element);
         loadVisible(component, element);
         loadEditable(component, element);
         loadValidators(component, element);
 
+        loadAlign(component, element);
         loadStyleName(component, element);
 
         loadHeight(component, element);
@@ -188,7 +190,8 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
     }
 
     protected void loadValidators(T component, Table.Column column) {
-        final List<Element> validatorElements = column.getXmlDescriptor().elements("validator");
+        @SuppressWarnings("unchecked") final
+        List<Element> validatorElements = column.getXmlDescriptor().elements("validator");
 
         if (!validatorElements.isEmpty()) {
             for (Element validatorElement : validatorElements) {

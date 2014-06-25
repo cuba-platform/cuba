@@ -297,6 +297,14 @@
     </xs:attributeGroup>
 
     <xs:attributeGroup name="isTableComponent">
+        <xs:attributeGroup ref="hasId"/>
+
+        <xs:attributeGroup ref="hasSize"/>
+        <xs:attributeGroup ref="hasStyle"/>
+        <xs:attributeGroup ref="hasVisibility"/>
+        <xs:attributeGroup ref="hasEditState"/>
+        <xs:attributeGroup ref="hasAlign"/>
+
         <xs:attribute name="multiselect" type="xs:boolean"/>
         <xs:attribute name="sortable" type="xs:boolean"/>
         <xs:attribute name="reorderingAllowed" type="xs:boolean"/>
@@ -866,13 +874,6 @@
             <xs:element name="rows" minOccurs="1" type="tableRowsType"/>
         </xs:all>
 
-        <xs:attributeGroup ref="hasId"/>
-
-        <xs:attributeGroup ref="hasSize"/>
-        <xs:attributeGroup ref="hasStyle"/>
-        <xs:attributeGroup ref="hasVisibility"/>
-        <xs:attributeGroup ref="hasEditState"/>
-
         <xs:attributeGroup ref="isTableComponent"/>
     </xs:complexType>
 
@@ -887,13 +888,6 @@
             <xs:element name="columns" minOccurs="1" maxOccurs="1" type="groupTableColumnsType"/>
             <xs:element name="rows" minOccurs="1" type="tableRowsType"/>
         </xs:all>
-
-        <xs:attributeGroup ref="hasId"/>
-
-        <xs:attributeGroup ref="hasSize"/>
-        <xs:attributeGroup ref="hasStyle"/>
-        <xs:attributeGroup ref="hasVisibility"/>
-        <xs:attributeGroup ref="hasEditState"/>
 
         <xs:attributeGroup ref="isTableComponent"/>
 
