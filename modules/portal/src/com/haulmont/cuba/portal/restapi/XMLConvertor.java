@@ -30,6 +30,7 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.global.UserSession;
+import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.*;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 import org.w3c.dom.ls.DOMImplementationLS;
@@ -46,6 +47,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -84,64 +86,15 @@ public class XMLConvertor implements Convertor {
 
     public static final String ROOT_ELEMENT_INSTANCE = "instances";
 
-    protected static DocumentBuilder _builder;
-
     public static final String MAPPING_ROOT_ELEMENT_INSTANCE = "mapping";
     public static final String PAIR_ELEMENT = "pair";
-
-    protected static final Transformer _transformer;
-    protected static LSParser requestConfigParser;
-    protected static DOMImplementationLS lsImpl;
 
     static {
         try {
             MIME_TYPE_XML = new MimeType(MIME_STR);
-
-            _builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-
-            DOMImplementationRegistry registry = DOMImplementationRegistry.newInstance();
-            lsImpl = (DOMImplementationLS) registry.getDOMImplementation("LS");
-            requestConfigParser = lsImpl.createLSParser(DOMImplementationLS.MODE_SYNCHRONOUS,
-                    null);
-
-            // Set options on the parser
-            DOMConfiguration config = requestConfigParser.getDomConfig();
-            config.setParameter("validate", Boolean.TRUE);
-            config.setParameter("element-content-whitespace", Boolean.FALSE);
-            config.setParameter("comments", Boolean.FALSE);
-            requestConfigParser.setFilter(new LSParserFilter() {
-                @Override
-                public short startElement(Element elementArg) {
-                    return LSParserFilter.FILTER_ACCEPT;
-                }
-
-                @Override
-                public short acceptNode(Node nodeArg) {
-                    return "".equals(nodeArg.getTextContent().trim()) ?
-                            LSParserFilter.FILTER_REJECT :
-                            LSParserFilter.FILTER_ACCEPT;
-                }
-
-                @Override
-                public int getWhatToShow() {
-                    return NodeFilter.SHOW_TEXT;
-                }
-            });
-
-            _transformer = TransformerFactory.newInstance().newTransformer();
-            _transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-            _transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-            _transformer.setOutputProperty(OutputKeys.STANDALONE, "no");
-            _transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
-            _transformer.setOutputProperty(OutputKeys.INDENT, "no");
-            _transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public XMLConvertor() {
     }
 
     @Override
@@ -197,7 +150,15 @@ public class XMLConvertor implements Convertor {
         Document doc = (Document) o;
         response.setContentType(MIME_STR);
         try {
-            _transformer.transform(new DOMSource(doc), new StreamResult(response.getOutputStream()));
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+            transformer.setOutputProperty(OutputKeys.STANDALONE, "no");
+            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+            transformer.setOutputProperty(OutputKeys.INDENT, "no");
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+
+            transformer.transform(new DOMSource(doc), new StreamResult(response.getOutputStream()));
         } catch (Exception e) {
             throw new IOException(e);
         }
@@ -205,6 +166,32 @@ public class XMLConvertor implements Convertor {
 
     public CommitRequest parseCommitRequest(String content) {
         try {
+            DOMImplementationRegistry registry = DOMImplementationRegistry.newInstance();
+            DOMImplementationLS lsImpl = (DOMImplementationLS) registry.getDOMImplementation("LS");
+            LSParser requestConfigParser = lsImpl.createLSParser(DOMImplementationLS.MODE_SYNCHRONOUS, null);
+
+            // Set options on the parser
+            DOMConfiguration config = requestConfigParser.getDomConfig();
+            config.setParameter("validate", Boolean.TRUE);
+            config.setParameter("element-content-whitespace", Boolean.FALSE);
+            config.setParameter("comments", Boolean.FALSE);
+            requestConfigParser.setFilter(new LSParserFilter() {
+                @Override
+                public short startElement(Element elementArg) {
+                    return LSParserFilter.FILTER_ACCEPT;
+                }
+
+                @Override
+                public short acceptNode(Node nodeArg) {
+                    return StringUtils.isBlank(nodeArg.getTextContent()) ?
+                            LSParserFilter.FILTER_REJECT : LSParserFilter.FILTER_ACCEPT;
+                }
+
+                @Override
+                public int getWhatToShow() {
+                    return NodeFilter.SHOW_TEXT;
+                }
+            });
             LSInput lsInput = lsImpl.createLSInput();
             lsInput.setStringData(content);
             Document commitRequestDoc = requestConfigParser.parse(lsInput);
@@ -245,8 +232,7 @@ public class XMLConvertor implements Convertor {
                 }
             }
             return result;
-        } catch (InstantiationException | IllegalAccessException | IntrospectionException
-                | InvocationTargetException | ParseException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -411,7 +397,13 @@ public class XMLConvertor implements Convertor {
      */
 
     public Element newDocument(String rootTag) {
-        Document doc = _builder.newDocument();
+        DocumentBuilder builder;
+        try {
+            builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        } catch (ParserConfigurationException e) {
+            throw new RuntimeException(e);
+        }
+        Document doc = builder.newDocument();
         Element root = doc.createElement(rootTag);
         doc.appendChild(root);
         String[] nvpairs = new String[]{
