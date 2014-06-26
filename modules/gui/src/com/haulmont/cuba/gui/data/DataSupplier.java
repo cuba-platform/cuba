@@ -72,6 +72,14 @@ public interface DataSupplier extends DataService {
     <A extends Entity> A commit(A entity, @Nullable View view);
 
     /**
+     * Commit the entity to the database.
+     * @param entity    entity instance
+     * @param view      view object, affects returning committed instance
+     * @return          committed instance
+     */
+    <A extends Entity> A commit(A entity);
+
+    /**
      * Remove the entity instance from the database.
      * @param entity    entity instance
      */

@@ -20,10 +20,11 @@ import java.util.*;
  */
 public class GenericDataSupplier implements DataSupplier {
 
-    private Metadata metadata = AppBeans.get(Metadata.NAME, Metadata.class);
+    protected Metadata metadata = AppBeans.get(Metadata.NAME, Metadata.class);
 
-    private DataService dataService = AppBeans.get(DataService.NAME, DataService.class);
+    protected DataService dataService = AppBeans.get(DataService.NAME, DataService.class);
 
+    @SuppressWarnings("unchecked")
     @Override
     public <A extends Entity> A newInstance(MetaClass metaClass) {
         return (A) metadata.create(metaClass);
@@ -46,6 +47,7 @@ public class GenericDataSupplier implements DataSupplier {
         return reload(entity, view, metaClass, true);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <A extends Entity> A reload(A entity, View view, @Nullable MetaClass metaClass, boolean useSecurityConstraints) {
         if (metaClass == null) {
@@ -59,6 +61,7 @@ public class GenericDataSupplier implements DataSupplier {
         return (A) load(context);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <A extends Entity> A commit(A instance, @Nullable View view) {
         final CommitContext context = new CommitContext(
@@ -74,6 +77,11 @@ public class GenericDataSupplier implements DataSupplier {
                 return (A) entity;
         }
         return null;
+    }
+
+    @Override
+    public <A extends Entity> A commit(A instance) {
+        return commit(instance, null);
     }
 
     @Override
@@ -102,12 +110,12 @@ public class GenericDataSupplier implements DataSupplier {
     @Override
     @Nullable
     public <A extends Entity> A load(LoadContext context) {
-        return dataService.<A>load(context);
+        return dataService.load(context);
     }
 
     @Override
     @Nonnull
     public <A extends Entity> List<A> loadList(LoadContext context) {
-        return dataService.<A>loadList(context);
+        return dataService.loadList(context);
     }
 }

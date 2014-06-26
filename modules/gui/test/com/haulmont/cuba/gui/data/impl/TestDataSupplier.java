@@ -15,7 +15,7 @@ import java.util.*;
 
 /**
 * @author krivopustov
- * @version $Id$
+* @version $Id$
 */
 public class TestDataSupplier implements DataSupplier {
 
@@ -39,7 +39,7 @@ public class TestDataSupplier implements DataSupplier {
         if (commitValidator != null)
             commitValidator.validate(context);
 
-        Set<Entity> result = new HashSet<Entity>();
+        Set<Entity> result = new HashSet<>();
         for (Entity entity : context.getCommitInstances()) {
             result.add(entity);
         }
@@ -59,7 +59,7 @@ public class TestDataSupplier implements DataSupplier {
     @Override
     @Nonnull
     public <A extends Entity> List<A> loadList(LoadContext context) {
-        return null;
+        return Collections.emptyList();
     }
 
     @Override
@@ -90,6 +90,11 @@ public class TestDataSupplier implements DataSupplier {
     @Override
     public <A extends Entity> A commit(A entity, View view) {
         return null;
+    }
+
+    @Override
+    public <A extends Entity> A commit(A instance) {
+        return commit(instance, null);
     }
 
     @Override
