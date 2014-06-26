@@ -196,6 +196,7 @@ public class DesktopLookupField
         }
     }
 
+    @SuppressWarnings("unchecked")
     protected void updateOptionsDsItem() {
         if (optionsDatasource != null) {
             updatingInstance = true;
@@ -211,14 +212,17 @@ public class DesktopLookupField
         if (!resetValueState) {
             resetValueState = true;
             Object selectedItem = comboBox.getSelectedItem();
-            if (selectedItem instanceof ValueWrapper) {
-            } else if (selectedItem instanceof String && newOptionAllowed && newOptionHandler != null) {
-                updateComponent(prevValue);
-            } else if (selectedItem == null || !newOptionAllowed) {
-                if (isRequired())
+
+            if (!(selectedItem instanceof ValueWrapper)) {
+                if (selectedItem instanceof String && newOptionAllowed && newOptionHandler != null) {
                     updateComponent(prevValue);
-                else
-                    updateComponent(nullOption);
+                } else if (selectedItem == null || !newOptionAllowed) {
+                    if (isRequired()) {
+                        updateComponent(prevValue);
+                    } else {
+                        updateComponent(nullOption);
+                    }
+                }
             }
 
             resetValueState = false;
@@ -263,6 +267,7 @@ public class DesktopLookupField
                 items.add(new ObjectWrapper(obj));
             }
         } else if (datasource != null && metaProperty != null && metaProperty.getRange().isEnum()) {
+            @SuppressWarnings("unchecked")
             Enumeration<Enum> enumeration = metaProperty.getRange().asEnumeration();
             for (Enum en : enumeration.getValues()) {
                 items.add(new ObjectWrapper(en));
@@ -394,6 +399,8 @@ public class DesktopLookupField
 
             impl = comboBox;
         }
+        // #PL-4040
+        // CAUTION do not set editable to combobox
         this.editable = editable;
 
         updateMissingValueState();
@@ -411,15 +418,23 @@ public class DesktopLookupField
         }
     }
 
-    private void updateTextField() {
+    protected void updateTextField() {
         if (metaProperty != null) {
-            valueFormatter.setMetaProperty(metaProperty);
-            textField.setText(valueFormatter.formatValue(getValue()));
+            Object value = getValue();
+            if (value == null && nullOption != null) {
+                textField.setText(nullOption.toString());
+            } else {
+                valueFormatter.setMetaProperty(metaProperty);
+                textField.setText(valueFormatter.formatValue(value));
+            }
         } else {
-            if (comboBox.getSelectedItem() != null)
+            if (comboBox.getSelectedItem() != null) {
                 textField.setText(comboBox.getSelectedItem().toString());
-            else
+            } else if (nullOption != null) {
+                textField.setText(nullOption.toString());
+            } else {
                 textField.setText("");
+            }
         }
     }
 
@@ -495,6 +510,7 @@ public class DesktopLookupField
                 }
 
                 // Used for captionProperty of null entity
+                @SuppressWarnings("unchecked")
                 @Override
                 public <T> T getValue(String s) {
                     return (T) getInstanceName();

@@ -245,10 +245,16 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
 
             if (editable && enabled) {
                 if (editorComponent instanceof JTextComponent) {
-                    String inputText = ((JTextComponent) editorComponent).getText();
+                    String inputText = StringUtils.trimToNull(((JTextComponent) editorComponent).getText());
 
                     if (prevValue == null) {
-                        if (StringUtils.isNotEmpty(inputText)) {
+                        String nullOptionText = null;
+                        if (nullOption != null) {
+                            nullOptionText = String.valueOf(nullOption);
+                        }
+
+                        if (StringUtils.isNotEmpty(inputText) && nullOption == null
+                                || !StringUtils.equals(nullOptionText, inputText)) {
                             comboBox.setBackground(searchEditBgColor);
                         }
                     } else {
@@ -322,6 +328,7 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
         items.clear();
     }
 
+    @SuppressWarnings("unchecked")
     protected void updateOptionsDsItem() {
         if (optionsDatasource != null) {
             updatingInstance = true;
@@ -496,13 +503,20 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
         }
     }
 
-    private void updateTextField() {
+    protected void updateTextField() {
         if (metaProperty != null) {
-            valueFormatter.setMetaProperty(metaProperty);
-            textField.setText(valueFormatter.formatValue(getValue()));
+            Object value = getValue();
+            if (value == null && nullOption != null) {
+                textField.setText(nullOption.toString());
+            } else {
+                valueFormatter.setMetaProperty(metaProperty);
+                textField.setText(valueFormatter.formatValue(value));
+            }
         } else {
             if (comboBox.getSelectedItem() != null) {
                 textField.setText(comboBox.getSelectedItem().toString());
+            } else if (nullOption != null) {
+                textField.setText(nullOption.toString());
             } else {
                 textField.setText("");
             }
@@ -611,6 +625,7 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
                 }
 
                 // Used for captionProperty of null entity
+                @SuppressWarnings("unchecked")
                 @Override
                 public <T> T getValue(String s) {
                     return (T) getInstanceName();
