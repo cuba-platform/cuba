@@ -211,7 +211,7 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
                 return  ((GroupStyleProvider) styleProvider).getStyleName((GroupInfo) itemId);
             }
         } else {
-            super.getGeneratedCellStyle(itemId, propertyId);
+            return super.getGeneratedCellStyle(itemId, propertyId);
         }
         return null;
     }

@@ -208,7 +208,7 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
                 return  ((GroupStyleProvider) styleProvider).getStyleName((GroupInfo) itemId);
             }
         } else {
-            super.getGeneratedCellStyle(itemId, propertyId);
+            return super.getGeneratedCellStyle(itemId, propertyId);
         }
         return null;
     }
