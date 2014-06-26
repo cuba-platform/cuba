@@ -29,7 +29,7 @@
 
     <bean id="freemarkerSettings" factory-bean="cuba_PortalSiteSettings" factory-method="getFreeMarkerSettings"/>
 
-    <bean id="viewResolver" class="com.haulmont.cuba.portal.springframework.FreeMarkerThemedViewResolver">
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
         <property name="cache" value="true"/>
         <property name="prefix" value=""/>
         <property name="suffix" value=".ftl"/>
