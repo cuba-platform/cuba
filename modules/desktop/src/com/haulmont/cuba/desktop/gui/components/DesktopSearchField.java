@@ -475,9 +475,17 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
 
             impl = comboBox;
         }
-        comboBox.setEditable(editable);
+        // #PL-4040
+        // CAUTION do not set editable to combobox
         this.editable = editable;
+
         updateMissingValueState();
+        requestContainerUpdate();
+
+        updateTextField();
+
+        composition.revalidate();
+        composition.repaint();
     }
 
     protected JComponent getInputComponent() {
