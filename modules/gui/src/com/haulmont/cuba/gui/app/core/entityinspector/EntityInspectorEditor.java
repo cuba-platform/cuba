@@ -735,7 +735,9 @@ public class EntityInspectorEditor extends AbstractWindow {
                 column.setCaption(metaProperty.getName());
                 systemPropertyColumns.add(column);
             }
-            column.setMaxTextLength(MAX_TEXT_LENGTH);
+            if (metaProperty.getJavaType().equals(String.class)) {
+                column.setMaxTextLength(MAX_TEXT_LENGTH);
+            }
         }
         for (Table.Column column : nonSystemPropertyColumns)
             table.addColumn(column);
