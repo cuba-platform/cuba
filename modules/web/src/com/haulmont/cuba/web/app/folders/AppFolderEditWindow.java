@@ -33,41 +33,22 @@ public class AppFolderEditWindow extends FolderEditWindow {
 
     public static FolderEditWindow create(boolean isAppFolder, boolean adding,
                                           Folder folder, Presentations presentations, Runnable commitHandler) {
-        if (isAppFolder) {
-            GlobalConfig globalConfig = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class);
-            String className = globalConfig.getAppFolderEditWindowClassName();
-            if (className != null) {
-                Class<FolderEditWindow> aClass = ReflectionHelper.getClass(className);
-                try {
-                    Constructor constructor = aClass.
-                            getConstructor(boolean.class, Folder.class, Presentations.class, Runnable.class);
-                    FolderEditWindow folderEditWindow = (FolderEditWindow) constructor.
-                            newInstance(adding, folder, presentations, commitHandler);
-                    return folderEditWindow;
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            } else {
-                return new AppFolderEditWindow(adding, folder, presentations, commitHandler);
+        GlobalConfig globalConfig = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class);
+        String className = isAppFolder ? globalConfig.getAppFolderEditWindowClassName()
+                                       : globalConfig.getFolderEditWindowClassName();
+
+        if (className != null) {
+            Class<FolderEditWindow> aClass = ReflectionHelper.getClass(className);
+            try {
+                Constructor constructor = aClass.
+                        getConstructor(boolean.class, Folder.class, Presentations.class, Runnable.class);
+                return (FolderEditWindow) constructor.newInstance(adding, folder, presentations, commitHandler);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
-        } else {
-            GlobalConfig globalConfig = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class);
-            String className = globalConfig.getFolderEditWindowClassName();
-            if (className != null) {
-                Class<FolderEditWindow> aClass = ReflectionHelper.getClass(className);
-                try {
-                    Constructor constructor = aClass.
-                            getConstructor(boolean.class, Folder.class, Presentations.class, Runnable.class);
-                    FolderEditWindow folderEditWindow = (FolderEditWindow) constructor.
-                            newInstance(adding, folder, presentations, commitHandler);
-                    return folderEditWindow;
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            } else {
-                return new FolderEditWindow(adding, folder, presentations, commitHandler);
-            }
-        }
+        } else
+            return isAppFolder ? new AppFolderEditWindow(adding, folder, presentations, commitHandler)
+                               : new FolderEditWindow(adding, folder, presentations, commitHandler);
     }
 
     public AppFolderEditWindow(boolean adding, Folder folder, Presentations presentations, Runnable commitHandler) {
