@@ -4,6 +4,8 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.cuba.gui.WindowManager;
+
 import java.beans.PropertyChangeListener;
 import java.util.Collection;
 
@@ -124,4 +126,10 @@ public interface Action {
      * @see #addPropertyChangeListener
      */
     public void removePropertyChangeListener(PropertyChangeListener listener);
+
+    public interface HasOpenType extends Action {
+
+        WindowManager.OpenType getOpenType();
+        void setOpenType(WindowManager.OpenType openType);
+    }
 }

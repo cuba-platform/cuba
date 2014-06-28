@@ -10,8 +10,6 @@ import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.actions.CreateAction;
-import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.cuba.gui.components.actions.ListActionType;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -345,6 +343,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
     }
 
     protected void loadValidators(T component, Element element) {
+        @SuppressWarnings("unchecked")
         final List<Element> validatorElements = element.elements("validator");
 
         for (Element validatorElement : validatorElements) {
@@ -408,9 +407,11 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
     @Override
     protected Action loadDeclarativeAction(Component.ActionsHolder actionsHolder, Element element) {
         String id = element.attributeValue("id");
-        if (id == null)
+        if (StringUtils.isEmpty(id)) {
             throw new GuiDevelopmentException("No action id provided", context.getFullFrameId(),
                     "ActionsHolder ID", actionsHolder.getId());
+        }
+
         if (StringUtils.isBlank(element.attributeValue("invoke"))) {
             // Try to create a standard list action
             for (ListActionType type : ListActionType.values()) {
@@ -419,29 +420,18 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
 
                     loadStandardActionProperties(element, instance);
 
-                    if (type != ListActionType.CREATE && type != ListActionType.EDIT) {
-                        return instance;
-                    }
+                    if (instance instanceof Action.HasOpenType) {
+                        String openTypeString = element.attributeValue("openType");
+                        if (StringUtils.isNotEmpty(openTypeString)) {
+                            try {
+                                WindowManager.OpenType openType = WindowManager.OpenType.valueOf(openTypeString);
 
-                    String openTypeString = element.attributeValue("openType");
-                    if (openTypeString == null) {
-                        return instance;
-                    }
-
-                    WindowManager.OpenType openType;
-                    try {
-                        openType = WindowManager.OpenType.valueOf(openTypeString);
-                    } catch (IllegalArgumentException e) {
-                        throw new GuiDevelopmentException(
-                                "Unknown open type: '" + openTypeString + "' for action: '" + id + "'", context.getFullFrameId());
-                    }
-
-                    if (type == ListActionType.CREATE) {
-                        CreateAction create = (CreateAction) instance;
-                        create.setOpenType(openType);
-                    } else {
-                        EditAction edit = (EditAction) instance;
-                        edit.setOpenType(openType);
+                                ((Action.HasOpenType)instance).setOpenType(openType);
+                            } catch (IllegalArgumentException e) {
+                                throw new GuiDevelopmentException(
+                                        "Unknown open type: '" + openTypeString + "' for action: '" + id + "'", context.getFullFrameId());
+                            }
+                        }
                     }
 
                     return instance;

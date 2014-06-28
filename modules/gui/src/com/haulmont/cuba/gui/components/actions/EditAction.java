@@ -11,6 +11,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.Window;
@@ -32,7 +33,7 @@ import java.util.Set;
  * @author krivopustov
  * @version $Id$
  */
-public class EditAction extends ItemTrackingAction {
+public class EditAction extends ItemTrackingAction implements Action.HasOpenType {
 
     public static final String ACTION_ID = ListActionType.EDIT.getId();
 
@@ -191,6 +192,7 @@ public class EditAction extends ItemTrackingAction {
     /**
      * @return  editor screen open type
      */
+    @Override
     public WindowManager.OpenType getOpenType() {
         return openType;
     }
@@ -198,6 +200,7 @@ public class EditAction extends ItemTrackingAction {
     /**
      * @param openType  editor screen open type
      */
+    @Override
     public void setOpenType(WindowManager.OpenType openType) {
         this.openType = openType;
     }

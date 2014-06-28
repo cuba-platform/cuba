@@ -15,10 +15,7 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.AbstractAction;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.ListComponent;
-import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.PropertyDatasource;
@@ -37,7 +34,7 @@ import java.util.Map;
  * @author krivopustov
  * @version $Id$
  */
-public class AddAction extends AbstractAction {
+public class AddAction extends AbstractAction implements Action.HasOpenType {
 
     public static final String ACTION_ID = ListActionType.ADD.getId();
 
@@ -164,6 +161,7 @@ public class AddAction extends AbstractAction {
     /**
      * @return  lookup screen open type
      */
+    @Override
     public WindowManager.OpenType getOpenType() {
         return openType;
     }
@@ -171,6 +169,7 @@ public class AddAction extends AbstractAction {
     /**
      * @param openType  lookup screen open type
      */
+    @Override
     public void setOpenType(WindowManager.OpenType openType) {
         this.openType = openType;
     }

@@ -31,7 +31,7 @@ import java.util.Map;
  * @author krivopustov
  * @version $Id$
  */
-public class CreateAction extends AbstractAction {
+public class CreateAction extends AbstractAction implements Action.HasOpenType {
 
     public static final String ACTION_ID = ListActionType.CREATE.getId();
 
@@ -213,15 +213,15 @@ public class CreateAction extends AbstractAction {
             @Override
             public void windowClosed(String actionId) {
                 if (Window.COMMIT_ACTION_ID.equals(actionId) && window instanceof Window.Editor) {
-                    Object item = ((Window.Editor) window).getItem();
-                    if (item instanceof Entity) {
+                    Entity item = ((Window.Editor) window).getItem();
+                    if (item != null) {
                         if (pDs == null) {
                             boolean modified = datasource.isModified();
-                            datasource.addItem((Entity) item);
+                            datasource.addItem(item);
                             ((DatasourceImplementation) datasource).setModified(modified);
                         }
-                        owner.setSelected((Entity) item);
-                        afterCommit((Entity) item);
+                        owner.setSelected(item);
+                        afterCommit(item);
                     }
                 }
 
@@ -236,6 +236,7 @@ public class CreateAction extends AbstractAction {
     /**
      * @return  editor screen open type
      */
+    @Override
     public WindowManager.OpenType getOpenType() {
         return openType;
     }
@@ -243,6 +244,7 @@ public class CreateAction extends AbstractAction {
     /**
      * @param openType  editor screen open type
      */
+    @Override
     public void setOpenType(WindowManager.OpenType openType) {
         this.openType = openType;
     }
