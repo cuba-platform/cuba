@@ -12,6 +12,8 @@ import com.haulmont.cuba.core.entity.annotation.Extends;
 import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Encapsulates functionality for working with extended entities.
@@ -23,7 +25,9 @@ import javax.inject.Inject;
 public class ExtendedEntities {
 
     @Inject
-    private Metadata metadata;
+    protected Metadata metadata;
+
+    protected Map<Class, MetaClass> replacedMetaClasses = new HashMap<>();
 
     /**
      * Default constructor used by container at runtime and in server-side integration tests.
@@ -112,7 +116,16 @@ public class ExtendedEntities {
     @Nullable
     public MetaClass getOriginalMetaClass(MetaClass extendedMetaClass) {
         Class originalClass = getOriginalClass(extendedMetaClass);
-        return originalClass == null ? null : metadata.getSession().getClassNN(originalClass);
+        if (originalClass == null) {
+            return null;
+        }
+
+        MetaClass metaClass = replacedMetaClasses.get(originalClass);
+        if (metaClass != null) {
+            return metaClass;
+        }
+
+        return  metadata.getSession().getClassNN(originalClass);
     }
 
     /**
@@ -123,5 +136,13 @@ public class ExtendedEntities {
     @Nullable
     public MetaClass getOriginalMetaClass(String extendedEntityName) {
         return getOriginalMetaClass(metadata.getSession().getClassNN(extendedEntityName));
+    }
+
+    /**
+     * Import replaced meta class from metadata. </br>
+     * CAUTION: For internal use only!
+     */
+    public void registerReplacedMetaClass(MetaClass metaClass) {
+        replacedMetaClasses.put(metaClass.getJavaClass(), metaClass);
     }
 }

@@ -13,10 +13,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaModel;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Session;
-import com.haulmont.chile.core.model.impl.ClassRange;
-import com.haulmont.chile.core.model.impl.MetaModelImpl;
-import com.haulmont.chile.core.model.impl.MetaPropertyImpl;
-import com.haulmont.chile.core.model.impl.SessionImpl;
+import com.haulmont.chile.core.model.impl.*;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.annotation.*;
 import com.haulmont.cuba.core.global.*;
@@ -222,8 +219,11 @@ public class MetadataImpl implements Metadata {
             }
 
             for (Pair<MetaClass, MetaClass> replace : replaceMap) {
-                modelImpl.registerClass(replace.getFirst().getName(), replace.getFirst().getJavaClass(),
-                        (com.haulmont.chile.core.model.impl.MetaClassImpl) replace.getSecond());
+                MetaClass replacedMetaClass = replace.getFirst();
+                extendedEntities.registerReplacedMetaClass(replacedMetaClass);
+
+                MetaClassImpl effectiveMetaClass = (MetaClassImpl) replace.getSecond();
+                modelImpl.registerClass(replacedMetaClass.getName(), replacedMetaClass.getJavaClass(), effectiveMetaClass);
             }
         }
 
