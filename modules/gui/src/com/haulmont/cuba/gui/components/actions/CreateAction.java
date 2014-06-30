@@ -10,6 +10,7 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.ExtendedEntities;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
@@ -167,8 +168,11 @@ public class CreateAction extends AbstractAction implements Action.HasOpenType {
             if (masterDs != null && metaProperty != null) {
                 MetaProperty inverseProp = metaProperty.getInverse();
                 if (inverseProp != null) {
-                    MetaClass metaClass = metadata.getExtendedEntities().getEffectiveMetaClass(inverseProp.getDomain());
-                    if (metaClass.equals(datasource.getMetaClass())) {
+                    ExtendedEntities extendedEntities = metadata.getExtendedEntities();
+
+                    Class inversePropClass = extendedEntities.getEffectiveClass(inverseProp.getDomain());
+                    Class dsClass = extendedEntities.getEffectiveClass(datasource.getMetaClass());
+                    if (inversePropClass.isAssignableFrom(dsClass)) {
                         item.setValue(inverseProp.getName(), masterDs.getItem());
                     }
                 }
