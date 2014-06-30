@@ -17,7 +17,7 @@
                 hierarchyProperty="parent"
                 >
             <query>
-                <![CDATA[select g from sec$Group g]]>
+                <![CDATA[select g from sec$Group g order by g.name]]>
             </query>
         </hierarchicalDatasource>
 
