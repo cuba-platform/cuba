@@ -21,6 +21,7 @@ import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
 import java.util.ArrayList;
@@ -127,11 +128,17 @@ public class FieldGroupLoader extends AbstractFieldLoader {
                 final List<FieldGroup.FieldConfig> fields = component.getFields();
                 for (final FieldGroup.FieldConfig field : fields) {
                     if (field.isCustom()) {
-                        loadValidators(component, field);
-                        loadRequired(component, field);
-                        loadEditable(component, field);
-                        loadEnable(component, field);
-                        loadVisible(component, field);
+                        Component fieldComponent = component.getFieldComponent(field);
+                        if (fieldComponent != null) {
+                            loadValidators(component, field);
+                            loadRequired(component, field);
+                            loadEditable(component, field);
+                            loadEnable(component, field);
+                            loadVisible(component, field);
+                        } else {
+                            LogFactory.getLog(FieldGroupLoader.class).warn(
+                                    "Missing component for custom field " + field.getId());
+                        }
                     }
                 }
             }
