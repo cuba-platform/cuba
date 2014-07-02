@@ -13,6 +13,7 @@ import com.haulmont.cuba.core.entity.annotation.TrackEditScreenHistory;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.ScreenHistoryEntity;
 import org.apache.commons.lang.BooleanUtils;
@@ -49,10 +50,11 @@ public class ScreenHistorySupport {
             screenIds.addAll(Arrays.asList(StringUtils.split(property, ',')));
         }
 
+        WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
         for (MetaClass metaClass : metadata.getTools().getAllPersistentMetaClasses()) {
             Boolean value = (Boolean) metaClass.getAnnotations().get(TrackEditScreenHistory.class.getName());
             if (BooleanUtils.isTrue(value)) {
-                screenIds.add(metaClass.getName() + ".edit");
+                screenIds.add(windowConfig.getEditorScreenId(metaClass));
             }
         }
     }

@@ -11,9 +11,9 @@ import com.haulmont.cuba.core.app.EntityLogService;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.TimeSource;
-import com.haulmont.cuba.gui.NoSuchScreenException;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowParams;
+import com.haulmont.cuba.gui.app.core.entityinspector.EntityInspectorBrowse;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -162,62 +162,48 @@ public class EntityLogBrowser extends AbstractWindow {
             @Override
             public void actionPerform(Component component) {
                 final MetaClass metaClass = pickerField.getMetaClass();
-                boolean openLookupWindowError = false;
                 if (pickerField.isEditable()) {
                     String currentWindowAlias = lookupScreen;
                     if (currentWindowAlias == null) {
-                        if (metaClass == null)
+                        if (metaClass == null) {
                             throw new IllegalStateException("Please specify metaclass or property for PickerField");
-                        currentWindowAlias = metaClass.getName() + ".lookup";
-                    }
-                    try {
-                        config.getWindowInfo(currentWindowAlias);
-                    } catch (NoSuchScreenException ex1) {
-                        openLookupWindowError = true;
-                    } finally {
-                        Window lookupWindow = pickerField.getFrame();
-                        if (!openLookupWindowError) {
-                            lookupWindow.openLookup(
-                                    currentWindowAlias,
-                                    new Lookup.Handler() {
-                                        @Override
-                                        public void handleLookup(Collection items) {
-                                            if (!items.isEmpty()) {
-                                                Object item = items.iterator().next();
-                                                pickerField.setValue(item);
-                                                afterSelect(items);
-                                            }
-                                        }
-                                    },
-                                    lookupScreenOpenType,
-                                    lookupScreenParams != null ? lookupScreenParams : Collections.<String, Object>emptyMap()
-                            );
-                        } else {
-                            TreeMap<String, Object> treeMap = new TreeMap<>();
-                            treeMap.put("entity", metaClass.getName());
-                            lookupWindow.openLookup("entityInspector.browse",
-                                    new Lookup.Handler() {
-                                        @Override
-                                        public void handleLookup(Collection items) {
-                                            if (!items.isEmpty()) {
-                                                Object item = items.iterator().next();
-                                                pickerField.setValue(item);
-                                                afterSelect(items);
-                                            }
-                                        }
-                                    },
-                                    WindowManager.OpenType.THIS_TAB,
-                                    treeMap
-                            );
                         }
-
-                        lookupWindow.addListener(new CloseListener() {
-                            @Override
-                            public void windowClosed(String actionId) {
-                                pickerField.requestFocus();
-                            }
-                        });
+                        currentWindowAlias = windowConfig.getLookupScreenId(metaClass);
                     }
+
+                    Window lookupWindow = pickerField.getFrame();
+                    Lookup.Handler lookupWindowHandler = new Lookup.Handler() {
+                        @Override
+                        public void handleLookup(Collection items) {
+                            if (!items.isEmpty()) {
+                                Object item = items.iterator().next();
+                                pickerField.setValue(item);
+                                afterSelect(items);
+                            }
+                        }
+                    };
+
+                    if (config.hasWindow(currentWindowAlias)) {
+                        lookupWindow.openLookup(
+                                currentWindowAlias,
+                                lookupWindowHandler,
+                                lookupScreenOpenType,
+                                lookupScreenParams != null ? lookupScreenParams : Collections.<String, Object>emptyMap()
+                        );
+                    } else {
+                        lookupWindow.openLookup(EntityInspectorBrowse.SCREEN_NAME,
+                                lookupWindowHandler,
+                                WindowManager.OpenType.THIS_TAB,
+                                Collections.<String, Object>singletonMap("entity", metaClass.getName())
+                        );
+                    }
+
+                    lookupWindow.addListener(new CloseListener() {
+                        @Override
+                        public void windowClosed(String actionId) {
+                            pickerField.requestFocus();
+                        }
+                    });
                 }
             }
         };

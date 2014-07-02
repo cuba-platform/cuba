@@ -2150,10 +2150,10 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
             String[] strings = ValuePathHelper.parse(getComponentPath());
             String windowAlias = strings[0];
             StringBuilder lookupAlias = new StringBuilder(windowAlias);
-            if (windowAlias.endsWith(".browse")) {
-                int index = lookupAlias.lastIndexOf(".browse");
+            if (windowAlias.endsWith(Window.BROWSE_WINDOW_SUFFIX)) {
+                int index = lookupAlias.lastIndexOf(Window.BROWSE_WINDOW_SUFFIX);
                 lookupAlias.delete(index, lookupAlias.length());
-                lookupAlias.append(".lookup");
+                lookupAlias.append(Window.LOOKUP_WINDOW_SUFFIX);
             }
             frame.openLookup(lookupAlias.toString(), new Window.Lookup.Handler() {
 

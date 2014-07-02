@@ -48,18 +48,16 @@ public class ScreensHelper {
         UserSessionSource uss = AppBeans.get(UserSessionSource.NAME);
         WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
 
-        WindowInfo browseWindow = windowConfig.findWindowInfo(metaClass.getName() + ".browse");
-        if (browseWindow != null) {
-            if (uss.getUserSession().isScreenPermitted(browseWindow.getId())) {
-                return browseWindow;
-            }
+        WindowInfo browseWindow = windowConfig.findWindowInfo(windowConfig.getBrowseScreenId(metaClass));
+        if (browseWindow != null
+                && uss.getUserSession().isScreenPermitted(browseWindow.getId())) {
+            return browseWindow;
         }
 
-        WindowInfo lookupWindow = windowConfig.findWindowInfo(metaClass.getName() + ".lookup");
-        if (lookupWindow != null) {
-            if (uss.getUserSession().isScreenPermitted(lookupWindow.getId())) {
-                return lookupWindow;
-            }
+        WindowInfo lookupWindow = windowConfig.findWindowInfo(windowConfig.getLookupScreenId(metaClass));
+        if (lookupWindow != null
+                && uss.getUserSession().isScreenPermitted(lookupWindow.getId())) {
+            return lookupWindow;
         }
 
         return null;

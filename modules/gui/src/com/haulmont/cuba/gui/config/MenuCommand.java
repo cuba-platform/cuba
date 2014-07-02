@@ -15,6 +15,7 @@ import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowParams;
+import com.haulmont.cuba.gui.components.Window;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -57,19 +58,20 @@ public class MenuCommand {
         }
 
         final String id = windowInfo.getId();
-        if (id.endsWith(".create") || id.endsWith(".edit")) {
+        if (id.endsWith(Window.CREATE_WINDOW_SUFFIX) || id.endsWith(Window.EDITOR_WINDOW_SUFFIX)) {
             Entity entityItem;
             if (params.containsKey("item")) {
                 entityItem = (Entity) params.get("item");
             } else {
                 final String[] strings = id.split("[.]");
                 String metaClassName;
-                if (strings.length == 2)
+                if (strings.length == 2) {
                     metaClassName = strings[0];
-                else if (strings.length == 3)
+                } else if (strings.length == 3) {
                     metaClassName = strings[1];
-                else
+                } else {
                     throw new UnsupportedOperationException();
+                }
 
                 entityItem = AppBeans.get(Metadata.class).create(metaClassName);
             }

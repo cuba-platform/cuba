@@ -505,14 +505,15 @@ public class WebTokenList extends WebAbstractField<WebTokenList.TokenListImpl> i
                 wrappedButton.addListener(new Button.ClickListener() {
                     @Override
                     public void buttonClick(Button.ClickEvent event) {
+                        WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
 
                         String windowAlias;
                         if (getLookupScreen() != null) {
                             windowAlias = getLookupScreen();
                         } else if (getOptionsDatasource() != null) {
-                            windowAlias = getOptionsDatasource().getMetaClass().getName() + ".browse";
+                            windowAlias = windowConfig.getBrowseScreenId(getOptionsDatasource().getMetaClass());
                         } else {
-                            windowAlias = getDatasource().getMetaClass().getName() + ".browse";
+                            windowAlias = windowConfig.getBrowseScreenId(getDatasource().getMetaClass());
                         }
 
                         WindowInfo windowInfo = AppBeans.get(WindowConfig.class).getWindowInfo(windowAlias);

@@ -194,12 +194,11 @@ public interface PickerField extends Field, Component.ActionsHolder {
                 String windowAlias = lookupScreen;
                 if (windowAlias == null) {
                     final MetaClass metaClass = pickerField.getMetaClass();
-                    if (metaClass == null)
+                    if (metaClass == null) {
                         throw new DevelopmentException("Neither metaClass nor datasource/property is specified for the PickerField",
                                 "action ID", getId());
-                    windowAlias = metaClass.getName() + ".lookup";
-                    if (!windowConfig.hasWindow(windowAlias))
-                        windowAlias = metaClass.getName() + ".browse";
+                    }
+                    windowAlias = windowConfig.getAvailableLookupScreenId(metaClass);
                 }
 
                 WindowManager wm;
@@ -375,8 +374,10 @@ public interface PickerField extends Field, Component.ActionsHolder {
 
             if (entity != null) {
                 String windowAlias = editScreen;
-                if (windowAlias == null)
-                    windowAlias = entity.getMetaClass().getName() + ".edit";
+                if (windowAlias == null) {
+                    windowAlias = windowConfig.getEditorScreenId(entity.getMetaClass());
+                }
+
                 final Window.Editor editor = wm.openEditor(
                         windowConfig.getWindowInfo(windowAlias),
                         entity,

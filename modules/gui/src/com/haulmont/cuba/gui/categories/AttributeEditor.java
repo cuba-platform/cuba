@@ -430,10 +430,11 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
 
         List<String> screensList = new ArrayList<>();
         for (WindowInfo windowInfo : windowInfoCollection) {
-            if (!windowInfo.getId().contains(".")
-                    || windowInfo.getId().contains(".browse")
-                    || windowInfo.getId().contains(".lookup")) {
-                screensList.add(windowInfo.getId());
+            String windowId = windowInfo.getId();
+            if (!windowId.contains(".")
+                    || windowId.contains(Window.BROWSE_WINDOW_SUFFIX)
+                    || windowId.contains(Window.LOOKUP_WINDOW_SUFFIX)) {
+                screensList.add(windowId);
             }
         }
         screenField.setOptionsList(screensList);
@@ -451,7 +452,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         Map<String, Object> entitiesMap = new HashMap<>();
         String entityClassName = metadata.getClass(clazz).getName();
         LoadContext entitiesContext = new LoadContext(clazz);
-        LoadContext.Query query = entitiesContext.setQueryString("select a from " + entityClassName + " a");
+        entitiesContext.setQueryString("select a from " + entityClassName + " a");
         entitiesContext.setView("_minimal");
         List<BaseUuidEntity> list = dataService.loadList(entitiesContext);
         for (BaseUuidEntity entity : list) {

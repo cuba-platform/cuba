@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.global.ExtendedEntities;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
@@ -257,10 +258,13 @@ public class CreateAction extends AbstractAction implements Action.HasOpenType {
      * @return  editor screen identifier
      */
     public String getWindowId() {
-        if (windowId != null)
+        if (windowId != null) {
             return windowId;
-        else
-            return owner.getDatasource().getMetaClass().getName() + ".edit";
+        } else {
+            MetaClass metaClass = owner.getDatasource().getMetaClass();
+            WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
+            return windowConfig.getEditorScreenId(metaClass);
+        }
     }
 
     /**

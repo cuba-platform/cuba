@@ -178,14 +178,13 @@ public class AddAction extends AbstractAction implements Action.HasOpenType {
      * @return  lookup screen id
      */
     public String getWindowId() {
-        if (windowId != null)
+        if (windowId != null) {
             return windowId;
-        else {
+        } else {
             WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
-            String id = owner.getDatasource().getMetaClass().getName() + ".lookup";
-            if (!windowConfig.hasWindow(id))
-                id = owner.getDatasource().getMetaClass().getName() + ".browse";
-            return id;
+            MetaClass metaClass = owner.getDatasource().getMetaClass();
+
+            return windowConfig.getAvailableLookupScreenId(metaClass);
         }
     }
 

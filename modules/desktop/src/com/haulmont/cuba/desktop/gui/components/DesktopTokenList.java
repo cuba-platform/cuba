@@ -595,16 +595,17 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
         }
 
         private void openLookupWindow() {
+            WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
+
             String windowAlias;
             if (getLookupScreen() != null) {
                 windowAlias = getLookupScreen();
             } else if (getOptionsDatasource() != null) {
-                windowAlias = getOptionsDatasource().getMetaClass().getName() + ".browse";
+                windowAlias = windowConfig.getBrowseScreenId(getOptionsDatasource().getMetaClass());
             } else {
-                windowAlias = getDatasource().getMetaClass().getName() + ".browse";
+                windowAlias = windowConfig.getBrowseScreenId(getDatasource().getMetaClass());
             }
 
-            WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
             WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
 
             Map<String, Object> params = new HashMap<>();

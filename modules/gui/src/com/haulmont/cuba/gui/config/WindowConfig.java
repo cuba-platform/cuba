@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.NoSuchScreenException;
+import com.haulmont.cuba.gui.components.Window;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
@@ -43,15 +44,15 @@ public class WindowConfig {
 
     public static final String WINDOW_CONFIG_XML_PROP = "cuba.windowConfig";
 
-    protected Map<String, WindowInfo> screens = new HashMap<>();
+    public static final Pattern ENTITY_SCREEN_PATTERN = Pattern.compile("([_A-Za-z]+\\$[A-Z][_A-Za-z0-9]*)\\..+");
 
     private static Log log = LogFactory.getLog(WindowConfig.class);
 
-    private Resources resources;
+    protected Map<String, WindowInfo> screens = new HashMap<>();
 
-    private Metadata metadata;
+    protected Resources resources;
 
-    public static final Pattern ENTITY_SCREEN_PATTERN = Pattern.compile("([_A-Za-z]+\\$[A-Z][_A-Za-z0-9]*)\\..+");
+    protected Metadata metadata;
 
     @Inject
     public WindowConfig(Resources resources, Metadata metadata) {
@@ -79,6 +80,7 @@ public class WindowConfig {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public void loadConfig(Element rootElem) {
         for (Element element : (List<Element>) rootElem.elements("include")) {
             String fileName = element.attributeValue("file");
@@ -134,8 +136,9 @@ public class WindowConfig {
      */
     public WindowInfo getWindowInfo(String id) {
         WindowInfo windowInfo = findWindowInfo(id);
-        if (windowInfo == null)
+        if (windowInfo == null) {
             throw new NoSuchScreenException(id);
+        }
         return windowInfo;
     }
 
@@ -151,5 +154,35 @@ public class WindowConfig {
      */
     public Collection<WindowInfo> getWindows() {
         return screens.values();
+    }
+
+    public String getMetaClassScreenId(MetaClass metaClass, String suffix) {
+        MetaClass screenMetaClass = metaClass;
+        MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalMetaClass(metaClass);
+        if (originalMetaClass != null) {
+            screenMetaClass = originalMetaClass;
+        }
+
+        return screenMetaClass.getName() + suffix;
+    }
+
+    public String getBrowseScreenId(MetaClass metaClass) {
+        return getMetaClassScreenId(metaClass, Window.BROWSE_WINDOW_SUFFIX);
+    }
+
+    public String getLookupScreenId(MetaClass metaClass) {
+        return getMetaClassScreenId(metaClass, Window.LOOKUP_WINDOW_SUFFIX);
+    }
+
+    public String getEditorScreenId(MetaClass metaClass) {
+        return getMetaClassScreenId(metaClass, Window.EDITOR_WINDOW_SUFFIX);
+    }
+
+    public String getAvailableLookupScreenId(MetaClass metaClass) {
+        String id = getLookupScreenId(metaClass);
+        if (!hasWindow(id)) {
+            id = getBrowseScreenId(metaClass);
+        }
+        return id;
     }
 }

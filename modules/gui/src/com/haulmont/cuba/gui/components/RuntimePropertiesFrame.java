@@ -13,12 +13,14 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.entity.CategoryAttributeValue;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.sys.SetValueEntity;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.validators.DateValidator;
 import com.haulmont.cuba.gui.components.validators.DoubleValidator;
 import com.haulmont.cuba.gui.components.validators.IntegerValidator;
+import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import org.apache.commons.lang.StringUtils;
@@ -236,12 +238,11 @@ public class RuntimePropertiesFrame extends AbstractWindow {
                                 CategoryAttributeValue categoryAttributeValue = runtimePropertiesEntity.getCategoryValue(property.getName());
                                 if (categoryAttributeValue != null) {
                                     String screen = categoryAttributeValue.getCategoryAttribute().getScreen();
-                                    if (StringUtils.isNotBlank(screen))
-                                        lookupAction.setLookupScreen(screen);
-                                    else {
-                                        screen = pickerField.getMetaClass().getName() + ".browse";
-                                        lookupAction.setLookupScreen(screen);
+                                    if (StringUtils.isBlank(screen)) {
+                                        WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
+                                        screen = windowConfig.getBrowseScreenId(pickerField.getMetaClass());
                                     }
+                                    lookupAction.setLookupScreen(screen);
                                 }
                             }
                             pickerField.addOpenAction();

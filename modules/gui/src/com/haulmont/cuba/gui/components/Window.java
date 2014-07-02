@@ -40,9 +40,18 @@ public interface Window extends IFrame, Component.HasCaption {
      */
     String CLOSE_ACTION_ID = "close";
 
+    String BROWSE_WINDOW_SUFFIX = ".browse";
+
+    String LOOKUP_WINDOW_SUFFIX = ".lookup";
+
+    String EDITOR_WINDOW_SUFFIX = ".edit";
+
+    String CREATE_WINDOW_SUFFIX = ".create";
+
     /**
      * @return current window context
      */
+    @Override
     WindowContext getContext();
 
     /**

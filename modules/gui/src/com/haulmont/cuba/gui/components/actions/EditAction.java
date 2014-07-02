@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.gui.components.actions;
 
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
@@ -15,6 +16,7 @@ import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.PropertyDatasource;
@@ -209,10 +211,13 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
      * @return  editor screen identifier
      */
     public String getWindowId() {
-        if (windowId != null)
+        if (windowId != null) {
             return windowId;
-        else
-            return owner.getDatasource().getMetaClass().getName() + ".edit";
+        } else {
+            MetaClass metaClass = owner.getDatasource().getMetaClass();
+            WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
+            return windowConfig.getEditorScreenId(metaClass);
+        }
     }
 
     /**
