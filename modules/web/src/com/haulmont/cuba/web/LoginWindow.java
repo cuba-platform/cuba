@@ -357,7 +357,7 @@ public class LoginWindow extends UIView implements Action.Handler {
             loginField.setValue(app.getPrincipal() == null ? "" : app.getPrincipal().getName());
             passwordField.setValue("");
 
-            if (!ActiveDirectoryHelper.activeDirectorySupportedBySession())
+            if (rememberMeAllowed && !ActiveDirectoryHelper.activeDirectorySupportedBySession())
                 initRememberMe();
         } else {
             String defaultUser = webConfig.getLoginDialogDefaultUser();
@@ -372,7 +372,8 @@ public class LoginWindow extends UIView implements Action.Handler {
             else
                 passwordField.setValue("");
 
-            initRememberMe();
+            if (rememberMeAllowed)
+                initRememberMe();
         }
     }
 
