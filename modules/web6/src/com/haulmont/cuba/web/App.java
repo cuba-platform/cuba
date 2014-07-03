@@ -10,13 +10,11 @@ import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.auth.ActiveDirectoryHelper;
+import com.haulmont.cuba.web.auth.RequestContext;
 import com.haulmont.cuba.web.auth.WebAuthConfig;
 import com.haulmont.cuba.web.exception.ExceptionHandlers;
 import com.haulmont.cuba.web.log.AppLog;
-import com.haulmont.cuba.web.sys.AppCookies;
-import com.haulmont.cuba.web.sys.AppTimers;
-import com.haulmont.cuba.web.sys.BackgroundTaskManager;
-import com.haulmont.cuba.web.sys.LinkHandler;
+import com.haulmont.cuba.web.sys.*;
 import com.haulmont.cuba.web.toolkit.Timer;
 import com.vaadin.Application;
 import com.vaadin.service.ApplicationContext;
@@ -29,6 +27,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -110,7 +109,7 @@ public abstract class App extends Application
 
     protected final WebAuthConfig webAuthConfig;
 
-    protected String webResourceTimestamp = "null";
+    protected String webResourceTimestamp = "DEBUG";
 
     protected boolean testMode = false;
 
@@ -137,7 +136,9 @@ public abstract class App extends Application
             timers = new AppTimers(this);
             backgroundTaskManager = new BackgroundTaskManager();
 
-            String resourcesTimestampPath = webConfig.getResourcesTimestampPath();
+            RequestContext rc = RequestContext.get();
+            ServletContext servletContext = rc.getRequest().getServletContext();
+            String resourcesTimestampPath = servletContext.getInitParameter("webResourcesTs");
             if (StringUtils.isNotEmpty(resourcesTimestampPath)) {
                 String timestamp = AppBeans.get(Resources.class).getResourceAsString(resourcesTimestampPath);
                 if (StringUtils.isNotEmpty(timestamp))

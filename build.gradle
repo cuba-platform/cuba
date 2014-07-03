@@ -381,24 +381,18 @@ configure(webModule) {
         provided(servletApi)
     }
 
-    def resourceBuildTimeStamp = new java.text.SimpleDateFormat('yyyy_MM_dd_HH_mm').format(new Date())
-
-    task resourceTimeStampInject() << {
-        new File("${project.buildDir}/classes/main/com/haulmont/cuba/web/resources.timestamp").write(resourceBuildTimeStamp)
-    }
-
-    classes.dependsOn resourceTimeStampInject
-
     task enhanceTransient(type: CubaEnhanceTransient) {
         metadataXml = "$webModule.projectDir/src/cuba-web-metadata.xml"
     }
 
+    jar {
+        from sourceSets.main.allJava
+    }
+
     task buildScssThemes(type: CubaWebScssThemeCreation) {
-        buildTimeStamp = resourceBuildTimeStamp
         themes = ['havana']
-        destDir = "${project.buildDir}/web/VAADIN/themes"
 //        compress = true
-        sprites = true
+//        sprites = true
 //        cleanup = true
     }
 
@@ -457,30 +451,25 @@ configure(webAuthModule) {
 }
 
 configure(webToolkitModule) {
-    configurations {
-        widgetSetBuilding
-    }
-
     dependencies {
         compile(webModule)
 
         compile(group: 'com.vaadin', name: 'vaadin-client', version: vaadinVersion)
         compile(group: 'com.vaadin', name: 'vaadin-client-compiler', version: vaadinVersion)
-
-        widgetSetBuilding(webModule)
     }
 
-    def webOutDir = file("$buildDir/web")
     task buildWidgetSet(type: CubaWidgetSetBuilding) {
-        widgetSetsDir = "$webOutDir/VAADIN/widgetsets"
         widgetSetClass = 'com.haulmont.cuba.web.toolkit.ui.WidgetSet'
-        //jvmArgs('-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000')
-        compilerArgs = ['-style': 'DETAILED', '-logLevel': 'INFO', '-localWorkers': '4']
+        compilerArgs = ['-style': 'OBF', '-logLevel': 'INFO']
+    }
+
+    jar {
+        from sourceSets.main.allJava
     }
 
     task webArchive(dependsOn: buildWidgetSet, type: Zip) {
         from file('web')
-        from webOutDir
+        from file("$buildDir/web")
         exclude '**/web.xml', '**/app.properties'
         classifier = 'web'
     }
@@ -590,34 +579,16 @@ configure(webLegacyModule) {
         provided(servletApi)
     }
 
-    def resourceBuildTimeStamp = new java.text.SimpleDateFormat('yyyy_MM_dd_HH_mm').format(new Date())
-
-    task resourceTimeStampInject() << {
-        new File("${project.buildDir}/classes/main/com/haulmont/cuba/web/resources.timestamp").write(resourceBuildTimeStamp)
-    }
-
-    classes.dependsOn resourceTimeStampInject
-
     task enhanceTransient(type: CubaEnhanceTransient) {
         metadataXml = "$webLegacyModule.projectDir/src/cuba-web-metadata.xml"
     }
 
     task buildScssThemes(type: CubaWebScssThemeCreation) {
-        buildTimeStamp = resourceBuildTimeStamp
         themes = ['havana']
         destDir = "${project.buildDir}/web/VAADIN/themes"
 //        compress = true
-//        sprites = true
+        sprites = false
 //        cleanup = true
-    }
-
-    task buildThemes(type: CubaWebThemeCreation) {
-        themes = [
-//                [themeName: 'peyto', destFile: 'styles-include.css'],
-                [themeName: 'havana', destFile: 'styles-include.css']
-        ]
-        cssDir = 'css/VAADIN/themes'
-        destDir = "$buildDir/web/VAADIN/themes"
     }
 
     File webOutDir = new File("$buildDir/web")

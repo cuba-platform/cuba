@@ -46,7 +46,7 @@ public class CubaVaadinServletService extends VaadinServletService {
 
         webConfig = AppBeans.get(Configuration.class).getConfig(WebConfig.class);
 
-        String resourcesTimestampPath = webConfig.getResourcesTimestampPath();
+        String resourcesTimestampPath = servlet.getServletContext().getInitParameter("webResourcesTs");
         if (StringUtils.isNotEmpty(resourcesTimestampPath)) {
             String timestamp = AppBeans.get(Resources.class).getResourceAsString(resourcesTimestampPath);
             if (StringUtils.isNotEmpty(timestamp)) {

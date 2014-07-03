@@ -436,7 +436,7 @@ public class CubaApplicationServlet extends ApplicationServlet {
 
     protected String getResourceVersion() {
         String webResourceTimestamp;
-        String resourcesTimestampPath = webConfig.getResourcesTimestampPath();
+        String resourcesTimestampPath = getInitParameter("webResourcesTs");
         if (StringUtils.isNotEmpty(resourcesTimestampPath)) {
             String timestamp = AppBeans.get(Resources.class).getResourceAsString(resourcesTimestampPath);
             if (StringUtils.isNotEmpty(timestamp)) {

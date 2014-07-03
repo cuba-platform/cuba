@@ -17,6 +17,7 @@ import com.haulmont.cuba.web.sys.AppCookies;
 import com.haulmont.cuba.web.sys.BackgroundTaskManager;
 import com.haulmont.cuba.web.sys.LinkHandler;
 import com.haulmont.cuba.web.toolkit.ui.CubaTimer;
+import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
 import org.apache.commons.lang.StringUtils;
@@ -68,7 +69,7 @@ public abstract class App {
 
     protected boolean themeInitialized = false;
 
-    protected String webResourceTimestamp = "null";
+    protected String webResourceTimestamp = "DEBUG";
 
     protected String clientAddress;
 
@@ -88,11 +89,12 @@ public abstract class App {
             cookies = new AppCookies();
             backgroundTaskManager = new BackgroundTaskManager();
 
-            String resourcesTimestampPath = webConfig.getResourcesTimestampPath();
+            String resourcesTimestampPath = VaadinServlet.getCurrent().getInitParameter("webResourcesTs");
             if (StringUtils.isNotEmpty(resourcesTimestampPath)) {
                 String timestamp = AppBeans.get(Resources.class).getResourceAsString(resourcesTimestampPath);
-                if (StringUtils.isNotEmpty(timestamp))
+                if (StringUtils.isNotEmpty(timestamp)) {
                     this.webResourceTimestamp = timestamp;
+                }
             }
         } catch (Exception e) {
             log.fatal("Error initializing application", e);
