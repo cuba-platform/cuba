@@ -410,6 +410,9 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void committed(Set<Entity> entities) {
+        if (!State.VALID.equals(state))
+            return;
+
         for (Entity newEntity : entities) {
             if (newEntity.equals(item))
                 item = (T) newEntity;

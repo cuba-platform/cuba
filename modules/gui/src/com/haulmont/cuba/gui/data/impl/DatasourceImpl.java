@@ -203,6 +203,9 @@ public class DatasourceImpl<T extends Entity>
 
     @Override
     public void committed(Set<Entity> entities) {
+        if (!State.VALID.equals(state))
+            return;
+
         for (Entity entity : entities) {
             if (entity.equals(item)) {
                 detachListener(item);
