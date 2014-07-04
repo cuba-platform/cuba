@@ -51,6 +51,7 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
         );
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T getValue() {
         return (T) (Boolean) impl.isSelected();
@@ -61,6 +62,10 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
         if (!isEditable()) {
             log.debug("Set value for non editable field ignored");
             return;
+        }
+
+        if (value == null) {
+            value = false;
         }
 
         if (!ObjectUtils.equals(prevValue, value)) {
@@ -84,6 +89,7 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
         return metaProperty;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void setDatasource(Datasource datasource, String property) {
         this.datasource = datasource;
@@ -95,12 +101,10 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
 
         final MetaClass metaClass = datasource.getMetaClass();
         metaPropertyPath = metaClass.getPropertyPath(property);
-        try {
-            metaProperty = metaPropertyPath.getMetaProperty();
+        if (metaPropertyPath == null) {
+            throw new RuntimeException("Metaproperty name is possibly wrong: " + property);
         }
-        catch (ArrayIndexOutOfBoundsException e) {
-            throw new RuntimeException("Metaproperty name is possibly wrong: " + property, e);
-        }
+        metaProperty = metaPropertyPath.getMetaProperty();
 
         datasource.addListener(
                 new DsListenerAdapter() {
@@ -109,6 +113,10 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
                         if (updatingInstance)
                             return;
                         Boolean value = InstanceUtils.getValueEx(item, metaPropertyPath.getPath());
+                        if (value == null) {
+                            value = false;
+                        }
+
                         updateComponent(value);
                         fireChangeListeners(value);
                     }
@@ -118,6 +126,10 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
                         if (updatingInstance)
                             return;
                         if (property.equals(metaPropertyPath.toString())) {
+                            if (value == null) {
+                                value = false;
+                            }
+
                             updateComponent(value);
                             fireChangeListeners(value);
                         }
