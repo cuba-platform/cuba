@@ -171,7 +171,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         applyBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (isVisible() && datasource != null) {
+                if (isVisible() && datasource != null && !editing) {
                     apply(false);
                 }
             }

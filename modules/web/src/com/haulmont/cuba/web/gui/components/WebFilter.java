@@ -1133,7 +1133,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         frame.addAction(new AbstractAction("applyFilter", clientConfig.getFilterApplyShortcut()) {
             @Override
             public void actionPerform(Component component) {
-                if (isVisible() && datasource != null) {
+                if (isVisible() && datasource != null && !editing) {
                     apply(false);
                 }
             }
