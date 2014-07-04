@@ -20,6 +20,7 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Root of properties branch.
@@ -33,14 +34,16 @@ public class RootPropertyModelItem implements ModelItem {
 
     private MetaClass metaClass;
     private List<AbstractConditionDescriptor> propertyDescriptors;
+    private Map<AbstractConditionDescriptor, String> descriptorMessages;
     private AbstractDescriptorBuilder descriptorBuilder;
 
     private List<ModelItem> modelItems;
 
     public RootPropertyModelItem(MetaClass metaClass, List<AbstractConditionDescriptor> propertyDescriptors,
-                                 AbstractDescriptorBuilder descriptorBuilder) {
+                                 Map<AbstractConditionDescriptor, String> descriptorMessages, AbstractDescriptorBuilder descriptorBuilder) {
         this.metaClass = metaClass;
         this.propertyDescriptors = propertyDescriptors;
+        this.descriptorMessages = descriptorMessages;
         this.descriptorBuilder = descriptorBuilder;
     }
 
@@ -64,10 +67,11 @@ public class RootPropertyModelItem implements ModelItem {
                         log.error("Invalid property name: " + descriptor.getName());
                         continue;
                     }
-                    MetaProperty metaProperty = mpp.getMetaProperty();
 
-                    if (modelPropertiesFilter.isPropertyFilterAllowed(metaProperty))
-                        modelItems.add(new PropertyModelItem(null, metaProperty, descriptor, descriptorBuilder));
+                    MetaProperty metaProperty = mpp.getMetaProperty();
+                    if (modelPropertiesFilter.isPropertyFilterAllowed(metaProperty)) {
+                        modelItems.add(new PropertyModelItem(null, metaProperty, descriptorMessages, descriptor, descriptorBuilder));
+                    }
                 }
             }
 

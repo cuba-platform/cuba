@@ -6,6 +6,7 @@
 package com.haulmont.cuba.desktop.gui.components.filter;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.CategorizedEntity;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -38,6 +39,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Dialog to select a new generic filter condition.
@@ -53,11 +55,11 @@ public class AddConditionDlg extends JDialog {
     private TopLevelFrame topLevelFrame;
 
     public AddConditionDlg(MetaClass metaClass,
-                           List<AbstractConditionDescriptor> propertyDescriptors,
-                           DescriptorBuilder descriptorBuilder,
+                           List<AbstractConditionDescriptor> descriptorMessages,
+                           Map<AbstractConditionDescriptor, String> propertyMessages, DescriptorBuilder descriptorBuilder,
                            SelectionHandler selectionHandler,
-                           JComponent parent)
-    {
+                           JComponent parent) {
+
         super(DesktopComponentsHelper.getTopLevelFrame(parent));
         this.selectionHandler = selectionHandler;
         this.topLevelFrame = DesktopComponentsHelper.getTopLevelFrame(parent);
@@ -81,7 +83,7 @@ public class AddConditionDlg extends JDialog {
 
         setLayout(new MigLayout("fill", "[grow][]", "[grow][]"));
 
-        Model model = new Model(metaClass, propertyDescriptors, descriptorBuilder);
+        Model model = new Model(metaClass, descriptorMessages, propertyMessages, descriptorBuilder);
         tree = new JTree(model) {
             @Override
             public String convertValueToText(Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
@@ -168,6 +170,7 @@ public class AddConditionDlg extends JDialog {
 
         private MetaClass metaClass;
         private List<AbstractConditionDescriptor> propertyDescriptors;
+        private Map<AbstractConditionDescriptor, String> descriptorMessages;
         private DescriptorBuilder descriptorBuilder;
 
         private List<ModelItem> rootModelItems;
@@ -175,10 +178,10 @@ public class AddConditionDlg extends JDialog {
 
         public Model(MetaClass metaClass,
                      List<AbstractConditionDescriptor> propertyDescriptors,
-                     DescriptorBuilder descriptorBuilder)
-        {
+                     Map<AbstractConditionDescriptor, String> descriptorMessages, DescriptorBuilder descriptorBuilder) {
             this.metaClass = metaClass;
             this.propertyDescriptors = propertyDescriptors;
+            this.descriptorMessages = descriptorMessages;
             this.descriptorBuilder = descriptorBuilder;
             initRoot();
         }
@@ -186,7 +189,7 @@ public class AddConditionDlg extends JDialog {
         private void initRoot() {
             rootModelItems = new ArrayList<>();
 
-            rootModelItems.add(new RootPropertyModelItem(metaClass, propertyDescriptors, descriptorBuilder));
+            rootModelItems.add(new RootPropertyModelItem(metaClass, propertyDescriptors, descriptorMessages, descriptorBuilder));
 
             for (AbstractConditionDescriptor descriptor : propertyDescriptors) {
                 if (descriptor instanceof AbstractCustomConditionDescriptor) {

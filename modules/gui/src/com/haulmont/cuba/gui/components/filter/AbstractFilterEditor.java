@@ -8,6 +8,7 @@ package com.haulmont.cuba.gui.components.filter;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.Filter;
@@ -39,6 +40,8 @@ public abstract class AbstractFilterEditor {
     protected List<AbstractConditionDescriptor> descriptors = new ArrayList<>();
     protected List<String> existingNames;
 
+    protected Map<AbstractConditionDescriptor, String> descriptorMessages = new HashMap<>();
+
     protected ConditionsTree conditions = new ConditionsTree();
     protected String messagesPack;
     protected String filterComponentName;
@@ -61,8 +64,9 @@ public abstract class AbstractFilterEditor {
         this.metaClass = datasource.getMetaClass();
         this.existingNames = existingNames;
 
-        this.manualApplyRequired = filter.getManualApplyRequired() != null
-                ? filter.getManualApplyRequired() : ConfigProvider.getConfig(ClientConfig.class).getGenericFilterManualApplyRequired();
+        this.manualApplyRequired = filter.getManualApplyRequired() != null ?
+                filter.getManualApplyRequired() :
+                AppBeans.get(Configuration.class).getConfig(ClientConfig.class).getGenericFilterManualApplyRequired();
 
         String[] strings = ValuePathHelper.parse(filterEntity.getComponentId());
         this.filterComponentName = ValuePathHelper.format(Arrays.copyOfRange(strings, 1, strings.length));
@@ -120,11 +124,20 @@ public abstract class AbstractFilterEditor {
             } else if ("property".equals(element.getName())) {
                 conditionDescriptor = createPropertyConditionDescriptor(element, messagesPack, filterComponentName, datasource);
                 descriptors.add(conditionDescriptor);
+
+                if (StringUtils.isNotEmpty(conditionDescriptor.getLocCaption())) {
+                    MetaClass metaClass = conditionDescriptor.getMetaClass();
+                    MetaPropertyPath propertyPath = metaClass.getPropertyPath(conditionDescriptor.getName());
+                    if (propertyPath != null) {
+                        descriptorMessages.put(conditionDescriptor, conditionDescriptor.getLocCaption());
+                    }
+                }
             } else if ("custom".equals(element.getName())) {
                 conditionDescriptor = createCustomConditionDescriptor(element, messagesPack, filterComponentName, datasource);
                 descriptors.add(conditionDescriptor);
-            } else
+            } else {
                 throw new UnsupportedOperationException("Element not supported: " + element.getName());
+            }
         }
 
         Collections.sort(descriptors, new Comparator<AbstractConditionDescriptor>() {
@@ -136,7 +149,7 @@ public abstract class AbstractFilterEditor {
     }
 
     private void addMultiplePropertyDescriptors(Element element, String filterComponentName) {
-        List<String> includedProps = new ArrayList<String>();
+        List<String> includedProps = new ArrayList<>();
 
         String inclRe = element.attributeValue("include");
         Pattern inclPattern = Pattern.compile(inclRe);
@@ -214,10 +227,12 @@ public abstract class AbstractFilterEditor {
         filterEntity.setName(getName().trim());
         filterEntity.setXml(xml);
 
-        if (isTrue(isGlobal()))
+        if (isTrue(isGlobal())) {
             filterEntity.setUser(null);
-        else
-            filterEntity.setUser(UserSessionProvider.getUserSession().getCurrentOrSubstitutedUser());
+        } else {
+            UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
+            filterEntity.setUser(userSessionSource.getUserSession().getCurrentOrSubstitutedUser());
+        }
 
         return true;
     }

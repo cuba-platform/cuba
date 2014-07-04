@@ -13,7 +13,6 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.gui.components.filter.AbstractConditionDescriptor;
 import com.haulmont.cuba.gui.components.filter.AbstractCustomConditionDescriptor;
@@ -50,7 +49,7 @@ public class AddConditionDlg extends Window {
 
     public AddConditionDlg(MetaClass metaClass,
                            List<AbstractConditionDescriptor> propertyDescriptors,
-                           DescriptorBuilder descriptorBuilder,
+                           Map<AbstractConditionDescriptor, String> descriptoMessages, DescriptorBuilder descriptorBuilder,
                            SelectionHandler selectionHandler) {
 
         super(AppBeans.get(Messages.class).getMessage(AbstractFilterEditor.MESSAGES_PACK, "FilterEditor.addCondition"));
@@ -74,7 +73,7 @@ public class AddConditionDlg extends Window {
         tree.setHeight("100%");
         tree.setImmediate(true);
         tree.setMultiSelect(false);
-        Model model = new Model(metaClass, propertyDescriptors, descriptorBuilder);
+        Model model = new Model(metaClass, propertyDescriptors, descriptoMessages, descriptorBuilder);
         tree.setContainerDataSource(model);
         tree.setItemCaptionPropertyId(MODEL_PROPERTY_IDS.get(0));
         tree.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_PROPERTY);
@@ -278,9 +277,7 @@ public class AddConditionDlg extends Window {
 
             ItemWrapper that = (ItemWrapper) o;
 
-            if (!modelItem.equals(that.modelItem)) return false;
-
-            return true;
+            return modelItem.equals(that.modelItem);
         }
 
         @Override
@@ -293,13 +290,15 @@ public class AddConditionDlg extends Window {
 
         private MetaClass metaClass;
         private List<AbstractConditionDescriptor> propertyDescriptors;
+        private Map<AbstractConditionDescriptor, String> descriptoMessages;
         private DescriptorBuilder descriptorBuilder;
         private List<ModelItem> rootModelItems;
 
         private Model(MetaClass metaClass, List<AbstractConditionDescriptor> propertyDescriptors,
-                      DescriptorBuilder descriptorBuilder) {
+                      Map<AbstractConditionDescriptor, String> descriptoMessages, DescriptorBuilder descriptorBuilder) {
             this.metaClass = metaClass;
             this.propertyDescriptors = propertyDescriptors;
+            this.descriptoMessages = descriptoMessages;
             this.descriptorBuilder = descriptorBuilder;
             initRootModelItems();
         }
@@ -307,7 +306,7 @@ public class AddConditionDlg extends Window {
         private void initRootModelItems() {
             rootModelItems = new ArrayList<>();
 
-            rootModelItems.add(new RootPropertyModelItem(metaClass, propertyDescriptors, descriptorBuilder));
+            rootModelItems.add(new RootPropertyModelItem(metaClass, propertyDescriptors, descriptoMessages, descriptorBuilder));
 
             for (AbstractConditionDescriptor descriptor : propertyDescriptors) {
                 if (descriptor instanceof AbstractCustomConditionDescriptor) {

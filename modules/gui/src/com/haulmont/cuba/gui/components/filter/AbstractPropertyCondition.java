@@ -7,8 +7,8 @@ package com.haulmont.cuba.gui.components.filter;
 
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MessageTools;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.data.Datasource;
 import org.apache.commons.lang.ObjectUtils;
 import org.dom4j.Element;
@@ -31,30 +31,37 @@ public abstract class AbstractPropertyCondition<T extends AbstractParam> extends
     public AbstractPropertyCondition(Element element, String messagesPack, String filterComponentName, Datasource datasource) {
         super(element, filterComponentName, datasource);
 
-        String propertyPath = datasource.getMetaClass().getJavaClass().getSimpleName() + "." + name;
-        this.locCaption = MessageProvider.getMessage(datasource.getMetaClass().getJavaClass(), propertyPath);
-        if (locCaption == null || locCaption.equals(propertyPath))
+        Class itemsClass = datasource.getMetaClass().getJavaClass();
+        String propertyPath = itemsClass.getSimpleName() + "." + name;
+
+        this.locCaption = AppBeans.get(Messages.class).getMessage(itemsClass, propertyPath);
+        if (locCaption == null || locCaption.equals(propertyPath)) {
             this.locCaption = AppBeans.get(MessageTools.class).loadString(messagesPack, caption);
+        }
 
         String text = element.getText();
         Matcher matcher = PATTERN_NULL.matcher(text);
         if (!matcher.matches()) {
             matcher = PATTERN_NOT_IN.matcher(text);
-            if (!matcher.matches())
+            if (!matcher.matches()) {
                 matcher = PATTERN.matcher(text);
-            if (!matcher.matches())
+            }
+            if (!matcher.matches()) {
                 throw new IllegalStateException("Unable to build condition from: " + text);
+            }
         }
         String operatorName = element.attributeValue("operatorType", null);
-        if (operatorName != null)
+        if (operatorName != null) {
             operator = Op.valueOf(operatorName);
-        else
+        } else {
             operator = Op.fromString(matcher.group(2));
+        }
 
         String prop = matcher.group(1);
         entityAlias = prop.substring(0, prop.indexOf('.'));
     }
 
+    @SuppressWarnings("unchecked")
     public AbstractPropertyCondition(AbstractConditionDescriptor descriptor, String entityAlias) {
         super(descriptor);
         this.entityAlias = entityAlias;
@@ -70,26 +77,29 @@ public abstract class AbstractPropertyCondition<T extends AbstractParam> extends
     @Override
     protected void updateText() {
         StringBuilder sb = new StringBuilder();
-        if (operator.equals(Op.NOT_IN)) {
+        if (operator == Op.NOT_IN) {
             sb.append("((");
         }
         sb.append(entityAlias).append(".").append(name);
 
-        if (AbstractParam.Type.ENTITY.equals(param.getType()))
+        if (AbstractParam.Type.ENTITY == param.getType()) {
             sb.append(".id");
+        }
 
         sb.append(" ").append(operator.getText());
 
         if (!operator.isUnary()) {
-            if (inExpr)
+            if (inExpr) {
                 sb.append(" (");
-            else
+            } else {
                 sb.append(" ");
+            }
             sb.append(":").append(param.getName());
-            if (inExpr)
+            if (inExpr) {
                 sb.append(")");
+            }
 
-            if (operator.equals(Op.NOT_IN)) {
+            if (operator == Op.NOT_IN) {
                 sb.append(") or (").append(entityAlias).append(".").append(name).append(" is null)) ");
             }
         }
@@ -106,7 +116,6 @@ public abstract class AbstractPropertyCondition<T extends AbstractParam> extends
         super.toXml(element);
         element.addAttribute("type", ConditionType.PROPERTY.name());
         element.addAttribute("operatorType", getOperatorType());
-
     }
 
     public Op getOperator() {
@@ -134,17 +143,19 @@ public abstract class AbstractPropertyCondition<T extends AbstractParam> extends
     @Override
     public String getError() {
         String res = super.getError();
-        if (res != null)
+        if (res != null) {
             return res;
+        }
 
-        if (operator == null)
-            return locCaption + ": " + MessageProvider.getMessage(MESSAGES_PACK, "PropertyCondition.operatorNotDefined");
-        else
+        if (operator == null) {
+            return locCaption + ": " + AppBeans.get(Messages.class).getMessage(MESSAGES_PACK, "PropertyCondition.operatorNotDefined");
+        } else {
             return null;
+        }
     }
 
     @Override
     public String getOperationCaption() {
-        return MessageProvider.getMessage(operator);
+        return AppBeans.get(Messages.class).getMessage(operator);
     }
 }

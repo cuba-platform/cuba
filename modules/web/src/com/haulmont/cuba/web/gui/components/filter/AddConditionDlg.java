@@ -54,8 +54,8 @@ public class AddConditionDlg extends Window {
     protected Button cancelBtn;
 
     public AddConditionDlg(MetaClass metaClass,
-                           List<AbstractConditionDescriptor> propertyDescriptors,
-                           DescriptorBuilder descriptorBuilder,
+                           List<AbstractConditionDescriptor> descriptors,
+                           Map<AbstractConditionDescriptor, String> propertyMessages, DescriptorBuilder descriptorBuilder,
                            SelectionHandler selectionHandler) {
 
         super(AppBeans.get(Messages.class).getMessage(AbstractFilterEditor.MESSAGES_PACK, "FilterEditor.addCondition"));
@@ -106,7 +106,7 @@ public class AddConditionDlg extends Window {
             }
         });
 
-        Model model = new Model(metaClass, propertyDescriptors, descriptorBuilder);
+        Model model = new Model(metaClass, descriptors, propertyMessages, descriptorBuilder);
         tree.setContainerDataSource(model);
         tree.setItemCaptionPropertyId(MODEL_PROPERTY_IDS.get(0));
         tree.setItemCaptionMode(AbstractSelect.ItemCaptionMode.PROPERTY);
@@ -320,9 +320,7 @@ public class AddConditionDlg extends Window {
 
             ItemWrapper that = (ItemWrapper) o;
 
-            if (!modelItem.equals(that.modelItem)) return false;
-
-            return true;
+            return modelItem.equals(that.modelItem);
         }
 
         @Override
@@ -335,21 +333,24 @@ public class AddConditionDlg extends Window {
 
         private MetaClass metaClass;
         private List<AbstractConditionDescriptor> propertyDescriptors;
+        private Map<AbstractConditionDescriptor, String> descriptorMessages;
         private DescriptorBuilder descriptorBuilder;
         private List<ModelItem> rootModelItems;
 
         private Model(MetaClass metaClass, List<AbstractConditionDescriptor> propertyDescriptors,
-                      DescriptorBuilder descriptorBuilder) {
+                      Map<AbstractConditionDescriptor, String> descriptorMessages, DescriptorBuilder descriptorBuilder) {
             this.metaClass = metaClass;
             this.propertyDescriptors = propertyDescriptors;
+            this.descriptorMessages = descriptorMessages;
             this.descriptorBuilder = descriptorBuilder;
+
             initRootModelItems();
         }
 
         private void initRootModelItems() {
             rootModelItems = new ArrayList<>();
 
-            rootModelItems.add(new RootPropertyModelItem(metaClass, propertyDescriptors, descriptorBuilder));
+            rootModelItems.add(new RootPropertyModelItem(metaClass, propertyDescriptors, descriptorMessages, descriptorBuilder));
 
             for (AbstractConditionDescriptor descriptor : propertyDescriptors) {
                 if (descriptor instanceof AbstractCustomConditionDescriptor) {

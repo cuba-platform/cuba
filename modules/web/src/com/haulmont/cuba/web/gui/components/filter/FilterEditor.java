@@ -54,9 +54,10 @@ public class FilterEditor extends AbstractFilterEditor {
 
     protected ConditionsContainer container;
 
-    protected Security security = AppBeans.get(Security.class);
     private Button upBtn;
     private Button downBtn;
+
+    protected Security security = AppBeans.get(Security.class);
 
     public FilterEditor(final WebFilter webFilter, FilterEntity filterEntity,
                         Element filterDescriptor, List<String> existingNames) {
@@ -536,6 +537,7 @@ public class FilterEditor extends AbstractFilterEditor {
             AddConditionDlg dlg = new AddConditionDlg(
                     metaClass,
                     descriptors,
+                    descriptorMessages,
                     new AddConditionDlg.DescriptorBuilder(messagesPack, filterComponentName, datasource),
                     new SelectionHandler() {
                         @Override

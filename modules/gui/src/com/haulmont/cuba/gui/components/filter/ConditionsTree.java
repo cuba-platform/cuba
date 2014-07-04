@@ -29,7 +29,7 @@ public class ConditionsTree extends Tree<AbstractCondition> {
      * @return  conditions list
      */
     public List<AbstractCondition> toConditionsList() {
-        List<AbstractCondition> list = new ArrayList<AbstractCondition>();
+        List<AbstractCondition> list = new ArrayList<>();
         for (Node<AbstractCondition> node : toList()) {
             list.add(node.getData());
         }
@@ -41,7 +41,7 @@ public class ConditionsTree extends Tree<AbstractCondition> {
      * @return  root conditions list
      */
     public List<AbstractCondition> getRoots() {
-        List<AbstractCondition> list = new ArrayList<AbstractCondition>();
+        List<AbstractCondition> list = new ArrayList<>();
         for (Node<AbstractCondition> node : getRootNodes()) {
             list.add(node.getData());
         }

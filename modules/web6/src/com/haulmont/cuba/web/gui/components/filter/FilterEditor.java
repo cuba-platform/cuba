@@ -499,6 +499,7 @@ public class FilterEditor extends AbstractFilterEditor {
             AddConditionDlg dlg = new AddConditionDlg(
                     metaClass,
                     descriptors,
+                    descriptorMessages,
                     new AddConditionDlg.DescriptorBuilder(messagesPack, filterComponentName, datasource),
                     new SelectionHandler() {
                         @Override

@@ -14,6 +14,7 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Property node
@@ -24,15 +25,17 @@ import java.util.List;
 public class PropertyModelItem implements ModelItem {
 
     private MetaProperty metaProperty;
+    private Map<AbstractConditionDescriptor, String> descriptorMessages;
     private AbstractDescriptorBuilder descriptorBuilder;
     private AbstractConditionDescriptor descriptor;
     private ModelItem parent;
     private List<ModelItem> modelItems;
 
-    PropertyModelItem(ModelItem parent, MetaProperty metaProperty,
+    PropertyModelItem(ModelItem parent, MetaProperty metaProperty, Map<AbstractConditionDescriptor, String> descriptorMessages,
                       AbstractConditionDescriptor descriptor, AbstractDescriptorBuilder descriptorBuilder) {
         this.parent = parent;
         this.metaProperty = metaProperty;
+        this.descriptorMessages = descriptorMessages;
         this.descriptorBuilder = descriptorBuilder;
         if (descriptor != null) {
             this.descriptor = descriptor;
@@ -64,18 +67,24 @@ public class PropertyModelItem implements ModelItem {
                 ModelPropertiesFilter propertiesFilter = new ModelPropertiesFilter();
 
                 for (MetaProperty property : metaProperty.getRange().asClass().getProperties()) {
-                    if (propertiesFilter.isPropertyFilterAllowed(property))
-                        modelItems.add(new PropertyModelItem(this, property, null, descriptorBuilder));
+                    if (propertiesFilter.isPropertyFilterAllowed(property)) {
+                        modelItems.add(new PropertyModelItem(this, property, descriptorMessages, null, descriptorBuilder));
+                    }
                 }
                 Collections.sort(modelItems, new ModelItemComparator());
-            } else
+            } else {
                 modelItems = Collections.emptyList();
+            }
         }
         return modelItems;
     }
 
     @Override
     public String getCaption() {
+        String caption = descriptorMessages.get(descriptor);
+        if (caption != null) {
+            return caption;
+        }
         return AppBeans.get(MessageTools.class).getPropertyCaption(metaProperty);
     }
 
