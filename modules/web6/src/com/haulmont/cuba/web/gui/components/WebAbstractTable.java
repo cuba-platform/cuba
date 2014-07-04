@@ -27,7 +27,6 @@ import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.presentations.PresentationsImpl;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
-import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Presentation;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
@@ -845,22 +844,22 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     }
 
     protected String getColumnCaption(Object columnId) {
-        if (columnId instanceof MetaPropertyPath)
+        if (columnId instanceof MetaPropertyPath) {
             return ((MetaPropertyPath) columnId).getMetaProperty().getName();
-        else
+        } else {
             return columnId.toString();
+        }
     }
 
     protected List<MetaPropertyPath> getPropertyColumns() {
-        UserSession userSession = UserSessionProvider.getUserSession();
         List<MetaPropertyPath> result = new ArrayList<>();
+
+        MetaClass metaClass = datasource.getMetaClass();
         for (Column column : columnsOrder) {
             if (column.getId() instanceof MetaPropertyPath) {
-                MetaProperty colMetaProperty = ((MetaPropertyPath) column.getId()).getMetaProperty();
-                MetaClass colMetaClass = colMetaProperty.getDomain();
-                if (userSession.isEntityOpPermitted(colMetaClass, EntityOp.READ)
-                        && userSession.isEntityAttrPermitted(
-                        colMetaClass, colMetaProperty.getName(), EntityAttrAccess.VIEW)) {
+                String propertyPath = column.getId().toString();
+
+                if (security.isEntityPropertyPathPermitted(metaClass, propertyPath, EntityAttrAccess.VIEW)) {
                     result.add((MetaPropertyPath)column.getId());
                 }
             }
@@ -937,17 +936,16 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         LogFactory.getLog(WebAbstractTable.class).warn("Legacy web module does not support icons for tables");
     }
 
-    // For vaadin component extensions.
+    // For vaadin component extensions
+    @SuppressWarnings("unchecked")
     protected Resource getItemIcon(Object itemId) {
         if (iconProvider == null) {
             return null;
         }
-        // noinspection unchecked
         Entity item = datasource.getItem(itemId);
         if (item == null) {
             return null;
         }
-        // noinspection unchecked
         String resourceUrl = iconProvider.getItemIcon(item);
         if (StringUtils.isBlank(resourceUrl)) {
             return null;

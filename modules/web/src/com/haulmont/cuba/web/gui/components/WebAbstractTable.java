@@ -26,7 +26,6 @@ import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.presentations.PresentationsImpl;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
-import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Presentation;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.AppUI;
@@ -859,16 +858,15 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     }
 
     protected List<MetaPropertyPath> getPropertyColumns() {
-        UserSession userSession = AppBeans.get(UserSessionSource.class).getUserSession();
         List<MetaPropertyPath> result = new ArrayList<>();
+
+        MetaClass metaClass = datasource.getMetaClass();
         for (Column column : columnsOrder) {
             if (column.getId() instanceof MetaPropertyPath) {
-                MetaProperty colMetaProperty = ((MetaPropertyPath) column.getId()).getMetaProperty();
-                MetaClass colMetaClass = colMetaProperty.getDomain();
-                if (userSession.isEntityOpPermitted(colMetaClass, EntityOp.READ)
-                        && userSession.isEntityAttrPermitted(
-                        colMetaClass, colMetaProperty.getName(), EntityAttrAccess.VIEW)) {
-                    result.add((MetaPropertyPath) column.getId());
+                String propertyPath = column.getId().toString();
+
+                if (security.isEntityPropertyPathPermitted(metaClass, propertyPath, EntityAttrAccess.VIEW)) {
+                    result.add((MetaPropertyPath)column.getId());
                 }
             }
         }
@@ -950,17 +948,16 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         component.refreshRowCache();
     }
 
-    // For vaadin component extensions.
+    // For vaadin component extensions
+    @SuppressWarnings("unchecked")
     protected Resource getItemIcon(Object itemId) {
         if (iconProvider == null) {
             return null;
         }
-        // noinspection unchecked
         Entity item = datasource.getItem(itemId);
         if (item == null) {
             return null;
         }
-        // noinspection unchecked
         String resourceUrl = iconProvider.getItemIcon(item);
         if (StringUtils.isBlank(resourceUrl)) {
             return null;

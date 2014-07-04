@@ -23,7 +23,7 @@ public interface Security {
     /**
      * Check if current user has permission to open a screen.
      *
-     * @param windowAlias   screen id as registered in <code>screens.xml</code>
+     * @param windowAlias screen id as registered in <code>screens.xml</code>
      */
     boolean isScreenPermitted(String windowAlias);
 
@@ -38,8 +38,8 @@ public interface Security {
     /**
      * Check if current user has permission to execute an entity operation.
      *
-     * @param entityClass   entity class
-     * @param entityOp      operation
+     * @param entityClass entity class
+     * @param entityOp    operation
      */
     boolean isEntityOpPermitted(Class<?> entityClass, EntityOp entityOp);
 
@@ -55,23 +55,41 @@ public interface Security {
     /**
      * Check if current user has permission to an entity attribute.
      *
-     * @param entityClass   entity class
-     * @param property      entity attribute name
-     * @param access        required access
+     * @param entityClass entity class
+     * @param property    entity attribute name
+     * @param access      required access
      */
     boolean isEntityAttrPermitted(Class<?> entityClass, String property, EntityAttrAccess access);
 
     /**
      * Check if current user can modify an entity attribute. It means that he has the following permissions:
      * <ul>
-     *     <li/> {@link EntityOp#CREATE} or {@link EntityOp#UPDATE} on the whole entity
-     *     <li/> {@link EntityAttrAccess#MODIFY} on the attribute
+     * <li> {@link EntityOp#CREATE} or {@link EntityOp#UPDATE} on the whole entity </li>
+     * <li> {@link EntityAttrAccess#MODIFY} on the attribute </li>
      * </ul>
      *
-     * @param metaClass  entity attribute's meta class
-     * @param propertyName  entity attribute's name
+     * @param metaClass    entity attribute's meta class
+     * @param propertyName entity attribute's name
      */
     boolean isEntityAttrModificationPermitted(MetaClass metaClass, String propertyName);
+
+    /**
+     * Check if current user has permission to an entity attribute path.
+     *
+     * @param entityClass  entity class
+     * @param propertyPath entity attribute path
+     * @param access       required access
+     */
+    boolean isEntityPropertyPathPermitted(Class<?> entityClass, String propertyPath, EntityAttrAccess access);
+
+    /**
+     * Check if current user has permission to an entity attribute path.
+     *
+     * @param metaClass    entity meta-class
+     * @param propertyPath entity attribute path
+     * @param access       required access
+     */
+    boolean isEntityPropertyPathPermitted(MetaClass metaClass, String propertyPath, EntityAttrAccess access);
 
     /**
      * Check if current user has a specific permission.

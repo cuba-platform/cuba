@@ -106,6 +106,8 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
                 DatasourceComponent dsComponent = (DatasourceComponent) component;
                 if (dsComponent.getMetaProperty() != null) {
                     MetaClass metaClass = dsComponent.getDatasource().getMetaClass();
+                    // todo artamonov check security according to meta property path with real property class
+
                     if (!security.isEntityAttrModificationPermitted(metaClass, dsComponent.getMetaProperty().getName())) {
                         ((Component.Editable) component).setEditable(false);
                         return;
@@ -142,6 +144,8 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         if (component instanceof DatasourceComponent
                 && ((DatasourceComponent) component).getDatasource() != null) {
             MetaProperty metaProperty = ((DatasourceComponent) component).getMetaProperty();
+
+            // todo artamonov check security according to meta property path with real property class
             MetaClass metaClass = metaProperty != null ?
                     metaProperty.getDomain() : ((DatasourceComponent) component).getDatasource().getMetaClass();
 
