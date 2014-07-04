@@ -50,21 +50,31 @@ public class LocalizedTaskWrapper<T, V> extends BackgroundTask<T, V> {
                 window.closeAndRun("close", new Runnable() {
                     @Override
                     public void run() {
-                        String localizedMessage = ex.getLocalizedMessage();
-                        if (StringUtils.isNotBlank(localizedMessage))
-                            ownerFrame.showNotification(messages.getMessage(getClass(), "backgroundWorkProgress.executionError"),
-                                    localizedMessage, IFrame.NotificationType.WARNING);
-                        else
-                            ownerFrame.showNotification(messages.getMessage(getClass(), "backgroundWorkProgress.executionError"),
-                                    IFrame.NotificationType.WARNING);
+                        showExecutionError(ex);
                     }
                 });
                 handled = true;
-            } else
+            } else {
                 window.close("", true);
-        } else
+            }
+        } else {
             window.close("", true);
+        }
         return handled;
+    }
+
+    protected void showExecutionError(Exception ex) {
+        final IFrame ownerFrame = wrappedTask.getOwnerFrame();
+        if (ownerFrame != null) {
+            String localizedMessage = ex.getLocalizedMessage();
+            if (StringUtils.isNotBlank(localizedMessage)) {
+                ownerFrame.showNotification(messages.getMessage(getClass(), "backgroundWorkProgress.executionError"),
+                        localizedMessage, IFrame.NotificationType.WARNING);
+            } else {
+                ownerFrame.showNotification(messages.getMessage(getClass(), "backgroundWorkProgress.executionError"),
+                        IFrame.NotificationType.WARNING);
+            }
+        }
     }
 
     @Override
@@ -83,22 +93,36 @@ public class LocalizedTaskWrapper<T, V> extends BackgroundTask<T, V> {
                     }
                 });
                 handled = true;
-            } else
+            } else {
                 window.close("", true);
-        } else
+            }
+        } else {
             window.close("", true);
+        }
         return handled;
     }
 
     @Override
     public void done(V result) {
         window.close("", true);
-        wrappedTask.done(result);
+
+        try {
+            // after window close we should show exception messages immediately
+            wrappedTask.done(result);
+        } catch (Exception ex) {
+            showExecutionError(ex);
+        }
     }
 
     @Override
     public void canceled() {
         window.close("", true);
-        wrappedTask.canceled();
+
+        try {
+            // after window close we should show exception messages immediately
+            wrappedTask.canceled();
+        } catch (Exception ex) {
+            showExecutionError(ex);
+        }
     }
 }
