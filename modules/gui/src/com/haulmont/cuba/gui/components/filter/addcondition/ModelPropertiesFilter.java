@@ -30,6 +30,8 @@ public class ModelPropertiesFilter {
     }
 
     public boolean isPropertyFilterAllowed(MetaProperty property) {
+        // todo artamonov correctly check permissions
+        // #PL-4076
         return userSession.isEntityAttrPermitted(property.getDomain(), property.getName(), EntityAttrAccess.VIEW)
                 && !metadataTools.isSystemLevel(property)           // exclude system level attributes
                 && metadataTools.isPersistent(property)             // exclude transient properties
