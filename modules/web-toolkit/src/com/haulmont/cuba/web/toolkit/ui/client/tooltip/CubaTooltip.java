@@ -31,19 +31,18 @@ public class CubaTooltip extends VTooltip {
     }
 
     protected void showTooltip(boolean forceShow) {
-        // Close current tooltip
-        if (isActuallyVisible()) {
-            closeNow();
-        }
-
-        // Schedule timer for showing the tooltip according to if it was
-        // recently closed or not.
+        // Schedule timer for showing the tooltip according to if it
+        // was recently closed or not.
         int timeout = 0;
         if (!forceShow) {
             timeout = justClosed ? getQuickOpenDelay() : getOpenDelay();
         }
-        showTimer.schedule(timeout);
-        opening = true;
+        if (timeout == 0) {
+            showTooltip();
+        } else {
+            showTimer.schedule(timeout);
+            opening = true;
+        }
     }
 
     public class CubaTooltipEventHandler extends TooltipEventHandler {
@@ -126,11 +125,23 @@ public class CubaTooltip extends VTooltip {
                 return;
             }
 
+            // If the parent (sub)component already has a tooltip open and it
+            // hasn't changed, we ignore the event.
+            // TooltipInfo contains a reference to the parent component that is
+            // checked in it's equals-method.
+            if (currentElement != null && isTooltipOpen()) {
+                TooltipInfo currentTooltip = getTooltipFor(currentElement);
+                TooltipInfo newTooltip = getTooltipFor(element);
+                if (currentTooltip != null && currentTooltip.equals(newTooltip)) {
+                    return;
+                }
+            }
+
             TooltipInfo info = getTooltipFor(element);
             if (info == null) {
                 // close tooltip only if it is from button or checkbox
                 if (currentConnector instanceof ButtonConnector || currentConnector instanceof CheckBoxConnector) {
-                    if (isActuallyVisible()) {
+                    if (isTooltipOpen()) {
                         handleHideEvent();
                     } else {
                         currentConnector = null;
@@ -139,12 +150,17 @@ public class CubaTooltip extends VTooltip {
             } else {
                 if ((domEvent instanceof ClickEvent && !isStandardTooltip(currentConnector))
                         || (!(domEvent instanceof ClickEvent) && isStandardTooltip(currentConnector))) {
-                    setTooltipText(info);
-                    updatePosition(event, isFocused);
+                    if (closing) {
+                        closeTimer.cancel();
+                        closing = false;
+                    }
 
-                    if (isActuallyVisible()) {
+                    if (isTooltipOpen()) {
                         closeNow();
                     }
+
+                    setTooltipText(info);
+                    updatePosition(event, isFocused);
 
                     if (isStandardTooltip(currentConnector)) {
                         showTooltip(false);

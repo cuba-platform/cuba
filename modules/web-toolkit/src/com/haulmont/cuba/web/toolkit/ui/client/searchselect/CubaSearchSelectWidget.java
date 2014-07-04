@@ -147,9 +147,11 @@ public class CubaSearchSelectWidget extends VFilterSelect {
     protected void handleSelectionOnBlur() {
         if (tabPressedWhenPopupOpen) {
             tabPressedWhenPopupOpen = false;
+            waitingForFilteringResponse = false;
             suggestionPopup.menu.doSelectedItemAction();
             suggestionPopup.hide();
         } else if (!suggestionPopup.isAttached() || suggestionPopup.isJustClosed()) {
+            waitingForFilteringResponse = false;
             if (currentSuggestion == null) {
                 if (tb.getText() != null && !"".equals(tb.getText().trim())) {
                     suggestionPopup.menu.doSelectedItemAction();
