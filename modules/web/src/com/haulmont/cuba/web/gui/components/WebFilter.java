@@ -472,8 +472,9 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
             }
             datasource.setMaxResults(maxResults);
         }
-        if (datasource instanceof CollectionDatasource.SupportsPaging)
+        if (datasource instanceof CollectionDatasource.SupportsPaging) {
             ((CollectionDatasource.SupportsPaging) datasource).setFirstResult(0);
+        }
 
         refreshDatasource();
 
@@ -1236,8 +1237,12 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         select.setEnabled(!editing);
         applyBtn.setVisible(!editing);
         actionsButton.setVisible(editable && isEditFiltersPermitted());
-        if (pinAppliedFilterBtn != null)
-            pinAppliedFilterBtn.setEnabled(!editing && filterEntity != null && filterEntity.getXml() != null);
+        if (pinAppliedFilterBtn != null) {
+            pinAppliedFilterBtn.setEnabled(!editing
+                    && filterEntity != null
+                    && filterEntity.getXml() != null
+                    && lastAppliedFilter != null);
+        }
     }
 
     protected boolean checkGlobalAppFolderPermission() {
@@ -1245,10 +1250,11 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
     }
 
     protected boolean checkGlobalFilterPermission() {
-        if (filterEntity == null || filterEntity.getUser() != null)
+        if (filterEntity == null || filterEntity.getUser() != null) {
             return true;
-        else
+        } else {
             return userSessionSource.getUserSession().isSpecificPermitted(GLOBAL_FILTER_PERMISSION);
+        }
     }
 
     @Override

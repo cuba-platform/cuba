@@ -1217,8 +1217,12 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         select.setEnabled(!editing);
         applyBtn.setVisible(!editing);
         actionsButton.setVisible(editable && isEditFiltersPermitted());
-        if (pinAppliedFilterBtn != null)
-            pinAppliedFilterBtn.setEnabled(!editing && filterEntity != null && filterEntity.getXml() != null);
+        if (pinAppliedFilterBtn != null) {
+            pinAppliedFilterBtn.setEnabled(!editing
+                    && filterEntity != null
+                    && filterEntity.getXml() != null
+                    && lastAppliedFilter != null);
+        }
     }
 
     protected boolean checkGlobalAppFolderPermission() {
