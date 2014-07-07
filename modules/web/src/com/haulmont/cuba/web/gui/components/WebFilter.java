@@ -481,7 +481,12 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         if (pinAppliedFilterBtn != null) {
             pinAppliedFilterBtn.setEnabled(filterEntity != null && filterEntity.getXml() != null);
         }
-        lastAppliedFilter = new AppliedFilter(filterEntity, paramsLayout);
+
+        if (filterEntity != null) {
+            lastAppliedFilter = new AppliedFilter(filterEntity, paramsLayout);
+        } else {
+            lastAppliedFilter = null;
+        }
 
         return true;
     }

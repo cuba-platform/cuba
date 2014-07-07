@@ -502,7 +502,12 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         if (pinAppliedFilterBtn != null) {
             pinAppliedFilterBtn.setEnabled(filterEntity != null && filterEntity.getXml() != null);
         }
-        lastAppliedFilter = new AppliedFilter(filterEntity, (ComponentContainer) paramsLayout);
+
+        if (filterEntity != null) {
+            lastAppliedFilter = new AppliedFilter(filterEntity, (ComponentContainer) paramsLayout);
+        } else {
+            lastAppliedFilter = null;
+        }
 
         return true;
     }
