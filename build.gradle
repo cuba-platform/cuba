@@ -719,13 +719,6 @@ task transformManual(type: TransformDocbook) {
     fonts = zipTree(configurations.docFonts.singleFile)
 }*/
 
-task transformSecurity(type: TransformDocbook) {
-    sourceDir = new File(docSrcDir, 'security/ru')
-    sourceFile = new File(sourceDir, 'security.xml')
-    destFile = new File(docTmpDir, 'security/ru/security.xml')
-    classpath = configurations.buildDoc
-}
-
 def commonXslParameters = [
         'toc.section.depth': '5',
         'chunk.section.depth': '5',
@@ -745,56 +738,11 @@ task buildManualWebHelp(type: DocBook2WebHelp, dependsOn: transformManual) {
     xslParameters = commonXslParameters
 }
 
-task buildSecurityWebHelp(type: DocBook2WebHelp, dependsOn: transformSecurity) {
-    sourceFile = transformSecurity.destFile
-    imagesDir = new File(transformSecurity.sourceDir, "img")
-    destDir = new File(docDstDir, "security/ru/webhelp")
-    templateDir = new File(docToolsDir, "webhelp/template")
-    searchDir = new File(docToolsDir, "webhelp/search")
-    brand = "CUBA"
-    language = "ru"
-    xslParameters = commonXslParameters
-}
-
-task buildSecurityXhtml(type: Docbook2Xhtml, dependsOn: transformSecurity) {
-    source transformSecurity.destFile
-    destFile = new File(docTmpDir, 'security-pdf/security-pdf.html')
-    stylesheetName = 'pdf.xsl'
-    resources = fileTree(new File(docSrcDir, 'security/ru')) {
-        include 'img/*.png'
-        include 'img/*.jpg'
-    }
-    resources += fileTree(docCssDir) {
-        include '*.css'
-    }
-}
-
-task buildSecurityPdf(type: Xhtml2Pdf, dependsOn: buildSecurityXhtml) {
-    inputs.dir docCssDir
-    sourceFile = buildSecurityXhtml.destFile
-    destFile = new File(docDstDir, 'security/ru/pdf/security.pdf')
-    classpath = configurations.buildDoc
-    fonts = zipTree(configurations.docFonts.singleFile)
-}
-
 task buildManualHtml(type: Docbook2Xhtml, dependsOn: transformManual) {
     source transformManual.destFile
     destDir = new File(docDstDir, 'manual/ru/html')
     stylesheetName = 'html.xsl'
     resources = fileTree(new File(docSrcDir, 'manual/ru')) {
-        include 'img/*.png'
-        include 'img/*.jpg'
-    }
-    resources += fileTree(docCssDir) {
-        include '*.css'
-    }
-}
-
-task buildSecurityHtml(type: Docbook2Xhtml, dependsOn: transformSecurity) {
-    source transformSecurity.destFile
-    destDir = new File(docDstDir, 'security/ru/html')
-    stylesheetName = 'html.xsl'
-    resources = fileTree(new File(docSrcDir, 'security/ru')) {
         include 'img/*.png'
         include 'img/*.jpg'
     }
@@ -816,22 +764,8 @@ task buildManualSingleHtml(type: Docbook2Xhtml, dependsOn: transformManual) {
     }
 }
 
-task buildSecuritySingleHtml(type: Docbook2Xhtml, dependsOn: transformSecurity) {
-    source transformSecurity.destFile
-    destFile = new File(docDstDir, 'security/ru/html-single/security.html')
-    stylesheetName = 'html-single.xsl'
-    resources = fileTree(new File(docSrcDir, 'security/ru')) {
-        include 'img/**/*.png'
-        include 'img/**/*.jpg'
-    }
-    resources += fileTree(docCssDir) {
-        include '*.css'
-    }
-}
-
 task buildDoc(type: Zip, description: 'Build documentation',
-        dependsOn: [buildManualSingleHtml, buildSecuritySingleHtml, buildSecurityPdf, buildManualWebHelp, buildSecurityWebHelp]) {
-    //dependsOn: [buildManualSingleHtml,buildManualPdf,buildSecuritySingleHtml,buildSecurityPdf]) {
+        dependsOn: [buildManualSingleHtml, buildManualWebHelp]) {
     from 'build/doc'
     destinationDir = file('build/distributions')
     baseName = 'cuba-doc'

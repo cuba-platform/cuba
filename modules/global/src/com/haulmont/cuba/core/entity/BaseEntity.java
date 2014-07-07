@@ -21,7 +21,7 @@ public interface BaseEntity<T> extends Entity<T> {
     String[] PROPERTIES = {"id", "createTs", "createdBy"};
 
     /**
-     * For internal ise.
+     * For internal use.
      * If you need to check instance state, use {@link com.haulmont.cuba.core.global.PersistenceHelper} methods.
      * @return true if the entity is detached from persistence context
      */
