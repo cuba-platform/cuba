@@ -25,15 +25,16 @@ public class DsTree extends Tree<Datasource> {
         while (!backlog.isEmpty()) {
             for (Datasource datasource : new ArrayList<>(backlog)) {
                 Node<Datasource> node = new Node<>(datasource);
-                if (datasource instanceof NestedDatasource) {
+                if (!(datasource instanceof NestedDatasource)
+                        || !backlog.contains(((NestedDatasource) datasource).getMaster())) {
+                    getRootNodes().add(node);
+                    backlog.remove(datasource);
+                } else {
                     Node<Datasource> masterNode = find(getRootNodes(), ((NestedDatasource) datasource).getMaster());
                     if (masterNode != null) {
                         masterNode.addChild(node);
                         backlog.remove(datasource);
                     }
-                } else {
-                    getRootNodes().add(node);
-                    backlog.remove(datasource);
                 }
             }
         }
