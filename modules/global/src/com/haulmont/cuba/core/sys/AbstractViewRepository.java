@@ -319,7 +319,7 @@ public class AbstractViewRepository implements ViewRepository {
 
         HashSet<View> checked = new HashSet<>();
 
-        for (View view : getAll()) {
+        for (View view : getAllInitialized()) {
             if (!checked.contains(view)) {
                 replaceOverridden(view, replacementView, checked);
             }
@@ -507,6 +507,14 @@ public class AbstractViewRepository implements ViewRepository {
 
         views.put(view.getName(), view);
         storage.put(metaClass, views);
+    }
+
+    protected List<View> getAllInitialized() {
+        List<View> list = new ArrayList<>();
+        for (Map<String, View> viewMap : storage.values()) {
+            list.addAll(viewMap.values());
+        }
+        return list;
     }
 
     public List<View> getAll() {
