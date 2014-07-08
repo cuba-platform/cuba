@@ -95,14 +95,6 @@ public class LoginWindow extends UIView implements Action.Handler {
     protected Configuration configuration;
     protected PasswordEncryption passwordEncryption;
 
-    /**
-     * @deprecated Use {@link #LoginWindow(AppUI)}. In next minor release will be removed
-     */
-    @Deprecated
-    public LoginWindow(App app, Connection connection) {
-        this(app.getAppUI());
-    }
-
     public LoginWindow(AppUI ui) {
         log.trace("Creating " + this);
         this.ui = ui;
