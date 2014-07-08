@@ -10,6 +10,7 @@ import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -45,7 +46,7 @@ public class View implements Serializable {
 
     private String name;
 
-    private Map<String, ViewProperty> properties = new HashMap<>();
+    private Map<String, ViewProperty> properties = new LinkedHashMap<>();
 
     private boolean includeSystemProperties;
 
