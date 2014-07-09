@@ -60,6 +60,13 @@ public interface Connection {
     boolean isConnected();
 
     /**
+     * Check if session is alive on middleware
+     *
+     * @return true if call to middleware performed successfully
+     */
+    boolean isAlive();
+
+    /**
      * Check if remember me token exists in db
      *
      * @param login           user login

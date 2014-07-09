@@ -168,13 +168,14 @@ public abstract class App {
     }
 
     /**
-     * Called from hearbeat request. <br/>
+     * Called from heartbeat request. <br/>
      * Used for ping middleware session and show session messages
      */
     public void onHeartbeat() {
         if (getConnection().isConnected()) {
             // Ping middleware session if connected and show messages
             log.debug("Ping session");
+
             UserSessionService service = AppBeans.get(UserSessionService.NAME);
             String message = service.getMessages();
             if (message != null) {

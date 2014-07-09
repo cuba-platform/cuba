@@ -20,7 +20,7 @@ public interface ActiveDirectoryConnection {
      * Log in to the system using ActiveDirectory integration.
      * @param login             user login name
      * @param locale            user locale
-     * @throws LoginException   in case of unsuccesful login due to wrong credentials or other issues
+     * @throws LoginException   in case of unsuccessful login due to wrong credentials or other issues
      */
     void loginActiveDirectory(String login, Locale locale) throws LoginException;
 }

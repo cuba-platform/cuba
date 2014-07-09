@@ -12,10 +12,10 @@ import com.haulmont.cuba.gui.components.DialogAction;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.Connection;
 import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.controllers.ControllerUtils;
 import com.vaadin.server.Page;
-import com.vaadin.ui.Notification;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -36,8 +36,10 @@ public class NoUserSessionHandler extends AbstractExceptionHandler {
 
     public NoUserSessionHandler() {
         super(NoUserSessionException.class.getName());
+
+        Connection connection = App.getInstance().getConnection();
         //noinspection ConstantConditions
-        locale = App.getInstance().getConnection().getSession().getLocale();
+        locale = connection.getSession().getLocale();
     }
 
     @Override
@@ -53,7 +55,8 @@ public class NoUserSessionHandler extends AbstractExceptionHandler {
                     new Action[]{new LoginAction()}
             );
         } catch (Throwable th) {
-            log.error("Unable to handle NoUserSessionException", th);
+            log.error("Unable to handle NoUserSessionException", throwable);
+            log.error("Exception in NoUserSessionHandler", th);
         }
     }
 

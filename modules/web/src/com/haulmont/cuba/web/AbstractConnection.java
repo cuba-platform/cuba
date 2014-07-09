@@ -11,9 +11,11 @@ import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.app.LoginService;
+import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.IpMatcher;
 import com.haulmont.cuba.security.global.LoginException;
+import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.sys.VaadinSessionAwareSecurityContext;
 import com.vaadin.server.Page;
@@ -37,12 +39,13 @@ public abstract class AbstractConnection implements Connection {
 
     protected Log log = LogFactory.getLog(getClass());
 
-    private Map<ConnectionListener, Object> connListeners = new HashMap<>();
-    private Map<UserSubstitutionListener, Object> usListeners = new HashMap<>();
+    protected Map<ConnectionListener, Object> connListeners = new HashMap<>();
+    protected Map<UserSubstitutionListener, Object> usListeners = new HashMap<>();
 
     protected boolean connected;
 
     protected LoginService loginService = AppBeans.get(LoginService.NAME);
+    protected UserSessionService userSessionService = AppBeans.get(UserSessionService.NAME);
     protected Messages messages = AppBeans.get(Messages.class);
 
     @Override
@@ -58,6 +61,26 @@ public abstract class AbstractConnection implements Connection {
 
     protected void setSession(ClientUserSession clientUserSession) {
         VaadinSession.getCurrent().setAttribute(UserSession.class, clientUserSession);
+    }
+
+    @Override
+    public boolean isAlive() {
+        if (!isConnected()) {
+            return false;
+        }
+
+        UserSession session = getSession();
+        if (session == null) {
+            return false;
+        }
+
+        try {
+            userSessionService.getUserSession(session.getId());
+        } catch (NoUserSessionException ignored) {
+            return false;
+        }
+
+        return true;
     }
 
     @Override
