@@ -272,15 +272,7 @@ public class UserBrowser extends AbstractLookup {
                                     resetRememberMeAll();
                                 }
                             },
-                            new AbstractAction("actions.Cancel") {
-                                {
-                                    setIcon("icons/cancel.png");
-                                }
-
-                                @Override
-                                public void actionPerform(Component component) {
-                                }
-                            }
+                            new DialogAction(DialogAction.Type.CANCEL)
                     }
             );
         } else {
@@ -298,15 +290,7 @@ public class UserBrowser extends AbstractLookup {
                                     resetRememberMeAll();
                                 }
                             },
-                            new AbstractAction("actions.Cancel") {
-                                {
-                                    setIcon("icons/cancel.png");
-                                }
-
-                                @Override
-                                public void actionPerform(Component component) {
-                                }
-                            }
+                            new DialogAction(DialogAction.Type.CANCEL)
                     }
             );
         }
