@@ -54,7 +54,7 @@ public interface UserSessionService {
     void setSessionAddress(UUID sessionId, String address);
 
     /**
-     * Set client's iformation into the session, propagating changes to the cluster.
+     * Set client's information into the session, propagating changes to the cluster.
      * @param sessionId     an active session identifier
      * @param clientInfo    client's info
      * @throws com.haulmont.cuba.security.global.NoUserSessionException in case of a session with the specified ID
