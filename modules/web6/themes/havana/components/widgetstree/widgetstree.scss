@@ -92,30 +92,6 @@
     padding-left: 0;
 }
 
-/* ie6compatnode is hidden from non ie6 browsers, for ie6
-* uses weird hack to sink all events properly
-*/
-.widgets-tree .v-tree-node-ie6compatnode {
-    display: none;
-}
-
-/* IMPORTANT keep the offsetWidth of this element the same as the margin-left of i-tree-node-caption */
-.v-ie6 .widgets-tree .v-tree-node-ie6compatnode {
-    display: inline;
-    float: left;
-    background: orange;
-    margin: 0;
-    width: 14px;
-    height: 10px;
-    padding: 1px;
-    filter: Alpha(opacity = 0);
-}
-
-.v-ie6 .widgets-tree .v-tree-node,
-.v-ie6 .widgets-tree .v-tree-node-children {
-    clear: left;
-}
-
 .v-ie7 .widgets-tree {
 	position: relative;
 	overflow-x:hidden;

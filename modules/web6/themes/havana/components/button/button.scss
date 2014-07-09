@@ -31,10 +31,6 @@
     outline: 0;
 }
 
-.v-ie6 .v-button {
-    display: inline;
-}
-
 .v-ie7 .v-button {
     display: inline;
 }
@@ -234,9 +230,6 @@ zoom: 1;
 float: none;
 }
 /* Fixes streched buttons in IE6 and IE7*/
-.v-ie6 .v-nativebutton {
-width: 1px;
-}
 .v-ie7 .v-nativebutton, .v-ie8 .v-nativebutton {
 overflow: visible;
 padding-left: 1em;
