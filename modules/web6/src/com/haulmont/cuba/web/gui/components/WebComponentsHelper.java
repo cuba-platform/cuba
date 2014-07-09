@@ -321,4 +321,12 @@ public class WebComponentsHelper {
             }
         }
     }
+
+    public static void setClickShortcut(Button button, String shortcut) {
+        KeyCombination closeCombination = KeyCombination.create(shortcut);
+        int[] closeModifiers = KeyCombination.Modifier.codes(closeCombination.getModifiers());
+        int closeCode = closeCombination.getKey().getCode();
+
+        button.setClickShortcut(closeCode, closeModifiers);
+    }
 }

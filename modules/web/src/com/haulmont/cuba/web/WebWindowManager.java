@@ -71,7 +71,8 @@ public class WebWindowManager extends WindowManager {
         this.app = app;
         this.appWindow = appWindow;
 
-        Configuration configuration = AppBeans.get(Configuration.class);
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+
         webConfig = configuration.getConfig(WebConfig.class);
         clientConfig = configuration.getConfig(ClientConfig.class);
 
@@ -1108,13 +1109,12 @@ public class WebWindowManager extends WindowManager {
                 switch (((DialogAction) action).getType()) {
                     case OK:
                     case YES:
-                        button.setClickShortcut(KeyCombination.Key.ENTER.getCode(),
-                                KeyCombination.Modifier.CTRL.getCode());
+                        WebComponentsHelper.setClickShortcut(button, clientConfig.getCommitShortcut());
                         break;
                     case NO:
                     case CANCEL:
                     case CLOSE:
-                        button.setClickShortcut(KeyCombination.Key.ESCAPE.getCode());
+                        WebComponentsHelper.setClickShortcut(button, clientConfig.getCloseShortcut());
                         break;
                 }
             }

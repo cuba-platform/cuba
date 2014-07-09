@@ -1056,7 +1056,10 @@ public class WebWindow implements Window, Component.Wrapper,
         private SelectAction selectAction;
 
         public Lookup() {
-            addAction(new AbstractAction(WindowDelegate.LOOKUP_SELECTED_ACTION_ID, "CTRL-ENTER") {
+            Configuration configuration = AppBeans.get(Configuration.NAME);
+            ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
+
+            addAction(new AbstractAction(WindowDelegate.LOOKUP_SELECTED_ACTION_ID, clientConfig.getCommitShortcut()) {
                 @Override
                 public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
                     fireSelectAction();

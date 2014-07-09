@@ -76,6 +76,7 @@ public class DesktopWindowManager extends WindowManager {
     public void setTabsPane(final JTabbedPane tabsPane) {
         this.tabsPane = tabsPane;
 
+        // todo move to config
         tabsPane.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
                 KeyStroke.getKeyStroke("control W"),
                 "closeTab"
@@ -1019,7 +1020,11 @@ public class DesktopWindowManager extends WindowManager {
                     }
                 });
 
-        KeyStroke okKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, KeyEvent.CTRL_DOWN_MASK, true);
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
+
+        KeyCombination okCombination = KeyCombination.create(clientConfig.getCommitShortcut());
+        KeyStroke okKeyStroke = DesktopComponentsHelper.convertKeyCombination(okCombination);
 
         InputMap inputMap = optionPane.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         ActionMap actionMap = optionPane.getActionMap();
