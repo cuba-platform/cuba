@@ -471,7 +471,11 @@
   color: #fff;
 }
 
-.popupmenu .v-button-caption, .popupmenu .v-disabled.v-button:hover .v-button-caption {
+.popupmenu .v-disabled.v-button:hover .v-button-caption {
+  color: #000;
+}
+
+.popupmenu .v-button-caption {
   color: #4d7ab2;
   text-decoration: none;
 }

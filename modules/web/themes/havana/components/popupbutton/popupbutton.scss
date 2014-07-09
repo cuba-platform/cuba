@@ -42,6 +42,14 @@
     .v-button-link:focus {
       border: 1px solid transparent;
     }
+
+    .v-disabled.v-button:hover {
+      background: transparent;
+
+      .v-button-caption {
+        color: #000;
+      }
+    }
   }
 
   .v-button.#{$primaryStyleName} .v-popup-indicator {
