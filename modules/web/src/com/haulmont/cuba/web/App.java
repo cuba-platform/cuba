@@ -24,6 +24,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -89,7 +90,9 @@ public abstract class App {
             cookies = new AppCookies();
             backgroundTaskManager = new BackgroundTaskManager();
 
-            String resourcesTimestamp = VaadinServlet.getCurrent().getInitParameter("webResourcesTs");
+            VaadinServlet vaadinServlet = VaadinServlet.getCurrent();
+            ServletContext sc = vaadinServlet.getServletContext();
+            String resourcesTimestamp = sc.getInitParameter("webResourcesTs");
             if (StringUtils.isNotEmpty(resourcesTimestamp)) {
                 this.webResourceTimestamp = resourcesTimestamp;
             }

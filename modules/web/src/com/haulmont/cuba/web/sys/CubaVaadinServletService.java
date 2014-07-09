@@ -20,6 +20,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,7 +46,8 @@ public class CubaVaadinServletService extends VaadinServletService {
 
         webConfig = AppBeans.get(Configuration.class).getConfig(WebConfig.class);
 
-        String resourcesTimestamp = servlet.getServletContext().getInitParameter("webResourcesTs");
+        ServletContext sc = servlet.getServletContext();
+        String resourcesTimestamp = sc.getInitParameter("webResourcesTs");
         if (StringUtils.isNotEmpty(resourcesTimestamp)) {
             this.webResourceTimestamp = resourcesTimestamp;
         } else {

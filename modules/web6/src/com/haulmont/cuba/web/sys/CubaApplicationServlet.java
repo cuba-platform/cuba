@@ -435,7 +435,7 @@ public class CubaApplicationServlet extends ApplicationServlet {
 
     protected String getResourceVersion() {
         String webResourceTimestamp;
-        String resourcesTimestamp = getInitParameter("webResourcesTs");
+        String resourcesTimestamp = getServletContext().getInitParameter("webResourcesTs");
         if (StringUtils.isNotEmpty(resourcesTimestamp)) {
             webResourceTimestamp = resourcesTimestamp;
         } else {
