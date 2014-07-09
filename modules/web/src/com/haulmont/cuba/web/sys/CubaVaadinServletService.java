@@ -8,7 +8,6 @@ package com.haulmont.cuba.web.sys;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
@@ -46,14 +45,9 @@ public class CubaVaadinServletService extends VaadinServletService {
 
         webConfig = AppBeans.get(Configuration.class).getConfig(WebConfig.class);
 
-        String resourcesTimestampPath = servlet.getServletContext().getInitParameter("webResourcesTs");
-        if (StringUtils.isNotEmpty(resourcesTimestampPath)) {
-            String timestamp = AppBeans.get(Resources.class).getResourceAsString(resourcesTimestampPath);
-            if (StringUtils.isNotEmpty(timestamp)) {
-                this.webResourceTimestamp = timestamp;
-            } else {
-                this.webResourceTimestamp = "DEBUG";
-            }
+        String resourcesTimestamp = servlet.getServletContext().getInitParameter("webResourcesTs");
+        if (StringUtils.isNotEmpty(resourcesTimestamp)) {
+            this.webResourceTimestamp = resourcesTimestamp;
         } else {
             this.webResourceTimestamp = "DEBUG";
         }

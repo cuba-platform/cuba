@@ -8,7 +8,6 @@ import com.haulmont.cuba.core.app.ServerInfoService;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
-import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
@@ -436,14 +435,9 @@ public class CubaApplicationServlet extends ApplicationServlet {
 
     protected String getResourceVersion() {
         String webResourceTimestamp;
-        String resourcesTimestampPath = getInitParameter("webResourcesTs");
-        if (StringUtils.isNotEmpty(resourcesTimestampPath)) {
-            String timestamp = AppBeans.get(Resources.class).getResourceAsString(resourcesTimestampPath);
-            if (StringUtils.isNotEmpty(timestamp)) {
-                webResourceTimestamp = timestamp;
-            } else {
-                webResourceTimestamp = "DEBUG";
-            }
+        String resourcesTimestamp = getInitParameter("webResourcesTs");
+        if (StringUtils.isNotEmpty(resourcesTimestamp)) {
+            webResourceTimestamp = resourcesTimestamp;
         } else {
             webResourceTimestamp = "DEBUG";
         }

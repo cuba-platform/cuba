@@ -89,15 +89,13 @@ public abstract class App {
             cookies = new AppCookies();
             backgroundTaskManager = new BackgroundTaskManager();
 
-            String resourcesTimestampPath = VaadinServlet.getCurrent().getInitParameter("webResourcesTs");
-            if (StringUtils.isNotEmpty(resourcesTimestampPath)) {
-                String timestamp = AppBeans.get(Resources.class).getResourceAsString(resourcesTimestampPath);
-                if (StringUtils.isNotEmpty(timestamp)) {
-                    this.webResourceTimestamp = timestamp;
-                }
+            String resourcesTimestamp = VaadinServlet.getCurrent().getInitParameter("webResourcesTs");
+            if (StringUtils.isNotEmpty(resourcesTimestamp)) {
+                this.webResourceTimestamp = resourcesTimestamp;
             }
         } catch (Exception e) {
             log.fatal("Error initializing application", e);
+
             throw new Error("Error initializing application. See log for details.");
         }
     }
