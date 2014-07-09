@@ -273,6 +273,10 @@ public class UserBrowser extends AbstractLookup {
                                 }
                             },
                             new AbstractAction("actions.Cancel") {
+                                {
+                                    setIcon("icons/cancel.png");
+                                }
+
                                 @Override
                                 public void actionPerform(Component component) {
                                 }
@@ -282,19 +286,23 @@ public class UserBrowser extends AbstractLookup {
         } else {
             showOptionDialog(getMessage("resetRememberMeTitle"), getMessage("resetRememberMeQuestion"), MessageType.CONFIRMATION,
                     new Action[]{
-                            new AbstractAction("actions.ResetSelected") {
+                            new AbstractAction("actions.ResetOptionSelected") {
                                 @Override
                                 public void actionPerform(Component component) {
                                     resetRememberMe(usersTable.<User>getSelected());
                                 }
                             },
-                            new AbstractAction("actions.ResetAll") {
+                            new AbstractAction("actions.ResetOptionAll") {
                                 @Override
                                 public void actionPerform(Component component) {
                                     resetRememberMeAll();
                                 }
                             },
                             new AbstractAction("actions.Cancel") {
+                                {
+                                    setIcon("icons/cancel.png");
+                                }
+
                                 @Override
                                 public void actionPerform(Component component) {
                                 }

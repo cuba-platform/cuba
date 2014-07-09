@@ -190,9 +190,9 @@ public class LoginWorkerBean implements LoginWorker {
         try {
             User user = loadUser(login);
 
-            if (user == null)
-                throw new LoginException(
-                        messages.formatMessage(getClass(), "LoginException.InvalidActiveDirectoryUser", locale, login));
+            if (user == null) {
+                throw new LoginException(messages.formatMessage(getClass(), "LoginException.InvalidUser", locale, login));
+            }
 
             Locale userLocale = locale;
             if (!StringUtils.isBlank(user.getLanguage())) {
@@ -226,8 +226,7 @@ public class LoginWorkerBean implements LoginWorker {
             User user = loadUser(login);
 
             if (user == null) {
-                throw new LoginException(
-                        messages.formatMessage(getClass(), "LoginException.InvalidActiveDirectoryUser", locale, login));
+                throw new LoginException(messages.formatMessage(getClass(), "LoginException.InvalidUser", locale, login));
             }
 
             RememberMeToken loginToken = loadRememberMeToken(rememberMeToken, user);
