@@ -7,9 +7,13 @@ package com.haulmont.cuba.web;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.security.app.UserManagementService;
+import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
+import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.auth.ActiveDirectoryConnection;
 import com.haulmont.cuba.web.auth.ActiveDirectoryHelper;
+import com.haulmont.cuba.web.auth.CubaAuthProvider;
 import com.haulmont.cuba.web.auth.DomainAliasesResolver;
 import com.haulmont.cuba.web.sys.Browser;
 import com.haulmont.cuba.web.sys.CubaApplicationContext;
@@ -20,16 +24,12 @@ import com.vaadin.event.ShortcutAction;
 import com.vaadin.terminal.gwt.server.WebApplicationContext;
 import com.vaadin.terminal.gwt.server.WebBrowser;
 import com.vaadin.ui.*;
-import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.Nullable;
-import javax.crypto.Cipher;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -56,12 +56,6 @@ public class LoginWindow extends Window implements Action.Handler {
 
     private static final char[] DOMAIN_SEPARATORS = new char[]{'\\', '@'};
 
-    /**
-     * This key is used to encrypt password in cookie to support "remember me" in AD auth.
-     * Must be of 8 symbols.
-     */
-    private static final String PASSWORD_KEY = "25tuThUw";
-
     protected Connection connection;
 
     protected TextField loginField;
@@ -84,12 +78,15 @@ public class LoginWindow extends Window implements Action.Handler {
     protected Configuration configuration;
     protected PasswordEncryption passwordEncryption;
 
+    protected UserManagementService userManagementService;
+
     public LoginWindow(App app, Connection connection) {
         log.trace("Creating " + this);
 
         configuration = AppBeans.get(Configuration.NAME);
         messages = AppBeans.get(Messages.NAME);
         passwordEncryption = AppBeans.get(PasswordEncryption.NAME);
+        userManagementService = AppBeans.get(UserManagementService.NAME);
 
         globalConfig = configuration.getConfig(GlobalConfig.class);
         webConfig = configuration.getConfig(WebConfig.class);
@@ -285,8 +282,6 @@ public class LoginWindow extends Window implements Action.Handler {
 
         String rememberMeCookie = app.getCookieValue(COOKIE_REMEMBER_ME);
         if (Boolean.parseBoolean(rememberMeCookie)) {
-            rememberMe.setValue(true);
-
             String login;
             String encodedLogin = app.getCookieValue(COOKIE_LOGIN) != null ? app.getCookieValue(COOKIE_LOGIN) : "";
             try {
@@ -295,9 +290,14 @@ public class LoginWindow extends Window implements Action.Handler {
                 login = encodedLogin;
             }
 
-            loginField.setValue(login);
-            passwordField.setValue(app.getCookieValue(COOKIE_PASSWORD) != null ? app.getCookieValue(COOKIE_PASSWORD) : "");
-            loginByRememberMe = true;
+            String rememberMeToken = app.getCookieValue(COOKIE_PASSWORD) != null ? app.getCookieValue(COOKIE_PASSWORD) : "";
+            if (connection.checkRememberMe(login, rememberMeToken)) {
+                rememberMe.setValue(true);
+                loginField.setValue(login);
+
+                passwordField.setValue(rememberMeToken);
+                loginByRememberMe = true;
+            }
 
             loginChangeListener = new Property.ValueChangeListener() {
                 @Override
@@ -374,24 +374,21 @@ public class LoginWindow extends Window implements Action.Handler {
     protected void login() {
         String login = (String) loginField.getValue();
         try {
-            // Login with AD if domain specified
-            if (ActiveDirectoryHelper.useActiveDirectory() && StringUtils.containsAny(login, DOMAIN_SEPARATORS)) {
-                Locale locale = getUserLocale();
-                App.getInstance().setLocale(locale);
-                String password = (String) passwordField.getValue();
-                if (loginByRememberMe && StringUtils.isNotEmpty(password))
-                    password = decryptPassword(password);
+            Locale locale = getUserLocale();
+            App.getInstance().setLocale(locale);
 
-                ActiveDirectoryHelper.getAuthProvider().authenticate(login, password, resolvedLocale);
+            String passwordValue = passwordField.getValue() != null ? (String) passwordField.getValue() : "";
+
+            if (loginByRememberMe && rememberMe != null) {
+                loginByRememberMe(login, passwordValue, locale);
+            } else if (ActiveDirectoryHelper.useActiveDirectory() && StringUtils.containsAny(login, DOMAIN_SEPARATORS)) {
+                CubaAuthProvider authProvider = ActiveDirectoryHelper.getAuthProvider();
+                authProvider.authenticate(login, passwordValue, resolvedLocale);
                 login = convertLoginString(login);
 
                 ((ActiveDirectoryConnection) connection).loginActiveDirectory(login, locale);
             } else {
-                String value = passwordField.getValue() != null ? (String) passwordField.getValue() : "";
-                String passwd = loginByRememberMe ? value : passwordEncryption.getPlainHash(value);
-                Locale locale = getUserLocale();
-                App.getInstance().setLocale(locale);
-                login(login, passwd, locale);
+                login(login, passwordEncryption.getPlainHash(passwordValue), locale);
             }
         } catch (LoginException e) {
             log.info("Login failed: " + e.toString());
@@ -435,91 +432,60 @@ public class LoginWindow extends Window implements Action.Handler {
         return login;
     }
 
-    protected void login(String login, String passwd, Locale locale) throws LoginException {
-        connection.login(login, passwd, locale);
+    protected void login(String login, String password, Locale locale) throws LoginException {
+        connection.login(login, password, locale);
+    }
+
+    protected void loginByRememberMe(String login, String rememberMeToken, Locale locale) throws LoginException {
+        connection.loginByRememberMe(login, rememberMeToken, locale);
     }
 
     protected void doLogin() {
         login();
-        if (rememberMe != null) {
-            App app = App.getInstance();
-            if (Boolean.TRUE.equals(rememberMe.getValue())) {
-                if (!loginByRememberMe) {
-                    app.addCookie(COOKIE_REMEMBER_ME, String.valueOf(rememberMe));
 
-                    String login = (String) loginField.getValue();
-                    String password = passwordField.getValue() != null ? (String) passwordField.getValue() : "";
+        if (connection.isConnected()) {
+            if (rememberMe != null) {
+                App app = App.getInstance();
+                if (Boolean.TRUE.equals(rememberMe.getValue())) {
+                    if (!loginByRememberMe) {
+                        app.addCookie(COOKIE_REMEMBER_ME, Boolean.TRUE.toString());
 
-                    String encodedLogin;
-                    try {
-                        encodedLogin = URLEncoder.encode(login, "UTF-8");
-                    } catch (UnsupportedEncodingException e) {
-                        encodedLogin = login;
+                        String login = (String) loginField.getValue();
+
+                        String encodedLogin;
+                        try {
+                            encodedLogin = URLEncoder.encode(login, "UTF-8");
+                        } catch (UnsupportedEncodingException e) {
+                            encodedLogin = login;
+                        }
+
+                        app.addCookie(COOKIE_LOGIN, StringEscapeUtils.escapeJava(encodedLogin));
+
+                        UserSession session = connection.getSession();
+                        if (session == null) {
+                            throw new IllegalStateException("Unable to get session after login");
+                        }
+
+                        User user = session.getUser();
+
+                        String rememberMeToken = userManagementService.generateRememberMeToken(user.getId());
+
+                        app.addCookie(COOKIE_PASSWORD, rememberMeToken);
                     }
-
-                    app.addCookie(COOKIE_LOGIN, StringEscapeUtils.escapeJava(encodedLogin));
-                    if (!ActiveDirectoryHelper.useActiveDirectory())
-                        app.addCookie(COOKIE_PASSWORD, passwordEncryption.getPlainHash(password));
-                    else {
-                        if (StringUtils.isNotEmpty(password))
-                            app.addCookie(COOKIE_PASSWORD, encryptPassword(password));
-                    }
+                } else {
+                    app.removeCookie(COOKIE_REMEMBER_ME);
+                    app.removeCookie(COOKIE_LOGIN);
+                    app.removeCookie(COOKIE_PASSWORD);
                 }
-            } else {
-                app.removeCookie(COOKIE_REMEMBER_ME);
-                app.removeCookie(COOKIE_LOGIN);
-                app.removeCookie(COOKIE_PASSWORD);
+            }
+
+            if (webConfig.getUseSessionFixationProtection()) {
+                CubaApplicationContext context = (CubaApplicationContext) App.getInstance().getContext();
+                context.reinitializeSession();
+
+                context.getHttpSession().setMaxInactiveInterval(webConfig.getHttpSessionExpirationTimeoutSec());
             }
         }
-
-        if (webConfig.getUseSessionFixationProtection()) {
-            CubaApplicationContext context = (CubaApplicationContext) App.getInstance().getContext();
-            context.reinitializeSession();
-
-            context.getHttpSession().setMaxInactiveInterval(webConfig.getHttpSessionExpirationTimeoutSec());
-        }
-    }
-
-    /**
-     * Encrypt password to store in cookie for "remember me". <br/>
-     * Used only for AD auth.
-     *
-     * @param password  plain password
-     * @return          encrypted password
-     */
-    protected String encryptPassword(String password) {
-        SecretKeySpec key = new SecretKeySpec(PASSWORD_KEY.getBytes(), "DES");
-        IvParameterSpec ivSpec = new IvParameterSpec(PASSWORD_KEY.getBytes());
-        String result;
-        try {
-            Cipher cipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
-            cipher.init(Cipher.ENCRYPT_MODE, key, ivSpec);
-            result = new String(Hex.encodeHex(cipher.doFinal(password.getBytes())));
-        } catch (Exception e) {
-            throw new RuntimeException();
-        }
-        return result;
-    }
-
-    /**
-     * Decrypt the password stored in cookie. <br/>
-     * Used only for AD auth.
-     *
-     * @param password  encrypted password
-     * @return          plain password, or input string if decryption fails
-     */
-    protected String decryptPassword(String password) {
-        SecretKeySpec key = new SecretKeySpec(PASSWORD_KEY.getBytes(), "DES");
-        IvParameterSpec ivSpec = new IvParameterSpec(PASSWORD_KEY.getBytes());
-        String result;
-        try {
-            Cipher cipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
-            cipher.init(Cipher.DECRYPT_MODE, key, ivSpec);
-            result = new String(cipher.doFinal(Hex.decodeHex(password.toCharArray())));
-        } catch (Exception e) {
-            return password;
-        }
-        return result;
     }
 
     protected Locale getUserLocale() {

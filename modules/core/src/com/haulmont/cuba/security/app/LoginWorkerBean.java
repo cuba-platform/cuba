@@ -8,6 +8,7 @@ import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.remoting.RemoteClientInfo;
+import com.haulmont.cuba.security.entity.RememberMeToken;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.NoUserSessionException;
@@ -30,9 +31,10 @@ import java.util.regex.Pattern;
 /**
  * Class that encapsulates the middleware login/logout functionality.
  *
+ * @see com.haulmont.cuba.security.app.LoginServiceBean
+ *
  * @author krivopustov
  * @version $Id$
- * @see com.haulmont.cuba.security.app.LoginServiceBean
  */
 @ManagedBean(LoginWorker.NAME)
 public class LoginWorkerBean implements LoginWorker {
@@ -81,9 +83,22 @@ public class LoginWorkerBean implements LoginWorker {
             log.warn("Failed to authenticate: " + login);
             return null;
         } else {
+            //noinspection UnnecessaryLocalVariable
             User user = (User) list.get(0);
             return user;
         }
+    }
+
+    @Nullable
+    protected RememberMeToken loadRememberMeToken(String rememberMeToken, User user) {
+        EntityManager em = persistence.getEntityManager();
+        TypedQuery<RememberMeToken> query = em.createQuery(
+                "select rt from sec$RememberMeToken rt where rt.token = :token and rt.user.id = :userId",
+                RememberMeToken.class);
+        query.setParameter("token", rememberMeToken);
+        query.setParameter("userId", user.getId());
+
+        return query.getFirstResult();
     }
 
     @Override
@@ -205,6 +220,48 @@ public class LoginWorkerBean implements LoginWorker {
     }
 
     @Override
+    public UserSession loginByRememberMe(String login, String rememberMeToken, Locale locale) throws LoginException {
+        Transaction tx = persistence.createTransaction();
+        try {
+            User user = loadUser(login);
+
+            if (user == null) {
+                throw new LoginException(
+                        messages.formatMessage(getClass(), "LoginException.InvalidActiveDirectoryUser", locale, login));
+            }
+
+            RememberMeToken loginToken = loadRememberMeToken(rememberMeToken, user);
+            if (loginToken == null) {
+                throw new LoginException(getInvalidCredentialsMessage(login, locale));
+            }
+
+            Locale userLocale = locale;
+            if (!StringUtils.isBlank(user.getLanguage())) {
+                userLocale = new Locale(user.getLanguage());
+            }
+            UserSession session = userSessionManager.createSession(user, userLocale, false);
+            if (user.getDefaultSubstitutedUser() != null) {
+                session = userSessionManager.createSession(session, user.getDefaultSubstitutedUser());
+            }
+            log.info("Logged in: " + session);
+
+            tx.commit();
+
+            userSessionManager.storeSession(session);
+
+            return session;
+        } finally {
+            tx.end();
+        }
+    }
+
+    @Override
+    public UserSession loginByRememberMe(String login, String rememberMeToken, Locale locale, Map<String, Object> params)
+            throws LoginException {
+        return loginByRememberMe(login, rememberMeToken, locale);
+    }
+
+    @Override
     public void logout() {
         try {
             UserSession session = userSessionSource.getUserSession();
@@ -261,6 +318,7 @@ public class LoginWorkerBean implements LoginWorker {
     @Override
     public UserSession getSession(UUID sessionId) {
         try {
+            //noinspection UnnecessaryLocalVariable
             UserSession session = userSessionManager.getSession(sessionId);
             return session;
         } catch (RuntimeException e) {
@@ -269,5 +327,29 @@ public class LoginWorkerBean implements LoginWorker {
             else
                 throw e;
         }
+    }
+
+    @Override
+    public boolean checkRememberMe(String login, String rememberMeToken) {
+        boolean verified = false;
+
+        Transaction tx = persistence.createTransaction();
+        try {
+            EntityManager em = persistence.getEntityManager();
+            TypedQuery<RememberMeToken> query = em.createQuery(
+                    "select rt from sec$RememberMeToken rt where rt.token = :token and rt.user.loginLowerCase = :userLogin",
+                    RememberMeToken.class);
+            query.setParameter("token", rememberMeToken);
+            query.setParameter("userLogin", StringUtils.lowerCase(login));
+
+            if (query.getFirstResult() != null) {
+                verified = true;
+            }
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+        return verified;
     }
 }

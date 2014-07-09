@@ -41,7 +41,19 @@ public interface LoginWorker {
     /**
      * @see LoginService#loginTrusted(String, String, java.util.Locale, java.util.Map))
      */
-    UserSession loginTrusted(String login, String password, Locale locale, Map<String, Object> params) throws LoginException;
+    UserSession loginTrusted(String login, String password, Locale locale, Map<String, Object> params)
+            throws LoginException;
+
+    /**
+     * @see LoginService#loginByRememberMe(String, String, java.util.Locale))
+     */
+    UserSession loginByRememberMe(String login, String rememberMeToken, Locale locale) throws LoginException;
+
+    /**
+     * @see LoginService#loginTrusted(String, String, java.util.Locale, java.util.Map))
+     */
+    UserSession loginByRememberMe(String login, String rememberMeToken, Locale locale, Map<String, Object> params)
+            throws LoginException;
 
     /**
      * @see LoginService#logout()
@@ -67,4 +79,9 @@ public interface LoginWorker {
      * @throws LoginException in case of unsuccessful log in
      */
     UserSession loginSystem(String login) throws LoginException;
+
+    /**
+     * @see com.haulmont.cuba.security.app.LoginService#checkRememberMe(String, String)
+     */
+    boolean checkRememberMe(String login, String rememberMeToken);
 }

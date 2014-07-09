@@ -25,8 +25,21 @@ public class CASProtectedConnection extends AbstractConnection {
     }
 
     @Override
+    public void loginByRememberMe(String login, String rememberMeToken, Locale locale) throws LoginException {
+        if (locale == null)
+            throw new IllegalArgumentException("Locale is null");
+
+        update(loginService.loginByRememberMe(login, rememberMeToken, locale));
+    }
+
+    @Override
     public String logout() {
         super.logout();
         return "logout";
+    }
+
+    @Override
+    public boolean checkRememberMe(String login, String rememberMeToken) {
+        return loginService.checkRememberMe(login, rememberMeToken);
     }
 }

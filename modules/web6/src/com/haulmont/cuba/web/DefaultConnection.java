@@ -33,6 +33,15 @@ public class DefaultConnection extends AbstractConnection implements ActiveDirec
     }
 
     @Override
+    public void loginByRememberMe(String login, String rememberMeToken, Locale locale) throws LoginException {
+        if (locale == null) {
+            throw new IllegalArgumentException("Locale is null");
+        }
+
+        update(loginService.loginByRememberMe(login, rememberMeToken, locale));
+    }
+
+    @Override
     public void loginActiveDirectory(String login, Locale locale) throws LoginException {
         if (locale == null)
             throw new IllegalArgumentException("Locale is null");
@@ -45,5 +54,10 @@ public class DefaultConnection extends AbstractConnection implements ActiveDirec
     public String logout() {
         super.logout();
         return ActiveDirectoryHelper.useActiveDirectory()? "login" : "";
+    }
+
+    @Override
+    public boolean checkRememberMe(String login, String rememberMeToken) {
+        return loginService.checkRememberMe(login, rememberMeToken);
     }
 }

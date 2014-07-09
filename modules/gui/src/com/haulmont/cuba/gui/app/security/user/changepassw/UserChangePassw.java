@@ -15,6 +15,7 @@ import org.apache.commons.lang.ObjectUtils;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
 
@@ -128,6 +129,9 @@ public class UserChangePassw extends AbstractEditor {
     @Override
     protected boolean postCommit(boolean committed, boolean close) {
         if (committed) {
+            UUID userId = userDs.getItem().getId();
+            userManagementService.resetRememberMeTokens(Collections.singletonList(userId));
+
             showNotification(getMessage("passwordChanged"), NotificationType.HUMANIZED);
         }
 

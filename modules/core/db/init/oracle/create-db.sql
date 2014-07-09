@@ -579,6 +579,20 @@ create table SEC_USER_SUBSTITUTION (
 )^
 create index IDX_SEC_USER_SUBSTITUTION_USER on SEC_USER_SUBSTITUTION(USER_ID)^
 
+create table SEC_REMEMBER_ME (
+    ID varchar2(32) not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar2(50),
+    VERSION integer,
+    --
+    USER_ID varchar2(32) not null,
+    TOKEN varchar2(32) not null,
+    --
+    primary key (ID)
+)^
+create index IDX_SEC_REMEMBER_ME_USER on SEC_REMEMBER_ME(USER_ID)^
+create index IDX_SEC_REMEMBER_ME_TOKEN on SEC_REMEMBER_ME(TOKEN)^
+
 alter table SYS_APP_FOLDER add constraint FK_SYS_APP_FOLDER_FOLDER foreign key (FOLDER_ID) references SYS_FOLDER(ID)^
 
 alter table SYS_ATTR_VALUE add constraint SYS_ATTR_VALUE_CATEGORY_ATT_ID foreign key (CATEGORY_ATTR_ID) references SYS_CATEGORY_ATTR(ID)^
@@ -634,6 +648,8 @@ alter table SEC_USER_SETTING add constraint SEC_USER_SETTING_USER foreign key (U
 
 alter table SEC_USER_SUBSTITUTION add constraint FK_SEC_USER_SUB_SUB_USE foreign key (SUBSTITUTED_USER_ID) references SEC_USER(ID)^
 alter table SEC_USER_SUBSTITUTION add constraint FK_SEC_USER_SUBSTITUTION_USER foreign key (USER_ID) references SEC_USER(ID)^
+
+alter table SEC_REMEMBER_ME add constraint FK_SEC_REMEMBER_ME_USER foreign key (USER_ID) references SEC_USER(ID)^
 
 --------------------------------------------------------------------------------------------------------------
 

@@ -12,10 +12,7 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.app.security.user.edit.UserEditor;
 import com.haulmont.cuba.gui.app.security.user.resetpasswords.ResetPasswordsDialog;
-import com.haulmont.cuba.gui.components.AbstractLookup;
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataSupplier;
@@ -57,6 +54,12 @@ public class UserBrowser extends AbstractLookup {
 
     @Named("usersTable.changePasswAtLogon")
     protected Action changePasswAtLogonAction;
+
+    @Named("usersTable.resetRememberMe")
+    protected Action resetRememberMeAction;
+
+    @Inject
+    protected PopupButton additionalActionsBtn;
 
     @Inject
     protected UserSession userSession;
@@ -116,6 +119,11 @@ public class UserBrowser extends AbstractLookup {
             }
         });
 
+        additionalActionsBtn.addAction(copySettingsAction);
+        additionalActionsBtn.addAction(changePasswAction);
+        additionalActionsBtn.addAction(changePasswAtLogonAction);
+        additionalActionsBtn.addAction(resetRememberMeAction);
+
         if (WindowParams.MULTI_SELECT.getBool(getContext())) {
             usersTable.setMultiSelect(true);
         }
@@ -136,8 +144,9 @@ public class UserBrowser extends AbstractLookup {
                 List<UserRole> userRoles = new ArrayList<>();
                 for (UserRole oldUserRole : selectedUser.getUserRoles()) {
                     Role oldRole = dataSupplier.reload(oldUserRole.getRole(), "_local");
-                    if (BooleanUtils.isTrue(oldRole.getDefaultRole()))
+                    if (BooleanUtils.isTrue(oldRole.getDefaultRole())) {
                         continue;
+                    }
                     UserRole role = new UserRole();
                     role.setUser(newUser);
                     role.setRole(oldRole);
@@ -163,6 +172,7 @@ public class UserBrowser extends AbstractLookup {
     public void copySettings() {
         Set<User> selected = usersTable.getSelected();
         if (!selected.isEmpty()) {
+            @SuppressWarnings("unchecked")
             Window copySettingsWindow = openWindow(
                     "sec$User.copySettings",
                     WindowManager.OpenType.DIALOG,
@@ -208,7 +218,7 @@ public class UserBrowser extends AbstractLookup {
                         boolean sendEmails = resetPasswordsDialog.getSendEmails();
                         boolean generatePasswords = resetPasswordsDialog.getGeneratePasswords();
                         Set<User> users = usersTable.getSelected();
-                        resetPasswordsForUsers(users, sendEmails, generatePasswords);
+                        resetPasswords(users, sendEmails, generatePasswords);
                     }
                     usersTable.requestFocus();
                 }
@@ -216,7 +226,7 @@ public class UserBrowser extends AbstractLookup {
         }
     }
 
-    private void resetPasswordsForUsers(Set<User> users, boolean sendEmails, boolean generatePasswords) {
+    protected void resetPasswords(Set<User> users, boolean sendEmails, boolean generatePasswords) {
         List<UUID> usersForModify = new ArrayList<>();
         for (User user : users) {
             usersForModify.add(user.getId());
@@ -250,5 +260,64 @@ public class UserBrowser extends AbstractLookup {
             }
             usersDs.refresh();
         }
+    }
+
+    public void resetRememberMe() {
+        if (usersTable.getSelected().isEmpty()) {
+            showOptionDialog(getMessage("resetRememberMeTitle"), getMessage("resetRememberMeQuestion"), MessageType.CONFIRMATION,
+                    new Action[]{
+                            new AbstractAction("actions.ResetAll") {
+                                @Override
+                                public void actionPerform(Component component) {
+                                    resetRememberMeAll();
+                                }
+                            },
+                            new AbstractAction("actions.Cancel") {
+                                @Override
+                                public void actionPerform(Component component) {
+                                }
+                            }
+                    }
+            );
+        } else {
+            showOptionDialog(getMessage("resetRememberMeTitle"), getMessage("resetRememberMeQuestion"), MessageType.CONFIRMATION,
+                    new Action[]{
+                            new AbstractAction("actions.ResetSelected") {
+                                @Override
+                                public void actionPerform(Component component) {
+                                    resetRememberMe(usersTable.<User>getSelected());
+                                }
+                            },
+                            new AbstractAction("actions.ResetAll") {
+                                @Override
+                                public void actionPerform(Component component) {
+                                    resetRememberMeAll();
+                                }
+                            },
+                            new AbstractAction("actions.Cancel") {
+                                @Override
+                                public void actionPerform(Component component) {
+                                }
+                            }
+                    }
+            );
+        }
+    }
+
+    public void resetRememberMe(Set<User> users) {
+        List<UUID> usersForModify = new ArrayList<>();
+        for (User user : users) {
+            usersForModify.add(user.getId());
+        }
+
+        userManagementService.resetRememberMeTokens(usersForModify);
+
+        showNotification(getMessage("resetRememberMeCompleted"), NotificationType.HUMANIZED);
+    }
+
+    public void resetRememberMeAll() {
+        userManagementService.resetRememberMeTokens();
+
+        showNotification(getMessage("resetRememberMeCompleted"), NotificationType.HUMANIZED);
     }
 }

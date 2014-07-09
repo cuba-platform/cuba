@@ -41,12 +41,10 @@
                 <action id="edit"/>
                 <action id="copy" caption="msg://copy" icon="icons/copy.png" invoke="copy" enable="false"/>
                 <action id="remove"/>
-                <action id="copySettings" caption="msg://copySettings" icon="icons/copy.png"
-                        invoke="copySettings"/>
-                <action id="changePassw" caption="msg://changePassw" icon="icons/change-pass.png"
-                        invoke="changePassword"/>
-                <action id="changePasswAtLogon" caption="msg://changePasswAtLogon" icon="icons/change-pass-at-logon.png"
-                        invoke="changePasswordAtLogon"/>
+                <action id="copySettings" caption="msg://copySettings" invoke="copySettings"/>
+                <action id="changePassw" caption="msg://changePassw" invoke="changePassword"/>
+                <action id="changePasswAtLogon" caption="msg://changePasswAtLogon" invoke="changePasswordAtLogon"/>
+                <action id="resetRememberMe" caption="msg://resetRememberMe" invoke="resetRememberMe"/>
                 <action id="excel"/>
             </actions>
             <buttonsPanel>
@@ -54,9 +52,7 @@
                 <button action="usersTable.edit"/>
                 <button id="userTableCopyButton" action="usersTable.copy"/>
                 <button action="usersTable.remove"/>
-                <button action="usersTable.copySettings"/>
-                <button id="changePasswordButton" action="usersTable.changePassw"/>
-                <button action="usersTable.changePasswAtLogon"/>
+                <popupButton id="additionalActionsBtn" caption="msg://additional" icon="icons/gear.png"/>
                 <button action="usersTable.excel"/>
             </buttonsPanel>
             <rowsCount/>

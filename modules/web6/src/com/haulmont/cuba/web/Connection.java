@@ -14,9 +14,8 @@ import java.util.Locale;
 /**
  * Interface to be implemented by middleware connection objects on web-client.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public interface Connection {
 
@@ -25,9 +24,18 @@ public interface Connection {
      * @param login             user login name
      * @param password          encrypted user password
      * @param locale            user locale
-     * @throws LoginException   in case of unsuccesful login due to wrong credentials or other issues
+     * @throws LoginException   in case of unsuccessful login due to wrong credentials or other issues
      */
     void login(String login, String password, Locale locale) throws LoginException;
+
+    /**
+     * Log in to the system.
+     * @param login             user login name
+     * @param rememberMeToken   remember me token
+     * @param locale            user locale
+     * @throws LoginException   in case of unsuccessful login due to wrong credentials or other issues
+     */
+    void loginByRememberMe(String login, String rememberMeToken, Locale locale) throws LoginException;
 
     /**
      * Log out of the system.
@@ -52,6 +60,15 @@ public interface Connection {
     boolean isConnected();
 
     /**
+     * Check if remember me token exists in db
+     *
+     * @param login           user login
+     * @param rememberMeToken remember me token
+     * @return true if remember me token exists in db
+     */
+    boolean checkRememberMe(String login, String rememberMeToken);
+
+    /**
      * Get current user session.
      * @return  user session object or null if not connected
      */
@@ -61,7 +78,7 @@ public interface Connection {
     /**
      * Update internal state with the passed user session object. Also fires connection listeners.
      * @param session           new UserSession object
-     * @throws LoginException   in case of unsuccesful update
+     * @throws LoginException   in case of unsuccessful update
      */
     void update(UserSession session) throws LoginException;
 

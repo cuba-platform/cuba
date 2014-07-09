@@ -809,6 +809,23 @@ create index IDX_SYS_QUERY_RESULT_SESSION_KEY on SYS_QUERY_RESULT (SESSION_ID, Q
 
 ------------------------------------------------------------------------------------------------------------------
 
+create table SEC_REMEMBER_ME (
+    ID uniqueidentifier not null,
+    CREATE_TS datetime,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    --
+    USER_ID uniqueidentifier not null,
+    TOKEN varchar(32) not null,
+    --
+    primary key (ID),
+    constraint FK_SEC_REMEMBER_ME_USER foreign key (USER_ID) references SEC_USER(ID)
+)^
+create index IDX_SEC_REMEMBER_ME_USER on SEC_REMEMBER_ME(USER_ID)^
+create index IDX_SEC_REMEMBER_ME_TOKEN on SEC_REMEMBER_ME(TOKEN)^
+
+------------------------------------------------------------------------------------------------------------------
+
 insert into SEC_GROUP (ID, CREATE_TS, VERSION, NAME, PARENT_ID)
 values ('0fa2b1a5-1d68-4d69-9fbd-dff348347f93', current_timestamp, 0, 'Company', null)^
 

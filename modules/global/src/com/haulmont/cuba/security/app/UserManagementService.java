@@ -65,11 +65,21 @@ public interface UserManagementService {
     boolean checkPassword(UUID userId, String passwordHash);
 
     /**
-     * @param userId          User id
-     * @param newPasswordHash Plain hash of new password
-     * @return True if the new and old passwords are equal
-     * @deprecated Use ${@link com.haulmont.cuba.security.app.UserManagementService#checkPassword(java.util.UUID, String)}
+     * Remove remember me tokens for users
+     *
+     * @param userIds User ids
      */
-    @Deprecated
-    boolean checkEqualsOfNewAndOldPassword(UUID userId, String newPasswordHash);
+    void resetRememberMeTokens(List<UUID> userIds);
+
+    /**
+     * Remove remember me tokens for all users
+     */
+    void resetRememberMeTokens();
+
+    /**
+     * Generate and store to DB {@link com.haulmont.cuba.security.entity.RememberMeToken}
+     *
+     * @return token string
+     */
+    String generateRememberMeToken(UUID userId);
 }

@@ -67,7 +67,31 @@ public interface LoginService {
      * @return created user session
      * @throws LoginException in case of unsuccessful login
      */
-    UserSession loginTrusted(String login, String password, Locale locale, Map<String, Object> params) throws LoginException;
+    UserSession loginTrusted(String login, String password, Locale locale, Map<String, Object> params)
+            throws LoginException;
+
+    /**
+     * Login using user name and remember me token
+     *
+     * @param login           login name
+     * @param rememberMeToken client's remember me token
+     * @param locale          client locale
+     * @return created user session
+     * @throws LoginException in case of unsuccessful login
+     */
+    UserSession loginByRememberMe(String login, String rememberMeToken, Locale locale) throws LoginException;
+
+    /**
+     * Login using user name and remember me token
+     *
+     * @param login           login name
+     * @param rememberMeToken client's remember me token
+     * @param locale          client locale
+     * @param params          login params
+     * @return created user session
+     * @throws LoginException in case of unsuccessful login
+     */
+    UserSession loginByRememberMe(String login, String rememberMeToken, Locale locale, Map<String, Object> params) throws LoginException;
 
     /**
      * Log out and destroy an active user session.
@@ -79,7 +103,7 @@ public interface LoginService {
      * <p/>
      * This method replaces an active UserSession with the new one, which is returned.
      *
-     * @param substitutedUser a user to substitute. Must be in the current users's {@link User#substitutions} list.
+     * @param substitutedUser a user to substitute. Must be in the current users' {@link User#substitutions} list.
      * @return new UserSession instance that contains: <ul>
      *         <li> id - the previously active user session id </li>
      *         <li> user - the logged in user </li>
@@ -97,4 +121,13 @@ public interface LoginService {
      */
     @Nullable
     UserSession getSession(UUID sessionId);
+
+    /**
+     * Check if remember me token exists in db
+     *
+     * @param login           user login
+     * @param rememberMeToken remember me token
+     * @return true if remember me token exists in db
+     */
+    boolean checkRememberMe(String login, String rememberMeToken);
 }

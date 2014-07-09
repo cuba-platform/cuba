@@ -84,6 +84,33 @@ public class LoginServiceBean implements LoginService {
     }
 
     @Override
+    public UserSession loginByRememberMe(String login, String rememberMeToken, Locale locale) throws LoginException {
+        try {
+            return loginWorker.loginByRememberMe(login, rememberMeToken, locale);
+        } catch (LoginException e) {
+            log.info("Login failed: " + e.toString());
+            throw e;
+        } catch (Throwable e) {
+            log.error("Login error", e);
+            throw wrapInLoginException(e);
+        }
+    }
+
+    @Override
+    public UserSession loginByRememberMe(String login, String rememberMeToken, Locale locale, Map<String, Object> params)
+            throws LoginException {
+        try {
+            return loginWorker.loginByRememberMe(login, rememberMeToken, locale, params);
+        } catch (LoginException e) {
+            log.info("Login failed: " + e.toString());
+            throw e;
+        } catch (Throwable e) {
+            log.error("Login error", e);
+            throw wrapInLoginException(e);
+        }
+    }
+
+    @Override
     public void logout() {
         try {
             loginWorker.logout();
@@ -101,6 +128,11 @@ public class LoginServiceBean implements LoginService {
     @Override
     public UserSession getSession(UUID sessionId) {
         return loginWorker.getSession(sessionId);
+    }
+
+    @Override
+    public boolean checkRememberMe(String login, String rememberMeToken) {
+        return loginWorker.checkRememberMe(login, rememberMeToken);
     }
 
     protected LoginException wrapInLoginException(Throwable throwable) {

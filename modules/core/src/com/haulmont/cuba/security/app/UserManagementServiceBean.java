@@ -14,6 +14,7 @@ import groovy.text.SimpleTemplateEngine;
 import groovy.text.Template;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -219,10 +220,57 @@ public class UserManagementServiceBean implements UserManagementService {
         return passwordEncryption.checkPassword(user, passwordHash);
     }
 
-    @Deprecated
     @Override
-    public boolean checkEqualsOfNewAndOldPassword(UUID userId, String newPasswordHash) {
-        return checkPassword(userId, newPasswordHash);
+    public void resetRememberMeTokens(List<UUID> userIds) {
+        Transaction tx = persistence.getTransaction();
+        try {
+            EntityManager em = persistence.getEntityManager();
+
+            Query query = em.createQuery("delete from sec$RememberMeToken rt where rt.user.id in :userIds");
+            query.setParameter("userIds", userIds);
+            query.executeUpdate();
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+    }
+
+    @Override
+    public void resetRememberMeTokens() {
+        Transaction tx = persistence.createTransaction();
+        try {
+            EntityManager em = persistence.getEntityManager();
+
+            Query query = em.createQuery("delete from sec$RememberMeToken rt");
+            query.executeUpdate();
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+    }
+
+    @Override
+    public String generateRememberMeToken(UUID userId) {
+        String token = RandomStringUtils.randomAlphanumeric(RememberMeToken.TOKEN_LENGTH);
+
+        Transaction tx = persistence.createTransaction();
+        try {
+            EntityManager em = persistence.getEntityManager();
+
+            RememberMeToken rememberMeToken = new RememberMeToken();
+            rememberMeToken.setToken(token);
+            rememberMeToken.setUser(em.getReference(User.class, userId));
+
+            em.persist(rememberMeToken);
+
+            tx.commit();
+        } finally {
+          tx.end();
+        }
+
+        return token;
     }
 
     protected EmailTemplate getResetPasswordTemplate(User user,
@@ -357,10 +405,13 @@ public class UserManagementServiceBean implements UserManagementService {
                 modifiedUsers.put(user, password);
             }
 
+            resetRememberMeTokens(userIds);
+
             tx.commit();
         } finally {
             tx.end();
         }
+
         return modifiedUsers;
     }
 
