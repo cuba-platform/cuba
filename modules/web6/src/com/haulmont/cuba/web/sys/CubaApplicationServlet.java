@@ -50,6 +50,7 @@ public class CubaApplicationServlet extends ApplicationServlet {
     private WebConfig webConfig;
 
     private GlobalConfig globalConfig;
+    private String webResourceTimestamp;
 
     @Override
     protected boolean isTestingMode() {
@@ -68,6 +69,8 @@ public class CubaApplicationServlet extends ApplicationServlet {
         Configuration configuration = AppBeans.get(Configuration.class);
         webConfig = configuration.getConfig(WebConfig.class);
         globalConfig = configuration.getConfig(GlobalConfig.class);
+
+        webResourceTimestamp = getResourceVersion();
     }
 
     @Override
@@ -405,7 +408,7 @@ public class CubaApplicationServlet extends ApplicationServlet {
         }
         page.write(fileName);
         if (nocache) {
-            page.write("?v=" + getResourceVersion());
+            page.write("?v=" + webResourceTimestamp);
         }
         page.write("\" language=\"javascript\"> </script>");
     }
@@ -416,7 +419,6 @@ public class CubaApplicationServlet extends ApplicationServlet {
         // script
         // tag to be dominate styles injected by widget
         // set
-        String webResourceTimestamp = getResourceVersion();
 
         page.write("<script type=\"text/javascript\">\n");
         page.write("//<![CDATA[\n");
@@ -455,8 +457,10 @@ public class CubaApplicationServlet extends ApplicationServlet {
                 throw new ServletException(e);
             }
 
-            // Handles requested cookies
-            ((App) application).getCookies().updateCookies(request);
+            App app = (App) application;
+
+            app.setWebResourceTimestamp(webResourceTimestamp);
+            app.getCookies().updateCookies(request);              // Handles requested cookies
 
             return application;
         } catch (final IllegalAccessException | InstantiationException e) {
