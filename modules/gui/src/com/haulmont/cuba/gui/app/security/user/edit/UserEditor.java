@@ -157,36 +157,42 @@ public class UserEditor extends AbstractEditor<User> {
         user.setUserRoles(newRoles);
     }
 
-    private void initCustomFields(boolean isNew) {
-        if (isNew) {
-            fieldGroup.addCustomField("passw", new FieldGroup.CustomFieldGenerator() {
-                @Override
-                public Component generateField(Datasource datasource, String propertyId) {
-                    passwField = factory.createComponent(PasswordField.NAME);
+    private void initCustomFields(final boolean isNew) {
+        fieldGroup.addCustomField("passw", new FieldGroup.CustomFieldGenerator() {
+            @Override
+            public Component generateField(Datasource datasource, String propertyId) {
+                passwField = factory.createComponent(PasswordField.NAME);
+                if (isNew) {
                     passwField.setRequiredMessage(getMessage("passwMsg"));
                     if (companion != null) {
                         companion.initPasswordField(passwField);
                     } else {
                         passwField.setRequired(true);
                     }
-                    return passwField;
+                } else {
+                    passwField.setVisible(false);
                 }
-            });
+                return passwField;
+            }
+        });
 
-            fieldGroup.addCustomField("confirmPassw", new FieldGroup.CustomFieldGenerator() {
-                @Override
-                public Component generateField(Datasource datasource, String propertyId) {
-                    confirmPasswField = factory.createComponent(PasswordField.NAME);
+        fieldGroup.addCustomField("confirmPassw", new FieldGroup.CustomFieldGenerator() {
+            @Override
+            public Component generateField(Datasource datasource, String propertyId) {
+                confirmPasswField = factory.createComponent(PasswordField.NAME);
+                if (isNew) {
                     confirmPasswField.setRequiredMessage(getMessage("confirmPasswMsg"));
                     if (companion != null) {
                         companion.initPasswordField(confirmPasswField);
                     } else {
                         confirmPasswField.setRequired(true);
                     }
-                    return confirmPasswField;
+                } else {
+                    confirmPasswField.setVisible(false);
                 }
-            });
-        }
+                return confirmPasswField;
+            }
+        });
 
         fieldGroup.addCustomField("language", new FieldGroup.CustomFieldGenerator() {
             @Override
