@@ -116,7 +116,10 @@ public class WindowConfig {
         if (windowInfo == null) {
             Matcher matcher = ENTITY_SCREEN_PATTERN.matcher(id);
             if (matcher.matches()) {
-                MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalMetaClass(matcher.group(1));
+                MetaClass metaClass = metadata.getClass(matcher.group(1));
+                if (metaClass == null)
+                    return null;
+                MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalMetaClass(metaClass);
                 if (originalMetaClass != null) {
                     String originalId = new StringBuilder(id)
                             .replace(matcher.start(1), matcher.end(1), originalMetaClass.getName()).toString();
