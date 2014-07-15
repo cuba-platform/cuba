@@ -226,13 +226,11 @@ create table SEC_USER (
     LANGUAGE_ varchar(20),
     ACTIVE boolean,
     GROUP_ID uuid,
-    DEFAULT_SUBSTITUTED_USER_ID uuid,
     IP_MASK varchar(200),
     CHANGE_PASSWORD_AT_LOGON boolean,
     --
     primary key (ID),
-    constraint SEC_USER_GROUP foreign key (GROUP_ID) references SEC_GROUP(ID),
-    constraint SEC_USER_DEFAULT_SUBSTITUTED_USER foreign key (DEFAULT_SUBSTITUTED_USER_ID) references SEC_USER(ID)
+    constraint SEC_USER_GROUP foreign key (GROUP_ID) references SEC_GROUP(ID)
 )^
 
 create unique index IDX_SEC_USER_UNIQ_LOGIN on SEC_USER (LOGIN_LC) where DELETE_TS is null^

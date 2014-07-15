@@ -62,7 +62,6 @@ public class ViewRepositoryTest extends CubaTestCase {
         assertNotNull(view.getProperty("login"));
         assertNotNull(view.getProperty("userRoles"));
         assertNull(view.getProperty("substitutions"));
-        assertNull(view.getProperty("defaultSubstitutedUser"));
     }
 
     public void testAnonymous() {

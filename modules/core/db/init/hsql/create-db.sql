@@ -228,15 +228,12 @@ create table SEC_USER (
     LANGUAGE_ varchar(20),
     ACTIVE boolean,
     GROUP_ID varchar(36),
-    DEFAULT_SUBSTITUTED_USER_ID varchar(36),
     IP_MASK varchar(200),
     CHANGE_PASSWORD_AT_LOGON boolean,
     --
     primary key (ID),
     constraint SEC_USER_UNIQ_LOGIN unique (LOGIN_LC, DELETE_TS),
-    constraint SEC_USER_GROUP foreign key (GROUP_ID) references SEC_GROUP(ID),
-    constraint SEC_USER_DEFAULT_SUBSTITUTED_USER foreign key (DEFAULT_SUBSTITUTED_USER_ID)
-        references SEC_USER(ID)
+    constraint SEC_USER_GROUP foreign key (GROUP_ID) references SEC_GROUP(ID)
 )^
 
 ------------------------------------------------------------------------------------------------------------

@@ -528,7 +528,6 @@ create table SEC_USER (
     LANGUAGE_ varchar2(20),
     ACTIVE char(1),
     GROUP_ID varchar2(32),
-    DEFAULT_SUBSTITUTED_USER_ID varchar2(32),
     IP_MASK varchar2(200),
     CHANGE_PASSWORD_AT_LOGON char(1),
     primary key(ID)
@@ -639,7 +638,6 @@ alter table SEC_SEARCH_FOLDER add constraint FK_SEC_SEARCH_FOLDER_FOLDER foreign
 alter table SEC_SESSION_ATTR add constraint SEC_SESSION_ATTR_GROUP foreign key (GROUP_ID) references SEC_GROUP(ID)^
 
 alter table SEC_USER add constraint SEC_USER_GROUP foreign key (GROUP_ID) references SEC_GROUP(ID)^
-alter table SEC_USER add constraint SEC_USER_DEFAULT_SUB_USE foreign key (DEFAULT_SUBSTITUTED_USER_ID) references SEC_USER(ID)^
 
 alter table SEC_USER_ROLE add constraint SEC_USER_ROLE_ROLE foreign key (ROLE_ID) references SEC_ROLE(ID)^
 alter table SEC_USER_ROLE add constraint SEC_USER_ROLE_PROFILE foreign key (USER_ID) references SEC_USER(ID)^

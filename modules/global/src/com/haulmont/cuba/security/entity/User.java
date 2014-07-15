@@ -82,10 +82,6 @@ public class User extends StandardEntity {
     @Composition
     protected List<UserRole> userRoles;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "DEFAULT_SUBSTITUTED_USER_ID")
-    protected User defaultSubstitutedUser;
-
     @OneToMany(mappedBy = "user")
     @OrderBy("createTs")
     @Composition
@@ -201,14 +197,6 @@ public class User extends StandardEntity {
 
     public void setSubstitutions(List<UserSubstitution> substitutions) {
         this.substitutions = substitutions;
-    }
-
-    public User getDefaultSubstitutedUser() {
-        return defaultSubstitutedUser;
-    }
-
-    public void setDefaultSubstitutedUser(User defaultSubstitutedUser) {
-        this.defaultSubstitutedUser = defaultSubstitutedUser;
     }
 
     public Boolean getActive() {

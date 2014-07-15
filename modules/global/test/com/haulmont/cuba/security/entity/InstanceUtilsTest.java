@@ -34,20 +34,11 @@ public class InstanceUtilsTest extends TestCase {
     }
 
     public void test() {
-        assertNull(userSubst.getValueEx("user.defaultSubstitutedUser.login"));
-
         assertEquals("testName", userSubst.getValueEx("user.name.login"));
 
         assertEquals("testGroup", userSubst.getValueEx("user.group.name"));
 
         userSubst.setValueEx("user.group.name", "newName");
         assertEquals("newName", userSubst.getValueEx("user.group.name"));
-
-        try {
-            userSubst.setValueEx("user.defaultSubstitutedUser.login", "newLogin");
-            fail();
-        } catch (IllegalStateException e) {
-            // ok
-        }
     }
 }
