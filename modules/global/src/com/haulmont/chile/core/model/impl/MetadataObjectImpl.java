@@ -28,9 +28,6 @@ public abstract class MetadataObjectImpl<T extends MetadataObject> implements Me
 
     protected String name;
 
-    private transient String caption;
-    private transient String description;
-
     private transient UUID uuid = UUID.randomUUID();
 
     private transient Map<String, Object> annotations = new HashMap<>();
@@ -73,16 +70,6 @@ public abstract class MetadataObjectImpl<T extends MetadataObject> implements Me
     }
 
     @Override
-    public String getCaption() {
-        return caption;
-    }
-
-    @Override
-    public String getDescription() {
-        return description;
-    }
-
-    @Override
     public UUID getUUID() {
         return uuid;
     }
@@ -98,14 +85,6 @@ public abstract class MetadataObjectImpl<T extends MetadataObject> implements Me
 
     public void setUuid(UUID uuid) {
         this.uuid = uuid;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setCaption(String caption) {
-        this.caption = caption;
     }
 
     public void addAncestor(T ancestorClass) {

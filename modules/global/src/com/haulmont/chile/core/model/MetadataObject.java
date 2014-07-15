@@ -11,6 +11,9 @@ import java.util.Collection;
 
 /**
  * Ancestor of main metadata objects: {@link com.haulmont.chile.core.model.MetaClass} and {@link com.haulmont.chile.core.model.MetaProperty}
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 public interface MetadataObject<T extends MetadataObject> {
 
@@ -38,16 +41,6 @@ public interface MetadataObject<T extends MetadataObject> {
      * Not used
      */
     String getFullName();
-
-    /**
-     * Localized MetadataObject caption for use in UI
-     */
-    String getCaption();
-
-    /**
-     * Localized MetadataObject description for use in UI
-     */
-    String getDescription();
 
     /**
      * Unique ID
