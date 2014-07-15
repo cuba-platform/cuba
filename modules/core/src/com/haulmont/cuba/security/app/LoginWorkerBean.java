@@ -121,9 +121,6 @@ public class LoginWorkerBean implements LoginWorker {
             }
 
             UserSession session = userSessionManager.createSession(user, locale, false);
-            if (user.getDefaultSubstitutedUser() != null) {
-                session = userSessionManager.createSession(session, user.getDefaultSubstitutedUser());
-            }
             log.info("Logged in: " + session);
 
             tx.commit();
@@ -156,9 +153,6 @@ public class LoginWorkerBean implements LoginWorker {
                 throw new LoginException(getInvalidCredentialsMessage(login, locale));
 
             UserSession session = userSessionManager.createSession(user, locale, true);
-            if (user.getDefaultSubstitutedUser() != null) {
-                session = userSessionManager.createSession(session, user.getDefaultSubstitutedUser());
-            }
             log.info("Logged in: " + session);
 
             tx.commit();
@@ -199,9 +193,6 @@ public class LoginWorkerBean implements LoginWorker {
                 userLocale = new Locale(user.getLanguage());
             }
             UserSession session = userSessionManager.createSession(user, userLocale, false);
-            if (user.getDefaultSubstitutedUser() != null) {
-                session = userSessionManager.createSession(session, user.getDefaultSubstitutedUser());
-            }
             log.info("Logged in: " + session);
 
             tx.commit();
@@ -239,9 +230,6 @@ public class LoginWorkerBean implements LoginWorker {
                 userLocale = new Locale(user.getLanguage());
             }
             UserSession session = userSessionManager.createSession(user, userLocale, false);
-            if (user.getDefaultSubstitutedUser() != null) {
-                session = userSessionManager.createSession(session, user.getDefaultSubstitutedUser());
-            }
             log.info("Logged in: " + session);
 
             tx.commit();
