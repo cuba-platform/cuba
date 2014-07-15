@@ -65,6 +65,7 @@ public class BulkEditAction extends AbstractAction {
 
         Map<String, Object> params = new HashMap<>();
         params.put("metaClass", owner.getDatasource().getMetaClass());
+        params.put("view", owner.getDatasource().getView());
         params.put("selected", owner.getSelected());
         params.put("exclude", exclude);
 

@@ -75,6 +75,9 @@ public class BulkEditorWindow extends AbstractWindow {
     @WindowParam(required = true)
     protected MetaClass metaClass;
 
+    @WindowParam
+    protected View view;
+
     @WindowParam(required = true)
     protected Set<Entity> selected;
 
@@ -485,11 +488,11 @@ public class BulkEditorWindow extends AbstractWindow {
         for (Entity item : selected) {
             ids.add(((BaseUuidEntity) item).getId());
         }
-
         LoadContext.Query query = new LoadContext.Query(String.format("select e from %s e where e.id in :ids", metaClass));
         query.setParameter("ids", ids);
-
         lc.setQuery(query);
+
+        lc.setView(view);
 
         return dataSupplier.loadList(lc);
     }
