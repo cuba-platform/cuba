@@ -631,6 +631,11 @@ public class FoldersPane extends VerticalLayout {
                         && !StringUtils.isBlank(((AbstractSearchFolder) folder).getFilterComponentId());
     }
 
+    protected boolean isItemExpandable(Folder folder) {
+        return folder instanceof AbstractSearchFolder &&
+                StringUtils.isBlank(((AbstractSearchFolder) folder).getFilterComponentId());
+    }
+
     protected class FolderTreeStyleProvider implements Tree.ItemStyleGenerator {
         private static final long serialVersionUID = 3346848644718707748L;
 
@@ -673,6 +678,14 @@ public class FoldersPane extends VerticalLayout {
                     }
                 } else {
                     openFolder((AbstractSearchFolder) event.getItemId());
+                }
+            } else if (isItemExpandable(folder)) {
+                Component tree = event.getComponent();
+                if (tree instanceof Tree && isItemExpandable(folder)) {
+                    if (((Tree) tree).isExpanded(folder))
+                        ((Tree) tree).collapseItem(folder);
+                    else
+                        ((Tree) tree).expandItem(folder);
                 }
             }
         }
