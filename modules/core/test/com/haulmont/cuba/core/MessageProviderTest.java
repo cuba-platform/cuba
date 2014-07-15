@@ -88,7 +88,7 @@ public class MessageProviderTest extends CubaTestCase {
         String msg = messages.getMessage(MpTestNestedObj.class, "key0");
         assertEquals("Message0", msg);
 
-        assertEquals(2,
+        assertEquals(4,
                 Iterables.size(Iterables.filter(appender.getMessages(), new Predicate<String>() {
                     @Override
                     public boolean apply(@Nullable String input) {
@@ -96,7 +96,7 @@ public class MessageProviderTest extends CubaTestCase {
                     }
                 }))
         );
-        assertEquals(2,
+        assertEquals(4,
                 Iterables.size(Iterables.filter(appender.getMessages(), new Predicate<String>() {
                     @Override
                     public boolean apply(@Nullable String input) {
@@ -122,7 +122,7 @@ public class MessageProviderTest extends CubaTestCase {
 
         String msg = messages.getMessage(MpTestNestedObj.class, "key0", Locale.forLanguageTag("fr"));
         assertEquals("Message0 in French", msg);
-        assertEquals(2, getSearchMessagesCount());
+        assertEquals(6, getSearchMessagesCount());
 
         appender.getMessages().clear();
 
@@ -147,7 +147,7 @@ public class MessageProviderTest extends CubaTestCase {
 
         String msg = messages.getMessage("com.haulmont.cuba.core.mp_test.nested com.haulmont.cuba.core.mp_test", "key0");
         assertEquals("Message0", msg);
-        assertEquals(8, getSearchMessagesCount());
+        assertEquals(12, getSearchMessagesCount());
 
         appender.getMessages().clear();
 
@@ -164,7 +164,7 @@ public class MessageProviderTest extends CubaTestCase {
         String msg = messages.getMessage("com.haulmont.cuba.core.mp_test.nested com.haulmont.cuba.core.mp_test", "key0",
                 Locale.forLanguageTag("fr"));
         assertEquals("Message0 in French", msg);
-        assertEquals(4, getSearchMessagesCount());
+        assertEquals(8, getSearchMessagesCount());
 
         appender.getMessages().clear();
 

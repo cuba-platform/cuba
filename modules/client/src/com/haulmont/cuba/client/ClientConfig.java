@@ -157,7 +157,7 @@ public interface ClientConfig extends Config {
      * @return If true, client will try to find missing localized messages on the server.
      */
     @Property("cuba.remoteMessagesSearchEnabled")
-    @DefaultBoolean(true)
+    @DefaultBoolean(false)
     boolean getRemoteMessagesSearchEnabled();
 
     @Property("cuba.gui.pickerShortcut.modifiers")

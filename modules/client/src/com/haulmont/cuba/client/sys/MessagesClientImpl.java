@@ -13,6 +13,8 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.AbstractMessages;
 import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.perf4j.StopWatch;
+import org.perf4j.log4j.Log4JStopWatch;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -33,7 +35,7 @@ public class MessagesClientImpl extends AbstractMessages {
     @Inject
     protected UserSessionSource userSessionSource;
 
-    protected volatile boolean remoteSearch = true;
+    protected volatile boolean remoteSearch;
 
     protected ClientConfig clientConfig;
 
@@ -42,6 +44,7 @@ public class MessagesClientImpl extends AbstractMessages {
     public void setConfiguration(Configuration configuration) {
         super.setConfiguration(configuration);
         clientConfig = configuration.getConfig(ClientConfig.class);
+        remoteSearch = clientConfig.getRemoteMessagesSearchEnabled();
     }
 
     @Override
@@ -59,6 +62,7 @@ public class MessagesClientImpl extends AbstractMessages {
         if (log.isTraceEnabled())
             log.trace("searchRemotely: " + pack + "/" + locale + "/" + key);
 
+        StopWatch stopWatch = new Log4JStopWatch("Messages.searchRemotely");
         try {
             String message = localizedMessageService.getMessage(pack, key, locale);
             if (key.equals(message))
@@ -74,6 +78,8 @@ public class MessagesClientImpl extends AbstractMessages {
                 }
             }
             throw (RuntimeException) e;
+        } finally {
+            stopWatch.stop();
         }
     }
 
