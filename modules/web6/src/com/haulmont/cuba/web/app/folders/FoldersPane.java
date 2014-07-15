@@ -749,7 +749,7 @@ public class FoldersPane extends VerticalLayout {
                 }
             } else if (isItemExpandable(folder)) {
                 Component tree = event.getComponent();
-                if (tree instanceof Tree && isItemExpandable(folder)) {
+                if (tree instanceof Tree) {
                     if (((Tree) tree).isExpanded(folder))
                         ((Tree) tree).collapseItem(folder);
                     else
