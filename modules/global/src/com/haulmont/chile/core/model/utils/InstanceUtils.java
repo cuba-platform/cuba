@@ -4,11 +4,13 @@
  */
 package com.haulmont.chile.core.model.utils;
 
-import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.annotations.NamePattern;
+import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.IllegalEntityStateException;
+import com.haulmont.cuba.core.global.Messages;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -17,6 +19,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
+
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 /**
  * Utility class to work with {@link Instance}s.
@@ -25,6 +30,8 @@ import java.util.List;
  * @version $Id$
  */
 public final class InstanceUtils {
+
+    private static final Pattern instanceNameSplitPattern = Pattern.compile("[,;]");
 
     private InstanceUtils() {
     }
@@ -169,7 +176,7 @@ public final class InstanceUtils {
      * @return          new instance of the same Java class as source
      */
     public static Instance copy(Instance source) {
-        Preconditions.checkNotNullArgument(source, "source is null");
+        checkNotNullArgument(source, "source is null");
 
         Instance dest;
         try {
@@ -192,8 +199,8 @@ public final class InstanceUtils {
      * @param dest      destination instance
      */
     public static void copy(Instance source, Instance dest) {
-        Preconditions.checkNotNullArgument(source, "source is null");
-        Preconditions.checkNotNullArgument(dest, "dest is null");
+        checkNotNullArgument(source, "source is null");
+        checkNotNullArgument(dest, "dest is null");
 
         for (MetaProperty srcProperty : source.getMetaClass().getProperties()) {
             String name = srcProperty.getName();
@@ -219,7 +226,7 @@ public final class InstanceUtils {
      * @param instance  instance
      */
     public static String getInstanceName(Instance instance) {
-        Preconditions.checkNotNullArgument(instance, "instance is null");
+        checkNotNullArgument(instance, "instance is null");
 
         String pattern = (String) instance.getMetaClass().getAnnotations().get(NamePattern.class.getName());
         if (StringUtils.isBlank(pattern)) {
@@ -243,16 +250,26 @@ public final class InstanceUtils {
 
             String fieldsStr = StringUtils.substring(pattern, pos + 1);
 
-            String[] fields = fieldsStr.split("[,;]");
+            // lazy initialized messages, used only for enum values
+            Messages messages = null;
+
+            String[] fields = instanceNameSplitPattern.split(fieldsStr);
             Object[] values = new Object[fields.length];
             for (int i = 0; i < fields.length; i++) {
                 Object value = instance.getValue(fields[i]);
                 if (value == null) {
                     values[i] = "";
-                } else if (value instanceof Instance)
+                } else if (value instanceof Instance) {
                     values[i] = getInstanceName((Instance) value);
-                else
+                } else if (value instanceof EnumClass) {
+                    if (messages == null) {
+                        messages = AppBeans.get(Messages.class);
+                    }
+
+                    values[i] = messages.getMessage((Enum)value);
+                } else {
                     values[i] = value;
+                }
             }
 
             return String.format(format, values);
