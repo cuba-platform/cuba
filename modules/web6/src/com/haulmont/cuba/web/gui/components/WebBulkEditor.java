@@ -86,6 +86,8 @@ public class WebBulkEditor extends WebButton implements BulkEditor {
             }
             bulkEditAction.setEnabled(enabled);
             bulkEditAction.setVisible(visible);
+
+            listComponent.addAction(bulkEditAction);
         }
     }
 }

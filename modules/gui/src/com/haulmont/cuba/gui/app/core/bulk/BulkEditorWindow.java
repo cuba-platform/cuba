@@ -75,9 +75,6 @@ public class BulkEditorWindow extends AbstractWindow {
     @WindowParam(required = true)
     protected MetaClass metaClass;
 
-    @WindowParam
-    protected View view;
-
     @WindowParam(required = true)
     protected Set<Entity> selected;
 
@@ -104,8 +101,6 @@ public class BulkEditorWindow extends AbstractWindow {
         checkNotNullArgument(metaClass);
         checkNotNullArgument(selected);
 
-        items = loadItems();
-
         if (StringUtils.isNotBlank(exclude)) {
             excludeRegex = Pattern.compile(exclude);
         }
@@ -115,6 +110,8 @@ public class BulkEditorWindow extends AbstractWindow {
         }
 
         View view = createView(metaClass);
+
+        items = loadItems(view);
 
         dsContext = new DsContextImpl(dataSupplier);
         dsContext.setFrameContext(getDsContext().getFrameContext());
@@ -480,7 +477,7 @@ public class BulkEditorWindow extends AbstractWindow {
         }
     }
 
-    protected List<Entity> loadItems() {
+    protected List<Entity> loadItems(View view) {
         LoadContext lc = new LoadContext(metaClass);
         lc.setSoftDeletion(false);
 
@@ -491,7 +488,6 @@ public class BulkEditorWindow extends AbstractWindow {
         LoadContext.Query query = new LoadContext.Query(String.format("select e from %s e where e.id in :ids", metaClass));
         query.setParameter("ids", ids);
         lc.setQuery(query);
-
         lc.setView(view);
 
         return dataSupplier.loadList(lc);

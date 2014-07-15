@@ -90,6 +90,8 @@ public class DesktopBulkEditor extends DesktopButton implements BulkEditor {
             }
             bulkEditAction.setEnabled(enabled);
             bulkEditAction.setVisible(visible);
+
+            listComponent.addAction(bulkEditAction);
         }
     }
 }

@@ -7,6 +7,8 @@ package com.haulmont.cuba.gui.components.actions;
 
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.Datasource;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +17,7 @@ import java.util.Map;
  * @author artamonov
  * @version $Id$
  */
-public class BulkEditAction extends AbstractAction {
+public class BulkEditAction extends ItemTrackingAction {
 
     protected ListComponent owner;
     protected WindowManager.OpenType openType = WindowManager.OpenType.DIALOG;
@@ -51,6 +53,16 @@ public class BulkEditAction extends AbstractAction {
     }
 
     @Override
+    public void refreshState() {
+        super.refreshState();
+
+        CollectionDatasource ds = owner.getDatasource();
+        if (ds != null) {
+            updateApplicableTo(isApplicableTo(ds.getState(), ds.getState() == Datasource.State.VALID ? ds.getItem() : null));
+        }
+    }
+
+    @Override
     public void actionPerform(Component component) {
         if (!userSession.isSpecificPermitted(BulkEditor.PERMISSION)) {
             owner.getFrame().showNotification(messages.getMainMessage("accessDenied.message"), IFrame.NotificationType.ERROR);
@@ -65,7 +77,6 @@ public class BulkEditAction extends AbstractAction {
 
         Map<String, Object> params = new HashMap<>();
         params.put("metaClass", owner.getDatasource().getMetaClass());
-        params.put("view", owner.getDatasource().getView());
         params.put("selected", owner.getSelected());
         params.put("exclude", exclude);
 
