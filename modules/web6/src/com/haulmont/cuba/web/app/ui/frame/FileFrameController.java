@@ -7,14 +7,16 @@ package com.haulmont.cuba.web.app.ui.frame;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.FileStorageException;
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.TimeProvider;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.app.core.file.FileDownloadHelper;
+import com.haulmont.cuba.gui.components.AbstractWindow;
+import com.haulmont.cuba.gui.components.Button;
+import com.haulmont.cuba.gui.components.FileUploadField;
+import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
-import com.haulmont.cuba.gui.app.core.file.FileDownloadHelper;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
@@ -42,18 +44,21 @@ public class FileFrameController extends AbstractWindow {
         filesTable = getComponent("files");
         initGeneratedColumn();
         ds = getDsContext().get("filesDs");
-        Button remove = getComponent("remove");
+        Button remove = getComponentNN("remove");
         remove.setAction(new RemoveAction(filesTable, false));
 
         uploadField.addListener(new FileUploadField.Listener() {
+            @Override
             public void uploadStarted(Event event) {
                 uploadField.setEnabled(false);
             }
 
+            @Override
             public void uploadFinished(Event event) {
                 uploadField.setEnabled(true);
             }
 
+            @Override
             public void uploadSucceeded(Event event) {
                 fd = new FileDescriptor();
                 fd.setName(uploadField.getFileName());
@@ -61,19 +66,17 @@ public class FileFrameController extends AbstractWindow {
 
                 FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
                 File file = fileUploading.getFile(uploadField.getFileId());
-                fd.setSize((int)file.length());
+                fd.setSize(file.length());
 
                 fd.setCreateDate(TimeProvider.currentTimestamp());
                 saveFile();
                 ds.addItem(fd);
-                showNotification(MessageProvider.getMessage(getClass(), "uploadSuccess"), NotificationType.HUMANIZED);
+                showNotification(getMessage("uploadSuccess"), NotificationType.HUMANIZED);
             }
 
+            @Override
             public void uploadFailed(Event event) {
-                showNotification(MessageProvider.getMessage(getClass(), "uploadUnsuccess"), NotificationType.HUMANIZED);
-            }
-
-            public void updateProgress(long readBytes, long contentLength) {
+                showNotification(getMessage("uploadUnsuccess"), NotificationType.HUMANIZED);
             }
         });
     }

@@ -33,7 +33,7 @@ public class FileDescriptor extends StandardEntity {
     private String extension;
 
     @Column(name = "FILE_SIZE")
-    private Integer size;
+    private Long size;
 
     @Column(name = "CREATE_DATE")
     private Date createDate;
@@ -74,11 +74,11 @@ public class FileDescriptor extends StandardEntity {
     /**
      * @return file size in bytes
      */
-    public Integer getSize() {
+    public Long getSize() {
         return size;
     }
 
-    public void setSize(Integer size) {
+    public void setSize(Long size) {
         this.size = size;
     }
 

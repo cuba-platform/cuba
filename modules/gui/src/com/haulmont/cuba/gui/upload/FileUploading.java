@@ -180,11 +180,10 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
     @Override
     public FileDescriptor getFileDescriptor(UUID fileId, String name) {
         File file = getFile(fileId);
-        int fileSize = (int) file.length();
 
         FileDescriptor fDesc = new FileDescriptor();
 
-        fDesc.setSize(fileSize);
+        fDesc.setSize(file.length());
         fDesc.setExtension(FilenameUtils.getExtension(name));
         fDesc.setName(name);
         fDesc.setCreateDate(timeSource.currentTimestamp());

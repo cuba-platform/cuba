@@ -87,6 +87,7 @@ public class FileEditor extends AbstractEditor<FileDescriptor> {
     }
 
     protected class FileUploadListener extends FileUploadField.ListenerAdapter {
+
         @Override
         public void uploadSucceeded(Event event) {
             getItem().setName(uploadField.getFileName());
@@ -95,9 +96,8 @@ public class FileEditor extends AbstractEditor<FileDescriptor> {
 
             FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
             File file = fileUploading.getFile(uploadField.getFileId());
-            Integer size = (int) file.length();
 
-            getItem().setSize(size);
+            getItem().setSize(file.length());
 
             okBtn.setEnabled(true);
 

@@ -461,7 +461,7 @@ public class Emailer implements EmailerAPI {
         contentFile.setCreateDate(timeSource.currentTimestamp());
         contentFile.setName(attachment.getName());
         contentFile.setExtension(FilenameUtils.getExtension(attachment.getName()));
-        contentFile.setSize(attachment.getContent().length);
+        contentFile.setSize((long) attachment.getContent().length);
         return contentFile;
     }
 
@@ -470,7 +470,7 @@ public class Emailer implements EmailerAPI {
         contentTextFile.setCreateDate(timeSource.currentTimestamp());
         contentTextFile.setName("Email_" + message.getId() + "." + BODY_FILE_EXTENSION);
         contentTextFile.setExtension(BODY_FILE_EXTENSION);
-        contentTextFile.setSize(bodyBytes.length);
+        contentTextFile.setSize((long) bodyBytes.length);
         return contentTextFile;
     }
 

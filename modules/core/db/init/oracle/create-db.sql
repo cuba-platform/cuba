@@ -130,7 +130,7 @@ create table SYS_FILE (
     DELETED_BY varchar2(50),
     NAME varchar2(500),
     EXT varchar2(20),
-    FILE_SIZE integer,
+    FILE_SIZE number(19),
     CREATE_DATE timestamp,
     primary key(ID)
 )^

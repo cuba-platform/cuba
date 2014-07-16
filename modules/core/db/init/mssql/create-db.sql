@@ -45,7 +45,7 @@ create table SYS_FILE (
     --
     NAME varchar(500),
     EXT varchar(20),
-    FILE_SIZE integer,
+    FILE_SIZE bigint,
     CREATE_DATE datetime,
     --
     primary key nonclustered (ID)
