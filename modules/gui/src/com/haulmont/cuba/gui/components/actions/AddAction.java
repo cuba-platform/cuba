@@ -6,18 +6,18 @@ package com.haulmont.cuba.gui.components.actions;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.Range;
-import com.haulmont.chile.core.model.Session;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.ExtendedEntities;
 import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.NestedDatasource;
 import com.haulmont.cuba.gui.data.PropertyDatasource;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 
@@ -211,57 +211,59 @@ public class AddAction extends AbstractAction implements Action.HasOpenType {
 
     /**
      * The default implementation of <code>Lookup.Handler</code>, adding items to owner's datasource if they are not
-     * there yet.
-     * <p/> It assumes that a lookup screen returns a collection of entities of the same type as owner's datasource.
+     * there yet. <br/>
+     * It assumes that a lookup screen returns a collection of entities of the same type as owner's datasource or
+     * subtype of owner's datasource class.
      */
     protected class DefaultHandler implements Window.Lookup.Handler {
 
         @SuppressWarnings("unchecked")
         @Override
         public void handleLookup(Collection items) {
-            if (items == null || items.isEmpty())
+            if (items == null || items.isEmpty()) {
                 return;
+            }
 
             final CollectionDatasource ds = owner.getDatasource();
-            if (ds == null)
+            if (ds == null) {
                 return;
-
-            Session session = AppBeans.get(Metadata.class).getSession();
-
-            Entity masterEntity = null;
-            MetaClass masterMetaClass = null;
-            Window window = ComponentsHelper.getWindow(owner);
-            if (window instanceof Window.Editor) {
-                masterEntity = ((Window.Editor) window).getItem();
-                masterMetaClass = session.getClassNN(masterEntity.getClass());
             }
+
+            Metadata metadata = AppBeans.get(Metadata.class);
+            ExtendedEntities extendedEntities = metadata.getExtendedEntities();
 
             ds.suspendListeners();
             try {
+                Entity masterEntity = null;
+                MetaProperty inverseProp = null;
+                boolean initializeMasterReference = false;
+
+                if (ds instanceof NestedDatasource) {
+                    Datasource masterDs = ((NestedDatasource) ds).getMaster();
+                    if (masterDs != null) {
+                        MetaProperty metaProperty = ((NestedDatasource) ds).getProperty();
+                        masterEntity = masterDs.getItem();
+
+                        if (metaProperty != null) {
+                            inverseProp = metaProperty.getInverse();
+
+                            if (inverseProp != null) {
+                                Class inversePropClass = extendedEntities.getEffectiveClass(inverseProp.getDomain());
+                                Class dsClass = extendedEntities.getEffectiveClass(ds.getMetaClass());
+
+                                initializeMasterReference = inversePropClass.isAssignableFrom(dsClass);
+                            }
+                        }
+                    }
+                }
+
                 for (Object item : items) {
                     if (item instanceof Entity) {
                         Entity entity = (Entity) item;
                         if (!ds.containsItem(entity.getId())) {
-                            if (masterEntity != null) {
-                                // try to assign the master entity to some attribute of added entity
-                                MetaClass metaClass = session.getClassNN(entity.getClass());
-                                String propertyName = null;
-                                for (MetaProperty metaProperty : metaClass.getProperties()) {
-                                    Range range = metaProperty.getRange();
-                                    if (range.isClass()
-                                            && !range.getCardinality().isMany()
-                                            && range.asClass().equals(masterMetaClass)) {
-                                        if (propertyName == null)
-                                            propertyName = metaProperty.getName();
-                                        else {
-                                            // more than one property of master's type, don't assign automatically
-                                            propertyName = null;
-                                            break;
-                                        }
-                                    }
-                                }
-                                if (propertyName != null)
-                                    entity.setValue(propertyName, masterEntity);
+                            // Initialize reference to master entity
+                            if (initializeMasterReference) {
+                                entity.setValue(inverseProp.getName(), masterEntity);
                             }
                             ds.addItem(entity);
                         }
