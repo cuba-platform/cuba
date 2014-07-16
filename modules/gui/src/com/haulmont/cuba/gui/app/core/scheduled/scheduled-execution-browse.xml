@@ -3,13 +3,11 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<window
-        xmlns="http://schemas.haulmont.com/cuba/5.2/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/5.2/window.xsd"
         class="com.haulmont.cuba.gui.app.core.scheduled.ScheduledExecutionBrowser"
         messagesPack="com.haulmont.cuba.gui.app.core.scheduled"
         caption="msg://executionBrowseCaption"
-        focusComponent="executionsTable"
-        >
+        focusComponent="executionsTable">
 
     <dsContext>
         <collectionDatasource id="executionsDs" class="com.haulmont.cuba.core.entity.ScheduledExecution" view="_local">
@@ -52,6 +50,7 @@
                 <column id="finishTime">
                     <formatter class="com.haulmont.cuba.gui.components.formatters.DateFormatter" format="yyyy-MM-dd HH:mm:ss"/>
                 </column>
+                <column id="durationSec"/>
                 <column id="server"/>
                 <column id="result"/>
             </columns>

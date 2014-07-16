@@ -5,6 +5,8 @@
 
 package com.haulmont.cuba.core.entity;
 
+import com.haulmont.chile.core.annotations.MetaProperty;
+
 import javax.persistence.*;
 import javax.persistence.Entity;
 import java.util.Date;
@@ -12,9 +14,8 @@ import java.util.Date;
 /**
  * Entity that reflects the fact of a {@link ScheduledTask} execution.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 @Entity(name = "sys$ScheduledExecution")
 @Table(name = "SYS_SCHEDULED_EXECUTION")
@@ -76,6 +77,14 @@ public class ScheduledExecution extends BaseUuidEntity {
 
     public void setResult(String result) {
         this.result = result;
+    }
+
+    @MetaProperty
+    public Long getDurationSec() {
+        if (finishTime == null || startTime == null)
+            return 0L;
+
+        return (finishTime.getTime() - startTime.getTime()) / 1000;
     }
 
     @Override
