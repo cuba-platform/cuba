@@ -254,7 +254,7 @@ public abstract class AbstractMessages implements Messages {
         if (notFound != null)
             return notFound;
 
-        msg = searchMessage(packs, key, locale, false);
+        msg = searchMessage(packs, key, locale, false, new HashSet<String>());
         if (msg != null) {
             cache(cacheKey, msg);
             return msg;
@@ -264,21 +264,25 @@ public abstract class AbstractMessages implements Messages {
         return key;
     }
 
-    protected String searchMessage(String packs, String key, Locale locale, boolean defaultLocale) {
+    @Nullable
+    protected String searchMessage(String packs, String key, Locale locale, boolean defaultLocale, Set<String> passedPacks) {
         StrTokenizer tokenizer = new StrTokenizer(packs);
         //noinspection unchecked
         List<String> list = tokenizer.getTokenList();
         Collections.reverse(list);
         for (String pack : list) {
+            if (!enterPack(pack, locale, defaultLocale, passedPacks))
+                continue;
+
             String cacheKey = makeCacheKey(pack, key, locale, defaultLocale);
 
             String msg = strCache.get(cacheKey);
             if (msg != null)
                 return msg;
 
-            msg = searchFiles(pack, key, locale, defaultLocale);
+            msg = searchFiles(pack, key, locale, defaultLocale, passedPacks);
             if (msg == null) {
-                msg = searchClasspath(pack, key, locale, defaultLocale);
+                msg = searchClasspath(pack, key, locale, defaultLocale, passedPacks);
             }
             if (msg == null && !defaultLocale) {
                 msg = searchRemotely(pack, key, locale);
@@ -291,7 +295,7 @@ public abstract class AbstractMessages implements Messages {
                 return msg;
         }
         if (!defaultLocale)
-            return searchMessage(packs, key, locale, true);
+            return searchMessage(packs, key, locale, true, passedPacks);
         else {
             if (log.isTraceEnabled()) {
                 String packName = new StrBuilder().appendWithSeparators(list, ",").toString();
@@ -301,12 +305,19 @@ public abstract class AbstractMessages implements Messages {
         }
     }
 
+    private boolean enterPack(String pack, Locale locale, boolean defaultLocale, Set<String> passedPacks) {
+        String k = defaultLocale ?
+                pack + "/default" :
+                pack + "/" + (locale == null ? "default" : locale);
+        return passedPacks.add(k);
+    }
+
     protected void cache(String key, String msg) {
         if (!strCache.containsKey(key))
             strCache.put(key, msg);
     }
 
-    protected String searchFiles(String pack, String key, Locale locale, boolean defaultLocale) {
+    protected String searchFiles(String pack, String key, Locale locale, boolean defaultLocale, Set<String> passedPacks) {
         StopWatch stopWatch = new Log4JStopWatch("Messages.searchFiles");
         try {
             String cacheKey = makeCacheKey(pack, key, locale, defaultLocale);
@@ -321,7 +332,7 @@ public abstract class AbstractMessages implements Messages {
             while (packPath != null && !packPath.equals(confDir)) {
                 Properties properties = loadPropertiesFromFile(packPath, locale, defaultLocale);
                 if (properties != PROPERTIES_NOT_FOUND) {
-                    msg = getMessageFromProperties(pack, key, locale, defaultLocale, properties);
+                    msg = getMessageFromProperties(pack, key, locale, defaultLocale, properties, passedPacks);
                     if (msg != null)
                         return msg;
                 }
@@ -338,7 +349,7 @@ public abstract class AbstractMessages implements Messages {
         }
     }
 
-    protected String searchClasspath(String pack, String key, Locale locale, boolean defaultLocale) {
+    protected String searchClasspath(String pack, String key, Locale locale, boolean defaultLocale, Set<String> passedPacks) {
         StopWatch stopWatch = new Log4JStopWatch("Messages.searchClasspath");
         try {
             String cacheKey = makeCacheKey(pack, key, locale, defaultLocale);
@@ -353,7 +364,7 @@ public abstract class AbstractMessages implements Messages {
             while (packPath != null) {
                 Properties properties = loadPropertiesFromResource(packPath, locale, defaultLocale);
                 if (properties != PROPERTIES_NOT_FOUND) {
-                    msg = getMessageFromProperties(pack, key, locale, defaultLocale, properties);
+                    msg = getMessageFromProperties(pack, key, locale, defaultLocale, properties, passedPacks);
                     if (msg != null)
                         return msg;
                 }
@@ -372,7 +383,7 @@ public abstract class AbstractMessages implements Messages {
 
     @Nullable
     protected String getMessageFromProperties(String pack, String key, Locale locale, boolean defaultLocale,
-                                            Properties properties) {
+                                              Properties properties, Set<String> passedPacks) {
         String message;
         message = properties.getProperty(key);
         if (message != null) {
@@ -383,19 +394,33 @@ public abstract class AbstractMessages implements Messages {
 
         if (message == null) {
             // process includes after to support overriding
-            List<Properties> includes = new ArrayList<>();
-            processIncludes(includes, locale, defaultLocale, properties);
-            for (Properties includedProperties : includes) {
-                message = includedProperties.getProperty(key);
-                if (message != null) {
-                    cache(makeCacheKey(pack, key, locale, defaultLocale), message);
-                    if (defaultLocale)
-                        cache(makeCacheKey(pack, key, locale, false), message);
-                    break;
+            message = searchIncludes(properties, key, locale, defaultLocale, passedPacks);
+        }
+        return message;
+    }
+
+    @Nullable
+    protected String searchIncludes(Properties properties, String key, Locale locale, boolean defaultLocale,
+                                    Set<String> passedPacks) {
+        for (String k : properties.stringPropertyNames()) {
+            if (k.startsWith("@include")) {
+                String includesProperty = properties.getProperty(k);
+                // multiple includes separated by comma
+                String[] includes = StringUtils.split(includesProperty, " ,");
+                if (includes != null && includes.length > 0) {
+                    ArrayUtils.reverse(includes);
+                    for (String includePath : includes) {
+                        includePath = StringUtils.trimToNull(includePath);
+                        if (includePath != null) {
+                            String message = searchMessage(includePath, key, locale, defaultLocale, passedPacks);
+                            if (message != null)
+                                return message;
+                        }
+                    }
                 }
             }
         }
-        return message;
+        return null;
     }
 
     protected Properties loadPropertiesFromFile(String packPath, Locale locale, boolean defaultLocale) {
@@ -443,41 +468,6 @@ public abstract class AbstractMessages implements Messages {
             });
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    protected void getAllIncludes(List<Properties> list, String pack, Locale locale, boolean defaultLocale) {
-        log.trace("include: " + pack);
-
-        String packPath = confDir + "/" + pack.replaceAll("\\.", "/");
-        Properties properties = loadPropertiesFromFile(packPath, locale, defaultLocale);
-        if (properties == PROPERTIES_NOT_FOUND) {
-            packPath = "/" + pack.replaceAll("\\.", "/");
-            properties = loadPropertiesFromResource(packPath, locale, defaultLocale);
-        }
-        if (properties == PROPERTIES_NOT_FOUND) {
-            log.warn("Included messages pack not found: " + pack);
-        } else {
-            list.add(properties);
-            processIncludes(list, locale, defaultLocale, properties);
-        }
-    }
-
-    protected void processIncludes(List<Properties> list, Locale locale, boolean defaultLocale, Properties properties) {
-        for (String k : properties.stringPropertyNames()) {
-            if (k.equals("@include")) {
-                String includesProperty = properties.getProperty(k);
-                // multiple includes separated by comma
-                String[] includes = StringUtils.split(includesProperty, " ,");
-                if (includes != null && includes.length > 0) {
-                    ArrayUtils.reverse(includes);
-                    for (String includePath : includes) {
-                        includePath = StringUtils.trimToNull(includePath);
-                        if (includePath != null)
-                            getAllIncludes(list, includePath, locale, defaultLocale);
-                    }
-                }
-            }
         }
     }
 
