@@ -6,12 +6,11 @@
 package com.haulmont.cuba.gui.security.entity;
 
 /**
- * <p>$Id$</p>
- *
  * @author artamonov
+ * @version $Id$
  */
 public interface AssignableTarget {
     boolean isAssigned();
 
-    String getPermissionValue();
+    String getCaption();
 }

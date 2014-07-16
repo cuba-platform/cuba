@@ -144,20 +144,33 @@ public class PermissionConfig {
                     // Filter base entity classes
                     if (name.contains("$")) {
                         // Skip classes that have extensions
-                        if (metadata.getExtendedEntities().getExtendedClass(metaClass) != null)
+                        if (metadata.getExtendedEntities().getExtendedClass(metaClass) != null) {
                             continue;
+                        }
 
                         // For extended entities use original metaclass name
                         MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalMetaClass(metaClass);
                         String entityName = originalMetaClass == null ? name : originalMetaClass.getName();
 
+                        String className = metaClass.getJavaClass().getName();
+                        int i = className.lastIndexOf('.');
+                        if (i > -1) {
+                            className = className.substring(i + 1);
+                        }
+
+                        String entityCaption = messages.getMessage(metaClass.getJavaClass(), className, locale);
+                        String caption = name;
+                        if (!StringUtils.equals(className, entityCaption)) {
+                            caption += " ( " + entityCaption + " )";
+                        }
+
                         // Entity target
                         entities.add(new OperationPermissionTarget(metaClass.getJavaClass(),
-                                "entity:" + entityName, name, entityName));
+                                "entity:" + entityName, caption, entityName));
 
                         // Target with entity attributes
                         MultiplePermissionTarget attrs = new MultiplePermissionTarget(metaClass.getJavaClass(),
-                                "entity:" + entityName, name, entityName);
+                                "entity:" + entityName, caption, entityName);
 
                         List<MetaProperty> propertyList = new ArrayList<>(metaClass.getProperties());
                         Collections.sort(propertyList, new MetadataObjectAlphabetComparator());

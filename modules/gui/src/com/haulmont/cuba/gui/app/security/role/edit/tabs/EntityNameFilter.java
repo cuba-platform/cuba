@@ -10,7 +10,6 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.components.CheckBox;
 import com.haulmont.cuba.gui.components.TextField;
-import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.gui.security.entity.AssignableTarget;
 import com.haulmont.cuba.gui.security.entity.EntityPermissionTarget;
 import org.apache.commons.lang.StringUtils;
@@ -56,16 +55,8 @@ public class EntityNameFilter<T extends AssignableTarget> implements Predicate<T
             }
 
             String filterValue = StringUtils.trimToEmpty(entityFilter.<String>getValue());
-            if (StringUtils.isNotBlank(filterValue)) {
-                String permissionValue = target.getPermissionValue();
-                int delimiterIndex = permissionValue.indexOf(Permission.TARGET_PATH_DELIMETER);
-                if (delimiterIndex >= 0) {
-                    permissionValue = permissionValue.substring(0, delimiterIndex);
-                }
-                return StringUtils.containsIgnoreCase(permissionValue, filterValue);
-            } else {
-                return true;
-            }
+            return StringUtils.isBlank(filterValue)
+                    || StringUtils.containsIgnoreCase(target.getCaption(), filterValue);
         }
         return false;
     }
