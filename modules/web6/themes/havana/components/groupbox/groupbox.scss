@@ -19,7 +19,7 @@
     padding-top: 0;
 }
 
-.group-box.group-box-nocollapsable.group-box-nocaption fieldset {
+.group-box.group-box-nocollapsable.group-box-nocaption > fieldset {
     padding-top: 5px;
 }
 
@@ -55,7 +55,7 @@
     background: transparent url(images/collapse.png) no-repeat center left;
 }
 
-.group-box-nocollapsable .group-box-caption div {
+.group-box-nocollapsable > fieldset > legend > .group-box-caption div {
     background: transparent none;
 }
 
@@ -106,8 +106,8 @@
     padding-top: 10px;
 }
 
-.v-ie7 .group-box group-box-description, .v-ie8 .group-box group-box-description,
-.v-ie7 .group-box group-box-content, .v-ie8 .group-box group-box-content {
+.v-ie7 .group-box .group-box-description, .v-ie8 .group-box .group-box-description,
+.v-ie7 .group-box .group-box-content, .v-ie8 .group-box .group-box-content {
     line-height: 18px;
 }
 
@@ -120,11 +120,12 @@
     padding-top: .3em;
 }
 
-.v-ie7 .group-box.group-box-nocollapsable.group-box-nocaption .group-box-content, .v-ie8 .group-box.group-box-nocollapsable.group-box-nocaption .group-box-content {
+.v-ie7 .group-box.group-box-nocollapsable.group-box-nocaption > fieldset > .group-box-content,
+.v-ie8 .group-box.group-box-nocollapsable.group-box-nocaption > fieldset > .group-box-content {
     padding-top: 0;
 }
 
-.v-sa .group-box.group-box-nocaption .group-box-caption div,
-.v-ch .group-box.group-box-nocaption .group-box-caption div {
+.v-sa .group-box.group-box-nocaption > fieldset > legend .group-box-caption div,
+.v-ch .group-box.group-box-nocaption > fieldset > legend .group-box-caption div {
     float: none;
 }
