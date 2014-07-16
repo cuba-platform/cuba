@@ -13,7 +13,7 @@ package com.haulmont.cuba.core.global;
  * @author pavlov
  */
 public class EntityAccessException extends RuntimeException {
-    public static final String ERR_MESSAGE = "Unable to load entiny because it has been deleted or access denied";
+    public static final String ERR_MESSAGE = "Unable to load entity because it has been deleted or access denied";
 
     public EntityAccessException() {
         super(ERR_MESSAGE);
