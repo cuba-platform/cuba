@@ -11,8 +11,6 @@ import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.web.sys.LinkHandler;
 import com.haulmont.cuba.gui.TestIdManager;
-import com.haulmont.cuba.web.toolkit.ui.CubaJQueryIntegration;
-import com.haulmont.cuba.web.toolkit.ui.CubaSWFObjectIntegration;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.server.*;
 import com.vaadin.ui.Component;
@@ -25,6 +23,8 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
+ * Single window / page of web application. Root component of Vaadin layout.
+ *
  * @author artamonov
  * @version $Id$
  */
@@ -84,9 +84,37 @@ public class AppUI extends UI implements ErrorHandler {
         initJsLibraries();
     }
 
+    /**
+     * Dynamically init external JS libraries.
+     * You should create JavaScriptExtension class and extend UI object here. <br/>
+     *
+     * Example: <br/>
+     * <pre><code>
+     * JavaScriptExtension:
+     *
+     * {@literal @}JavaScript("resources/jquery/jquery-1.10.2.min.js")
+     * public class JQueryIntegration extends AbstractJavaScriptExtension {
+     *
+     *     {@literal @}Override
+     *     public void extend(AbstractClientConnector target) {
+     *         super.extend(target);
+     *     }
+     *
+     *     {@literal @}Override
+     *     protected Class&lt;? extends ClientConnector&gt; getSupportedParentType() {
+     *         return UI.class;
+     *     }
+     * }
+     *
+     * AppUI:
+     *
+     * protected void initJsLibraries() {
+     *     new JQueryIntegration().extend(this);
+     * }</code></pre>
+     *
+     * If you want to include scripts to generated page statically see {@link com.haulmont.cuba.web.sys.CubaBootstrapListener}.
+     */
     protected void initJsLibraries() {
-        new CubaJQueryIntegration().extend(this);
-        new CubaSWFObjectIntegration().extend(this);
     }
 
     protected App createApplication() {

@@ -10,10 +10,7 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.auth.RequestContext;
-import com.vaadin.server.DeploymentConfiguration;
-import com.vaadin.server.ServiceException;
-import com.vaadin.server.VaadinServlet;
-import com.vaadin.server.VaadinServletService;
+import com.vaadin.server.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -30,6 +27,8 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
+ * Main CUBA web-application servlet
+ *
  * @author artamonov
  * @version $Id$
  */
@@ -55,6 +54,20 @@ public class CubaApplicationServlet extends VaadinServlet {
         webConfig = configuration.getConfig(WebConfig.class);
 
         super.init(servletConfig);
+    }
+
+    @Override
+    protected void servletInitialized() throws ServletException {
+        super.servletInitialized();
+
+        getService().addSessionInitListener(new SessionInitListener() {
+            @Override
+            public void sessionInit(SessionInitEvent event) throws ServiceException {
+                CubaBootstrapListener bootstrapListener = AppBeans.get(CubaBootstrapListener.NAME);
+
+                event.getSession().addBootstrapListener(bootstrapListener);
+            }
+        });
     }
 
     @Override
