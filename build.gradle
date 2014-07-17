@@ -468,9 +468,7 @@ configure(webToolkitModule) {
     }
 
     task webArchive(dependsOn: buildWidgetSet, type: Zip) {
-        from file('web')
         from file("$buildDir/web")
-        exclude '**/web.xml', '**/app.properties'
         classifier = 'web'
     }
 
