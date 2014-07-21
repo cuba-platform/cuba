@@ -61,13 +61,11 @@ public class DesktopScrollBoxLayout extends DesktopAbstractComponent<JScrollPane
         Dimension preferredSize = null;
         switch (scrollBarPolicy) {
             case VERTICAL:
-                int width = Math.max(minimumSize.width, impl.getViewport().getWidth());
-                preferredSize = new Dimension(width, minimumSize.height);
+                preferredSize = new Dimension(impl.getViewport().getWidth(), minimumSize.height);
                 break;
 
             case HORIZONTAL:
-                int height = Math.max(minimumSize.height, impl.getViewport().getHeight());
-                preferredSize = new Dimension(minimumSize.width, height);
+                preferredSize = new Dimension(minimumSize.width, impl.getViewport().getHeight());
                 break;
 
             case NONE:
@@ -79,6 +77,8 @@ public class DesktopScrollBoxLayout extends DesktopAbstractComponent<JScrollPane
                 break;
         }
         view.setPreferredSize(preferredSize);
+        view.setMaximumSize(preferredSize);
+        view.revalidate();
     }
 
     @Override
