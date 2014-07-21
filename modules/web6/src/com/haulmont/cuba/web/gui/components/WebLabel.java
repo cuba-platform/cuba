@@ -40,6 +40,8 @@ public class WebLabel extends WebAbstractComponent<com.vaadin.ui.Label> implemen
 
     public WebLabel() {
         component = new com.vaadin.ui.Label();
+
+        component.setSizeUndefined();
     }
 
     @Override
