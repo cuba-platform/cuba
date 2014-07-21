@@ -55,6 +55,7 @@
                           caption="msg://permissions">
                     <vbox id="selectedEntityPanel" width="100%" height="100%" expand="editGridContainer" visible="false">
                         <label id="selectedTargetCaption" stylename="h2" align="MIDDLE_CENTER"/>
+                        <label id="selectedTargetLocalCaption" stylename="h2" align="MIDDLE_CENTER"/>
 
                         <scrollBox id="editGridContainer">
                         </scrollBox>

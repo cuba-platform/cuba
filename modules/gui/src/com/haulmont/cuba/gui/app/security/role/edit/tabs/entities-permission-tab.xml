@@ -24,8 +24,7 @@
                               class="com.haulmont.cuba.gui.security.entity.OperationPermissionTarget"
                               allowCommit="false"
                               view="_local"
-                              datasourceClass="com.haulmont.cuba.gui.security.EntityPermissionTargetsDatasource">
-        </collectionDatasource>
+                              datasourceClass="com.haulmont.cuba.gui.security.EntityPermissionTargetsDatasource"/>
     </dsContext>
 
     <layout expand="contentPane">
@@ -56,57 +55,60 @@
                 </vbox>
                 <!-- Edit pane -->
                 <groupBox id="editPane" width="100%" height="100%" caption="msg://permissions">
-
                     <vbox id="selectedEntityPanel" expand="panelSpacer" width="100%" height="100%" visible="false">
                         <label id="selectedTargetCaption" stylename="h2" align="MIDDLE_CENTER"/>
+                        <label id="selectedTargetLocalCaption" stylename="h2" align="MIDDLE_CENTER"/>
 
-                        <hbox width="100%">
-                            <grid margin="true" width="100%">
-                                <columns>
-                                    <column flex="1"/>
-                                    <column flex="0"/>
-                                    <column flex="0"/>
-                                </columns>
-                                <rows>
-                                    <row>
-                                        <label width="80px"/>
-                                        <label value="msg://checkbox.allow" align="MIDDLE_LEFT" width="75px"/>
-                                        <label value="msg://checkbox.deny" align="MIDDLE_LEFT" width="75px"/>
-                                    </row>
+                        <grid margin="true" width="100%">
+                            <columns>
+                                <column flex="1"/>
+                                <column flex="0"/>
+                                <column flex="0"/>
+                            </columns>
+                            <rows>
+                                <row>
+                                    <label/>
 
-                                    <row>
-                                        <label width="80px" value="msg://allEntities"/>
-                                        <checkBox id="allAllowCheck" align="MIDDLE_CENTER" width="75px"/>
-                                        <checkBox id="allDenyCheck" align="MIDDLE_CENTER" width="75px"/>
-                                    </row>
+                                    <hbox margin="false,true,false,false">
+                                        <label value="msg://checkbox.allow"/>
+                                    </hbox>
+                                    <hbox margin="false,false,false,true">
+                                        <label value="msg://checkbox.deny"/>
+                                    </hbox>
+                                </row>
 
-                                    <row>
-                                        <label id="createOpLabel" value="msg://EntityOp.CREATE" width="75px"/>
+                                <row>
+                                    <label value="msg://allEntities"/>
+                                    <checkBox id="allAllowCheck" align="MIDDLE_CENTER"/>
+                                    <checkBox id="allDenyCheck" align="MIDDLE_CENTER"/>
+                                </row>
 
-                                        <checkBox id="createAllowCheck" align="MIDDLE_CENTER" width="75px"/>
-                                        <checkBox id="createDenyCheck" align="MIDDLE_CENTER" width="75px"/>
-                                    </row>
-                                    <row>
-                                        <label id="readOpLabel" value="msg://EntityOp.READ" width="75px"/>
+                                <row>
+                                    <label id="createOpLabel" value="msg://EntityOp.CREATE"/>
 
-                                        <checkBox id="readAllowCheck" align="MIDDLE_CENTER" width="75px"/>
-                                        <checkBox id="readDenyCheck" align="MIDDLE_CENTER" width="75px"/>
-                                    </row>
-                                    <row>
-                                        <label id="updateOpLabel" value="msg://EntityOp.UPDATE" width="80px"/>
+                                    <checkBox id="createAllowCheck" align="MIDDLE_CENTER"/>
+                                    <checkBox id="createDenyCheck" align="MIDDLE_CENTER"/>
+                                </row>
+                                <row>
+                                    <label id="readOpLabel" value="msg://EntityOp.READ"/>
 
-                                        <checkBox id="updateAllowCheck" align="MIDDLE_CENTER" width="75px"/>
-                                        <checkBox id="updateDenyCheck" align="MIDDLE_CENTER" width="75px"/>
-                                    </row>
-                                    <row>
-                                        <label id="deleteOpLabel" value="msg://EntityOp.DELETE" width="80px"/>
+                                    <checkBox id="readAllowCheck" align="MIDDLE_CENTER"/>
+                                    <checkBox id="readDenyCheck" align="MIDDLE_CENTER"/>
+                                </row>
+                                <row>
+                                    <label id="updateOpLabel" value="msg://EntityOp.UPDATE"/>
 
-                                        <checkBox id="deleteAllowCheck" align="MIDDLE_CENTER" width="75px"/>
-                                        <checkBox id="deleteDenyCheck" align="MIDDLE_CENTER" width="75px"/>
-                                    </row>
-                                </rows>
-                            </grid>
-                        </hbox>
+                                    <checkBox id="updateAllowCheck" align="MIDDLE_CENTER"/>
+                                    <checkBox id="updateDenyCheck" align="MIDDLE_CENTER"/>
+                                </row>
+                                <row>
+                                    <label id="deleteOpLabel" value="msg://EntityOp.DELETE"/>
+
+                                    <checkBox id="deleteAllowCheck" align="MIDDLE_CENTER"/>
+                                    <checkBox id="deleteDenyCheck" align="MIDDLE_CENTER"/>
+                                </row>
+                            </rows>
+                        </grid>
 
                         <vbox id="panelSpacer"/>
 

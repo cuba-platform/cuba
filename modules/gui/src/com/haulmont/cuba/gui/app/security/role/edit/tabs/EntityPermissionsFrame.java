@@ -54,6 +54,9 @@ public class EntityPermissionsFrame extends AbstractFrame {
     protected Label selectedTargetCaption;
 
     @Inject
+    protected Label selectedTargetLocalCaption;
+
+    @Inject
     protected UserSession userSession;
 
     @Inject
@@ -319,20 +322,41 @@ public class EntityPermissionsFrame extends AbstractFrame {
     protected void updateEditPane(OperationPermissionTarget item, Set selected) {
         if (item != null) {
             if (selected.size() == 1) {
+                String caption = item.getCaption();
+
+                String name;
+                String localName;
+
+                int delimiterIndex = caption.indexOf(" ");
+                if (delimiterIndex >= 0) {
+                    name = caption.substring(0, delimiterIndex);
+                    localName = caption.substring(delimiterIndex + 1);
+                } else {
+                    name = caption;
+                    localName = "";
+                }
+
                 selectedTargetCaption.setVisible(true);
-                selectedTargetCaption.setValue(item.getCaption());
+                selectedTargetCaption.setValue(name);
+
+                selectedTargetLocalCaption.setVisible(true);
+                selectedTargetLocalCaption.setValue(localName);
 
                 // check compatibility, hide not applicable operations
                 for (EntityOperationControl control : operationControls) {
-                    if (control.applicableToEntity(item.getEntityClass()))
+                    if (control.applicableToEntity(item.getEntityClass())) {
                         control.show();
-                    else
+                    } else {
                         control.hide();
+                    }
                 }
 
             } else if (selected.size() > 1) {
                 selectedTargetCaption.setVisible(false);
                 selectedTargetCaption.setValue("");
+
+                selectedTargetLocalCaption.setVisible(false);
+                selectedTargetLocalCaption.setValue("");
 
                 // show all
                 for (EntityOperationControl control : operationControls)
