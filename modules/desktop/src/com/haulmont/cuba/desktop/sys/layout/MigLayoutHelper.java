@@ -6,7 +6,6 @@
 package com.haulmont.cuba.desktop.sys.layout;
 
 import com.haulmont.cuba.desktop.gui.components.AutoExpanding;
-import com.haulmont.cuba.desktop.gui.data.ComponentSize;
 import com.haulmont.cuba.gui.components.AbstractFrame;
 import com.haulmont.cuba.gui.components.Component;
 import net.miginfocom.layout.CC;
@@ -14,9 +13,8 @@ import net.miginfocom.layout.UnitValue;
 import org.apache.commons.lang.StringUtils;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class MigLayoutHelper {
 
@@ -120,22 +118,17 @@ public class MigLayoutHelper {
     public static void applyHeight(CC constraints, int height, int heightUnits, boolean expand) {
         if (height == -1) { // own size
             constraints.growY(0.0f);
-        }
-        else if (heightUnits == Component.UNITS_PERCENTAGE) {
-            constraints.growY();
+        } else if (heightUnits == Component.UNITS_PERCENTAGE) {
             constraints.height(height + "%");
-        }
-        else if (height != 0 && heightUnits == Component.UNITS_PIXELS) {
+        } else if (height != 0 && heightUnits == Component.UNITS_PIXELS) {
             constraints.growY(0.0f);
             constraints.height(height + "!"); // min, pref, max size as specified
-        }
-        else {
+        } else {
             if (expand) {
                 constraints.growY();
                 constraints.growPrioY(99); // lower grow priority
                 constraints.height("100%"); // preffered size to full container
-            }
-            else {
+            } else {
                 constraints.growY(0.0f);
             }
         }
@@ -144,25 +137,19 @@ public class MigLayoutHelper {
     public static void applyWidth(CC constraints, int width, int widthUnits, boolean expand) {
         if (width == -1) { // own size
             constraints.growX(0);
-        }
-        else if (widthUnits == Component.UNITS_PERCENTAGE) {
-            constraints.growX();
+        } else if (widthUnits == Component.UNITS_PERCENTAGE) {
             constraints.width(width + "%");
-        }
-        else if (width != 0 && widthUnits == Component.UNITS_PIXELS) {
+        } else if (width != 0 && widthUnits == Component.UNITS_PIXELS) {
             constraints.growX(0);
             constraints.width(width + "!");  // min, pref, max size as specified
-        }
-        else {
+        } else {
             if (expand) {
                 constraints.growX();
                 constraints.growPrioX(99); // lower grow priority
                 constraints.width("100%"); // preffered size to full container
-            }
-            else {
+            } else {
                 constraints.growX(0);
             }
         }
     }
-
 }
