@@ -114,7 +114,7 @@ public class DataServiceController {
     public void query(@PathVariable String type,
                       @RequestParam(value = "e") String entityName,
                       @RequestParam(value = "q") String queryStr,
-                      @RequestParam(value = "view", required = false) String view,
+                      @RequestParam(value = "view", required = false) String viewName,
                       @RequestParam(value = "first", required = false) Integer firstResult,
                       @RequestParam(value = "max", required = false) Integer maxResults,
                       @RequestParam(value = "s") String sessionId,
@@ -169,7 +169,12 @@ public class DataServiceController {
                 query.setParameter(paramKey, parsedParam);
             }
 
-            loadCtx.setView(view == null ? View.LOCAL : view);
+            if (viewName == null) {
+                View view = metadata.getViewRepository().getView(metaClass, View.LOCAL);
+                loadCtx.setView(new View(view, "local-with-system-props", true));
+            } else {
+                loadCtx.setView(viewName);
+            }
             List<Entity> entities = dataService.loadList(loadCtx);
             Convertor convertor = conversionFactory.getConvertor(type);
             Object result = convertor.process(entities, metaClass, request.getRequestURI());
