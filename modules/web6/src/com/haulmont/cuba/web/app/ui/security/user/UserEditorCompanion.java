@@ -21,6 +21,7 @@ public class UserEditorCompanion implements UserEditor.Companion {
     @Inject
     protected Configuration configuration;
 
+    @Override
     public void initPasswordField(PasswordField passwordField) {
         passwordField.setRequired(!configuration.getConfig(WebAuthConfig.class).getUseActiveDirectory());
     }
