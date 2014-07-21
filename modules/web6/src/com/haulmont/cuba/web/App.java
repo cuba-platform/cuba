@@ -7,6 +7,8 @@ package com.haulmont.cuba.web;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
+import com.haulmont.cuba.gui.theme.Theme;
+import com.haulmont.cuba.gui.theme.ThemeRepository;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.auth.ActiveDirectoryHelper;
@@ -114,6 +116,8 @@ public abstract class App extends Application
 
     protected boolean testMode = false;
 
+    protected Theme theme;
+
     protected App() {
         log.trace("Creating application " + this);
         try {
@@ -123,6 +127,8 @@ public abstract class App extends Application
             webAuthConfig = configuration.getConfig(WebAuthConfig.class);
 
             testMode = globalConfig.getTestMode();
+
+            this.theme = loadTheme();
 
             appLog = new AppLog();
             connection = createConnection();
@@ -536,6 +542,22 @@ public abstract class App extends Application
         if (log.isTraceEnabled()) {
             log.trace("requestEnd: [@" + Integer.toHexString(System.identityHashCode(transactionData)) + "]");
         }
+    }
+
+    protected Theme loadTheme() {
+        String appWindowTheme = webConfig.getAppWindowTheme();
+        ThemeRepository themeRepository = AppBeans.get(ThemeRepository.NAME);
+        Theme theme = themeRepository.getTheme(appWindowTheme);
+
+        if (theme == null) {
+            throw new IllegalStateException("Unable to use theme '" + appWindowTheme + "'");
+        }
+
+        return theme;
+    }
+
+    public Theme getUiTheme() {
+        return theme;
     }
 
     public BackgroundTaskManager getTaskManager() {

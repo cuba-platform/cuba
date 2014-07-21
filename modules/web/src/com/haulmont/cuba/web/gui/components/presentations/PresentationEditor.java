@@ -12,6 +12,7 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.presentations.Presentations;
+import com.haulmont.cuba.gui.theme.Theme;
 import com.haulmont.cuba.security.entity.Presentation;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.App;
@@ -56,7 +57,9 @@ public class PresentationEditor extends Window {
         isNew = PersistenceHelper.isNew(presentation);
 
         initLayout();
-        setWidth("300px");
+
+        Theme theme = App.getInstance().getUiTheme();
+        setWidth(theme.get("cuba.web.PresentationEditor.width"));
 
         String key = isNew ? "PresentationsEditor.new" : "PresentationsEditor.edit";
         setCaption(getMessage(key));
@@ -65,12 +68,14 @@ public class PresentationEditor extends Window {
     }
 
     protected void initLayout() {
+        Theme theme = App.getInstance().getUiTheme();
+
         VerticalLayout root = new VerticalLayout();
         root.setSpacing(true);
         setContent(root);
 
         nameField = new TextField(getMessage("PresentationsEditor.name"));
-        nameField.setWidth("250px");
+        nameField.setWidth(theme.get("cuba.web.PresentationEditor.name.width"));
         nameField.setValue(getPresentationCaption());
         root.addComponent(nameField);
 

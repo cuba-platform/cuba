@@ -7,9 +7,9 @@ package com.haulmont.cuba.web.app.ui.security.history;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.theme.Theme;
 import com.haulmont.cuba.security.entity.ScreenHistoryEntity;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
@@ -34,15 +34,19 @@ public class ScreenHistoryBrowse extends AbstractWindow {
     @Inject
     protected Configuration configuration;
 
+    @Inject
+    protected Theme theme;
+
     @Override
     public void init(Map<String, Object> params) {
-        DialogParams dialogParams = getDialogParams();
-        dialogParams.setHeight(480);
-        dialogParams.setWidth(500);
-        dialogParams.setResizable(false);
+        getDialogParams()
+                .setHeight(theme.getInt("cuba.web.ScreenHistoryBrowse.height"))
+                .setWidth(theme.getInt("cuba.web.ScreenHistoryBrowse.width"))
+                .setResizable(false);
 
         LinkColumnHelper.initColumn(historyTable, "caption",
                 new LinkColumnHelper.Handler() {
+                    @Override
                     public void onClick(Entity entity) {
                         close("windowClose");
                         openUrl(entity);
@@ -50,13 +54,14 @@ public class ScreenHistoryBrowse extends AbstractWindow {
                 }
         );
         historyTable.addAction(new ShowLinkAction(historyTable.getDatasource(), new ShowLinkAction.Handler() {
+            @Override
             public String makeLink(Entity entity) {
                 return entity != null ? ((ScreenHistoryEntity) entity).getUrl() : "";
             }
         }));
     }
 
-    private void openUrl(Entity entity) {
+    protected void openUrl(Entity entity) {
         ScreenHistoryEntity screenHistoryEntity = (ScreenHistoryEntity) entity;
         Map<String, String> paramsScreen = new HashMap<>();
         String url = screenHistoryEntity.getUrl();

@@ -16,6 +16,8 @@ import com.haulmont.cuba.gui.autocomplete.Suggestion;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.gui.theme.Theme;
+import com.haulmont.cuba.gui.theme.ThemeManager;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -32,7 +34,6 @@ public abstract class AbstractCustomConditionEditDlg<T> {
 
     protected static final String WHERE = " where ";
     protected static final String MESSAGES_PACK = "com.haulmont.cuba.gui.components.filter";
-    protected static final String FIELD_WIDTH = "250px";
     protected static final int COMPONENT_WIDTH = 250;
     protected String messagesPack;
 
@@ -67,13 +68,17 @@ public abstract class AbstractCustomConditionEditDlg<T> {
         this.messagesPack = AppConfig.getMessagesPack();
         this.messages = AppBeans.get(Messages.class);
 
+        ThemeManager themeManager = AppBeans.get(ThemeManager.NAME);
+        Theme theme = themeManager.getTheme();
+        String fieldWidth = theme.get("cuba.gui.AbstractCustomConditionEditDlg.field.width");
+
         entityAlias = condition.getEntityAlias();
 
         nameLab = factory.createComponent(Label.NAME);
         nameLab.setValue(messages.getMessage(MESSAGES_PACK, "CustomConditionEditDlg.nameLabel"));
 
         nameText = factory.createComponent(TextField.NAME);
-        nameText.setWidth(FIELD_WIDTH);
+        nameText.setWidth(fieldWidth);
         nameText.setValue(condition.getLocCaption());
         nameText.requestFocus();
 
@@ -83,9 +88,9 @@ public abstract class AbstractCustomConditionEditDlg<T> {
         joinText = factory.createComponent(SourceCodeEditor.NAME);
         joinText.setHighlightActiveLine(false);
         joinText.setShowGutter(false);
-        joinText.setWidth(FIELD_WIDTH);
+        joinText.setWidth(fieldWidth);
         joinText.setValue(condition.getJoin());
-        joinText.setHeight("80px");
+        joinText.setHeight(theme.get("cuba.gui.AbstractCustomConditionEditDlg.joinText.height"));
 
         joinText.setSuggester(new Suggester() {
             @Override
@@ -100,8 +105,8 @@ public abstract class AbstractCustomConditionEditDlg<T> {
         whereText = factory.createComponent(SourceCodeEditor.NAME);
         whereText.setHighlightActiveLine(false);
         whereText.setShowGutter(false);
-        whereText.setWidth(FIELD_WIDTH);
-        whereText.setHeight("80px");
+        whereText.setWidth(fieldWidth);
+        whereText.setHeight(theme.get("cuba.gui.AbstractCustomConditionEditDlg.whereText.height"));
         String where = replaceParamWithQuestionMark(condition.getWhere());
         whereText.setValue(where);
 
@@ -152,7 +157,7 @@ public abstract class AbstractCustomConditionEditDlg<T> {
 
         entitySelect = factory.createComponent(LookupField.NAME);
 
-        entitySelect.setWidth(FIELD_WIDTH);
+        entitySelect.setWidth(fieldWidth);
         entitySelect.setEnabled(entitySelectEnabled);
         fillEntitySelect(condition.getParam());
 
@@ -161,7 +166,7 @@ public abstract class AbstractCustomConditionEditDlg<T> {
         entityParamWhereLab.setEnabled(ParamType.ENTITY.equals(typeSelect.getValue()));
 
         entityParamWhereText = factory.createComponent(TextArea.NAME);
-        entityParamWhereText.setWidth(FIELD_WIDTH);
+        entityParamWhereText.setWidth(fieldWidth);
         entityParamWhereText.setRows(4);
         entityParamWhereText.setValue(condition.getEntityParamWhere());
         entityParamWhereText.setEnabled(ParamType.ENTITY.equals(typeSelect.getValue()));
@@ -171,7 +176,7 @@ public abstract class AbstractCustomConditionEditDlg<T> {
         entityParamViewLab.setEnabled(ParamType.ENTITY.equals(typeSelect.getValue()));
 
         entityParamViewText = factory.createComponent(TextField.NAME);
-        entityParamViewText.setWidth(FIELD_WIDTH);
+        entityParamViewText.setWidth(fieldWidth);
         entityParamViewText.setValue(condition.getEntityParamView());
         entityParamViewText.setEnabled(ParamType.ENTITY.equals(typeSelect.getValue()));
 
@@ -202,7 +207,7 @@ public abstract class AbstractCustomConditionEditDlg<T> {
         String whereStr = whereText.getValue();
         CollectionDatasource ds = (CollectionDatasource) condition.getDatasource();
 
-        // the magic entity name!  The length is three character to match "{E}" length in query
+        // CAUTION: the magic entity name!  The length is three character to match "{E}" length in query
         String entityAlias = "a39";
 
         int queryPosition = -1;

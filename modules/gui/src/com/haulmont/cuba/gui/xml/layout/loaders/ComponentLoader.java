@@ -18,6 +18,8 @@ import com.haulmont.cuba.gui.components.validators.DateValidator;
 import com.haulmont.cuba.gui.components.validators.DoubleValidator;
 import com.haulmont.cuba.gui.components.validators.IntegerValidator;
 import com.haulmont.cuba.gui.components.validators.ScriptValidator;
+import com.haulmont.cuba.gui.theme.Theme;
+import com.haulmont.cuba.gui.theme.ThemeManager;
 import com.haulmont.cuba.gui.xml.DeclarativeAction;
 import com.haulmont.cuba.gui.xml.DeclarativeTrackingAction;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
@@ -47,6 +49,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
     protected Scripting scripting = AppBeans.get(Scripting.NAME);
     protected Resources resources = AppBeans.get(Resources.NAME);
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
+    protected Theme theme = AppBeans.get(ThemeManager.class).getTheme();
 
     protected ComponentLoader(Context context) {
         this.context = context;
@@ -201,6 +204,13 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         return messageTools.loadString(messagesPack, caption);
     }
 
+    protected String loadThemeString(String value) {
+        if (value != null && value.startsWith(Theme.PREFIX)) {
+            value = theme.get(value.substring(Theme.PREFIX.length()));
+        }
+        return value;
+    }
+
     protected void loadAlign(final Component component, Element element) {
         final String align = element.attributeValue("align");
         if (!StringUtils.isBlank(align)) {
@@ -219,12 +229,13 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
 
     protected void loadHeight(Component component, Element element, @Nullable String defaultValue) {
         final String height = element.attributeValue("height");
-        if ("auto".equalsIgnoreCase(height))
+        if ("auto".equalsIgnoreCase(height)) {
             component.setHeight(Component.AUTO_SIZE);
-        else if (!StringUtils.isBlank(height))
-            component.setHeight(height);
-        else if (!StringUtils.isBlank(defaultValue))
+        } else if (!StringUtils.isBlank(height)) {
+            component.setHeight(loadThemeString(height));
+        } else if (!StringUtils.isBlank(defaultValue)) {
             component.setHeight(defaultValue);
+        }
     }
 
     protected void loadWidth(Component component, Element element) {
@@ -233,12 +244,13 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
 
     protected void loadWidth(Component component, Element element, @Nullable String defaultValue) {
         final String width = element.attributeValue("width");
-        if ("auto".equalsIgnoreCase(width))
+        if ("auto".equalsIgnoreCase(width)) {
             component.setWidth(Component.AUTO_SIZE);
-        else if (!StringUtils.isBlank(width))
-            component.setWidth(width);
-        else if (!StringUtils.isBlank(defaultValue))
+        } else if (!StringUtils.isBlank(width)) {
+            component.setWidth(loadThemeString(width));
+        } else if (!StringUtils.isBlank(defaultValue)) {
             component.setWidth(defaultValue);
+        }
     }
 
     protected void loadCollapsible(Component.Collapsable component, Element element) {

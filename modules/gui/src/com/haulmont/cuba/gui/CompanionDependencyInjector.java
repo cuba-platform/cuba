@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.gui;
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
@@ -13,6 +14,8 @@ import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.export.ExportDisplay;
+import com.haulmont.cuba.gui.theme.Theme;
+import com.haulmont.cuba.gui.theme.ThemeManager;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -167,6 +170,11 @@ public class CompanionDependencyInjector {
         } else if (ExportDisplay.class.isAssignableFrom(type)) {
             // Injecting an ExportDisplay
             return AppConfig.createExportDisplay(frame);
+
+        } else if (Theme.class.isAssignableFrom(type)) {
+            // Injecting a Theme
+            ThemeManager themeManager = AppBeans.get(ThemeManager.NAME);
+            return themeManager.getTheme();
 
         } else {
             Object instance;

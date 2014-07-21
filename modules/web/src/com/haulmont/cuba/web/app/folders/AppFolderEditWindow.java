@@ -13,6 +13,7 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.presentations.Presentations;
+import com.haulmont.cuba.gui.theme.Theme;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.vaadin.ui.Button;
@@ -54,7 +55,9 @@ public class AppFolderEditWindow extends FolderEditWindow {
     public AppFolderEditWindow(boolean adding, Folder folder, Presentations presentations, Runnable commitHandler) {
         super(adding, folder, presentations, commitHandler);
         if (!adding) {
-            setWidth(500, Unit.PIXELS);
+            Theme theme = App.getInstance().getUiTheme();
+            setWidth(theme.get("cuba.web.AppFolderEditWindow.width"));
+
             visibilityScriptField = new TextArea();
             visibilityScriptField.setRows(10);
             visibilityScriptField.setColumns(40);

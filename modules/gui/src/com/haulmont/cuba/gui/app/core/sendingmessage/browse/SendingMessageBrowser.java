@@ -14,6 +14,7 @@ import com.haulmont.cuba.gui.components.TextArea;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
+import com.haulmont.cuba.gui.theme.Theme;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
 import javax.inject.Inject;
@@ -40,6 +41,9 @@ public class SendingMessageBrowser extends AbstractWindow {
     @Inject
     protected ComponentsFactory factory;
 
+    @Inject
+    protected Theme theme;
+
     @Override
     public void init(Map<String, Object> params) {
         fg.addCustomField(CONTENT_TEXT, new FieldGroup.CustomFieldGenerator() {
@@ -47,7 +51,7 @@ public class SendingMessageBrowser extends AbstractWindow {
             public Component generateField(Datasource datasource, String propertyId) {
                 TextArea contentTextArea = factory.createComponent(TextArea.NAME);
                 contentTextArea.setRows(20);
-                contentTextArea.setHeight("350px");
+                contentTextArea.setHeight(theme.get("cuba.gui.SendingMessageBrowser.contentTextArea.height"));
                 return contentTextArea;
             }
         });

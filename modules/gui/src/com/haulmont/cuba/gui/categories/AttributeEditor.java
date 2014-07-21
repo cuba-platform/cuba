@@ -29,6 +29,7 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.RuntimePropsDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
+import com.haulmont.cuba.gui.theme.Theme;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.BooleanUtils;
 
@@ -74,11 +75,16 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     @Inject
     protected MessageTools messageTools;
 
-    protected static final String FIELD_WIDTH = "200px";
+    @Inject
+    protected Theme theme;
+
+    protected String fieldWidth;
 
     @Override
     public void init(Map<String, Object> params) {
-        getDialogParams().setWidth(251);
+        getDialogParams().setWidth(theme.getInt("cuba.gui.AttributeEditor.width"));
+
+        fieldWidth = theme.get("cuba.gui.AttributeEditor.field.width");
 
         dataService = getDsContext().getDataSupplier();
         fieldsContainer = getComponent("attributeProperties");
@@ -88,7 +94,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         nameField.setRequired(true);
         nameField.setRequiredMessage(getMessage("nameRequired"));
         nameField.setCaption(getMessage("name"));
-        nameField.setWidth(FIELD_WIDTH);
+        nameField.setWidth(fieldWidth);
         nameField.setFrame(frame);
         nameField.requestFocus();
         nameField.addListener(new ValueListener() {
@@ -103,7 +109,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         codeField = factory.createComponent(TextField.NAME);
         codeField.setId("code");
         codeField.setCaption(getMessage("code"));
-        codeField.setWidth(FIELD_WIDTH);
+        codeField.setWidth(fieldWidth);
         codeField.setFrame(frame);
         codeField.addListener(new ValueListener() {
             @Override
@@ -117,7 +123,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         requiredField = factory.createComponent(CheckBox.NAME);
         requiredField.setId("required");
         requiredField.setCaption(getMessage("required"));
-        requiredField.setWidth(FIELD_WIDTH);
+        requiredField.setWidth(fieldWidth);
         requiredField.setFrame(frame);
 
         requiredField.addListener(new ValueListener() {
@@ -134,7 +140,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         for (RuntimePropsDatasource.PropertyType propertyType : types) {
             options.put(getMessage(propertyType.toString()), propertyType);
         }
-        dataTypeField.setWidth(FIELD_WIDTH);
+        dataTypeField.setWidth(fieldWidth);
 
         dataTypeField.setNewOptionAllowed(false);
         dataTypeField.setRequired(true);
@@ -173,7 +179,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         lookupField = factory.createComponent(CheckBox.NAME);
         lookupField.setId("lookup");
         lookupField.setCaption(getMessage("lookup"));
-        lookupField.setWidth(FIELD_WIDTH);
+        lookupField.setWidth(fieldWidth);
         lookupField.setFrame(frame);
         lookupField.addListener(new ValueListener() {
             @Override
@@ -206,7 +212,6 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     }
 
     protected void generateDefaultValueField(Enum<RuntimePropsDatasource.PropertyType> dataType, boolean setValue) {
-
         boolean hasValue = (attribute.getDefaultValue() == null || !setValue) ? (false) : (true);
         clearComponents();
         if (RuntimePropsDatasource.PropertyType.STRING.equals(dataType)) {
@@ -214,7 +219,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             textField.setId("stringDefaultValueField");
             textField.setCaption(getMessage("defaultValue"));
             textField.setDatatype(Datatypes.getNN(String.class));
-            textField.setWidth(FIELD_WIDTH);
+            textField.setWidth(fieldWidth);
             textField.setFrame(frame);
 
             textField.addListener(new ValueListener() {
@@ -239,7 +244,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             dateField.setId("dateDefaultValueField");
             dateField.setCaption(getMessage("defaultValue"));
             dateField.setFrame(frame);
-            dateField.setWidth(FIELD_WIDTH);
+            dateField.setWidth(fieldWidth);
             boxLayout.add(checkBox);
             boxLayout.add(dateField);
             fieldsContainer.add(boxLayout);
@@ -275,7 +280,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             textField.addValidator(new IntegerValidator(messages.getMessage(AppConfig.getMessagesPack(),
                     "validation.invalidNumber")));
             textField.setDatatype(Datatypes.get(Integer.class));
-            textField.setWidth(FIELD_WIDTH);
+            textField.setWidth(fieldWidth);
             textField.setFrame(frame);
             textField.addListener(new ValueListener() {
                 @Override
@@ -291,7 +296,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             textField.setId("doubleDefaultValueField");
             textField.setCaption(getMessage("defaultValue"));
             textField.setDatatype(Datatypes.get(Double.class));
-            textField.setWidth(FIELD_WIDTH);
+            textField.setWidth(fieldWidth);
             textField.setFrame(frame);
             textField.addValidator(new DoubleValidator(
                     messages.getMessage(AppConfig.getMessagesPack(),
@@ -332,7 +337,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         TextField textField = factory.createComponent(TextField.NAME);
         textField.setId("enumeration");
         textField.setCaption(getMessage("ENUMERATION"));
-        textField.setWidth(FIELD_WIDTH);
+        textField.setWidth(fieldWidth);
         textField.setRequired(true);
         textField.setRequiredMessage(getMessage("enumRequired"));
         textField.setFrame(frame);
@@ -349,7 +354,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         final TextField defaultValueField = factory.createComponent(TextField.NAME);
         defaultValueField.setId("enumDefaultValueField");
         defaultValueField.setCaption(getMessage("defaultValue"));
-        defaultValueField.setWidth(FIELD_WIDTH);
+        defaultValueField.setWidth(fieldWidth);
         defaultValueField.setFrame(frame);
         fieldsContainer.add(defaultValueField);
 
@@ -372,7 +377,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         entityTypeField.setCaption(getMessage("entityType"));
         entityTypeField.setRequired(true);
         entityTypeField.setRequiredMessage(getMessage("entityTypeRequired"));
-        entityTypeField.setWidth(FIELD_WIDTH);
+        entityTypeField.setWidth(fieldWidth);
         entityTypeField.setFrame(frame);
         Map<String, Object> options = new TreeMap<>();
         MetaClass entityType = null;
@@ -391,7 +396,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         final LookupField entityField = factory.createComponent(LookupField.NAME);
         entityField.setId("entityDefaultValueField");
         entityField.setCaption(getMessage("defaultValue"));
-        entityField.setWidth(FIELD_WIDTH);
+        entityField.setWidth(fieldWidth);
         entityField.setFrame(frame);
         fieldsContainer.add(entityField);
 
@@ -407,7 +412,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         screenField = factory.createComponent(LookupField.NAME);
         screenField.setId("screenField");
         screenField.setCaption(getMessage("screen"));
-        screenField.setWidth(FIELD_WIDTH);
+        screenField.setWidth(fieldWidth);
         screenField.setRequired(true);
         screenField.setRequiredMessage(getMessage("entityScreenRequired"));
         screenField.setFrame(frame);

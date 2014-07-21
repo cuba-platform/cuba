@@ -7,6 +7,7 @@ package com.haulmont.cuba.gui.app.core.credits;
 
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.TextArea;
+import com.haulmont.cuba.gui.theme.Theme;
 
 import javax.inject.Inject;
 import java.util.Map;
@@ -20,9 +21,16 @@ public class LicenseWindow extends AbstractWindow {
     @Inject
     protected TextArea licenseTextArea;
 
+    @Inject
+    protected Theme theme;
+
     @Override
     public void init(Map<String, Object> params) {
-        getDialogParams().setWidth(700).setHeight(500).setResizable(false);
+        getDialogParams()
+                .setWidth(theme.getInt("cuba.gui.LicenseWindow.width"))
+                .setHeight(theme.getInt("cuba.gui.LicenseWindow.height"))
+                .setResizable(false);
+
         String licenseText = (String) params.get("licenseText");
         if (licenseText != null) {
             licenseTextArea.setValue(licenseText);

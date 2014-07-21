@@ -18,6 +18,7 @@ import com.haulmont.cuba.gui.components.ShowInfoAction;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.gui.theme.Theme;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserSubstitution;
@@ -595,7 +596,9 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
             searchLayout.setMargin(new MarginInfo(false, true, false, true));
 
             final TextField searchField = new CubaTextField();
-            searchField.setWidth(120, Unit.PIXELS);
+
+            Theme theme = App.getInstance().getUiTheme();
+            searchField.setWidth(theme.get("cuba.web.AppWindow.searchField.width"));
 
             if (ui.isTestMode()) {
                 searchField.setCubaId("ftsField");
@@ -762,9 +765,12 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
         } else {
             if (webConfig.getUseLightHeader()) {
                 substUserSelect = new ComboBox();
-                substUserSelect.setWidth("200px");
-            } else
+
+                Theme theme = App.getInstance().getUiTheme();
+                substUserSelect.setWidth(theme.get("cuba.web.AppWindow.substUserSelect.width"));
+            } else {
                 substUserSelect = new NativeSelect();
+            }
 
             substUserSelect.setNullSelectionAllowed(false);
             substUserSelect.setImmediate(true);

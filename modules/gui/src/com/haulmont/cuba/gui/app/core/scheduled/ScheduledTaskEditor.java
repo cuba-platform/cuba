@@ -15,6 +15,7 @@ import com.haulmont.cuba.core.entity.SchedulingType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.gui.theme.Theme;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.StringUtils;
 
@@ -94,6 +95,8 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
     @Inject
     protected Label startDateLabel;
 
+    @Inject
+    protected Theme theme;
 
     private void show(Component... components) {
         for (Component component : components) {
@@ -251,7 +254,7 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
             nameLabel.setValue(parameterInfo.getType().getSimpleName() + " " + parameterInfo.getName());
 
             TextField valueTextField = componentsFactory.createComponent(TextField.NAME);
-            valueTextField.setWidth("250px");
+            valueTextField.setWidth(theme.get("cuba.gui.ScheduledTaskEditor.valueTextField.width"));
             valueTextField.setValue(parameterInfo.getValue());
 
             valueTextField.addListener(new ValueListener() {

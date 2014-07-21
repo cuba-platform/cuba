@@ -13,6 +13,7 @@ import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.gui.components.filter.AbstractRuntimePropConditionEditDlg;
 import com.haulmont.cuba.gui.components.filter.ParamFactory;
+import com.haulmont.cuba.gui.theme.Theme;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.vaadin.event.Action;
@@ -89,7 +90,10 @@ public class RuntimePropConditionEditDlg extends AbstractRuntimePropConditionEdi
     protected class Editor extends Window {
         public Editor() {
             super(condition.getLocCaption());
-            setWidth("380px");
+
+            Theme theme = App.getInstance().getUiTheme();
+            setWidth(theme.get("cuba.web.RuntimePropConditionEditDlg.editor.width"));
+
             setModal(true);
 
             VerticalLayout layout = new VerticalLayout();

@@ -5,11 +5,15 @@
 package com.haulmont.cuba.gui.xml.layout;
 
 import com.haulmont.bali.util.Dom4j;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.core.global.TemplateHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
+import com.haulmont.cuba.gui.theme.Theme;
+import com.haulmont.cuba.gui.theme.ThemeManager;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -61,7 +65,16 @@ public class LayoutLoader {
 
             matcher = ASSIGN_PATTERN.matcher(template);
             while (matcher.find()) {
-                templateParams.put(matcher.group(1), matcher.group(2));
+                String variable = matcher.group(1);
+                String value = matcher.group(2);
+
+                if (StringUtils.startsWith(value, Theme.PREFIX)) {
+                    ThemeManager themeManager = AppBeans.get(ThemeManager.NAME);
+                    Theme theme = themeManager.getTheme();
+                    value = theme.get(value.substring(Theme.PREFIX.length()));
+                }
+
+                templateParams.put(variable, value);
             }
 
             matcher = DS_CONTEXT_PATTERN.matcher(template);

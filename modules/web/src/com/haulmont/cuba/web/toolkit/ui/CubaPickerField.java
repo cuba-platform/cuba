@@ -6,6 +6,8 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.gui.components.PickerField;
+import com.haulmont.cuba.gui.theme.Theme;
+import com.haulmont.cuba.web.App;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.event.Action;
@@ -25,8 +27,6 @@ import java.util.List;
  * @version $Id$
  */
 public class CubaPickerField extends com.vaadin.ui.CustomField implements Action.Container {
-
-    public static final int DEFAULT_WIDTH = 250;
 
     protected com.vaadin.ui.AbstractField field;
     protected Converter captionFormatter;
@@ -63,7 +63,9 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
         container.setExpandRatio(field, 1);
 
         setPrimaryStyleName("cuba-pickerfield");
-        setWidth(DEFAULT_WIDTH + "px");
+
+        Theme theme = App.getInstance().getUiTheme();
+        setWidth(theme.get("cuba.web.CubaPickerField.width"));
     }
 
     protected void initTextField() {

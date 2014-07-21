@@ -22,6 +22,7 @@ import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.*;
+import com.haulmont.cuba.gui.theme.Theme;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
@@ -42,7 +43,6 @@ import java.util.*;
  */
 public class EntityInspectorEditor extends AbstractWindow {
 
-    public static final String DEFAULT_FIELD_WIDTH = "300";
     public static final int CAPTION_MAX_LENGTH = 100;
     public static final int MAX_TEXT_LENGTH = 50;
 
@@ -82,6 +82,9 @@ public class EntityInspectorEditor extends AbstractWindow {
     @Inject
     protected Configuration configuration;
 
+    @Inject
+    protected Theme theme;
+
     @WindowParam(name = "item")
     protected Entity item;
 
@@ -112,13 +115,11 @@ public class EntityInspectorEditor extends AbstractWindow {
     protected Button cancelButton;
     protected FieldGroup focusFieldGroup;
     protected String focusFieldId;
-    private final String TABLE_MAX_HEIGHT;
 
     public EntityInspectorEditor() {
         datasources = new HashMap<>();
         tables = new LinkedList<>();
         isNew = true;
-        TABLE_MAX_HEIGHT = "200px";
         autocommit = true;
         showSystemFields = false;
     }
@@ -216,7 +217,7 @@ public class EntityInspectorEditor extends AbstractWindow {
             Map<String, Object> params = new HashMap<>();
             params.put("runtimeDs", rDS.getId());
             params.put("categoriesDs", categoriesDs.getId());
-            params.put("fieldWidth", DEFAULT_FIELD_WIDTH);
+            params.put("fieldWidth", theme.get("cuba.gui.EntityInspectorEditor.field.width"));
             params.put("borderVisible", "true");
 
             RuntimePropertiesFrame runtimePropertiesFrame = openFrame(runtimePane, "runtimePropertiesFrame", params);
@@ -572,7 +573,7 @@ public class EntityInspectorEditor extends AbstractWindow {
         String caption = getPropertyCaption(metaProperty);
         field.setCaption(caption);
         field.setType(metaProperty.getJavaType());
-        field.setWidth(DEFAULT_FIELD_WIDTH);
+        field.setWidth(theme.get("cuba.gui.EntityInspectorEditor.field.width"));
         field.setCustom(custom);
         field.setRequired(required);
         field.setEditable(!readOnly);
@@ -757,7 +758,7 @@ public class EntityInspectorEditor extends AbstractWindow {
         rowsCount.setDatasource(propertyDs);
         table.setRowsCount(rowsCount);
         table.setWidth("100%");
-        vbox.setHeight(TABLE_MAX_HEIGHT);
+        vbox.setHeight(theme.get("cuba.gui.EntityInspectorEditor.tableContainer.height"));
         vbox.add(label);
         vbox.add(table);
         vbox.expand(table);

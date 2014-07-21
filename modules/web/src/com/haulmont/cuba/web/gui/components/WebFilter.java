@@ -36,6 +36,7 @@ import com.haulmont.cuba.gui.filter.DenyingClause;
 import com.haulmont.cuba.gui.filter.QueryFilter;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
+import com.haulmont.cuba.gui.theme.Theme;
 import com.haulmont.cuba.gui.xml.ParametersHelper;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.security.entity.SearchFolder;
@@ -53,7 +54,6 @@ import com.haulmont.cuba.web.toolkit.ui.converters.SimpleStringToIntegerConverte
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
 import com.vaadin.data.validator.IntegerRangeValidator;
-import com.vaadin.server.Sizeable;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
@@ -170,7 +170,9 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         noFilter.setName(messages.getMainMessage("filter.noFilter"));
 
         select = new CubaComboBox();
-        select.setWidth(300, Sizeable.Unit.PIXELS);
+
+        Theme theme = App.getInstance().getUiTheme();
+        select.setWidth(theme.get("cuba.web.WebFilter.select.width"));
         select.setStyleName("cuba-generic-filter-select");
         select.setNullSelectionAllowed(true);
         select.setNullSelectionItemId(noFilter);
@@ -331,7 +333,9 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         maxResultsField = new TextField();
         maxResultsField.setImmediate(true);
         maxResultsField.setMaxLength(4);
-        maxResultsField.setWidth(50, Sizeable.Unit.PIXELS);
+
+        Theme theme = App.getInstance().getUiTheme();
+        maxResultsField.setWidth(theme.get("cuba.web.WebFilter.maxResults.width"));
         maxResultsField.setInvalidAllowed(false);
         maxResultsField.addValidator(
                 new IntegerRangeValidator(messages.getMainMessage("validation.invalidNumber"), 0, Integer.MAX_VALUE) {

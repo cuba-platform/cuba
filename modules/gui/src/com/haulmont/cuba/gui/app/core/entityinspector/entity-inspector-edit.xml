@@ -6,9 +6,8 @@
 <window xmlns="http://schemas.haulmont.com/cuba/5.2/window.xsd"
         class="com.haulmont.cuba.gui.app.core.entityinspector.EntityInspectorEditor"
         caption="">
-    <dsContext/>
     <layout expand="fieldsScrollBox" spacing="true">
-        <scrollBox id="fieldsScrollBox" height="100%" width="100%" spacing="true">
+        <scrollBox id="fieldsScrollBox" width="100%" spacing="true">
             <vbox id="contentPane" spacing="true" width="600px"/>
             <vbox id="runtimePane" spacing="true" width="600px"/>
             <vbox id="tablesBox" spacing="true" width="100%"/>

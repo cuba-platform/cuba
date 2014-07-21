@@ -16,6 +16,8 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.RuntimePropertiesHelper;
 import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.gui.theme.Theme;
+import com.haulmont.cuba.gui.theme.ThemeManager;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.ObjectUtils;
 
@@ -27,7 +29,6 @@ import java.util.*;
  */
 public abstract class AbstractRuntimePropConditionEditDlg<T> {
     protected static final String MESSAGES_PACK = "com.haulmont.cuba.gui.components.filter";
-    protected static final String FIELD_WIDTH = "250px";
 
     protected AbstractRuntimePropCondition condition;
     protected String messagesPack;
@@ -56,8 +57,12 @@ public abstract class AbstractRuntimePropConditionEditDlg<T> {
         categoryLabel = factory.createComponent(Label.NAME);
         categoryLabel.setValue(messages.getMessage(MESSAGES_PACK, "RuntimePropConditionEditDlg.categoryLabel"));
 
+        ThemeManager themeManager = AppBeans.get(ThemeManager.NAME);
+        Theme theme = themeManager.getTheme();
+        String fieldWidth = theme.get("cuba.gui.AbstractRuntimePropConditionEditDlg.field.width");
+
         categorySelect = factory.createComponent(LookupField.NAME);
-        categorySelect.setWidth(FIELD_WIDTH);
+        categorySelect.setWidth(fieldWidth);
         categorySelect.setRequired(true);
         categorySelect.addListener(new ValueListener() {
             @Override
@@ -72,7 +77,7 @@ public abstract class AbstractRuntimePropConditionEditDlg<T> {
         attributeLabel.setValue(messages.getMessage(MESSAGES_PACK, "RuntimePropConditionEditDlg.attributeLabel"));
 
         attributeSelect = factory.createComponent(LookupField.NAME);
-        attributeSelect.setWidth(FIELD_WIDTH);
+        attributeSelect.setWidth(fieldWidth);
         attributeSelect.setRequired(true);
         attributeSelect.addListener(new ValueListener() {
             @Override
@@ -86,7 +91,7 @@ public abstract class AbstractRuntimePropConditionEditDlg<T> {
         operationLabel.setValue(messages.getMessage(MESSAGES_PACK, "RuntimePropConditionEditDlg.operationLabel"));
 
         operationSelect = factory.createComponent(LookupField.NAME);
-        operationSelect.setWidth(FIELD_WIDTH);
+        operationSelect.setWidth(fieldWidth);
         operationSelect.setRequired(true);
 
         btnOk = factory.createComponent(Button.NAME);

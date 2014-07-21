@@ -12,6 +12,8 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.components.TimeField;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.theme.Theme;
+import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaMaskedTextField;
@@ -42,8 +44,6 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implemen
 
     protected Log log = LogFactory.getLog(WebTimeField.class);
 
-    protected static final int DIGIT_WIDTH = 23;
-    
     public WebTimeField() {
         UserSessionSource uss = AppBeans.get(UserSessionSource.NAME);
 
@@ -123,18 +123,21 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implemen
     }
 
     private void updateWidth() {
-        int width = isAmPmUsed() ? DIGIT_WIDTH : 0;
+        Theme theme = App.getInstance().getUiTheme();
+        int digitWidth = theme.getInt("cuba.web.WebTimeField.digitWidth");
+
+        int width = isAmPmUsed() ? digitWidth : 0;
         if (showSeconds) {
-            width = width + DIGIT_WIDTH;
+            width = width + digitWidth;
         }
         switch (resolution) {
             case HOUR:
-                component.setWidth((DIGIT_WIDTH + width) + "px");
+                component.setWidth((digitWidth + width) + "px");
                 break;
             case MIN:
             case SEC:
-                component.setWidth((DIGIT_WIDTH * 2 + width) + "px");
-
+                component.setWidth((digitWidth * 2 + width) + "px");
+                break;
         }
     }
 

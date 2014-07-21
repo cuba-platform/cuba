@@ -18,6 +18,8 @@ import com.haulmont.cuba.gui.components.PickerField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
+import com.haulmont.cuba.gui.theme.Theme;
+import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.WebDateField;
 import com.haulmont.cuba.web.gui.components.WebLookupField;
@@ -41,8 +43,6 @@ import java.util.*;
  * @version $Id$
  */
 public class ListEditComponent extends CustomField {
-
-    public static final int DEFAULT_WIDTH = 250;
 
     protected com.vaadin.ui.TextField field;
     protected com.vaadin.ui.Button pickerButton;
@@ -120,7 +120,9 @@ public class ListEditComponent extends CustomField {
         composition.setExpandRatio(field, 1);
 
         setStyleName("cuba-pickerfield");
-        setWidth(DEFAULT_WIDTH + "px");
+
+        Theme theme = App.getInstance().getUiTheme();
+        setWidth(theme.get("cuba.web.filter.ListEditComponent.width"));
     }
 
     public ListEditComponent(CollectionDatasource collectionDatasource) {
@@ -348,7 +350,6 @@ public class ListEditComponent extends CustomField {
     private class ListEditWindow extends Window {
         protected static final String MESSAGES_PACK = "com.haulmont.cuba.gui.components.filter";
 
-        private static final String COMPONENT_WIDTH = "140";
         private VerticalLayout listLayout;
         private Map<Object, String> values;
         private Messages messages;
@@ -359,8 +360,11 @@ public class ListEditComponent extends CustomField {
 
         private ListEditWindow(Map<Object, String> values) {
             super(AppBeans.get(Messages.class).getMessage(MESSAGES_PACK, "ListEditWindow.caption"));
-            setWidth(200, Unit.PIXELS);
-            setHeight(200, Unit.PIXELS);
+
+            Theme theme = App.getInstance().getUiTheme();
+
+            setWidth(theme.get("cuba.web.filter.ListEditComponent.window.width"));
+            setHeight(theme.get("cuba.web.filter.ListEditComponent.window.height"));
             setModal(true);
 
             this.messages = AppBeans.get(Messages.class);
@@ -388,9 +392,11 @@ public class ListEditComponent extends CustomField {
             Button addButton = null;
             HorizontalLayout dateFieldLayout = null;
 
+            String pickerWidth = theme.get("cuba.web.filter.ListEditComponent.window.picker.width");
+
             if (collectionDatasource != null) {
                 final WebLookupField lookup = new WebLookupField();
-                lookup.setWidth(COMPONENT_WIDTH);
+                lookup.setWidth(pickerWidth);
                 lookup.setOptionsDatasource(collectionDatasource);
 
                 collectionDatasource.addListener(
@@ -417,7 +423,7 @@ public class ListEditComponent extends CustomField {
 
             } else if (metaClass != null) {
                 final WebPickerField picker = new WebPickerField();
-                picker.setWidth(COMPONENT_WIDTH);
+                picker.setWidth(pickerWidth);
                 picker.setMetaClass(metaClass);
                 PickerField.LookupAction action = picker.addLookupAction();
                 action.setLookupScreenOpenType(WindowManager.OpenType.DIALOG);
@@ -440,7 +446,7 @@ public class ListEditComponent extends CustomField {
 
             } else if (runtimeEnum != null) {
                 final WebLookupField lookup = new WebLookupField();
-                lookup.setWidth(COMPONENT_WIDTH);
+                lookup.setWidth(pickerWidth);
                 lookup.setOptionsList(runtimeEnum);
 
                 lookup.addListener(new ValueListener() {
@@ -462,7 +468,7 @@ public class ListEditComponent extends CustomField {
                 }
 
                 final WebLookupField lookup = new WebLookupField();
-                lookup.setWidth(COMPONENT_WIDTH);
+                lookup.setWidth(pickerWidth);
                 lookup.setOptionsMap(options);
 
                 lookup.addListener(new ValueListener() {
@@ -482,7 +488,10 @@ public class ListEditComponent extends CustomField {
                 final WebDateField dateField = new WebDateField();
                 field = dateField.getComponent();
                 dateFieldLayout = new HorizontalLayout();
-                this.setWidth(350, Unit.PIXELS);
+
+                // change width of dialog
+                this.setWidth(theme.get("cuba.web.filter.ListEditComponent.window.withDate.width"));
+
                 addButton = new CubaButton(messages.getMessage(getClass(), "actions.Add"));
                 addButton.addClickListener(new Button.ClickListener() {
                     @Override

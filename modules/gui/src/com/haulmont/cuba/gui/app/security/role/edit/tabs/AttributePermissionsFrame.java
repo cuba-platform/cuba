@@ -15,6 +15,7 @@ import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.security.MultiplePermissionTargetsDatasource;
 import com.haulmont.cuba.gui.security.RestorablePermissionDatasource;
+import com.haulmont.cuba.gui.theme.Theme;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Permission;
@@ -34,8 +35,6 @@ import java.util.*;
  * @version $Id$
  */
 public class AttributePermissionsFrame extends AbstractFrame {
-
-    protected static final String CHECKER_COLUMN_WIDTH = "75px";
 
     public interface Companion {
         void initPermissionColoredColumn(Table propertyPermissionsTable);
@@ -58,6 +57,9 @@ public class AttributePermissionsFrame extends AbstractFrame {
 
     @Inject
     protected Security security;
+
+    @Inject
+    protected Theme theme;
 
     /* Selection */
 
@@ -125,19 +127,19 @@ public class AttributePermissionsFrame extends AbstractFrame {
             modifyCheckBox = uiFactory.createComponent(CheckBox.NAME);
             modifyCheckBox.setAlignment(Alignment.MIDDLE_CENTER);
             modifyCheckBox.setFrame(AttributePermissionsFrame.this);
-            modifyCheckBox.setWidth(CHECKER_COLUMN_WIDTH);
+            modifyCheckBox.setWidth(checkerColumnWidth);
             modifyCheckBox.setId(attributeName + "_modifyCheckBox");
 
             readOnlyCheckBox = uiFactory.createComponent(CheckBox.NAME);
             readOnlyCheckBox.setAlignment(Alignment.MIDDLE_CENTER);
             readOnlyCheckBox.setFrame(AttributePermissionsFrame.this);
-            readOnlyCheckBox.setWidth(CHECKER_COLUMN_WIDTH);
+            readOnlyCheckBox.setWidth(checkerColumnWidth);
             readOnlyCheckBox.setId(attributeName + "_readOnlyCheckBox");
 
             hideCheckBox = uiFactory.createComponent(CheckBox.NAME);
             hideCheckBox.setAlignment(Alignment.MIDDLE_CENTER);
             hideCheckBox.setFrame(AttributePermissionsFrame.this);
-            hideCheckBox.setWidth(CHECKER_COLUMN_WIDTH);
+            hideCheckBox.setWidth(checkerColumnWidth);
             hideCheckBox.setId(attributeName + "_hideCheckBox");
 
             updateCheckers(permissionVariant);
@@ -232,9 +234,13 @@ public class AttributePermissionsFrame extends AbstractFrame {
 
     protected final List<AttributePermissionControl> permissionControls = new LinkedList<>();
 
+    protected String checkerColumnWidth;
+
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
+
+        checkerColumnWidth = theme.get("cuba.gui.AttributePermissionsFrame.checkerColumn.width");
 
         assignedOnlyCheckBox.setValue(Boolean.TRUE);
 
@@ -359,21 +365,21 @@ public class AttributePermissionsFrame extends AbstractFrame {
         modifyLabel.setValue(getMessage("checkbox.modify"));
         modifyLabel.setAlignment(Alignment.MIDDLE_CENTER);
         modifyLabel.setStyleName("centered");
-        modifyLabel.setWidth(CHECKER_COLUMN_WIDTH);
+        modifyLabel.setWidth(checkerColumnWidth);
         editGrid.add(modifyLabel, 1, 0);
 
         Label readOnlyLabel = uiFactory.createComponent(Label.NAME);
         readOnlyLabel.setValue(getMessage("checkbox.readOnly"));
         readOnlyLabel.setAlignment(Alignment.MIDDLE_CENTER);
         readOnlyLabel.setStyleName("centered");
-        readOnlyLabel.setWidth(CHECKER_COLUMN_WIDTH);
+        readOnlyLabel.setWidth(checkerColumnWidth);
         editGrid.add(readOnlyLabel, 2, 0);
 
         Label hideLabel = uiFactory.createComponent(Label.NAME);
         hideLabel.setValue(getMessage("checkbox.hide"));
         hideLabel.setAlignment(Alignment.MIDDLE_CENTER);
         hideLabel.setStyleName("centered");
-        hideLabel.setWidth(CHECKER_COLUMN_WIDTH);
+        hideLabel.setWidth(checkerColumnWidth);
         editGrid.add(hideLabel, 3, 0);
 
         // edit all checkers
@@ -382,9 +388,9 @@ public class AttributePermissionsFrame extends AbstractFrame {
         allReadOnlyCheck = uiFactory.createComponent(CheckBox.NAME);
         allHideCheck = uiFactory.createComponent(CheckBox.NAME);
 
-        allModifyCheck.setWidth(CHECKER_COLUMN_WIDTH);
-        allReadOnlyCheck.setWidth(CHECKER_COLUMN_WIDTH);
-        allHideCheck.setWidth(CHECKER_COLUMN_WIDTH);
+        allModifyCheck.setWidth(checkerColumnWidth);
+        allReadOnlyCheck.setWidth(checkerColumnWidth);
+        allHideCheck.setWidth(checkerColumnWidth);
 
         allModifyCheck.setId("allAttributesModifyCheck");
         allReadOnlyCheck.setId("allAttributesReadOnlyCheck");

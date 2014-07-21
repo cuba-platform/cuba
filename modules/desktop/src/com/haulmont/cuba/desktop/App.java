@@ -21,6 +21,8 @@ import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.gui.theme.Theme;
+import com.haulmont.cuba.gui.theme.ThemeRepository;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
@@ -64,6 +66,8 @@ public class App implements ConnectionListener {
 
     protected DesktopTheme theme;
 
+    protected Theme uiTheme;
+
     protected LinkedList<TopLevelFrame> topLevelFrames = new LinkedList<>();
 
     protected Messages messages;
@@ -103,6 +107,7 @@ public class App implements ConnectionListener {
             initHomeDir();
             initLogging();
         } catch (Throwable t) {
+            //noinspection CallToPrintStackTrace
             t.printStackTrace();
             System.exit(-1);
         }
@@ -222,10 +227,23 @@ public class App implements ConnectionListener {
         String themeName = config.getTheme();
         theme = AppBeans.get(DesktopThemeLoader.class).loadTheme(themeName);
         theme.init();
+
+        ThemeRepository themeRepository = AppBeans.get(ThemeRepository.NAME);
+        Theme uiTheme = themeRepository.getTheme(themeName);
+
+        if (uiTheme == null) {
+            throw new IllegalStateException("Unable to use theme '" + themeName + "'");
+        }
+
+        this.uiTheme = uiTheme;
     }
 
     public DesktopTheme getTheme() {
         return theme;
+    }
+
+    public Theme getUiTheme() {
+        return uiTheme;
     }
 
     protected void initLookAndFeelDefaults() {
@@ -296,6 +314,7 @@ public class App implements ConnectionListener {
     }
 
     protected void forceExit() {
+        //noinspection finally
         try {
             createMainWindowProperties().save();
             AppContext.stopContext();

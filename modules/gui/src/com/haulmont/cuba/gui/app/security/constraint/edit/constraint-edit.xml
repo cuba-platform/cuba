@@ -13,6 +13,8 @@
         <datasource id="constraint" class="com.haulmont.cuba.security.entity.Constraint" view="edit"/>
     </dsContext>
 
+    <assign name="width" value="theme://cuba.gui.constraint-edit.field.width"/>
+
     <layout expand="windowActions" spacing="true">
         <grid id="grid" spacing="true">
             <columns count="2"/>
@@ -20,17 +22,19 @@
                 <row>
                     <label value="msg://entityName"/>
                     <lookupField id="entityName" datasource="constraint" property="entityName" required="true"
-                                 width="500px"/>
+                                 width="${width}"/>
                 </row>
                 <row>
                     <label value="msg://joinClause"/>
                     <sourceCodeEditor id="joinClause" datasource="constraint" property="joinClause"
-                                           width="500px" height="70px"/>
+                                           width="${width}"
+                                           height="theme://cuba.gui.constraint-edit.joinClause.height"/>
                 </row>
                 <row>
                     <label value="msg://whereClause"/>
                     <sourceCodeEditor id="whereClause" datasource="constraint" property="whereClause"
-                                           width="500px" height="70px"/>
+                                           width="${width}"
+                                           height="theme://cuba.gui.constraint-edit.whereClause.height"/>
                 </row>
             </rows>
         </grid>

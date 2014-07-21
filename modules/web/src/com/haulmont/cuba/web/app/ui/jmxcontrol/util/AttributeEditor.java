@@ -6,6 +6,8 @@
 package com.haulmont.cuba.web.app.ui.jmxcontrol.util;
 
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.theme.Theme;
+import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.jmx.entity.AttributeHelper;
 import com.haulmont.cuba.web.gui.components.WebCheckBox;
 import com.haulmont.cuba.web.gui.components.WebTextField;
@@ -45,7 +47,9 @@ public class AttributeEditor {
             layout.setSpacing(true);
         } else {
             textField = new WebTextField();
-            textField.setWidth("500px");
+
+            Theme theme = App.getInstance().getUiTheme();
+            textField.setWidth(theme.get("cuba.web.jmx.AttributeEditor.textField.width"));
             textField.setFrame(frame);
 
             if (requestFocus) {

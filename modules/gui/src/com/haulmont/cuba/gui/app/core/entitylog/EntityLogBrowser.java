@@ -20,6 +20,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
+import com.haulmont.cuba.gui.theme.Theme;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.EntityLogItem;
 import com.haulmont.cuba.security.entity.LoggedAttribute;
@@ -107,6 +108,9 @@ public class EntityLogBrowser extends AbstractWindow {
     @Inject
     protected WindowConfig config;
 
+    @Inject
+    protected Theme theme;
+
     protected TextField showRowField;
 
     protected TreeMap<String, Object> entityMetaClassesMap;
@@ -149,7 +153,7 @@ public class EntityLogBrowser extends AbstractWindow {
         label2.setValue(messages.getMessage(getClass(),"rows"));
         ButtonsPanel panel = entityLogTable.getButtonsPanel();
         showRowField = factory.createComponent(TextField.NAME);
-        showRowField.setWidth("40px");
+        showRowField.setWidth(theme.get("cuba.gui.EntityLogBrowser.showRowField.width"));
         showRowField.setValue(String.valueOf(DEFAULT_SHOW_ROWS));
         panel.add(label1);
         panel.add(showRowField);

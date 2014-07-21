@@ -8,6 +8,7 @@ package com.haulmont.cuba.web.app.ui.jmxinstance.edit;
 import com.haulmont.cuba.core.entity.JmxInstance;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.theme.Theme;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.jmx.JmxControlAPI;
 import com.haulmont.cuba.web.jmx.JmxControlException;
@@ -31,13 +32,16 @@ public class JmxInstanceEditor extends AbstractEditor<JmxInstance> {
     @Inject
     protected JmxControlAPI jmxControlAPI;
 
+    @Inject
+    protected Theme theme;
+
     protected PasswordField passwordField;
 
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        getDialogParams().setWidth(490);
+        getDialogParams().setWidth(theme.getInt("cuba.web.JmxInstanceEditor.width"));
 
         jmxFieldGroup.addCustomField("password", new FieldGroup.CustomFieldGenerator() {
             @Override

@@ -5,8 +5,13 @@
 
 package com.haulmont.cuba.web;
 
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.GlobalConfig;
+import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.theme.Theme;
+import com.haulmont.cuba.gui.theme.ThemeRepository;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.web.auth.ActiveDirectoryHelper;
 import com.haulmont.cuba.web.auth.RequestContext;
@@ -16,7 +21,6 @@ import com.haulmont.cuba.web.log.AppLog;
 import com.haulmont.cuba.web.sys.AppCookies;
 import com.haulmont.cuba.web.sys.BackgroundTaskManager;
 import com.haulmont.cuba.web.sys.LinkHandler;
-import com.haulmont.cuba.web.toolkit.ui.CubaTimer;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
@@ -74,6 +78,8 @@ public abstract class App {
 
     protected String clientAddress;
 
+    protected Theme theme;
+
     public App() {
         log.trace("Creating application " + this);
         try {
@@ -90,6 +96,8 @@ public abstract class App {
             cookies = new AppCookies();
             backgroundTaskManager = new BackgroundTaskManager();
 
+            theme = loadTheme();
+
             VaadinServlet vaadinServlet = VaadinServlet.getCurrent();
             ServletContext sc = vaadinServlet.getServletContext();
             String resourcesTimestamp = sc.getInitParameter("webResourcesTs");
@@ -101,6 +109,18 @@ public abstract class App {
 
             throw new Error("Error initializing application. See log for details.");
         }
+    }
+
+    protected Theme loadTheme() {
+        String appWindowTheme = webConfig.getAppWindowTheme();
+        ThemeRepository themeRepository = AppBeans.get(ThemeRepository.NAME);
+        Theme theme = themeRepository.getTheme(appWindowTheme);
+
+        if (theme == null) {
+            throw new IllegalStateException("Unable to use theme '" + appWindowTheme + "'");
+        }
+
+        return theme;
     }
 
     /**
@@ -129,6 +149,10 @@ public abstract class App {
      */
     public AppUI getAppUI() {
         return AppUI.getCurrent();
+    }
+
+    public Theme getUiTheme() {
+        return theme;
     }
 
     public List<AppUI> getAppUIs() {
@@ -244,14 +268,6 @@ public abstract class App {
      */
     protected AppWindow createAppWindow(AppUI ui) {
         return new AppWindow(ui);
-    }
-
-    /**
-     * @deprecated Unused. In next minor release will be removed
-     */
-    @Deprecated
-    protected CubaTimer createSessionPingTimer() {
-        return null;
     }
 
     public String getCookieValue(String name) {

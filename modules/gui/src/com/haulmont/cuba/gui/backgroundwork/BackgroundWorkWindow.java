@@ -13,6 +13,7 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
 import com.haulmont.cuba.gui.executors.BackgroundTaskHandler;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
+import com.haulmont.cuba.gui.theme.Theme;
 import org.apache.commons.lang.BooleanUtils;
 
 import javax.annotation.Nullable;
@@ -47,6 +48,9 @@ public class BackgroundWorkWindow<T, V> extends AbstractWindow {
 
     @Inject
     protected BackgroundWorker backgroundWorker;
+
+    @Inject
+    protected Theme theme;
 
     protected BackgroundTaskHandler<V> taskHandler;
 
@@ -116,7 +120,8 @@ public class BackgroundWorkWindow<T, V> extends AbstractWindow {
 
     @Override
     public void init(Map<String, Object> params) {
-        getDialogParams().setWidth(500);
+        getDialogParams().setWidth(theme.getInt("cuba.gui.BackgroundWorkWindow.width"));
+
         BackgroundTask<T, V> task = (BackgroundTask<T, V>) params.get("task");
         String title = (String) params.get("title");
         if (title != null) {

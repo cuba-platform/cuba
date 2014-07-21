@@ -3,30 +3,25 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<window
-        xmlns="http://schemas.haulmont.com/cuba/5.2/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/5.2/window.xsd"
         datasource="userDs"
         caption="msg://caption"
         class="com.haulmont.cuba.gui.app.security.user.edit.UserEditor"
         messagesPack="com.haulmont.cuba.gui.app.security.user.edit"
-        focusComponent="fieldGroup"
-        >
+        focusComponent="fieldGroup">
 
     <companions>
         <web class="com.haulmont.cuba.web.app.ui.security.user.UserEditorCompanion"/>
     </companions>
 
     <dsContext>
-        <datasource
-                id="userDs"
-                class="com.haulmont.cuba.security.entity.User"
-                view="user.edit">
+        <datasource id="userDs" class="com.haulmont.cuba.security.entity.User" view="user.edit">
             <collectionDatasource id="rolesDs" property="userRoles"/>
             <collectionDatasource id="substitutionsDs" property="substitutions"/>
         </datasource>
     </dsContext>
 
-    <assign name="width" value="250px"/>
+    <assign name="width" value="theme://cuba.gui.user-edit.field.width"/>
 
     <layout expand="split" spacing="true">
         <fieldGroup id="fieldGroup" width="100%" datasource="userDs" border="visible">

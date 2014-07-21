@@ -11,12 +11,12 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.FileMultiUploadField;
 import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.theme.Theme;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.ui.CubaMultiUpload;
-import com.vaadin.server.Sizeable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -50,11 +50,16 @@ public class WebFileMultiUploadField extends WebAbstractComponent<CubaMultiUploa
 
         CubaMultiUpload uploader = new CubaMultiUpload();
 
-        uploader.setWidth(90, Sizeable.Unit.PIXELS);
-        uploader.setHeight(25, Sizeable.Unit.PIXELS);
+        Theme theme = App.getInstance().getUiTheme();
 
-        uploader.setButtonWidth(90);
-        uploader.setButtonHeight(25);
+        String width = theme.get("cuba.web.WebFileMultiUploadField.upload.width");
+        String height = theme.get("cuba.web.WebFileMultiUploadField.upload.height");
+
+        uploader.setWidth(width);
+        uploader.setHeight(height);
+
+        uploader.setButtonWidth(Integer.parseInt(width.replace("px", "")));
+        uploader.setButtonHeight(Integer.parseInt(width.replace("px", "")));
 
         uploader.setCaption(messages.getMessage(AppConfig.getMessagesPack(), "multiupload.submit"));
         uploader.setFileSizeLimitMB(AppBeans.get(Configuration.class).getConfig(ClientConfig.class).getMaxUploadSizeMb());
@@ -64,13 +69,15 @@ public class WebFileMultiUploadField extends WebAbstractComponent<CubaMultiUploa
             @Override
             public void loadWebResourcesFailed() {
                 String resourcesLoadFailed = messages.getMessage(WebFileMultiUploadField.class, "multiupload.resources.notLoaded");
-                App.getInstance().getWindowManager().showNotification(resourcesLoadFailed, IFrame.NotificationType.ERROR);
+                WebWindowManager wm = App.getInstance().getWindowManager();
+                wm.showNotification(resourcesLoadFailed, IFrame.NotificationType.ERROR);
             }
 
             @Override
             public void flashNotInstalled() {
                 String swfNotSupported = messages.getMessage(WebFileMultiUploadField.class, "multiupload.resources.swfNotSupported");
-                App.getInstance().getWindowManager().showNotification(swfNotSupported, IFrame.NotificationType.ERROR);
+                WebWindowManager wm = App.getInstance().getWindowManager();
+                wm.showNotification(swfNotSupported, IFrame.NotificationType.ERROR);
             }
         });
 

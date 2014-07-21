@@ -6,6 +6,7 @@
 package com.haulmont.cuba.gui.app.security.session.browse;
 
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.theme.Theme;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.entity.UserSessionEntity;
 import org.apache.commons.lang.StringUtils;
@@ -31,6 +32,9 @@ public class SessionMessageWindow extends AbstractWindow {
     @Inject
     protected Label sendToAllLabel;
 
+    @Inject
+    protected Theme theme;
+
     protected String result;
 
     protected Set<UserSessionEntity> allSessions;
@@ -41,7 +45,7 @@ public class SessionMessageWindow extends AbstractWindow {
 
     @Override
     public void init(Map<String, Object> params) {
-        getDialogParams().setWidth(500);
+        getDialogParams().setWidth(theme.getInt("cuba.gui.SessionMessageWindow.width"));
 
         TO_ALL = messages.getMessage(getClass(), "messageWindow.toAll");
         TO_SELECTED = messages.getMessage(getClass(), "messageWindow.toSelected");

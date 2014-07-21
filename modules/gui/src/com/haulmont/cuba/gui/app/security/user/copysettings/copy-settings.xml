@@ -19,7 +19,7 @@
 
     <layout spacing="true">
         <label id="label" value="msg://copyFromUser"/>
-        <lookupField width="350px" id="user"
+        <lookupField width="theme://cuba.gui.copy-settings.userSelect.width" id="user"
                      optionsDatasource="usersDs"
                      required="true"
                      requiredMessage="msg://selectUser"/>
@@ -29,4 +29,3 @@
         </buttonsPanel>
     </layout>
 </window>
-

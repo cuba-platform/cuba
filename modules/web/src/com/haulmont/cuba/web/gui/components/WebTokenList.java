@@ -18,6 +18,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
+import com.haulmont.cuba.gui.theme.Theme;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.toolkit.ui.CubaTokenListLabel;
 import com.vaadin.ui.Button;
@@ -526,9 +527,13 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
 
                         WindowManager wm = App.getInstance().getWindowManager();
                         if (lookupOpenMode == WindowManager.OpenType.DIALOG) {
+                            Theme theme = App.getInstance().getUiTheme();
+                            int width = theme.getInt("cuba.web.WebTokenList.lookupDialog.width");
+                            int height = theme.getInt("cuba.web.WebTokenList.lookupDialog.height");
+
                             wm.getDialogParams().setResizable(true);
-                            wm.getDialogParams().setWidth(800);
-                            wm.getDialogParams().setHeight(600);
+                            wm.getDialogParams().setWidth(width);
+                            wm.getDialogParams().setHeight(height);
                         }
 
                         wm.openLookup(windowInfo, new Window.Lookup.Handler() {

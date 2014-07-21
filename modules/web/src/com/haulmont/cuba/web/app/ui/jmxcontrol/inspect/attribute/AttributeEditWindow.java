@@ -7,6 +7,7 @@ package com.haulmont.cuba.web.app.ui.jmxcontrol.inspect.attribute;
 
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.GridLayout;
+import com.haulmont.cuba.gui.theme.Theme;
 import com.haulmont.cuba.web.app.ui.jmxcontrol.util.AttributeEditor;
 import com.haulmont.cuba.web.jmx.JmxControlAPI;
 import com.haulmont.cuba.web.jmx.entity.ManagedBeanAttribute;
@@ -27,6 +28,9 @@ public class AttributeEditWindow extends AbstractEditor<ManagedBeanAttribute> {
 
     @Inject
     protected GridLayout valueContainer;
+
+    @Inject
+    protected Theme theme;
 
     @Override
     protected void postInit() {
@@ -63,7 +67,8 @@ public class AttributeEditWindow extends AbstractEditor<ManagedBeanAttribute> {
                 return true;
             }
         } catch (Exception e) {
-            getDialogParams().setWidth(640);
+            getDialogParams().setWidth(theme.getInt("cuba.web.AttributeEditWindow.messageDialog.width"));
+
             showMessageDialog(String.format(getMessage("editAttribute.exception"), mba.getName()),
                     e.getClass().getCanonicalName() + " " + e.getMessage() + "\n",
                     MessageType.WARNING);

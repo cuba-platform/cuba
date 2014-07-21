@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.gui;
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.AbstractFrame;
 import com.haulmont.cuba.gui.components.Action;
@@ -14,6 +15,8 @@ import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.export.ExportDisplay;
+import com.haulmont.cuba.gui.theme.Theme;
+import com.haulmont.cuba.gui.theme.ThemeManager;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -76,6 +79,7 @@ public class ControllerDependencyInjector {
         }
         return list;
     }
+
     private Class injectionAnnotation(AnnotatedElement element) {
         if (element.isAnnotationPresent(Named.class))
             return Named.class;
@@ -177,6 +181,11 @@ public class ControllerDependencyInjector {
             // Injecting an ExportDisplay
             return AppConfig.createExportDisplay(frame);
 
+        } else if (Theme.class.isAssignableFrom(type)) {
+            // Injecting a Theme
+            ThemeManager themeManager = AppBeans.get(ThemeManager.NAME);
+            return themeManager.getTheme();
+
         } else {
             Object instance;
             // Try to find a Spring bean
@@ -184,16 +193,18 @@ public class ControllerDependencyInjector {
             if (!beans.isEmpty()) {
                 instance = beans.get(name);
                 // If a bean with required name found, return it. Otherwise return first found.
-                if (instance != null)
+                if (instance != null) {
                     return instance;
-                else
+                } else {
                     return beans.values().iterator().next();
+                }
             }
             // There are no Spring beans of required type - the last option is Companion
             if (frame instanceof AbstractFrame) {
                 instance = ((AbstractFrame) frame).getCompanion();
-                if (instance != null && type.isAssignableFrom(instance.getClass()))
+                if (instance != null && type.isAssignableFrom(instance.getClass())) {
                     return instance;
+                }
             }
         }
         return  null;

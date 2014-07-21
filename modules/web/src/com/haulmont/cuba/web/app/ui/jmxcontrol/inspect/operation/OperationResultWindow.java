@@ -9,6 +9,7 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.components.ScrollBoxLayout;
+import com.haulmont.cuba.gui.theme.Theme;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.jmx.entity.AttributeHelper;
@@ -30,13 +31,17 @@ public class OperationResultWindow extends AbstractWindow {
     @Inject
     protected ScrollBoxLayout resultContainer;
 
+    @Inject
+    protected Theme theme;
+
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        getDialogParams().setResizable(true);
-        getDialogParams().setWidth(800);
-        getDialogParams().setHeight(600);
+        getDialogParams()
+                .setResizable(true)
+                .setWidth(theme.getInt("cuba.web.jmx.OperationResultWindow.width"))
+                .setHeight(theme.getInt("cuba.web.jmx.OperationResultWindow.height"));
 
         Throwable ex = (Throwable) params.get("exception");
         Object result = params.get("result");

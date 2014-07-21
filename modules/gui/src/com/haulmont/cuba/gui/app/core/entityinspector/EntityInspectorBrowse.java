@@ -21,6 +21,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
+import com.haulmont.cuba.gui.theme.Theme;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.global.UserSession;
@@ -37,7 +38,6 @@ public class EntityInspectorBrowse extends AbstractLookup {
 
     public static final String SCREEN_NAME = "entityInspector.browse";
     public static final WindowManager.OpenType WINDOW_OPEN_TYPE = WindowManager.OpenType.THIS_TAB;
-    public static final String DEFAULT_FIELD_WIDTH = "300";
     public static final int MAX_TEXT_LENGTH = 50;
 
     @Inject
@@ -63,6 +63,9 @@ public class EntityInspectorBrowse extends AbstractLookup {
 
     @Inject
     protected Configuration configuration;
+
+    @Inject
+    protected Theme theme;
 
     protected LookupField entities;
     protected Button showButton;
@@ -92,7 +95,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
             }
         } else {
             entities = componentsFactory.createComponent(LookupField.NAME);
-            entities.setWidth(DEFAULT_FIELD_WIDTH);
+            entities.setWidth(theme.get("cuba.gui.EntityInspectorBrowse.entitiesSelect.width"));
             entities.setOptionsMap(getEntitiesLookupFieldOptions());
             entities.setId("entitiesLookup");
             entities.setFrame(frame);

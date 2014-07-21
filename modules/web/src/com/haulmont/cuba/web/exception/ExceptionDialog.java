@@ -8,7 +8,9 @@ import com.haulmont.cuba.core.app.EmailService;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.config.WindowConfig;
+import com.haulmont.cuba.gui.theme.Theme;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.toolkit.ui.CubaButton;
@@ -65,7 +67,9 @@ public class ExceptionDialog extends Window {
         }
 
         setCaption(caption != null ? caption : messages.getMessage(getClass(), "exceptionDialog.caption"));
-        setWidth(600, Unit.PIXELS);
+
+        Theme theme = ui.getApp().getUiTheme();
+        setWidth(theme.get("cuba.web.ExceptionDialog.width"));
         center();
 
         final String text = message != null ? message : getText(throwable);
@@ -76,7 +80,7 @@ public class ExceptionDialog extends Window {
         mainLayout.setSpacing(true);
 
         TextArea textArea = new TextArea();
-        textArea.setHeight(100, Unit.PIXELS);
+        textArea.setHeight(theme.get("cuba.web.ExceptionDialog.textArea.height"));
         textArea.setWidth(100, Unit.PERCENTAGE);
         textArea.setValue(text);
         textArea.setReadOnly(true);
@@ -218,6 +222,7 @@ public class ExceptionDialog extends Window {
     public void setStackTraceVisible(boolean visible) {
         isStackTraceVisible = visible;
 
+        Theme theme = App.getInstance().getUiTheme();
         if (visible) {
             showStackTraceButton.setCaption(messages.getMessage(getClass(), "exceptionDialog.hideStackTrace"));
 
@@ -225,8 +230,8 @@ public class ExceptionDialog extends Window {
             mainLayout.setExpandRatio(stackTraceScrollablePanel, 1.0f);
             mainLayout.setHeight(100, Unit.PERCENTAGE);
 
-            setWidth(750, Unit.PIXELS);
-            setHeight(650, Unit.PIXELS);
+            setWidth(theme.get("cuba.web.ExceptionDialog.expanded.width"));
+            setHeight(theme.get("cuba.web.ExceptionDialog.expanded.height"));
 
             setResizable(true);
             center();
@@ -236,7 +241,7 @@ public class ExceptionDialog extends Window {
             mainLayout.setHeight(-1, Unit.PIXELS);
             mainLayout.removeComponent(stackTraceScrollablePanel);
 
-            setWidth(600, Unit.PIXELS);
+            setWidth(theme.get("cuba.web.ExceptionDialog.width"));
             setHeight(-1, Unit.PERCENTAGE);
 
             setResizable(false);

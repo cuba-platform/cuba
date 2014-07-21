@@ -8,6 +8,7 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.TestIdManager;
+import com.haulmont.cuba.gui.theme.Theme;
 import com.haulmont.cuba.security.app.UserManagementService;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
@@ -293,7 +294,14 @@ public class LoginWindow extends UIView implements Action.Handler {
     }
 
     protected void initUI() {
-        initStandartUI(310, -1, 125, configuration.getConfig(GlobalConfig.class).getLocaleSelectVisible());
+        boolean localeSelectVisible = configuration.getConfig(GlobalConfig.class).getLocaleSelectVisible();
+
+        Theme theme = App.getInstance().getUiTheme();
+        int formWidth = theme.getInt("cuba.web.LoginWindow.form.width");
+        int formHeight = theme.getInt("cuba.web.LoginWindow.form.height");
+        int fieldWidth = theme.getInt("cuba.web.LoginWindow.field.width");
+
+        initStandartUI(formWidth, formHeight, fieldWidth, localeSelectVisible);
     }
 
     protected void initRememberMe() {
