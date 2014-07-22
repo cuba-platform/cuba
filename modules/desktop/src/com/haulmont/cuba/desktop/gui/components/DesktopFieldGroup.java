@@ -10,7 +10,6 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
-import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
@@ -26,6 +25,7 @@ import net.miginfocom.layout.CC;
 import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
 import javax.swing.*;
@@ -144,17 +144,18 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     @Override
     public void removeField(FieldConfig field) {
         if (fields.remove(field.getId()) != null) {
-            Integer col = fieldsColumn.get(field.getId());
+            Integer col = fieldsColumn.get(field);
 
             final List<FieldConfig> fields = columnFields.get(col);
             fields.remove(field);
-            fieldsColumn.remove(field.getId());
+            fieldsColumn.remove(field);
         }
     }
 
     @Override
     public void requestFocus() {
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 for (Component component : fieldComponents.values()) {
                     JComponent jComponent = DesktopComponentsHelper.unwrap(component);
@@ -175,17 +176,10 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     @Override
     public void setDatasource(Datasource datasource) {
         this.datasource = datasource;
+
         if (this.fields.isEmpty() && datasource != null) {
             //collect fields by entity view
-            MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
-            Collection<MetaPropertyPath> fieldsMetaProps = metadataTools.getViewPropertyPaths(datasource.getView(), datasource.getMetaClass());
-            for (MetaPropertyPath mpp : fieldsMetaProps) {
-                MetaProperty mp = mpp.getMetaProperty();
-                if (!mp.getRange().getCardinality().isMany() && !metadataTools.isSystem(mp)) {
-                    FieldConfig field = new FieldConfig(mpp.toString());
-                    addField(field);
-                }
-            }
+            LogFactory.getLog(getClass()).warn("Field group does not have fields");
         }
         rows = rowsCount();
 
@@ -802,6 +796,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         }
     }
 
+    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     @Override
     public void validate() throws ValidationException {
         if (!isVisible() || !isEditable() || !isEnabled()) {

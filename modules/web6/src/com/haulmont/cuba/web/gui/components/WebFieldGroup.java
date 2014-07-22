@@ -312,56 +312,18 @@ public class WebFieldGroup
         return datasource;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void setDatasource(Datasource datasource) {
         this.datasource = datasource;
 
         component.setCols(cols);
 
-        MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
-        Collection<MetaPropertyPath> fieldsMetaProps = null;
-        if (this.fields.isEmpty() && datasource != null) {//collects fields by entity view
-            fieldsMetaProps = metadataTools.getViewPropertyPaths(datasource.getView(), datasource.getMetaClass());
-
-            final ArrayList<MetaPropertyPath> propertyPaths = new ArrayList<>(fieldsMetaProps);
-            for (final MetaPropertyPath propertyPath : propertyPaths) {
-                MetaProperty property = propertyPath.getMetaProperty();
-                if (property.getRange().getCardinality().isMany() || metadataTools.isSystem(property)) {
-                    fieldsMetaProps.remove(propertyPath);
-                }
-            }
-
-            component.setRows(fieldsMetaProps.size());
-
-        } else {
-            if (datasource != null) {
-                final List<String> fieldIds = new ArrayList<>(this.fields.keySet());
-                fieldsMetaProps = new ArrayList<>();
-                for (final String id : fieldIds) {
-                    final FieldConfig field = getField(id);
-                    final MetaPropertyPath propertyPath = datasource.getMetaClass().getPropertyPath(field.getId());
-                    final Element descriptor = field.getXmlDescriptor();
-                    final String clickAction = (descriptor == null) ? (null) : (descriptor.attributeValue("clickAction"));
-                    if (field.getDatasource() == null && propertyPath != null
-                            && StringUtils.isEmpty(clickAction)) {
-                        //fieldsMetaProps with attribute "clickAction" will be created manually
-                        fieldsMetaProps.add(propertyPath);
-                    }
-                }
-            }
-
-            component.setRows(rowsCount());
-        }
-
         if (datasource != null) {
-            if (!this.fields.isEmpty()) {
-                //Removes custom fieldsMetaProps from the list. We shouldn't to create components for custom fieldsMetaProps
-                for (MetaPropertyPath propertyPath : new ArrayList<>(fieldsMetaProps)) {
-                    final FieldConfig field = getField(propertyPath.toString());
-                    if (field.isCustom()) {
-                        fieldsMetaProps.remove(propertyPath);
-                    }
-                }
+            if (this.fields.isEmpty()) {
+                LogFactory.getLog(getClass()).warn("Field group does not have fields");
+            } else {
+                component.setRows(rowsCount());
             }
         }
 
@@ -765,6 +727,7 @@ public class WebFieldGroup
         }
     }
 
+    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     @Override
     public void validate() throws ValidationException {
         if (!isVisible() || !isEditable() || !isEnabled()) {
