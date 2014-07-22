@@ -148,7 +148,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
                 fireStateChanged(prevState);
             }
 
-            if (prevIds != null && this.item != null && !prevIds.contains(this.item.getId())) {
+            if (this.item != null && !prevIds.contains(this.item.getId())) {
                 setItem(null);
             } else if (this.item != null) {
                 setItem(getItem(this.item.getId()));
@@ -287,7 +287,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         return itemId != null && itemId.equals(lastItemId());
     }
 
-    private void checkState() {
+    protected void checkState() {
         if (!State.VALID.equals(state)) {
             refresh();
         }
@@ -350,6 +350,17 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void clear() {
+        // replaced refresh call with state initialization
+        if (state != State.VALID) {
+            invalidate();
+
+            State prevState = state;
+            if (prevState != State.VALID) {
+                valid();
+                fireStateChanged(prevState);
+            }
+        }
+
         // Get items
         List<Object> collectionItems = new ArrayList<Object>(data.values());
         // Clear container
@@ -359,18 +370,18 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
             T item = (T) obj;
             detachListener(item);
         }
-        if (state == State.VALID)
-            fireCollectionChanged(CollectionDatasourceListener.Operation.CLEAR, Collections.<Entity>emptyList());
+
+        setItem(null);
+
+        fireCollectionChanged(CollectionDatasourceListener.Operation.CLEAR, Collections.<Entity>emptyList());
     }
 
     @Override
     public void revert() {
-        if (refreshMode != RefreshMode.NEVER)
+        if (refreshMode != RefreshMode.NEVER) {
             refresh();
-        else {
+        } else {
             clear();
-            invalidate();
-            valid();
         }
     }
 
@@ -531,6 +542,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         }
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public Map<Object, String> aggregate(AggregationInfo[] aggregationInfos, Collection itemIds) {
         return aggregatableDelegate.aggregate(aggregationInfos, itemIds);

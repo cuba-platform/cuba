@@ -134,6 +134,8 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
             if (size != null && size > 0)
                 size--;
 
+            setItem(null);
+
             fireCollectionChanged(CollectionDatasourceListener.Operation.CLEAR, Collections.<Entity>emptyList());
         }
     }

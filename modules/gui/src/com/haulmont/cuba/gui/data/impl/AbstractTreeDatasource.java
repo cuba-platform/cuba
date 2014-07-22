@@ -137,6 +137,17 @@ public abstract class AbstractTreeDatasource<T extends Entity<K>, K>
 
     @Override
     public void clear() {
+        // replaced refresh call with state initialization
+        if (state != State.VALID) {
+            invalidate();
+
+            State prevState = state;
+            if (!prevState.equals(State.VALID)) {
+                valid();
+                fireStateChanged(prevState);
+            }
+        }
+
         // Get items
         List<Object> collectionItems = new ArrayList<Object>(data.values());
         // Clear container
@@ -150,9 +161,10 @@ public abstract class AbstractTreeDatasource<T extends Entity<K>, K>
             T item = (T) obj;
             detachListener(item);
         }
-        if (state == State.VALID) {
-            fireCollectionChanged(CollectionDatasourceListener.Operation.CLEAR, Collections.<Entity>emptyList());
-        }
+
+        setItem(null);
+
+        fireCollectionChanged(CollectionDatasourceListener.Operation.CLEAR, Collections.<Entity>emptyList());
     }
 
     @Override

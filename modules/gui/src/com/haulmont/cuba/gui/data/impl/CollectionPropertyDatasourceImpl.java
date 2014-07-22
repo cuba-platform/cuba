@@ -429,6 +429,8 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
                     detachListener(item);
                 }
 
+                setItem(null);
+
                 fireCollectionChanged(CollectionDatasourceListener.Operation.CLEAR, Collections.<Entity>emptyList());
             } finally {
                 doNotModify = false;
