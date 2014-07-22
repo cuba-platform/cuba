@@ -626,6 +626,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
         datasource.addListener(
                 new CollectionDsListenerAdapter<Entity>() {
+                    @SuppressWarnings("unchecked")
                     @Override
                     public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
                         onDataChange();
@@ -645,7 +646,9 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                         }
 
                         if (ds.getState() == Datasource.State.VALID && ds.getItem() != null) {
-                            newSelection.add(ds.getItem());
+                            if (ds.containsItem(ds.getItem())) {
+                                newSelection.add(ds.getItem());
+                            }
                         }
 
                         if (newSelection.isEmpty()) {
