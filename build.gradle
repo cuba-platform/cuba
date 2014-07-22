@@ -315,6 +315,7 @@ configure(coreModule) {
 configure(clientModule) {
     dependencies {
         compile(globalModule)
+        compile(group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.2.2')
     }
 
     task testsJar(dependsOn: testClasses, type: Jar) {
@@ -340,7 +341,6 @@ configure(guiModule) {
         compile(globalModule)
         compile(clientModule)
         compile(poi)
-        compile(group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.2.2')
         compile(groovyArtifact)
         compile(asm)
 
