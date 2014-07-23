@@ -28,6 +28,8 @@
         </collectionDatasource>
     </dsContext>
 
+    <assign name="fieldWidth" value="theme://cuba.gui.user-subst-edit.field.width"/>
+
     <layout expand="windowActions" spacing="true">
         <grid spacing="true">
             <columns>
@@ -38,12 +40,12 @@
                 <row>
                     <label value="msg://user"/>
                     <textField id="user" datasource="subst" property="user"
-                               required="true" editable="false" requiredMessage="msg://userMsg" width="250"/>
+                               required="true" editable="false" requiredMessage="msg://userMsg" width="${fieldWidth}"/>
                 </row>
                 <row>
                     <label value="msg://substUser"/>
                     <lookupField id="substUser" datasource="subst" property="substitutedUser"
-                                 required="true" optionsDatasource="users" requiredMessage="msg://substUserMsg" width="250"/>
+                                 required="true" optionsDatasource="users" requiredMessage="msg://substUserMsg" width="${fieldWidth}"/>
                 </row>
                 <row id="startDateRow">
                     <label value="msg://startDate"/>

@@ -30,10 +30,10 @@ import java.util.Properties;
  * @author artamonov
  * @version $Id$
  */
-@ManagedBean(ThemeRepository.NAME)
-public class ThemeRepository {
+@ManagedBean(ThemeConstantsRepository.NAME)
+public class ThemeConstantsRepository {
 
-    public static final String NAME = "cuba_ThemeRepository";
+    public static final String NAME = "cuba_ThemeConstantsRepository";
 
     @Inject
     protected Resources resources;
@@ -42,13 +42,13 @@ public class ThemeRepository {
 
     private volatile boolean initialized;
 
-    protected Map<String, Theme> themes;
+    protected Map<String, ThemeConstants> themeContstantsMap;
 
     protected void checkInitialized() {
         if (!initialized) {
             synchronized (this) {
                 if (!initialized) {
-                    log.info("Initializing themes");
+                    log.info("Loading theme constants");
                     init();
                     initialized = true;
                 }
@@ -75,15 +75,15 @@ public class ThemeRepository {
                 }
             }
 
-            Map<String, Theme> themes = new HashMap<>();
+            Map<String, ThemeConstants> themes = new HashMap<>();
 
             for (Map.Entry<String, Map<String, String>> entry : themeProperties.entrySet()) {
-                themes.put(entry.getKey(), new Theme(entry.getValue()));
+                themes.put(entry.getKey(), new ThemeConstants(entry.getValue()));
             }
 
-            this.themes = Collections.unmodifiableMap(themes);
+            this.themeContstantsMap = Collections.unmodifiableMap(themes);
         } else {
-            this.themes = Collections.emptyMap();
+            this.themeContstantsMap = Collections.emptyMap();
         }
     }
 
@@ -92,7 +92,7 @@ public class ThemeRepository {
         try {
             propertiesStream = resources.getResourceAsStream(fileName);
             if (propertiesStream == null) {
-                throw new DevelopmentException("Unable to load application theme: '" + fileName + "'");
+                throw new DevelopmentException("Unable to load theme constants for: '" + fileName + "'");
             }
 
             InputStreamReader propertiesReader = new InputStreamReader(propertiesStream, StandardCharsets.UTF_8);
@@ -101,7 +101,7 @@ public class ThemeRepository {
             try {
                 properties.load(propertiesReader);
             } catch (IOException e) {
-                throw new DevelopmentException("Unable to parse application theme: '" + fileName + "'");
+                throw new DevelopmentException("Unable to parse theme constants for: '" + fileName + "'");
             }
 
             for (Map.Entry<Object, Object> entry : properties.entrySet()) {
@@ -133,9 +133,9 @@ public class ThemeRepository {
         }
     }
 
-    public Theme getTheme(String themeName) {
+    public ThemeConstants getConstants(String themeName) {
         checkInitialized();
 
-        return themes.get(themeName);
+        return themeContstantsMap.get(themeName);
     }
 }

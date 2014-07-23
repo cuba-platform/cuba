@@ -6,7 +6,7 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.gui.components.PickerField;
-import com.haulmont.cuba.gui.theme.Theme;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.web.App;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.converter.Converter;
@@ -64,7 +64,7 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
 
         setPrimaryStyleName("cuba-pickerfield");
 
-        Theme theme = App.getInstance().getUiTheme();
+        ThemeConstants theme = App.getInstance().getThemeConstants();
         setWidth(theme.get("cuba.web.CubaPickerField.width"));
     }
 
@@ -112,6 +112,7 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
         suppressTextChangeListener = false;
     }
 
+    @SuppressWarnings("unchecked")
     protected String getStringRepresentation() {
         if (captionFormatter != null) {
             return (String) captionFormatter.convertToPresentation(getValue(), String.class, getLocale());

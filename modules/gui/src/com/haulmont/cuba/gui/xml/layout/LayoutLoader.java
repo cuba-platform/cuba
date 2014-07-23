@@ -10,8 +10,8 @@ import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.core.global.TemplateHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
-import com.haulmont.cuba.gui.theme.Theme;
-import com.haulmont.cuba.gui.theme.ThemeManager;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
+import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -68,10 +68,10 @@ public class LayoutLoader {
                 String variable = matcher.group(1);
                 String value = matcher.group(2);
 
-                if (StringUtils.startsWith(value, Theme.PREFIX)) {
-                    ThemeManager themeManager = AppBeans.get(ThemeManager.NAME);
-                    Theme theme = themeManager.getTheme();
-                    value = theme.get(value.substring(Theme.PREFIX.length()));
+                if (StringUtils.startsWith(value, ThemeConstants.PREFIX)) {
+                    ThemeConstantsManager themeManager = AppBeans.get(ThemeConstantsManager.NAME);
+                    ThemeConstants theme = themeManager.getConstants();
+                    value = theme.get(value.substring(ThemeConstants.PREFIX.length()));
                 }
 
                 templateParams.put(variable, value);

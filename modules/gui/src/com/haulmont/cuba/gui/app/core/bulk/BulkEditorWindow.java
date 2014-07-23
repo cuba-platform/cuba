@@ -21,7 +21,7 @@ import com.haulmont.cuba.gui.data.NestedDatasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.DsContextImpl;
 import com.haulmont.cuba.gui.data.impl.EmbeddedDatasourceImpl;
-import com.haulmont.cuba.gui.theme.Theme;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
@@ -74,7 +74,7 @@ public class BulkEditorWindow extends AbstractWindow {
     protected Button applyButton;
 
     @Inject
-    protected Theme theme;
+    protected ThemeConstants themeConstants;
 
     @WindowParam(required = true)
     protected MetaClass metaClass;
@@ -162,7 +162,7 @@ public class BulkEditorWindow extends AbstractWindow {
             }
         });
 
-        String fieldWidth = theme.get("cuba.gui.BulkEditorWindow.field.width");
+        String fieldWidth = themeConstants.get("cuba.gui.BulkEditorWindow.field.width");
 
         for (ManagedField field : editFields) {
             Label label = componentsFactory.createComponent(Label.NAME);

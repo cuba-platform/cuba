@@ -7,8 +7,8 @@ package com.haulmont.cuba.web;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
-import com.haulmont.cuba.gui.theme.Theme;
-import com.haulmont.cuba.gui.theme.ThemeRepository;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
+import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.auth.ActiveDirectoryHelper;
@@ -116,7 +116,7 @@ public abstract class App extends Application
 
     protected boolean testMode = false;
 
-    protected Theme theme;
+    protected ThemeConstants themeConstants;
 
     protected App() {
         log.trace("Creating application " + this);
@@ -128,7 +128,7 @@ public abstract class App extends Application
 
             testMode = globalConfig.getTestMode();
 
-            this.theme = loadTheme();
+            this.themeConstants = loadTheme();
 
             appLog = new AppLog();
             connection = createConnection();
@@ -544,20 +544,20 @@ public abstract class App extends Application
         }
     }
 
-    protected Theme loadTheme() {
+    protected ThemeConstants loadTheme() {
         String appWindowTheme = webConfig.getAppWindowTheme();
-        ThemeRepository themeRepository = AppBeans.get(ThemeRepository.NAME);
-        Theme theme = themeRepository.getTheme(appWindowTheme);
+        ThemeConstantsRepository themeRepository = AppBeans.get(ThemeConstantsRepository.NAME);
+        ThemeConstants theme = themeRepository.getConstants(appWindowTheme);
 
         if (theme == null) {
-            throw new IllegalStateException("Unable to use theme '" + appWindowTheme + "'");
+            throw new IllegalStateException("Unable to use theme constants '" + appWindowTheme + "'");
         }
 
         return theme;
     }
 
-    public Theme getUiTheme() {
-        return theme;
+    public ThemeConstants getThemeConstants() {
+        return themeConstants;
     }
 
     public BackgroundTaskManager getTaskManager() {

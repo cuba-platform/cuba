@@ -22,7 +22,7 @@
             <button action="uploadsTable.remove" icon="icons/remove.png"/>
         </hbox>
 
-        <table id="uploadsTable" editable="true" height="400px" width="100%">
+        <table id="uploadsTable" editable="true" height="theme://cuba.gui.multiupload.table.height" width="100%">
             <columns>
                 <column id="name" caption="msg://name" editable="true"
                         required="true" requiredMessage="msg://notNullFileNames"/>

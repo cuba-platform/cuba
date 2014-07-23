@@ -17,17 +17,19 @@
         </datasource>
     </dsContext>
 
+    <assign name="fieldWidth" value="theme://cuba.gui.lock-edit.field.width"/>
+
     <layout spacing="true" expand="windowActions">
         <grid spacing="true">
             <columns count="2"/>
             <rows>
                 <row>
                     <label value="msg://name"/>
-                    <lookupField width="250px" datasource="lockDescriptorDs" id="nameLookupField" property="name"/>
+                    <lookupField width="${fieldWidth}" datasource="lockDescriptorDs" id="nameLookupField" property="name"/>
                 </row>
                 <row>
                     <label value="msg://timeout"/>
-                    <textField id="timeoutField" width="250px" datasource="lockDescriptorDs" property="timeoutSec"/>
+                    <textField id="timeoutField" width="${fieldWidth}" datasource="lockDescriptorDs" property="timeoutSec"/>
                 </row>
             </rows>
         </grid>

@@ -16,8 +16,8 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.RuntimePropertiesHelper;
 import com.haulmont.cuba.gui.data.ValueListener;
-import com.haulmont.cuba.gui.theme.Theme;
-import com.haulmont.cuba.gui.theme.ThemeManager;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
+import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.ObjectUtils;
 
@@ -57,8 +57,8 @@ public abstract class AbstractRuntimePropConditionEditDlg<T> {
         categoryLabel = factory.createComponent(Label.NAME);
         categoryLabel.setValue(messages.getMessage(MESSAGES_PACK, "RuntimePropConditionEditDlg.categoryLabel"));
 
-        ThemeManager themeManager = AppBeans.get(ThemeManager.NAME);
-        Theme theme = themeManager.getTheme();
+        ThemeConstantsManager themeManager = AppBeans.get(ThemeConstantsManager.NAME);
+        ThemeConstants theme = themeManager.getConstants();
         String fieldWidth = theme.get("cuba.gui.AbstractRuntimePropConditionEditDlg.field.width");
 
         categorySelect = factory.createComponent(LookupField.NAME);

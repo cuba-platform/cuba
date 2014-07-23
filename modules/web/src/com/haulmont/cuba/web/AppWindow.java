@@ -9,7 +9,6 @@ import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Action;
@@ -18,7 +17,7 @@ import com.haulmont.cuba.gui.components.ShowInfoAction;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
-import com.haulmont.cuba.gui.theme.Theme;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserSubstitution;
@@ -480,7 +479,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
      * Called by constructor when all layouts are created but before {@link #initStartupScreen()}.
      */
     protected void postInitLayout() {
-        String themeName = AppContext.getProperty("cuba.web.theme");
+//        String themeName = AppContext.getProperty("cuba.web.theme");
 //        vaadin7 Theme switch
 //        if (themeName == null) themeName = AppUI.THEME_NAME;
 //        themeName = userSettingsTools.loadAppWindowTheme() == null ? themeName : userSettingsTools.loadAppWindowTheme();
@@ -597,7 +596,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
 
             final TextField searchField = new CubaTextField();
 
-            Theme theme = App.getInstance().getUiTheme();
+            ThemeConstants theme = App.getInstance().getThemeConstants();
             searchField.setWidth(theme.get("cuba.web.AppWindow.searchField.width"));
 
             if (ui.isTestMode()) {
@@ -766,7 +765,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
             if (webConfig.getUseLightHeader()) {
                 substUserSelect = new ComboBox();
 
-                Theme theme = App.getInstance().getUiTheme();
+                ThemeConstants theme = App.getInstance().getThemeConstants();
                 substUserSelect.setWidth(theme.get("cuba.web.AppWindow.substUserSelect.width"));
             } else {
                 substUserSelect = new NativeSelect();

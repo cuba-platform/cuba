@@ -16,6 +16,8 @@
                     view="user.changepassw"/>
     </dsContext>
 
+    <assign name="fieldWidth" value="theme://cuba.gui.user-changepassw.field.width"/>
+
     <layout spacing="true">
         <grid spacing="true">
             <columns>
@@ -25,16 +27,16 @@
             <rows>
                 <row>
                     <label id="currentPasswordLabel" value="msg://currentPassword" visible="false"/>
-                    <passwordField id="currentPasswordField" width="200px" visible="false"
+                    <passwordField id="currentPasswordField" width="${fieldWidth}" visible="false"
                                    required="true" requiredMessage="msg://currentPasswordRequired"/>
                 </row>
                 <row>
                     <label id="passwLab" value="msg://password"/>
-                    <passwordField id="passwField" width="200px" required="true" requiredMessage="msg://passwordRequired"/>
+                    <passwordField id="passwField" width="${fieldWidth}" required="true" requiredMessage="msg://passwordRequired"/>
                 </row>
                 <row>
                     <label id="confirmPasswLab" value="msg://confirmPassword"/>
-                    <passwordField id="confirmPasswField" width="200px" required="true" requiredMessage="msg://passwordConfirmRequired"/>
+                    <passwordField id="confirmPasswField" width="${fieldWidth}" required="true" requiredMessage="msg://passwordConfirmRequired"/>
                 </row>
             </rows>
         </grid>

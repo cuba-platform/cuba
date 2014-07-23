@@ -24,7 +24,7 @@ import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
-import com.haulmont.cuba.gui.theme.Theme;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.components.WebDateField;
 import com.haulmont.cuba.web.gui.components.WebLookupField;
@@ -125,7 +125,7 @@ public class Param extends AbstractParam<Component> {
         final TextField field = new TextField();
         field.setNullRepresentation("");
 
-        Theme theme = App.getInstance().getUiTheme();
+        ThemeConstants theme = App.getInstance().getThemeConstants();
         field.setWidth(theme.get("cuba.web.filter.Param.textComponent.width"));
 
         field.addValueChangeListener(new Property.ValueChangeListener() {
@@ -357,7 +357,7 @@ public class Param extends AbstractParam<Component> {
                 WebPickerField picker = new WebPickerField();
                 picker.setMetaClass(metaClass);
 
-                Theme theme = App.getInstance().getUiTheme();
+                ThemeConstants theme = App.getInstance().getThemeConstants();
                 picker.setWidth(theme.get("cuba.web.filter.Param.textComponent.width"));
                 picker.setFrame(datasource.getDsContext().getFrameContext().getFrame());
                 picker.addLookupAction();
@@ -408,7 +408,7 @@ public class Param extends AbstractParam<Component> {
             } else {
                 final WebLookupField lookup = new WebLookupField();
 
-                Theme theme = App.getInstance().getUiTheme();
+                ThemeConstants theme = App.getInstance().getThemeConstants();
                 lookup.setWidth(theme.get("cuba.web.filter.Param.textComponent.width"));
                 lookup.setOptionsDatasource(ds);
 
@@ -437,7 +437,7 @@ public class Param extends AbstractParam<Component> {
     }
 
     private void initListEdit(final ListEditComponent component) {
-        Theme theme = App.getInstance().getUiTheme();
+        ThemeConstants theme = App.getInstance().getThemeConstants();
         component.setWidth(theme.get("cuba.web.filter.Param.textComponent.width"));
         component.addValueChangeListener(
                 new Property.ValueChangeListener() {

@@ -8,8 +8,8 @@
         caption="">
     <layout expand="fieldsScrollBox" spacing="true">
         <scrollBox id="fieldsScrollBox" width="100%" spacing="true">
-            <vbox id="contentPane" spacing="true" width="600px"/>
-            <vbox id="runtimePane" spacing="true" width="600px"/>
+            <vbox id="contentPane" spacing="true" width="theme://cuba.gui.entity-inspector-edit.contentPane.width"/>
+            <vbox id="runtimePane" spacing="true" width="theme://cuba.gui.entity-inspector-edit.runtimePane.width"/>
             <vbox id="tablesBox" spacing="true" width="100%"/>
         </scrollBox>
         <vbox id="buttonsBox"/>

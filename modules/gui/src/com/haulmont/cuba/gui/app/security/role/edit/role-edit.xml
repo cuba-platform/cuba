@@ -42,7 +42,7 @@
                         <row>
                             <label value="msg://roleType"/>
                             <lookupField id="typeLookup" datasource="roleDs" property="type"
-                                         required="true" width="150"/>
+                                         required="true" width="theme://cuba.gui.role-edit.typeLookup.width"/>
                         </row>
                         <row>
                             <label value="msg://defaultRole"/>
@@ -54,7 +54,7 @@
                 <hbox spacing="true" id="descrBox" height="100%">
                     <label value="msg://description"/>
                     <textArea id="description" datasource="roleDs" property="description" rows="4"
-                              height="100%" width="300px"/>
+                              height="100%" width="theme://cuba.gui.role-edit.description.width"/>
                 </hbox>
             </hbox>
         </groupBox>

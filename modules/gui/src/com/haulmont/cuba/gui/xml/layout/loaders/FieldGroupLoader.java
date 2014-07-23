@@ -67,7 +67,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
                     component.setColumnExpandRatio(colIndex, Float.parseFloat(flex));
                 }
 
-                String width = columnElement.attributeValue("width");
+                String width = loadThemeString(columnElement.attributeValue("width"));
 
                 final List<FieldGroup.FieldConfig> columnFields = loadFields(component, columnElement, ds);
                 for (final FieldGroup.FieldConfig field : columnFields) {

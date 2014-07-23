@@ -16,7 +16,7 @@ import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
-import com.haulmont.cuba.gui.theme.Theme;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.app.UserManagementService;
 import com.haulmont.cuba.security.entity.Constraint;
@@ -70,7 +70,7 @@ public class GroupBrowser extends AbstractWindow {
     protected ComponentsFactory componentsFactory;
 
     @Inject
-    protected Theme theme;
+    protected ThemeConstants themeConstants;
 
     protected boolean constraintsTabInitialized, attributesTabInitialized;
 
@@ -125,7 +125,7 @@ public class GroupBrowser extends AbstractWindow {
                 final Set<User> selected = usersTable.getSelected();
                 if (!selected.isEmpty()) {
                     getDialogParams().setResizable(false);
-                    getDialogParams().setHeight(theme.getInt("cuba.gui.GroupBrowser.moveToGroupLookup.height"));
+                    getDialogParams().setHeight(themeConstants.getInt("cuba.gui.GroupBrowser.moveToGroupLookup.height"));
 
                     Window lookupWindow = openLookup("sec$Group.lookup", new Lookup.Handler() {
                         @Override

@@ -18,8 +18,8 @@ import com.haulmont.cuba.gui.components.validators.DateValidator;
 import com.haulmont.cuba.gui.components.validators.DoubleValidator;
 import com.haulmont.cuba.gui.components.validators.IntegerValidator;
 import com.haulmont.cuba.gui.components.validators.ScriptValidator;
-import com.haulmont.cuba.gui.theme.Theme;
-import com.haulmont.cuba.gui.theme.ThemeManager;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
+import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.gui.xml.DeclarativeAction;
 import com.haulmont.cuba.gui.xml.DeclarativeTrackingAction;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
@@ -49,7 +49,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
     protected Scripting scripting = AppBeans.get(Scripting.NAME);
     protected Resources resources = AppBeans.get(Resources.NAME);
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
-    protected Theme theme = AppBeans.get(ThemeManager.class).getTheme();
+    protected ThemeConstants themeConstants = AppBeans.get(ThemeConstantsManager.class).getConstants();
 
     protected ComponentLoader(Context context) {
         this.context = context;
@@ -205,8 +205,8 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
     }
 
     protected String loadThemeString(String value) {
-        if (value != null && value.startsWith(Theme.PREFIX)) {
-            value = theme.get(value.substring(Theme.PREFIX.length()));
+        if (value != null && value.startsWith(ThemeConstants.PREFIX)) {
+            value = themeConstants.get(value.substring(ThemeConstants.PREFIX.length()));
         }
         return value;
     }

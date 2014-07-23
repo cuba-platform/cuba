@@ -8,7 +8,7 @@ import com.haulmont.cuba.core.app.EmailService;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.config.WindowConfig;
-import com.haulmont.cuba.gui.theme.Theme;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
@@ -68,7 +68,7 @@ public class ExceptionDialog extends Window {
 
         setCaption(caption != null ? caption : messages.getMessage(getClass(), "exceptionDialog.caption"));
 
-        Theme theme = ui.getApp().getUiTheme();
+        ThemeConstants theme = ui.getApp().getThemeConstants();
         setWidth(theme.get("cuba.web.ExceptionDialog.width"));
         center();
 
@@ -222,7 +222,7 @@ public class ExceptionDialog extends Window {
     public void setStackTraceVisible(boolean visible) {
         isStackTraceVisible = visible;
 
-        Theme theme = App.getInstance().getUiTheme();
+        ThemeConstants theme = App.getInstance().getThemeConstants();
         if (visible) {
             showStackTraceButton.setCaption(messages.getMessage(getClass(), "exceptionDialog.hideStackTrace"));
 

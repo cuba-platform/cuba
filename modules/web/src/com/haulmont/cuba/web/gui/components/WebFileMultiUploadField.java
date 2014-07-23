@@ -11,7 +11,7 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.FileMultiUploadField;
 import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.theme.Theme;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebWindowManager;
@@ -50,7 +50,7 @@ public class WebFileMultiUploadField extends WebAbstractComponent<CubaMultiUploa
 
         CubaMultiUpload uploader = new CubaMultiUpload();
 
-        Theme theme = App.getInstance().getUiTheme();
+        ThemeConstants theme = App.getInstance().getThemeConstants();
 
         String width = theme.get("cuba.web.WebFileMultiUploadField.upload.width");
         String height = theme.get("cuba.web.WebFileMultiUploadField.upload.height");

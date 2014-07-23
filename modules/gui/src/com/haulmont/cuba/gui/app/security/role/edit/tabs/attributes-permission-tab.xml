@@ -30,12 +30,17 @@
 
     <layout expand="contentPane">
         <hbox expand="spacer" width="100%" spacing="true" margin="true">
-            <checkBox id="assignedOnlyCheckBox" caption="msg://assignedOnly" align="MIDDLE_LEFT"/>
-            <checkBox id="systemLevelCheckBox" caption="msg://systemLevel" align="MIDDLE_LEFT"/>
-            <label width="20"/>
-            <label value="msg://entityFilter" align="MIDDLE_RIGHT"/>
-            <textField id="entityFilter" width="300"/>
-            <button id="applyFilterBtn" caption="msg://actions.Apply" invoke="applyFilter"/>
+            <hbox margin="false,true,false,false" spacing="true" align="MIDDLE_LEFT">
+                <checkBox id="assignedOnlyCheckBox" caption="msg://assignedOnly"/>
+                <checkBox id="systemLevelCheckBox" caption="msg://systemLevel"/>
+            </hbox>
+
+            <hbox margin="false,false,false,true" spacing="true">
+                <label value="msg://entityFilter" align="MIDDLE_RIGHT"/>
+                <textField id="entityFilter" width="theme://cuba.gui.attributes-permission-tab.entityFilter.width"/>
+                <button id="applyFilterBtn" caption="msg://actions.Apply" invoke="applyFilter"/>
+            </hbox>
+
             <label id="spacer"/>
         </hbox>
 
@@ -44,7 +49,7 @@
                 <vbox id="tablePane" expand="propertyPermissionsTable" height="100%">
                     <table id="propertyPermissionsTable" width="100%">
                         <columns>
-                            <column id="caption" caption="msg://entities" width="300"/>
+                            <column id="caption" caption="msg://entities"/>
                             <column id="permissionsInfo"/>
                         </columns>
                         <rows datasource="attributeTargetsDs"/>

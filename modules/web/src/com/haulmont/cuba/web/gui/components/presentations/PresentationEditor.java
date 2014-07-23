@@ -12,7 +12,7 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.presentations.Presentations;
-import com.haulmont.cuba.gui.theme.Theme;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.security.entity.Presentation;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.App;
@@ -58,7 +58,7 @@ public class PresentationEditor extends Window {
 
         initLayout();
 
-        Theme theme = App.getInstance().getUiTheme();
+        ThemeConstants theme = App.getInstance().getThemeConstants();
         setWidth(theme.get("cuba.web.PresentationEditor.width"));
 
         String key = isNew ? "PresentationsEditor.new" : "PresentationsEditor.edit";
@@ -68,7 +68,7 @@ public class PresentationEditor extends Window {
     }
 
     protected void initLayout() {
-        Theme theme = App.getInstance().getUiTheme();
+        ThemeConstants theme = App.getInstance().getThemeConstants();
 
         VerticalLayout root = new VerticalLayout();
         root.setSpacing(true);

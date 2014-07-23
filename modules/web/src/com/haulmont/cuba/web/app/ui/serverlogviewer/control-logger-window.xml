@@ -15,7 +15,7 @@
             <button id="addButton" caption="msg://actions.Add" icon="icons/add.png" invoke="addLogger"/>
         </hbox>
 
-        <scrollBox id="loggersGroupBox" height="320" scrollBars="vertical">
+        <scrollBox id="loggersGroupBox" scrollBars="vertical">
             <grid id="loggersGrid" width="100%" spacing="true">
                 <columns>
                     <column flex="1"/>

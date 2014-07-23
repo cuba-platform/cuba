@@ -12,7 +12,7 @@ import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.GridLayout;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.components.TextField;
-import com.haulmont.cuba.gui.theme.Theme;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
@@ -35,7 +35,7 @@ public class ControlLoggerWindow extends AbstractWindow {
     protected GridLayout loggersGrid;
 
     @Inject
-    protected Theme theme;
+    protected ThemeConstants themeConstants;
 
     protected final Map<String, LookupField> fieldMap = new HashMap<>();
 
@@ -44,10 +44,11 @@ public class ControlLoggerWindow extends AbstractWindow {
     @Override
     public void init(Map<String, Object> params) {
         getDialogParams()
-                .setWidth(theme.getInt("cuba.web.ControlLoggerWindow.width"))
-                .setHeight(theme.getInt("cuba.web.ControlLoggerWindow.height"))
+                .setWidth(themeConstants.getInt("cuba.web.ControlLoggerWindow.width"))
+                .setHeight(themeConstants.getInt("cuba.web.ControlLoggerWindow.height"))
                 .setResizable(true);
 
+        @SuppressWarnings("unchecked")
         Map<String, Level> loggersMap = (Map<String, Level>) params.get("loggersMap");
 
         for (String loggerName : loggersMap.keySet()) {
@@ -95,7 +96,7 @@ public class ControlLoggerWindow extends AbstractWindow {
         loggerNameField.setWidth("100%");
 
         final LookupField logLevelField = AppConfig.getFactory().createComponent(LookupField.NAME);
-        logLevelField.setWidth(theme.get("cuba.web.ControlLoggerWindow.logLevelField.width"));
+        logLevelField.setWidth(themeConstants.get("cuba.web.ControlLoggerWindow.logLevelField.width"));
         logLevelField.setOptionsList(LoggingHelper.getLevels());
         logLevelField.setValue(level);
         logLevelField.setFrame(this);

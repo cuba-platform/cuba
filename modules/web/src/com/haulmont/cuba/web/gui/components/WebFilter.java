@@ -36,7 +36,7 @@ import com.haulmont.cuba.gui.filter.DenyingClause;
 import com.haulmont.cuba.gui.filter.QueryFilter;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
-import com.haulmont.cuba.gui.theme.Theme;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.ParametersHelper;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.security.entity.SearchFolder;
@@ -171,7 +171,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
 
         select = new CubaComboBox();
 
-        Theme theme = App.getInstance().getUiTheme();
+        ThemeConstants theme = App.getInstance().getThemeConstants();
         select.setWidth(theme.get("cuba.web.WebFilter.select.width"));
         select.setStyleName("cuba-generic-filter-select");
         select.setNullSelectionAllowed(true);
@@ -334,7 +334,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         maxResultsField.setImmediate(true);
         maxResultsField.setMaxLength(4);
 
-        Theme theme = App.getInstance().getUiTheme();
+        ThemeConstants theme = App.getInstance().getThemeConstants();
         maxResultsField.setWidth(theme.get("cuba.web.WebFilter.maxResults.width"));
         maxResultsField.setInvalidAllowed(false);
         maxResultsField.addValidator(

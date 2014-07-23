@@ -9,9 +9,9 @@ package com.haulmont.cuba.gui.theme;
  * @author artamonov
  * @version $Id$
  */
-public interface ThemeManager {
+public interface ThemeConstantsManager {
 
     String NAME = "cuba_ThemeManager";
 
-    Theme getTheme();
+    ThemeConstants getConstants();
 }

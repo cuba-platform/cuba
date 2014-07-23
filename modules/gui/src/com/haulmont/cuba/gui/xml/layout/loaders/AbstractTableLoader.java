@@ -263,7 +263,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         if (metaPropertyPath != null)
             column.setType(metaPropertyPath.getRangeJavaClass());
 
-        String width = element.attributeValue("width");
+        String width = loadThemeString(element.attributeValue("width"));
         if (!StringUtils.isBlank(width)) {
             if (StringUtils.endsWith(width, "px")) {
                 width = StringUtils.substring(width, 0, width.length() - 2);

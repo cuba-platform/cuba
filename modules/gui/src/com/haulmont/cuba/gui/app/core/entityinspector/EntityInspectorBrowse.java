@@ -21,7 +21,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
-import com.haulmont.cuba.gui.theme.Theme;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.global.UserSession;
@@ -65,7 +65,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
     protected Configuration configuration;
 
     @Inject
-    protected Theme theme;
+    protected ThemeConstants themeConstants;
 
     protected LookupField entities;
     protected Button showButton;
@@ -95,7 +95,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
             }
         } else {
             entities = componentsFactory.createComponent(LookupField.NAME);
-            entities.setWidth(theme.get("cuba.gui.EntityInspectorBrowse.entitiesSelect.width"));
+            entities.setWidth(themeConstants.get("cuba.gui.EntityInspectorBrowse.entitiesSelect.width"));
             entities.setOptionsMap(getEntitiesLookupFieldOptions());
             entities.setId("entitiesLookup");
             entities.setFrame(frame);

@@ -12,7 +12,7 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.components.TimeField;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.theme.Theme;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
@@ -123,7 +123,7 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implemen
     }
 
     private void updateWidth() {
-        Theme theme = App.getInstance().getUiTheme();
+        ThemeConstants theme = App.getInstance().getThemeConstants();
         int digitWidth = theme.getInt("cuba.web.WebTimeField.digitWidth");
 
         int width = isAmPmUsed() ? digitWidth : 0;

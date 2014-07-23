@@ -29,7 +29,7 @@
                 <row>
                     <label value="msg://name"/>
                     <textField id="nameField" datasource="fileDs" property="name"
-                               width="200px"/>
+                               width="theme://cuba.gui.file-edit.nameField.width"/>
                 </row>
                 <row>
                     <label value="msg://extension"/>

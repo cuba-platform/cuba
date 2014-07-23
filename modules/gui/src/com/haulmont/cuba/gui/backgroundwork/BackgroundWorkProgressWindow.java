@@ -10,7 +10,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
 import com.haulmont.cuba.gui.executors.BackgroundTaskHandler;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
-import com.haulmont.cuba.gui.theme.Theme;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
 import org.apache.commons.lang.BooleanUtils;
 
 import javax.annotation.Nullable;
@@ -53,7 +53,7 @@ public class BackgroundWorkProgressWindow<T extends Number, V> extends AbstractW
     protected ProgressBar taskProgress;
 
     @Inject
-    protected Theme theme;
+    protected ThemeConstants themeConstants;
 
     protected BackgroundTaskHandler<V> taskHandler;
 
@@ -142,8 +142,9 @@ public class BackgroundWorkProgressWindow<T extends Number, V> extends AbstractW
 
     @Override
     public void init(Map<String, Object> params) {
-        getDialogParams().setWidth(theme.getInt("cuba.gui.BackgroundWorkProgressWindow.width"));
+        getDialogParams().setWidth(themeConstants.getInt("cuba.gui.BackgroundWorkProgressWindow.width"));
 
+        @SuppressWarnings("unchecked")
         final BackgroundTask<T, V> task = (BackgroundTask<T, V>) params.get("task");
         String title = (String) params.get("title");
         if (title != null) {
@@ -164,6 +165,7 @@ public class BackgroundWorkProgressWindow<T extends Number, V> extends AbstractW
         cancelButton.setVisible(cancelAllowed);
         getDialogParams().setCloseable(cancelAllowed);
 
+        @SuppressWarnings("unchecked")
         final T total = (T) params.get("total");
 
         taskProgress.setValue(0.0f);

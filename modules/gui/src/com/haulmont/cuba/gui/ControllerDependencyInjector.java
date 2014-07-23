@@ -15,8 +15,8 @@ import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.export.ExportDisplay;
-import com.haulmont.cuba.gui.theme.Theme;
-import com.haulmont.cuba.gui.theme.ThemeManager;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
+import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -181,10 +181,10 @@ public class ControllerDependencyInjector {
             // Injecting an ExportDisplay
             return AppConfig.createExportDisplay(frame);
 
-        } else if (Theme.class.isAssignableFrom(type)) {
+        } else if (ThemeConstants.class.isAssignableFrom(type)) {
             // Injecting a Theme
-            ThemeManager themeManager = AppBeans.get(ThemeManager.NAME);
-            return themeManager.getTheme();
+            ThemeConstantsManager themeManager = AppBeans.get(ThemeConstantsManager.NAME);
+            return themeManager.getConstants();
 
         } else {
             Object instance;

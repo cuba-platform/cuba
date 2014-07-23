@@ -8,8 +8,7 @@
         datasource="attribute"
         messagesPack="com.haulmont.cuba.gui.app.security.sessionattr"
         caption="msg://editor.caption"
-        focusComponent="fields"
-        >
+        focusComponent="fields">
 
     <dsContext>
         <datasource id="attribute" class="com.haulmont.cuba.security.entity.SessionAttribute" view="edit"/>
@@ -17,7 +16,7 @@
 
     <layout expand="windowActions" spacing="true">
         <fieldGroup id="fields" width="100%" datasource="attribute">
-            <column width="250px">
+            <column width="theme://cuba.gui.session-attr-edit.field.width">
                 <field id="name" required="true" requiredMessage="msg://nameMsg"/>
                 <field id="datatype" custom="true" requiredMessage="msg://datatypeMsg"/>
                 <field id="stringValue"/>

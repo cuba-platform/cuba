@@ -7,7 +7,7 @@ package com.haulmont.cuba.gui.app.security.group.lookup;
 import com.haulmont.cuba.gui.components.AbstractLookup;
 import com.haulmont.cuba.gui.components.Tree;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
-import com.haulmont.cuba.gui.theme.Theme;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.security.entity.Group;
 
 import javax.inject.Inject;
@@ -28,13 +28,13 @@ public class GroupLookup extends AbstractLookup {
     protected HierarchicalDatasource<Group, UUID> groupsDs;
 
     @Inject
-    protected Theme theme;
+    protected ThemeConstants themeConstants;
 
     @Override
     public void init(Map<String, Object> params) {
         getDialogParams()
-                .setWidth(theme.getInt("cuba.gui.GroupLookup.width"))
-                .setHeight(theme.getInt("cuba.gui.GroupLookup.height"));
+                .setWidth(themeConstants.getInt("cuba.gui.GroupLookup.width"))
+                .setHeight(themeConstants.getInt("cuba.gui.GroupLookup.height"));
 
         groupsDs.refresh();
         groups.expandTree();

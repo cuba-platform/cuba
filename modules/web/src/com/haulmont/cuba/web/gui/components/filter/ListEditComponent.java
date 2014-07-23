@@ -18,7 +18,7 @@ import com.haulmont.cuba.gui.components.PickerField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
-import com.haulmont.cuba.gui.theme.Theme;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.WebDateField;
@@ -121,7 +121,7 @@ public class ListEditComponent extends CustomField {
 
         setStyleName("cuba-pickerfield");
 
-        Theme theme = App.getInstance().getUiTheme();
+        ThemeConstants theme = App.getInstance().getThemeConstants();
         setWidth(theme.get("cuba.web.filter.ListEditComponent.width"));
     }
 
@@ -361,7 +361,7 @@ public class ListEditComponent extends CustomField {
         private ListEditWindow(Map<Object, String> values) {
             super(AppBeans.get(Messages.class).getMessage(MESSAGES_PACK, "ListEditWindow.caption"));
 
-            Theme theme = App.getInstance().getUiTheme();
+            ThemeConstants theme = App.getInstance().getThemeConstants();
 
             setWidth(theme.get("cuba.web.filter.ListEditComponent.window.width"));
             setHeight(theme.get("cuba.web.filter.ListEditComponent.window.height"));

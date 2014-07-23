@@ -47,6 +47,9 @@
         </collectionDatasource>
     </dsContext>
 
+    <assign name="fieldWidth" value="theme://cuba.gui.entity-log-browse.field.width"/>
+    <assign name="buttonWidth" value="theme://cuba.gui.entity-log-browse.button.width"/>
+
     <layout expand="tabsheet" spacing="true">
         <tabSheet id="tabsheet">
             <tab id="view" caption="msg://view" expand="split1" spacing="true">
@@ -55,21 +58,21 @@
                     <rows>
                         <row>
                             <label value="msg://user"/>
-                            <lookupField id="userField" optionsDatasource="usersDs" width="250px"/>
+                            <lookupField id="userField" optionsDatasource="usersDs" width="${fieldWidth}"/>
                             <label value="msg://changeType"/>
-                            <lookupField id="changeTypeField" width="250px"/>
+                            <lookupField id="changeTypeField" width="${fieldWidth}"/>
                             <label value="msg://from"/>
                             <dateField id="fromDateField"/>
-                            <button width="70px" caption="msg://search" invoke="search"/>
+                            <button width="${buttonWidth}" caption="msg://search" invoke="search"/>
                         </row>
                         <row>
                             <label value="msg://entity"/>
-                            <lookupField id="filterEntityNameField" width="250px"/>
+                            <lookupField id="filterEntityNameField" width="${fieldWidth}"/>
                             <label value="msg://instance"/>
-                            <pickerField id="instancePicker" width="250px"/>
+                            <pickerField id="instancePicker" width="${fieldWidth}"/>
                             <label value="msg://till"/>
                             <dateField id="tillDateField"/>
-                            <button width="70px" caption="msg://clear" invoke="clearEntityLogTable"/>
+                            <button width="${buttonWidth}" caption="msg://clear" invoke="clearEntityLogTable"/>
                         </row>
                     </rows>
                 </grid>

@@ -6,7 +6,7 @@
 package com.haulmont.cuba.gui.app.core.about;
 
 import com.haulmont.cuba.gui.components.AbstractWindow;
-import com.haulmont.cuba.gui.theme.Theme;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
 
 import javax.inject.Inject;
 import java.util.Map;
@@ -18,13 +18,13 @@ import java.util.Map;
 public class AboutWindow extends AbstractWindow {
 
     @Inject
-    protected Theme theme;
+    protected ThemeConstants themeConstants;
 
     @Override
     public void init(Map<String, Object> params) {
         getDialogParams()
-                .setWidth(theme.getInt("cuba.gui.AboutWindow.width"))
-                .setHeight(theme.getInt("cuba.gui.AboutWindow.height"))
+                .setWidth(themeConstants.getInt("cuba.gui.AboutWindow.width"))
+                .setHeight(themeConstants.getInt("cuba.gui.AboutWindow.height"))
                 .setResizable(false);
     }
 }

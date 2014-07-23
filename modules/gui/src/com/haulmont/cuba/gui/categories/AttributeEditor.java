@@ -29,7 +29,7 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.RuntimePropsDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
-import com.haulmont.cuba.gui.theme.Theme;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.BooleanUtils;
 
@@ -76,15 +76,15 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     protected MessageTools messageTools;
 
     @Inject
-    protected Theme theme;
+    protected ThemeConstants themeConstants;
 
     protected String fieldWidth;
 
     @Override
     public void init(Map<String, Object> params) {
-        getDialogParams().setWidth(theme.getInt("cuba.gui.AttributeEditor.width"));
+        getDialogParams().setWidth(themeConstants.getInt("cuba.gui.AttributeEditor.width"));
 
-        fieldWidth = theme.get("cuba.gui.AttributeEditor.field.width");
+        fieldWidth = themeConstants.get("cuba.gui.AttributeEditor.field.width");
 
         dataService = getDsContext().getDataSupplier();
         fieldsContainer = getComponent("attributeProperties");

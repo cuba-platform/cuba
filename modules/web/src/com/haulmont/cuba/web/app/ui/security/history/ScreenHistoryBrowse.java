@@ -9,7 +9,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.theme.Theme;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.security.entity.ScreenHistoryEntity;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
@@ -35,13 +35,13 @@ public class ScreenHistoryBrowse extends AbstractWindow {
     protected Configuration configuration;
 
     @Inject
-    protected Theme theme;
+    protected ThemeConstants themeConstants;
 
     @Override
     public void init(Map<String, Object> params) {
         getDialogParams()
-                .setHeight(theme.getInt("cuba.web.ScreenHistoryBrowse.height"))
-                .setWidth(theme.getInt("cuba.web.ScreenHistoryBrowse.width"))
+                .setHeight(themeConstants.getInt("cuba.web.ScreenHistoryBrowse.height"))
+                .setWidth(themeConstants.getInt("cuba.web.ScreenHistoryBrowse.width"))
                 .setResizable(false);
 
         LinkColumnHelper.initColumn(historyTable, "caption",

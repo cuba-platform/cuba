@@ -21,8 +21,8 @@ import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
-import com.haulmont.cuba.gui.theme.Theme;
-import com.haulmont.cuba.gui.theme.ThemeRepository;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
+import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
@@ -66,7 +66,7 @@ public class App implements ConnectionListener {
 
     protected DesktopTheme theme;
 
-    protected Theme uiTheme;
+    protected ThemeConstants themeConstants;
 
     protected LinkedList<TopLevelFrame> topLevelFrames = new LinkedList<>();
 
@@ -228,22 +228,22 @@ public class App implements ConnectionListener {
         theme = AppBeans.get(DesktopThemeLoader.class).loadTheme(themeName);
         theme.init();
 
-        ThemeRepository themeRepository = AppBeans.get(ThemeRepository.NAME);
-        Theme uiTheme = themeRepository.getTheme(themeName);
+        ThemeConstantsRepository themeRepository = AppBeans.get(ThemeConstantsRepository.NAME);
+        ThemeConstants uiTheme = themeRepository.getConstants(themeName);
 
         if (uiTheme == null) {
-            throw new IllegalStateException("Unable to use theme '" + themeName + "'");
+            throw new IllegalStateException("Unable to use theme constants '" + themeName + "'");
         }
 
-        this.uiTheme = uiTheme;
+        this.themeConstants = uiTheme;
     }
 
     public DesktopTheme getTheme() {
         return theme;
     }
 
-    public Theme getUiTheme() {
-        return uiTheme;
+    public ThemeConstants getThemeConstants() {
+        return themeConstants;
     }
 
     protected void initLookAndFeelDefaults() {

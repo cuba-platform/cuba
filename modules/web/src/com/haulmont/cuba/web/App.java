@@ -10,8 +10,8 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.theme.Theme;
-import com.haulmont.cuba.gui.theme.ThemeRepository;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
+import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.web.auth.ActiveDirectoryHelper;
 import com.haulmont.cuba.web.auth.RequestContext;
@@ -78,7 +78,7 @@ public abstract class App {
 
     protected String clientAddress;
 
-    protected Theme theme;
+    protected ThemeConstants themeConstants;
 
     public App() {
         log.trace("Creating application " + this);
@@ -96,7 +96,7 @@ public abstract class App {
             cookies = new AppCookies();
             backgroundTaskManager = new BackgroundTaskManager();
 
-            theme = loadTheme();
+            themeConstants = loadTheme();
 
             VaadinServlet vaadinServlet = VaadinServlet.getCurrent();
             ServletContext sc = vaadinServlet.getServletContext();
@@ -111,13 +111,13 @@ public abstract class App {
         }
     }
 
-    protected Theme loadTheme() {
+    protected ThemeConstants loadTheme() {
         String appWindowTheme = webConfig.getAppWindowTheme();
-        ThemeRepository themeRepository = AppBeans.get(ThemeRepository.NAME);
-        Theme theme = themeRepository.getTheme(appWindowTheme);
+        ThemeConstantsRepository themeRepository = AppBeans.get(ThemeConstantsRepository.NAME);
+        ThemeConstants theme = themeRepository.getConstants(appWindowTheme);
 
         if (theme == null) {
-            throw new IllegalStateException("Unable to use theme '" + appWindowTheme + "'");
+            throw new IllegalStateException("Unable to use theme constants '" + appWindowTheme + "'");
         }
 
         return theme;
@@ -151,8 +151,8 @@ public abstract class App {
         return AppUI.getCurrent();
     }
 
-    public Theme getUiTheme() {
-        return theme;
+    public ThemeConstants getThemeConstants() {
+        return themeConstants;
     }
 
     public List<AppUI> getAppUIs() {

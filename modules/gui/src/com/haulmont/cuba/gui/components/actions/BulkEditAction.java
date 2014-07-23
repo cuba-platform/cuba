@@ -10,8 +10,8 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.theme.Theme;
-import com.haulmont.cuba.gui.theme.ThemeManager;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
+import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -84,8 +84,8 @@ public class BulkEditAction extends ItemTrackingAction {
         params.put("exclude", exclude);
 
         if (openType == WindowManager.OpenType.DIALOG) {
-            ThemeManager themeManager = AppBeans.get(ThemeManager.NAME);
-            Theme theme = themeManager.getTheme();
+            ThemeConstantsManager themeManager = AppBeans.get(ThemeConstantsManager.NAME);
+            ThemeConstants theme = themeManager.getConstants();
 
             owner.getFrame().getDialogParams()
                     .setWidth(theme.getInt("cuba.gui.BulkEditAction.editorDialog.width"))

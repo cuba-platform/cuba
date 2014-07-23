@@ -14,13 +14,13 @@ import java.util.Map;
  * @author artamonov
  * @version $Id$
  */
-public class Theme {
+public class ThemeConstants {
 
     public static final String PREFIX = "theme://";
 
     protected Map<String, String> properties;
 
-    public Theme(Map<String, String> properties) {
+    public ThemeConstants(Map<String, String> properties) {
         this.properties = Collections.unmodifiableMap(properties);
     }
 

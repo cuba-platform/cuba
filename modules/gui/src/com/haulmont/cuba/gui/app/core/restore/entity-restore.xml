@@ -15,7 +15,7 @@
 
     <layout spacing="true" expand="tablePanel">
         <hbox spacing="true">
-            <lookupField id="entities" width="250px"/>
+            <lookupField id="entities" width="theme://cuba.gui.entity-restore.entities.width"/>
             <button id="refreshButton" icon="icons/refresh.png"/>
         </hbox>
 

@@ -21,7 +21,7 @@ import com.haulmont.cuba.gui.components.filter.AbstractFilterEditor;
 import com.haulmont.cuba.gui.components.filter.GroupType;
 import com.haulmont.cuba.gui.components.filter.addcondition.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.theme.Theme;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
@@ -66,7 +66,7 @@ public class AddConditionDlg extends Window {
 
         setModal(true);
 
-        Theme theme = App.getInstance().getUiTheme();
+        ThemeConstants theme = App.getInstance().getThemeConstants();
 
         setWidth(theme.get("cuba.web.AddConditionDlg.width"));
         setHeight(theme.get("cuba.web.AddConditionDlg.height"));

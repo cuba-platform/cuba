@@ -30,12 +30,17 @@
     <layout expand="contentPane">
         <!-- Filter -->
         <hbox expand="spacer" width="100%" spacing="true" margin="true">
-            <checkBox id="assignedOnlyCheckBox" caption="msg://assignedOnly" align="MIDDLE_LEFT"/>
-            <checkBox id="systemLevelCheckBox" caption="msg://systemLevel" align="MIDDLE_LEFT"/>
-            <label width="20"/>
-            <label value="msg://entityFilter" align="MIDDLE_RIGHT"/>
-            <textField id="entityFilter" width="300"/>
-            <button id="applyFilterBtn" caption="msg://actions.Apply" invoke="applyFilter"/>
+            <hbox margin="false,true,false,false" spacing="true" align="MIDDLE_LEFT">
+                <checkBox id="assignedOnlyCheckBox" caption="msg://assignedOnly"/>
+                <checkBox id="systemLevelCheckBox" caption="msg://systemLevel"/>
+            </hbox>
+
+            <hbox margin="false,false,false,true" spacing="true">
+                <label value="msg://entityFilter" align="MIDDLE_RIGHT"/>
+                <textField id="entityFilter" width="theme://cuba.gui.entities-permission-tab.entityFilter.width"/>
+                <button id="applyFilterBtn" caption="msg://actions.Apply" invoke="applyFilter"/>
+            </hbox>
+
             <label id="spacer"/>
         </hbox>
         <hbox id="contentPane" expand="contentSplit" spacing="true" margin="true" width="100%">

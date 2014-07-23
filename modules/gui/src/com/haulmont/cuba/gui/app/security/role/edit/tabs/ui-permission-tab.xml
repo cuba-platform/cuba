@@ -27,17 +27,24 @@
                          datasourceClass="com.haulmont.cuba.gui.security.UiPermissionsDatasource">
         </groupDatasource>
     </dsContext>
+    
+    <assign name="filterFieldWidth" value="theme://cuba.gui.ui-permission-tab.filterFieldWidth.width"/>
 
     <layout expand="contentPane">
         <!-- Filter -->
         <hbox expand="spacer" width="100%" spacing="true" margin="true">
-            <label value="msg://screen" align="MIDDLE_RIGHT"/>
-            <lookupField id="screenFilter" width="300"/>
-            <label width="20"/>
-            <label value="msg://component" align="MIDDLE_RIGHT"/>
-            <textField id="componentTextField" width="250"/>
-            <button id="addPermissionBtn" caption="msg://actions.Add" invoke="addUiPermission"/>
-            <button id="removePermissionBtn"/>
+            <hbox margin="false,true,false,false" spacing="true">
+                <label value="msg://screen" align="MIDDLE_RIGHT"/>
+                <lookupField id="screenFilter" width="${filterFieldWidth}"/>
+            </hbox>
+
+            <hbox margin="false,false,false,true" spacing="true">
+                <label value="msg://component" align="MIDDLE_RIGHT"/>
+                <textField id="componentTextField" width="${filterFieldWidth}"/>
+                <button id="addPermissionBtn" caption="msg://actions.Add" invoke="addUiPermission"/>
+                <button id="removePermissionBtn"/>
+            </hbox>
+
             <label id="spacer"/>
         </hbox>
         <hbox id="contentPane" expand="contentSplit" spacing="true" margin="true" width="100%">
@@ -46,7 +53,7 @@
                 <groupTable id="uiPermissionsTable" height="100%" width="100%">
                     <columns>
                         <group>
-                            <column id="screen" width="200"/>
+                            <column id="screen"/>
                         </group>
                         <column id="component"/>
                         <column id="permissionVariant"/>

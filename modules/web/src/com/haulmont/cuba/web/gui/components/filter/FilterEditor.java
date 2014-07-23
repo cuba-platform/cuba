@@ -14,7 +14,7 @@ import com.haulmont.cuba.gui.components.filter.*;
 import com.haulmont.cuba.gui.components.filter.addcondition.SelectionHandler;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.theme.Theme;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.web.App;
@@ -56,13 +56,13 @@ public class FilterEditor extends AbstractFilterEditor {
     protected Button downBtn;
 
     protected Security security = AppBeans.get(Security.class);
-    protected Theme theme;
+    protected ThemeConstants themeConstants;
 
     public FilterEditor(final WebFilter webFilter, FilterEntity filterEntity,
                         Element filterDescriptor, List<String> existingNames) {
         super(webFilter, filterEntity, filterDescriptor, existingNames);
 
-        theme = App.getInstance().getUiTheme();
+        themeConstants = App.getInstance().getThemeConstants();
     }
 
     @Override
@@ -79,14 +79,14 @@ public class FilterEditor extends AbstractFilterEditor {
         layout.setStyleName("cuba-generic-filter-editorlayout");
         layout.setSpacing(true);
         layout.setMargin(new MarginInfo(false, false, false, false));
-        layout.setWidth(theme.get("cuba.web.FilterEditor.layout.width"));
+        layout.setWidth(themeConstants.get("cuba.web.FilterEditor.layout.width"));
 
         GridLayout topGrid = new GridLayout(2, 1);
-        topGrid.setWidth(theme.get("cuba.web.FilterEditor.grid.width"));
+        topGrid.setWidth(themeConstants.get("cuba.web.FilterEditor.grid.width"));
         topGrid.setSpacing(true);
 
         HorizontalLayout bottomLayout = new HorizontalLayout();
-        bottomLayout.setWidth(theme.get("cuba.web.FilterEditor.grid.width"));
+        bottomLayout.setWidth(themeConstants.get("cuba.web.FilterEditor.grid.width"));
         bottomLayout.setSpacing(true);
 
         HorizontalLayout flagsLayout = new HorizontalLayout();
@@ -203,7 +203,7 @@ public class FilterEditor extends AbstractFilterEditor {
 
         nameField = new TextField();
         nameField.setValue(filterEntity.getName());
-        nameField.setWidth(theme.get("cuba.web.FilterEditor.name.width"));
+        nameField.setWidth(themeConstants.get("cuba.web.FilterEditor.name.width"));
         nameLayout.addComponent(nameField);
 
         topGrid.addComponent(nameLayout, 0, 0);
@@ -306,7 +306,7 @@ public class FilterEditor extends AbstractFilterEditor {
         addSelect.setImmediate(true);
         addSelect.setNullSelectionAllowed(true);
         addSelect.setFilteringMode(FilteringMode.CONTAINS);
-        addSelect.setWidth(theme.get("cuba.web.FilterEditor.addSelect.width"));
+        addSelect.setWidth(themeConstants.get("cuba.web.FilterEditor.addSelect.width"));
         for (AbstractConditionDescriptor descriptor : descriptors) {
             addSelect.addItem(descriptor);
             addSelect.setItemCaption(descriptor, descriptor.getLocCaption());
@@ -376,8 +376,8 @@ public class FilterEditor extends AbstractFilterEditor {
         table.setImmediate(true);
         table.setSelectable(true);
         table.setPageLength(0);
-        table.setWidth(theme.get("cuba.web.FilterEditor.grid.width"));
-        table.setHeight(theme.get("cuba.web.FilterEditor.table.height"));
+        table.setWidth(themeConstants.get("cuba.web.FilterEditor.grid.width"));
+        table.setHeight(themeConstants.get("cuba.web.FilterEditor.table.height"));
         table.setStyleName("cuba-filter-conditions");
         table.setColumnReorderingAllowed(false);
         table.setSortEnabled(false);

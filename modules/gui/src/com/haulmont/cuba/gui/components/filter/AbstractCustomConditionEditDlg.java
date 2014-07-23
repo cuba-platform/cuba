@@ -16,8 +16,8 @@ import com.haulmont.cuba.gui.autocomplete.Suggestion;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
-import com.haulmont.cuba.gui.theme.Theme;
-import com.haulmont.cuba.gui.theme.ThemeManager;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
+import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -68,8 +68,8 @@ public abstract class AbstractCustomConditionEditDlg<T> {
         this.messagesPack = AppConfig.getMessagesPack();
         this.messages = AppBeans.get(Messages.class);
 
-        ThemeManager themeManager = AppBeans.get(ThemeManager.NAME);
-        Theme theme = themeManager.getTheme();
+        ThemeConstantsManager themeManager = AppBeans.get(ThemeConstantsManager.NAME);
+        ThemeConstants theme = themeManager.getConstants();
         String fieldWidth = theme.get("cuba.gui.AbstractCustomConditionEditDlg.field.width");
 
         entityAlias = condition.getEntityAlias();

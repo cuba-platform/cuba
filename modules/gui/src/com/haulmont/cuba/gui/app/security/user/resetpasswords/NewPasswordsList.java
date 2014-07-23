@@ -8,7 +8,7 @@ package com.haulmont.cuba.gui.app.security.user.resetpasswords;
 import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.theme.Theme;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.security.entity.User;
 
 import javax.inject.Inject;
@@ -35,7 +35,7 @@ public class NewPasswordsList extends AbstractWindow {
     protected Map<User, String> passwords;
 
     @Inject
-    protected Theme theme;
+    protected ThemeConstants themeConstants;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -43,7 +43,7 @@ public class NewPasswordsList extends AbstractWindow {
 
         getDialogParams()
                 .setResizable(true)
-                .setHeight(theme.getInt("cuba.gui.NewPasswordsList.height"));
+                .setHeight(themeConstants.getInt("cuba.gui.NewPasswordsList.height"));
 
         passwordsTable.getColumn("id").setFormatter(new Formatter<UUID>() {
             @Override

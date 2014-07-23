@@ -10,7 +10,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.theme.Theme;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -34,14 +34,14 @@ public class SystemInfoWindow extends AbstractWindow {
     protected Table infoTable;
 
     @Inject
-    protected Theme theme;
+    protected ThemeConstants themeConstants;
 
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
 
         getDialogParams()
-                .setHeight(theme.getInt("cuba.gui.SystemInfoWindow.height"))
+                .setHeight(themeConstants.getInt("cuba.gui.SystemInfoWindow.height"))
                 .setResizable(true);
 
         paramsDs.setInstance((Entity) params.get("item"));

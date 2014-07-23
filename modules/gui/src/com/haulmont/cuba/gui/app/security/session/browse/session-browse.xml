@@ -16,6 +16,8 @@
         </groupDatasource>
     </dsContext>
 
+    <assign name="filterFieldWidth" value="theme://cuba.gui.session-browse.filterField.width"/>
+
     <layout expand="sessionsTable" spacing="true">
         <hbox spacing="true" expand="spacer" width="100%">
             <groupBox caption="msg://filter" orientation="horizontal" spacing="true" width="AUTO">
@@ -29,10 +31,10 @@
                             <label value="msg://clientInfo"/>
                         </row>
                         <row>
-                            <textField width="150px" id="userLogin"/>
-                            <textField width="150px" id="userName"/>
-                            <textField width="150px" id="userAddress"/>
-                            <textField width="150px" id="userInfo"/>
+                            <textField width="${filterFieldWidth}" id="userLogin"/>
+                            <textField width="${filterFieldWidth}" id="userName"/>
+                            <textField width="${filterFieldWidth}" id="userAddress"/>
+                            <textField width="${filterFieldWidth}" id="userInfo"/>
                         </row>
                     </rows>
                 </grid>

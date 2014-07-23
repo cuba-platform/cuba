@@ -2,8 +2,7 @@
   ~ Copyright (c) 2008-2013 Haulmont. All rights reserved.
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
-<window
-        xmlns="http://schemas.haulmont.com/cuba/5.2/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/5.2/window.xsd"
         class="com.haulmont.cuba.gui.categories.CategoryEditor"
         messagesPack="com.haulmont.cuba.gui.categories"
         caption="msg://editorCaption"
@@ -17,11 +16,13 @@
         </datasource>
     </dsContext>
 
+    <assign name="fieldWidth" value="theme://cuba.gui.category-edit.field.width"/>
+
     <layout expand="categoryAttrsFrame" spacing="true">
         <hbox id="categoryProperties" spacing="true">
-            <textField width="200px" id="name" datasource="categoryDs" property="name" required="true"
+            <textField width="${fieldWidth}" id="name" datasource="categoryDs" property="name" required="true"
                        requiredMessage="msg://nameRequired" caption="msg://name"/>
-            <lookupField width="200px" id="entityType" caption="msg://entityType" required="true"
+            <lookupField width="${fieldWidth}" id="entityType" caption="msg://entityType" required="true"
                          requiredMessage="msg://entityTypeRequired"/>
             <checkBox id="isDefault" caption="msg://isDefault"/>
         </hbox>

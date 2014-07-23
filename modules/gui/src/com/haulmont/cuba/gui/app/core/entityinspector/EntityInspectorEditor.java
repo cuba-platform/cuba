@@ -22,7 +22,7 @@ import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.*;
-import com.haulmont.cuba.gui.theme.Theme;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
@@ -83,7 +83,7 @@ public class EntityInspectorEditor extends AbstractWindow {
     protected Configuration configuration;
 
     @Inject
-    protected Theme theme;
+    protected ThemeConstants themeConstants;
 
     @WindowParam(name = "item")
     protected Entity item;
@@ -217,7 +217,7 @@ public class EntityInspectorEditor extends AbstractWindow {
             Map<String, Object> params = new HashMap<>();
             params.put("runtimeDs", rDS.getId());
             params.put("categoriesDs", categoriesDs.getId());
-            params.put("fieldWidth", theme.get("cuba.gui.EntityInspectorEditor.field.width"));
+            params.put("fieldWidth", themeConstants.get("cuba.gui.EntityInspectorEditor.field.width"));
             params.put("borderVisible", "true");
 
             RuntimePropertiesFrame runtimePropertiesFrame = openFrame(runtimePane, "runtimePropertiesFrame", params);
@@ -573,7 +573,7 @@ public class EntityInspectorEditor extends AbstractWindow {
         String caption = getPropertyCaption(metaProperty);
         field.setCaption(caption);
         field.setType(metaProperty.getJavaType());
-        field.setWidth(theme.get("cuba.gui.EntityInspectorEditor.field.width"));
+        field.setWidth(themeConstants.get("cuba.gui.EntityInspectorEditor.field.width"));
         field.setCustom(custom);
         field.setRequired(required);
         field.setEditable(!readOnly);
@@ -758,7 +758,7 @@ public class EntityInspectorEditor extends AbstractWindow {
         rowsCount.setDatasource(propertyDs);
         table.setRowsCount(rowsCount);
         table.setWidth("100%");
-        vbox.setHeight(theme.get("cuba.gui.EntityInspectorEditor.tableContainer.height"));
+        vbox.setHeight(themeConstants.get("cuba.gui.EntityInspectorEditor.tableContainer.height"));
         vbox.add(label);
         vbox.add(table);
         vbox.expand(table);

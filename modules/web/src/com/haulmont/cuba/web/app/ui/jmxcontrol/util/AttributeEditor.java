@@ -6,7 +6,7 @@
 package com.haulmont.cuba.web.app.ui.jmxcontrol.util;
 
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.theme.Theme;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.jmx.entity.AttributeHelper;
 import com.haulmont.cuba.web.gui.components.WebCheckBox;
@@ -48,7 +48,7 @@ public class AttributeEditor {
         } else {
             textField = new WebTextField();
 
-            Theme theme = App.getInstance().getUiTheme();
+            ThemeConstants theme = App.getInstance().getThemeConstants();
             textField.setWidth(theme.get("cuba.web.jmx.AttributeEditor.textField.width"));
             textField.setFrame(frame);
 

@@ -19,7 +19,7 @@ import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
-import com.haulmont.cuba.gui.theme.Theme;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.UserSession;
@@ -82,7 +82,7 @@ public class UserEditor extends AbstractEditor<User> {
     protected PasswordEncryption passwordEncryption;
 
     @Inject
-    protected Theme theme;
+    protected ThemeConstants themeConstants;
 
     public interface Companion {
         void initPasswordField(PasswordField passwordField);
@@ -459,7 +459,7 @@ public class UserEditor extends AbstractEditor<User> {
                 params.put("existingIds", list);
             }
 
-            getDialogParams().setWidth(theme.getInt("cuba.gui.UserEditor.substitutionEditor.width"));
+            getDialogParams().setWidth(themeConstants.getInt("cuba.gui.UserEditor.substitutionEditor.width"));
 
             Window substitutionEditor = openEditor("sec$UserSubstitution.edit", substitution,
                     WindowManager.OpenType.DIALOG, params, substitutionsDs);
@@ -488,7 +488,7 @@ public class UserEditor extends AbstractEditor<User> {
 
         @Override
         public void actionPerform(Component component) {
-            getDialogParams().setWidth(theme.getInt("cuba.gui.UserEditor.substitutionEditor.width"));
+            getDialogParams().setWidth(themeConstants.getInt("cuba.gui.UserEditor.substitutionEditor.width"));
 
             if (substitutionsDs.getItem() != null) {
                 Window substitutionEditor = openEditor("sec$UserSubstitution.edit", substitutionsDs.getItem(),

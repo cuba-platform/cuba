@@ -6,8 +6,8 @@
 package com.haulmont.cuba.desktop.app;
 
 import com.haulmont.cuba.desktop.App;
-import com.haulmont.cuba.gui.theme.Theme;
-import com.haulmont.cuba.gui.theme.ThemeManager;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
+import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 
 import javax.annotation.ManagedBean;
 
@@ -15,10 +15,10 @@ import javax.annotation.ManagedBean;
  * @author artamonov
  * @version $Id$
  */
-@ManagedBean(ThemeManager.NAME)
-public class DesktopThemeManager implements ThemeManager {
+@ManagedBean(ThemeConstantsManager.NAME)
+public class DesktopThemeConstantsManager implements ThemeConstantsManager {
     @Override
-    public Theme getTheme() {
-        return App.getInstance().getUiTheme();
+    public ThemeConstants getConstants() {
+        return App.getInstance().getThemeConstants();
     }
 }
