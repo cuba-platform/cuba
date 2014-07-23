@@ -3,8 +3,7 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<window
-        xmlns="http://schemas.haulmont.com/cuba/5.2/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/5.2/window.xsd"
         class="com.haulmont.cuba.web.app.ui.serverlogviewer.AdditionLoggerWindow"
         messagesPack="com.haulmont.cuba.web.app.ui.serverlogviewer"
         caption="msg://logger.add"
@@ -15,7 +14,7 @@
             <label value="msg://logger.name"/>
             <textField id="loggerNameField"/>
             <label value="msg://logger.level"/>
-            <lookupField id="logLevelField" width="80px"/>
+            <lookupField id="logLevelField" width="theme://cuba.web.addition-logger-window.logLevelField.width"/>
         </hbox>
 
         <hbox spacing="true">

@@ -21,6 +21,10 @@
         <timer id="updateLogTailTimer" delay="5000" repeating="true" onTimer="updateLogTail"/>
     </timers>
 
+    <assign name="jmxFieldWidth" value="theme://cuba.web.server-log-window.jmxField.width"/>
+    <assign name="logFieldWidth" value="theme://cuba.web.server-log-window.logField.width"/>
+    <assign name="logLevelFieldWidth" value="theme://cuba.web.server-log-window.logLevelField.width"/>
+
     <layout expand="logFieldBox" spacing="true">
 
         <grid spacing="true">
@@ -31,11 +35,11 @@
             <rows>
                 <row>
                     <label value="msg://jmx.localJmxNode"/>
-                    <label id="localJmxField" stylename="h2" width="400px"/>
+                    <label id="localJmxField" stylename="h2" width="${jmxFieldWidth}"/>
                 </row>
                 <row>
                     <label value="msg://jmx.targetJmxNode"/>
-                    <lookupPickerField id="jmxConnectionField" optionsDatasource="jmxInstancesDs" width="400px"/>
+                    <lookupPickerField id="jmxConnectionField" optionsDatasource="jmxInstancesDs" width="${jmxFieldWidth}"/>
                 </row>
             </rows>
         </grid>
@@ -44,7 +48,7 @@
             <tab id="viewTab" caption="msg://tab.view" margin="true">
                 <hbox id="logSelectBox" spacing="true">
                     <label id="labelLogFile" value="msg://log.file"/>
-                    <lookupField id="logFileNameField" width="300px"/>
+                    <lookupField id="logFileNameField" width="${logFieldWidth}"/>
                     <button id="downloadButton" caption="msg://actions.Download" invoke="downloadLog"/>
                     <button id="showTailButton" caption="msg://actions.ShowTail" invoke="showLogTail"/>
                     <checkBox id="autoRefreshCheck" caption="msg://actions.autoRefresh"/>
@@ -57,9 +61,9 @@
                         <rows>
                             <row>
                                 <label value="msg://logger.name"/>
-                                <lookupField id="loggerNameField" width="300px"/>
+                                <lookupField id="loggerNameField" width="${logFieldWidth}"/>
                                 <label value="msg://logger.level"/>
-                                <lookupField id="loggerLevelField" width="80px"/>
+                                <lookupField id="loggerLevelField" width="${logLevelFieldWidth}"/>
                                 <hbox spacing="true">
                                     <button caption="msg://actions.Get" invoke="getLoggerLevel"/>
                                     <button caption="msg://actions.Set" invoke="setLoggerLevel"/>
@@ -68,9 +72,9 @@
                             </row>
                             <row>
                                 <label value="msg://appender.name"/>
-                                <lookupField id="appenderNameField" width="300px"/>
+                                <lookupField id="appenderNameField" width="${logFieldWidth}"/>
                                 <label value="msg://appender.level"/>
-                                <lookupField id="appenderLevelField" width="80px"/>
+                                <lookupField id="appenderLevelField" width="${logLevelFieldWidth}"/>
                                 <hbox spacing="true">
                                     <button caption="msg://actions.Get" invoke="getAppenderLevel"/>
                                     <button caption="msg://actions.Set" invoke="setAppenderLevel"/>

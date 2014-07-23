@@ -551,11 +551,14 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
         layout.setMargin(false);
         layout.setStyleName("cuba-app-menubar");
         layout.setWidth(100, Unit.PERCENTAGE);
-        if (webConfig.getUseLightHeader()){
+
+        ThemeConstants theme = app.getThemeConstants();
+
+        if (webConfig.getUseLightHeader()) {
             layout.addStyleName("cuba-app-light-header");
-            layout.setHeight(40, Unit.PIXELS);
+            layout.setHeight(theme.getInt("cuba.web.AppWindow.menu.light.height"), Unit.PIXELS);
         } else {
-            layout.setHeight(28, Unit.PIXELS);
+            layout.setHeight(theme.getInt("cuba.web.AppWindow.menu.height"), Unit.PIXELS);
         }
 
         if (webConfig.getUseLightHeader()) {
@@ -685,8 +688,10 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
         HorizontalLayout titleLayout = new HorizontalLayout();
         titleLayout.setStyleName("cuba-app-titlebar");
 
+        ThemeConstants theme = app.getThemeConstants();
+
         titleLayout.setWidth(100, Unit.PERCENTAGE);
-        titleLayout.setHeight(41, Unit.PIXELS);
+        titleLayout.setHeight(theme.getInt("cuba.web.AppWindow.titleLayout.height"), Unit.PIXELS);
 
         titleLayout.setMargin(new MarginInfo(false, true, false, true));
         titleLayout.setSpacing(true);

@@ -26,6 +26,8 @@
         </collectionDatasource>
     </dsContext>
 
+    <assign name="fieldWidth" value="theme://cuba.web.display-mbeans.field.width"/>
+
     <layout expand="mbeans" spacing="true">
         <groupBox>
             <grid spacing="true">
@@ -36,15 +38,15 @@
                 <rows>
                     <row>
                         <label value="msg://localJmxNode"/>
-                        <label id="localJmxField" stylename="h2" width="400px"/>
+                        <label id="localJmxField" stylename="h2" width="${fieldWidth}"/>
                     </row>
                     <row>
                         <label value="msg://targetJmxNode"/>
-                        <lookupPickerField id="jmxConnectionField" optionsDatasource="jmxInstancesDs" width="400px"/>
+                        <lookupPickerField id="jmxConnectionField" optionsDatasource="jmxInstancesDs" width="${fieldWidth}"/>
                     </row>
                     <row>
                         <label value="msg://searchByObjectName"/>
-                        <textField id="objectNameField" width="400px"/>
+                        <textField id="objectNameField" width="${fieldWidth}"/>
                     </row>
                 </rows>
             </grid>

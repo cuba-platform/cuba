@@ -15,16 +15,15 @@
     </dsContext>
 
     <layout expand="windowActions">
-        <fieldGroup id="jmxFieldGroup" datasource="jmxInstanceDs">
-            <column width="350px">
+        <fieldGroup id="jmxFieldGroup" datasource="jmxInstanceDs" width="100%">
+            <column width="100%">
                 <field id="address"/>
                 <field id="login"/>
                 <field id="password" custom="true"/>
                 <field id="nodeName"/>
             </column>
         </fieldGroup>
-        <hbox id="windowActions" align="MIDDLE_LEFT" spacing="true"
-              margin="true;false;false;false" height="100%">
+        <hbox id="windowActions" align="MIDDLE_LEFT" spacing="true" margin="true;false;false;false">
             <button id="windowCommit" action="windowCommit" icon="icons/ok.png"/>
             <button id="testConnection" invoke="testConnection" caption="msg://testConnection" icon="icons/test-connection.png"/>
             <button id="windowClose" action="windowClose" icon="icons/cancel.png"/>

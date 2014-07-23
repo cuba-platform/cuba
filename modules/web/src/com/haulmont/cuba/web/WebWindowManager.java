@@ -13,6 +13,7 @@ import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.gui.components.WebButton;
@@ -712,17 +713,20 @@ public class WebWindowManager extends WindowManager {
         boolean dialogParamsIsNull = dialogParams.getHeight() == null && dialogParams.getWidth() == null &&
                 dialogParams.getResizable() == null;
 
+        ThemeConstants theme = app.getThemeConstants();
+
         if (forciblyDialog && dialogParamsIsNull) {
             outerLayout.setHeight(100, Sizeable.Unit.PERCENTAGE);
-            win.setWidth(800, Sizeable.Unit.PIXELS);
-            win.setHeight(500, Sizeable.Unit.PIXELS);
+            win.setWidth(theme.getInt("cuba.web.WebWindowManager.forciblyDialog.width"), Sizeable.Unit.PIXELS);
+            win.setHeight(theme.getInt("cuba.web.WebWindowManager.forciblyDialog.height"), Sizeable.Unit.PIXELS);
             win.setResizable(true);
             window.setHeight("100%");
         } else {
-            if (dialogParams.getWidth() != null)
+            if (dialogParams.getWidth() != null) {
                 win.setWidth(dialogParams.getWidth().floatValue(), Sizeable.Unit.PIXELS);
-            else
-                win.setWidth(600, Sizeable.Unit.PIXELS);
+            } else {
+                win.setWidth(theme.getInt("cuba.web.WebWindowManager.dialog.width"), Sizeable.Unit.PIXELS);
+            }
 
             if (dialogParams.getHeight() != null) {
                 win.setHeight(dialogParams.getHeight().floatValue(), Sizeable.Unit.PIXELS);

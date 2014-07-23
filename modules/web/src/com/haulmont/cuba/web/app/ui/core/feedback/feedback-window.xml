@@ -11,10 +11,10 @@
     <layout expand="buttons" spacing="true">
         <groupBox spacing="true">
             <label value="msg://theme"/>
-            <lookupField id="reason" required="true" width="200px" requiredMessage="msg://themeMsg"/>
-            <textField id="reasonFreeText" required="true" width="400px" requiredMessage="msg://themeMsg"/>
+            <lookupField id="reason" required="true" width="theme://cuba.web.feedback-window.reason.width" requiredMessage="msg://themeMsg"/>
+            <textField id="reasonFreeText" required="true" width="theme://cuba.web.feedback-window.reasonFreeText.width" requiredMessage="msg://themeMsg"/>
             <label value="msg://body"/>
-            <textArea id="mainBody" required="true" rows="15" width="600px" requiredMessage="msg://bodyMsg"/>
+            <textArea id="mainBody" required="true" rows="15" width="theme://cuba.web.feedback-window.mainBody.width" requiredMessage="msg://bodyMsg"/>
         </groupBox>
         <buttonsPanel id="buttons">
             <button id="okBtn" icon="icons/ok.png"/>

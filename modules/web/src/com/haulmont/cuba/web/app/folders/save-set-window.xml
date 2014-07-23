@@ -19,7 +19,7 @@
         </collectionDatasource>
     </dsContext>
     <layout spacing="true">
-        <lookupField id="folderSelect" optionsDatasource="setFoldersDs" width="250px"
+        <lookupField id="folderSelect" optionsDatasource="setFoldersDs" width="theme://cuba.web.save-set-window.folderSelect.width"
                      caption="msg://saveSetWindow.set"/>
         <hbox spacing="true" id="add">
             <button id="insertBtn" caption="msg://saveSetWindow.insert"/>

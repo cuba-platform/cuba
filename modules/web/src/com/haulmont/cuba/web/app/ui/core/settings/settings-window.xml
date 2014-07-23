@@ -25,7 +25,7 @@
                     </row>
                     <row>
                         <label value="msg://mainWindowTheme"/>
-                        <lookupField id="appThemeField" required="true" width="150"
+                        <lookupField id="appThemeField" required="true" width="theme://cuba.web.settings-window.appThemeField.width"
                                      requiredMessage="msg://mainWindowThemeMsg"/>
                     </row>
                     <row>
