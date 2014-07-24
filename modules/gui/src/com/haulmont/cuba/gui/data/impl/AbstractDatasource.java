@@ -95,6 +95,7 @@ public abstract class AbstractDatasource<T extends Entity> implements Datasource
             itemToCreate.remove(item);
             itemToCreate.add(item);
         } else {
+            itemToUpdate.remove(item);
             itemToUpdate.add(item);
         }
         modified = true;
