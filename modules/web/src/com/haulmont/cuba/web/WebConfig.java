@@ -219,7 +219,6 @@ public interface WebConfig extends Config {
      * Support e-mail. Exception reports and feedback emails are sent to this address.
      */
     @Property("cuba.supportEmail")
-    @DefaultString("support@localhost")
     String getSupportEmail();
 
     /**
