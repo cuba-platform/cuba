@@ -267,6 +267,15 @@ public class WebFieldGroup
                     if (!fieldConfig.isEditable()) {
                         cubaField.setEditable(fieldConfig.isEditable());
                     }
+                } else if (!(fieldComponent instanceof HasCaption)) {
+                    // if component does not support caption and we have explicit caption in XML
+                    if (fieldConfig.getCaption() != null) {
+                        fieldImpl.setCaption(fieldConfig.getCaption());
+                    }
+
+                    if (fieldConfig.getDescription() != null && fieldImpl instanceof AbstractComponent) {
+                        ((AbstractComponent) fieldImpl).setDescription(fieldConfig.getDescription());
+                    }
                 }
 
                 // some components (e.g. LookupPickerField) have width from the creation, so I commented out this check

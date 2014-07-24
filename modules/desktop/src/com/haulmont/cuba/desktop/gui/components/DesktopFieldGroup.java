@@ -636,6 +636,9 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
             if (cubaField.isEditable()) {
                 cubaField.setEditable(fieldConf.isEditable());
             }
+        } else if (!(fieldComponent instanceof HasCaption)) {
+            // if component does not support caption and we have explicit caption in XML
+            caption = fieldConf.getCaption();
         }
 
         if (fieldComponent instanceof HasFormatter) {

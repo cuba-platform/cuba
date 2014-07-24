@@ -23,6 +23,7 @@ import com.haulmont.cuba.web.toolkit.ui.CubaCheckBox;
 import com.haulmont.cuba.web.toolkit.ui.CubaFieldGroup;
 import com.haulmont.cuba.web.toolkit.ui.CubaFieldGroupLayout;
 import com.haulmont.cuba.web.toolkit.ui.CubaFieldWrapper;
+import com.vaadin.ui.AbstractComponent;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
@@ -278,6 +279,15 @@ public class WebFieldGroup
                     if (!fieldConf.isEditable()) {
                         cubaField.setEditable(fieldConf.isEditable());
                     }
+                } else if (!(fieldComponent instanceof HasCaption)) {
+                    // if component does not support caption and we have explicit caption in XML
+                    if (fieldConf.getCaption() != null) {
+                        fieldImpl.setCaption(fieldConf.getCaption());
+                    }
+
+                    if (fieldConf.getDescription() != null && fieldImpl instanceof AbstractComponent) {
+                        ((AbstractComponent) fieldImpl).setDescription(fieldConf.getDescription());
+                    }
                 }
 
                 // some components (e.g. LookupPickerField) have width from the creation, so I commented out this check
@@ -397,9 +407,9 @@ public class WebFieldGroup
         if (fieldImpl instanceof CubaCheckBox) {
             ((CubaCheckBox) fieldImpl).setCaptionManagedByLayout(true);
         }
-
         if (fieldComponent instanceof Field) {
             Field cubaField = (Field) fieldComponent;
+
             String caption = fieldConf.getCaption();
             if (caption == null) {
                 MetaPropertyPath propertyPath = fieldDatasource.getMetaClass().getPropertyPath(fieldConf.getId());
@@ -420,7 +430,7 @@ public class WebFieldGroup
                 cubaField.setRequiredMessage(fieldConf.getRequiredError());
             }
             if (!fieldConf.isEditable()) {
-                cubaField.setEditable(fieldConf.isEditable());
+                cubaField.setEditable(false);
             }
         }
 
