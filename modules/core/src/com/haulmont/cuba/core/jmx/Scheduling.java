@@ -5,16 +5,23 @@
 
 package com.haulmont.cuba.core.jmx;
 
+import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.scheduling.SchedulingAPI;
+import com.haulmont.cuba.core.entity.ScheduledExecution;
 import com.haulmont.cuba.core.entity.ScheduledTask;
+import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.security.app.Authenticated;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang.time.DateUtils;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @author krivopustov
@@ -25,6 +32,12 @@ public class Scheduling implements SchedulingMBean {
 
     @Inject
     protected SchedulingAPI scheduling;
+
+    @Inject
+    protected Persistence persistence;
+
+    @Inject
+    protected TimeSource timeSource;
 
     @Override
     public boolean isActive() {
@@ -69,4 +82,45 @@ public class Scheduling implements SchedulingMBean {
         }
     }
 
+    @Authenticated
+    @Override
+    public String removeExecutionHistory(String age, String maxPeriod) {
+        List<UUID> list;
+        Transaction tx = persistence.createTransaction();
+        try {
+            EntityManager em = persistence.getEntityManager();
+            String jpql = "select e.id from sys$ScheduledExecution e where e.startTime < ?1";
+            if (maxPeriod != null) {
+                jpql += " and e.task.period <= ?2";
+            }
+            jpql += " order by e.startTime";
+
+            Query query = em.createQuery(jpql);
+
+            Date startDate = DateUtils.addHours(timeSource.currentTimestamp(), -Integer.valueOf(age));
+            query.setParameter(1, startDate);
+            if (maxPeriod != null) {
+                query.setParameter(2, Integer.valueOf(maxPeriod) * 3600);
+            }
+            list = query.getResultList();
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+
+        for (int i = 0; i < list.size(); i += 100) {
+            final List<UUID> subList = list.subList(i, Math.min(i + 100, list.size()));
+            persistence.createTransaction().execute(new Transaction.Runnable() {
+                @Override
+                public void run(EntityManager em) {
+                    Query query = em.createQuery("delete from sys$ScheduledExecution e where e.id in ?1");
+                    query.setParameter(1, subList);
+                    query.executeUpdate();
+                }
+            });
+        }
+
+        return "Deleted " + list.size();
+    }
 }

@@ -6,6 +6,8 @@
 package com.haulmont.cuba.core.jmx;
 
 import org.springframework.jmx.export.annotation.ManagedOperation;
+import org.springframework.jmx.export.annotation.ManagedOperationParameter;
+import org.springframework.jmx.export.annotation.ManagedOperationParameters;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
 /**
@@ -34,4 +36,10 @@ public interface SchedulingMBean {
 
     @ManagedOperation(description = "Starts the processing once, regardless of 'active' attribute")
     String processScheduledTasks();
+
+    @ManagedOperation(description = "Removes executions occured earlier than 'age' for tasks with period lesser than 'maxPeriod'")
+    @ManagedOperationParameters({
+            @ManagedOperationParameter(name = "age", description = "Execution age in hours"),
+            @ManagedOperationParameter(name = "maxPeriod", description = "Max task period in hours")})
+    String removeExecutionHistory(String age, String maxPeriod);
 }

@@ -52,7 +52,7 @@
                 </column>
                 <column id="durationSec"/>
                 <column id="server"/>
-                <column id="result"/>
+                <column id="result" maxTextLength="200"/>
             </columns>
             <rows datasource="executionsDs"/>
         </table>
