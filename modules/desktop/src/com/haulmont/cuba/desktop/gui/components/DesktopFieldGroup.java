@@ -177,11 +177,11 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     public void setDatasource(Datasource datasource) {
         this.datasource = datasource;
 
-        if (this.fields.isEmpty() && datasource != null) {
-            //collect fields by entity view
+        if (!this.fields.isEmpty()) {
+            rows = rowsCount();
+        } else if (datasource != null) {
             LogFactory.getLog(getClass()).warn("Field group does not have fields");
         }
-        rows = rowsCount();
 
         createFields();
     }

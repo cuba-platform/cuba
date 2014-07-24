@@ -336,12 +336,10 @@ public class WebFieldGroup
 
         component.setCols(cols);
 
-        if (datasource != null) {
-            if (this.fields.isEmpty()) {
-                LogFactory.getLog(getClass()).warn("Field group does not have fields");
-            } else {
-                component.setRows(rowsCount());
-            }
+        if (!this.fields.isEmpty()) {
+            component.setRows(rowsCount());
+        } else if (datasource != null) {
+            LogFactory.getLog(getClass()).warn("Field group does not have fields");
         }
 
         assignAutoDebugId();
