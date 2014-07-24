@@ -238,7 +238,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
 
         field.setFormatter(loadFormatter(element));
 
-        String width = element.attributeValue("width");
+        String width = loadThemeString(element.attributeValue("width"));
         if (!StringUtils.isEmpty(width)) {
             field.setWidth(width);
         }
