@@ -48,6 +48,9 @@ public class DesktopSplitPanel extends DesktopAbstractComponent<JSplitPane> impl
             }
         };
 
+        // default orientation as web split
+        impl.setOrientation(JSplitPane.VERTICAL_SPLIT);
+
         impl.setUI(new SynthSplitPaneUI() {
                        @Override
                        protected void dragDividerTo(int location) {
@@ -57,6 +60,9 @@ public class DesktopSplitPanel extends DesktopAbstractComponent<JSplitPane> impl
                            positionChanged = true;
                        }
                    });
+
+        impl.setLeftComponent(new JPanel());
+        impl.setRightComponent(new JPanel());
 
         impl.getLeftComponent().setMinimumSize(new Dimension());
         impl.getRightComponent().setMinimumSize(new Dimension());
