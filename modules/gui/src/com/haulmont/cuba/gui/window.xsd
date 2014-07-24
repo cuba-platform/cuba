@@ -707,7 +707,7 @@
                 <xs:attributeGroup ref="hasOptions"/>
 
                 <xs:attribute name="multiselect" type="xs:boolean"/>
-                <xs:attribute name="orientation" default="vertical" type="orientation"/>
+                <xs:attribute name="orientation" type="orientation"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -1007,7 +1007,7 @@
         <xs:attribute name="fieldCaptionWidth" type="xs:string"/>
 
         <xs:attribute name="datasource" type="xs:string"/>
-        <xs:attribute name="border" type="borderMode" default="hidden"/>
+        <xs:attribute name="border" type="borderMode"/>
     </xs:complexType>
 
     <!-- TokenList -->
@@ -1138,8 +1138,8 @@
         <xs:attributeGroup ref="hasEnableProp"/>
         <xs:attributeGroup ref="hasSpacingMargin"/>
 
-        <xs:attribute name="orientation" default="vertical" type="orientation"/>
-        <xs:attribute name="scrollBars" default="vertical" type="scrollBars"/>
+        <xs:attribute name="orientation" type="orientation"/>
+        <xs:attribute name="scrollBars" type="scrollBars"/>
     </xs:complexType>
 
     <!-- SplitPanel -->
@@ -1151,7 +1151,7 @@
         <xs:attributeGroup ref="hasId"/>
         <xs:attributeGroup ref="hasSize"/>
 
-        <xs:attribute name="orientation" default="horizontal" type="orientation"/>
+        <xs:attribute name="orientation" type="orientation"/>
         <xs:attribute name="pos" type="xs:int"/>
     </xs:complexType>
 
@@ -1242,7 +1242,7 @@
 
         <xs:attribute name="collapsable" type="xs:boolean"/>
         <xs:attribute name="collapsed" type="xs:boolean"/>
-        <xs:attribute name="orientation" default="vertical" type="orientation"/>
+        <xs:attribute name="orientation" type="orientation"/>
     </xs:complexType>
 
     <!-- IFrame -->
@@ -1582,7 +1582,7 @@
                                         <xs:attribute name="delay" type="xs:integer" use="required"/>
                                         <xs:attribute name="repeating" type="xs:boolean"/>
                                         <xs:attribute name="onTimer" type="xs:string"/>
-                                        <xs:attribute name="autostart" type="xs:boolean" default="false"/>
+                                        <xs:attribute name="autostart" type="xs:boolean"/>
                                     </xs:complexType>
                                 </xs:element>
                             </xs:choice>
