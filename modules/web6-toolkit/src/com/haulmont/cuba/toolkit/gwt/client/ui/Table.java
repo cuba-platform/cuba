@@ -70,6 +70,8 @@ public abstract class Table
 
     protected PopupContainer customContextMenuPopup;
 
+    private static int columnActionIndex = 0;
+
     //[6.6]
     private KeyPressHandler navKeyPressHandler = new KeyPressHandler() {
 
@@ -2108,23 +2110,32 @@ public abstract class Table
             private boolean collapsed;
             private boolean enabled = true;
 
+            private int columnActionId = 0;
+
             public VisibleColumnAction(String colKey) {
                 super(Table.TableHead.this);
                 this.colKey = colKey;
                 caption = tHead.getHeaderCell(colKey).getCaption();
                 iconUrl = tHead.getHeaderCell(colKey).getIcon();
+
+                columnActionId = columnActionIndex++;
             }
 
             @Override
             public void execute() {
                 if (enabled) {
-                    client.getContextMenu().hide();
+                    com.google.gwt.dom.client.Element columnActionSpan =
+                            Document.get().getElementById("tableColumnAction" + columnActionId);
                     // toggle selected column
                     if (collapsedColumns.contains(colKey)) {
                         collapsedColumns.remove(colKey);
+
+                        columnActionSpan.setClassName("v-on");
                     } else {
                         tHead.removeCell(colKey);
                         collapsedColumns.add(colKey);
+
+                        columnActionSpan.setClassName("v-off");
                     }
 
                     // update variable to server
@@ -2146,18 +2157,17 @@ public abstract class Table
              */
             @Override
             public String getHTML() {
-                final StringBuffer buf = new StringBuffer();
+                final StringBuilder buf = new StringBuilder();
                 if (collapsed) {
-                    buf.append("<span class=\"v-off\">");
+                    buf.append("<span id=\"tableColumnAction").append(columnActionId).append("\" class=\"v-off\">");
                 } else {
-                    buf.append("<span class=\"v-on\">");
+                    buf.append("<span id=\"tableColumnAction").append(columnActionId).append("\" class=\"v-on\">");
                 }
                 buf.append(super.getHTML());
                 buf.append("</span>");
 
                 return buf.toString();
             }
-
         }
 
         /*

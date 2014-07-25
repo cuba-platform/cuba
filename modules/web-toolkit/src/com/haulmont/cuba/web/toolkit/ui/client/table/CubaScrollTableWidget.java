@@ -48,6 +48,8 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
     protected CubaScrollTableWidget() {
         // handle shortcuts
         DOM.sinkEvents(getElement(), Event.ONKEYDOWN);
+
+        hideColumnControlAfterClick = false;
     }
 
     @Override

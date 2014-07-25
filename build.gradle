@@ -60,7 +60,7 @@ def webToolkitLegacyModule = project(':cuba-web6-toolkit')
 def webModuleThemes = project(':cuba-web-themes')
 def webLegacyModuleThemes = project(':cuba-web6-themes')
 
-def vaadinVersion = '7.2.4.cuba.1'
+def vaadinVersion = '7.2.4.cuba.2'
 def vaadinLegacyVersion = '6.6.1.144'
 def springVersion = '3.2.8.RELEASE'
 def springSecurityVersion = '3.2.3.RELEASE'

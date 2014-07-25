@@ -44,6 +44,10 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
 
     protected ClientLogger logger = ClientLoggerFactory.getLogger("CubaTreeTableWidget");
 
+    public CubaTreeTableWidget() {
+        hideColumnControlAfterClick = false;
+    }
+
     @Override
     public void handleBodyContextMenu(ContextMenuEvent event) {
         if (allowPopupMenu) {
