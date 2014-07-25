@@ -255,7 +255,6 @@ public class EntityManagerImpl implements EntityManager {
 
         if (log.isTraceEnabled()) log.trace("Fetching instance " + instance);
         for (ViewProperty property : view.getProperties()) {
-            // try to getValue only for references
             if (log.isTraceEnabled()) log.trace("Fetching property " + property.getName());
 
             View propertyView = property.getView();
