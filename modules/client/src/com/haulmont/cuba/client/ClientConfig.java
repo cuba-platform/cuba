@@ -145,15 +145,6 @@ public interface ClientConfig extends Config {
     String getPreviousTabShortcut();
 
     /**
-     * @return If false, the client loads all server views on startup.
-     * If true, it loads views one by one only when needed.
-     * <p>Lazy loading is required if the server can contain views for entities, not available on the client.</p>
-     */
-    @Property("cuba.lazyLoadServerViews")
-    @DefaultBoolean(false)
-    boolean getLazyLoadServerViews();
-
-    /**
      * @return If true, client will try to find missing localized messages on the server.
      */
     @Property("cuba.remoteMessagesSearchEnabled")
