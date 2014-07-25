@@ -233,14 +233,12 @@ public class EntityManagerImpl implements EntityManager {
     }
 
     private void setFetchPlan(List<View> views) {
-        if (views == null || views.isEmpty())
+        if (views == null || views.isEmpty()) {
             fetchPlanMgr.setView(delegate.getFetchPlan(), null);
-        else {
-            for (int i = 0; i < views.size(); i++) {
-                if (i == 0)
-                    fetchPlanMgr.setView(delegate.getFetchPlan(), views.get(i));
-                else
-                    fetchPlanMgr.addView(delegate.getFetchPlan(), views.get(i));
+        } else {
+            fetchPlanMgr.setView(delegate.getFetchPlan(), views.get(0));
+            for (int i = 1; i < views.size(); i++) {
+                fetchPlanMgr.addView(delegate.getFetchPlan(), views.get(i));
             }
         }
     }
@@ -257,9 +255,26 @@ public class EntityManagerImpl implements EntityManager {
 
         if (log.isTraceEnabled()) log.trace("Fetching instance " + instance);
         for (ViewProperty property : view.getProperties()) {
+            // try to getValue only for references
             if (log.isTraceEnabled()) log.trace("Fetching property " + property.getName());
-            Object value = instance.getValue(property.getName());
+
             View propertyView = property.getView();
+
+            Object value;
+            if (!property.isLazy() || propertyView == null) {
+                value = instance.getValue(property.getName());
+            } else {
+                if (log.isTraceEnabled()) log.trace("Use property view for lazy load " + propertyView.toString());
+                fetchPlanMgr.setView(delegate.getFetchPlan(), propertyView);
+
+                try {
+                    value = instance.getValue(property.getName());
+                } finally {
+                    // Restore fetch plan
+                    setFetchPlan(this.views);
+                }
+            }
+
             if (value != null && propertyView != null) {
                 if (value instanceof Collection) {
                     for (Object item : ((Collection) value)) {
