@@ -42,7 +42,7 @@ public class ThemeConstantsRepository {
 
     private volatile boolean initialized;
 
-    protected Map<String, ThemeConstants> themeContstantsMap;
+    protected Map<String, ThemeConstants> themeConstantsMap;
 
     protected void checkInitialized() {
         if (!initialized) {
@@ -57,7 +57,7 @@ public class ThemeConstantsRepository {
     }
 
     protected void init() {
-        String configName = AppContext.getProperty("cuba.themesConfig");
+        String configName = AppContext.getProperty("cuba.themeConfig");
         if (!StringUtils.isBlank(configName)) {
             Map<String, Map<String, String>> themeProperties = new HashMap<>();
 
@@ -81,9 +81,9 @@ public class ThemeConstantsRepository {
                 themes.put(entry.getKey(), new ThemeConstants(entry.getValue()));
             }
 
-            this.themeContstantsMap = Collections.unmodifiableMap(themes);
+            this.themeConstantsMap = Collections.unmodifiableMap(themes);
         } else {
-            this.themeContstantsMap = Collections.emptyMap();
+            this.themeConstantsMap = Collections.emptyMap();
         }
     }
 
@@ -136,6 +136,6 @@ public class ThemeConstantsRepository {
     public ThemeConstants getConstants(String themeName) {
         checkInitialized();
 
-        return themeContstantsMap.get(themeName);
+        return themeConstantsMap.get(themeName);
     }
 }
