@@ -563,6 +563,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
             editableColumns = new LinkedList<>();
         }
 
+        MetaClass metaClass = datasource.getMetaClass();
         for (final Object property : properties) {
             final Table.Column column = this.columns.get(property);
 
@@ -585,10 +586,10 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                 }
 
                 if (editableColumns != null && column.isEditable() && (property instanceof MetaPropertyPath)) {
-                    MetaProperty colMetaProperty = ((MetaPropertyPath) property).getMetaProperty();
-                    MetaClass colMetaClass = colMetaProperty.getDomain();
-                    if (userSession.isEntityAttrPermitted(colMetaClass, colMetaProperty.getName(), EntityAttrAccess.MODIFY)) {
-                        editableColumns.add((MetaPropertyPath) column.getId());
+                    MetaPropertyPath propertyPath = (MetaPropertyPath) property;
+
+                    if (security.isEntityPropertyPathPermitted(metaClass, propertyPath.toString(), EntityAttrAccess.MODIFY)) {
+                        editableColumns.add(propertyPath);
                     }
                 }
             }

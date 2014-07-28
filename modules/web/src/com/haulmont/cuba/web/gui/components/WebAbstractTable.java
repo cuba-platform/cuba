@@ -256,8 +256,14 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                 final Collection<MetaPropertyPath> propertyIds = (Collection<MetaPropertyPath>) ds.getContainerPropertyIds();
 
                 if (editable) {
+                    MetaClass metaClass = datasource.getMetaClass();
+
                     final List<MetaPropertyPath> editableColumns = new ArrayList<>(propertyIds.size());
                     for (final MetaPropertyPath propertyId : propertyIds) {
+                        if (!security.isEntityPropertyPathPermitted(metaClass, propertyId.toString(), EntityAttrAccess.MODIFY)) {
+                            continue;
+                        }
+
                         final Table.Column column = getColumn(propertyId.toString());
                         if (BooleanUtils.isTrue(column.isEditable())) {
                             com.vaadin.ui.Table.ColumnGenerator generator = component.getColumnGenerator(column.getId());
@@ -695,6 +701,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             editableColumns = new LinkedList<>();
         }
 
+        MetaClass metaClass = datasource.getMetaClass();
         for (final Object columnId : columns) {
             final Table.Column column = this.columns.get(columnId);
 
@@ -709,10 +716,10 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
             if (column != null) {
                 if (editableColumns != null && column.isEditable() && (columnId instanceof MetaPropertyPath)) {
-                    MetaProperty colMetaProperty = ((MetaPropertyPath) columnId).getMetaProperty();
-                    MetaClass colMetaClass = colMetaProperty.getDomain();
-                    if (userSession.isEntityAttrPermitted(colMetaClass, colMetaProperty.getName(), EntityAttrAccess.MODIFY)) {
-                        editableColumns.add((MetaPropertyPath) column.getId());
+                    MetaPropertyPath propertyPath = ((MetaPropertyPath) columnId);
+
+                    if (security.isEntityPropertyPathPermitted(metaClass, propertyPath.toString(), EntityAttrAccess.MODIFY)) {
+                        editableColumns.add(propertyPath);
                     }
                 }
 
