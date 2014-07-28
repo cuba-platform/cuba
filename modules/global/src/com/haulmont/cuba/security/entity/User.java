@@ -7,10 +7,7 @@ package com.haulmont.cuba.security.entity;
 import com.haulmont.chile.core.annotations.Composition;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.StandardEntity;
-import com.haulmont.cuba.core.entity.annotation.Listeners;
-import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
-import com.haulmont.cuba.core.entity.annotation.SystemLevel;
-import com.haulmont.cuba.core.entity.annotation.TrackEditScreenHistory;
+import com.haulmont.cuba.core.entity.annotation.*;
 import com.haulmont.cuba.core.global.DeletePolicy;
 import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.lang.StringUtils;
@@ -30,6 +27,7 @@ import java.util.List;
 @Listeners("com.haulmont.cuba.security.listener.UserEntityListener")
 @NamePattern("#getCaption|login,name")
 @TrackEditScreenHistory
+@EnableRestore
 public class User extends StandardEntity {
 
     private static final long serialVersionUID = 5007187642916030394L;

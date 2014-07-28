@@ -7,6 +7,7 @@ package com.haulmont.cuba.security.entity;
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.chile.core.annotations.NamePattern;
+import com.haulmont.cuba.core.entity.annotation.EnableRestore;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 import javax.persistence.*;
@@ -22,6 +23,7 @@ import javax.persistence.Entity;
 @Table(name = "SEC_FILTER")
 @NamePattern("%s|name")
 @SystemLevel
+@EnableRestore
 public class FilterEntity extends StandardEntity {
 
     @Column(name = "COMPONENT")
