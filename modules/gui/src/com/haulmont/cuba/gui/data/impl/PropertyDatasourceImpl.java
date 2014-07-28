@@ -10,6 +10,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewProperty;
 import com.haulmont.cuba.gui.data.*;
@@ -108,19 +109,24 @@ public class PropertyDatasourceImpl<T extends Entity>
     @Override
     public View getView() {
         if (view == null) {
-            View masterView = masterDs.getView();
-            if (masterView == null)
-                throw new IllegalStateException("No view for datasource " + masterDs.getId());
-            ViewProperty property = masterView.getProperty(metaProperty.getName());
-            if (property == null)
-                return null;
-            if (property.getView() == null)
-                throw new IllegalStateException("Invalid view definition: " + masterView
-                        + ". Property '" + property + "' must have a view");
-            view = metadata.getViewRepository().findView(getMetaClass(), property.getView().getName());
-            //anonymous (nameless) view
-            if (view == null)
-                view = property.getView();
+            MetaClass metaMetaClass = masterDs.getMetaClass();
+            if (metadata.getTools().isPersistent(metaMetaClass)
+                    || metadata.getTools().isEmbeddable(metaMetaClass)) {
+                View masterView = masterDs.getView();
+                if (masterView == null)
+                    throw new IllegalStateException("No view for datasource " + masterDs.getId());
+
+                ViewProperty property = masterView.getProperty(metaProperty.getName());
+                if (property == null)
+                    return null;
+                if (property.getView() == null)
+                    throw new IllegalStateException("Invalid view definition: " + masterView
+                            + ". Property '" + property + "' must have a view");
+                view = metadata.getViewRepository().findView(getMetaClass(), property.getView().getName());
+                //anonymous (nameless) view
+                if (view == null)
+                    view = property.getView();
+            }
         }
         return view;
     }

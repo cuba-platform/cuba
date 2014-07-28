@@ -194,14 +194,6 @@
         <property name="whereClause"/>
     </view>
 
-    <view class="com.haulmont.cuba.security.entity.UserSessionEntity" name="session.browse">
-        <property name="id"/>
-        <property name="login"/>
-        <property name="userName"/>
-        <property name="since"/>
-        <property name="lastUsedTs"/>
-    </view>
-
     <view class="com.haulmont.cuba.security.entity.LoggedEntity"
           name="loggedAttrs">
         <property name="attributes" view="_local"/>
