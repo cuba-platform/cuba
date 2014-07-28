@@ -118,22 +118,22 @@ public class AttributePermissionsFrame extends AbstractFrame {
             AttributePermissionVariant permissionVariant = item.getPermissionVariant(attributeName);
 
             attributeLabel = uiFactory.createComponent(Label.NAME);
-            attributeLabel.setFrame(AttributePermissionsFrame.this);
+            attributeLabel.setFrame(getFrame());
             attributeLabel.setValue(attributeName);
 
             modifyCheckBox = uiFactory.createComponent(CheckBox.NAME);
             modifyCheckBox.setAlignment(Alignment.MIDDLE_CENTER);
-            modifyCheckBox.setFrame(AttributePermissionsFrame.this);
+            modifyCheckBox.setFrame(getFrame());
             modifyCheckBox.setId(attributeName + "_modifyCheckBox");
 
             readOnlyCheckBox = uiFactory.createComponent(CheckBox.NAME);
             readOnlyCheckBox.setAlignment(Alignment.MIDDLE_CENTER);
-            readOnlyCheckBox.setFrame(AttributePermissionsFrame.this);
+            readOnlyCheckBox.setFrame(getFrame());
             readOnlyCheckBox.setId(attributeName + "_readOnlyCheckBox");
 
             hideCheckBox = uiFactory.createComponent(CheckBox.NAME);
             hideCheckBox.setAlignment(Alignment.MIDDLE_CENTER);
-            hideCheckBox.setFrame(AttributePermissionsFrame.this);
+            hideCheckBox.setFrame(getFrame());
             hideCheckBox.setId(attributeName + "_hideCheckBox");
 
             updateCheckers(permissionVariant);
@@ -393,9 +393,11 @@ public class AttributePermissionsFrame extends AbstractFrame {
 
     protected void compileDefaultControls(GridLayout editGrid) {
         Label emptyLabel = uiFactory.createComponent(Label.NAME);
+        emptyLabel.setFrame(getFrame());
         editGrid.add(emptyLabel, 0, 0);
 
         Label modifyLabel = uiFactory.createComponent(Label.NAME);
+        modifyLabel.setFrame(getFrame());
         modifyLabel.setValue(getMessage("checkbox.modify"));
         modifyLabel.setAlignment(Alignment.MIDDLE_CENTER);
         modifyLabel.setStyleName("centered");
@@ -408,6 +410,7 @@ public class AttributePermissionsFrame extends AbstractFrame {
         editGrid.add(modifyBox, 1, 0);
 
         Label readOnlyLabel = uiFactory.createComponent(Label.NAME);
+        readOnlyLabel.setFrame(getFrame());
         readOnlyLabel.setValue(getMessage("checkbox.readOnly"));
         readOnlyLabel.setAlignment(Alignment.MIDDLE_CENTER);
         readOnlyLabel.setStyleName("centered");
@@ -420,6 +423,7 @@ public class AttributePermissionsFrame extends AbstractFrame {
         editGrid.add(readOnlyBox, 2, 0);
 
         Label hideLabel = uiFactory.createComponent(Label.NAME);
+        hideLabel.setFrame(getFrame());
         hideLabel.setValue(getMessage("checkbox.hide"));
         hideLabel.setAlignment(Alignment.MIDDLE_CENTER);
         hideLabel.setStyleName("centered");
@@ -435,6 +439,10 @@ public class AttributePermissionsFrame extends AbstractFrame {
         allReadOnlyCheck = uiFactory.createComponent(CheckBox.NAME);
         allHideCheck = uiFactory.createComponent(CheckBox.NAME);
 
+        allModifyCheck.setFrame(getFrame());
+        allReadOnlyCheck.setFrame(getFrame());
+        allHideCheck.setFrame(getFrame());
+
         allModifyCheck.setId("allAttributesModifyCheck");
         allReadOnlyCheck.setId("allAttributesReadOnlyCheck");
         allHideCheck.setId("allAttributesHideCheck");
@@ -444,6 +452,7 @@ public class AttributePermissionsFrame extends AbstractFrame {
         attachAllCheckboxListener(allHideCheck, AttributePermissionVariant.HIDE);
 
         emptyLabel = uiFactory.createComponent(Label.NAME);
+        emptyLabel.setFrame(getFrame());
         emptyLabel.setValue(getMessage("allEntities"));
         editGrid.add(emptyLabel, 0, 1);
 
