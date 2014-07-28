@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.gui.components.actions;
 
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -73,9 +74,11 @@ public class ExcludeAction extends RemoveAction {
 
         CollectionDatasource ds = owner.getDatasource();
         if (ds instanceof PropertyDatasource) {
+            MetaClass parentMetaClass = ((PropertyDatasource) ds).getMaster().getMetaClass();
+
             MetaProperty metaProperty = ((PropertyDatasource) ds).getProperty();
-            removePermitted = userSession.isEntityAttrPermitted(
-                    metaProperty.getDomain(), metaProperty.getName(), EntityAttrAccess.MODIFY);
+            removePermitted = security.isEntityAttrPermitted(
+                    parentMetaClass, metaProperty.getName(), EntityAttrAccess.MODIFY);
         }
 
         return removePermitted;
@@ -96,6 +99,7 @@ public class ExcludeAction extends RemoveAction {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void doRemove(Set selected, boolean autocommit) {
         @SuppressWarnings({"unchecked"})

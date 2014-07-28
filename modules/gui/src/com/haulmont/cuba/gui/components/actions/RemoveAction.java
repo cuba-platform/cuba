@@ -4,11 +4,14 @@
  */
 package com.haulmont.cuba.gui.components.actions;
 
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -40,6 +43,8 @@ public class RemoveAction extends ItemTrackingAction {
 
     protected boolean permissionFlag = false;
 
+    protected Security security;
+
     /**
      * The simplest constructor. The action has default name and autocommit=true.
      * @param owner    component containing this action
@@ -69,6 +74,9 @@ public class RemoveAction extends ItemTrackingAction {
         this.autocommit = autocommit;
         this.caption = messages.getMainMessage("actions.Remove");
         this.icon = "icons/remove.png";
+
+        this.security = AppBeans.get(Security.NAME);
+
         ClientConfig config = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
         setShortcut(config.getTableRemoveShortcut());
 
@@ -112,14 +120,17 @@ public class RemoveAction extends ItemTrackingAction {
         boolean removePermitted;
         if (ds == null) {
             removePermitted = false;
+        } else if (ds instanceof PropertyDatasource) {
+            MetaProperty metaProperty = ((PropertyDatasource) ds).getProperty();
+
+            MetaClass parentMetaClass = ((PropertyDatasource) ds).getMaster().getMetaClass();
+            removePermitted = security.isEntityAttrPermitted(parentMetaClass, metaProperty.getName(), EntityAttrAccess.MODIFY);
+
+            if (metaProperty.getRange().getCardinality() != Range.Cardinality.MANY_TO_MANY) {
+                removePermitted = removePermitted && security.isEntityOpPermitted(ds.getMetaClass(), EntityOp.DELETE);
+            }
         } else {
             removePermitted = userSession.isEntityOpPermitted(ds.getMetaClass(), EntityOp.DELETE);
-
-            if (removePermitted && ds instanceof PropertyDatasource) {
-                MetaProperty metaProperty = ((PropertyDatasource) ds).getProperty();
-                removePermitted = userSession.isEntityAttrPermitted(
-                        metaProperty.getDomain(), metaProperty.getName(), EntityAttrAccess.MODIFY);
-            }
         }
 
         return removePermitted;
@@ -128,6 +139,7 @@ public class RemoveAction extends ItemTrackingAction {
     /**
      * This method is invoked by action owner component. Don't override it, there are special methods to
      * customize behaviour below.
+     *
      * @param component component invoking action
      */
     @Override

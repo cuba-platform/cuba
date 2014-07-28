@@ -6,7 +6,6 @@
 package com.haulmont.cuba.core.global;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 
@@ -28,7 +27,8 @@ public interface Security {
     boolean isScreenPermitted(String windowAlias);
 
     /**
-     * Check if current user has permission to execute an entity operation.
+     * Check if current user has permission to execute an entity operation. <br/>
+     * Takes into account original metaclass of entity.
      *
      * @param metaClass entity meta-class
      * @param entityOp  operation
@@ -36,7 +36,8 @@ public interface Security {
     boolean isEntityOpPermitted(MetaClass metaClass, EntityOp entityOp);
 
     /**
-     * Check if current user has permission to execute an entity operation.
+     * Check if current user has permission to execute an entity operation. <br/>
+     * Takes into account original metaclass of entity.
      *
      * @param entityClass entity class
      * @param entityOp    operation
@@ -44,7 +45,8 @@ public interface Security {
     boolean isEntityOpPermitted(Class<?> entityClass, EntityOp entityOp);
 
     /**
-     * Check if current user has permission to an entity attribute.
+     * Check if current user has permission to an entity attribute. <br/>
+     * Takes into account original metaclass of entity.
      *
      * @param metaClass entity meta-class
      * @param property  entity attribute name
@@ -53,7 +55,8 @@ public interface Security {
     boolean isEntityAttrPermitted(MetaClass metaClass, String property, EntityAttrAccess access);
 
     /**
-     * Check if current user has permission to an entity attribute.
+     * Check if current user has permission to an entity attribute. <br/>
+     * Takes into account original metaclass of entity.
      *
      * @param entityClass entity class
      * @param property    entity attribute name
@@ -68,7 +71,9 @@ public interface Security {
      * <li> {@link EntityAttrAccess#MODIFY} on the attribute </li>
      * </ul>
      *
-     * @param metaClass    entity attribute's meta class
+     * Takes into account original metaclass of entity.
+     *
+     * @param metaClass    entity meta class
      * @param propertyName entity attribute's name
      */
     boolean isEntityAttrModificationPermitted(MetaClass metaClass, String propertyName);
@@ -85,7 +90,7 @@ public interface Security {
     /**
      * Check if current user has permission to an entity attribute path.
      *
-     * @param metaClass    entity meta-class
+     * @param metaClass    entity meta class
      * @param propertyPath entity attribute path
      * @param access       required access
      */

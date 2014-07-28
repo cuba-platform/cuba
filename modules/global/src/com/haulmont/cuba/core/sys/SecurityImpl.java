@@ -8,6 +8,7 @@ package com.haulmont.cuba.core.sys;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.global.ExtendedEntities;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.core.global.UserSessionSource;
@@ -30,6 +31,9 @@ public class SecurityImpl implements Security {
     @Inject
     protected Metadata metadata;
 
+    @Inject
+    protected ExtendedEntities extendedEntities;
+
     @Override
     public boolean isScreenPermitted(String windowAlias) {
         return userSessionSource.getUserSession().isScreenPermitted(windowAlias);
@@ -37,22 +41,35 @@ public class SecurityImpl implements Security {
 
     @Override
     public boolean isEntityOpPermitted(MetaClass metaClass, EntityOp entityOp) {
+        MetaClass originalMetaClass = extendedEntities.getOriginalMetaClass(metaClass);
+        if (originalMetaClass != null) {
+            metaClass = originalMetaClass;
+        }
+
         return userSessionSource.getUserSession().isEntityOpPermitted(metaClass, entityOp);
     }
 
     @Override
     public boolean isEntityOpPermitted(Class<?> entityClass, EntityOp entityOp) {
-        return isEntityOpPermitted(metadata.getSession().getClassNN(entityClass), entityOp);
+        MetaClass metaClass = metadata.getSession().getClassNN(entityClass);
+
+        return isEntityOpPermitted(metaClass, entityOp);
     }
 
     @Override
     public boolean isEntityAttrPermitted(MetaClass metaClass, String property, EntityAttrAccess access) {
+        MetaClass originalMetaClass = extendedEntities.getOriginalMetaClass(metaClass);
+        if (originalMetaClass != null) {
+            metaClass = originalMetaClass;
+        }
+
         return userSessionSource.getUserSession().isEntityAttrPermitted(metaClass, property, access);
     }
 
     @Override
     public boolean isEntityAttrPermitted(Class<?> entityClass, String property, EntityAttrAccess access) {
         MetaClass metaClass = metadata.getSession().getClassNN(entityClass);
+
         return isEntityAttrPermitted(metaClass, property, access);
     }
 
