@@ -4,6 +4,10 @@
  */
 package com.haulmont.cuba.gui.app.security.role.edit;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public enum PermissionValue {
     ALLOW(1),
     DENY(0);

@@ -4,6 +4,10 @@
  */
 package com.haulmont.cuba.gui.app.security.role.edit;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public enum PropertyPermissionValue {
     MODIFY(2),
     VIEW(1),
