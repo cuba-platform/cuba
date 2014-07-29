@@ -236,12 +236,14 @@ public class DbUpdaterEngine implements DbUpdater {
         createChangelogTable();
 
         List<File> initFiles = getInitScripts();
-        for (File file : initFiles) {
-            executeScript(file);
-            markScript(getScriptName(file), true);
+        try {
+            for (File file : initFiles) {
+                executeScript(file);
+                markScript(getScriptName(file), true);
+            }
+        } finally {
+            prepareScripts();
         }
-
-        prepareScripts();
 
         log.info("Database initialized");
     }
@@ -255,11 +257,13 @@ public class DbUpdaterEngine implements DbUpdater {
             createChangelogTable();
 
             List<File> initFiles = getInitScripts();
-            for (File file : initFiles) {
-                markScript(getScriptName(file), true);
+            try {
+                for (File file : initFiles) {
+                    markScript(getScriptName(file), true);
+                }
+            } finally {
+                prepareScripts();
             }
-
-            prepareScripts();
 
             return;
         }
