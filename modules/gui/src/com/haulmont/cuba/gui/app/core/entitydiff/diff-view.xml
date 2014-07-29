@@ -3,29 +3,26 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<window
-        xmlns="http://schemas.haulmont.com/cuba/5.2/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/5.2/window.xsd"
         class="com.haulmont.cuba.gui.app.core.entitydiff.EntityDiffViewer"
-        messagesPack="com.haulmont.cuba.gui.app.core.entitydiff"
-        >
+        messagesPack="com.haulmont.cuba.gui.app.core.entitydiff">
 
     <dsContext>
         <collectionDatasource id="snapshotsDs" class="com.haulmont.cuba.core.entity.EntitySnapshot"
                               view="entitySnapshot.browse"
-                              datasourceClass="com.haulmont.cuba.gui.app.core.entitydiff.EntitySnapshotsDatasource">
-        </collectionDatasource>
+                              datasourceClass="com.haulmont.cuba.gui.app.core.entitydiff.EntitySnapshotsDatasource"/>
 
         <datasource id="entityDiffDs"
                     class="com.haulmont.cuba.core.entity.diff.EntityDiff"
                     view="_local"
-                    datasourceClass="com.haulmont.cuba.gui.app.core.entitydiff.EntityDiffDatasource">
-        </datasource>
+                    allowCommit="false"
+                    datasourceClass="com.haulmont.cuba.gui.app.core.entitydiff.EntityDiffDatasource"/>
 
         <collectionDatasource id="diffDs"
                               class="com.haulmont.cuba.core.entity.diff.EntityPropertyDiff"
                               view="_local"
-                              datasourceClass="com.haulmont.cuba.gui.app.core.entitydiff.DiffTreeDatasource">
-        </collectionDatasource>
+                              allowCommit="false"
+                              datasourceClass="com.haulmont.cuba.gui.app.core.entitydiff.DiffTreeDatasource"/>
     </dsContext>
 
     <layout>
