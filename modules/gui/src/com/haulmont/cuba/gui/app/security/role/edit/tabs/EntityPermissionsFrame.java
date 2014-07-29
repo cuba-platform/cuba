@@ -5,7 +5,6 @@
 
 package com.haulmont.cuba.gui.app.security.role.edit.tabs;
 
-import com.haulmont.cuba.core.entity.Updatable;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.app.security.role.edit.PermissionUiHelper;
@@ -15,12 +14,12 @@ import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.security.EntityPermissionTargetsDatasource;
 import com.haulmont.cuba.gui.security.RestorablePermissionDatasource;
+import com.haulmont.cuba.gui.security.entity.OperationPermissionTarget;
+import com.haulmont.cuba.gui.security.entity.PermissionVariant;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.Role;
-import com.haulmont.cuba.gui.security.entity.OperationPermissionTarget;
-import com.haulmont.cuba.gui.security.entity.PermissionVariant;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.ObjectUtils;
 
@@ -131,10 +130,6 @@ public class EntityPermissionsFrame extends AbstractFrame {
 
         public EntityOp getOperation() {
             return operation;
-        }
-
-        public Label getOperationLabel() {
-            return operationLabel;
         }
 
         public void setControlVisible(boolean visible) {
@@ -455,6 +450,7 @@ public class EntityPermissionsFrame extends AbstractFrame {
                 if (isSingleSelection()) {
                     for (EntityOperationControl control : operationControls) {
                         OperationPermissionTarget target = entityPermissionsTable.getSingleSelected();
+                        //noinspection ConstantConditions
                         if (control.applicableToEntity(target.getEntityClass())) {
                             markItemPermission(control.getMetaProperty(), control.getOperation(), permissionVariant);
                         }
@@ -529,7 +525,7 @@ public class EntityPermissionsFrame extends AbstractFrame {
     }
 
     protected void markTargetPermission(OperationPermissionTarget target,
-                                      String property, EntityOp operation, PermissionVariant permissionVariant) {
+                                        String property, EntityOp operation, PermissionVariant permissionVariant) {
         if (target != null) {
             target.setValue(property, permissionVariant);
             String permissionValue = target.getPermissionValue() + Permission.TARGET_PATH_DELIMETER + operation.getId();
