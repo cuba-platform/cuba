@@ -5,10 +5,7 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.GuiDevelopmentException;
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.components.ValuePathHelper;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import org.apache.commons.lang.ArrayUtils;
 
@@ -66,7 +63,12 @@ public class AssignActionPostInitTask implements ComponentLoader.PostInitTask {
             if (action != null) {
                 this.component.setAction(action);
             } else {
-                throw new GuiDevelopmentException(String.format("Can't find action '%s' in window", id), context.getFullFrameId());
+                String message = "Can't find action " + id;
+                if (Window.Editor.WINDOW_COMMIT.equals(id) || Window.Editor.WINDOW_COMMIT_AND_CLOSE.equals(id))
+                    message += ". This may happen if you are opening an AbstractEditor-based screen by openWindow() method, " +
+                            "for example from the main menu. Use openEditor() method or give the screen a name ended " +
+                            "with '.edit' to open it as editor from the main menu.";
+                throw new GuiDevelopmentException(message, context.getFullFrameId());
             }
         } else {
             throw new GuiDevelopmentException("Empty action name", context.getFullFrameId());
