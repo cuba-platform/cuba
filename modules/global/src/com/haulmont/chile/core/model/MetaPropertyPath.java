@@ -12,6 +12,9 @@ import java.util.Arrays;
 
 /**
  * Object representing a relative path to a property from certain MetaClass
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 public class MetaPropertyPath implements Serializable {
 
@@ -105,6 +108,7 @@ public class MetaPropertyPath implements Serializable {
         return metaProperties[metaProperties.length - 1];
     }
 
+    @Override
     public String toString() {
         StrBuilder sb = new StrBuilder();
         return sb.appendWithSeparators(path, ".").toString();
