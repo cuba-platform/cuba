@@ -33,7 +33,6 @@ import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
-import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.global.UserSession;
 import net.miginfocom.layout.CC;
 import net.miginfocom.swing.MigLayout;
@@ -602,11 +601,9 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         List<Object> columnsOrder = new ArrayList<>();
         for (Table.Column column : this.columnsOrder) {
             if (column.getId() instanceof MetaPropertyPath) {
-                MetaProperty colMetaProperty = ((MetaPropertyPath) column.getId()).getMetaProperty();
-                MetaClass colMetaClass = colMetaProperty.getDomain();
-                if (userSession.isEntityOpPermitted(colMetaClass, EntityOp.READ)
-                        && userSession.isEntityAttrPermitted(
-                        colMetaClass, colMetaProperty.getName(), EntityAttrAccess.VIEW)) {
+                MetaPropertyPath propertyPath = (MetaPropertyPath) column.getId();
+
+                if (security.isEntityPropertyPathPermitted(metaClass, propertyPath.toString(), EntityAttrAccess.VIEW)) {
                     columnsOrder.add(column.getId());
                 }
             } else {

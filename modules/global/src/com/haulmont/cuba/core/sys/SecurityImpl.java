@@ -79,8 +79,15 @@ public class SecurityImpl implements Security {
         MetaProperty chainProperty = propertyChain[chainIndex];
 
         if (chainIndex == propertyChain.length - 1) {
-            return isEntityOpPermitted(metaClass, EntityOp.READ)
-                    && isEntityAttrPermitted(metaClass, chainProperty.getName(), access);
+            if (access == EntityAttrAccess.VIEW) {
+                return isEntityOpPermitted(metaClass, EntityOp.READ)
+                        && isEntityAttrPermitted(metaClass, chainProperty.getName(), access);
+            } else if (access == EntityAttrAccess.MODIFY) {
+                return isEntityOpPermitted(metaClass, EntityOp.UPDATE)
+                        && isEntityAttrPermitted(metaClass, chainProperty.getName(), access);
+            } else {
+                return false;
+            }
         } else {
             MetaClass chainMetaClass = chainProperty.getRange().asClass();
 
