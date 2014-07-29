@@ -285,12 +285,7 @@ public class EntityPermissionsFrame extends AbstractFrame {
                 new EntityOperationControl(EntityOp.READ, "readPermissionVariant", "readOpLabel",
                         "readAllowCheck", "readDenyCheck"),
                 new EntityOperationControl(EntityOp.UPDATE, "updatePermissionVariant", "updateOpLabel",
-                        "updateAllowCheck", "updateDenyCheck") {
-                    @Override
-                    public boolean applicableToEntity(Class javaClass) {
-                        return Updatable.class.isAssignableFrom(javaClass);
-                    }
-                },
+                        "updateAllowCheck", "updateDenyCheck"),
                 new EntityOperationControl(EntityOp.DELETE, "deletePermissionVariant", "deleteOpLabel",
                         "deleteAllowCheck", "deleteDenyCheck") {
                     @Override
