@@ -17,13 +17,12 @@ import java.util.List;
 /**
  * Base class for building client-side integration tests.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class CubaClientTestCase {
 
-    private List<String> entityPackages = new ArrayList<String>();
+    private List<String> entityPackages = new ArrayList<>();
 
     private String viewConfig;
 
@@ -46,6 +45,10 @@ public class CubaClientTestCase {
     protected TestUserSessionSource userSessionSource;
 
     protected TestUuidSource uuidSource;
+
+    protected TestSecurity security;
+
+    protected TestExtendedEntities extendedEntities;
 
     /**
      * Add entities package to build metadata from. Should be invoked by concrete test classes in their @Before method.
@@ -79,6 +82,9 @@ public class CubaClientTestCase {
         userSessionSource = new TestUserSessionSource();
         uuidSource = new TestUuidSource();
 
+        extendedEntities = new TestExtendedEntities(metadata);
+        security = new TestSecurity(userSessionSource, metadata, extendedEntities);
+
         new NonStrictExpectations() {
             {
                 AppBeans.get(Metadata.NAME); result = metadata;
@@ -108,6 +114,14 @@ public class CubaClientTestCase {
                 AppBeans.get(UuidSource.NAME); result = uuidSource;
                 AppBeans.get(UuidSource.class); result = uuidSource;
                 AppBeans.get(UuidSource.NAME, UuidSource.class); result = uuidSource;
+
+                AppBeans.get(Security.NAME); result = security;
+                AppBeans.get(Security.class); result= security;
+                AppBeans.get(Security.NAME, Security.class); result = security;
+
+                AppBeans.get(ExtendedEntities.NAME); result = extendedEntities;
+                AppBeans.get(ExtendedEntities.class); result = extendedEntities;
+                AppBeans.get(ExtendedEntities.NAME, ExtendedEntities.class); result = extendedEntities;
             }
         };
     }
