@@ -16,9 +16,7 @@ import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
-import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
-import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.LogFactory;
@@ -27,6 +25,8 @@ import org.dom4j.Element;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 /**
  * @author gorodnov
@@ -289,6 +289,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
                     } else if (!"timeField".equals(descriptor.attributeValue("field"))) {
                         validator = getDefaultValidator(metaProperty); //In this case we no need to use validator
                     }
+
                     if (validator != null) {
                         component.addValidator(field, validator);
                     }
@@ -300,9 +301,13 @@ public class FieldGroupLoader extends AbstractFieldLoader {
     protected void loadRequired(FieldGroup component, FieldGroup.FieldConfig field) {
         if (!field.isCustom()) {
             boolean isMandatory = false;
-            MetaClass metaClass = metaClass(component, field);
+            MetaClass metaClass = getMetaClass(component, field);
             if (metaClass != null) {
-                MetaProperty metaProperty = metaClass.getPropertyPath(field.getId()).getMetaProperty();
+                MetaPropertyPath propertyPath = metaClass.getPropertyPath(field.getId());
+
+                checkNotNullArgument(propertyPath, "Could not resolve property path '%s' in '%s'", field.getId(), metaClass);
+
+                MetaProperty metaProperty = propertyPath.getMetaProperty();
                 isMandatory = metaProperty.isMandatory();
             }
 
@@ -315,7 +320,11 @@ public class FieldGroupLoader extends AbstractFieldLoader {
 
             String requiredMsg = element.attributeValue("requiredMessage");
             if (StringUtils.isEmpty(requiredMsg) && metaClass != null) {
-                MetaProperty metaProperty = metaClass.getPropertyPath(field.getId()).getMetaProperty();
+                MetaPropertyPath propertyPath = metaClass.getPropertyPath(field.getId());
+
+                checkNotNullArgument(propertyPath, "Could not resolve property path '%s' in '%s'", field.getId(), metaClass);
+
+                MetaProperty metaProperty = propertyPath.getMetaProperty();
                 requiredMsg = messageTools.getDefaultRequiredMessage(metaProperty);
             }
 
@@ -340,9 +349,8 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         FieldGroup fieldGroup = (FieldGroup) component;
         if (fieldGroup.getDatasource() != null) {
             MetaClass metaClass = fieldGroup.getDatasource().getMetaClass();
-            UserSession userSession = userSessionSource.getUserSession();
-            boolean editable = (userSession.isEntityOpPermitted(metaClass, EntityOp.CREATE)
-                    || userSession.isEntityOpPermitted(metaClass, EntityOp.UPDATE));
+            boolean editable = (security.isEntityOpPermitted(metaClass, EntityOp.CREATE)
+                    || security.isEntityOpPermitted(metaClass, EntityOp.UPDATE));
             if (!editable) {
                 ((Component.Editable) component).setEditable(false);
                 return;
@@ -363,18 +371,16 @@ public class FieldGroupLoader extends AbstractFieldLoader {
             }
         } else {
             if (component.isEditable()) {
-                MetaClass metaClass = metaClass(component, field);
-                MetaProperty metaProperty = metaClass.getPropertyPath(field.getId()).getMetaProperty();
+                MetaClass metaClass = getMetaClass(component, field);
+                MetaPropertyPath propertyPath = metaClass.getPropertyPath(field.getId());
 
-                UserSession userSession = userSessionSource.getUserSession();
-                boolean editableFromPermissions = (userSession.isEntityOpPermitted(metaClass, EntityOp.CREATE)
-                        || userSession.isEntityOpPermitted(metaClass, EntityOp.UPDATE))
-                        && userSession.isEntityAttrPermitted(metaClass, metaProperty.getName(), EntityAttrAccess.MODIFY);
+                checkNotNullArgument(propertyPath, "Could not resolve property path '%s' in '%s'", field.getId(), metaClass);
+
+                boolean editableFromPermissions = security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString());
 
                 if (!editableFromPermissions) {
                     component.setEditable(field, false);
-                    boolean visible = userSession.isEntityAttrPermitted(metaClass,
-                            metaProperty.getName(), EntityAttrAccess.VIEW);
+                    boolean visible = security.isEntityAttrReadPermitted(metaClass, propertyPath.toString());
 
                     component.setVisible(field, visible);
                 } else {
@@ -388,7 +394,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         }
     }
 
-    protected MetaClass metaClass(FieldGroup component, FieldGroup.FieldConfig field) {
+    protected MetaClass getMetaClass(FieldGroup component, FieldGroup.FieldConfig field) {
         if (field.isCustom()) return null;
         Datasource datasource;
         if (field.getDatasource() != null) {

@@ -25,9 +25,7 @@ import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.presentations.PresentationsImpl;
-import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.Presentation;
-import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.CompositionLayout;
 import com.haulmont.cuba.web.gui.components.presentations.TablePresentations;
@@ -260,7 +258,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
                     final List<MetaPropertyPath> editableColumns = new ArrayList<>(propertyIds.size());
                     for (final MetaPropertyPath propertyId : propertyIds) {
-                        if (!security.isEntityPropertyPathPermitted(metaClass, propertyId.toString(), EntityAttrAccess.MODIFY)) {
+                        if (!security.isEntityAttrUpdatePermitted(metaClass, propertyId.toString())) {
                             continue;
                         }
 
@@ -642,7 +640,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
     @Override
     public void setDatasource(CollectionDatasource datasource) {
-        UserSession userSession = AppBeans.get(UserSessionSource.class).getUserSession();
         MessageTools messageTools = AppBeans.get(MessageTools.class);
         MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
 
@@ -692,10 +689,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
         component.setContainerDataSource(containerDatasource);
 
-        if (columns == null) {
-            throw new NullPointerException("Columns cannot be null");
-        }
-
         List<MetaPropertyPath> editableColumns = null;
         if (isEditable()) {
             editableColumns = new LinkedList<>();
@@ -718,7 +711,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                 if (editableColumns != null && column.isEditable() && (columnId instanceof MetaPropertyPath)) {
                     MetaPropertyPath propertyPath = ((MetaPropertyPath) columnId);
 
-                    if (security.isEntityPropertyPathPermitted(metaClass, propertyPath.toString(), EntityAttrAccess.MODIFY)) {
+                    if (security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString())) {
                         editableColumns.add(propertyPath);
                     }
                 }
@@ -872,7 +865,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             if (column.getId() instanceof MetaPropertyPath) {
                 String propertyPath = column.getId().toString();
 
-                if (security.isEntityPropertyPathPermitted(metaClass, propertyPath, EntityAttrAccess.VIEW)) {
+                if (security.isEntityAttrReadPermitted(metaClass, propertyPath)) {
                     result.add((MetaPropertyPath)column.getId());
                 }
             }
@@ -1424,10 +1417,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         // Used for properly removing column from table
         protected Column associatedRuntimeColumn;
 
-        protected CustomColumnGenerator(ColumnGenerator columnGenerator) {
-            this.columnGenerator = columnGenerator;
-        }
-
         protected CustomColumnGenerator(ColumnGenerator columnGenerator, @Nullable Column associatedRuntimeColumn) {
             this.columnGenerator = columnGenerator;
             this.associatedRuntimeColumn = associatedRuntimeColumn;
@@ -1718,11 +1707,11 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         protected void applyPermissions(com.haulmont.cuba.gui.components.Component columnComponent) {
             if (columnComponent instanceof DatasourceComponent) {
                 DatasourceComponent dsComponent = (DatasourceComponent) columnComponent;
-                MetaProperty metaProperty = dsComponent.getMetaProperty();
+                MetaPropertyPath propertyPath = dsComponent.getMetaPropertyPath();
 
-                if (metaProperty != null) {
+                if (propertyPath != null) {
                     MetaClass metaClass = dsComponent.getDatasource().getMetaClass();
-                    dsComponent.setEditable(security.isEntityAttrModificationPermitted(metaClass, metaProperty.getName())
+                    dsComponent.setEditable(security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString())
                             && dsComponent.isEditable());
                 }
             }
@@ -1767,6 +1756,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             }
         }
 
+        //noinspection ConstantConditions
         return needReload;
     }
 

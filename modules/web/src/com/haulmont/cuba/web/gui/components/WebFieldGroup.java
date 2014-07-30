@@ -5,14 +5,14 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MessageTools;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -454,12 +454,12 @@ public class WebFieldGroup
     protected void applyPermissions(Component c) {
         if (c instanceof DatasourceComponent) {
             DatasourceComponent dsComponent = (DatasourceComponent) c;
-            MetaProperty metaProperty = dsComponent.getMetaProperty();
+            MetaPropertyPath propertyPath = dsComponent.getMetaPropertyPath();
 
-            if (metaProperty != null) {
+            if (propertyPath != null) {
                 MetaClass metaClass = dsComponent.getDatasource().getMetaClass();
-                dsComponent.setEditable(security.isEntityAttrModificationPermitted(metaClass, metaProperty.getName())
-                        && dsComponent.isEditable());
+                dsComponent.setEditable(dsComponent.isEditable()
+                        && security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString()));
             }
         }
     }

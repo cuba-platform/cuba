@@ -21,6 +21,8 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+
 /**
  * @author krivopustov
  * @version $Id$
@@ -89,6 +91,11 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
         return metaProperty;
     }
 
+    @Override
+    public MetaPropertyPath getMetaPropertyPath() {
+        return metaPropertyPath;
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public void setDatasource(Datasource datasource, String property) {
@@ -101,9 +108,9 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
 
         final MetaClass metaClass = datasource.getMetaClass();
         metaPropertyPath = metaClass.getPropertyPath(property);
-        if (metaPropertyPath == null) {
-            throw new RuntimeException("Metaproperty name is possibly wrong: " + property);
-        }
+
+        checkNotNullArgument(metaPropertyPath, "Could not resolve property path '%s' in '%s'", property, metaClass);
+
         metaProperty = metaPropertyPath.getMetaProperty();
 
         datasource.addListener(

@@ -40,6 +40,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+
 /**
  * @author krivopustov
  * @version $Id$
@@ -72,7 +74,7 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
         setResolution(Resolution.MIN);
 
         Locale locale = AppBeans.get(UserSessionSource.class).getLocale();
-        setDateFormat(Datatypes.getFormatStrings(locale).getDateTimeFormat());
+        setDateFormat(Datatypes.getFormatStringsNN(locale).getDateTimeFormat());
         DesktopComponentsHelper.adjustDateFieldSize(impl);
     }
 
@@ -175,6 +177,7 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
     @Override
     public void requestFocus() {
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 datePicker.requestFocus();
             }
@@ -226,6 +229,11 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
     }
 
     @Override
+    public MetaPropertyPath getMetaPropertyPath() {
+        return metaPropertyPath;
+    }
+
+    @Override
     public void setDatasource(Datasource datasource, String property) {
         this.datasource = datasource;
 
@@ -236,6 +244,9 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
 
         final MetaClass metaClass = datasource.getMetaClass();
         metaPropertyPath = metaClass.getPropertyPath(property);
+
+        checkNotNullArgument(metaPropertyPath, "Could not resolve property path '%s' in '%s'", property, metaClass);
+
         metaProperty = metaPropertyPath.getMetaProperty();
 
         datasource.addListener(
@@ -421,6 +432,7 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
             c.set(Calendar.SECOND, c2.get(Calendar.SECOND));
         }
 
+        //noinspection UnnecessaryLocalVariable
         Date time = c.getTime();
         return time;
     }

@@ -32,8 +32,6 @@ import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.presentations.Presentations;
-import com.haulmont.cuba.security.entity.EntityAttrAccess;
-import com.haulmont.cuba.security.global.UserSession;
 import net.miginfocom.layout.CC;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.StringUtils;
@@ -501,7 +499,6 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
     @Override
     public void setDatasource(final CollectionDatasource datasource) {
-        UserSession userSession = AppBeans.get(UserSessionSource.class).getUserSession();
         MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
 
         final Collection<Object> properties;
@@ -587,7 +584,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                 if (editableColumns != null && column.isEditable() && (property instanceof MetaPropertyPath)) {
                     MetaPropertyPath propertyPath = (MetaPropertyPath) property;
 
-                    if (security.isEntityPropertyPathPermitted(metaClass, propertyPath.toString(), EntityAttrAccess.MODIFY)) {
+                    if (security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString())) {
                         editableColumns.add(propertyPath);
                     }
                 }
@@ -603,7 +600,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
             if (column.getId() instanceof MetaPropertyPath) {
                 MetaPropertyPath propertyPath = (MetaPropertyPath) column.getId();
 
-                if (security.isEntityPropertyPathPermitted(metaClass, propertyPath.toString(), EntityAttrAccess.VIEW)) {
+                if (security.isEntityAttrReadPermitted(metaClass, propertyPath.toString())) {
                     columnsOrder.add(column.getId());
                 }
             } else {
@@ -788,7 +785,6 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                 return newSelection;
             }
 
-            @SuppressWarnings("unchecked")
             private void applySelection(Set<Entity> selection) {
                 int minimalSelectionRowIndex = Integer.MAX_VALUE;
                 if (!selection.isEmpty()) {
@@ -954,11 +950,11 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         protected void applyPermissions(com.haulmont.cuba.gui.components.Component columnComponent) {
             if (columnComponent instanceof DatasourceComponent) {
                 DatasourceComponent dsComponent = (DatasourceComponent) columnComponent;
-                MetaProperty metaProperty = dsComponent.getMetaProperty();
+                MetaPropertyPath propertyPath = dsComponent.getMetaPropertyPath();
 
-                if (metaProperty != null) {
+                if (propertyPath != null) {
                     MetaClass metaClass = dsComponent.getDatasource().getMetaClass();
-                    dsComponent.setEditable(security.isEntityAttrModificationPermitted(metaClass, metaProperty.getName())
+                    dsComponent.setEditable(security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString())
                             && dsComponent.isEditable());
                 }
             }
@@ -1448,7 +1444,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     @Override
     @Nullable
     public Printable getPrintable(Column column) {
-        checkArgument(column != null, "column is null");
+        checkNotNullArgument(column, "column is null");
 
         return getPrintable(String.valueOf(column.getId()));
     }
@@ -1965,14 +1961,17 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         return false;
     }
 
+    @SuppressWarnings("UnusedParameters")
     protected CellProvider getCustomCellView(MetaPropertyPath mpp) {
         return null;
     }
 
+    @SuppressWarnings("UnusedParameters")
     protected CellProvider getCustomCellEditor(MetaPropertyPath mpp) {
         return null;
     }
 
+    @SuppressWarnings("UnusedParameters")
     protected boolean isCustomCellEditable(Entity e, MetaPropertyPath mpp) {
         return false;
     }

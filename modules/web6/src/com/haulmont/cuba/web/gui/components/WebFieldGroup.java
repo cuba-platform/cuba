@@ -5,10 +5,12 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MessageTools;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.DatasourceComponent;
 import com.haulmont.cuba.gui.components.Field;
@@ -273,8 +275,8 @@ public class WebFieldGroup
                         fieldImpl.setCaption(fieldConfig.getCaption());
                     }
 
-                    if (fieldConfig.getDescription() != null && fieldImpl instanceof AbstractComponent) {
-                        ((AbstractComponent) fieldImpl).setDescription(fieldConfig.getDescription());
+                    if (fieldConfig.getDescription() != null) {
+                        fieldImpl.setDescription(fieldConfig.getDescription());
                     }
                 }
 
@@ -428,12 +430,12 @@ public class WebFieldGroup
     protected void applyPermissions(Component c) {
         if (c instanceof DatasourceComponent) {
             DatasourceComponent dsComponent = (DatasourceComponent) c;
-            MetaProperty metaProperty = dsComponent.getMetaProperty();
+            MetaPropertyPath propertyPath = dsComponent.getMetaPropertyPath();
 
-            if (metaProperty != null) {
+            if (propertyPath != null) {
                 MetaClass metaClass = dsComponent.getDatasource().getMetaClass();
-                dsComponent.setEditable(security.isEntityAttrModificationPermitted(metaClass, metaProperty.getName())
-                        && dsComponent.isEditable());
+                dsComponent.setEditable(dsComponent.isEditable()
+                        && security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString()));
             }
         }
     }

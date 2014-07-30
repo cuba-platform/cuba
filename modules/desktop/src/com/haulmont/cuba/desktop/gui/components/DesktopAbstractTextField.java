@@ -31,6 +31,8 @@ import java.awt.event.KeyListener;
 import java.text.ParseException;
 import java.util.Locale;
 
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+
 /**
  * @author artamonov
  * @version $Id$
@@ -144,14 +146,14 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
     }
 
     @Override
-    public <T> T getValue() {
+    public <V> V getValue() {
         String text = getImpl().getText();
         Object rawValue = validateRawValue(text);
         if (rawValue instanceof String) {
             rawValue = StringUtils.trimToNull((String) rawValue);
         }
 
-        return (T) rawValue;
+        return (V) rawValue;
     }
 
     @Override
@@ -186,6 +188,11 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
     }
 
     @Override
+    public MetaPropertyPath getMetaPropertyPath() {
+        return metaPropertyPath;
+    }
+
+    @Override
     public void setDatasource(Datasource datasource, String property) {
         this.datasource = datasource;
 
@@ -196,9 +203,8 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
 
         final MetaClass metaClass = datasource.getMetaClass();
         metaPropertyPath = metaClass.getPropertyPath(property);
-        if (metaPropertyPath == null)
-            throw new DevelopmentException(String.format(
-                    "Property '%s' does not exist in entity '%s'", property, metaClass.getName()));
+
+        checkNotNullArgument(metaPropertyPath, "Could not resolve property path '%s' in '%s'", property, metaClass);
 
         metaProperty = metaPropertyPath.getMetaProperty();
 

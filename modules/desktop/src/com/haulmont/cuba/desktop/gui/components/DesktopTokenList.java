@@ -7,6 +7,7 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
@@ -112,9 +113,15 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
     }
 
     @Override
+    public MetaPropertyPath getMetaPropertyPath() {
+        return null;
+    }
+
+    @Override
     public void setDatasource(Datasource datasource, String property) {
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void setDatasource(CollectionDatasource datasource) {
         this.datasource = datasource;
@@ -758,7 +765,7 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
                 tokensContainer.remove(ownComponent);
 
             if (datasource != null) {
-                List<Instance> usedItems = new ArrayList<Instance>();
+                List<Instance> usedItems = new ArrayList<>();
 
                 // New tokens
                 for (final Object itemId : datasource.getItemIds()) {

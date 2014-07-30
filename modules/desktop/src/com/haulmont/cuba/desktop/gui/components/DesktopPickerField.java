@@ -29,6 +29,8 @@ import javax.swing.text.JTextComponent;
 import java.awt.event.*;
 import java.util.*;
 
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+
 /**
  * @author krivopustov
  * @version $Id$
@@ -247,6 +249,11 @@ public class DesktopPickerField extends DesktopAbstractField<Picker> implements 
     }
 
     @Override
+    public MetaPropertyPath getMetaPropertyPath() {
+        return metaPropertyPath;
+    }
+
+    @Override
     public void setDatasource(Datasource datasource, String property) {
         this.datasource = datasource;
 
@@ -257,6 +264,9 @@ public class DesktopPickerField extends DesktopAbstractField<Picker> implements 
 
         final MetaClass metaClass = datasource.getMetaClass();
         metaPropertyPath = metaClass.getPropertyPath(property);
+
+        checkNotNullArgument(metaPropertyPath, "Could not resolve property path '%s' in '%s'", property, metaClass);
+
         metaProperty = metaPropertyPath.getMetaProperty();
 
         datasource.addListener(
@@ -326,7 +336,8 @@ public class DesktopPickerField extends DesktopAbstractField<Picker> implements 
                     text = ((Instance) value).getInstanceName();
                 } else {
                     Object propertyValue = ((Instance)value).getValue(captionProperty);
-                    MetaProperty property = metadata.getClass(value.getClass()).getProperty(captionProperty);
+                    MetaClass valueClass = metadata.getClassNN(value.getClass());
+                    MetaProperty property = valueClass.getProperty(captionProperty);
 
                     text = metadataTools.format(propertyValue, property);
                 }
@@ -376,7 +387,7 @@ public class DesktopPickerField extends DesktopAbstractField<Picker> implements 
         }
         if (!editable && impl.getEditor() instanceof JTextComponent) {
             JTextComponent editor = (JTextComponent) impl.getEditor();
-            editor.setEditable(editable);
+            editor.setEditable(false);
         }
         updateMissingValueState();
     }

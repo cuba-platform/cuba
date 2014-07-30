@@ -26,7 +26,6 @@ import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.presentations.PresentationsImpl;
-import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.Presentation;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
@@ -35,7 +34,6 @@ import com.haulmont.cuba.web.gui.components.presentations.TablePresentations;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
-import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.ui.FieldWrapper;
 import com.vaadin.data.Item;
@@ -48,7 +46,6 @@ import com.vaadin.terminal.Resource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextArea;
 import org.apache.commons.collections.CollectionUtils;
@@ -275,7 +272,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
                     final List<MetaPropertyPath> editableColumns = new ArrayList<>(propertyIds.size());
                     for (final MetaPropertyPath propertyId : propertyIds) {
-                        if (!security.isEntityPropertyPathPermitted(metaClass, propertyId.toString(), EntityAttrAccess.MODIFY)) {
+                        if (!security.isEntityAttrUpdatePermitted(metaClass, propertyId.toString())) {
                             continue;
                         }
 
@@ -725,10 +722,6 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
         component.setContainerDataSource(containerDatasource);
 
-        if (columns == null) {
-            throw new NullPointerException("Columns cannot be null");
-        }
-
         List<MetaPropertyPath> editableColumns = null;
         if (isEditable()) {
             editableColumns = new LinkedList<>();
@@ -751,7 +744,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                 if (editableColumns != null && column.isEditable() && (columnId instanceof MetaPropertyPath)) {
                     MetaPropertyPath propertyPath = ((MetaPropertyPath) columnId);
 
-                    if (security.isEntityPropertyPathPermitted(metaClass, propertyPath.toString(), EntityAttrAccess.MODIFY)) {
+                    if (security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString())) {
                         editableColumns.add(propertyPath);
                     }
                 }
@@ -866,7 +859,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             if (column.getId() instanceof MetaPropertyPath) {
                 String propertyPath = column.getId().toString();
 
-                if (security.isEntityPropertyPathPermitted(metaClass, propertyPath, EntityAttrAccess.VIEW)) {
+                if (security.isEntityAttrReadPermitted(metaClass, propertyPath)) {
                     result.add((MetaPropertyPath)column.getId());
                 }
             }
@@ -1424,10 +1417,6 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         // Used for properly removing column from table
         protected Column associatedRuntimeColumn;
 
-        protected CustomColumnGenerator(ColumnGenerator columnGenerator) {
-            this.columnGenerator = columnGenerator;
-        }
-
         protected CustomColumnGenerator(ColumnGenerator columnGenerator, @Nullable Column associatedRuntimeColumn) {
             this.columnGenerator = columnGenerator;
             this.associatedRuntimeColumn = associatedRuntimeColumn;
@@ -1476,9 +1465,9 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                                 @Override
                                 public void windowClosed(String actionId) {
                                     if (Window.COMMIT_ACTION_ID.equals(actionId) && window instanceof Window.Editor) {
-                                        Object item = ((Window.Editor) window).getItem();
-                                        if (item instanceof Entity) {
-                                            datasource.updateItem((Entity) item);
+                                        Entity item = ((Window.Editor) window).getItem();
+                                        if (item != null) {
+                                            datasource.updateItem(item);
                                         }
                                     }
                                 }
@@ -1531,26 +1520,6 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         @Override
         protected Entity getItem(Item item, Property property) {
             return ((ItemWrapper) item).getItem();
-        }
-    }
-
-    protected static class ReadOnlyCheckBox extends Embedded {
-        public final Object columnId;
-
-        public ReadOnlyCheckBox(Object columnId) {
-            this.columnId = columnId;
-        }
-
-        public void updateValue(Boolean value) {
-            if (BooleanUtils.isTrue(value)) {
-                setSource(new VersionedThemeResource("components/table/images/checkbox-checked.png"));
-            } else {
-                setSource(new VersionedThemeResource("components/table/images/checkbox-unchecked.png"));
-            }
-        }
-
-        public Object getColumnId() {
-            return columnId;
         }
     }
 
@@ -1679,8 +1648,6 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     protected class WebTableFieldFactory extends com.haulmont.cuba.web.gui.components.AbstractFieldFactory
             implements TableFieldFactory {
 
-        protected Map<MetaClass, CollectionDatasource> optionsDatasources = new HashMap<>();
-
         @Override
         public com.vaadin.ui.Field createField(com.vaadin.data.Container container,
                                                   Object itemId, Object propertyId, Component uiContext) {
@@ -1742,11 +1709,11 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         protected void applyPermissions(com.haulmont.cuba.gui.components.Component columnComponent) {
             if (columnComponent instanceof DatasourceComponent) {
                 DatasourceComponent dsComponent = (DatasourceComponent) columnComponent;
-                MetaProperty metaProperty = dsComponent.getMetaProperty();
+                MetaPropertyPath propertyPath = dsComponent.getMetaPropertyPath();
 
-                if (metaProperty != null) {
+                if (propertyPath != null) {
                     MetaClass metaClass = dsComponent.getDatasource().getMetaClass();
-                    dsComponent.setEditable(security.isEntityAttrModificationPermitted(metaClass, metaProperty.getName())
+                    dsComponent.setEditable(security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString())
                             && dsComponent.isEditable());
                 }
             }
@@ -1790,6 +1757,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             }
         }
 
+        //noinspection ConstantConditions
         return needReload;
     }
 

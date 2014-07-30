@@ -73,44 +73,44 @@ public class SecurityImpl implements Security {
         return isEntityAttrPermitted(metaClass, property, access);
     }
 
-    protected boolean isEntityPropertyPathPermitted(MetaClass metaClass,
-                                                    MetaProperty[] propertyChain, int chainIndex,
-                                                    EntityAttrAccess access) {
+    @Override
+    public boolean isEntityAttrReadPermitted(MetaClass metaClass, String propertyPath) {
+        MetaPropertyPath mpp = metaClass.getPropertyPath(propertyPath);
+        return mpp != null && isEntityAttrReadPermitted(metaClass, mpp.get(), 0);
+    }
+
+    protected boolean isEntityAttrReadPermitted(MetaClass metaClass,
+                                                MetaProperty[] propertyChain, int chainIndex) {
         MetaProperty chainProperty = propertyChain[chainIndex];
 
         if (chainIndex == propertyChain.length - 1) {
-            if (access == EntityAttrAccess.VIEW) {
-                return isEntityOpPermitted(metaClass, EntityOp.READ)
-                        && isEntityAttrPermitted(metaClass, chainProperty.getName(), access);
-            } else if (access == EntityAttrAccess.MODIFY) {
-                return isEntityOpPermitted(metaClass, EntityOp.UPDATE)
-                        && isEntityAttrPermitted(metaClass, chainProperty.getName(), access);
-            } else {
-                return false;
-            }
+            return isEntityOpPermitted(metaClass, EntityOp.READ)
+                    && isEntityAttrPermitted(metaClass, chainProperty.getName(), EntityAttrAccess.VIEW);
         } else {
             MetaClass chainMetaClass = chainProperty.getRange().asClass();
 
-            return isEntityPropertyPathPermitted(chainMetaClass, propertyChain, chainIndex + 1, access);
+            return isEntityAttrReadPermitted(chainMetaClass, propertyChain, chainIndex + 1);
         }
     }
 
     @Override
-    public boolean isEntityPropertyPathPermitted(MetaClass metaClass, String propertyPath, EntityAttrAccess access) {
+    public boolean isEntityAttrUpdatePermitted(MetaClass metaClass, String propertyPath) {
         MetaPropertyPath mpp = metaClass.getPropertyPath(propertyPath);
-        return mpp != null && isEntityPropertyPathPermitted(metaClass, mpp.get(), 0, access);
+        return mpp != null && isEntityAttrUpdatePermitted(metaClass, mpp.get(), 0);
     }
 
-    @Override
-    public boolean isEntityPropertyPathPermitted(Class<?> entityClass, String propertyPath, EntityAttrAccess access) {
-        MetaClass metaClass = metadata.getSession().getClassNN(entityClass);
-        return isEntityPropertyPathPermitted(metaClass, propertyPath, access);
-    }
+    protected boolean isEntityAttrUpdatePermitted(MetaClass metaClass,
+                                                  MetaProperty[] propertyChain, int chainIndex) {
+        MetaProperty chainProperty = propertyChain[chainIndex];
 
-    @Override
-    public boolean isEntityAttrModificationPermitted(MetaClass metaClass, String propertyName) {
-        return (isEntityOpPermitted(metaClass, EntityOp.CREATE) || isEntityOpPermitted(metaClass, EntityOp.UPDATE))
-                && isEntityAttrPermitted(metaClass, propertyName, EntityAttrAccess.MODIFY);
+        if (chainIndex == propertyChain.length - 1) {
+            return (isEntityOpPermitted(metaClass, EntityOp.CREATE) || isEntityOpPermitted(metaClass, EntityOp.UPDATE))
+                    && isEntityAttrPermitted(metaClass, chainProperty.getName(), EntityAttrAccess.MODIFY);
+        } else {
+            MetaClass chainMetaClass = chainProperty.getRange().asClass();
+
+            return isEntityAttrUpdatePermitted(chainMetaClass, propertyChain, chainIndex + 1);
+        }
     }
 
     @Override

@@ -28,6 +28,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+
 /**
  * @author krivopustov
  * @version $Id$
@@ -128,11 +130,9 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
 
         final MetaClass metaClass = datasource.getMetaClass();
         metaPropertyPath = metaClass.getPropertyPath(property);
-        try {
-            metaProperty = metaPropertyPath.getMetaProperty();
-        } catch (ArrayIndexOutOfBoundsException e) {
-            throw new RuntimeException("Metaproperty name is possibly wrong: " + property, e);
-        }
+        checkNotNullArgument(metaPropertyPath, "Could not resolve property path '%s' in '%s'", property, metaClass);
+
+        metaProperty = metaPropertyPath.getMetaProperty();
 
         datasource.addListener(
                 new DsListenerAdapter() {
@@ -198,6 +198,11 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
     @Override
     public MetaProperty getMetaProperty() {
         return metaProperty;
+    }
+
+    @Override
+    public MetaPropertyPath getMetaPropertyPath() {
+        return metaPropertyPath;
     }
 
     @Override
@@ -326,7 +331,7 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
         @Override
         public boolean equals(Object obj) {
             if (obj instanceof DesktopAbstractOptionsField.MapKeyWrapper) {
-                MapKeyWrapper other = (MapKeyWrapper) obj;
+                DesktopAbstractOptionsField.MapKeyWrapper other = (DesktopAbstractOptionsField.MapKeyWrapper) obj;
                 return StringUtils.equals(this.key, other.key);
             }
             return false;
@@ -363,7 +368,7 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
         @Override
         public boolean equals(Object obj) {
             if (obj instanceof DesktopAbstractOptionsField.ObjectWrapper) {
-                ObjectWrapper anotherWrapper = (ObjectWrapper) obj;
+                DesktopAbstractOptionsField.ObjectWrapper anotherWrapper = (DesktopAbstractOptionsField.ObjectWrapper) obj;
                 return ObjectUtils.equals(this.obj, anotherWrapper.obj);
             }
             return false;

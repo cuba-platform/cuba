@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.chile.core.model.MetaProperty;
 
@@ -21,9 +22,16 @@ public interface DatasourceComponent extends Component, Component.HasValue {
     Datasource getDatasource();
 
     /**
+     * @deprecated Use {@link #getMetaPropertyPath()}
      * @return datasource property
      */
+    @Deprecated
     MetaProperty getMetaProperty();
+
+    /**
+     * @return datasource property path
+     */
+    MetaPropertyPath getMetaPropertyPath();
 
     /**
      * Set datasource and its property.

@@ -9,7 +9,6 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.RequiredValueMissingException;
@@ -27,6 +26,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 /**
  * @author abramov
@@ -61,14 +62,18 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
     }
 
     @Override
+    public MetaPropertyPath getMetaPropertyPath() {
+        return metaPropertyPath;
+    }
+
+    @Override
     public void setDatasource(Datasource datasource, String property) {
         this.datasource = datasource;
 
         final MetaClass metaClass = datasource.getMetaClass();
         metaPropertyPath = metaClass.getPropertyPath(property);
-        if (metaPropertyPath == null)
-            throw new DevelopmentException(String.format(
-                    "Property '%s' does not exist in entity '%s'", property, metaClass.getName()));
+
+        checkNotNullArgument(metaPropertyPath, "Could not resolve property path '%s' in '%s'", property, metaClass);
 
         metaProperty = metaPropertyPath.getMetaProperty();
 
@@ -111,8 +116,8 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
     }
 
     @Override
-    public <T> T getValue() {
-        return (T) component.getValue();
+    public <V> V getValue() {
+        return (V) component.getValue();
     }
 
     @Override

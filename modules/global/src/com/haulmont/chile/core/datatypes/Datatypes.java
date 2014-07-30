@@ -109,6 +109,20 @@ public final class Datatypes {
         return instance.getFormat(locale);
     }
 
+    /**
+     * Returns localized format strings.
+     * @param locale selected locale
+     * @return {@link FormatStrings} object. Throws exception if not found.
+     */
+    @Nonnull
+    public static FormatStrings getFormatStringsNN(Locale locale) {
+        FormatStrings format = instance.getFormat(locale);
+        if (format == null) {
+            throw new IllegalArgumentException("Not found format strings for locale " + locale.toLanguageTag());
+        }
+        return format;
+    }
+
     /** For internal use only. Don't call from application code. */
     public static void setFormatStrings(Locale locale, FormatStrings formatStrings) {
         instance.putFormat(locale, formatStrings);

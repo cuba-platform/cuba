@@ -29,6 +29,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+
 /**
  * @author abramov
  * @version $Id$
@@ -60,13 +62,19 @@ public class WebLabel extends WebAbstractComponent<com.vaadin.ui.Label> implemen
     }
 
     @Override
+    public MetaPropertyPath getMetaPropertyPath() {
+        return metaPropertyPath;
+    }
+
+    @Override
     public void setDatasource(Datasource datasource, String property) {
         this.datasource = datasource;
 
         final MetaClass metaClass = datasource.getMetaClass();
         metaPropertyPath = metaClass.getPropertyPath(property);
-        if (metaPropertyPath == null)
-            throw new IllegalArgumentException("Property " + property + " is not found in " + metaClass);
+
+        checkNotNullArgument(metaPropertyPath, "Could not resolve property path '%s' in '%s'", property, metaClass);
+
         metaProperty = metaPropertyPath.getMetaProperty();
 
         switch (metaProperty.getType()) {

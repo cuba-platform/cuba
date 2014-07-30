@@ -65,36 +65,36 @@ public interface Security {
     boolean isEntityAttrPermitted(Class<?> entityClass, String property, EntityAttrAccess access);
 
     /**
-     * Check if current user can modify an entity attribute. It means that he has the following permissions:
+     * Check if current user can modify an entity attribute which is the last part of the path given.
+     * It means that he has the following permissions:
+     *
      * <ul>
-     * <li> {@link EntityOp#CREATE} or {@link EntityOp#UPDATE} on the whole entity </li>
-     * <li> {@link EntityAttrAccess#MODIFY} on the attribute </li>
+     * <li> {@link EntityOp#CREATE} or {@link EntityOp#UPDATE} on the whole entity which the attribute belongs to</li>
+     * <li> {@link EntityAttrAccess#MODIFY} on the attribute</li>
      * </ul>
      *
      * Takes into account original metaclass of entity.
      *
      * @param metaClass    entity meta class
-     * @param propertyName entity attribute's name
-     */
-    boolean isEntityAttrModificationPermitted(MetaClass metaClass, String propertyName);
-
-    /**
-     * Check if current user has permission to an entity attribute path.
-     *
-     * @param entityClass  entity class
      * @param propertyPath entity attribute path
-     * @param access       required access
      */
-    boolean isEntityPropertyPathPermitted(Class<?> entityClass, String propertyPath, EntityAttrAccess access);
+    boolean isEntityAttrUpdatePermitted(MetaClass metaClass, String propertyPath);
 
     /**
-     * Check if current user has permission to an entity attribute path.
+     * Check if current user can read an entity attribute which is the last part of the path given.
+     * It means that he has the following permissions:
+     *
+     * <ul>
+     * <li> {@link EntityOp#READ} on the whole entity which the attribute belongs to</li>
+     * <li> {@link EntityAttrAccess#VIEW} on the attribute</li>
+     * </ul>
+     *
+     * Takes into account original metaclass of entity.
      *
      * @param metaClass    entity meta class
      * @param propertyPath entity attribute path
-     * @param access       required access
      */
-    boolean isEntityPropertyPathPermitted(MetaClass metaClass, String propertyPath, EntityAttrAccess access);
+    boolean isEntityAttrReadPermitted(MetaClass metaClass, String propertyPath);
 
     /**
      * Check if current user has a specific permission.

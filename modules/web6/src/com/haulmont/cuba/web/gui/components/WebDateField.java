@@ -5,9 +5,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.datatypes.FormatStrings;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -34,6 +32,8 @@ import java.sql.Time;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 /**
  * @author abramov
@@ -64,10 +64,7 @@ public class WebDateField extends WebAbstractField<DateFieldWrapper> implements 
         dateField = new com.haulmont.cuba.web.toolkit.ui.DateField();
 
         Locale userLocale = AppBeans.get(UserSessionSource.class).getLocale();
-        FormatStrings formats = Datatypes.getFormatStrings(userLocale);
-        if (formats != null) {
-            dateField.setDateFormat(formats.getDateFormat());
-        }
+        dateField.setDateFormat(Datatypes.getFormatStringsNN(userLocale).getDateFormat());
 
         dateField.setResolution(com.haulmont.cuba.web.toolkit.ui.DateField.RESOLUTION_DAY);
         dateField.setWidth("100%");
@@ -277,16 +274,6 @@ public class WebDateField extends WebAbstractField<DateFieldWrapper> implements 
     }
 
     @Override
-    public void addListener(ValueListener listener) {
-        listeners.add(listener);
-    }
-
-    @Override
-    public void removeListener(ValueListener listener) {
-        listeners.remove(listener);
-    }
-
-    @Override
     public void setValueChangingListener(ValueChangingListener listener) {
     }
 
@@ -295,36 +282,15 @@ public class WebDateField extends WebAbstractField<DateFieldWrapper> implements 
     }
 
     @Override
-    public void addValidator(Validator validator) {
-        validators.add(validator);
-    }
-
-    @Override
-    public void removeValidator(Validator validator) {
-        validators.remove(validator);
-    }
-
-    @Override
-    public Datasource getDatasource() {
-        return datasource;
-    }
-
-    @Override
-    public MetaProperty getMetaProperty() {
-        return metaProperty;
-    }
-
-    @Override
     public void setDatasource(Datasource datasource, String property) {
         this.datasource = datasource;
 
         final MetaClass metaClass = datasource.getMetaClass();
         metaPropertyPath = metaClass.getPropertyPath(property);
-        try {
-            metaProperty = metaPropertyPath.getMetaProperty();
-        } catch (ArrayIndexOutOfBoundsException e) {
-            throw new RuntimeException("Metaproperty name is possibly wrong: " + property, e);
-        }
+
+        checkNotNullArgument(metaPropertyPath, "Could not resolve property path '%s' in '%s'", property, metaClass);
+
+        metaProperty = metaPropertyPath.getMetaProperty();
 
         datasource.addListener(
                 new DsListenerAdapter() {

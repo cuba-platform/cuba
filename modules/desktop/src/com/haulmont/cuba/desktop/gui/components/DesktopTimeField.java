@@ -34,6 +34,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+
 /**
  * @author krivopustov
  * @version $Id$
@@ -158,6 +160,11 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
     }
 
     @Override
+    public MetaPropertyPath getMetaPropertyPath() {
+        return metaPropertyPath;
+    }
+
+    @Override
     public void setDatasource(Datasource datasource, String property) {
         this.datasource = datasource;
 
@@ -168,6 +175,9 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
 
         final MetaClass metaClass = datasource.getMetaClass();
         metaPropertyPath = metaClass.getPropertyPath(property);
+
+        checkNotNullArgument(metaPropertyPath, "Could not resolve property path '%s' in '%s'", property, metaClass);
+
         metaProperty = metaPropertyPath.getMetaProperty();
 
         datasource.addListener(
@@ -245,7 +255,7 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
     @Override
     public <T> T getValue() {
         try {
-            return (T) new SimpleDateFormat(timeFormat).parse((String) impl.getText());
+            return (T) new SimpleDateFormat(timeFormat).parse(impl.getText());
         } catch (ParseException e) {
             return null;
         }

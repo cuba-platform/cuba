@@ -11,6 +11,7 @@ import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.*;
@@ -22,9 +23,6 @@ import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.gui.xml.DeclarativeAction;
 import com.haulmont.cuba.gui.xml.DeclarativeTrackingAction;
-import com.haulmont.cuba.security.entity.EntityAttrAccess;
-import com.haulmont.cuba.security.entity.EntityOp;
-import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -49,10 +47,14 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
     protected Scripting scripting = AppBeans.get(Scripting.NAME);
     protected Resources resources = AppBeans.get(Resources.NAME);
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
-    protected ThemeConstants themeConstants = AppBeans.get(ThemeConstantsManager.class).getConstants();
+
+    protected ThemeConstants themeConstants;
 
     protected ComponentLoader(Context context) {
         this.context = context;
+
+        ThemeConstantsManager themeConstantsManager = AppBeans.get(ThemeConstantsManager.NAME);
+        this.themeConstants = themeConstantsManager.getConstants();
     }
 
     @Override
@@ -106,16 +108,15 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         if (component instanceof Component.Editable) {
             if (component instanceof DatasourceComponent
                     && ((DatasourceComponent) component).getDatasource() != null) {
-                DatasourceComponent dsComponent = (DatasourceComponent) component;
-                if (dsComponent.getMetaProperty() != null) {
-                    MetaClass metaClass = dsComponent.getDatasource().getMetaClass();
-                    // todo artamonov check security according to meta property path with real property class
-                    // #PL-4076
 
-                    if (!security.isEntityAttrModificationPermitted(metaClass, dsComponent.getMetaProperty().getName())) {
-                        ((Component.Editable) component).setEditable(false);
-                        return;
-                    }
+                DatasourceComponent wiredComponent = (DatasourceComponent) component;
+                MetaClass metaClass = wiredComponent.getDatasource().getMetaClass();
+                MetaPropertyPath propertyPath = wiredComponent.getMetaPropertyPath();
+
+                if (propertyPath != null
+                        && !security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString())) {
+                    ((Component.Editable) component).setEditable(false);
+                    return;
                 }
             }
 
@@ -147,17 +148,13 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
     protected boolean loadVisible(Component component, Element element) {
         if (component instanceof DatasourceComponent
                 && ((DatasourceComponent) component).getDatasource() != null) {
-            MetaProperty metaProperty = ((DatasourceComponent) component).getMetaProperty();
 
-            // todo artamonov check security according to meta property path with real property class
-            // #PL-4076
-            MetaClass metaClass = metaProperty != null ?
-                    metaProperty.getDomain() : ((DatasourceComponent) component).getDatasource().getMetaClass();
+            DatasourceComponent wiredComponent = (DatasourceComponent) component;
+            MetaClass metaClass = wiredComponent.getDatasource().getMetaClass();
+            MetaPropertyPath propertyPath = wiredComponent.getMetaPropertyPath();
 
-            UserSession userSession = userSessionSource.getUserSession();
-            if (!userSession.isEntityOpPermitted(metaClass, EntityOp.READ)
-                    || ((metaProperty != null) &&
-                    !userSession.isEntityAttrPermitted(metaClass, metaProperty.getName(), EntityAttrAccess.VIEW))) {
+            if (propertyPath != null
+                    && !security.isEntityAttrReadPermitted(metaClass, propertyPath.toString())) {
                 component.setVisible(false);
                 return false;
             }
@@ -402,7 +399,6 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
             throw new GuiDevelopmentException("No action ID provided", context.getFullFrameId(),
                     "Component ID", component.attributeValue("id"));
         }
-
 
         String trackSelection = element.attributeValue("trackSelection");
         String shortcut = StringUtils.trimToNull(element.attributeValue("shortcut"));
