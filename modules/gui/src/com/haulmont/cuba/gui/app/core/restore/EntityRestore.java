@@ -7,6 +7,7 @@ package com.haulmont.cuba.gui.app.core.restore;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.annotation.EnableRestore;
@@ -117,13 +118,14 @@ public class EntityRestore extends AbstractWindow {
                 List<MetaProperty> metaProperties = new ArrayList<>();
                 for (MetaProperty metaProperty : metaClass.getProperties()) {
                     //don't show embedded & multiple referred entities
-                    if (isEmbedded(metaProperty)) {
+                    Range range = metaProperty.getRange();
+                    if (isEmbedded(metaProperty)
+                        || range.getCardinality().isMany()
+                        || metadataTools.isSystemLevel(metaProperty)
+                        || (range.isClass() && metadataTools.isSystemLevel(range.asClass()))) {
                         continue;
                     }
 
-                    if (metaProperty.getRange().getCardinality().isMany()) {
-                        continue;
-                    }
                     metaProperties.add(metaProperty);
                     Table.Column column = new Table.Column(metaClass.getPropertyPath(metaProperty.getName()));
                     if (!metadataTools.isSystem(metaProperty)) {
