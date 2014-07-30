@@ -18,6 +18,7 @@ public class ToolsImplMozilla extends ToolsImpl {
         if (typeof el.style == "undefined")
             el.style = {};
         el.style.MozUserSelect = "";
+        el.style.setProperty("user-select", "");
     }-*/;
 
     @Override
@@ -25,5 +26,6 @@ public class ToolsImplMozilla extends ToolsImpl {
         if (typeof el.style == "undefined")
             el.style = {};
         el.style.MozUserSelect = "none";
+        el.style.setProperty("user-select", "none");
     }-*/;
 }

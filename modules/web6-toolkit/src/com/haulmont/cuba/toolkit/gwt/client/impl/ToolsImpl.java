@@ -90,20 +90,28 @@ public class ToolsImpl {
                     if (typeof x.style == "undefined")
                         x.style = {};
                     x.style.MozUserSelect = "none";
+                    x.style.setProperty("user-select", "none");
                 });
             } else if ($wnd.jQuery.browser.msie) {
                 walkEach(el, function(x) {
+                    if (typeof x.style == "undefined")
+                        x.style = {};
                     x.onselectstart = document.falseFunction;
+                    x.style.setProperty("user-select", "none");
                 });
             } else if ($wnd.jQuery.browser.webkit) {
                 walkEach(el, function(x) {
                     if (typeof x.style == "undefined")
                         x.style = {};
                     x.style.webkitUserSelect = "none";
+                    x.style.setProperty("user-select", "none");
                 });
             } else {
                 walkEach(el, function(x) {
+                    if (typeof x.style == "undefined")
+                        x.style = {};
                     x.addEventListener("selectstart", document.falseFunction, true);
+                    x.style.setProperty("user-select", "none");
                 });
             }
         } else {
@@ -113,20 +121,28 @@ public class ToolsImpl {
                     if (typeof x.style == "undefined")
                         x.style = {};
                     x.style.MozUserSelect = "";
+                    x.style.setProperty("user-select", "");
                 });
             } else if ($wnd.jQuery.browser.msie) {
                 walkEach(el, function(x) {
+                    if (typeof x.style == "undefined")
+                        x.style = {};
                     x.onselectstart = null;
+                    x.style.setProperty("user-select", "");
                 });
             } else if ($wnd.jQuery.browser.webkit) {
                 walkEach(el, function(x) {
                     if (typeof x.style == "undefined")
                         x.style = {};
                     x.style.webkitUserSelect = "";
+                    x.style.setProperty("user-select", "");
                 });
             } else {
                 walkEach(el, function(x) {
+                    if (typeof x.style == "undefined")
+                        x.style = {};
                     x.removeEventListener("selectstart", document.falseFunction, true);
+                    x.style.setProperty("user-select", "");
                 });
             }
         }

@@ -18,6 +18,7 @@ public class ToolsImplWebkit extends ToolsImpl {
         if (typeof el.style == "undefined")
             el.style = {};
         el.style.webkitUserSelect = "";
+        el.style.setProperty("user-select", "");
     }-*/;
 
     @Override
@@ -25,5 +26,6 @@ public class ToolsImplWebkit extends ToolsImpl {
         if (typeof el.style == "undefined")
             el.style = {};
         el.style.webkitUserSelect = "none";
+        el.style.setProperty("user-select", "none");
     }-*/;
 }
