@@ -117,8 +117,12 @@ public class CreateAction extends AbstractAction implements Action.HasOpenType {
             createPermitted = security.isEntityOpPermitted(metaClass, EntityOp.CREATE);
 
             if (createPermitted && owner.getDatasource() instanceof PropertyDatasource) {
-                MetaProperty metaProperty = ((PropertyDatasource) owner.getDatasource()).getProperty();
-                createPermitted = security.isEntityAttrPermitted(metaClass, metaProperty.getName(), EntityAttrAccess.MODIFY);
+                PropertyDatasource propertyDatasource = (PropertyDatasource) owner.getDatasource();
+
+                MetaClass parentMetaClass = propertyDatasource.getMaster().getMetaClass();
+                MetaProperty metaProperty = propertyDatasource.getProperty();
+
+                createPermitted = security.isEntityAttrPermitted(parentMetaClass, metaProperty.getName(), EntityAttrAccess.MODIFY);
             }
         }
 

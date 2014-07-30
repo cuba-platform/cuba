@@ -111,11 +111,11 @@ public class AddAction extends AbstractAction implements Action.HasOpenType {
         if (owner.getDatasource() instanceof PropertyDatasource) {
             PropertyDatasource datasource = (PropertyDatasource) owner.getDatasource();
 
-            MetaClass metaClass = datasource.getMetaClass();
+            MetaClass parentMetaClass = datasource.getMaster().getMetaClass();
             MetaProperty metaProperty = datasource.getProperty();
 
             Security security = AppBeans.get(Security.NAME);
-            permissionFlag = security.isEntityAttrPermitted(metaClass, metaProperty.getName(), EntityAttrAccess.MODIFY);
+            permissionFlag = security.isEntityAttrPermitted(parentMetaClass, metaProperty.getName(), EntityAttrAccess.MODIFY);
         }
 
         super.setEnabled(permissionFlag);

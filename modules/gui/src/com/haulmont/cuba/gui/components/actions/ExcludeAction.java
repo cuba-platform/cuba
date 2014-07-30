@@ -74,11 +74,12 @@ public class ExcludeAction extends RemoveAction {
 
         CollectionDatasource ds = owner.getDatasource();
         if (ds instanceof PropertyDatasource) {
-            MetaClass parentMetaClass = ((PropertyDatasource) ds).getMaster().getMetaClass();
+            PropertyDatasource propertyDatasource = (PropertyDatasource) ds;
 
-            MetaProperty metaProperty = ((PropertyDatasource) ds).getProperty();
-            removePermitted = security.isEntityAttrPermitted(
-                    parentMetaClass, metaProperty.getName(), EntityAttrAccess.MODIFY);
+            MetaClass parentMetaClass = propertyDatasource.getMaster().getMetaClass();
+            MetaProperty metaProperty = propertyDatasource.getProperty();
+
+            removePermitted = security.isEntityAttrPermitted(parentMetaClass, metaProperty.getName(), EntityAttrAccess.MODIFY);
         }
 
         return removePermitted;

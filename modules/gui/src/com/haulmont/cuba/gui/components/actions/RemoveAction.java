@@ -121,9 +121,11 @@ public class RemoveAction extends ItemTrackingAction {
         if (ds == null) {
             removePermitted = false;
         } else if (ds instanceof PropertyDatasource) {
-            MetaProperty metaProperty = ((PropertyDatasource) ds).getProperty();
+            PropertyDatasource propertyDatasource = (PropertyDatasource) ds;
 
-            MetaClass parentMetaClass = ((PropertyDatasource) ds).getMaster().getMetaClass();
+            MetaClass parentMetaClass = propertyDatasource.getMaster().getMetaClass();
+            MetaProperty metaProperty = propertyDatasource.getProperty();
+
             removePermitted = security.isEntityAttrPermitted(parentMetaClass, metaProperty.getName(), EntityAttrAccess.MODIFY);
 
             if (metaProperty.getRange().getCardinality() != Range.Cardinality.MANY_TO_MANY) {
