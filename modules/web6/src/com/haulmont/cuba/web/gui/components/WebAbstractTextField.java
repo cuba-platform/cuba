@@ -173,7 +173,7 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
 
     @Override
     protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {
-        return new ItemWrapper(datasource, propertyPaths) {
+        return new ItemWrapper(datasource, datasource.getMetaClass(), propertyPaths) {
             private static final long serialVersionUID = -5672549961402055473L;
 
             @Override

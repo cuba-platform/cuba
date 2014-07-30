@@ -10,9 +10,11 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
-import com.haulmont.cuba.security.global.UserSession;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.JoinColumn;
+import javax.persistence.MappedSuperclass;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -263,8 +265,8 @@ public class MetaClassRepresentation {
     }
 
     private static boolean attrPermitted(MetaClass metaClass, String property, EntityAttrAccess entityAttrAccess) {
-        UserSession session = AppBeans.get(UserSessionSource.class).getUserSession();
-        return session.isEntityAttrPermitted(metaClass, property, entityAttrAccess);
+        Security security = AppBeans.get(Security.NAME);
+        return security.isEntityAttrPermitted(metaClass, property, entityAttrAccess);
     }
 
     private static boolean readPermitted(MetaClass metaClass) {
@@ -272,8 +274,8 @@ public class MetaClassRepresentation {
     }
 
     private static boolean entityOpPermitted(MetaClass metaClass, EntityOp entityOp) {
-        UserSession session = AppBeans.get(UserSessionSource.class).getUserSession();
-        return session.isEntityOpPermitted(metaClass, entityOp);
+        Security security = AppBeans.get(Security.NAME);
+        return security.isEntityOpPermitted(metaClass, entityOp);
     }
 
     private static String asHref(MetaClass metaClass) {

@@ -107,8 +107,12 @@ public class UserSettingServiceBean implements UserSettingService {
 
     @Override
     public void copySettings(User fromUser, User toUser) {
-        if (!userSessionSource.getUserSession().isEntityOpPermitted(metadata.getClassNN(UserSetting.class), EntityOp.CREATE))
-            throw new AccessDeniedException(PermissionType.ENTITY_OP, metadata.getClassNN(UserSetting.class).getName());
+        MetaClass metaClass = metadata.getClassNN(UserSetting.class);
+
+        Security security = AppBeans.get(Security.NAME);
+        if (!security.isEntityOpPermitted(metaClass, EntityOp.CREATE)) {
+            throw new AccessDeniedException(PermissionType.ENTITY_OP, metaClass.getName());
+        }
 
         Map<UUID, Presentation> presentationsMap = copyPresentations(fromUser, toUser);
         copyUserFolders(fromUser, toUser, presentationsMap);

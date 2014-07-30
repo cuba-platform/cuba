@@ -26,7 +26,6 @@ import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
-import com.haulmont.cuba.security.global.UserSession;
 import org.apache.openjpa.persistence.jdbc.EmbeddedMapping;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -59,7 +58,7 @@ public class EntityInspectorEditor extends AbstractWindow {
     protected ViewRepository viewRepository;
 
     @Inject
-    protected UserSession userSession;
+    protected Security security;
 
     @Inject
     protected DataSupplier dataSupplier;
@@ -365,18 +364,18 @@ public class EntityInspectorEditor extends AbstractWindow {
                             && (isByteArray(metaProperty) || isUuid(metaProperty)))  {
                         continue;
                     }
-                    addField(metaProperty, item, fieldGroup, isRequired, false, isReadonly, customFields);
+                    addField(metaClass, metaProperty, item, fieldGroup, isRequired, false, isReadonly, customFields);
                     break;
                 case COMPOSITION:
                 case ASSOCIATION:
                     if (metaProperty.getRange().getCardinality().isMany()) {
-                        addTable(metaProperty);
+                        addTable(metaClass, metaProperty);
                     } else {
                         if (isEmbedded(metaProperty)) {
                             Entity propertyValue = item.getValue(metaProperty.getName());
                             addEmbeddedFieldGroup(metaProperty, "", propertyValue);
                         } else {
-                            addField(metaProperty, item, fieldGroup, isRequired, true, isReadonly, customFields);
+                            addField(metaClass, metaProperty, item, fieldGroup, isRequired, true, isReadonly, customFields);
                         }
                     }
                     break;
@@ -425,7 +424,7 @@ public class EntityInspectorEditor extends AbstractWindow {
                             && (isByteArray(metaProperty) || isUuid(metaProperty)))  {
                         continue;
                     }
-                    addField(metaProperty, embeddedItem, fieldGroup, isRequired, false, isReadonly, customFields);
+                    addField(embeddableMetaClass, metaProperty, embeddedItem, fieldGroup, isRequired, false, isReadonly, customFields);
                     break;
                 case COMPOSITION:
                 case ASSOCIATION:
@@ -436,7 +435,7 @@ public class EntityInspectorEditor extends AbstractWindow {
                             Entity propertyValue = embeddedItem.getValue(metaProperty.getName());
                             addEmbeddedFieldGroup(metaProperty, fqn, propertyValue);
                         } else {
-                            addField(metaProperty, embeddedItem, fieldGroup, isRequired, true, isReadonly, customFields);
+                            addField(embeddableMetaClass, metaProperty, embeddedItem, fieldGroup, isRequired, true, isReadonly, customFields);
                         }
                     }
                     break;
@@ -558,10 +557,10 @@ public class EntityInspectorEditor extends AbstractWindow {
      * @param required     true if the field is required
      * @param custom       true if the field is custom
      */
-    private void addField(MetaProperty metaProperty, Entity item,
+    private void addField(MetaClass metaClass, MetaProperty metaProperty, Entity item,
                           FieldGroup fieldGroup, boolean required, boolean custom, boolean readOnly,
                           Collection<FieldGroup.FieldConfig> customFields) {
-        if (!attrViewPermitted(metaProperty))
+        if (!attrViewPermitted(metaClass, metaProperty))
             return;
 
         if ((metaProperty.getType() == MetaProperty.Type.COMPOSITION
@@ -703,11 +702,11 @@ public class EntityInspectorEditor extends AbstractWindow {
     /**
      * Creates a table for the entities in ONE_TO_MANY or MANY_TO_MANY relation with the current one
      */
-    private void addTable(MetaProperty childMeta) {
+    private void addTable(MetaClass metaClass, MetaProperty childMeta) {
         MetaClass meta = childMeta.getRange().asClass();
 
         //don't show empty table if the user don't have permissions on the attribute or the entity
-        if (!attrViewPermitted(childMeta.getDomain(), childMeta.getName()) ||
+        if (!attrViewPermitted(metaClass, childMeta.getName()) ||
                 !entityOpPermitted(meta, EntityOp.READ)) {
             return;
         }
@@ -1036,15 +1035,15 @@ public class EntityInspectorEditor extends AbstractWindow {
         return attrPermitted(metaClass, property, EntityAttrAccess.VIEW);
     }
 
-    private boolean attrViewPermitted(MetaProperty metaProperty) {
-        return attrPermitted(metaProperty.getDomain(), metaProperty.getName(), EntityAttrAccess.VIEW);
+    private boolean attrViewPermitted(MetaClass metaClass, MetaProperty metaProperty) {
+        return attrPermitted(metaClass, metaProperty.getName(), EntityAttrAccess.VIEW);
     }
 
     private boolean attrPermitted(MetaClass metaClass, String property, EntityAttrAccess entityAttrAccess) {
-        return userSession.isEntityAttrPermitted(metaClass, property, entityAttrAccess);
+        return security.isEntityAttrPermitted(metaClass, property, entityAttrAccess);
     }
 
     private boolean entityOpPermitted(MetaClass metaClass, EntityOp entityOp) {
-        return userSession.isEntityOpPermitted(metaClass, entityOp);
+        return security.isEntityOpPermitted(metaClass, entityOp);
     }
 }

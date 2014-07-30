@@ -56,14 +56,14 @@ public class CollectionDsHelper {
 
                 final Range.Cardinality cardinality = range.getCardinality();
                 if (!cardinality.isMany()) {
-                    properties.add(new MetaPropertyPath(metaProperty.getDomain(), metaProperty));
+                    properties.add(new MetaPropertyPath(metaClass, metaProperty));
                 }
             }
 
             // add all non-persistent properties
             for (MetaProperty metaProperty : metaClass.getProperties()) {
                 if (metadataTools.isTransient(metaProperty)) {
-                    properties.add(new MetaPropertyPath(metaProperty.getDomain(), metaProperty));
+                    properties.add(new MetaPropertyPath(metaClass, metaProperty));
                 }
             }
         } else {
@@ -79,7 +79,7 @@ public class CollectionDsHelper {
 
                 final Range.Cardinality cardinality = range.getCardinality();
                 if (!cardinality.isMany()) {
-                    properties.add(new MetaPropertyPath(metaProperty.getDomain(), metaProperty));
+                    properties.add(new MetaPropertyPath(metaClass, metaProperty));
                 }
             }
         }

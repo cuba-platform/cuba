@@ -130,7 +130,7 @@ public class RemoveAction extends ItemTrackingAction {
                 removePermitted = removePermitted && security.isEntityOpPermitted(ds.getMetaClass(), EntityOp.DELETE);
             }
         } else {
-            removePermitted = userSession.isEntityOpPermitted(ds.getMetaClass(), EntityOp.DELETE);
+            removePermitted = security.isEntityOpPermitted(ds.getMetaClass(), EntityOp.DELETE);
         }
 
         return removePermitted;

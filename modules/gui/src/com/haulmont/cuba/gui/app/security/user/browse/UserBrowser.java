@@ -8,6 +8,7 @@ package com.haulmont.cuba.gui.app.security.user.browse;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.app.security.user.edit.UserEditor;
@@ -65,6 +66,9 @@ public class UserBrowser extends AbstractLookup {
     protected UserSession userSession;
 
     @Inject
+    protected Security security;
+
+    @Inject
     protected Metadata metadata;
 
     @Inject
@@ -78,13 +82,13 @@ public class UserBrowser extends AbstractLookup {
         MetaClass userMetaClass = metadata.getClassNN(User.class);
 
         final boolean hasPermissionsToCreateUsers =
-                userSession.isEntityOpPermitted(userMetaClass, EntityOp.CREATE);
+                security.isEntityOpPermitted(userMetaClass, EntityOp.CREATE);
 
         final boolean hasPermissionsToUpdateUsers =
-                userSession.isEntityOpPermitted(userMetaClass, EntityOp.CREATE);
+                security.isEntityOpPermitted(userMetaClass, EntityOp.CREATE);
 
         final boolean hasPermissionsToCreateSettings =
-                userSession.isEntityOpPermitted(metadata.getClassNN(UserSetting.class), EntityOp.CREATE);
+                security.isEntityOpPermitted(metadata.getClassNN(UserSetting.class), EntityOp.CREATE);
 
         usersDs.addListener(new CollectionDsListenerAdapter<User>() {
             @Override

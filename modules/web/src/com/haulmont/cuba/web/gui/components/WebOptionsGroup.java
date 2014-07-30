@@ -67,7 +67,7 @@ public class WebOptionsGroup extends WebAbstractOptionsField<CubaOptionGroup> im
 
     @Override
     protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {
-        return new ItemWrapper(datasource, propertyPaths) {
+        return new ItemWrapper(datasource, datasource.getMetaClass(), propertyPaths) {
 
             @Override
             protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {

@@ -47,7 +47,7 @@ public class WebTimeField extends WebAbstractField<MaskedTextField> implements T
     public WebTimeField() {
         UserSessionSource uss = AppBeans.get(UserSessionSource.NAME);
 
-        timeFormat = Datatypes.getFormatStrings(uss.getLocale()).getTimeFormat();
+        timeFormat = Datatypes.getFormatStringsNN(uss.getLocale()).getTimeFormat();
         resolution = DateField.Resolution.MIN;
         component = new MaskedTextField();
         component.setImmediate(true);
@@ -73,6 +73,7 @@ public class WebTimeField extends WebAbstractField<MaskedTextField> implements T
         attachListener(component);
 
         final Property p = new AbstractPropertyWrapper() {
+            @Override
             public Class<?> getType() {
                 return Date.class;
             }
@@ -235,7 +236,7 @@ public class WebTimeField extends WebAbstractField<MaskedTextField> implements T
 
     @Override
     protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {
-        return new ItemWrapper(datasource, propertyPaths) {
+        return new ItemWrapper(datasource, datasource.getMetaClass(), propertyPaths) {
             private static final long serialVersionUID = 1729450322469573679L;
 
             @Override

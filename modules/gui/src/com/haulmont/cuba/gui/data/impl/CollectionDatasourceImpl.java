@@ -11,10 +11,7 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.AggregationInfo;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
@@ -475,8 +472,10 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
      * @param params    datasource parameters, as described in {@link CollectionDatasource#refresh(java.util.Map)}
      */
     protected void loadData(Map<String, Object> params) {
-        if (!userSession.isEntityOpPermitted(metaClass, EntityOp.READ))
+        Security security = AppBeans.get(Security.NAME);
+        if (!security.isEntityOpPermitted(metaClass, EntityOp.READ)) {
             return;
+        }
 
         String tag = getLoggingTag("CDS");
         StopWatch sw = new Log4JStopWatch(tag, Logger.getLogger(UIPerformanceLogger.class));

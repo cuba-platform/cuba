@@ -20,7 +20,6 @@ import com.haulmont.cuba.gui.filter.QueryFilter;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.PermissionType;
-import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.annotation.Nullable;
@@ -227,11 +226,15 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     }
 
     protected Collection<T> __getCollection() {
-        UserSession userSession = AppBeans.get(UserSessionSource.class).getUserSession();
-        if (!userSession.isEntityOpPermitted(metaProperty.getRange().asClass(), EntityOp.READ)
-                || !userSession.isEntityAttrPermitted(metaProperty.getDomain(), metaProperty.getName(), EntityAttrAccess.VIEW))
+        Security security = AppBeans.get(Security.NAME);
+
+        MetaClass parentMetaClass = masterDs.getMetaClass();
+        MetaClass propertyMetaClass = metaProperty.getRange().asClass();
+
+        if (!security.isEntityOpPermitted(propertyMetaClass, EntityOp.READ)
+                || !security.isEntityAttrPermitted(parentMetaClass, metaProperty.getName(), EntityAttrAccess.VIEW)) {
             return new ArrayList<>(); // Don't use Collections.emptyList() to avoid confusing UnsupportedOperationExceptions
-        else {
+        } else {
             final Instance master = masterDs.getItem();
             return master == null ? null : (Collection<T>) master.getValue(metaProperty.getName());
         }
@@ -243,9 +246,12 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     }
 
     private void checkPermission() {
-        UserSession userSession = AppBeans.get(UserSessionSource.class).getUserSession();
-        if (!userSession.isEntityAttrPermitted(metaProperty.getDomain(), metaProperty.getName(), EntityAttrAccess.MODIFY))
-            throw new AccessDeniedException(PermissionType.ENTITY_ATTR, metaProperty.getDomain() + "." + metaProperty.getName());
+        Security security = AppBeans.get(Security.NAME);
+        MetaClass parentMetaClass = masterDs.getMetaClass();
+
+        if (!security.isEntityAttrPermitted(parentMetaClass, metaProperty.getName(), EntityAttrAccess.MODIFY)) {
+            throw new AccessDeniedException(PermissionType.ENTITY_ATTR, parentMetaClass + "." + metaProperty.getName());
+        }
     }
 
     @Override

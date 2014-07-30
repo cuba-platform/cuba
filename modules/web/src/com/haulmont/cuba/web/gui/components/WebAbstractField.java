@@ -99,7 +99,7 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
     }
 
     protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {
-        return new ItemWrapper(datasource, propertyPaths);
+        return new ItemWrapper(datasource, datasource.getMetaClass(), propertyPaths);
     }
 
     @Override

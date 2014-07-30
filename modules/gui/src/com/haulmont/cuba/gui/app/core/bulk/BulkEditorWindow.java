@@ -62,7 +62,7 @@ public class BulkEditorWindow extends AbstractWindow {
     protected Configuration configuration;
 
     @Inject
-    protected UserSessionSource uss;
+    protected Security security;
 
     @Inject
     protected BoxLayout contentPane;
@@ -171,12 +171,12 @@ public class BulkEditorWindow extends AbstractWindow {
 
             grid.add(label);
 
-            Datasource<Entity> fielDs = datasource;
-            if (metadataTools.isEmbeddable(field.getMetaProperty().getDomain())) {
-                fielDs = datasources.get(field.getParentFqn());
+            Datasource<Entity> fieldDs = datasource;
+            if (metadataTools.isEmbeddable(fieldDs.getMetaClass())) {
+                fieldDs = datasources.get(field.getParentFqn());
             }
 
-            final Field editField = fieldFactory.createField(fielDs, field.getMetaProperty());
+            final Field editField = fieldFactory.createField(fieldDs, field.getMetaProperty());
             if (editField != null) {
                 editField.setFrame(getFrame());
                 editField.setWidth(fieldWidth);
@@ -365,16 +365,16 @@ public class BulkEditorWindow extends AbstractWindow {
         return view;
     }
 
-    protected boolean isPermitted(MetaProperty metaProperty) {
-        return uss.getUserSession().isEntityAttrPermitted(metaProperty.getDomain(), metaProperty.getName(), EntityAttrAccess.MODIFY);
+    protected boolean isPermitted(MetaClass metaClass, MetaProperty metaProperty) {
+        return security.isEntityAttrPermitted(metaClass, metaProperty.getName(), EntityAttrAccess.MODIFY);
     }
 
-    protected boolean isManagedAttribute(MetaProperty metaProperty) {
+    protected boolean isManagedAttribute(MetaClass metaClass, MetaProperty metaProperty) {
         if (metadataTools.isSystem(metaProperty)
                 || metadataTools.isTransient(metaProperty)
                 || metadataTools.isSystemLevel(metaProperty)
                 || metaProperty.getRange().getCardinality().isMany()
-                || !isPermitted(metaProperty)) {
+                || !isPermitted(metaClass, metaProperty)) {
             return false;
         }
 
@@ -388,7 +388,7 @@ public class BulkEditorWindow extends AbstractWindow {
                 return false;
             }
 
-            if (!uss.getUserSession().isEntityOpPermitted(propertyMetaClass, EntityOp.READ)) {
+            if (!security.isEntityOpPermitted(propertyMetaClass, EntityOp.READ)) {
                 return false;
             }
         }
@@ -400,7 +400,7 @@ public class BulkEditorWindow extends AbstractWindow {
         List<ManagedField> managedFields = new ArrayList<>();
         // sort Fields
         for (MetaProperty metaProperty : metaClass.getProperties()) {
-            if (isManagedAttribute(metaProperty)) {
+            if (isManagedAttribute(metaClass, metaProperty)) {
                 String propertyCaption = messageTools.getPropertyCaption(metaProperty);
                 if (!metadataTools.isEmbedded(metaProperty)) {
                     managedFields.add(new ManagedField(metaProperty.getName(), metaProperty,
@@ -420,8 +420,9 @@ public class BulkEditorWindow extends AbstractWindow {
 
     protected List<ManagedField> getManagedFields(MetaProperty embeddedProperty, String fqnPrefix, String localePrefix) {
         List<ManagedField> managedFields = new ArrayList<>();
-        for (MetaProperty metaProperty : embeddedProperty.getRange().asClass().getProperties()) {
-            if (isManagedAttribute(metaProperty)) {
+        MetaClass metaClass = embeddedProperty.getRange().asClass();
+        for (MetaProperty metaProperty : metaClass.getProperties()) {
+            if (isManagedAttribute(metaClass, metaProperty)) {
                 String fqn = fqnPrefix + "." + metaProperty.getName();
                 String localeName = localePrefix + " " + messageTools.getPropertyCaption(metaProperty);
 

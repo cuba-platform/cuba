@@ -24,7 +24,6 @@ import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.EntityOp;
-import com.haulmont.cuba.security.global.UserSession;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -361,7 +360,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
     }
 
     protected boolean entityOpPermitted(MetaClass metaClass, EntityOp entityOp) {
-        UserSession session = AppBeans.get(UserSessionSource.class).getUserSession();
-        return session.isEntityOpPermitted(metaClass, entityOp);
+        Security security = AppBeans.get(Security.NAME);
+        return security.isEntityOpPermitted(metaClass, entityOp);
     }
 }

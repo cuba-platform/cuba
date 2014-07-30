@@ -32,7 +32,7 @@ public abstract class AbstractDatasource<T extends Entity> implements Datasource
     protected boolean allowCommit = true;
     protected CommitMode commitMode = CommitMode.DATASTORE;
     protected Datasource parentDs;
-    protected Metadata metadata = AppBeans.get(Metadata.class);
+    protected Metadata metadata = AppBeans.get(Metadata.NAME);
 
     protected List<DatasourceListener> dsListeners = new ArrayList<>();
 

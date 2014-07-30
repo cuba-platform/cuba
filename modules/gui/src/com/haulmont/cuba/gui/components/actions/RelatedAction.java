@@ -32,20 +32,22 @@ public class RelatedAction extends AbstractAction {
 
     protected final ListComponent owner;
     protected final MetaProperty metaProperty;
+    protected final MetaClass metaClass;
 
     protected String screen;
     protected String filterCaption;
 
     protected WindowManager.OpenType openType;
 
-    protected ExtendedEntities extendedEntities = AppBeans.get(ExtendedEntities.class);
+    protected ExtendedEntities extendedEntities = AppBeans.get(ExtendedEntities.NAME);
     protected RelatedEntitiesService relatedEntitiesService = AppBeans.get(RelatedEntitiesService.NAME);
     protected RelatedEntitiesAssistant assistant = AppBeans.get(RelatedEntitiesAssistant.NAME);
 
-    public RelatedAction(String id, ListComponent owner, MetaProperty metaProperty) {
+    public RelatedAction(String id, ListComponent owner, MetaClass metaClass, MetaProperty metaProperty) {
         super(id);
 
         this.owner = owner;
+        this.metaClass = metaClass;
         this.metaProperty = metaProperty;
 
         MessageTools tools = AppBeans.get(MessageTools.NAME);
@@ -137,7 +139,7 @@ public class RelatedAction extends AbstractAction {
                 parentIds.add((UUID) e.getId());
             }
 
-            String parentMetaClass = metaProperty.getDomain().getFullName();
+            String parentMetaClass = metaClass.getFullName();
 
             return relatedEntitiesService.getRelatedIds(parentIds, parentMetaClass, metaProperty.getName());
         }

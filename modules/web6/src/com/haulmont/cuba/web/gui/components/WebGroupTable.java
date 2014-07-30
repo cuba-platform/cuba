@@ -258,7 +258,7 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
 
         @Override
         protected ItemWrapper createItemWrapper(Object item) {
-            return new ItemWrapper(item, properties) {
+            return new ItemWrapper(item, datasource.getMetaClass(), properties) {
                 @Override
                 protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
                     return new TablePropertyWrapper(item, propertyPath);

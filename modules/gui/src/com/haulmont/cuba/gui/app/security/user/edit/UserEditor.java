@@ -79,6 +79,9 @@ public class UserEditor extends AbstractEditor<User> {
     protected Metadata metadata;
 
     @Inject
+    protected Security security;
+
+    @Inject
     protected PasswordEncryption passwordEncryption;
 
     @Inject
@@ -356,7 +359,7 @@ public class UserEditor extends AbstractEditor<User> {
         @Override
         public boolean isEnabled() {
             return super.isEnabled() &&
-                    userSession.isEntityOpPermitted(
+                    security.isEntityOpPermitted(
                             metadata.getSession().getClass(UserRole.class), EntityOp.CREATE);
         }
 
@@ -429,7 +432,7 @@ public class UserEditor extends AbstractEditor<User> {
         @Override
         public boolean isEnabled() {
             return super.isEnabled() &&
-                    userSession.isEntityOpPermitted(
+                    security.isEntityOpPermitted(
                             metadata.getSession().getClass(UserRole.class), EntityOp.DELETE);
         }
     }
@@ -474,7 +477,7 @@ public class UserEditor extends AbstractEditor<User> {
         @Override
         public boolean isEnabled() {
             return super.isEnabled() &&
-                    userSession.isEntityOpPermitted(
+                    security.isEntityOpPermitted(
                             metadata.getSession().getClass(UserSubstitution.class), EntityOp.CREATE);
         }
     }

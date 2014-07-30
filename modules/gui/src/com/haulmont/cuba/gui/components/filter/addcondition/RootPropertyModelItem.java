@@ -69,7 +69,7 @@ public class RootPropertyModelItem implements ModelItem {
                     }
 
                     MetaProperty metaProperty = mpp.getMetaProperty();
-                    if (modelPropertiesFilter.isPropertyFilterAllowed(metaProperty)) {
+                    if (modelPropertiesFilter.isPropertyFilterAllowed(metaClass, metaProperty)) {
                         modelItems.add(new PropertyModelItem(null, metaProperty, descriptorMessages, descriptor, descriptorBuilder));
                     }
                 }

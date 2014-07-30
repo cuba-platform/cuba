@@ -78,6 +78,7 @@ public class EditorWindowDelegate extends WindowDelegate {
                 return messages.getMainMessage(commitAndCloseButtonExists ? "actions.Save" : "actions.Ok");
             }
 
+            @Override
             public void actionPerform(Component component) {
                 if (!commitAndCloseButtonExists) {
                     editor.commitAndClose();
@@ -156,7 +157,8 @@ public class EditorWindowDelegate extends WindowDelegate {
         ds.setItem(item);
         ((DatasourceImplementation) ds).setModified(false);
 
-        if (userSessionSource.getUserSession().isEntityOpPermitted(ds.getMetaClass(), EntityOp.UPDATE)) {
+        Security security = AppBeans.get(Security.NAME);
+        if (security.isEntityOpPermitted(ds.getMetaClass(), EntityOp.UPDATE)) {
             LockInfo lockInfo = lockService.lock(getMetaClassForLocking(ds).getName(), item.getId().toString());
             if (lockInfo == null) {
                 justLocked = true;

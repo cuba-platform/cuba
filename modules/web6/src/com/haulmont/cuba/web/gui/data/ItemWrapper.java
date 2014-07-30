@@ -30,13 +30,15 @@ public class ItemWrapper implements Item, Item.PropertySetChangeNotifier {
     private List<PropertySetChangeListener> listeners = new ArrayList<>();
 
     protected Object item;
+    protected MetaClass metaClass;
 
     public ItemWrapper(Object item, MetaClass metaClass) {
-        this(item, AppBeans.get(MetadataTools.class).getPropertyPaths(metaClass));
+        this(item, metaClass, AppBeans.get(MetadataTools.class).getPropertyPaths(metaClass));
     }
 
-    public ItemWrapper(Object item, Collection<MetaPropertyPath> properties) {
+    public ItemWrapper(Object item, MetaClass metaClass, Collection<MetaPropertyPath> properties) {
         this.item = item;
+        this.metaClass = metaClass;
 
         for (MetaPropertyPath property : properties) {
             this.properties.put(property, createPropertyWrapper(item, property));
@@ -68,7 +70,7 @@ public class ItemWrapper implements Item, Item.PropertySetChangeNotifier {
             return properties.get(id);
         } else if (id instanceof MetaProperty) {
             final MetaProperty metaProperty = (MetaProperty) id;
-            return properties.get(new MetaPropertyPath(metaProperty.getDomain(), metaProperty));
+            return properties.get(new MetaPropertyPath(metaClass, metaProperty));
         } else {
             throw new UnsupportedOperationException("Unsupported item property: " + id);
         }

@@ -33,11 +33,13 @@ public class WebTwinColumn extends WebAbstractOptionsField<TwinColumnSelect> imp
             @Override
             public void setPropertyDataSource(Property newDataSource) {
                 super.setPropertyDataSource(new PropertyAdapter(newDataSource) {
+                    @Override
                     public Object getValue() {
                         final Object o = itemProperty.getValue();
                         return getKeyFromValue(o);
                     }
 
+                    @Override
                     public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
                         final Object v = getValueFromKey(newValue);
                         itemProperty.setValue(v);
@@ -68,7 +70,7 @@ public class WebTwinColumn extends WebAbstractOptionsField<TwinColumnSelect> imp
 
     @Override
     protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {
-        return new ItemWrapper(datasource, propertyPaths) {
+        return new ItemWrapper(datasource, datasource.getMetaClass(), propertyPaths) {
             private static final long serialVersionUID = 5362825971897808953L;
 
             @Override

@@ -7,6 +7,7 @@ package com.haulmont.cuba.gui.app.security.group.browse;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.CreateAction;
@@ -23,7 +24,6 @@ import com.haulmont.cuba.security.entity.Constraint;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.StringUtils;
 
 import javax.inject.Inject;
@@ -61,10 +61,10 @@ public class GroupBrowser extends AbstractWindow {
     protected TabSheet tabsheet;
 
     @Inject
-    protected UserSession userSession;
+    protected Metadata metadata;
 
     @Inject
-    protected Metadata metadata;
+    protected Security security;
 
     @Inject
     protected ComponentsFactory componentsFactory;
@@ -154,8 +154,8 @@ public class GroupBrowser extends AbstractWindow {
 
             @Override
             public void refreshState() {
-                setEnabled(userSession.isEntityOpPermitted(metadata.getSession().getClass(User.class),
-                        EntityOp.UPDATE));
+                MetaClass userMetaClass = metadata.getSession().getClass(User.class);
+                setEnabled(security.isEntityOpPermitted(userMetaClass, EntityOp.UPDATE));
             }
         });
 
@@ -172,7 +172,7 @@ public class GroupBrowser extends AbstractWindow {
         );
 
         final boolean hasPermissionsToCreateGroup =
-                userSession.isEntityOpPermitted(metadata.getSession().getClass(Group.class),
+                security.isEntityOpPermitted(metadata.getSession().getClass(Group.class),
                         EntityOp.CREATE);
 
         // enable actions if group is selected

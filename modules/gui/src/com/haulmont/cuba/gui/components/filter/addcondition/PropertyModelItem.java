@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.gui.components.filter.addcondition;
 
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
@@ -66,8 +67,9 @@ public class PropertyModelItem implements ModelItem {
 
                 ModelPropertiesFilter propertiesFilter = new ModelPropertiesFilter();
 
-                for (MetaProperty property : metaProperty.getRange().asClass().getProperties()) {
-                    if (propertiesFilter.isPropertyFilterAllowed(property)) {
+                MetaClass metaClass = metaProperty.getRange().asClass();
+                for (MetaProperty property : metaClass.getProperties()) {
+                    if (propertiesFilter.isPropertyFilterAllowed(metaClass, property)) {
                         modelItems.add(new PropertyModelItem(this, property, descriptorMessages, null, descriptorBuilder));
                     }
                 }

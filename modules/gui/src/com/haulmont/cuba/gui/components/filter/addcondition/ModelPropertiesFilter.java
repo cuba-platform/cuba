@@ -5,13 +5,13 @@
 
 package com.haulmont.cuba.gui.components.filter.addcondition;
 
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.MetadataTools;
-import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
-import com.haulmont.cuba.security.global.UserSession;
 
 /**
  * @author artamonov
@@ -19,20 +19,18 @@ import com.haulmont.cuba.security.global.UserSession;
  */
 public class ModelPropertiesFilter {
 
-    private UserSession userSession;
     private final MessageTools messageTools;
     private final MetadataTools metadataTools;
+    private final Security security;
 
     public ModelPropertiesFilter() {
-        userSession = AppBeans.get(UserSessionSource.class).getUserSession();
+        security = AppBeans.get(Security.NAME);
         messageTools = AppBeans.get(MessageTools.class);
         metadataTools = AppBeans.get(MetadataTools.class);
     }
 
-    public boolean isPropertyFilterAllowed(MetaProperty property) {
-        // todo artamonov correctly check permissions
-        // #PL-4076
-        return userSession.isEntityAttrPermitted(property.getDomain(), property.getName(), EntityAttrAccess.VIEW)
+    public boolean isPropertyFilterAllowed(MetaClass metaClass, MetaProperty property) {
+        return security.isEntityAttrPermitted(metaClass, property.getName(), EntityAttrAccess.VIEW)
                 && !metadataTools.isSystemLevel(property)           // exclude system level attributes
                 && metadataTools.isPersistent(property)             // exclude transient properties
                 && messageTools.hasPropertyCaption(property)        // exclude not localized properties (they are usually not for end user)

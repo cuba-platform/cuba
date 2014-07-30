@@ -69,7 +69,7 @@ public class WebTwinColumn extends WebAbstractOptionsField<CubaTwinColSelect> im
 
     @Override
     protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {
-        return new ItemWrapper(datasource, propertyPaths) {
+        return new ItemWrapper(datasource, datasource.getMetaClass(), propertyPaths) {
 
             @Override
             protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {

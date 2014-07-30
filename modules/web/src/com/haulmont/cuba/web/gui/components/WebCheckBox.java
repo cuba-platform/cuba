@@ -29,7 +29,7 @@ public class WebCheckBox extends WebAbstractField<com.vaadin.ui.CheckBox> implem
 
     @Override
     protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {
-        return new ItemWrapper(datasource, propertyPaths) {
+        return new ItemWrapper(datasource, datasource.getMetaClass(), propertyPaths) {
             @Override
             protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
                 return new PropertyWrapper(item, propertyPath) {

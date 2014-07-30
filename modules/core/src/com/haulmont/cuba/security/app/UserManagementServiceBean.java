@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.security.app;
 
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.EmailerAPI;
 import com.haulmont.cuba.core.app.ServerConfig;
@@ -67,9 +68,15 @@ public class UserManagementServiceBean implements UserManagementService {
     @Inject
     protected MessageTools messageTools;
 
+    @Inject
+    protected Security security;
+
     protected void checkUpdatePermission(Class entityClass) {
-        if (!userSessionSource.getUserSession().isEntityOpPermitted(metadata.getClassNN(entityClass), EntityOp.UPDATE))
-            throw new AccessDeniedException(PermissionType.ENTITY_OP, metadata.getClassNN(entityClass).getName());
+        MetaClass metaClass = metadata.getClassNN(entityClass);
+
+        if (!security.isEntityOpPermitted(metaClass, EntityOp.UPDATE)) {
+            throw new AccessDeniedException(PermissionType.ENTITY_OP, metaClass.getName());
+        }
     }
 
     @Override

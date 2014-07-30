@@ -15,7 +15,6 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AbstractViewRepository;
 import com.haulmont.cuba.security.entity.EntityOp;
-import com.haulmont.cuba.security.global.UserSession;
 import freemarker.template.TemplateException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -52,6 +51,9 @@ public class DataServiceController {
 
     @Inject
     protected UserSessionSource userSessionSource;
+
+    @Inject
+    protected Security security;
 
     @Inject
     protected Metadata metadata;
@@ -430,7 +432,6 @@ public class DataServiceController {
     }
 
     private boolean entityOpPermitted(MetaClass metaClass, EntityOp entityOp) {
-        UserSession session = userSessionSource.getUserSession();
-        return session.isEntityOpPermitted(metaClass, entityOp);
+        return security.isEntityOpPermitted(metaClass, entityOp);
     }
 }

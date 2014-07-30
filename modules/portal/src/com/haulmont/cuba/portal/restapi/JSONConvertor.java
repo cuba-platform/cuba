@@ -29,7 +29,6 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
-import com.haulmont.cuba.security.global.UserSession;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -392,8 +391,8 @@ public class JSONConvertor implements Convertor {
     }
 
     protected boolean attrPermitted(MetaClass metaClass, String property, EntityAttrAccess entityAttrAccess) {
-        UserSession session = AppBeans.get(UserSessionSource.class).getUserSession();
-        return session.isEntityAttrPermitted(metaClass, property, entityAttrAccess);
+        Security security = AppBeans.get(Security.NAME);
+        return security.isEntityAttrPermitted(metaClass, property, entityAttrAccess);
     }
 
     protected boolean readPermitted(MetaClass metaClass) {
@@ -405,8 +404,8 @@ public class JSONConvertor implements Convertor {
     }
 
     protected boolean entityOpPermitted(MetaClass metaClass, EntityOp entityOp) {
-        UserSession session = AppBeans.get(UserSessionSource.class).getUserSession();
-        return session.isEntityOpPermitted(metaClass, entityOp);
+        Security security = AppBeans.get(Security.NAME);
+        return security.isEntityOpPermitted(metaClass, entityOp);
     }
 
     protected MetaClass propertyMetaClass(MetaProperty property) {

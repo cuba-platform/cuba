@@ -113,7 +113,7 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
     }
 
     protected ItemWrapper createItemWrapper(Object item) {
-        return new ItemWrapper(item, properties);
+        return new ItemWrapper(item, datasource.getMetaClass(), properties);
     }
 
     @Override

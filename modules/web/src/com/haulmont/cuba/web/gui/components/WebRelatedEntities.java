@@ -9,16 +9,14 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.ScreensHelper;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.RelatedEntities;
+import com.haulmont.cuba.gui.components.RelatedEntitiesSecurity;
 import com.haulmont.cuba.gui.components.actions.RelatedAction;
 import com.haulmont.cuba.gui.config.WindowInfo;
-import com.haulmont.cuba.gui.components.RelatedEntitiesSecurity;
-import com.haulmont.cuba.security.global.UserSession;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.Label;
 import org.apache.commons.lang.StringUtils;
@@ -121,13 +119,10 @@ public class WebRelatedEntities extends WebPopupButton implements RelatedEntitie
                 excludePattern = Pattern.compile(excludeRegex);
             }
 
-            UserSessionSource uss = AppBeans.get(UserSessionSource.NAME);
-            UserSession userSession = uss.getUserSession();
-
             for (MetaProperty metaProperty : metaClass.getProperties()) {
-                if (RelatedEntitiesSecurity.isSuitableProperty(userSession, metaProperty, metaClass)
+                if (RelatedEntitiesSecurity.isSuitableProperty(metaProperty, metaClass)
                         && (excludePattern == null || !excludePattern.matcher(metaProperty.getName()).matches())) {
-                    addNavigationAction(metaProperty);
+                    addNavigationAction(metaClass, metaProperty);
                 }
             }
 
@@ -138,14 +133,14 @@ public class WebRelatedEntities extends WebPopupButton implements RelatedEntitie
         }
     }
 
-    protected void addNavigationAction(MetaProperty metaProperty) {
+    protected void addNavigationAction(MetaClass metaClass, MetaProperty metaProperty) {
         // check if browse screen available
         PropertyOption propertyOption = propertyOptions.get(metaProperty.getName());
 
         WindowInfo defaultScreen = ScreensHelper.getAvailableBrowseScreen(metaProperty.getRange().asClass());
         if (defaultScreen != null
                 || (propertyOption != null && StringUtils.isNotEmpty(propertyOption.getScreen()))) {
-            RelatedAction relatedAction = new RelatedAction("related" + actionOrder.size(), listComponent, metaProperty);
+            RelatedAction relatedAction = new RelatedAction("related" + actionOrder.size(), listComponent, metaClass, metaProperty);
             relatedAction.setOpenType(openType);
 
             if (defaultScreen != null) {

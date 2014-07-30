@@ -29,7 +29,6 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
-import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.*;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
@@ -146,6 +145,7 @@ public class XMLConvertor implements Convertor {
         return doc;
     }
 
+    @Override
     public void write(HttpServletResponse response, Object o) throws IOException {
         Document doc = (Document) o;
         response.setContentType(MIME_STR);
@@ -164,6 +164,7 @@ public class XMLConvertor implements Convertor {
         }
     }
 
+    @Override
     public CommitRequest parseCommitRequest(String content) {
         try {
             DOMImplementationRegistry registry = DOMImplementationRegistry.newInstance();
@@ -630,8 +631,8 @@ public class XMLConvertor implements Convertor {
     }
 
     protected boolean attrPermitted(MetaClass metaClass, String property, EntityAttrAccess entityAttrAccess) {
-        UserSession session = AppBeans.get(UserSessionSource.class).getUserSession();
-        return session.isEntityAttrPermitted(metaClass, property, entityAttrAccess);
+        Security security = AppBeans.get(Security.NAME);
+        return security.isEntityAttrPermitted(metaClass, property, entityAttrAccess);
     }
 
     protected boolean readPermitted(MetaClass metaClass) {
@@ -643,7 +644,7 @@ public class XMLConvertor implements Convertor {
     }
 
     protected boolean entityOpPermitted(MetaClass metaClass, EntityOp entityOp) {
-        UserSession session = AppBeans.get(UserSessionSource.class).getUserSession();
-        return session.isEntityOpPermitted(metaClass, entityOp);
+        Security security = AppBeans.get(Security.NAME);
+        return security.isEntityOpPermitted(metaClass, entityOp);
     }
 }

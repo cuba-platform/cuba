@@ -21,8 +21,10 @@ import java.util.Map;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean("cuba_ExtendedEntities")
+@ManagedBean(ExtendedEntities.NAME)
 public class ExtendedEntities {
+
+    public static final String NAME = "cuba_ExtendedEntities";
 
     @Inject
     protected Metadata metadata;

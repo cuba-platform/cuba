@@ -8,9 +8,10 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Category;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
-import com.haulmont.cuba.security.global.UserSession;
 
 /**
  * @author artamonov
@@ -21,14 +22,14 @@ public final class RelatedEntitiesSecurity {
     private RelatedEntitiesSecurity() {
     }
 
-    public static boolean isSuitableProperty(UserSession userSession,
-                                             MetaProperty metaProperty, MetaClass effectiveMetaClass) {
+    public static boolean isSuitableProperty(MetaProperty metaProperty, MetaClass effectiveMetaClass) {
         if (metaProperty.getRange().isClass()
                 && !Category.class.isAssignableFrom(metaProperty.getJavaType())) {
 
+            Security security = AppBeans.get(Security.NAME);
             // check security
-            if (userSession.isEntityAttrPermitted(effectiveMetaClass, metaProperty.getName(), EntityAttrAccess.VIEW)
-                    && userSession.isEntityOpPermitted(metaProperty.getRange().asClass(), EntityOp.READ)) {
+            if (security.isEntityAttrPermitted(effectiveMetaClass, metaProperty.getName(), EntityAttrAccess.VIEW)
+                    && security.isEntityOpPermitted(metaProperty.getRange().asClass(), EntityOp.READ)) {
                 return true;
             }
         }

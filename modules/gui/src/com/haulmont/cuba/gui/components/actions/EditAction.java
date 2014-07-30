@@ -10,6 +10,7 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Action;
@@ -114,8 +115,9 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
         CollectionDatasource ds = owner.getDatasource();
 
         if (ds != null && !captionInitialized) {
+            Security security = AppBeans.get(Security.NAME);
             final String messagesPackage = AppConfig.getMessagesPack();
-            if (userSession.isEntityOpPermitted(ds.getMetaClass(), EntityOp.UPDATE)) {
+            if (security.isEntityOpPermitted(ds.getMetaClass(), EntityOp.UPDATE)) {
                 setCaption(messages.getMessage(messagesPackage, "actions.Edit"));
             } else {
                 setCaption(messages.getMessage(messagesPackage, "actions.View"));
@@ -132,8 +134,10 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
      * Check permissions for Action
      */
     protected boolean isPermitted() {
+        Security security = AppBeans.get(Security.NAME);
+
         return owner.getDatasource() != null &&
-                userSession.isEntityOpPermitted(owner.getDatasource().getMetaClass(), EntityOp.READ);
+                security.isEntityOpPermitted(owner.getDatasource().getMetaClass(), EntityOp.READ);
     }
 
     @Override

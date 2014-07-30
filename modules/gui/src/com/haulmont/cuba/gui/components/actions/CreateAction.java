@@ -8,10 +8,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.ExtendedEntities;
-import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowConfig;
@@ -114,12 +111,14 @@ public class CreateAction extends AbstractAction implements Action.HasOpenType {
         if (owner.getDatasource() == null) {
             createPermitted = false;
         } else {
-            createPermitted = userSession.isEntityOpPermitted(owner.getDatasource().getMetaClass(), EntityOp.CREATE);
+            Security security = AppBeans.get(Security.NAME);
+
+            MetaClass metaClass = owner.getDatasource().getMetaClass();
+            createPermitted = security.isEntityOpPermitted(metaClass, EntityOp.CREATE);
 
             if (createPermitted && owner.getDatasource() instanceof PropertyDatasource) {
                 MetaProperty metaProperty = ((PropertyDatasource) owner.getDatasource()).getProperty();
-                createPermitted = userSession.isEntityAttrPermitted(
-                        metaProperty.getDomain(), metaProperty.getName(), EntityAttrAccess.MODIFY);
+                createPermitted = security.isEntityAttrPermitted(metaClass, metaProperty.getName(), EntityAttrAccess.MODIFY);
             }
         }
 

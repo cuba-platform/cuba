@@ -83,7 +83,7 @@ public class WebTable extends WebAbstractTable<CubaTable> {
 
         @Override
         protected ItemWrapper createItemWrapper(Object item) {
-            return new ItemWrapper(item, properties) {
+            return new ItemWrapper(item, datasource.getMetaClass(), properties) {
                 @Override
                 protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
                     return new TablePropertyWrapper(item, propertyPath);
@@ -159,7 +159,7 @@ public class WebTable extends WebAbstractTable<CubaTable> {
 
         @Override
         protected ItemWrapper createItemWrapper(Object item) {
-            return new ItemWrapper(item, properties) {
+            return new ItemWrapper(item, datasource.getMetaClass(), properties) {
                 @Override
                 protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
                     return new TablePropertyWrapper(item, propertyPath);

@@ -11,7 +11,6 @@ import com.haulmont.cuba.core.app.DomainDescriptionService;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AbstractViewRepository;
 import com.haulmont.cuba.security.entity.EntityOp;
-import com.haulmont.cuba.security.global.UserSession;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -80,8 +79,8 @@ public class DomainDescriptionServiceBean implements DomainDescriptionService {
     }
 
     private boolean readPermitted(MetaClass metaClass) {
-        UserSession session = userSessionSource.getUserSession();
-        return session.isEntityOpPermitted(metaClass, EntityOp.READ);
+        Security security = AppBeans.get(Security.NAME);
+        return security.isEntityOpPermitted(metaClass, EntityOp.READ);
     }
 
     public String[] getAvailableBasicTypes() {

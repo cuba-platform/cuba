@@ -8,10 +8,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.ExtendedEntities;
-import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowConfig;
@@ -112,9 +109,13 @@ public class AddAction extends AbstractAction implements Action.HasOpenType {
         permissionFlag = true;
 
         if (owner.getDatasource() instanceof PropertyDatasource) {
-            MetaProperty metaProperty = ((PropertyDatasource) owner.getDatasource()).getProperty();
-            permissionFlag = userSession.isEntityAttrPermitted(
-                    metaProperty.getDomain(), metaProperty.getName(), EntityAttrAccess.MODIFY);
+            PropertyDatasource datasource = (PropertyDatasource) owner.getDatasource();
+
+            MetaClass metaClass = datasource.getMetaClass();
+            MetaProperty metaProperty = datasource.getProperty();
+
+            Security security = AppBeans.get(Security.NAME);
+            permissionFlag = security.isEntityAttrPermitted(metaClass, metaProperty.getName(), EntityAttrAccess.MODIFY);
         }
 
         super.setEnabled(permissionFlag);

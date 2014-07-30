@@ -14,11 +14,11 @@ import com.haulmont.cuba.core.entity.diff.EntityClassPropertyDiff;
 import com.haulmont.cuba.core.entity.diff.EntityCollectionPropertyDiff;
 import com.haulmont.cuba.core.entity.diff.EntityDiff;
 import com.haulmont.cuba.core.entity.diff.EntityPropertyDiff;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.data.impl.AbstractTreeDatasource;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
-import com.haulmont.cuba.security.global.UserSession;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,13 +54,13 @@ public class DiffTreeDatasource extends AbstractTreeDatasource<EntityPropertyDif
         if (propertyDiff != null) {
             // check security
             String propName = propertyDiff.getViewProperty().getName();
-            MetaClass propMetaClass = AppBeans.get(Metadata.class).getSession().getClass(propertyDiff.getMetaClassName());
-            UserSession userSession = AppBeans.get(UserSessionSource.class).getUserSession();
-            if (!userSession.isEntityOpPermitted(propMetaClass, EntityOp.READ))
-                return diffNode;
+            MetaClass propMetaClass = metadata.getSession().getClass(propertyDiff.getMetaClassName());
 
-            if (!userSession.isEntityAttrPermitted(propMetaClass, propName, EntityAttrAccess.VIEW))
-                return diffNode;
+            Security security = AppBeans.get(Security.NAME);
+            if (!security.isEntityOpPermitted(propMetaClass, EntityOp.READ)
+                || !security.isEntityAttrPermitted(propMetaClass, propName, EntityAttrAccess.VIEW)) {
+                return null;
+            }
 
             diffNode = new Node<>(propertyDiff);
             if (propertyDiff instanceof EntityClassPropertyDiff) {

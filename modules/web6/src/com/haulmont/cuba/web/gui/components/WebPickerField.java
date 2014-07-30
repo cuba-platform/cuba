@@ -31,7 +31,10 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author abramov
@@ -214,7 +217,7 @@ public class WebPickerField
 
         this.metaClass = metaProperty.getRange().asClass();
 
-        final MetaPropertyPath propertyPath = new MetaPropertyPath(metaProperty.getDomain(), metaProperty);
+        final MetaPropertyPath propertyPath = new MetaPropertyPath(metaClass, metaProperty);
         final ItemWrapper wrapper = createDatasourceWrapper(datasource, Collections.singleton(propertyPath));
         final Property itemProperty = wrapper.getItemProperty(propertyPath);
 
@@ -262,7 +265,7 @@ public class WebPickerField
 
     @Override
     protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {
-        return new ItemWrapper(datasource, propertyPaths) {
+        return new ItemWrapper(datasource, datasource.getMetaClass(), propertyPaths) {
             @Override
             protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
                 return new PropertyWrapper(item, propertyPath) {
