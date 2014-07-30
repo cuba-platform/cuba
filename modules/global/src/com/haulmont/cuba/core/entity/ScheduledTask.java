@@ -10,6 +10,7 @@ import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.app.scheduled.MethodParameterInfo;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
@@ -33,6 +34,7 @@ import java.util.List;
 @Entity(name = "sys$ScheduledTask")
 @Table(name = "SYS_SCHEDULED_TASK")
 @NamePattern("#name|beanName,methodName,className,scriptName")
+@SystemLevel
 public class ScheduledTask extends BaseUuidEntity implements Updatable, SoftDelete {
 
     private static final long serialVersionUID = -2330884126746644884L;

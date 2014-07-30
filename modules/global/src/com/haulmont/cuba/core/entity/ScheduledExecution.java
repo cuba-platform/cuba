@@ -6,6 +6,7 @@
 package com.haulmont.cuba.core.entity;
 
 import com.haulmont.chile.core.annotations.MetaProperty;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
@@ -19,6 +20,7 @@ import java.util.Date;
  */
 @Entity(name = "sys$ScheduledExecution")
 @Table(name = "SYS_SCHEDULED_EXECUTION")
+@SystemLevel
 public class ScheduledExecution extends BaseUuidEntity {
 
     private static final long serialVersionUID = -3891325977986519747L;
