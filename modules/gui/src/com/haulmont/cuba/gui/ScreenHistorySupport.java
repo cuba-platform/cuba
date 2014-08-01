@@ -32,12 +32,12 @@ import java.util.*;
  */
 public class ScreenHistorySupport {
 
-    private Set<String> screenIds = new HashSet<String>();
+    protected Set<String> screenIds = new HashSet<>();
 
-    private Metadata metadata;
-    private Messages messages;
-    private UserSessionSource uss;
-    private Configuration configuration;
+    protected Metadata metadata;
+    protected Messages messages;
+    protected UserSessionSource uss;
+    protected Configuration configuration;
 
     public ScreenHistorySupport() {
         metadata = AppBeans.get(Metadata.class);
