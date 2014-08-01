@@ -208,6 +208,8 @@ public class AbstractViewRepository implements ViewRepository {
 
     @SuppressWarnings("unchecked")
     protected View deployDefaultView(MetaClass metaClass, String name) {
+        List<MetaProperty> defferedMinimalProperties = null;
+
         Class<? extends Entity> javaClass = metaClass.getJavaClass();
         View view = new View(javaClass, name, false);
         if (View.LOCAL.equals(name)) {
@@ -221,13 +223,39 @@ public class AbstractViewRepository implements ViewRepository {
         } else if (View.MINIMAL.equals(name)) {
             Collection<MetaProperty> metaProperties = metadata.getTools().getNamePatternProperties(metaClass, true);
             for (MetaProperty metaProperty : metaProperties) {
-                view.addProperty(metaProperty.getName());
+                if (metaProperty.getRange().isClass()
+                        && !metaProperty.getRange().getCardinality().isMany()) {
+
+                    Map<String, View> views = storage.get(metaClass);
+                    View refMinimalView = (views == null ? null : views.get(View.MINIMAL));
+
+                    if (refMinimalView != null) {
+                        view.addProperty(metaProperty.getName(), refMinimalView);
+                    } else {
+                        if (defferedMinimalProperties == null) {
+                            defferedMinimalProperties = new ArrayList<>();
+                        }
+
+                        defferedMinimalProperties.add(metaProperty);
+                    }
+                } else {
+                    view.addProperty(metaProperty.getName());
+                }
             }
         } else {
             throw new UnsupportedOperationException("Unsupported default view: " + name);
         }
 
         storeView(metaClass, view);
+
+        // init deffered minimal view properties
+        if (defferedMinimalProperties != null) {
+            for (MetaProperty defferedProperty : defferedMinimalProperties) {
+                View referenceMinimalView = deployDefaultView(defferedProperty.getRange().asClass(), View.MINIMAL);
+                view.addProperty(defferedProperty.getName(), referenceMinimalView);
+            }
+        }
+
         return view;
     }
 
