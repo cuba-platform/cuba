@@ -304,20 +304,24 @@ public class MetadataTools {
         String pattern = (String) metaClass.getAnnotations().get(NamePattern.class.getName());
         if (pattern == null && useOriginal) {
             MetaClass original = metadata.getExtendedEntities().getOriginalMetaClass(metaClass);
-            if (original != null)
+            if (original != null) {
                 pattern = (String) original.getAnnotations().get(NamePattern.class.getName());
+            }
         }
         if (!StringUtils.isBlank(pattern)) {
             String value = StringUtils.substringAfter(pattern, "|");
             String[] fields = StringUtils.splitPreserveAllTokens(value, ",");
             for (String field : fields) {
-                MetaProperty property = metaClass.getProperty(field);
-                if (property != null)
-                    properties.add(metaClass.getProperty(field));
-                else
+                String fieldName = StringUtils.trim(field);
+
+                MetaProperty property = metaClass.getProperty(fieldName);
+                if (property != null) {
+                    properties.add(metaClass.getProperty(fieldName));
+                } else {
                     throw new DevelopmentException(
                             String.format("Property '%s' is not found in %s", field, metaClass.toString()),
                             "NamePattern", pattern);
+                }
             }
         }
         return properties;
