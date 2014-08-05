@@ -47,7 +47,7 @@
         </fieldGroup>
 
         <split id="split" orientation="horizontal" pos="50" width="100%">
-            <vbox id="roles-panel" expand="rolesTable" spacing="true" margin="false;true;false;false"
+            <vbox id="roles-panel" expand="rolesTable" spacing="true" margin="false,true,false,false"
                   height="100%" width="100%">
                 <label value="msg://roles" stylename="h2"/>
                 <buttonsPanel>
@@ -69,7 +69,7 @@
                 </table>
             </vbox>
 
-            <vbox id="subst-panel" expand="substTable" spacing="true" margin="false;false;false;true"
+            <vbox id="subst-panel" expand="substTable" spacing="true" margin="false,false,false,true"
                   height="100%" width="100%">
                 <label value="msg://substUsers" stylename="h2"/>
                 <buttonsPanel>
