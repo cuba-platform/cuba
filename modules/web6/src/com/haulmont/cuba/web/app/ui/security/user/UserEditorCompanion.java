@@ -19,10 +19,10 @@ import javax.inject.Inject;
 public class UserEditorCompanion implements UserEditor.Companion {
 
     @Inject
-    protected Configuration configuration;
+    protected WebAuthConfig config;
 
     @Override
     public void initPasswordField(PasswordField passwordField) {
-        passwordField.setRequired(!configuration.getConfig(WebAuthConfig.class).getUseActiveDirectory());
+        passwordField.setRequired(!config.getUseActiveDirectory());
     }
 }

@@ -42,7 +42,7 @@ public class UserSettingsTools {
     protected UserSettingService userSettingService;
 
     @Inject
-    protected Configuration configuration;
+    protected WebConfig webConfig;
 
     public AppWindow.Mode loadAppWindowMode() {
         String s = userSettingService.loadSetting(ClientType.WEB, "appWindowMode");
@@ -53,7 +53,6 @@ public class UserSettingsTools {
                 return AppWindow.Mode.TABBED;
             }
         }
-        WebConfig webConfig = configuration.getConfig(WebConfig.class);
         return AppWindow.Mode.valueOf(webConfig.getAppWindowMode().toUpperCase());
     }
 
@@ -66,7 +65,6 @@ public class UserSettingsTools {
         if (s != null) {
             return s;
         }
-        WebConfig webConfig = configuration.getConfig(WebConfig.class);
         return webConfig.getAppWindowTheme();
     }
 

@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.core;
 
+import com.haulmont.cuba.core.config.TestBeanToInjectConfig;
 import com.haulmont.cuba.core.config.TestConfig;
 import com.haulmont.cuba.core.entity.Config;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -161,6 +162,20 @@ public class ConfigProviderTest extends CubaTestCase
         Method boolMethod = TestConfig.class.getMethod("getBoolProp");
         Class<?> boolMethodReturnType = boolMethod.getReturnType();
         assertEquals(Boolean.TYPE, boolMethodReturnType);
+    }
+
+    public void testInjectedConfig() throws Exception {
+        TestBeanToInjectConfig bean = AppBeans.get(TestBeanToInjectConfig.class);
+        TestConfig config = bean.getConfig();
+        assertNotNull(config);
+        assertTrue(config.getBooleanPropDef());
+    }
+
+    public void testInjectedConfigBySetter() throws Exception {
+        TestBeanToInjectConfig bean = AppBeans.get(TestBeanToInjectConfig.class);
+        TestConfig config = bean.getConfig2();
+        assertNotNull(config);
+        assertTrue(config.getBooleanPropDef());
     }
 
     private void cleanup() {

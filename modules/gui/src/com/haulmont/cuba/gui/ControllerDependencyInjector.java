@@ -5,7 +5,9 @@
 
 package com.haulmont.cuba.gui;
 
+import com.haulmont.cuba.core.config.Config;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.AbstractFrame;
 import com.haulmont.cuba.gui.components.Action;
@@ -185,6 +187,10 @@ public class ControllerDependencyInjector {
             // Injecting a Theme
             ThemeConstantsManager themeManager = AppBeans.get(ThemeConstantsManager.NAME);
             return themeManager.getConstants();
+
+        } else if (Config.class.isAssignableFrom(type)) {
+            //noinspection unchecked
+            return AppBeans.get(Configuration.class).getConfig((Class<? extends Config>) type);
 
         } else {
             Object instance;

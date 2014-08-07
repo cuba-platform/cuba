@@ -12,6 +12,7 @@ import com.haulmont.cuba.core.global.PasswordEncryption;
 import com.haulmont.cuba.core.sys.AbstractAppContextLoader;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.AppContextLoader;
+import com.haulmont.cuba.core.sys.CubaDefaultListableBeanFactory;
 import com.haulmont.cuba.core.sys.persistence.PersistenceConfigProcessor;
 import com.haulmont.cuba.testsupport.TestContext;
 import com.haulmont.cuba.testsupport.TestDataSource;
@@ -23,6 +24,7 @@ import org.apache.commons.lang.text.StrSubstitutor;
 import org.apache.commons.lang.text.StrTokenizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
@@ -169,7 +171,12 @@ public abstract class CubaTestCase extends TestCase {
         List<String> locations = tokenizer.getTokenList();
         locations.add(getTestSpringConfig());
 
-        ClassPathXmlApplicationContext appContext = new ClassPathXmlApplicationContext();
+        ClassPathXmlApplicationContext appContext = new ClassPathXmlApplicationContext() {
+            @Override
+            protected DefaultListableBeanFactory createBeanFactory() {
+                return new CubaDefaultListableBeanFactory(getInternalParentBeanFactory());
+            }
+        };
 
         appContext.setConfigLocations(locations.toArray(new String[locations.size()]));
         appContext.setValidating(false);

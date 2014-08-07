@@ -38,7 +38,10 @@ public class AnonymousSessionHolder {
     private Log log = LogFactory.getLog(getClass());
 
     @Inject
-    protected Configuration configuration;
+    protected GlobalConfig globalConfig;
+
+    @Inject
+    protected PortalConfig portalConfig;
 
     @Inject
     protected PasswordEncryption passwordEncryption;
@@ -68,9 +71,8 @@ public class AnonymousSessionHolder {
     }
 
     private UserSession loginAsAnonymous() {
-        PortalConfig config = configuration.getConfig(PortalConfig.class);
-        String login = config.getAnonymousUserLogin();
-        String password = config.getTrustedClientPassword();
+        String login = portalConfig.getAnonymousUserLogin();
+        String password = portalConfig.getTrustedClientPassword();
 
         GlobalConfig globalConfig = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class);
         Collection<Locale> locales = globalConfig.getAvailableLocales().values();
@@ -99,7 +101,6 @@ public class AnonymousSessionHolder {
     }
 
     private String getPortalNetworkLocation() {
-        GlobalConfig globalConfig = configuration.getConfig(GlobalConfig.class);
         return globalConfig.getWebHostName() + ":" +
                globalConfig.getWebPort() + "/" +
                globalConfig.getWebContextName();

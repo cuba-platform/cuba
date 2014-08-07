@@ -60,7 +60,7 @@ public class UserManagementServiceBean implements UserManagementService {
     protected Resources resources;
 
     @Inject
-    protected Configuration configuration;
+    protected ServerConfig serverConfig;
 
     @Inject
     protected UserSessionSource userSessionSource;
@@ -158,7 +158,6 @@ public class UserManagementServiceBean implements UserManagementService {
         Map<User, String> modifiedUsers = updateUserPasswords(userIds, true);
 
         // email templates
-        ServerConfig serverConfig = configuration.getConfig(ServerConfig.class);
         String resetPasswordBodyTemplate = serverConfig.getResetPasswordEmailBodyTemplate();
         String resetPasswordSubjectTemplate = serverConfig.getResetPasswordEmailSubjectTemplate();
 

@@ -37,7 +37,7 @@ public class AbstractAppContextLoader {
         StrTokenizer tokenizer = new StrTokenizer(configProperty);
         String[] locations = tokenizer.getTokenArray();
 
-        ClassPathXmlApplicationContext appContext = new ClassPathXmlApplicationContext();
+        ClassPathXmlApplicationContext appContext = new CubaClassPathXmlApplicationContext();
 
         appContext.setConfigLocations(locations);
         appContext.setValidating(false);

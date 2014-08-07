@@ -5,7 +5,6 @@
 
 package com.haulmont.cuba.desktop.theme.impl;
 
-import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.desktop.DesktopConfig;
 import com.haulmont.cuba.desktop.DesktopResources;
@@ -48,7 +47,7 @@ public class DesktopThemeLoaderImpl implements DesktopThemeLoader {
     private static final String BORDER_TAG = "border";
 
     @Inject
-    private Configuration configuration;
+    private DesktopConfig config;
 
     @Inject
     private Resources resources;
@@ -59,7 +58,7 @@ public class DesktopThemeLoaderImpl implements DesktopThemeLoader {
     private static final Pattern DECIMAL_COLOR_PATTERN = Pattern.compile("^(\\d+)\\s+(\\d+)\\s+(\\d+)$");
 
     public DesktopTheme loadTheme(String themeName) {
-        final String themeLocations = configuration.getConfig(DesktopConfig.class).getResourceLocations();
+        String themeLocations = config.getResourceLocations();
         StrTokenizer tokenizer = new StrTokenizer(themeLocations);
         String[] locationList = tokenizer.getTokenArray();
 

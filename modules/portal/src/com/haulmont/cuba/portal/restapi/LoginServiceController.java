@@ -47,7 +47,7 @@ public class LoginServiceController {
     protected Authentication authentication;
 
     @Inject
-    protected Configuration configuration;
+    protected GlobalConfig globalConfig;
 
     @Inject
     protected UserSessionService userSessionService;
@@ -149,7 +149,6 @@ public class LoginServiceController {
     protected void setSessionInfo(HttpServletRequest request, UserSession userSession) {
         userSessionService.setSessionAddress(userSession.getId(), request.getRemoteAddr());
 
-        GlobalConfig globalConfig = configuration.getConfig(GlobalConfig.class);
         String serverInfo = "REST API (" +
                 globalConfig.getWebHostName() + ":" +
                 globalConfig.getWebPort() + "/" +

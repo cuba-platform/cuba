@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Copyright (c) 2008-2014 Haulmont. All rights reserved.
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
@@ -9,6 +9,9 @@ import com.haulmont.cuba.core.config.Config;
 import com.haulmont.cuba.core.config.ConfigHandler;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.sys.ConfigPersisterImpl;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
 import javax.annotation.ManagedBean;
 import java.lang.reflect.Proxy;
@@ -18,12 +21,11 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Server-side implementation of the {@link Configuration} interface.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id
  */
 @ManagedBean(Configuration.NAME)
-public class ConfigurationImpl implements Configuration {
+public class ConfigurationImpl implements Configuration, BeanFactoryPostProcessor {
 
     protected Map<Class, ConfigHandler> cache = new ConcurrentHashMap<>();
 
@@ -37,5 +39,10 @@ public class ConfigurationImpl implements Configuration {
         ClassLoader classLoader = configInterface.getClassLoader();
         Object proxy = Proxy.newProxyInstance(classLoader, new Class[]{configInterface}, handler);
         return configInterface.cast(proxy);
+    }
+
+    @Override
+    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+        // empty, just to make sure this bean is instantiated before others
     }
 }

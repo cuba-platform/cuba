@@ -5,6 +5,7 @@
 package com.haulmont.cuba.web.sys;
 
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.CubaXmlWebApplicationContext;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
 import org.springframework.context.ApplicationContext;
@@ -69,5 +70,10 @@ public class CubaDispatcherServlet extends DispatcherServlet {
         }
 
         return wac;
+    }
+
+    @Override
+    public Class<?> getContextClass() {
+        return CubaXmlWebApplicationContext.class;
     }
 }

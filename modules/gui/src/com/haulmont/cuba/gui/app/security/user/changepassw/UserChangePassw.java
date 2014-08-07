@@ -43,7 +43,7 @@ public class UserChangePassw extends AbstractEditor {
     protected Datasource<User> userDs;
 
     @Inject
-    protected Configuration configuration;
+    protected ClientConfig clientConfig;
 
     @Inject
     protected PasswordEncryption passwordEncryption;
@@ -111,7 +111,6 @@ public class UserChangePassw extends AbstractEditor {
                 errors.add(confirmPasswField, getMessage("passwordsDoNotMatch"));
 
             } else {
-                ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
                 if (clientConfig.getPasswordPolicyEnabled()) {
                     String regExp = clientConfig.getPasswordPolicyRegExp();
                     if (!password.matches(regExp)) {
