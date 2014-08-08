@@ -7,6 +7,7 @@ package com.haulmont.cuba.core.sys.listener;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.annotation.Listeners;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.listener.*;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.logging.Log;
@@ -151,44 +152,55 @@ public class EntityListenerManager {
         }
     }
 
-    private List getListener(Class<? extends BaseEntity> entityClass, EntityListenerType type) {
+    private List<?> getListener(Class<? extends BaseEntity> entityClass, EntityListenerType type) {
         Key key = new Key(entityClass, type);
 
         if (!cache.containsKey(key)) {
             List listeners = findListener(entityClass, type);
             cache.put(key, listeners);
             return listeners;
-        }
-        else {
-            List listeners = cache.get(key);
-            return listeners;
+        } else {
+            return cache.get(key);
         }
     }
 
-    private List findListener(Class<? extends BaseEntity> entityClass, EntityListenerType type) {
+    private List<?> findListener(Class<? extends BaseEntity> entityClass, EntityListenerType type) {
         log.trace("get listener " + type + " for class " + entityClass.getName());
-        List<String> classNames = getDeclaredListeners(entityClass);
-        if (classNames.isEmpty()) {
+        List<String> names = getDeclaredListeners(entityClass);
+        if (names.isEmpty()) {
             log.trace("no annotations, exiting");
             return Collections.emptyList();
         }
 
-        List result = new ArrayList();
-        for (String className : classNames) {
-            try {
-                Class aClass = Thread.currentThread().getContextClassLoader().loadClass(className);
-                log.trace("listener class found: " + aClass);
-                List<Class> interfaces = ClassUtils.getAllInterfaces(aClass);
+        List<Object> result = new ArrayList<>();
+        for (String name : names) {
+            if (AppBeans.containsBean(name)) {
+                Object bean = AppBeans.get(name);
+                log.trace("listener bean found: " + bean);
+                List<Class> interfaces = ClassUtils.getAllInterfaces(bean.getClass());
                 for (Class intf : interfaces) {
                     if (intf.equals(type.getListenerInterface())) {
                         log.trace("listener implements " + type.getListenerInterface());
-                        result.add(aClass.newInstance());
+                        result.add(bean);
                     }
                 }
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException("Unable to find an Entity Listener class", e);
-            } catch (IllegalAccessException | InstantiationException e) {
-                throw new RuntimeException("Unable to instantiate an Entity Listener", e);
+            } else {
+                try {
+                    Class aClass = Thread.currentThread().getContextClassLoader().loadClass(name);
+                    log.trace("listener class found: " + aClass);
+                    List<Class> interfaces = ClassUtils.getAllInterfaces(aClass);
+                    for (Class intf : interfaces) {
+                        if (intf.equals(type.getListenerInterface())) {
+                            log.trace("listener implements " + type.getListenerInterface());
+                            result.add(aClass.newInstance());
+                        }
+                    }
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException("Unable to create entity listener " + name + " for " + entityClass.getName()
+                            + " because there is no bean or class with such name");
+                } catch (IllegalAccessException | InstantiationException e) {
+                    throw new RuntimeException("Unable to instantiate an Entity Listener", e);
+                }
             }
         }
         return result;

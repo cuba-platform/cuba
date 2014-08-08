@@ -26,7 +26,7 @@ import org.apache.openjpa.persistence.Persistent;
  */
 @Entity(name = "sec$EntityLog")
 @Table(name = "SEC_ENTITY_LOG")
-@Listeners("com.haulmont.cuba.security.listener.EntityLogItemDetachListener")
+@Listeners("cuba_EntityLogItemDetachListener")
 @SystemLevel
 public class EntityLogItem extends BaseUuidEntity {
 

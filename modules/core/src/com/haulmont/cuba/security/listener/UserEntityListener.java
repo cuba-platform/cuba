@@ -8,10 +8,13 @@ import com.haulmont.cuba.core.listener.BeforeInsertEntityListener;
 import com.haulmont.cuba.core.listener.BeforeUpdateEntityListener;
 import com.haulmont.cuba.security.entity.User;
 
+import javax.annotation.ManagedBean;
+
 /**
  * @author krivopustov
  * @version $Id$
  */
+@ManagedBean("cuba_UserEntityListener")
 public class UserEntityListener implements
         BeforeInsertEntityListener<User>,
         BeforeUpdateEntityListener<User> {

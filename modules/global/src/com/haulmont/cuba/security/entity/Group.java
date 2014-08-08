@@ -24,7 +24,7 @@ import java.util.Set;
  */
 @Entity(name = "sec$Group")
 @Table(name = "SEC_GROUP")
-@Listeners({"com.haulmont.cuba.security.listener.GroupEntityListener"})
+@Listeners("cuba_GroupEntityListener")
 @NamePattern("%s|name")
 @TrackEditScreenHistory
 public class Group extends StandardEntity {

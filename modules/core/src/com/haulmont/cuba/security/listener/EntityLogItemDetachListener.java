@@ -9,7 +9,6 @@ import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.bali.db.ResultSetHandler;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UuidProvider;
 import com.haulmont.cuba.core.listener.BeforeDetachEntityListener;
 import com.haulmont.cuba.core.sys.persistence.DbTypeConverter;
@@ -19,6 +18,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.annotation.ManagedBean;
+import javax.inject.Inject;
 import java.io.StringReader;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -28,11 +29,13 @@ import java.util.*;
  * @author krivopustov
  * @version $Id$
  */
+@ManagedBean("cuba_EntityLogItemDetachListener")
 public class EntityLogItemDetachListener implements BeforeDetachEntityListener<EntityLogItem> {
 
     private Log log = LogFactory.getLog(getClass());
 
-    protected DbTypeConverter converter = AppBeans.get(Persistence.class).getDbTypeConverter();
+    @Inject
+    protected Persistence persistence;
 
     @Override
     public void onBeforeDetach(EntityLogItem item, EntityManager entityManager) {
@@ -84,6 +87,7 @@ public class EntityLogItemDetachListener implements BeforeDetachEntityListener<E
 
     private void fillAttributesFromTable(EntityLogItem item, EntityManager entityManager) {
         log.trace("fillAttributesFromTable for " + item);
+        DbTypeConverter converter = persistence.getDbTypeConverter();
         QueryRunner queryRunner = new QueryRunner();
         try {
             Set<EntityLogAttr> attributes = queryRunner.query(

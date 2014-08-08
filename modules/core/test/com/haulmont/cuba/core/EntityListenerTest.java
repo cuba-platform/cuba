@@ -97,9 +97,5 @@ public class EntityListenerTest extends CubaTestCase
         } catch (Exception e) {
             tx.end();
         }
-
-
     }
-
-
 }

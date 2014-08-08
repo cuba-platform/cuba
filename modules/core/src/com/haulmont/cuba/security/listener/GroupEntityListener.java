@@ -14,6 +14,8 @@ import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.GroupHierarchy;
 import org.apache.openjpa.enhance.PersistenceCapable;
 
+import javax.annotation.ManagedBean;
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,17 +23,20 @@ import java.util.List;
  * @author krivopustov
  * @version $Id$
  */
-@SuppressWarnings({"UnusedDeclaration"})
+@ManagedBean("cuba_GroupEntityListener")
 public class GroupEntityListener implements
         BeforeInsertEntityListener<Group>,
         BeforeUpdateEntityListener<Group> {
+
+    @Inject
+    protected Persistence persistence;
 
     @Override
     public void onBeforeInsert(Group entity) {
         createNewHierarchy(entity, entity.getParent());
     }
 
-    private void createNewHierarchy(Group entity, Group parent) {
+    protected void createNewHierarchy(Group entity, Group parent) {
         if (parent == null) {
             entity.setHierarchyList(new ArrayList<GroupHierarchy>());
             return;
@@ -41,7 +46,7 @@ public class GroupEntityListener implements
         if (parentPc.pcIsNew() && !parentPc.pcIsPersistent())
             throw new IllegalStateException("Unable to create GroupHierarchy. Commit parent group first.");
 
-        EntityManager em = AppBeans.get(Persistence.class).getEntityManager();
+        EntityManager em = persistence.getEntityManager();
 
         if (entity.getHierarchyList() == null) {
             entity.setHierarchyList(new ArrayList<GroupHierarchy>());
@@ -71,8 +76,6 @@ public class GroupEntityListener implements
 
     @Override
     public void onBeforeUpdate(Group entity) {
-        Persistence persistence = AppBeans.get(Persistence.class);
-
         if (!persistence.getTools().getDirtyFields(entity).contains("parent"))
             return;
 

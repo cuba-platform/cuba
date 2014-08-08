@@ -87,4 +87,11 @@ public class AppBeans {
     public static <T> Map<String, T> getAll(Class<T> beanType) {
         return AppContext.getApplicationContext().getBeansOfType(beanType);
     }
+
+    /**
+     * @return whether a bean with the given name is present
+     */
+    public static boolean containsBean(String name) {
+        return AppContext.getApplicationContext().containsBean(name);
+    }
 }
