@@ -344,10 +344,6 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
                 ((DatasourceImplementation) masterDs).modified(parentItem);
             } else {
                 deleted(item);
-                if (PersistenceHelper.isNew(item) && commitMode == CommitMode.PARENT) {
-                    if (parentDs instanceof CollectionDatasource)
-                        ((CollectionDatasource) parentDs).removeItem(item);
-                }
             }
 
             fireCollectionChanged(CollectionDatasourceListener.Operation.REMOVE, Collections.<Entity>singletonList(item));

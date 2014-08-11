@@ -161,6 +161,14 @@ public class PropertyDatasourceImpl<T extends Entity>
                 for (Object item : itemToDelete) {
                     parentCollectionDs.removeItem((Entity) item);
                 }
+                // after repeated edit of new items the parent datasource can contain items-to-create which are deleted
+                // in this datasource, so we need to delete them
+                for (Iterator it = ((DatasourceImplementation) parentCollectionDs).getItemsToCreate().iterator(); it.hasNext(); ) {
+                    Object item = it.next();
+                    if (!itemToCreate.contains(item))
+                        it.remove();
+                }
+
             } /* else {
                 // ??? No idea what to do here
             } */

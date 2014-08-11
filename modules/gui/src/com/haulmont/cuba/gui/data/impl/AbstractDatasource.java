@@ -75,18 +75,18 @@ public abstract class AbstractDatasource<T extends Entity> implements Datasource
     }
 
     @Override
-    public Collection getItemsToCreate() {
-        return Collections.unmodifiableCollection(itemToCreate);
+    public Collection<T> getItemsToCreate() {
+        return itemToCreate;
     }
 
     @Override
-    public Collection getItemsToUpdate() {
-        return Collections.unmodifiableCollection(itemToUpdate);
+    public Collection<T> getItemsToUpdate() {
+        return itemToUpdate;
     }
 
     @Override
-    public Collection getItemsToDelete() {
-        return Collections.unmodifiableCollection(itemToDelete);
+    public Collection<T> getItemsToDelete() {
+        return itemToDelete;
     }
 
     @Override
