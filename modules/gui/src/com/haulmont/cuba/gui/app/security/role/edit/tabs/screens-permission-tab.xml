@@ -39,8 +39,8 @@
             </treeTable>
 
             <groupBox height="100%" caption="msg://permissions">
-                <vbox id="selectedScreenPanel" width="100%" height="100%" visible="false">
-                    <label property="caption" datasource="screenPermissionsTreeDs" stylename="h2"/>
+                <vbox id="selectedScreenPanel" width="100%" visible="false">
+                    <label property="caption" datasource="screenPermissionsTreeDs" stylename="h2" align="MIDDLE_CENTER"/>
 
                     <checkBox id="allowCheckBox" caption="msg://checkbox.allow"/>
                     <checkBox id="disallowCheckBox" caption="msg://checkbox.deny"/>
