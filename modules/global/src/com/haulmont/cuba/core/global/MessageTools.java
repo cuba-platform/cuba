@@ -49,6 +49,9 @@ public class MessageTools {
     @Inject
     protected Metadata metadata;
 
+    @Inject
+    protected ExtendedEntities extendedEntities;
+
     protected GlobalConfig globalConfig;
 
     @Inject
@@ -111,22 +114,26 @@ public class MessageTools {
      * @return              localized name
      */
     public String getPropertyCaption(MetaClass metaClass, String propertyName) {
-        Class<?> ownClass = metaClass.getJavaClass();
+        Class originalClass = extendedEntities.getOriginalClass(metaClass);
+        Class<?> ownClass = originalClass != null ? originalClass : metaClass.getJavaClass();
         String className = ownClass.getName();
         int i = className.lastIndexOf('.');
-        if (i > -1)
+        if (i > -1) {
             className = className.substring(i + 1);
+        }
 
         String key = className + "." + propertyName;
         String message = messages.getMessage(ownClass, key);
-        if (!message.equals(key))
+        if (!message.equals(key)) {
             return message;
+        }
 
         MetaPropertyPath propertyPath = metaClass.getPropertyPath(propertyName);
-        if (propertyPath != null)
+        if (propertyPath != null) {
             return getPropertyCaption(propertyPath.getMetaProperty());
-        else
+        } else {
             return message;
+        }
     }
 
     /**
