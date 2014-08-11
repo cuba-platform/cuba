@@ -156,7 +156,11 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
 
         if ((datasource.getState() == Datasource.State.VALID) && (datasource.getItem() != null)) {
             Object newValue = InstanceUtils.getValueEx(datasource.getItem(), metaPropertyPath.getPath());
-            setValue(newValue);
+
+            if (!ObjectUtils.equals(prevValue, newValue)) {
+                updateComponent(newValue);
+                fireChangeListeners(newValue);
+            }
         }
 
         if (metaProperty.isReadOnly()) {
