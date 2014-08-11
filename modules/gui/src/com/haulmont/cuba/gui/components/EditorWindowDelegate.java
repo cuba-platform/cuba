@@ -36,6 +36,7 @@ public class EditorWindowDelegate extends WindowDelegate {
     protected boolean justLocked;
     protected boolean commitActionPerformed;
     protected boolean commitAndCloseButtonExists;
+    protected boolean readOnly;
 
     protected Metadata metadata = AppBeans.get(Metadata.class);
     protected Messages messages = AppBeans.get(Messages.class);
@@ -159,6 +160,7 @@ public class EditorWindowDelegate extends WindowDelegate {
 
         Security security = AppBeans.get(Security.NAME);
         if (security.isEntityOpPermitted(ds.getMetaClass(), EntityOp.UPDATE)) {
+            readOnly = false;
             LockInfo lockInfo = lockService.lock(getMetaClassForLocking(ds).getName(), item.getId().toString());
             if (lockInfo == null) {
                 justLocked = true;
@@ -177,6 +179,7 @@ public class EditorWindowDelegate extends WindowDelegate {
                 action = window.getAction(Window.Editor.WINDOW_COMMIT_AND_CLOSE);
                 if (action != null)
                     action.setEnabled(false);
+                readOnly = true;
             }
         }
     }
@@ -193,7 +196,9 @@ public class EditorWindowDelegate extends WindowDelegate {
     }
 
     public boolean isModified() {
-        if (wrapper instanceof Window.Committable)
+        if (readOnly)
+            return false;
+        else if (wrapper instanceof Window.Committable)
             return ((Window.Committable) wrapper).isModified();
         else
             return window.getDsContext() != null && window.getDsContext().isModified();
