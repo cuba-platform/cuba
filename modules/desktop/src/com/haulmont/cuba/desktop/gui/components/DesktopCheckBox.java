@@ -29,16 +29,15 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
  */
 public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements CheckBox {
 
-    private Datasource datasource;
-    private MetaProperty metaProperty;
-    private MetaPropertyPath metaPropertyPath;
+    protected Datasource datasource;
+    protected MetaProperty metaProperty;
+    protected MetaPropertyPath metaPropertyPath;
 
-    private boolean updatingInstance;
-    private Object prevValue;
+    protected boolean updatingInstance;
+    protected Object prevValue;
 
-    private boolean editable = true;
-
-    private boolean enabled = true;
+    protected boolean editable = true;
+    protected boolean enabled = true;
 
     public DesktopCheckBox() {
         impl = new JCheckBox();
@@ -144,17 +143,7 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
                 }
         );
 
-        impl.addActionListener(
-                new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        updateInstance();
-                        fireChangeListeners(getValue());
-                    }
-                }
-        );
-
-        if ((datasource.getState() == Datasource.State.VALID) && (datasource.getItem() != null)) {
+        if (datasource.getItemIfValid() != null) {
             Object newValue = InstanceUtils.getValueEx(datasource.getItem(), metaPropertyPath.getPath());
 
             if (!ObjectUtils.equals(prevValue, newValue)) {
