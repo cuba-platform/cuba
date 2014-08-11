@@ -44,7 +44,8 @@ public interface MetaProperty extends MetadataObject<MetaProperty> {
     MetaModel getModel();
 
     /**
-     * @return MetaClass, containing this MetaProperty
+     * @return MetaClass, containing this MetaProperty. <br/>
+     * In case of {@link com.haulmont.cuba.core.entity.annotation.Extends} returns extended meta class.
      */
     MetaClass getDomain();
 
