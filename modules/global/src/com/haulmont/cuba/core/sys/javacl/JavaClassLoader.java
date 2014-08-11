@@ -42,8 +42,8 @@ public class JavaClassLoader extends URLClassLoader {
 
     protected final String rootDir;
 
-    protected final Map<String, TimestampClass> compiled = new ConcurrentHashMap<String, TimestampClass>();
-    protected final ConcurrentHashMap<String, Lock> locks = new ConcurrentHashMap<String, Lock>();
+    protected final Map<String, TimestampClass> compiled = new ConcurrentHashMap<>();
+    protected final ConcurrentHashMap<String, Lock> locks = new ConcurrentHashMap<>();
 
     protected final ProxyClassLoader proxyClassLoader;
     protected final SourceProvider sourceProvider;
@@ -108,18 +108,18 @@ public class JavaClassLoader extends URLClassLoader {
                 log.debug("Compiling " + className);
                 final DiagnosticCollector<JavaFileObject> errs = new DiagnosticCollector<>();
 
-
                 SourcesAndDependencies sourcesAndDependencies = new SourcesAndDependencies(rootDir);
                 sourcesAndDependencies.putSource(className, src);
                 sourcesAndDependencies.collectDependencies(className);
 
                 Map<String, CharSequence> sourcesForCompilation = collectSourcesForCompilation(className, sourcesAndDependencies.sources);
 
+                @SuppressWarnings("unchecked")
                 Map<String, Class> compiledClasses = createCompiler().compile(sourcesForCompilation, errs);
 
-                Map<String, TimestampClass> compiledTimestampClasses = convertCompiledClassesAndDependencies(compiledClasses, sourcesAndDependencies.dependencies);
-
+                Map<String, TimestampClass> compiledTimestampClasses = wrapCompiledClasses(compiledClasses);
                 compiled.putAll(compiledTimestampClasses);
+                linkDependencies(compiledTimestampClasses, sourcesAndDependencies.dependencies);
 
                 clazz = compiledClasses.get(className);
                 return clazz;
@@ -167,23 +167,37 @@ public class JavaClassLoader extends URLClassLoader {
         return compiled.get(name);
     }
 
-    private Map<String, TimestampClass> convertCompiledClassesAndDependencies(Map<String, Class> compiledClasses, Multimap<String, String> dependecies) {
+    /**
+     * Wrap each compiled class with TimestampClass
+     */
+    private Map<String, TimestampClass> wrapCompiledClasses(Map<String, Class> compiledClasses) {
         Map<String, TimestampClass> compiledTimestampClasses = new HashMap<>();
-        for (String currentClassName : compiledClasses.keySet()) {
-            Class currentClass = compiledClasses.get(currentClassName);
-            Collection<String> dependentClasses = dependecies.get(currentClassName);
-            compiledTimestampClasses.put(currentClassName, new TimestampClass(currentClass, getCurrentTimestamp(), dependentClasses, new HashSet<String>()));
+
+        for (Map.Entry<String, Class> entry : compiledClasses.entrySet()) {
+            compiledTimestampClasses.put(entry.getKey(), new TimestampClass(entry.getValue(), getCurrentTimestamp()));
         }
 
+        return compiledTimestampClasses;
+    }
+
+    /**
+     * Add dependencies for each class and ALSO add each class to dependent for each dependency
+     */
+    private void linkDependencies(Map<String, TimestampClass> compiledTimestampClasses, Multimap<String, String> dependecies) {
         for (Map.Entry<String, TimestampClass> entry : compiledTimestampClasses.entrySet()) {
-            for (String dependencyClassName : entry.getValue().dependencies) {
-                TimestampClass dependencyClass = compiledTimestampClasses.get(dependencyClassName);
+            String className = entry.getKey();
+            TimestampClass timestampClass = entry.getValue();
+
+            Collection<String> dependencyClasses = dependecies.get(className);
+            timestampClass.dependencies.addAll(dependencyClasses);
+
+            for (String dependencyClassName : timestampClass.dependencies) {
+                TimestampClass dependencyClass = compiled.get(dependencyClassName);
                 if (dependencyClass != null) {
-                    dependencyClass.dependent.add(entry.getKey());
+                    dependencyClass.dependent.add(className);
                 }
             }
         }
-        return compiledTimestampClasses;
     }
 
     /**
@@ -191,9 +205,8 @@ public class JavaClassLoader extends URLClassLoader {
      * Find all classes dependent from those we are going to compile and add them to compilation as well
      */
     private Map<String, CharSequence> collectSourcesForCompilation(String rootClassName, Map<String, CharSequence> sourcesToCompilation) throws ClassNotFoundException, IOException {
-        Map<String, CharSequence> dependentSources = new HashMap<String, CharSequence>();
+        Map<String, CharSequence> dependentSources = new HashMap<>();
 
-        proxyClassLoader.removeFromCache(rootClassName);
         collectDependent(rootClassName, dependentSources);
         for (String dependencyClassName : sourcesToCompilation.keySet()) {
             CompilationScope dependencyCompilationScope = new CompilationScope(this, dependencyClassName);
@@ -201,10 +214,14 @@ public class JavaClassLoader extends URLClassLoader {
                 collectDependent(dependencyClassName, dependentSources);
             }
         }
+
         sourcesToCompilation.putAll(dependentSources);
         return sourcesToCompilation;
     }
 
+    /**
+     * Find all dependent classes (hierarchical search)
+     */
     private void collectDependent(String dependencyClassName, Map<String, CharSequence> dependentSources) throws IOException {
         TimestampClass removedClass = proxyClassLoader.removeFromCache(dependencyClassName);
         if (removedClass != null) {

@@ -6,18 +6,17 @@ package com.haulmont.cuba.core.sys.javacl;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 
 class TimestampClass {
     Class clazz;
     Date timestamp;
-    Collection<String> dependencies;
-    Collection<String> dependent;
+    Collection<String> dependencies = new HashSet<>();
+    Collection<String> dependent= new HashSet<>();
 
-    TimestampClass(Class clazz, Date timestamp, Collection<String> dependencies, Collection<String> dependent) {
+    TimestampClass(Class clazz, Date timestamp) {
         this.clazz = clazz;
         this.timestamp = timestamp;
-        this.dependencies = dependencies;
-        this.dependent = dependent;
     }
 
     @Override
