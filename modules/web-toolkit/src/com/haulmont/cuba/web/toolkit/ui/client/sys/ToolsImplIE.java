@@ -21,7 +21,7 @@ public class ToolsImplIE extends ToolsImpl {
         if (el.style.setProperty) {
             el.style.setProperty("user-select", "");
         } else {
-            el.style.setAttribute("user-select", "v");
+            el.style.setAttribute("user-select", "");
         }
     }-*/;
 
