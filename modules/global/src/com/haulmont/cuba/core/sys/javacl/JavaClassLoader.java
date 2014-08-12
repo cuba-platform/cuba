@@ -81,38 +81,40 @@ public class JavaClassLoader extends URLClassLoader {
         compiled.clear();
     }
 
-    public Class loadClass(String className, boolean resolve) throws ClassNotFoundException {
+    public Class loadClass(final String fullClassName, boolean resolve) throws ClassNotFoundException {
+        String containerClassName = StringUtils.substringBefore(fullClassName, "$");
+
         Log4JStopWatch loadingWatch = new Log4JStopWatch("LoadClass");
         try {
-            lock(className);
+            lock(containerClassName);
             Class clazz;
 
-            if (!sourceProvider.getSourceFile(className).exists()) {
-                clazz = super.loadClass(className, resolve);
+            if (!sourceProvider.getSourceFile(containerClassName).exists()) {
+                clazz = super.loadClass(fullClassName, resolve);
                 return clazz;
             }
 
-            CompilationScope compilationScope = new CompilationScope(this, className);
+            CompilationScope compilationScope = new CompilationScope(this, containerClassName);
             if (!compilationScope.compilationNeeded()) {
-                return getTimestampClass(className).clazz;
+                return getTimestampClass(fullClassName).clazz;
             }
 
             String src;
             try {
-                src = sourceProvider.getSourceString(className);
+                src = sourceProvider.getSourceString(containerClassName);
             } catch (IOException e) {
-                throw new ClassNotFoundException("Could not load java sources for class " + className);
+                throw new ClassNotFoundException("Could not load java sources for class " + containerClassName);
             }
 
             try {
-                log.debug("Compiling " + className);
+                log.debug("Compiling " + containerClassName);
                 final DiagnosticCollector<JavaFileObject> errs = new DiagnosticCollector<>();
 
                 SourcesAndDependencies sourcesAndDependencies = new SourcesAndDependencies(rootDir);
-                sourcesAndDependencies.putSource(className, src);
-                sourcesAndDependencies.collectDependencies(className);
+                sourcesAndDependencies.putSource(containerClassName, src);
+                sourcesAndDependencies.collectDependencies(containerClassName);
 
-                Map<String, CharSequence> sourcesForCompilation = collectSourcesForCompilation(className, sourcesAndDependencies.sources);
+                Map<String, CharSequence> sourcesForCompilation = collectSourcesForCompilation(containerClassName, sourcesAndDependencies.sources);
 
                 @SuppressWarnings("unchecked")
                 Map<String, Class> compiledClasses = createCompiler().compile(sourcesForCompilation, errs);
@@ -121,7 +123,7 @@ public class JavaClassLoader extends URLClassLoader {
                 compiled.putAll(compiledTimestampClasses);
                 linkDependencies(compiledTimestampClasses, sourcesAndDependencies.dependencies);
 
-                clazz = compiledClasses.get(className);
+                clazz = compiledClasses.get(fullClassName);
                 return clazz;
             } catch (Exception e) {
                 proxyClassLoader.restoreRemoved();
@@ -130,7 +132,7 @@ public class JavaClassLoader extends URLClassLoader {
                 proxyClassLoader.cleanupRemoved();
             }
         } finally {
-            unlock(className);
+            unlock(containerClassName);
             loadingWatch.stop();
         }
     }

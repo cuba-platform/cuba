@@ -4,10 +4,12 @@
  */
 package com.haulmont.cuba.core.sys.javacl;
 
+import com.haulmont.bali.util.ReflectionHelper;
 import junit.framework.Assert;
 import org.junit.Test;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.util.Date;
 
 public class JavaClassLoaderTest {
@@ -157,5 +159,40 @@ public class JavaClassLoaderTest {
         Assert.assertNotSame(class1, class2);
         Assert.assertNotSame(innerClass1, innerClass3);
         Assert.assertNotSame(innerClass2, innerClass4);
+    }
+
+    @Test
+    public void testCompanion() throws Exception {
+        System.out.println(new File(".").getAbsolutePath());
+
+        JavaClassLoader javaClassLoader = new JavaClassLoader(null, "./test-data/javacl-sources/", "") {
+            @Override
+            protected Date getCurrentTimestamp() {
+                return new Date();
+            }
+        };
+
+        Class<?> class10 = javaClassLoader.loadClass("com.haulmont.cuba.core.sys.javacl.test4.pack1.MainClass");
+        Class<?> interface10 = javaClassLoader.loadClass("com.haulmont.cuba.core.sys.javacl.test4.pack1.MainClass$MainInterface");
+
+        Object object10 = class10.newInstance();
+
+        Class<?> class20 = javaClassLoader.loadClass("com.haulmont.cuba.core.sys.javacl.test4.pack2.DependentClass");
+        Object object20 = class20.newInstance();
+
+        Method method = class10.getDeclaredMethod("setObject", interface10);
+        method.invoke(object10, object20);
+
+        modifyFile("test-data/javacl-sources/com/haulmont/cuba/core/sys/javacl/test4/pack1/MainClass.java");
+
+        Class<?> class11 = javaClassLoader.loadClass("com.haulmont.cuba.core.sys.javacl.test4.pack1.MainClass");
+        Class<?> interface11 = javaClassLoader.loadClass("com.haulmont.cuba.core.sys.javacl.test4.pack1.MainClass$MainInterface");
+        Class<?> class21 = javaClassLoader.loadClass("com.haulmont.cuba.core.sys.javacl.test4.pack2.DependentClass");
+
+        Object object11 = class11.newInstance();
+        Object object21 = class21.newInstance();
+
+        method = class11.getDeclaredMethod("setObject", interface11);
+        method.invoke(object11, object21);
     }
 }
