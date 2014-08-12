@@ -16,7 +16,7 @@ import com.vaadin.shared.ui.Connect;
  * @author artamonov
  * @version $Id$
  */
-@Connect(value = CubaResizableTextArea.class, loadStyle = Connect.LoadStyle.DEFERRED)
+@Connect(CubaResizableTextArea.class)
 public class CubaResizableTextAreaConnector extends TextAreaConnector {
 
     @Override

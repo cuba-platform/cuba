@@ -19,7 +19,7 @@ import com.vaadin.shared.ui.Connect;
  * @author artamonov
  * @version $Id$
  */
-@Connect(value = CubaGroupBox.class, loadStyle = Connect.LoadStyle.LAZY)
+@Connect(CubaGroupBox.class)
 public class CubaGroupBoxConnector extends PanelConnector {
 
     @Override

@@ -16,7 +16,7 @@ import com.vaadin.shared.ui.Connect;
  * @author artamonov
  * @version $Id$
  */
-@Connect(value = CubaHistoryControl.class, loadStyle = Connect.LoadStyle.LAZY)
+@Connect(CubaHistoryControl.class)
 public class CubaHistoryControlConnector extends AbstractExtensionConnector {
 
     protected ServerConnector target;

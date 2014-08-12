@@ -19,7 +19,7 @@ import com.vaadin.shared.ui.Connect;
  * @author artamonov
  * @version $Id$
  */
-@Connect(value = CubaGroupTable.class, loadStyle = Connect.LoadStyle.LAZY)
+@Connect(CubaGroupTable.class)
 public class CubaGroupTableConnector extends CubaScrollTableConnector {
 
     @Override

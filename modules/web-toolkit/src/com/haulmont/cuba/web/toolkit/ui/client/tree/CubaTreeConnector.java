@@ -21,7 +21,7 @@ import java.util.List;
  * @author devyatkin
  * @version $Id$
  */
-@Connect(value = CubaTree.class, loadStyle = Connect.LoadStyle.LAZY)
+@Connect(CubaTree.class)
 public class CubaTreeConnector extends TreeConnector implements HasComponentsConnector {
 
     protected boolean contextMenuSelection = false;

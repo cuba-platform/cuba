@@ -17,7 +17,7 @@ import com.vaadin.shared.ui.MarginInfo;
  * @author artamonov
  * @version $Id$
  */
-@Connect(value = CubaFlowLayout.class, loadStyle = Connect.LoadStyle.LAZY)
+@Connect(CubaFlowLayout.class)
 public class CubaFlowLayoutConnector extends CssLayoutConnector {
 
     @Override

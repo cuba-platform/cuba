@@ -16,7 +16,7 @@ import com.vaadin.shared.ui.Connect;
  * @author devyatkin
  * @version $Id$
  */
-@Connect(value = CubaTwinColSelect.class, loadStyle = Connect.LoadStyle.LAZY)
+@Connect(CubaTwinColSelect.class)
 public class CubaTwinColSelectConnector extends TwinColSelectConnector {
 
     @Override

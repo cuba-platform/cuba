@@ -14,7 +14,7 @@ import com.vaadin.shared.ui.Connect;
  * @author artamonov
  * @version $Id$
  */
-@Connect(value = CubaOptionGroup.class, loadStyle = Connect.LoadStyle.LAZY)
+@Connect(CubaOptionGroup.class)
 public class CubaOptionGroupConnector extends OptionGroupConnector {
 
     public static final String HORIZONTAL_ORIENTAION_STYLE = "horizontal";

@@ -20,7 +20,7 @@ import com.vaadin.shared.ui.Connect;
  * @author devyatkin
  * @version $Id$
  */
-@Connect(value = CubaTokenListLabel.class, loadStyle = Connect.LoadStyle.LAZY)
+@Connect(CubaTokenListLabel.class)
 public class CubaTokenListLabelConnector extends PanelConnector {
     @Override
     public CubaTokenListLabelWidget getWidget() {

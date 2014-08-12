@@ -16,7 +16,7 @@ import org.vaadin.aceeditor.client.AceEditorWidget;
  * @author artamonov
  * @version $Id$
  */
-@Connect(value = CubaSourceCodeEditor.class, loadStyle = Connect.LoadStyle.LAZY)
+@Connect(CubaSourceCodeEditor.class)
 public class CubaSourceCodeEditorConnector extends AceEditorConnector {
 
     @Override

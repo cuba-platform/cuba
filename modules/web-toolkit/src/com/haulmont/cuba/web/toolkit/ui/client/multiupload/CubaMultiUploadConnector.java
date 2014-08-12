@@ -18,7 +18,7 @@ import com.vaadin.shared.ui.Connect;
  * @author artamonov
  * @version $Id$
  */
-@Connect(value = CubaMultiUpload.class, loadStyle = Connect.LoadStyle.LAZY)
+@Connect(CubaMultiUpload.class)
 public class CubaMultiUploadConnector extends AbstractComponentConnector implements Paintable {
 
     protected boolean initialized = false;
