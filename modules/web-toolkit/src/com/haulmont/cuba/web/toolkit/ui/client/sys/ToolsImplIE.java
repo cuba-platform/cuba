@@ -18,7 +18,11 @@ public class ToolsImplIE extends ToolsImpl {
         if (typeof el.style == "undefined")
             el.style = {};
         el.setAttribute('onselectstart', null);
-        el.style.setProperty("user-select", "");
+        if (el.style.setProperty) {
+            el.style.setProperty("user-select", "");
+        } else {
+            el.style.setAttribute("user-select", "v");
+        }
     }-*/;
 
     @Override
@@ -26,6 +30,10 @@ public class ToolsImplIE extends ToolsImpl {
         if (typeof el.style == "undefined")
             el.style = {};
         el.setAttribute('onselectstart', this.@com.haulmont.cuba.web.toolkit.ui.client.sys.ToolsImpl::falseFunction);
-        el.style.setProperty("user-select", "none");
+        if (el.style.setProperty) {
+            el.style.setProperty("user-select", "none");
+        } else {
+            el.style.setAttribute("user-select", "none");
+        }
     }-*/;
 }

@@ -97,7 +97,11 @@ public class ToolsImpl {
                     if (typeof x.style == "undefined")
                         x.style = {};
                     x.onselectstart = document.falseFunction;
-                    x.style.setProperty("user-select", "none");
+                    if (x.style.setProperty) {
+                        x.style.setProperty("user-select", "none");
+                    } else {
+                        x.style.setAttribute("user-select", "none");
+                    }
                 });
             } else if ($wnd.jQuery.browser.webkit) {
                 walkEach(el, function(x) {
@@ -128,7 +132,11 @@ public class ToolsImpl {
                     if (typeof x.style == "undefined")
                         x.style = {};
                     x.onselectstart = null;
-                    x.style.setProperty("user-select", "");
+                    if (x.style.setProperty) {
+                        x.style.setProperty("user-select", "");
+                    } else {
+                        x.style.setAttribute("user-select", "");
+                    }
                 });
             } else if ($wnd.jQuery.browser.webkit) {
                 walkEach(el, function(x) {
