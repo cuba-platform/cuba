@@ -151,6 +151,8 @@ public abstract class DesktopAbstractBox
         }
 
         requestRepaint();
+
+        requestContainerUpdate();
     }
 
     @Override

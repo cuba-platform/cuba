@@ -115,15 +115,18 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
 
     @Override
     public void setVisible(boolean visible) {
-        this.visible = visible;
+        if (this.visible != visible) {
+            this.visible = visible;
 
-        getComposition().setVisible(visible);
-        requestContainerUpdate();
+            getComposition().setVisible(visible);
+            requestContainerUpdate();
+        }
     }
 
     @Override
     public void requestFocus() {
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 impl.requestFocus();
             }

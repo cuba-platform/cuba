@@ -537,6 +537,9 @@ public class DesktopWindowManager extends WindowManager {
                 }
             }
             dialog.setResizable(resizable);
+            if (!resizable) {
+                dialog.setFixedWidth(dim.width);
+            }
         }
 
         if (dialogParams.getCloseable() != null) {

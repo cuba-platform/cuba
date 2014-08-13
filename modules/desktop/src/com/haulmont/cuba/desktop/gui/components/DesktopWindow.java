@@ -17,6 +17,7 @@ import com.haulmont.cuba.desktop.gui.data.ComponentSize;
 import com.haulmont.cuba.desktop.gui.data.DesktopContainerHelper;
 import com.haulmont.cuba.desktop.gui.data.TreeModelAdapter;
 import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
+import com.haulmont.cuba.desktop.sys.DialogWindow;
 import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
 import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
 import com.haulmont.cuba.desktop.sys.vcl.FocusableComponent;
@@ -592,6 +593,14 @@ public class DesktopWindow implements Window, Component.Disposable,
                 public void run() {
                     panel.revalidate();
                     panel.repaint();
+
+                    java.awt.Container container = panel.getTopLevelAncestor();
+                    if (container instanceof DialogWindow) {
+                        DialogWindow dialog = (DialogWindow) container;
+                        if (!dialog.isResizable() && getHeight() <= 0) {
+                            dialog.pack();
+                        }
+                    }
 
                     scheduledRepaint = false;
                 }

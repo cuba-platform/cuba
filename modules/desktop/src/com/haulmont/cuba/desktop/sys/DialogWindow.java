@@ -22,6 +22,7 @@ public class DialogWindow extends JDialog {
 
     protected DisabledGlassPane glassPane;
     protected Integer fixedHeight;
+    protected Integer fixedWidth;
 
     public DialogWindow(Frame frame, String title) {
         super(frame, title, false);
@@ -42,6 +43,20 @@ public class DialogWindow extends JDialog {
 
     public Integer getFixedHeight() {
         return fixedHeight;
+    }
+
+    @Override
+    public Dimension getPreferredSize() {
+        if (fixedWidth != null) {
+            // dialog does not grow by horizontal axis
+            return new Dimension(fixedWidth, super.getPreferredSize().height);
+        }
+
+        return super.getPreferredSize();
+    }
+
+    public void setFixedWidth(Integer fixedWidth) {
+        this.fixedWidth = fixedWidth;
     }
 
     public void setFixedHeight(Integer fixedHeight) {

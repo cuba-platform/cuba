@@ -253,5 +253,7 @@ public class DesktopGridLayout extends DesktopAbstractComponent<JPanel> implemen
         }
 
         requestRepaint();
+
+        requestContainerUpdate();
     }
 }

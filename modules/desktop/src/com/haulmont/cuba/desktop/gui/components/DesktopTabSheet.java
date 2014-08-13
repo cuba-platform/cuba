@@ -378,6 +378,7 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> imple
     @Override
     public void updateComponent(Component child) {
         // do nothing
+        requestContainerUpdate();
     }
 
     protected class TabImpl implements TabSheet.Tab {
