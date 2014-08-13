@@ -58,7 +58,9 @@ public class SystemInfoWindow extends AbstractWindow {
         paramsDs.refresh();
 
         Companion companion = getCompanion();
-        companion.initInfoTable(infoTable);
+        if (companion != null) {
+            companion.initInfoTable(infoTable);
+        }
 
         // remove all actions
         List<Action> tableActions = new ArrayList<>(infoTable.getActions());
