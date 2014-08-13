@@ -32,6 +32,8 @@ public class DesktopGridLayout extends DesktopAbstractComponent<JPanel> implemen
     protected Map<Component, ComponentCaption> captions = new HashMap<>();
     protected Map<Component, Pair<JPanel, BoxLayoutAdapter>> wrappers = new HashMap<>();
 
+    protected boolean scheduledRepaint = false;
+
     public DesktopGridLayout() {
         impl = new JPanel();
         assignClassDebugProperty(impl);
@@ -142,6 +144,24 @@ public class DesktopGridLayout extends DesktopAbstractComponent<JPanel> implemen
         ownComponents.add(component);
 
         DesktopContainerHelper.assignContainer(component, this);
+
+        requestRepaint();
+    }
+
+    protected void requestRepaint() {
+        if (!scheduledRepaint) {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    impl.revalidate();
+                    impl.repaint();
+
+                    scheduledRepaint = false;
+                }
+            });
+
+            scheduledRepaint = true;
+        }
     }
 
     @Override
@@ -164,13 +184,7 @@ public class DesktopGridLayout extends DesktopAbstractComponent<JPanel> implemen
 
         DesktopContainerHelper.assignContainer(component, null);
 
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                impl.revalidate();
-                impl.repaint();
-            }
-        });
+        requestRepaint();
     }
 
     @Override
@@ -237,5 +251,7 @@ public class DesktopGridLayout extends DesktopAbstractComponent<JPanel> implemen
                         c.getCellX(), c.getCellY(), c.getCellX(), c.getCellY()));
             }
         }
+
+        requestRepaint();
     }
 }

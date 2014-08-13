@@ -149,6 +149,8 @@ public abstract class DesktopAbstractBox
             }
             adapterForCaption.updateConstraints(caption, adapterForCaption.getCaptionConstraints(child));
         }
+
+        requestRepaint();
     }
 
     @Override

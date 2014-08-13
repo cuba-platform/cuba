@@ -98,6 +98,8 @@ public class DesktopWindow implements Window, Component.Disposable,
     protected Configuration configuration = AppBeans.get(Configuration.class);
     protected Messages messages = AppBeans.get(Messages.class);
 
+    protected boolean scheduledRepaint = false;
+
     public DesktopWindow() {
         initLayout();
         delegate = createDelegate();
@@ -583,6 +585,22 @@ public class DesktopWindow implements Window, Component.Disposable,
         expand(component, "", "");
     }
 
+    protected void requestRepaint() {
+        if (!scheduledRepaint) {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    panel.revalidate();
+                    panel.repaint();
+
+                    scheduledRepaint = false;
+                }
+            });
+
+            scheduledRepaint = true;
+        }
+    }
+
     @Override
     public void add(Component component) {
         ComponentCaption caption = null;
@@ -620,6 +638,8 @@ public class DesktopWindow implements Window, Component.Disposable,
         ownComponents.add(component);
 
         DesktopContainerHelper.assignContainer(component, this);
+
+        requestRepaint();
     }
 
     @Override
@@ -644,6 +664,8 @@ public class DesktopWindow implements Window, Component.Disposable,
         if (expandedComponent == component) {
             expandedComponent = null;
         }
+
+        requestRepaint();
     }
 
     @Override
@@ -852,6 +874,7 @@ public class DesktopWindow implements Window, Component.Disposable,
             }
             adapterForCaption.updateConstraints(caption, adapterForCaption.getCaptionConstraints(child));
         }
+        requestRepaint();
     }
 
     @Override
