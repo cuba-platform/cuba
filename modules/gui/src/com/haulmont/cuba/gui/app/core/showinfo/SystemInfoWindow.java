@@ -6,10 +6,13 @@
 package com.haulmont.cuba.gui.app.core.showinfo;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.app.script.ScriptGenerationService;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.TextArea;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 
 import javax.inject.Inject;
@@ -36,15 +39,20 @@ public class SystemInfoWindow extends AbstractWindow {
     @Inject
     protected ThemeConstants themeConstants;
 
+    @Inject
+    protected TextArea scriptArea;
+
+    @Inject
+    protected ScriptGenerationService scriptGenerationService;
+
+    @WindowParam(name = "item")
+    protected Entity item;
+
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        getDialogParams()
-                .setHeight(themeConstants.getInt("cuba.gui.SystemInfoWindow.height"))
-                .setResizable(true);
-
-        paramsDs.setInstance((Entity) params.get("item"));
+        paramsDs.setInstance(item);
         paramsDs.setInstanceMetaClass((MetaClass) params.get("metaClass"));
 
         paramsDs.refresh();
@@ -56,5 +64,19 @@ public class SystemInfoWindow extends AbstractWindow {
         List<Action> tableActions = new ArrayList<>(infoTable.getActions());
         for (Action action : tableActions)
             infoTable.removeAction(action);
+    }
+
+    public void generateInsert() {
+        scriptArea.setEditable(true);
+        scriptArea.setValue(scriptGenerationService.generateInsertScript(item));
+        scriptArea.setVisible(true);
+        scriptArea.setEditable(false);
+    }
+
+    public void generateUpdate() {
+        scriptArea.setEditable(true);
+        scriptArea.setValue(scriptGenerationService.generateUpdateScript(item));
+        scriptArea.setVisible(true);
+        scriptArea.setEditable(false);
     }
 }

@@ -59,6 +59,7 @@
                 <entry key="cuba_EntityLogService" value="com.haulmont.cuba.core.app.EntityLogService"/>
                 <entry key="cuba_TestingService" value="com.haulmont.cuba.core.app.TestingService"/>
                 <entry key="cuba_RelatedEntitiesService" value="com.haulmont.cuba.core.app.RelatedEntitiesService"/>
+                <entry key="cuba_ScriptGenerationService" value="com.haulmont.cuba.core.app.script.ScriptGenerationService"/>
             </map>
         </property>
     </bean>

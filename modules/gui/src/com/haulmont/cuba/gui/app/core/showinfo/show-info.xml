@@ -23,13 +23,21 @@
         </collectionDatasource>
     </dsContext>
 
-    <layout expand="infoTable">
-        <table id="infoTable" width="100%" columnControlVisible="false" sortable="false" reorderingAllowed="false">
-            <columns>
-                <column id="key" caption="msg://showInfo.name"/>
-                <column id="keyValue" caption="msg://showInfo.value"/>
-            </columns>
-            <rows datasource="paramsDs"/>
-        </table>
+    <layout expand="vbox">
+        <vbox id="vbox" spacing="true">
+            <hbox spacing="true">
+                <button caption="msg://caption.generateInsert" invoke="generateInsert"/>
+                <button caption="msg://caption.generateUpdate" invoke="generateUpdate"/>
+            </hbox>
+
+            <table id="infoTable" width="100%" height="250" columnControlVisible="false" sortable="false" reorderingAllowed="false">
+                <columns>
+                    <column id="key" caption="msg://showInfo.name"/>
+                    <column id="keyValue" caption="msg://showInfo.value"/>
+                </columns>
+                <rows datasource="paramsDs"/>
+            </table>
+            <textArea id="scriptArea" visible="false" width="100%" height="150"/>
+        </vbox>
     </layout>
 </window>
