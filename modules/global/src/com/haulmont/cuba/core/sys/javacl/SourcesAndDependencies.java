@@ -21,9 +21,11 @@ class SourcesAndDependencies {
     final Multimap<String, String> dependencies = HashMultimap.create();
 
     private final SourceProvider sourceProvider;
+    private final JavaClassLoader javaClassLoader;
 
-    SourcesAndDependencies(String rootDir) {
+    SourcesAndDependencies(String rootDir, JavaClassLoader javaClassLoader) {
         this.sourceProvider = new SourceProvider(rootDir);
+        this.javaClassLoader = javaClassLoader;
     }
 
     public void putSource(String name, CharSequence sourceCode) {
@@ -51,9 +53,42 @@ class SourcesAndDependencies {
         }
     }
 
-    private void addDependency(String dependentFrom, String dependency) {
-        if (!dependentFrom.equals(dependency)) {
-            dependencies.put(dependentFrom, dependency);
+
+    /**
+     * Decides what to compile using CompilationScope (hierarchical search)
+     * Find all classes dependent from those we are going to compile and add them to compilation as well
+     */
+    public Map<String, CharSequence> collectSourcesForCompilation(String rootClassName) throws ClassNotFoundException, IOException {
+        Map<String, CharSequence> dependentSources = new HashMap<>();
+
+        collectDependent(rootClassName, dependentSources);
+        for (String dependencyClassName : sources.keySet()) {
+            CompilationScope dependencyCompilationScope = new CompilationScope(javaClassLoader, dependencyClassName);
+            if (dependencyCompilationScope.compilationNeeded()) {
+                collectDependent(dependencyClassName, dependentSources);
+            }
+        }
+        sources.putAll(dependentSources);
+        return sources;
+    }
+
+    /**
+     * Find all dependent classes (hierarchical search)
+     */
+    private void collectDependent(String dependencyClassName, Map<String, CharSequence> dependentSources) throws IOException {
+        TimestampClass removedClass = javaClassLoader.proxyClassLoader.removeFromCache(dependencyClassName);
+        if (removedClass != null) {
+            for (String dependentName : removedClass.dependent) {
+                dependentSources.put(dependentName, sourceProvider.getSourceString(dependentName));
+                addDependency(dependentName, dependencyClassName);
+                collectDependent(dependentName, dependentSources);
+            }
+        }
+    }
+
+    private void addDependency(String dependent, String dependency) {
+        if (!dependent.equals(dependency)) {
+            dependencies.put(dependent, dependency);
         }
     }
 

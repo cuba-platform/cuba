@@ -18,4 +18,8 @@ public class CubaClassPathXmlApplicationContext extends ClassPathXmlApplicationC
     protected DefaultListableBeanFactory createBeanFactory() {
         return new CubaDefaultListableBeanFactory(getInternalParentBeanFactory());
     }
+
+    public DefaultListableBeanFactory getBeanFactoryImplementation(){
+        return (DefaultListableBeanFactory) getBeanFactory();
+    }
 }

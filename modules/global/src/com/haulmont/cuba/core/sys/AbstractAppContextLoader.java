@@ -8,7 +8,7 @@ package com.haulmont.cuba.core.sys;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 
 /**
  * Base class for {@link AppContext} loaders.
@@ -37,13 +37,16 @@ public class AbstractAppContextLoader {
         StrTokenizer tokenizer = new StrTokenizer(configProperty);
         String[] locations = tokenizer.getTokenArray();
 
-        ClassPathXmlApplicationContext appContext = new CubaClassPathXmlApplicationContext();
+        CubaClassPathXmlApplicationContext appContext = new CubaClassPathXmlApplicationContext();
 
         appContext.setConfigLocations(locations);
         appContext.setValidating(false);
         appContext.refresh();
 
         AppContext.setApplicationContext(appContext);
+
+        DefaultListableBeanFactory beanFactory = appContext.getBeanFactoryImplementation();
+        AppContext.setContextBeanFactory(beanFactory);
     }
 
     protected void afterInitAppContext() {

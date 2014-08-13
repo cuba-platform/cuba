@@ -127,6 +127,8 @@
                        value-ref="cuba_JmxNodeIdentifierMBean"/>
                 <entry key="${cuba.webContextName}.cuba:type=JmxLogControl"
                        value-ref="cuba_JmxLogControlMBean"/>
+                <entry key="${cuba.webContextName}.cuba:type=ClassLoaderManagement"
+                       value-ref="cuba_ClassLoaderManagement"/>
             </map>
         </property>
     </bean>

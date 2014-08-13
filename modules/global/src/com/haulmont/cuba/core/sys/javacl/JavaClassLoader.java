@@ -9,11 +9,19 @@ import com.google.common.collect.Multimap;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.TimeSource;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.javacl.compiler.CharSequenceCompiler;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.perf4j.log4j.Log4JStopWatch;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.beans.factory.support.GenericBeanDefinition;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -110,11 +118,10 @@ public class JavaClassLoader extends URLClassLoader {
                 log.debug("Compiling " + containerClassName);
                 final DiagnosticCollector<JavaFileObject> errs = new DiagnosticCollector<>();
 
-                SourcesAndDependencies sourcesAndDependencies = new SourcesAndDependencies(rootDir);
+                SourcesAndDependencies sourcesAndDependencies = new SourcesAndDependencies(rootDir, this);
                 sourcesAndDependencies.putSource(containerClassName, src);
                 sourcesAndDependencies.collectDependencies(containerClassName);
-
-                Map<String, CharSequence> sourcesForCompilation = collectSourcesForCompilation(containerClassName, sourcesAndDependencies.sources);
+                Map<String, CharSequence> sourcesForCompilation = sourcesAndDependencies.collectSourcesForCompilation(containerClassName);
 
                 @SuppressWarnings("unchecked")
                 Map<String, Class> compiledClasses = createCompiler().compile(sourcesForCompilation, errs);
@@ -124,6 +131,9 @@ public class JavaClassLoader extends URLClassLoader {
                 linkDependencies(compiledTimestampClasses, sourcesAndDependencies.dependencies);
 
                 clazz = compiledClasses.get(fullClassName);
+
+                updateSpringContext(compiledClasses.values());
+
                 return clazz;
             } catch (Exception e) {
                 proxyClassLoader.restoreRemoved();
@@ -134,6 +144,45 @@ public class JavaClassLoader extends URLClassLoader {
         } finally {
             unlock(containerClassName);
             loadingWatch.stop();
+        }
+    }
+
+    private void updateSpringContext(Collection<Class> classes) {
+        boolean needToRefreshRemotingContext = false;
+        for (Class clazz : classes) {
+            Service serviceAnnotation = (Service) clazz.getAnnotation(Service.class);
+            ManagedBean managedBeanAnnotation = (ManagedBean) clazz.getAnnotation(ManagedBean.class);
+            Component componentAnnotation = (Component) clazz.getAnnotation(Component.class);
+            Controller controllerAnnotation = (Controller) clazz.getAnnotation(Controller.class);
+
+            String beanName = null;
+            if (serviceAnnotation != null) {
+                beanName = serviceAnnotation.value();
+            } else if (managedBeanAnnotation != null) {
+                beanName = managedBeanAnnotation.value();
+            } else if (componentAnnotation != null) {
+                beanName = componentAnnotation.value();
+            } else if (controllerAnnotation != null) {
+                beanName = controllerAnnotation.value();
+            }
+
+            if (StringUtils.isNotBlank(beanName)) {
+                DefaultListableBeanFactory beanFactory = AppContext.getContextBeanFactory();
+                GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
+                beanDefinition.setBeanClass(clazz);
+                beanFactory.registerBeanDefinition(beanName, beanDefinition);
+            }
+
+            if (serviceAnnotation != null) {
+                needToRefreshRemotingContext = true;
+            }
+        }
+
+        if (needToRefreshRemotingContext) {
+            ApplicationContext remotingContext = AppContext.getRemotingContext();
+            if (remotingContext != null && remotingContext instanceof ConfigurableApplicationContext) {
+                ((ConfigurableApplicationContext) remotingContext).refresh();
+            }
         }
     }
 
@@ -198,38 +247,6 @@ public class JavaClassLoader extends URLClassLoader {
                 if (dependencyClass != null) {
                     dependencyClass.dependent.add(className);
                 }
-            }
-        }
-    }
-
-    /**
-     * Decides what to compile using CompilationScope (hierarchical search)
-     * Find all classes dependent from those we are going to compile and add them to compilation as well
-     */
-    private Map<String, CharSequence> collectSourcesForCompilation(String rootClassName, Map<String, CharSequence> sourcesToCompilation) throws ClassNotFoundException, IOException {
-        Map<String, CharSequence> dependentSources = new HashMap<>();
-
-        collectDependent(rootClassName, dependentSources);
-        for (String dependencyClassName : sourcesToCompilation.keySet()) {
-            CompilationScope dependencyCompilationScope = new CompilationScope(this, dependencyClassName);
-            if (dependencyCompilationScope.compilationNeeded()) {
-                collectDependent(dependencyClassName, dependentSources);
-            }
-        }
-
-        sourcesToCompilation.putAll(dependentSources);
-        return sourcesToCompilation;
-    }
-
-    /**
-     * Find all dependent classes (hierarchical search)
-     */
-    private void collectDependent(String dependencyClassName, Map<String, CharSequence> dependentSources) throws IOException {
-        TimestampClass removedClass = proxyClassLoader.removeFromCache(dependencyClassName);
-        if (removedClass != null) {
-            for (String dependentName : removedClass.dependent) {
-                dependentSources.put(dependentName, sourceProvider.getSourceString(dependentName));
-                collectDependent(dependentName, dependentSources);
             }
         }
     }

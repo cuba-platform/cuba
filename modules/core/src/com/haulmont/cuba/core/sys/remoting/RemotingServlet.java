@@ -85,6 +85,7 @@ public class RemotingServlet extends DispatcherServlet {
                     "' as ServletContext attribute with name [" + attrName + "]");
         }
 
+        AppContext.setRemotingContext(wac);
         return wac;
     }
 
