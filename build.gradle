@@ -237,6 +237,7 @@ configure(coreModule) {
 
         testRuntime(servletApi)
         testRuntime(hsqldb)
+    	testRuntime(postgres)
     }
 
     task recompileNoDebug(type: JavaCompile) {
