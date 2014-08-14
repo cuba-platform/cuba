@@ -9,14 +9,14 @@ package com.haulmont.cuba.core.sys.javacl;
  * @author degtyarjov
  * @version $Id$
  */
-public interface ClassLoaderManagementMBean {
-    Class reloadClass(String className) throws ClassNotFoundException;
+public interface ClassLoaderManagerMBean {
+    String reloadClass(String className) throws ClassNotFoundException;
 
-    Class loadClass(String className) throws ClassNotFoundException;
+    String loadClass(String className) throws ClassNotFoundException;
 
-    Class removeClass(String className);
+    String removeClass(String className);
 
     String getClassDependencies(String className);
 
-    void clearCache();
+    String clearCache();
 }
