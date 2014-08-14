@@ -6,6 +6,7 @@
 package com.haulmont.cuba.desktop.sys;
 
 import com.google.common.base.Strings;
+import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
@@ -14,16 +15,14 @@ import com.haulmont.cuba.desktop.DesktopConfig;
 import com.haulmont.cuba.desktop.TopLevelFrame;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.desktop.gui.components.DesktopWindow;
-import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.DialogParams;
-import com.haulmont.cuba.gui.ScreenHistorySupport;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowInfo;
-import com.haulmont.cuba.gui.executors.WatchDog;
+import com.haulmont.cuba.gui.executors.*;
+import com.haulmont.cuba.gui.settings.SettingsImpl;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -63,6 +62,8 @@ public class DesktopWindowManager extends WindowManager {
 
     private boolean disableSavingScreenHistory;
     private ScreenHistorySupport screenHistorySupport = new ScreenHistorySupport();
+
+    private boolean recursiveFramesClose = false;
 
     public DesktopWindowManager(TopLevelFrame frame) {
         this.frame = frame;
@@ -396,7 +397,9 @@ public class DesktopWindowManager extends WindowManager {
     }
 
     protected void addShortcuts(final Window window) {
-        ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
+
         String closeShortcut = clientConfig.getCloseShortcut();
         window.addAction(new com.haulmont.cuba.gui.components.AbstractAction("closeWindowShortcutAction", closeShortcut) {
             @Override
@@ -756,7 +759,8 @@ public class DesktopWindowManager extends WindowManager {
 
     private String formatTabCaption(String caption, String description) {
         String s = formatTabDescription(caption, description);
-        int maxLength = AppBeans.get(Configuration.class).getConfig(DesktopConfig.class).getMainTabCaptionLength();
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        int maxLength = configuration.getConfig(DesktopConfig.class).getMainTabCaptionLength();
         if (s.length() > maxLength) {
             return s.substring(0, maxLength) + "...";
         } else {
@@ -1187,10 +1191,16 @@ public class DesktopWindowManager extends WindowManager {
                 screenHistorySupport.saveScreenHistory(window, windowOpenMode.get(window).getOpenType());
             }
 
-            if (window instanceof WrappedWindow && ((WrappedWindow) window).getWrapper() != null)
-                ((WrappedWindow) window).getWrapper().saveSettings();
-            else
-                window.saveSettings();
+            recursiveFramesClose = true;
+            try {
+                if (window instanceof WrappedWindow && ((WrappedWindow) window).getWrapper() != null) {
+                    ((WrappedWindow) window).getWrapper().saveSettings();
+                } else {
+                    window.saveSettings();
+                }
+            } finally {
+                recursiveFramesClose = false;
+            }
 
             if (window.getDsContext() != null && window.getDsContext().isModified()) {
                 modified = true;
@@ -1233,6 +1243,58 @@ public class DesktopWindowManager extends WindowManager {
             );
         } else {
             runIfOk.run();
+        }
+    }
+
+    @Override
+    protected SettingsImpl getSettingsImpl(String id) {
+        return new AsyncSettingsImpl(id);
+    }
+
+    protected class AsyncSettingsImpl extends SettingsImpl {
+        public AsyncSettingsImpl(String id) {
+            super(id);
+        }
+
+        @Override
+        public void commit() {
+            if (modified && root != null) {
+                final String xml = Dom4j.writeDocument(root.getDocument(), true);
+                if (!recursiveFramesClose) {
+                    saveSettingsAsync(xml);
+                } else {
+                    getService().saveSetting(AppConfig.getClientType(), name, xml);
+                }
+
+                modified = false;
+            }
+        }
+
+        protected void saveSettingsAsync(final String xml) {
+            BackgroundWorker worker = AppConfig.getBackgroundWorker();
+            BackgroundTaskHandler<Object> handle = worker.handle(new BackgroundTask<Object, Object>(10) {
+                @Override
+                public Object run(TaskLifeCycle<Object> taskLifeCycle) throws Exception {
+                    getService().saveSetting(AppConfig.getClientType(), AsyncSettingsImpl.this.name, xml);
+
+                    return null;
+                }
+
+                @Override
+                public boolean handleException(Exception ex) {
+                    log.warn("Unable to save user settings " + AsyncSettingsImpl.this.name, ex);
+
+                    return true;
+                }
+
+                @Override
+                public boolean handleTimeoutException() {
+                    log.warn("Time out while saving user settings " + AsyncSettingsImpl.this.name);
+
+                    return true;
+                }
+            });
+            handle.execute();
         }
     }
 }

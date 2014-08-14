@@ -22,12 +22,13 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ConfigPersisterClientImpl implements ConfigPersister {
 
-    private Map<String, String> cache = new ConcurrentHashMap<String, String>();
+    private Map<String, String> cache = new ConcurrentHashMap<>();
 
     private volatile boolean cacheLoaded;
 
     private final Log log = LogFactory.getLog(ConfigPersisterClientImpl.class);
 
+    @Override
     public String getProperty(SourceType sourceType, String name) {
         log.trace("Getting property '" + name + "', source=" + sourceType.name());
         String value;
@@ -64,6 +65,7 @@ public class ConfigPersisterClientImpl implements ConfigPersister {
         }
     }
 
+    @Override
     public void setProperty(SourceType sourceType, String name, String value) {
         log.debug("Setting property '" + name + "' to '" + value + "', source=" + sourceType.name());
         switch (sourceType) {
@@ -74,10 +76,11 @@ public class ConfigPersisterClientImpl implements ConfigPersister {
                 AppContext.setProperty(name, value);
                 break;
             case DATABASE:
-                if (value != null)
+                if (value != null) {
                     cache.put(name, value);
-                else
+                } else {
                     cache.remove(name);
+                }
                 getConfigStorage().setDbProperty(name, value);
                 break;
             default:
@@ -85,7 +88,7 @@ public class ConfigPersisterClientImpl implements ConfigPersister {
         }
     }
 
-    private ConfigStorageService getConfigStorage() {
+    protected ConfigStorageService getConfigStorage() {
         return (ConfigStorageService) AppBeans.get(ConfigStorageService.NAME);
     }
 }

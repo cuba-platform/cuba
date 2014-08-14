@@ -16,6 +16,7 @@ import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.data.impl.GenericDataSupplier;
 import com.haulmont.cuba.gui.logging.UIPerformanceLogger;
+import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.gui.xml.XmlInheritanceProcessor;
 import com.haulmont.cuba.gui.xml.data.DsContextLoader;
@@ -626,9 +627,13 @@ public abstract class WindowManager {
 
     protected abstract void showFrame(Component parent, IFrame frame);
 
+    protected Settings getSettingsImpl(String id) {
+        return new SettingsImpl(id);
+    }
+
     protected void afterShowWindow(Window window) {
         if (!WindowParams.DISABLE_APPLY_SETTINGS.getBool(window.getContext())) {
-            window.applySettings(new SettingsImpl(window.getId()));
+            window.applySettings(getSettingsImpl(window.getId()));
         }
         if (!WindowParams.DISABLE_RESUME_SUSPENDED.getBool(window.getContext())) {
             ((DsContextImplementation) window.getDsContext()).resumeSuspended();

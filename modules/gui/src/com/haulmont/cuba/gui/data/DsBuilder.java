@@ -77,9 +77,9 @@ public class DsBuilder {
         else
             this.dataSupplier = new GenericDataSupplier();
 
-        this.metadata = AppBeans.get(Metadata.class);
+        this.metadata = AppBeans.get(Metadata.NAME);
         this.viewRepository = metadata.getViewRepository();
-        this.persistenceManager = AppBeans.get(PersistenceManagerClient.class);
+        this.persistenceManager = AppBeans.get(PersistenceManagerClient.NAME);
     }
 
     public DsContext getDsContext() {

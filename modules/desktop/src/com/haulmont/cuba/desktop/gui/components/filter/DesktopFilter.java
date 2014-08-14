@@ -11,6 +11,7 @@ import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.client.sys.PersistenceManagerClient;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.app.PersistenceManagerService;
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
@@ -75,15 +76,16 @@ import java.util.regex.Pattern;
  * @version $Id$
  */
 public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements Filter {
+
     protected static final String MESSAGES_PACK = "com.haulmont.cuba.gui.components.filter";
 
     protected static final String GLOBAL_FILTER_PERMISSION = "cuba.gui.filter.global";
     protected static final String GLOBAL_APP_FOLDERS_PERMISSION = "cuba.gui.appFolder.global";
 
-    protected Messages messages;
-    protected UserSessionSource userSessionSource;
+    protected Messages messages = AppBeans.get(Messages.NAME);
+    protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
 
-    protected PersistenceManagerService persistenceManager;
+    protected PersistenceManagerService persistenceManager = AppBeans.get(PersistenceManagerClient.NAME);
 
     protected CollectionDatasource datasource;
     protected QueryFilter dsQueryFilter;
@@ -117,19 +119,18 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
 
     protected DesktopPopupButton actionsButton;
 
-    protected GlobalConfig globalConfig = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class);
-    protected ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+    protected GlobalConfig globalConfig;
+    protected ClientConfig clientConfig;
     protected String defaultFilterCaption;
 
     protected Component applyTo;
 
-    protected Metadata metadata = AppBeans.get(Metadata.class);
+    protected Metadata metadata = AppBeans.get(Metadata.NAME);
 
     public DesktopFilter() {
-        persistenceManager = AppBeans.get(PersistenceManagerService.NAME);
-
-        messages = AppBeans.get(Messages.class);
-        userSessionSource = AppBeans.get(UserSessionSource.class);
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        globalConfig = configuration.getConfig(GlobalConfig.class);
+        clientConfig = configuration.getConfig(ClientConfig.class);
 
         LC topLc = new LC();
         topLc.hideMode(3);
@@ -197,7 +198,6 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     @Override
     public void setFrame(IFrame frame) {
         super.setFrame(frame);
-        ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
         frame.addAction(new AbstractAction("applyFilter", clientConfig.getFilterApplyShortcut()) {
             @Override
             public void actionPerform(Component component) {
@@ -354,10 +354,11 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     }
 
     protected boolean checkGlobalFilterPermission() {
-        if (filterEntity == null || filterEntity.getUser() != null)
+        if (filterEntity == null || filterEntity.getUser() != null) {
             return true;
-        else
+        } else {
             return userSessionSource.getUserSession().isSpecificPermitted(GLOBAL_FILTER_PERMISSION);
+        }
     }
 
     protected void fillActions() {
@@ -824,7 +825,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     }
 
     protected void loadFilterEntities() {
-        DataService ds = AppBeans.get(DataService.class);
+        DataService ds = AppBeans.get(DataService.NAME);
         LoadContext ctx = new LoadContext(metadata.getExtendedEntities().getEffectiveMetaClass(FilterEntity.class));
         ctx.setView("app");
 
@@ -916,7 +917,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         Boolean isDefault = filterEntity.getIsDefault();
         Boolean applyDefault = filterEntity.getApplyDefault();
         if (filterEntity.getFolder() == null) {
-            DataService ds = AppBeans.get(DataService.class);
+            DataService ds = AppBeans.get(DataService.NAME);
             CommitContext ctx = new CommitContext(Collections.singletonList(filterEntity));
             Set<Entity> result = ds.commit(ctx);
             for (Entity entity : result) {
@@ -927,8 +928,6 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
             }
             filterEntity.setApplyDefault(applyDefault);
             filterEntity.setIsDefault(isDefault);
-
-
         }
         //todo
         /*else if (filterEntity.getFolder() instanceof SearchFolder) {
@@ -940,7 +939,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     }
 
     protected void deleteFilterEntity() {
-        DataService ds = AppBeans.get(DataService.class);
+        DataService ds = AppBeans.get(DataService.NAME);
         CommitContext ctx = new CommitContext();
         ctx.setRemoveInstances(Collections.singletonList(filterEntity));
         ds.commit(ctx);
@@ -1236,7 +1235,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     }
 
     protected boolean isEditFiltersPermitted() {
-        return AppBeans.get(UserSessionSource.class).getUserSession().isSpecificPermitted("cuba.gui.filter.edit");
+        return userSessionSource.getUserSession().isSpecificPermitted("cuba.gui.filter.edit");
     }
 
     @Override

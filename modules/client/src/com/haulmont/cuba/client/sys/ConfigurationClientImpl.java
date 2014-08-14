@@ -22,9 +22,8 @@ import java.lang.reflect.Proxy;
  * You can see the new value only when you get another instance of the config interface.
  * </p>
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 @ManagedBean(Configuration.NAME)
 public class ConfigurationClientImpl implements Configuration {
