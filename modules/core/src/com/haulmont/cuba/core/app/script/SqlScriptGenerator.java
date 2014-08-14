@@ -7,16 +7,18 @@ package com.haulmont.cuba.core.app.script;
 
 import com.google.common.base.Preconditions;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
-import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.sys.persistence.DbTypeConverter;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.sys.persistence.PostgresUUID;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
 
+import javax.annotation.ManagedBean;
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import javax.persistence.Column;
 import javax.persistence.JoinColumn;
-import javax.persistence.Table;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -31,9 +33,12 @@ import static java.lang.String.format;
  * @author degtyarjov
  * @version $Id$
  */
-public class ScriptGeneratorImpl {
-    protected final SimpleDateFormat dateFormat = new SimpleDateFormat("''yyyy-MM-dd HH:mm:ss''");
+@ManagedBean(SqlScriptGenerator.NAME)
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
+public class SqlScriptGenerator {
+    public static final String NAME = "cuba_SqlScriptGenerator";
 
+    protected SimpleDateFormat dateFormat = new SimpleDateFormat("''yyyy-MM-dd HH:mm:ss''");
     protected String insertTemplate = "insert into %s \n(%s) \nvalues (%s);";
     protected String updateTemplate = "update %s \nset %s \nwhere id=%s;";
     protected Class clazz;
@@ -41,14 +46,21 @@ public class ScriptGeneratorImpl {
     protected List<String> fieldNames = new ArrayList<>();
     protected String tableName;
 
+    @Inject
+    protected Metadata metadata;
 
-    public ScriptGeneratorImpl(Class<? extends Entity> clazz) {
+    @Inject
+    protected Persistence persistence;
+
+    public SqlScriptGenerator(Class<? extends Entity> clazz) {
         this.clazz = clazz;
-        Table tableAnnotation = (Table) clazz.getAnnotation(Table.class);
-        Preconditions.checkNotNull(tableAnnotation,
-                format("Could not generate script for class [%s], because it's not linked with DB table using @Table annotation", clazz));
+    }
 
-        this.tableName = tableAnnotation.name();
+    @PostConstruct
+    public void init(){
+        this.tableName = metadata.getTools().getDatabaseTable(metadata.getClass(clazz));
+        Preconditions.checkNotNull(tableName,
+                format("Could not generate script for class [%s], because it's not linked with DB table using @Table annotation", clazz));
         collectMetadata(clazz);
     }
 
@@ -99,7 +111,7 @@ public class ScriptGeneratorImpl {
                 value = ((EnumClass) value).getId();
             }
 
-            value = getDbTypeConverter().getSqlObject(value);
+            value = persistence.getDbTypeConverter().getSqlObject(value);
 
             if (value == null) {
                 valueStr = null;
@@ -116,10 +128,6 @@ public class ScriptGeneratorImpl {
         } catch (SQLException e) {
             throw new RuntimeException(format("An error occurred while converting object [%s] for SQL query", value), e);
         }
-    }
-
-    protected DbTypeConverter getDbTypeConverter() {
-        return AppBeans.get(Persistence.class).getDbTypeConverter();
     }
 
     protected String convertList(List<String> strings) {

@@ -98,7 +98,9 @@ public class PersistenceHelper {
     /**
      * @param entityClass entity class
      * @return table name as defined in {@link Table} annotation, or <code>null</code> if there is no such annotation
+     * @deprecated please use com.haulmont.cuba.core.global.MetadataTools#getDatabaseTable instead
      */
+    @Deprecated
     @Nullable
     public static String getTableName(Class<?> entityClass) {
         Table annotation = entityClass.getAnnotation(Table.class);

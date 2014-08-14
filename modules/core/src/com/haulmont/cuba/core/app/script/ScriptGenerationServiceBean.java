@@ -7,6 +7,7 @@ package com.haulmont.cuba.core.app.script;
 
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
 import org.springframework.stereotype.Service;
 
 /**
@@ -18,12 +19,14 @@ public class ScriptGenerationServiceBean implements ScriptGenerationService {
     @Override
     public String generateInsertScript(Entity entity) {
         Preconditions.checkNotNullArgument(entity);
-        return new ScriptGeneratorImpl(entity.getClass()).generateInsertScript(entity);
+        SqlScriptGenerator generator = AppBeans.getPrototype(SqlScriptGenerator.NAME, entity.getClass());
+        return generator.generateInsertScript(entity);
     }
 
     @Override
     public String generateUpdateScript(Entity entity) {
         Preconditions.checkNotNullArgument(entity);
-        return new ScriptGeneratorImpl(entity.getClass()).generateUpdateScript(entity);
+        SqlScriptGenerator generator = AppBeans.getPrototype(SqlScriptGenerator.NAME, entity.getClass());
+        return generator.generateUpdateScript(entity);
     }
 }
