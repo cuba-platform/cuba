@@ -21,7 +21,10 @@ import javax.annotation.ManagedBean;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Embedded;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.*;
@@ -433,6 +436,9 @@ public class MetadataTools {
         return enums;
     }
 
+    /**
+     * @return table name for the given entity, or null if the entity is Embeddable, MappedSuperclass or non-persistent
+     */
     @Nullable
     public String getDatabaseTable(MetaClass metaClass) {
         if (isEmbeddable(metaClass) || !isPersistent(metaClass))
@@ -447,5 +453,20 @@ public class MetadataTools {
         }
 
         return null;
+    }
+
+    /**
+     * @return list of related properties defined in {@link com.haulmont.chile.core.annotations.MetaProperty#related()}
+     * or empty list
+     */
+    public List<String> getRelatedProperties(Class<?> entityClass, String property) {
+        List<String> result = new ArrayList<>();
+        MetaClass metaClass = metadata.getClassNN(entityClass);
+        MetaProperty metaProperty = metaClass.getPropertyNN(property);
+        String relatedProperties = (String) metaProperty.getAnnotations().get("relatedProperties");
+        if (relatedProperties != null) {
+            result.addAll(Arrays.asList(relatedProperties.split(",")));
+        }
+        return result;
     }
 }

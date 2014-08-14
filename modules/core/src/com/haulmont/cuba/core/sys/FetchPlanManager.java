@@ -5,13 +5,12 @@
 
 package com.haulmont.cuba.core.sys;
 
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.Updatable;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.core.global.ViewProperty;
+import com.haulmont.cuba.core.global.*;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.openjpa.persistence.FetchPlan;
 
@@ -35,6 +34,12 @@ public class FetchPlanManager {
 
     @Inject
     private Metadata metadata;
+
+    @Inject
+    private MetadataTools metadataTools;
+
+    @Inject
+    private ViewRepository viewRepository;
 
     public void setView(FetchPlan fetchPlan, @Nullable View view) {
         if (fetchPlan == null)
@@ -71,10 +76,13 @@ public class FetchPlanManager {
         if (view.isIncludeSystemProperties()) {
             includeSystemProperties(view, fetchPlanFields);
         }
+
+        Class<? extends Entity> entityClass = view.getEntityClass();
+
         // Always add SoftDelete properties to support EntityManager contract
-        if (SoftDelete.class.isAssignableFrom(view.getEntityClass())) {
+        if (SoftDelete.class.isAssignableFrom(entityClass)) {
             for (String property : SoftDelete.PROPERTIES) {
-                fetchPlanFields.add(createFetchPlanField(view.getEntityClass(), property));
+                fetchPlanFields.add(createFetchPlanField(entityClass, property));
             }
         }
 
@@ -82,10 +90,26 @@ public class FetchPlanManager {
             if (property.isLazy())
                 continue;
 
-            FetchPlanField field = createFetchPlanField(view.getEntityClass(), property.getName());
-            fetchPlanFields.add(field);
-            if (property.getView() != null) {
-                processView(property.getView(), fetchPlanFields);
+            String propertyName = property.getName();
+            if (metadataTools.isPersistent(metadata.getClassNN(entityClass).getPropertyNN(propertyName))) {
+                FetchPlanField field = createFetchPlanField(entityClass, propertyName);
+                fetchPlanFields.add(field);
+                if (property.getView() != null) {
+                    processView(property.getView(), fetchPlanFields);
+                }
+            }
+
+            List<String> relatedProperties = metadataTools.getRelatedProperties(entityClass, propertyName);
+            for (String relatedProperty : relatedProperties) {
+                if (!view.containsProperty(relatedProperty)) {
+                    FetchPlanField field = createFetchPlanField(entityClass, relatedProperty);
+                    fetchPlanFields.add(field);
+                    MetaProperty relatedMetaProp = metadata.getClassNN(entityClass).getPropertyNN(relatedProperty);
+                    if (relatedMetaProp.getRange().isClass()) {
+                        View relatedView = viewRepository.getView(relatedMetaProp.getRange().asClass(), View.LOCAL);
+                        processView(relatedView, fetchPlanFields);
+                    }
+                }
             }
         }
     }

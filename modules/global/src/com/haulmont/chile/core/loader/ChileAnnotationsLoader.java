@@ -5,6 +5,7 @@
 
 package com.haulmont.chile.core.loader;
 
+import com.google.common.base.Joiner;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.annotations.Composition;
 import com.haulmont.chile.core.datatypes.Datatype;
@@ -270,13 +271,27 @@ public class ChileAnnotationsLoader implements MetaClassLoader {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     protected void onPropertyLoaded(MetaProperty metaProperty, Field field) {
-        SystemLevel systemLevel = field.getAnnotation(SystemLevel.class);
-        if (systemLevel != null) {
-            metaProperty.getAnnotations().put(SystemLevel.class.getName(), systemLevel.value());
-        }
+        loadPropertyAnnotations(metaProperty, field);
     }
 
     protected void onPropertyLoaded(MetaProperty metaProperty, Method method) {
+        loadPropertyAnnotations(metaProperty, method);
+    }
+
+    private void loadPropertyAnnotations(MetaProperty metaProperty, AnnotatedElement annotatedElement) {
+        SystemLevel systemLevel = annotatedElement.getAnnotation(SystemLevel.class);
+        if (systemLevel != null) {
+            metaProperty.getAnnotations().put(SystemLevel.class.getName(), systemLevel.value());
+        }
+
+        com.haulmont.chile.core.annotations.MetaProperty metaPropertyAnnotation =
+                annotatedElement.getAnnotation(com.haulmont.chile.core.annotations.MetaProperty.class);
+        if (metaPropertyAnnotation != null) {
+            String[] related = metaPropertyAnnotation.related();
+            if (!(related.length == 1 && related[0].equals(""))) {
+                metaProperty.getAnnotations().put("relatedProperties", Joiner.on(',').join(related));
+            }
+        }
     }
 
     protected void onClassLoaded(MetaClass metaClass, Class<?> clazz) {
