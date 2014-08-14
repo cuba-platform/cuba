@@ -9,7 +9,6 @@ import com.google.common.collect.Multimap;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.TimeSource;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.javacl.compiler.CharSequenceCompiler;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -191,7 +190,7 @@ public class JavaClassLoader extends URLClassLoader implements BeanFactoryAware 
             }
 
             if (needToRefreshRemotingContext) {
-                ApplicationContext remotingContext = AppContext.getRemotingContext();
+                ApplicationContext remotingContext = RemotingContextHolder.getRemotingApplicationContext();
                 if (remotingContext != null && remotingContext instanceof ConfigurableApplicationContext) {
                     ((ConfigurableApplicationContext) remotingContext).refresh();
                 }

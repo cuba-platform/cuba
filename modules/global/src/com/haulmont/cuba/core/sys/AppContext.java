@@ -6,7 +6,6 @@ package com.haulmont.cuba.core.sys;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 
@@ -52,8 +51,6 @@ public class AppContext {
     }
 
     private static ApplicationContext context;
-
-    private static volatile ApplicationContext remotingContext;
 
     private static Map<String, String> properties = new ConcurrentHashMap<>();
 
@@ -221,13 +218,5 @@ public class AppContext {
         if (context != null && context instanceof ConfigurableApplicationContext) {
             ((ConfigurableApplicationContext) context).close();
         }
-    }
-
-    public static ApplicationContext getRemotingContext() {
-        return remotingContext;
-    }
-
-    public static void setRemotingContext(ApplicationContext remotingContext) {
-        AppContext.remotingContext = remotingContext;
     }
 }
