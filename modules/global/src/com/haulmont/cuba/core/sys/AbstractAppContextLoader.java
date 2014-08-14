@@ -44,9 +44,6 @@ public class AbstractAppContextLoader {
         appContext.refresh();
 
         AppContext.setApplicationContext(appContext);
-
-        DefaultListableBeanFactory beanFactory = appContext.getBeanFactoryImplementation();
-        AppContext.setContextBeanFactory(beanFactory);
     }
 
     protected void afterInitAppContext() {

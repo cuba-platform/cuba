@@ -15,6 +15,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.perf4j.log4j.Log4JStopWatch;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.ApplicationContext;
@@ -38,7 +41,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 @ManagedBean("cuba_JavaClassLoader")
-public class JavaClassLoader extends URLClassLoader {
+public class JavaClassLoader extends URLClassLoader implements BeanFactoryAware {
     private static final String JAVA_CLASSPATH = System.getProperty("java.class.path");
     private static final String PATH_SEPARATOR = System.getProperty("path.separator");
     private static final String JAR_EXT = ".jar";
@@ -55,6 +58,8 @@ public class JavaClassLoader extends URLClassLoader {
 
     protected final ProxyClassLoader proxyClassLoader;
     protected final SourceProvider sourceProvider;
+
+    protected DefaultListableBeanFactory beanFactory;
 
     @Inject
     private TimeSource timeSource;
@@ -83,6 +88,13 @@ public class JavaClassLoader extends URLClassLoader {
         this.cubaClassPath = cubaClassPath;
         this.classPath = buildClasspath();
         this.sourceProvider = new SourceProvider(rootDir);
+    }
+
+    @Override
+    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+        if (beanFactory instanceof DefaultListableBeanFactory) {
+            this.beanFactory = (DefaultListableBeanFactory) beanFactory;
+        }
     }
 
     public void clearCache() {
@@ -148,40 +160,41 @@ public class JavaClassLoader extends URLClassLoader {
     }
 
     private void updateSpringContext(Collection<Class> classes) {
-        boolean needToRefreshRemotingContext = false;
-        for (Class clazz : classes) {
-            Service serviceAnnotation = (Service) clazz.getAnnotation(Service.class);
-            ManagedBean managedBeanAnnotation = (ManagedBean) clazz.getAnnotation(ManagedBean.class);
-            Component componentAnnotation = (Component) clazz.getAnnotation(Component.class);
-            Controller controllerAnnotation = (Controller) clazz.getAnnotation(Controller.class);
+        if (beanFactory != null) {
+            boolean needToRefreshRemotingContext = false;
+            for (Class clazz : classes) {
+                Service serviceAnnotation = (Service) clazz.getAnnotation(Service.class);
+                ManagedBean managedBeanAnnotation = (ManagedBean) clazz.getAnnotation(ManagedBean.class);
+                Component componentAnnotation = (Component) clazz.getAnnotation(Component.class);
+                Controller controllerAnnotation = (Controller) clazz.getAnnotation(Controller.class);
 
-            String beanName = null;
-            if (serviceAnnotation != null) {
-                beanName = serviceAnnotation.value();
-            } else if (managedBeanAnnotation != null) {
-                beanName = managedBeanAnnotation.value();
-            } else if (componentAnnotation != null) {
-                beanName = componentAnnotation.value();
-            } else if (controllerAnnotation != null) {
-                beanName = controllerAnnotation.value();
+                String beanName = null;
+                if (serviceAnnotation != null) {
+                    beanName = serviceAnnotation.value();
+                } else if (managedBeanAnnotation != null) {
+                    beanName = managedBeanAnnotation.value();
+                } else if (componentAnnotation != null) {
+                    beanName = componentAnnotation.value();
+                } else if (controllerAnnotation != null) {
+                    beanName = controllerAnnotation.value();
+                }
+
+                if (StringUtils.isNotBlank(beanName)) {
+                    GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
+                    beanDefinition.setBeanClass(clazz);
+                    beanFactory.registerBeanDefinition(beanName, beanDefinition);
+                }
+
+                if (serviceAnnotation != null) {
+                    needToRefreshRemotingContext = true;
+                }
             }
 
-            if (StringUtils.isNotBlank(beanName)) {
-                DefaultListableBeanFactory beanFactory = AppContext.getContextBeanFactory();
-                GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
-                beanDefinition.setBeanClass(clazz);
-                beanFactory.registerBeanDefinition(beanName, beanDefinition);
-            }
-
-            if (serviceAnnotation != null) {
-                needToRefreshRemotingContext = true;
-            }
-        }
-
-        if (needToRefreshRemotingContext) {
-            ApplicationContext remotingContext = AppContext.getRemotingContext();
-            if (remotingContext != null && remotingContext instanceof ConfigurableApplicationContext) {
-                ((ConfigurableApplicationContext) remotingContext).refresh();
+            if (needToRefreshRemotingContext) {
+                ApplicationContext remotingContext = AppContext.getRemotingContext();
+                if (remotingContext != null && remotingContext instanceof ConfigurableApplicationContext) {
+                    ((ConfigurableApplicationContext) remotingContext).refresh();
+                }
             }
         }
     }

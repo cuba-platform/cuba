@@ -53,8 +53,6 @@ public class AppContext {
 
     private static ApplicationContext context;
 
-    private static DefaultListableBeanFactory contextBeanFactory;
-
     private static volatile ApplicationContext remotingContext;
 
     private static Map<String, String> properties = new ConcurrentHashMap<>();
@@ -223,14 +221,6 @@ public class AppContext {
         if (context != null && context instanceof ConfigurableApplicationContext) {
             ((ConfigurableApplicationContext) context).close();
         }
-    }
-
-    public static void setContextBeanFactory(DefaultListableBeanFactory contextBeanFactory) {
-        AppContext.contextBeanFactory = contextBeanFactory;
-    }
-
-    public static DefaultListableBeanFactory getContextBeanFactory() {
-        return contextBeanFactory;
     }
 
     public static ApplicationContext getRemotingContext() {
