@@ -335,13 +335,9 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
         }
 
         protected class CubaGroupTableGroupRow extends CubaGroupTableRow {
-            private String colKey;
+            private Integer groupColIndex;
             private String groupKey;
             private boolean expanded;
-
-            private int colIndex = -1;
-
-            private boolean hasCells = false;
 
             public CubaGroupTableGroupRow(UIDL uidl, char[] aligns) {
                 super(uidl, aligns);
@@ -361,29 +357,23 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
 
             protected void setWidthForSpannedCell() {
                 int spanWidth = 0;
-                for (int ix = getElement().getChildCount() - 1; ix < tHead.getVisibleCellCount(); ix++) {
-                    HeaderCell headerCell = tHead.getHeaderCell(ix);
-
-                    if (headerCell != null) {
-                        spanWidth += headerCell.getOffsetWidth();
-                    }
+                for (int ix = groupColIndex; ix < tHead.getVisibleCellCount(); ix++) {
+                    spanWidth += tHead.getHeaderCell(ix).getOffsetWidth();
                 }
-
-                Element child = (Element) getElement().getChild(getElement().getChildCount() - 1);
-                if (child != null) {
-                    Util.setWidthExcludingPaddingAndBorder(child, spanWidth, 13, false);
-                }
+                Util.setWidthExcludingPaddingAndBorder((Element) getElement().getChild(groupColIndex),
+                        spanWidth, 13, false);
             }
 
             @Override
             protected void addCellsFromUIDL(UIDL uidl, char[] aligns, int colIndex, int visibleColumnIndex) {
-                this.colKey = uidl.getStringAttribute("colKey");
                 this.groupKey = uidl.getStringAttribute("groupKey");
                 this.expanded = uidl.hasAttribute("expanded") && uidl.getBooleanAttribute("expanded");
 
-                if (colIndex < visibleColOrder.length) {
-                    while (colIndex < visibleColOrder.length && !visibleColOrder[colIndex].equals(colKey)) {
-                        //draw empty cells
+                int currentColIndex = colIndex;
+                if (currentColIndex < visibleColOrder.length) {
+                    String colKey = uidl.getStringAttribute("colKey");
+                    while (currentColIndex < visibleColOrder.length && !visibleColOrder[currentColIndex].equals(colKey)) {
+                                            //draw empty cells
                         Element td = DOM.createTD();
 
                         final TableCellElement tdCell = td.cast();
@@ -393,14 +383,14 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
                         td.addClassName(CubaGroupTableWidget.this.getStylePrimaryName() + "-cell-stub");
                         DOM.appendChild(getElement(), td);
 
-                        colIndex++;
+                        currentColIndex++;
                     }
                 } else {
                     throw new ArrayIndexOutOfBoundsException("Group rendering error");
                 }
 
                 //paint "+" and group caption
-                this.colIndex = colIndex;
+                this.groupColIndex = currentColIndex;
 
                 addGroupCell(uidl.getStringAttribute("groupCaption"));
 
@@ -414,7 +404,7 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
 
             @Override
             protected void setCellWidth(int cellIx, int width) {
-                if (this.colIndex > cellIx) {
+                if (groupColIndex > cellIx) {
                     super.setCellWidth(cellIx, width);
                 } else {
                     setWidthForSpannedCell();
@@ -425,7 +415,7 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
                 // String only content is optimized by not using Label widget
                 Element tdElement = DOM.createTD();
                 final TableCellElement td = tdElement.cast();
-                td.setColSpan(visibleColOrder.length - this.colIndex);
+                td.setColSpan(visibleColOrder.length - groupColIndex);
                 initCellWithText(text, ALIGN_LEFT, "", false, true, null, td);
 
                 // Enchance DOM for table cell
@@ -451,7 +441,8 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
                 final Element targetElement = DOM.eventGetTarget(event);
                 switch (DOM.eventGetType(event)) {
                     case Event.ONCLICK:
-                        if (BrowserInfo.get().getWebkitVersion() > 0 && DOM.getElementPropertyBoolean(targetElement, "__cell")) {
+                        if (BrowserInfo.get().getWebkitVersion() > 0
+                                && DOM.getElementPropertyBoolean(targetElement, "__cell")) {
                             scrollBodyPanel.setFocus(true);
                         }
                         handleRowClick(event);
@@ -462,10 +453,11 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
             }
 
             protected void handleRowClick(Event event) {
-                if (isExpanded())
+                if (expanded) {
                     client.updateVariable(paintableId, "collapse", getGroupKey(), true);
-                else
+                } else {
                     client.updateVariable(paintableId, "expand", getGroupKey(), true);
+                }
 
                 DOM.eventCancelBubble(event, true);
             }
@@ -481,24 +473,12 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
                 //do nothing
             }
 
-            public String getColKey() {
-                return colKey;
-            }
-
             public String getGroupKey() {
                 return groupKey;
             }
 
-            public int getColIndex() {
-                return colIndex;
-            }
-
             public boolean isExpanded() {
                 return expanded;
-            }
-
-            public boolean hasCells() {
-                return hasCells;
             }
         }
 
