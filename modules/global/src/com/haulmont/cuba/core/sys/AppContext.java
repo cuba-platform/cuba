@@ -61,9 +61,9 @@ public class AppContext {
     public static final SecurityContext NO_USER_CONTEXT =
             new SecurityContext(UUID.fromString("23dce942-d13f-11df-88cd-b3d32fd1e595"), "server");
 
-    // Temporary support for deprecated properties
-    private static final List<Pair<String, String>> PROPERTY_SYNONYMS = Arrays.asList(
-            new Pair<>("cuba.connectionUrl", "cuba.connectionUrlList"));
+    // Temporary support for deprecated properties: the second element has priority
+    private static final List<Pair<String, String>> DEPRECATED_PROPERTIES = Arrays.asList(
+            new Pair<>("cuba.connectionUrlList", "cuba.connectionUrl"));
 
     /**
      * Used by other framework classes to get access Spring's context. Don't use it in application code.
@@ -133,17 +133,22 @@ public class AppContext {
      */
     @Nullable
     public static String getProperty(String key) {
-        String value = properties.get(key);
-        if (value == null) {
-            for (Pair<String, String> pair : PROPERTY_SYNONYMS) {
-                if (pair.getFirst().equals(key)) {
-                    return properties.get(pair.getSecond());
-                } else if (pair.getSecond().equals(key)) {
-                    return properties.get(pair.getFirst());
-                }
+        for (Pair<String, String> pair : DEPRECATED_PROPERTIES) {
+            if (pair.getFirst().equals(key)) {
+                return getDeprecatedProperty(pair);
+            } else if (pair.getSecond().equals(key)) {
+                return getDeprecatedProperty(pair);
             }
         }
-        return value;
+        return properties.get(key);
+    }
+
+    private static String getDeprecatedProperty(Pair<String, String> pair) {
+        String value = properties.get(pair.getSecond());
+        if (value != null)
+            return value;
+        else
+            return properties.get(pair.getFirst());
     }
 
     /**

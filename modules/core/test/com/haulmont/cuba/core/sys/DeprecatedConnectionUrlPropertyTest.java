@@ -48,5 +48,14 @@ public class DeprecatedConnectionUrlPropertyTest extends CubaTestCase {
         assertEquals(VALUE, property);
         property = AppContext.getProperty("cuba.connectionUrlList");
         assertEquals(VALUE, property);
+
+        // Old property have priority, because it is likely set in production and must override default value set
+        // in inherited app.properties
+        AppContext.setProperty("cuba.connectionUrl", "aaa");
+        AppContext.setProperty("cuba.connectionUrlList", "bbb");
+        property = AppContext.getProperty("cuba.connectionUrl");
+        assertEquals("aaa", property);
+        property = AppContext.getProperty("cuba.connectionUrlList");
+        assertEquals("aaa", property);
     }
 }

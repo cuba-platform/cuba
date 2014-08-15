@@ -14,14 +14,6 @@ import java.util.Properties;
  */
 public class CubaPropertyPlaceholderConfigurer extends PropertyPlaceholderConfigurer {
 
-    public CubaPropertyPlaceholderConfigurer() {
-        Properties properties = new Properties();
-        for (String name : AppContext.getPropertyNames()) {
-            properties.setProperty(name, AppContext.getProperty(name));
-        }
-        setProperties(properties);
-    }
-
     @Override
     protected String resolvePlaceholder(String placeholder, Properties props, int systemPropertiesMode) {
         String key = placeholder;
@@ -31,7 +23,17 @@ public class CubaPropertyPlaceholderConfigurer extends PropertyPlaceholderConfig
             key = parts[0];
             defValue = parts[1];
         }
-        String value = super.resolvePlaceholder(key, props, systemPropertiesMode);
+
+        String value = null;
+        if (systemPropertiesMode == SYSTEM_PROPERTIES_MODE_OVERRIDE)
+            value = super.resolvePlaceholder(key, props, systemPropertiesMode);
+
+        if (value == null)
+            value = AppContext.getProperty(key);
+
+        if (value == null && systemPropertiesMode == SYSTEM_PROPERTIES_MODE_FALLBACK)
+            value = super.resolvePlaceholder(key, props, systemPropertiesMode);
+
         if (value == null && defValue != null) {
             value = defValue;
         }
