@@ -159,6 +159,7 @@ public class DefaultApp extends App implements ConnectionListener {
             getTimers().stopAll();
 
             closeAllWindows();
+            clearSettingsCache();
 
             String name = currentWindowName.get();
             if (name == null)

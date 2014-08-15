@@ -60,10 +60,10 @@ public class DefaultApp extends App implements ConnectionListener {
             }
 
             afterLoggedIn();
-
         } else {
             cleanupBackgroundTasks();
             closeAllWindows();
+            clearSettingsCache();
 
             for (AppUI ui : getAppUIs()) {
                 if (ui.isTestMode()) {

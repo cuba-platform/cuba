@@ -7,6 +7,7 @@ package com.haulmont.cuba.web;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
+import com.haulmont.cuba.gui.settings.SettingsClient;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
 import com.haulmont.cuba.security.app.UserSessionService;
@@ -15,6 +16,7 @@ import com.haulmont.cuba.web.auth.ActiveDirectoryHelper;
 import com.haulmont.cuba.web.auth.WebAuthConfig;
 import com.haulmont.cuba.web.exception.ExceptionHandlers;
 import com.haulmont.cuba.web.log.AppLog;
+import com.haulmont.cuba.web.settings.WebSettingsClient;
 import com.haulmont.cuba.web.sys.AppCookies;
 import com.haulmont.cuba.web.sys.AppTimers;
 import com.haulmont.cuba.web.sys.BackgroundTaskManager;
@@ -580,6 +582,11 @@ public abstract class App extends Application
                 ((AppWindow) w).getWorkerTimer().stop();
             }
         }
+    }
+
+    protected void clearSettingsCache() {
+        WebSettingsClient webSettingsClient = AppBeans.get(SettingsClient.NAME);
+        webSettingsClient.clearCache();
     }
 
     /**

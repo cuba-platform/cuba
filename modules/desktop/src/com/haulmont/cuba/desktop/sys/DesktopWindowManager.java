@@ -1263,7 +1263,7 @@ public class DesktopWindowManager extends WindowManager {
                 if (!recursiveFramesClose) {
                     saveSettingsAsync(xml);
                 } else {
-                    getService().saveSetting(AppConfig.getClientType(), name, xml);
+                    getSettingsClient().setSetting(name, xml);
                 }
 
                 modified = false;
@@ -1275,7 +1275,7 @@ public class DesktopWindowManager extends WindowManager {
             BackgroundTaskHandler<Object> handle = worker.handle(new BackgroundTask<Object, Object>(10) {
                 @Override
                 public Object run(TaskLifeCycle<Object> taskLifeCycle) throws Exception {
-                    getService().saveSetting(AppConfig.getClientType(), AsyncSettingsImpl.this.name, xml);
+                    getSettingsClient().setSetting(AsyncSettingsImpl.this.name, xml);
 
                     return null;
                 }

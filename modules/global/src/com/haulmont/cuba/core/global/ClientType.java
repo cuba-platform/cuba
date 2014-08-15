@@ -4,8 +4,11 @@
  */
 package com.haulmont.cuba.core.global;
 
-public enum ClientType
-{
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
+public enum ClientType {
     WEB("W", "web"),
     PORTAL("P", "portal"),
     DESKTOP("D", "desktop");
@@ -27,11 +30,12 @@ public enum ClientType
     }
 
     public static ClientType fromId(String id) {
-        if ("W".equals(id))
+        if ("W".equals(id)) {
             return WEB;
-        else if ("D".equals(id))
+        } else if ("D".equals(id)) {
             return DESKTOP;
-        else
+        } else {
             return null;
+        }
     }
 }

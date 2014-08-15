@@ -33,6 +33,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.remoting.RemoteAccessException;
 
+import javax.annotation.Nullable;
 import javax.swing.*;
 import javax.swing.plaf.InputMapUIResource;
 import java.awt.*;
@@ -45,6 +46,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author krivopustov
@@ -75,6 +77,8 @@ public class App implements ConnectionListener {
     protected Configuration configuration;
 
     protected boolean exiting;
+
+    protected ApplicationSession applicationSession;
 
     static {
         initEnvironment();
@@ -548,6 +552,8 @@ public class App implements ConnectionListener {
         SessionMessagesNotifier messagesNotifier = AppBeans.get(SessionMessagesNotifier.NAME);
 
         if (connection.isConnected()) {
+            applicationSession = new ApplicationSession(new ConcurrentHashMap<String, Object>());
+
             messagesClient.setRemoteSearch(true);
 
             DesktopWindowManager windowManager = mainFrame.getWindowManager();
@@ -587,12 +593,19 @@ public class App implements ConnectionListener {
             if (windowManager != null)
                 windowManager.dispose();
 
+            applicationSession = null;
+
             mainFrame.setContentPane(createStartContentPane());
             mainFrame.repaint();
 
             initExceptionHandlers(false);
             showLoginDialog();
         }
+    }
+
+    @Nullable
+    public ApplicationSession getApplicationSession() {
+        return applicationSession;
     }
 
     private void checkSessions() {

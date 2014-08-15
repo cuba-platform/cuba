@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.settings.SettingsClient;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
 import com.haulmont.cuba.security.app.UserSessionService;
@@ -18,6 +19,7 @@ import com.haulmont.cuba.web.auth.RequestContext;
 import com.haulmont.cuba.web.auth.WebAuthConfig;
 import com.haulmont.cuba.web.exception.ExceptionHandlers;
 import com.haulmont.cuba.web.log.AppLog;
+import com.haulmont.cuba.web.settings.WebSettingsClient;
 import com.haulmont.cuba.web.sys.AppCookies;
 import com.haulmont.cuba.web.sys.BackgroundTaskManager;
 import com.haulmont.cuba.web.sys.LinkHandler;
@@ -362,5 +364,10 @@ public abstract class App {
         } catch (Throwable e) {
             log.error("Error closing all windows", e);
         }
+    }
+
+    protected void clearSettingsCache() {
+        WebSettingsClient webSettingsClient = AppBeans.get(SettingsClient.NAME);
+        webSettingsClient.clearCache();
     }
 }

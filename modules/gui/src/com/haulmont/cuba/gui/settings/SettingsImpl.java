@@ -6,8 +6,6 @@ package com.haulmont.cuba.gui.settings;
 
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.security.app.UserSettingService;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -16,12 +14,12 @@ import java.util.List;
 
 /**
  * @author krivopustov
- * @version $id$
+ * @version $Id$
  */
 public class SettingsImpl implements Settings {
 
     protected final String name;
-    protected transient UserSettingService service;
+    protected transient SettingsClient settingsClient;
     protected Element root;
     protected boolean modified;
 
@@ -29,16 +27,17 @@ public class SettingsImpl implements Settings {
         this.name = name;
     }
 
-    protected UserSettingService getService() {
-        if (service == null) {
-            service = AppBeans.get(UserSettingService.NAME);
+    protected SettingsClient getSettingsClient() {
+        if (settingsClient == null) {
+            settingsClient = AppBeans.get(SettingsClient.NAME);
         }
-        return service;
+        return settingsClient;
     }
 
     protected void checkLoaded() {
         if (root == null) {
-            String xml = getService().loadSetting(AppConfig.getClientType(), name);
+            // use cache
+            String xml = getSettingsClient().getSetting(name);
             if (StringUtils.isBlank(xml)) {
                 root = DocumentHelper.createDocument().addElement("settings");
             } else {
@@ -83,7 +82,7 @@ public class SettingsImpl implements Settings {
     public void commit() {
         if (modified && root != null) {
             String xml = Dom4j.writeDocument(root.getDocument(), true);
-            getService().saveSetting(AppConfig.getClientType(), name, xml);
+            getSettingsClient().setSetting(name, xml);
             modified = false;
         }
     }
