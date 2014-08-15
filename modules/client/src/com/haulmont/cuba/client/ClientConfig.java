@@ -12,6 +12,10 @@ import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
 import com.haulmont.cuba.core.config.defaults.DefaultInteger;
 import com.haulmont.cuba.core.config.defaults.DefaultString;
+import com.haulmont.cuba.core.config.type.CommaSeparatedStringListTypeFactory;
+import com.haulmont.cuba.core.config.type.Factory;
+
+import java.util.List;
 
 /**
  * Configuration parameters interface used by the WEB and DESKTOP layers.
@@ -23,8 +27,18 @@ import com.haulmont.cuba.core.config.defaults.DefaultString;
 public interface ClientConfig extends Config {
 
     /**
-     * @return Middleware connection URL
+     * @return middleware connection URL list
      */
+    @Property("cuba.connectionUrlList")
+    @Factory(factory = CommaSeparatedStringListTypeFactory.class)
+    List<String> getConnectionUrlList();
+
+    /**
+     * DEPRECATED! Use {@link #getConnectionUrlList()} to avoid mistakes when connecting to the cluster.
+     * @return middleware connection URL as it is defined in app.properties, i.e. in case of several URLs it will
+     * be a comma-separated list.
+     */
+    @Deprecated
     @Property("cuba.connectionUrl")
     String getConnectionUrl();
 

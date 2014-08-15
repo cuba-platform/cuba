@@ -82,11 +82,11 @@ public class LocalServiceProxy extends RemoteAccessor implements FactoryBean<Obj
 
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            String connectionUrl = AppContext.getProperty("cuba.connectionUrl");
-            if (connectionUrl == null)
-                throw new IllegalStateException("Property cuba.connectionUrl not defined");
+            String connectionUrlList = AppContext.getProperty("cuba.connectionUrlList");
+            if (connectionUrlList == null)
+                throw new IllegalStateException("Property cuba.connectionUrlList not defined");
 
-            String entryName = connectionUrl.substring(connectionUrl.lastIndexOf('/') + 1) + serviceName;
+            String entryName = connectionUrlList.substring(connectionUrlList.lastIndexOf('/') + 1) + serviceName;
             LocalServiceInvoker invoker = LocalServiceDirectory.getInvoker(entryName);
             if (invoker == null)
                 throw new IllegalArgumentException("Service " + entryName + " is not registered in LocalServiceDirectory");

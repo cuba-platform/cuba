@@ -54,7 +54,7 @@
 
     <bean id="cuba_clusterInvocationSupport" class="com.haulmont.cuba.core.sys.remoting.ClusterInvocationSupport"
           init-method="init">
-        <property name="baseUrl" value="${cuba.connectionUrl}"/>
+        <property name="baseUrl" value="${cuba.connectionUrlList}"/>
         <property name="servletPath" value="remoting"/>
     </bean>
 

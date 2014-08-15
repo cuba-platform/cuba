@@ -41,7 +41,7 @@ public class ClusterInvocationSupport {
     private List<String> urls;
     private ReadWriteLock lock = new ReentrantReadWriteLock();
 
-    protected String baseUrl = AppContext.getProperty("cuba.connectionUrl");
+    protected String baseUrl = AppContext.getProperty("cuba.connectionUrlList");
     protected boolean randomPriority = Boolean.valueOf(AppContext.getProperty("cuba.randomServerPriority"));
 
     protected String servletPath = "remoting";

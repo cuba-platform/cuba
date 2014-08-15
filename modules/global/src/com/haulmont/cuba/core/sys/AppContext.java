@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.core.sys;
 
+import com.haulmont.bali.datastruct.Pair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.context.ApplicationContext;
@@ -11,10 +12,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -62,6 +60,10 @@ public class AppContext {
 
     public static final SecurityContext NO_USER_CONTEXT =
             new SecurityContext(UUID.fromString("23dce942-d13f-11df-88cd-b3d32fd1e595"), "server");
+
+    // Temporary support for deprecated properties
+    private static final List<Pair<String, String>> PROPERTY_SYNONYMS = Arrays.asList(
+            new Pair<>("cuba.connectionUrl", "cuba.connectionUrlList"));
 
     /**
      * Used by other framework classes to get access Spring's context. Don't use it in application code.
@@ -131,7 +133,17 @@ public class AppContext {
      */
     @Nullable
     public static String getProperty(String key) {
-        return properties.get(key);
+        String value = properties.get(key);
+        if (value == null) {
+            for (Pair<String, String> pair : PROPERTY_SYNONYMS) {
+                if (pair.getFirst().equals(key)) {
+                    return properties.get(pair.getSecond());
+                } else if (pair.getSecond().equals(key)) {
+                    return properties.get(pair.getFirst());
+                }
+            }
+        }
+        return value;
     }
 
     /**
@@ -192,7 +204,7 @@ public class AppContext {
     }
 
     /**
-     * Called by the framework after the aplication has been started and fully initialized.
+     * Called by the framework after the application has been started and fully initialized.
      */
     public static void startContext() {
         if (started)
@@ -205,7 +217,7 @@ public class AppContext {
     }
 
     /**
-     * Called by the framework before the aplication shutdown.
+     * Called by the framework right before the application shutdown.
      */
     public static void stopContext() {
         if (!started)
