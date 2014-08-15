@@ -70,6 +70,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
 
         loadActions(component, element);
         loadAllowPopupMenu(component, element);
+        loadAllowMultiStringCells(component, element);
 
         final Element columnsElement = element.element("columns");
         final Element rowsElement = element.element("rows");
@@ -123,6 +124,13 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         component.setMultiSelect(BooleanUtils.toBoolean(multiselect));
 
         return component;
+    }
+
+    protected void loadAllowMultiStringCells(T table, Element element) {
+        final String allowMultiStringCells = element.attributeValue("allowMultiStringCells");
+        if (StringUtils.isNotBlank(allowMultiStringCells)) {
+            table.setAllowMultiStringCells(BooleanUtils.toBoolean(allowMultiStringCells));
+        }
     }
 
     protected void loadAllowPopupMenu(T table, Element element) {

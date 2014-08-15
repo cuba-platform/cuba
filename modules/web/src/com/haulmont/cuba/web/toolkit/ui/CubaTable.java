@@ -35,9 +35,6 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
 
     protected LinkedList<Object> editableColumns;
 
-    public CubaTable() {
-    }
-
     /**
      * Keeps track of the ShortcutListeners added to this component, and manages the painting and handling as well.
      */
@@ -142,6 +139,18 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
         if (isAllowPopupMenu() != allowPopupMenu) {
             getState(true).allowPopupMenu = allowPopupMenu;
         }
+    }
+
+    @Override
+    public void setAllowMultiStringCells(boolean allowMultiStringCells) {
+        if (isAllowMultiStringCells() != allowMultiStringCells) {
+            getState(true).allowMultiStringCells = allowMultiStringCells;
+        }
+    }
+
+    @Override
+    public boolean isAllowMultiStringCells() {
+        return getState(false).allowMultiStringCells;
     }
 
     @Override

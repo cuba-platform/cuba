@@ -387,15 +387,13 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
     @Override
     public boolean isAllowMultiStringCells() {
-        return false;
-//        vaadin 7
-//        return component.isAllowMultiStringCells();
+        return component.isAllowMultiStringCells();
     }
 
     @Override
     public void setAllowMultiStringCells(boolean value) {
-//        vaadin7
-//        component.setAllowMultiStringCells(value);
+        component.setAllowMultiStringCells(value);
+        component.setPageLength(0);
     }
 
     @Override

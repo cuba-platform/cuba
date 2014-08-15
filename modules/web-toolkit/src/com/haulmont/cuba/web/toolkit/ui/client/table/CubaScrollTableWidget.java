@@ -45,6 +45,8 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
     protected Widget presentationsMenu;
     protected Widget customContextMenu;
 
+    protected boolean allowMultiStringCells = false;
+
     protected CubaScrollTableWidget() {
         // handle shortcuts
         DOM.sinkEvents(getElement(), Event.ONKEYDOWN);
@@ -433,6 +435,11 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
 
                 Element tdElement = td.cast();
                 Tools.textSelectionEnable(tdElement, textSelectionEnabled);
+
+                if (allowMultiStringCells) {
+                    Style wrapperStyle = tdElement.getFirstChildElement().getStyle();
+                    wrapperStyle.setWhiteSpace(Style.WhiteSpace.PRE_LINE);
+                }
             }
 
             @Override

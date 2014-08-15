@@ -313,6 +313,7 @@
         <xs:attribute name="aggregatable" type="xs:boolean"/>
         <xs:attribute name="presentations" type="xs:boolean"/>
         <xs:attribute name="allowPopupMenu" type="xs:boolean"/>
+        <xs:attribute name="allowMultiStringCells" type="xs:boolean"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="isLayoutComponent">

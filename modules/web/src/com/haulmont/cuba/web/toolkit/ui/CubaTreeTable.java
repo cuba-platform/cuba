@@ -94,6 +94,18 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
     }
 
     @Override
+    public void setAllowMultiStringCells(boolean allowMultiStringCells) {
+        if (isAllowMultiStringCells() != allowMultiStringCells) {
+            getState(true).allowMultiStringCells = allowMultiStringCells;
+        }
+    }
+
+    @Override
+    public boolean isAllowMultiStringCells() {
+        return getState(false).allowMultiStringCells;
+    }
+
+    @Override
     public boolean disableContentBufferRefreshing() {
         return disableContentRefreshing();
     }

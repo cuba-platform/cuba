@@ -78,6 +78,9 @@ public class CubaScrollTableConnector extends TableConnector {
                 getWidget().customContextMenu = null;
             }
         }
+        if (stateChangeEvent.hasPropertyChanged("allowMultiStringCells")) {
+            getWidget().allowMultiStringCells = getState().allowMultiStringCells;
+        }
     }
 
     @Override

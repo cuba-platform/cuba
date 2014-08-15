@@ -43,6 +43,7 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
     protected Widget customContextMenu;
 
     protected ClientLogger logger = ClientLoggerFactory.getLogger("CubaTreeTableWidget");
+    protected boolean allowMultiStringCells = false;
 
     public CubaTreeTableWidget() {
         hideColumnControlAfterClick = false;
@@ -431,6 +432,11 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
 
                 Element tdElement = td.cast();
                 Tools.textSelectionEnable(tdElement, textSelectionEnabled);
+
+                if (allowMultiStringCells) {
+                    Style wrapperStyle = tdElement.getFirstChildElement().getStyle();
+                    wrapperStyle.setWhiteSpace(Style.WhiteSpace.PRE_LINE);
+                }
             }
 
             @Override

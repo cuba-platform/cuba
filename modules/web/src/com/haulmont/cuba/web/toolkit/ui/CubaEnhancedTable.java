@@ -29,6 +29,9 @@ public interface CubaEnhancedTable {
 
     boolean isColumnEditable(Object columnId);
 
+    void setAllowMultiStringCells(boolean allowMultiStringCells);
+    boolean isAllowMultiStringCells();
+
     boolean isAllowPopupMenu();
     void setAllowPopupMenu(boolean allowPopupMenu);
 

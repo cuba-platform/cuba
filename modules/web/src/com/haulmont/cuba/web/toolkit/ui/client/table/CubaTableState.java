@@ -14,6 +14,7 @@ import com.vaadin.shared.ui.table.TableState;
  */
 public class CubaTableState extends TableState {
 
+    public boolean allowMultiStringCells = false;
     public boolean textSelectionEnabled = false;
     public boolean allowPopupMenu = true;
 

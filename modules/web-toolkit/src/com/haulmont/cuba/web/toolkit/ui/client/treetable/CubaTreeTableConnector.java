@@ -79,6 +79,9 @@ public class CubaTreeTableConnector extends TreeTableConnector {
                 getWidget().customContextMenu = null;
             }
         }
+        if (stateChangeEvent.hasPropertyChanged("allowMultiStringCells")) {
+            getWidget().allowMultiStringCells = getState().allowMultiStringCells;
+        }
     }
 
     @Override
