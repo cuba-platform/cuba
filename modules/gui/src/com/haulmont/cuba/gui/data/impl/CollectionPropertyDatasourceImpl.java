@@ -260,7 +260,26 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         checkPermission();
 
         if (__getCollection() == null) {
-            initCollection();
+            if (masterDs.getItem() == null) {
+                // Last chance to find and set a master item
+                MetaProperty inverseProp = metaProperty.getInverse();
+                if (inverseProp != null) {
+                    Entity probableMasterItem = item.getValue(inverseProp.getName());
+                    if (probableMasterItem != null) {
+                        Collection<Entity> masterCollection = ((CollectionPropertyDatasourceImpl) masterDs).__getCollection();
+                        for (Entity masterCollectionItem : masterCollection) {
+                            if (masterCollectionItem.equals(probableMasterItem)) {
+                                masterDs.setItem(masterCollectionItem);
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (masterDs.getItem() == null)
+                    throw new IllegalStateException("Master datasource item is null");
+            } else {
+                initCollection();
+            }
         }
 
         // Don't add the same object instance twice (this is possible when committing nested datasources)
