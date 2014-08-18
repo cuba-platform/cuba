@@ -178,6 +178,8 @@ public class PresentationEditor extends Window {
             }
         });
         buttons.addComponent(closeButton);
+
+        nameField.focus();
     }
 
     protected String getPresentationCaption() {

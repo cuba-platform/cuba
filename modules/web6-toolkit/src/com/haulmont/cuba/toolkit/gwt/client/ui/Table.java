@@ -1803,7 +1803,7 @@ public abstract class Table
 
         private Element clickedSelector;
 
-        private PopupContainer popup;
+        private PresentationsPopupContainer popup;
 
         private int focusedSlot = -1;
 
@@ -2100,7 +2100,7 @@ public abstract class Table
 
         protected void updatePresentationsPopup(UIDL uidl) {
             if (popup == null) {
-                popup = new PopupContainer();
+                popup = new PresentationsPopupContainer();
             }
             popup.updateFromUIDL(uidl, client);
         }

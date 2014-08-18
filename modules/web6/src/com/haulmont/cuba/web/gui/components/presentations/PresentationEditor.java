@@ -23,6 +23,10 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 public class PresentationEditor extends Window {
 
     private Presentation presentation;
@@ -164,6 +168,8 @@ public class PresentationEditor extends Window {
             }
         });
         buttons.addComponent(closeButton);
+
+        nameField.focus();
     }
 
     protected String getPresentationCaption() {

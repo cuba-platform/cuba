@@ -51,7 +51,7 @@ public class TablePresentations extends CustomComponent {
         this.tableImpl = (com.haulmont.cuba.web.toolkit.ui.Table) WebComponentsHelper.unwrap(component);
 
         initLayout();
-        setSizeUndefined();
+        setWidth("100%");
         setStyleName("table-presentations");
 
         setParent(tableImpl);
@@ -152,7 +152,7 @@ public class TablePresentations extends CustomComponent {
 
     private void buildPresentationsList() {
         menuBar.removeItems();
-        presentationsMenuMap = new HashMap<Object, com.vaadin.ui.MenuBar.MenuItem>();
+        presentationsMenuMap = new HashMap<>();
 
         final Presentations p = table.getPresentations();
 
