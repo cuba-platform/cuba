@@ -9,15 +9,17 @@
   .#{$primaryStyleName} {
     text-align: left;
 
-    .boolean-cell-true .v-table-cell-wrapper {
+    .v-table-cell-content.boolean-cell-true .v-table-cell-wrapper {
       color: transparent;
+      font-size: 0px;
       height: 13px;
       background: no-repeat left center;
       background-image: url(sprites/checkbox-checked.png); /** sprite-ref: components; */
     }
 
-    .boolean-cell-false .v-table-cell-wrapper {
+    .v-table-cell-content.boolean-cell-false .v-table-cell-wrapper {
       color: transparent;
+      font-size: 0px;
       height: 13px;
       background: no-repeat left center;
       background-image: url(sprites/checkbox-unchecked.png); /** sprite-ref: components; */

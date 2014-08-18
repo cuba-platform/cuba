@@ -554,12 +554,14 @@
 }
 
 .v-table div.v-table-cell-content.boolean-cell-true {
+  font-size: 0px;
   color: transparent;
   background: no-repeat 5px center;
   background-image: url(images/checkbox-checked.png);
 }
 
 .v-table div.v-table-cell-content.boolean-cell-false {
+  font-size: 0px;
   color: transparent;
   background: no-repeat 5px center;
   background-image: url(images/checkbox-unchecked.png);
