@@ -108,8 +108,10 @@ public class VSwfUpload
         final String height = getValueFromUIDL(uidl, "height", "25").replace("px", "");
 
         final String controlPid = paintableId;
+        final String sessionId = uidl.getStringAttribute("sessionId");
 
         SwfUploadAPI.onReady(new Runnable() {
+            @Override
             public void run() {
                 Tools.fixFlashTitleIE();
                 initSwfUploadObjects();
@@ -120,7 +122,7 @@ public class VSwfUpload
                 // Flash resource url
                 opts.set("flash_url", appUri + "VAADIN/resources/flash/" + "swfupload.swf");
                 // Resource url
-                opts.set("upload_url", appUri + ";jsessionid=" + client.getConfiguration().getSessionId()
+                opts.set("upload_url", appUri + ";jsessionid=" + sessionId
                         + "?pid=" + controlPid + "&multiupload=true");
 
                 // Set file parameters

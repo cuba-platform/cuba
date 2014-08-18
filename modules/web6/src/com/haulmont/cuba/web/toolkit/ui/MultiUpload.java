@@ -9,6 +9,7 @@ import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.gui.components.ValueProvider;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import com.haulmont.cuba.toolkit.gwt.client.swfupload.VSwfUpload;
+import com.haulmont.cuba.web.auth.RequestContext;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.ui.AbstractComponent;
@@ -20,6 +21,10 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
 
+/**
+ * @author artamonov
+ * @version $Id$
+ */
 @SuppressWarnings("serial")
 @ClientWidget(VSwfUpload.class)
 public class MultiUpload extends AbstractComponent {
@@ -79,15 +84,15 @@ public class MultiUpload extends AbstractComponent {
         void errorNotify(String fileName, String message, int errorCode);
     }
 
-    private List<FileUploadStartListener> fileStartListeners = new ArrayList<FileUploadStartListener>();
+    private List<FileUploadStartListener> fileStartListeners = new ArrayList<>();
 
-    private List<FileUploadCompleteListener> fileCompleteListeners = new ArrayList<FileUploadCompleteListener>();
+    private List<FileUploadCompleteListener> fileCompleteListeners = new ArrayList<>();
 
-    private List<QueueCompleteListener> queueCompleteListeners = new ArrayList<QueueCompleteListener>();
+    private List<QueueCompleteListener> queueCompleteListeners = new ArrayList<>();
 
-    private List<FileProgressListener> fileProgressListeners = new ArrayList<FileProgressListener>();
+    private List<FileProgressListener> fileProgressListeners = new ArrayList<>();
 
-    private List<FileErrorHandler> fileErrorListeners = new ArrayList<FileErrorHandler>();
+    private List<FileErrorHandler> fileErrorListeners = new ArrayList<>();
 
     private ValueProvider valueProvider = null;
 
@@ -97,7 +102,7 @@ public class MultiUpload extends AbstractComponent {
     }
 
     @Override
-    public void changeVariables(Object source, Map variables) {
+    public void changeVariables(Object source, Map<String, Object> variables) {
         super.changeVariables(source, variables);
         // Uploading complete
         if (variables.containsKey("queueUploadComplete")) {
@@ -132,6 +137,7 @@ public class MultiUpload extends AbstractComponent {
         FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
         UUID uuid = fileUploading.saveFile(itemStream.openStream(), new FileUploadingAPI.UploadProgressListener() {
 
+            @Override
             public void progressChanged(UUID fileId, int receivedBytes) {
                 for (FileProgressListener listener : fileProgressListeners)
                     listener.progressChanged(fileName, receivedBytes, streamLength);
@@ -151,6 +157,8 @@ public class MultiUpload extends AbstractComponent {
      */
     @Override
     public void paintContent(PaintTarget target) throws PaintException {
+        target.addAttribute("sessionId", RequestContext.get().getSession().getId());
+
         if (valueProvider != null) {
             Iterator<Map.Entry<String, Object>> iter =
                     valueProvider.getParameters().entrySet().iterator();
