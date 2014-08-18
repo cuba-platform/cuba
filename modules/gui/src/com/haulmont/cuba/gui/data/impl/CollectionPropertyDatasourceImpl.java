@@ -7,6 +7,7 @@ package com.haulmont.cuba.gui.data.impl;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterables;
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.*;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
@@ -195,12 +196,12 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
             Object prevItem = this.item;
 
             if (prevItem != item) {
-
                 if (item != null) {
                     final MetaClass aClass = item.getMetaClass();
                     MetaClass metaClass = getMetaClass();
                     if (!aClass.equals(metaClass) && !metaClass.getDescendants().contains(aClass)) {
-                        throw new IllegalStateException(String.format("Invalid item metaClass"));
+                        throw new DevelopmentException(String.format("Invalid item metaClass '%s'",  aClass),
+                                ParamsMap.of("datasource", getId(), "metaClass", aClass));
                     }
                 }
                 this.item = item;

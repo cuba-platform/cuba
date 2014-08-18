@@ -4,13 +4,14 @@
  */
 package com.haulmont.cuba.gui.data.impl;
 
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.MetadataTools;
+import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewProperty;
 import com.haulmont.cuba.gui.data.*;
@@ -54,7 +55,7 @@ public class PropertyDatasourceImpl<T extends Entity>
 
             @Override
             public void stateChanged(Datasource ds, State prevState, State state) {
-                for (DatasourceListener dsListener : new ArrayList<DatasourceListener>(dsListeners)) {
+                for (DatasourceListener dsListener : new ArrayList<>(dsListeners)) {
                     dsListener.stateChanged(PropertyDatasourceImpl.this, prevState, state);
                 }
             }
@@ -113,15 +114,25 @@ public class PropertyDatasourceImpl<T extends Entity>
             if (metadata.getTools().isPersistent(metaMetaClass)
                     || metadata.getTools().isEmbeddable(metaMetaClass)) {
                 View masterView = masterDs.getView();
-                if (masterView == null)
-                    throw new IllegalStateException("No view for datasource " + masterDs.getId());
+                if (masterView == null) {
+                    throw new DevelopmentException("No view for datasource " + masterDs.getId(),
+                            ParamsMap.of("masterDs", masterDs.getId(), "propertyDs", getId()));
+                }
 
                 ViewProperty property = masterView.getProperty(metaProperty.getName());
-                if (property == null)
+                if (property == null) {
                     return null;
-                if (property.getView() == null)
-                    throw new IllegalStateException("Invalid view definition: " + masterView
-                            + ". Property '" + property + "' must have a view");
+                }
+
+                if (property.getView() == null) {
+                    throw new DevelopmentException(
+                            "Invalid view definition: " + masterView + ". Property '" + property + "' must have a view",
+                            ParamsMap.of("masterDs", masterDs.getId(),
+                                         "propertyDs", getId(),
+                                         "masterView", masterView,
+                                         "property", property)
+                    );
+                }
                 view = metadata.getViewRepository().findView(getMetaClass(), property.getView().getName());
                 //anonymous (nameless) view
                 if (view == null)

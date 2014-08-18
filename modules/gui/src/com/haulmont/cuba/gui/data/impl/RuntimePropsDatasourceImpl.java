@@ -159,7 +159,7 @@ public class RuntimePropsDatasourceImpl
         final MetaClass metaClass = this.getMetaClass();
         final MetaProperty metaProperty = metaClass.getProperty(property);
         if (metaProperty == null) {
-            throw new IllegalStateException(
+            throw new DevelopmentException(
                     String.format("Can't find property '%s' in datasource '%s'", property, this.getId()));
         }
         DsBuilder builder = new DsBuilder(getDsContext());

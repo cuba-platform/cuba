@@ -10,10 +10,7 @@ import com.google.common.cache.CacheBuilder;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.FormatStrings;
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.GlobalConfig;
-import com.haulmont.cuba.core.global.MessageTools;
-import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -83,8 +80,10 @@ public abstract class AbstractMessages implements Messages {
     @PostConstruct
     protected void init() {
         mainMessagePack = AppContext.getProperty("cuba.mainMessagePack");
-        if (mainMessagePack == null)
-            throw new IllegalStateException("Property cuba.mainMessagePack is not set");
+        if (mainMessagePack == null) {
+            throw new DevelopmentException("Property cuba.mainMessagePack is not set");
+        }
+
         log.debug("Main message pack: " + mainMessagePack);
 
         for (Locale locale : globalConfig.getAvailableLocales().values()) {

@@ -4,8 +4,10 @@
  */
 package com.haulmont.cuba.gui.data.impl;
 
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -165,7 +167,8 @@ public class DatasourceImpl<T extends Entity>
         if (item != null) {
             final MetaClass aClass = item.getMetaClass();
             if (!aClass.equals(metaClass) && !metaClass.getDescendants().contains(aClass)) {
-                throw new IllegalStateException(String.format("Invalid item MetaClass: " + aClass));
+                throw new DevelopmentException(String.format("Invalid item metaClass '%s'",  aClass),
+                        ParamsMap.of("datasource", getId(), "metaClass", aClass));
             }
             attachListener(item);
         }

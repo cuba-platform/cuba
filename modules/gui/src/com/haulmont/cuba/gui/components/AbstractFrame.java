@@ -5,12 +5,14 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.FrameContext;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
+import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -236,8 +238,9 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
      */
     protected String getMessage(String key) {
         String msgPack = getMessagesPack();
-        if (msgPack == null)
-            throw new IllegalStateException("MessagePack is not set");
+        if (StringUtils.isEmpty(msgPack)) {
+            throw new DevelopmentException("MessagePack is not set");
+        }
 
         return messages.getMessage(msgPack, key);
     }
@@ -252,8 +255,9 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
      */
     protected String formatMessage(String key, Object... params) {
         String msgPack = getMessagesPack();
-        if (msgPack == null)
-            throw new IllegalStateException("MessagePack is not set");
+        if (StringUtils.isEmpty(msgPack)) {
+            throw new DevelopmentException("MessagePack is not set");
+        }
 
         return messages.formatMessage(msgPack, key, params);
     }

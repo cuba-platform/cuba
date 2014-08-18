@@ -74,7 +74,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
                 if (item != null) {
                     final MetaClass aClass = item.getMetaClass();
                     if (!aClass.equals(this.metaClass) && !this.metaClass.getDescendants().contains(aClass)) {
-                        throw new IllegalStateException(String.format("Invalid item metaClass"));
+                        throw new DevelopmentException(String.format("Invalid item metaClass '%s'",  aClass));
                     }
                 }
                 this.item = item;
@@ -107,8 +107,9 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
     @Override
     public void setQueryFilter(QueryFilter filter) {
         String query = getQuery();
-        if (query == null)
-            throw new IllegalStateException("Unable to use filter on '" + getId() + "' datasource without query");
+        if (query == null) {
+            throw new DevelopmentException("Unable to use filter on '" + getId() + "' datasource without query");
+        }
         setQuery(query, filter);
     }
 
@@ -189,10 +190,14 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
             final String[] elements = path.split("\\.");
             switch (info.getType()) {
                 case DATASOURCE: {
-                    final Datasource datasource = dsContext.get(elements[0]);
-                    if (datasource == null)
-                        throw new IllegalStateException("Datasource '" + elements[0] + "' not found in dsContext");
-                    if (State.VALID.equals(datasource.getState())) {
+                    String dsName = elements[0];
+                    final Datasource datasource = dsContext.get(dsName);
+                    if (datasource == null) {
+                        throw new DevelopmentException("Datasource '" + dsName + "' not found in dsContext",
+                                "datasource", dsName);
+                    }
+
+                    if (datasource.getState() == State.VALID) {
                         final Entity item = datasource.getItem();
                         if (elements.length > 1) {
                             String[] valuePath = (String[]) ArrayUtils.subarray(elements, 1, elements.length);
