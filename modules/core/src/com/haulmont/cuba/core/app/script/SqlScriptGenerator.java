@@ -183,7 +183,7 @@ public class SqlScriptGenerator {
                 String fieldName = entry.getKey();
                 String columnName = entry.getValue();
                 if (!fieldName.equalsIgnoreCase(ID)) {
-                    Object value = entity.getValue(fieldName);
+                    Object value = entity.getValueEx(fieldName);
                     valuesStr.add(format("%s=%s", columnName, convertValue(value)));
                 }
             }
