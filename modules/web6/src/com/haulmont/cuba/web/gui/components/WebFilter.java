@@ -144,6 +144,8 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
 
     protected String userStyleName = null;
 
+    protected String initialWindowCaption;
+
     public WebFilter() {
         persistenceManager = AppBeans.get(PersistenceManagerService.NAME);
         component = new VerticalActionsLayout();
@@ -1202,6 +1204,8 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         component.removeComponent(editLayout);
         createParamsLayout(true);
         component.addComponent(paramsLayout);
+
+        updateWindowCaption();
     }
 
     protected void switchToEdit() {
@@ -1692,9 +1696,31 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         return manualApplyRequired != null ? manualApplyRequired : clientConfig.getGenericFilterManualApplyRequired();
     }
 
-    protected class SelectListener implements Property.ValueChangeListener {
+    protected void updateWindowCaption() {
+        if (!applyingDefault) {
+            Window window = ComponentsHelper.getWindow(WebFilter.this);
+            String filterTitle;
+            if (filterEntity != null) {
+                if (filterEntity.getCode() != null) {
+                    filterTitle = messages.getMainMessage(filterEntity.getCode());
+                } else {
+                    filterTitle = filterEntity.getName();
+                }
+            } else {
+                filterTitle = null;
+            }
+            window.setDescription(filterTitle);
 
-        protected String initialWindowCaption;
+            if (initialWindowCaption == null) {
+                initialWindowCaption = window.getCaption();
+            }
+
+            WebWindowManager wm = App.getInstance().getWindowManager();
+            wm.setWindowCaption(window, initialWindowCaption, filterTitle);
+        }
+    }
+
+    protected class SelectListener implements Property.ValueChangeListener {
 
         @Override
         public void valueChange(Property.ValueChangeEvent event) {
@@ -1714,27 +1740,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
             createParamsLayout(true);
             component.addComponent(paramsLayout);
 
-            if (!applyingDefault) {
-                Window window = ComponentsHelper.getWindow(WebFilter.this);
-                String filterTitle;
-                if (filterEntity != null) {
-                    if (filterEntity.getCode() != null) {
-                        filterTitle = messages.getMainMessage(filterEntity.getCode());
-                    } else {
-                        filterTitle = filterEntity.getName();
-                    }
-                } else {
-                    filterTitle = null;
-                }
-                window.setDescription(filterTitle);
-
-                if (initialWindowCaption == null) {
-                    initialWindowCaption = window.getCaption();
-                }
-
-                WebWindowManager wm = App.getInstance().getWindowManager();
-                wm.setWindowCaption(window, initialWindowCaption, filterTitle);
-            }
+            updateWindowCaption();
 
             if (useMaxResults) {
                 maxResultsCb.setValue(true);

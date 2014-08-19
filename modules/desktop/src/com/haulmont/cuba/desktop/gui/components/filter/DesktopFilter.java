@@ -125,6 +125,8 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
 
     protected Component applyTo;
 
+    protected String initialWindowCaption;
+
     protected Metadata metadata = AppBeans.get(Metadata.NAME);
 
     public DesktopFilter() {
@@ -1283,9 +1285,33 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         return manualApplyRequired != null ? manualApplyRequired : clientConfig.getGenericFilterManualApplyRequired();
     }
 
-    protected class SelectListener implements ValueListener {
+    protected void updateWindowCaption() {
+        if (!applyingDefault) {
+            Window window = ComponentsHelper.getWindow(DesktopFilter.this);
+            String filterTitle;
+            if (filterEntity != null) {
+                if (filterEntity.getCode() != null) {
+                    filterTitle = messages.getMainMessage(filterEntity.getCode());
+                } else {
+                    filterTitle = filterEntity.getName();
+                }
+            } else {
+                filterTitle = null;
+            }
+            window.setDescription(filterTitle);
 
-        protected String initialWindowCaption;
+            if (initialWindowCaption == null) {
+                initialWindowCaption = window.getCaption();
+            }
+
+            DesktopWindowManager wm = DesktopComponentsHelper.getTopLevelFrame(
+                    DesktopFilter.this.getComposition()).getWindowManager();
+
+            wm.setWindowCaption(window, initialWindowCaption, filterTitle);
+        }
+    }
+
+    protected class SelectListener implements ValueListener {
 
         @Override
         public void valueChanged(Object source, String property, Object prevValue, Object value) {
@@ -1310,29 +1336,8 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
             impl.revalidate();
             impl.repaint();
 
-            if (!applyingDefault) {
-                Window window = ComponentsHelper.getWindow(DesktopFilter.this);
-                String filterTitle;
-                if (filterEntity != null) {
-                    if (filterEntity.getCode() != null) {
-                        filterTitle = messages.getMainMessage(filterEntity.getCode());
-                    } else {
-                        filterTitle = filterEntity.getName();
-                    }
-                } else {
-                    filterTitle = null;
-                }
-                window.setDescription(filterTitle);
+            updateWindowCaption();
 
-                if (initialWindowCaption == null) {
-                    initialWindowCaption = window.getCaption();
-                }
-
-                DesktopWindowManager wm = DesktopComponentsHelper.getTopLevelFrame(
-                        DesktopFilter.this.getComposition()).getWindowManager();
-
-                wm.setWindowCaption(window, initialWindowCaption, filterTitle);
-            }
             if (useMaxResults) {
                 maxResultsCb.setSelected(true);
             }

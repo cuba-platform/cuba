@@ -142,6 +142,8 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
 
     protected String userStyleName = null;
 
+    protected String initialWindowCaption;
+
     public WebFilter() {
         persistenceManager = AppBeans.get(PersistenceManagerService.NAME);
         component = new CubaVerticalActionsLayout();
@@ -1224,8 +1226,11 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         updateControls();
         component.removeComponent(editLayout);
         createParamsLayout(true);
-        if (paramsLayout.getComponentCount() > 0)
+        if (paramsLayout.getComponentCount() > 0) {
             component.addComponent(paramsLayout);
+        }
+
+        updateWindowCaption();
     }
 
     protected void switchToEdit() {
@@ -1717,10 +1722,31 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         return manualApplyRequired != null ? manualApplyRequired : clientConfig.getGenericFilterManualApplyRequired();
     }
 
+    protected void updateWindowCaption() {
+        if (!applyingDefault) {
+            Window window = ComponentsHelper.getWindow(WebFilter.this);
+            String filterTitle;
+            if (filterEntity != null) {
+                if (filterEntity.getCode() != null) {
+                    filterTitle = messages.getMainMessage(filterEntity.getCode());
+                } else {
+                    filterTitle = filterEntity.getName();
+                }
+            } else {
+                filterTitle = null;
+            }
+            window.setDescription(filterTitle);
+
+            if (initialWindowCaption == null) {
+                initialWindowCaption = window.getCaption();
+            }
+
+            WebWindowManager wm = App.getInstance().getWindowManager();
+            wm.setWindowCaption(window, initialWindowCaption, filterTitle);
+        }
+    }
+
     protected class SelectListener implements Property.ValueChangeListener {
-
-        protected String initialWindowCaption;
-
         @Override
         public void valueChange(Property.ValueChangeEvent event) {
             if (changingFilter) {
@@ -1742,27 +1768,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
                 component.addComponent(paramsLayout);
             }
 
-            if (!applyingDefault) {
-                Window window = ComponentsHelper.getWindow(WebFilter.this);
-                String filterTitle;
-                if (filterEntity != null) {
-                    if (filterEntity.getCode() != null) {
-                        filterTitle = messages.getMainMessage(filterEntity.getCode());
-                    } else {
-                        filterTitle = filterEntity.getName();
-                    }
-                } else {
-                    filterTitle = null;
-                }
-                window.setDescription(filterTitle);
-
-                if (initialWindowCaption == null) {
-                    initialWindowCaption = window.getCaption();
-                }
-
-                WebWindowManager wm = App.getInstance().getWindowManager();
-                wm.setWindowCaption(window, initialWindowCaption, filterTitle);
-            }
+            updateWindowCaption();
 
             if (useMaxResults) {
                 maxResultsCb.setValue(true);
