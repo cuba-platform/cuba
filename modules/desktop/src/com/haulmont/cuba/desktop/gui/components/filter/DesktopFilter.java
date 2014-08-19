@@ -267,6 +267,9 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         impl.remove(editPanel);
 
         createParamsPanel(true);
+
+        updateWindowCaption();
+
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
