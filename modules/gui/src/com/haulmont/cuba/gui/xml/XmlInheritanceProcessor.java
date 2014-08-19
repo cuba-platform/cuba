@@ -5,6 +5,7 @@
 package com.haulmont.cuba.gui.xml;
 
 import com.haulmont.bali.util.Dom4j;
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.Resources;
@@ -99,7 +100,7 @@ public class XmlInheritanceProcessor {
         }
 
         // add and process elements
-        Set<Element> justAdded = new HashSet<Element>();
+        Set<Element> justAdded = new HashSet<>();
         for (Element element : Dom4j.elements(extElem)) {
             // look for suitable locator
             ElementTargetLocator locator = null;
@@ -131,16 +132,27 @@ public class XmlInheritanceProcessor {
 
     private void addNewElement(Element resultElem, Element element, Set<Element> justAdded) {
         String idx = element.attributeValue(new QName("index", extNs));
-        Element newElem;
+        Element newElement;
         if (StringUtils.isBlank(idx)) {
-            newElem = resultElem.addElement(element.getName());
+            newElement = resultElem.addElement(element.getName());
         } else {
-            newElem = DocumentHelper.createElement(element.getName());
-            List elements = resultElem.elements();
-            elements.add(Integer.valueOf(idx), newElem);
+            newElement = DocumentHelper.createElement(element.getName());
+
+            @SuppressWarnings("unchecked")
+            List<Element> elements = resultElem.elements();
+            int index = Integer.parseInt(idx);
+            if (index < 0 || index > elements.size()) {
+                String message = String.format(
+                        "Incorrect extension XML for screen. Could not paste new element %s to position %s",
+                        newElement.getName(), index);
+
+                throw new DevelopmentException(message,
+                        ParamsMap.of("element", newElement.getName(), "index", index));
+            }
+            elements.add(index, newElement);
         }
-        justAdded.add(newElem);
-        process(newElem, element);
+        justAdded.add(newElement);
+        process(newElement, element);
     }
 
     private interface ElementTargetLocator {
@@ -150,10 +162,12 @@ public class XmlInheritanceProcessor {
 
     private static class CommonElementTargetLocator implements ElementTargetLocator {
 
+        @Override
         public boolean suitableFor(Element extElem) {
             return !StringUtils.isBlank(extElem.attributeValue("id"));
         }
 
+        @Override
         public Element locate(Element resultParentElem, Element extElem) {
             String id = extElem.attributeValue("id");
             for (Element e : Dom4j.elements(resultParentElem)) {
@@ -167,10 +181,12 @@ public class XmlInheritanceProcessor {
 
     private static class ViewElementTargetLocator implements ElementTargetLocator {
 
+        @Override
         public boolean suitableFor(Element extElem) {
             return "view".equals(extElem.getName());
         }
 
+        @Override
         public Element locate(Element resultParentElem, Element extElem) {
             String entity = extElem.attributeValue("entity");
             String clazz = extElem.attributeValue("class");
@@ -190,10 +206,12 @@ public class XmlInheritanceProcessor {
 
     private static class ViewPropertyElementTargetLocator implements ElementTargetLocator {
 
+        @Override
         public boolean suitableFor(Element extElem) {
             return "property".equals(extElem.getName());
         }
 
+        @Override
         public Element locate(Element resultParentElem, Element extElem) {
             String name = extElem.attributeValue("name");
             for (Element e : Dom4j.elements(resultParentElem)) {
@@ -207,12 +225,14 @@ public class XmlInheritanceProcessor {
 
     private static class ButtonElementTargetLocator implements ElementTargetLocator {
 
+        @Override
         public boolean suitableFor(Element extElem) {
             return "button".equals(extElem.getName())
                     && extElem.attributeValue("id") == null
                     && extElem.attributeValue("action") != null;
         }
 
+        @Override
         public Element locate(Element resultParentElem, Element extElem) {
             String action = extElem.attributeValue("action");
             for (Element e : Dom4j.elements(resultParentElem)) {
