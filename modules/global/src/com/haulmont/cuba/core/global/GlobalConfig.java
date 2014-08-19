@@ -154,5 +154,10 @@ public interface GlobalConfig extends Config {
      */
     @Property("cuba.classpath.directories")
     String getCubaClasspathDirectories();
+
+    @Property("cuba.system.info.systemInfoScriptsEnabled")
+    @DefaultBoolean(true)
+    boolean getSystemInfoScriptsEnabled();
+    void setSystemInfoScriptsEnabled(boolean enabled);
 }
 

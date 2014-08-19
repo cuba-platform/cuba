@@ -6,13 +6,12 @@
 package com.haulmont.cuba.gui.app.core.showinfo;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.app.ConfigStorageService;
 import com.haulmont.cuba.core.app.script.ScriptGenerationService;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.gui.WindowParam;
-import com.haulmont.cuba.gui.components.AbstractWindow;
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.components.TextArea;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 
 import javax.inject.Inject;
@@ -45,8 +44,20 @@ public class SystemInfoWindow extends AbstractWindow {
     @Inject
     protected ScriptGenerationService scriptGenerationService;
 
+    @Inject
+    protected GlobalConfig globalConfig;
+
     @WindowParam(name = "item")
     protected Entity item;
+
+    @Inject
+    protected Button insert;
+
+    @Inject
+    protected Button select;
+
+    @Inject
+    protected Button update;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -66,6 +77,12 @@ public class SystemInfoWindow extends AbstractWindow {
         List<Action> tableActions = new ArrayList<>(infoTable.getActions());
         for (Action action : tableActions)
             infoTable.removeAction(action);
+
+        if (!globalConfig.getSystemInfoScriptsEnabled()) {
+            insert.setVisible(false);
+            update.setVisible(false);
+            select.setVisible(false);
+        }
     }
 
     public void generateInsert() {
@@ -78,6 +95,13 @@ public class SystemInfoWindow extends AbstractWindow {
     public void generateUpdate() {
         scriptArea.setEditable(true);
         scriptArea.setValue(scriptGenerationService.generateUpdateScript(item));
+        scriptArea.setVisible(true);
+        scriptArea.setEditable(false);
+    }
+
+    public void generateSelect() {
+        scriptArea.setEditable(true);
+        scriptArea.setValue(scriptGenerationService.generateSelectScript(item));
         scriptArea.setVisible(true);
         scriptArea.setEditable(false);
     }

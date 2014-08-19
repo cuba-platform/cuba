@@ -17,6 +17,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 
 import javax.annotation.ManagedBean;
+import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.persistence.*;
@@ -26,6 +27,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static java.lang.String.format;
+import static java.lang.String.valueOf;
 
 /**
  * @author degtyarjov
@@ -40,6 +42,8 @@ public class SqlScriptGenerator {
     protected SimpleDateFormat dateFormat = new SimpleDateFormat("''yyyy-MM-dd HH:mm:ss''");
     protected String insertTemplate = "insert into %s \n(%s) \nvalues (%s);";
     protected String updateTemplate = "update %s \nset %s \nwhere %s=%s;";
+    protected String selectTemplate = "select %s from %s where %s";
+
     protected Class clazz;
     protected List<Table> tables = new LinkedList<>();
     protected String discriminatorValue;
@@ -58,6 +62,11 @@ public class SqlScriptGenerator {
     public void init() {
         MetaClass metaClass = metadata.getClass(clazz);
         collectTableMetadata(metaClass, new Table(null));
+
+        if (tables.isEmpty()) {
+            throw new IllegalStateException(
+                    format("Could not generate scripts for class %s, because it's not linked with any database tables.", clazz));
+        }
     }
 
     public String generateInsertScript(Entity entity) {
@@ -76,7 +85,7 @@ public class SqlScriptGenerator {
 
     public String generateUpdateScript(Entity entity) {
         Preconditions.checkArgument(entity.getClass().equals(clazz),
-                format("Could not generate insert script for entity with class [%s]. This script generator is for class [%s]",
+                format("Could not generate update script for entity with class [%s]. This script generator is for class [%s]",
                         entity.getClass().getName(),
                         clazz.getClass()));
 
@@ -88,7 +97,43 @@ public class SqlScriptGenerator {
         return result.toString();
     }
 
-    protected String convertValue(Object value) {
+    public String generateSelectScript(Entity entity) {
+        Preconditions.checkArgument(entity.getClass().equals(clazz),
+                format("Could not generate select script for entity with class [%s]. This script generator is for class [%s]",
+                        entity.getClass().getName(),
+                        clazz.getClass()));
+
+        List<String> columns = new ArrayList<>();
+        List<String> tableNames = new ArrayList<>();
+        List<String> where = new ArrayList<>();
+
+        String tableAlias = null;
+        String tableIdColumn = null;
+        for (int i = 0; i < tables.size(); i++) {
+            Table table = tables.get(i);
+            tableIdColumn = table.fieldToColumnMapping.get(ID);
+            tableAlias = format("t%s", valueOf(i));
+            String parentAlias = format("t%s", valueOf(i - 1));
+            tableNames.add(table.name + " " + tableAlias);
+
+            for (String columnName : table.fieldToColumnMapping.values()) {
+                columns.add(tableAlias + "." + columnName);
+            }
+
+            if (table.parent != null) {
+                String parentIdColumn = table.parent.fieldToColumnMapping.get(ID);
+                where.add(format("%s.%s = %s.%s", tableAlias, tableIdColumn, parentAlias, parentIdColumn));
+            }
+        }
+
+        where.add(tableAlias + "." + tableIdColumn + " = " + convertValue(entity.getId()));
+
+
+        return format(selectTemplate,
+                convertList(columns), convertList(tableNames), convertList(where).replaceAll(",", " and "));
+    }
+
+    protected String convertValue(@Nullable Object value) {
         try {
             String valueStr;
             if (value instanceof Entity) {
@@ -188,10 +233,11 @@ public class SqlScriptGenerator {
                 }
             }
 
-            return format(updateTemplate, name, convertList(valuesStr), fieldToColumnMapping.get(ID), convertValue(entity.getUuid()));
+            return format(updateTemplate, name, convertList(valuesStr), fieldToColumnMapping.get(ID), convertValue(entity.getId()));
         }
 
 
+        @Nullable
         protected Object discriminatorValue() {
             if (discriminatorValue == null) {
                 return null;
@@ -231,21 +277,26 @@ public class SqlScriptGenerator {
                 this.discriminatorType = discriminatorColumn.discriminatorType();
             }
 
-            fieldToColumnMapping.putAll(collect(clazz));
+            fieldToColumnMapping.putAll(collectFields(clazz));
         }
 
-        private Map<String, String> collect(Class clazz) {
+        private Map<String, String> collectFields(Class clazz) {
             Map<String, String> result = new LinkedHashMap<>();
             for (Field field : clazz.getDeclaredFields()) {
 
                 Embedded embedded = field.getAnnotation(Embedded.class);
+                AttributeOverrides overrides = field.getAnnotation(AttributeOverrides.class);
                 Column columnAnnotation = field.getAnnotation(Column.class);
                 JoinColumn joinColumnAnnotation = field.getAnnotation(JoinColumn.class);
 
                 if (embedded != null) {
                     Class<?> embeddedObjectType = field.getType();
-                    Map<String, String> embeddedFields = collect(embeddedObjectType);
-                    //todo attributes override
+                    Map<String, String> embeddedFields = collectFields(embeddedObjectType);
+
+                    if (overrides != null) {
+                        overrideFields(overrides, embeddedFields);
+                    }
+
                     for (Map.Entry<String, String> entry : embeddedFields.entrySet()) {
                         result.put(field.getName() + "." + entry.getKey(), entry.getValue());
                     }
@@ -257,6 +308,13 @@ public class SqlScriptGenerator {
             }
 
             return result;
+        }
+
+        private void overrideFields(AttributeOverrides overrides, Map<String, String> embeddedFields) {
+            AttributeOverride[] overriddenAttributes = overrides.value();
+            for (AttributeOverride overriddenAttribute : overriddenAttributes) {
+                embeddedFields.put(overriddenAttribute.name(), overriddenAttribute.column().name());
+            }
         }
     }
 }

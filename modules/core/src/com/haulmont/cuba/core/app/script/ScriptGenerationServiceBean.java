@@ -52,6 +52,13 @@ public class ScriptGenerationServiceBean implements ScriptGenerationService {
         return generator.generateUpdateScript(entity);
     }
 
+    @Override
+    public String generateSelectScript(Entity entity) {
+        Preconditions.checkNotNullArgument(entity);
+        SqlScriptGenerator generator = AppBeans.getPrototype(SqlScriptGenerator.NAME, entity.getClass());
+        return generator.generateSelectScript(entity);
+    }
+
     protected Entity reload(Entity entity) {
         Transaction tx = persistence.createTransaction();
         try {

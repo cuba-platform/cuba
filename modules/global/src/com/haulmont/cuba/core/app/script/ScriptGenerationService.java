@@ -23,4 +23,6 @@ public interface ScriptGenerationService {
      * Generates an SQL-update query for the entity
      */
     String generateUpdateScript(Entity entity);
+
+    String generateSelectScript(Entity entity);
 }
