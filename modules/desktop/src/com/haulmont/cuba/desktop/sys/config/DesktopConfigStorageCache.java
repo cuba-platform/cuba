@@ -12,6 +12,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * Config storage service proxy with caching for desktop client. <br/>
+ * Reloads db properties only if last loading was at least 10 seconds ago.
+ *
  * @author artamonov
  * @version $Id$
  */
@@ -19,7 +22,7 @@ public class DesktopConfigStorageCache implements ConfigStorageService {
 
     protected static final int SEQUENTIAL_INVALIDATE_THRESHOLD = 10000; // 10 seconds
 
-    protected volatile long lastInvalidateTs = 0;
+    protected long lastInvalidateTs = 0;
     protected final Map<String, String> properties = new ConcurrentHashMap<>();
 
     @Override
@@ -48,6 +51,9 @@ public class DesktopConfigStorageCache implements ConfigStorageService {
         }
     }
 
+    /**
+     * invoke only with synchronization by this.properties
+     */
     protected void invalidateIfNeeded() {
         long currentTimeMillis = System.currentTimeMillis();
         if (currentTimeMillis - lastInvalidateTs > SEQUENTIAL_INVALIDATE_THRESHOLD) {

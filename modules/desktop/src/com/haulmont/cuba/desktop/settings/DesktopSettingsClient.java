@@ -20,6 +20,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * User settings provider for desktop application. Caches settings in desktop app per user session.
+ *
  * @author artamonov
  * @version $Id$
  */
@@ -37,7 +39,7 @@ public class DesktopSettingsClient implements SettingsClient {
             return cached.orNull();
         }
 
-        String setting = userSettingService.loadSetting(ClientType.WEB, name);
+        String setting = userSettingService.loadSetting(ClientType.DESKTOP, name);
         settings.put(name, Optional.fromNullable(setting));
 
         return setting;
@@ -46,7 +48,7 @@ public class DesktopSettingsClient implements SettingsClient {
     @Override
     public void setSetting(String name, @Nullable String value) {
         getCache().put(name, Optional.fromNullable(value));
-        userSettingService.saveSetting(ClientType.WEB, name, value);
+        userSettingService.saveSetting(ClientType.DESKTOP, name, value);
     }
 
     protected Map<String, Optional<String>> getCache() {

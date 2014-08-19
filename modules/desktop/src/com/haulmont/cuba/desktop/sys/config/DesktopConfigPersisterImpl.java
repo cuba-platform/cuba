@@ -8,6 +8,10 @@ import com.haulmont.cuba.client.sys.config.ConfigPersisterClientImpl;
 import com.haulmont.cuba.core.app.ConfigStorageService;
 
 /**
+ * Desktop specific configuration properties provider that uses cache for db properties.
+ *
+ * @see com.haulmont.cuba.desktop.sys.config.DesktopConfigStorageCache
+ *
  * @author krivopustov
  * @version $Id$
  */

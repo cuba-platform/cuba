@@ -19,6 +19,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * User settings provider for web application. Caches settings in HTTP session.
+ *
  * @author artamonov
  * @version $Id$
  */

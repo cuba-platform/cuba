@@ -12,6 +12,10 @@ import com.haulmont.cuba.core.global.Configuration;
 import java.lang.reflect.Proxy;
 
 /**
+ * Desktop specific implementation of Configuration that uses application scope cache for db properties.
+ *
+ * @see com.haulmont.cuba.desktop.sys.config.DesktopConfigStorageCache
+ *
  * @author artamonov
  * @version $Id$
  */
