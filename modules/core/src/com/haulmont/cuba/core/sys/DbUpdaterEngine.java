@@ -145,7 +145,7 @@ public class DbUpdaterEngine implements DbUpdater {
             for (String moduleDirName : moduleDirs) {
                 File moduleDir = new File(dbDir, moduleDirName);
                 File initDir = new File(moduleDir, "update");
-                File scriptDir = new File(initDir, DbmsType.getCurrent().getId());
+                File scriptDir = new File(initDir, getDbDialect().getDbmsType());
                 if (scriptDir.exists()) {
                     Collection list = FileUtils.listFiles(scriptDir, null, true);
                     URI scriptDirUri = scriptDir.toURI();
