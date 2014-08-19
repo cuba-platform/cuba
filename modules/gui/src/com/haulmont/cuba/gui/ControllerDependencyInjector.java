@@ -129,7 +129,10 @@ public class ControllerDependencyInjector {
         }
 
         Object instance = getInjectedInstance(type, name, annotationClass);
-        if (required && instance == null) {
+
+        if (instance != null) {
+            assignValue(element, instance);
+        } else if (required) {
             Class<?> declaringClass = ((Member) element).getDeclaringClass();
             Class<? extends IFrame> frameClass = frame.getClass();
 
@@ -145,8 +148,6 @@ public class ControllerDependencyInjector {
             }
 
             log.warn(msg);
-        } else {
-            assignValue(element, instance);
         }
     }
 
