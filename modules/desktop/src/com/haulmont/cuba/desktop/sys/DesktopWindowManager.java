@@ -132,9 +132,10 @@ public class DesktopWindowManager extends WindowManager {
         if (window instanceof Window.Wrapper) {
             desktopWindow = ((Window.Wrapper) window).getWrappedWindow();
         }
-        WindowOpenMode openMode = windowOpenMode.get(desktopWindow);
+        window.setCaption(caption);
+
         String formattedCaption = formatTabDescription(caption, description);
-        window.setCaption(formattedCaption);
+        WindowOpenMode openMode = windowOpenMode.get(desktopWindow);
 
         if (openMode != null) {
             OpenType openType = openMode.getOpenType();

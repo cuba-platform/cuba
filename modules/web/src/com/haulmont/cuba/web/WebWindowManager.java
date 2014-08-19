@@ -110,8 +110,9 @@ public class WebWindowManager extends WindowManager {
         if (window instanceof Window.Wrapper) {
             webWindow = ((Window.Wrapper) window).getWrappedWindow();
         }
-        WindowOpenMode openMode = windowOpenMode.get(webWindow);
+        window.setCaption(caption);
 
+        WindowOpenMode openMode = windowOpenMode.get(webWindow);
         String formattedCaption;
         if (openMode != null
                 && (openMode.getOpenType() == OpenType.NEW_TAB || openMode.getOpenType() == OpenType.THIS_TAB)) {
@@ -119,8 +120,6 @@ public class WebWindowManager extends WindowManager {
         } else {
             formattedCaption = formatTabDescription(caption, description);
         }
-
-        window.setCaption(formattedCaption);
 
         if (openMode != null) {
             if (openMode.getOpenType() == OpenType.DIALOG) {
