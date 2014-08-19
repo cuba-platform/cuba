@@ -5,9 +5,12 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.combobox;
 
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
+import com.vaadin.client.VConsole;
 import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.VFilterSelect;
 
@@ -35,6 +38,32 @@ public class CubaComboBoxWidget extends VFilterSelect implements ShortcutActionH
 
         if (type == Event.ONKEYDOWN && shortcutHandler != null) {
             shortcutHandler.handleKeyboardEvent(event);
+        }
+    }
+
+    @Override
+    public void onKeyUp(KeyUpEvent event) {
+        if (enabled && !readonly) {
+            switch (event.getNativeKeyCode()) {
+                case KeyCodes.KEY_ENTER:
+                case KeyCodes.KEY_TAB:
+                case KeyCodes.KEY_SHIFT:
+                case KeyCodes.KEY_CTRL:
+                case KeyCodes.KEY_ALT:
+                case KeyCodes.KEY_DOWN:
+                case KeyCodes.KEY_UP:
+                case KeyCodes.KEY_PAGEDOWN:
+                case KeyCodes.KEY_PAGEUP:
+                case KeyCodes.KEY_ESCAPE:
+                    // NOP
+                    break;
+                default:
+                    // do not show options popup if we handle shortcut action
+                    if (!event.isControlKeyDown() && !event.isAltKeyDown()) {
+                        super.onKeyUp(event);
+                    }
+                    break;
+            }
         }
     }
 
