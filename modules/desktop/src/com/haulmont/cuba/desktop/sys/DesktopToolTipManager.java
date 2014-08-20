@@ -19,7 +19,7 @@ import java.awt.event.*;
  */
 public class DesktopToolTipManager extends MouseAdapter {
 
-    public static int F1_CODE = 112;
+    public static final int F1_CODE = 112;
 
     private static int CLOSE_TIME = 500;
     private static int SHOW_TIME = 1000;

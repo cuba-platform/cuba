@@ -1019,7 +1019,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
                     String width = colElem.attributeValue("width");
                     if (width != null) {
-                        component.setColumnWidth(column, Integer.valueOf(width));
+                        component.setColumnWidth(column, Integer.parseInt(width));
                     }
 
                     String visible = colElem.attributeValue("visible");

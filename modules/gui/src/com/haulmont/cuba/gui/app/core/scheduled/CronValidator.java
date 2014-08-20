@@ -12,6 +12,10 @@ import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.ValidationException;
 import org.springframework.scheduling.support.CronSequenceGenerator;
 
+/**
+ * @author degtyarjov
+ * @version $Id$
+ */
 public class CronValidator implements Field.Validator {
 
     @Override
@@ -20,7 +24,7 @@ public class CronValidator implements Field.Validator {
             ServerInfoService serverInfoService = AppBeans.get(ServerInfoService.NAME);
             Messages messages = AppBeans.get(Messages.NAME);
             try {
-                CronSequenceGenerator cronSequenceGenerator = new CronSequenceGenerator(value.toString(), serverInfoService.getTimeZone());
+                new CronSequenceGenerator(value.toString(), serverInfoService.getTimeZone());
             } catch (Exception e) {
                 throw new ValidationException(messages.getMessage(getClass(), "validation.cronInvalid"));
             }

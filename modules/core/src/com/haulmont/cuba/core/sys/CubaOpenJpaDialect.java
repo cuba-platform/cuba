@@ -28,7 +28,7 @@ public class CubaOpenJpaDialect extends OpenJpaDialect {
 
     private static final long serialVersionUID = 7560990917358283944L;
 
-    private Log log = LogFactory.getLog(getClass());
+    private static final Log log = LogFactory.getLog(CubaOpenJpaDialect.class);
 
     @Override
     public Object beginTransaction(EntityManager entityManager, TransactionDefinition definition) throws PersistenceException, SQLException, TransactionException {
@@ -57,8 +57,9 @@ public class CubaOpenJpaDialect extends OpenJpaDialect {
 
             if (DbmsType.getCurrent() == DbmsType.POSTGRES) {
                 Connection connection = (Connection) ((OpenJPAEntityManager) entityManager).getConnection();
-                Statement statement = connection.createStatement();
-                statement.execute("set local statement_timeout to " + timeoutMs);
+                try (Statement statement = connection.createStatement()) {
+                    statement.execute("set local statement_timeout to " + timeoutMs);
+                }
             }
         }
 

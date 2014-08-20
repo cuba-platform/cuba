@@ -182,7 +182,7 @@ public class DesktopSplitPanel extends DesktopAbstractComponent<JSplitPane> impl
                 this.applyNewPosition = false;
                 this.positionChanged = true;
 
-                impl.setDividerLocation(Integer.valueOf(value));
+                impl.setDividerLocation(Integer.parseInt(value));
                 impl.setResizeWeight(position / 100.0);
             }
         }

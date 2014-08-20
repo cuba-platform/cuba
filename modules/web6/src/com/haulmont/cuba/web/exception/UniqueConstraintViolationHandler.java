@@ -19,16 +19,15 @@ import java.util.regex.Pattern;
  * Handles database unique constraint violations. Determines the exception type by searching a special marker string
  * in the messages of all exceptions in the chain.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class UniqueConstraintViolationHandler implements ExceptionHandler {
 
     private Pattern pattern;
 
-    private Messages messages = AppBeans.get(Messages.class);
-    private DataService dataService = AppBeans.get(DataService.class);
+    private Messages messages = AppBeans.get(Messages.NAME);
+    private DataService dataService = AppBeans.get(DataService.NAME);
 
     private Pattern getPattern() {
         if (pattern == null) {

@@ -236,7 +236,7 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
         }
     }
 
-    public class RowsCountComponent extends JPanel {
+    public static class RowsCountComponent extends JPanel {
 
         private JButton prevButton;
         private JButton nextButton;

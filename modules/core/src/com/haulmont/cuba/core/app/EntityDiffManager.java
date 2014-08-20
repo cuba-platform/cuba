@@ -197,7 +197,7 @@ public class EntityDiffManager {
                 } else {
                     if (firstValue != null) {
                         // removed or set null
-                        propertyDiff = generateClassDiffFor(firstValue, firstValue, secondValue,
+                        propertyDiff = generateClassDiffFor(firstValue, firstValue, null /*secondValue*/,
                                 viewProperty, metaProperty, diffBranch);
                     }
                 }

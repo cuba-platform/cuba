@@ -72,7 +72,7 @@ public class WebFileUploadField extends WebAbstractComponent<Upload> implements 
         component.addStartedListener(new Upload.StartedListener() {
             @Override
             public void uploadStarted(Upload.StartedEvent event) {
-                final Integer maxUploadSizeMb = AppBeans.get(Configuration.class).getConfig(ClientConfig.class).getMaxUploadSizeMb();
+                final long maxUploadSizeMb = AppBeans.get(Configuration.class).getConfig(ClientConfig.class).getMaxUploadSizeMb();
                 final long maxSize = maxUploadSizeMb * BYTES_IN_MEGABYTE;
                 if (event.getContentLength() > maxSize) {
                     component.interruptUpload();

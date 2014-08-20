@@ -54,7 +54,7 @@ public class SplitPanelLoader extends ContainerLoader{
 
         final String pos = element.attributeValue("pos");
         if (!StringUtils.isEmpty(pos)) {
-            component.setSplitPosition(Integer.valueOf(pos));
+            component.setSplitPosition(Integer.parseInt(pos));
         }
 
         loadHeight(component, element, "-1px");

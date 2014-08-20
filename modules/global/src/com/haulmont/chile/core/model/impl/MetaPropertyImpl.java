@@ -148,7 +148,7 @@ public class MetaPropertyImpl extends MetadataObjectImpl<MetaProperty> implement
         return domain.getName() + "." + name;
     }
 
-    private class MetaPropertyInvocationHandler implements InvocationHandler {
+    private static class MetaPropertyInvocationHandler implements InvocationHandler {
 
         private MetaClass domain;
         private String name;

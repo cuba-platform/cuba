@@ -29,13 +29,13 @@ public class TextAreaLoader extends AbstractTextFieldLoader {
         loadTrimming(element, component);
 
         final String cols = element.attributeValue("cols");
-        final String rows = element.attributeValue("rows");
-
-        if (!StringUtils.isEmpty(cols)) {
-            component.setColumns(Integer.valueOf(cols));
+        if (StringUtils.isNotEmpty(cols)) {
+            component.setColumns(Integer.parseInt(cols));
         }
-        if (!StringUtils.isEmpty(rows)) {
-            component.setRows(Integer.valueOf(rows));
+
+        final String rows = element.attributeValue("rows");
+        if (StringUtils.isNotEmpty(rows)) {
+            component.setRows(Integer.parseInt(rows));
         }
 
         return component;

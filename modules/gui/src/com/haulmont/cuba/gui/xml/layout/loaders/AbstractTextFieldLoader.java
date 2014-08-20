@@ -30,7 +30,7 @@ public abstract class AbstractTextFieldLoader extends AbstractFieldLoader {
     protected void loadMaxLength(Element element, TextInputField.MaxLengthLimited component) {
         final String maxLength = element.attributeValue("maxLength");
         if (!StringUtils.isEmpty(maxLength)) {
-            component.setMaxLength(Integer.valueOf(maxLength));
+            component.setMaxLength(Integer.parseInt(maxLength));
         }
     }
 }

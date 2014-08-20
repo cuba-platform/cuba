@@ -28,7 +28,6 @@ public class WebScrollBoxLayout extends WebAbstractComponent<Panel> implements S
     public static final String CUBA_SCROLLBOX_CONTENT_STYLE = "cuba-scrollbox-content";
 
     protected List<Component> components = new ArrayList<>();
-    protected Alignment alignment = Alignment.TOP_LEFT;
     protected Orientation orientation = Orientation.VERTICAL;
     protected ScrollBarPolicy scrollBarPolicy = ScrollBarPolicy.VERTICAL;
 

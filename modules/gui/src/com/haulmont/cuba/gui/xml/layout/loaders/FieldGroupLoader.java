@@ -86,7 +86,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
                         columnFieldCaptionWidth = columnFieldCaptionWidth.substring(0, columnFieldCaptionWidth.indexOf("px"));
                     }
 
-                    component.setFieldCaptionWidth(colIndex, Integer.valueOf(columnFieldCaptionWidth));
+                    component.setFieldCaptionWidth(colIndex, Integer.parseInt(columnFieldCaptionWidth));
                 }
 
                 colIndex++;
@@ -157,7 +157,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
                 fieldCaptionWidth = fieldCaptionWidth.substring(0, fieldCaptionWidth.indexOf("px"));
             }
 
-            component.setFieldCaptionWidth(Integer.valueOf(fieldCaptionWidth));
+            component.setFieldCaptionWidth(Integer.parseInt(fieldCaptionWidth));
         }
     }
 

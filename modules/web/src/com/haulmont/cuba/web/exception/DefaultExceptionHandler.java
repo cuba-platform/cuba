@@ -28,7 +28,7 @@ import java.net.SocketException;
  */
 public class DefaultExceptionHandler implements ExceptionHandler {
 
-    protected Messages messages = AppBeans.get(Messages.class);
+    protected Messages messages = AppBeans.get(Messages.NAME);
 
     @Override
     public boolean handle(ErrorEvent event, App app) {

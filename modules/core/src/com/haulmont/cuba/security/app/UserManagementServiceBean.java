@@ -170,16 +170,16 @@ public class UserManagementServiceBean implements UserManagementService {
         Template bodyDefaultTemplate = loadDefaultTemplate(resetPasswordBodyTemplate, templateEngine);
         Template subjectDefaultTemplate = loadDefaultTemplate(resetPasswordSubjectTemplate, templateEngine);
 
-        // send emails
-        for (User user : modifiedUsers.keySet()) {
+        for (Map.Entry<User, String> userPasswordEntry : modifiedUsers.entrySet()) {
+            User user = userPasswordEntry.getKey();
             if (StringUtils.isNotEmpty(user.getEmail())) {
-
                 EmailTemplate template = getResetPasswordTemplate(user, templateEngine,
                         resetPasswordSubjectTemplate, resetPasswordBodyTemplate,
                         subjectDefaultTemplate, bodyDefaultTemplate,
                         localizedSubjectTemplates, localizedBodyTemplates);
 
-                sendResetPasswordEmail(user, modifiedUsers.get(user), template.getSubjectTemplate(), template.getBodyTemplate());
+                String password = userPasswordEntry.getValue();
+                sendResetPasswordEmail(user, password, template.getSubjectTemplate(), template.getBodyTemplate());
             }
         }
 
@@ -480,7 +480,7 @@ public class UserManagementServiceBean implements UserManagementService {
     /**
      * Template pair : subject + body
      */
-    protected class EmailTemplate {
+    protected static class EmailTemplate {
 
         private Template subjectTemplate;
         private Template bodyTemplate;

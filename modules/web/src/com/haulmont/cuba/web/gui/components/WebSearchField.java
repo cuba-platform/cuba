@@ -26,8 +26,6 @@ public class WebSearchField extends WebLookupField implements SearchField {
     protected int minSearchStringLength = 0;
     protected Mode mode = Mode.CASE_SENSITIVE;
 
-    protected Messages messages;
-
     protected IFrame.NotificationType defaultNotificationType = IFrame.NotificationType.TRAY;
 
     protected SearchNotifications searchNotifications = new SearchNotifications() {
@@ -44,10 +42,6 @@ public class WebSearchField extends WebLookupField implements SearchField {
             App.getInstance().getWindowManager().showNotification(message, defaultNotificationType);
         }
     };
-
-    public WebSearchField() {
-        messages = AppBeans.get(Messages.class);
-    }
 
     @Override
     protected void createComponent() {

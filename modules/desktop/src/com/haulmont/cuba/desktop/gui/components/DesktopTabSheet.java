@@ -549,7 +549,7 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> imple
         }
     }
 
-    protected class LazyTabInfo {
+    protected static class LazyTabInfo {
         protected DesktopAbstractBox tabContent;
         protected Element descriptor;
         protected ComponentLoader loader;

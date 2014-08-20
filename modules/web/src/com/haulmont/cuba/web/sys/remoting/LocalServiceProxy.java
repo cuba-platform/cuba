@@ -72,7 +72,7 @@ public class LocalServiceProxy extends RemoteAccessor implements FactoryBean<Obj
             this.serviceName = "/" + serviceName;
     }
 
-    private class LocalServiceInvocationHandler implements InvocationHandler {
+    private static class LocalServiceInvocationHandler implements InvocationHandler {
 
         private String serviceName;
 

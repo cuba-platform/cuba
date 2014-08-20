@@ -25,7 +25,6 @@ import java.lang.reflect.AnnotatedElement;
  * @author devyatkin
  * @version $Id$
  */
-
 public class RuntimePropertiesMetaProperty extends MetadataObjectImpl<MetaProperty> implements MetaProperty {
 
     private MetaClass metaClass;
@@ -99,7 +98,7 @@ public class RuntimePropertiesMetaProperty extends MetadataObjectImpl<MetaProper
         return null;
     }
 
-    protected class FakeAnnotatedElement implements AnnotatedElement {
+    protected static class FakeAnnotatedElement implements AnnotatedElement {
 
         @Override
         public boolean isAnnotationPresent(Class<? extends Annotation> annotationClass) {

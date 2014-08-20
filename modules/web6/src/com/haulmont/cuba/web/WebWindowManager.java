@@ -7,7 +7,6 @@ package com.haulmont.cuba.web;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.SilentException;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.*;
@@ -64,8 +63,6 @@ public class WebWindowManager extends WindowManager {
     protected final WebConfig webConfig;
     protected final ClientConfig clientConfig;
 
-    protected Messages messages;
-
     public WebWindowManager(final App app, AppWindow appWindow) {
         this.app = app;
         this.appWindow = appWindow;
@@ -74,8 +71,6 @@ public class WebWindowManager extends WindowManager {
 
         webConfig = configuration.getConfig(WebConfig.class);
         clientConfig = configuration.getConfig(ClientConfig.class);
-
-        messages = AppBeans.get(Messages.class);
 
         screenHistorySupport = new ScreenHistorySupport();
     }

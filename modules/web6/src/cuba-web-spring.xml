@@ -98,7 +98,7 @@
                 <value>com.haulmont.cuba.web.exception.FileStorageExceptionHandler</value>
                 <value>com.haulmont.cuba.web.exception.InvalidValueExceptionHandler</value>
                 <value>com.haulmont.cuba.web.exception.EntityAccessExceptionHandler</value>
-                <value>com.haulmont.cuba.web.exception.MssqlDateOutOfRangeException</value>
+                <value>com.haulmont.cuba.web.exception.MssqlDateOutOfRangeExceptionHandler</value>
             </list>
         </property>
     </bean>

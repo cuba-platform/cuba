@@ -99,8 +99,10 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
             List constants = Arrays.asList(metaProperty.getRange().asEnumeration().getJavaClass().getEnumConstants());
             List opts = new ArrayList();
 
-            for (String key : options.keySet()) {
-                Object itemId = options.get(key);
+            for (Map.Entry<String, Object> entry : options.entrySet()) {
+                String key = entry.getKey();
+                Object itemId = entry.getValue();
+
                 component.setItemCaption(itemId, key);
                 if (!constants.contains(itemId)) {
                     throw new UnsupportedOperationException(itemId + " is not of class of meta property" + metaProperty);
@@ -113,8 +115,10 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
             setCaptionMode(CaptionMode.ITEM);
         } else {
             List opts = new ArrayList();
-            for (String key : options.keySet()) {
-                Object itemId = options.get(key);
+            for (Map.Entry<String, Object> entry : options.entrySet()) {
+                String key = entry.getKey();
+                Object itemId = entry.getValue();
+
                 component.setItemCaption(itemId, key);
                 opts.add(itemId);
             }

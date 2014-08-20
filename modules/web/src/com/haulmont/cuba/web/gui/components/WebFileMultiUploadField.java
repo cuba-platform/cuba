@@ -133,7 +133,7 @@ public class WebFileMultiUploadField extends WebAbstractComponent<CubaMultiUploa
                     case FILE_EXCEEDS_SIZE_LIMIT:
 
                         ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
-                        final Integer maxUploadSizeMb = clientConfig.getMaxUploadSizeMb();
+                        final int maxUploadSizeMb = clientConfig.getMaxUploadSizeMb();
 
                         wm.showNotification(messages.formatMessage(WebFileMultiUploadField.class, "multiupload.filesizeLimitExceed", fileName, maxUploadSizeMb),
                                 IFrame.NotificationType.WARNING);

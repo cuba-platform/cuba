@@ -32,7 +32,6 @@ import java.util.*;
 public class WebGroupBox extends WebAbstractComponent<GroupBox> implements GroupBoxLayout, GroupBox.ExpandChangeHandler {
 
     protected List<Component> components = new ArrayList<>();
-    protected Alignment alignment = Alignment.TOP_LEFT;
     protected Orientation orientation = Orientation.VERTICAL;
 
     protected List<ExpandListener> expandListeners = null;

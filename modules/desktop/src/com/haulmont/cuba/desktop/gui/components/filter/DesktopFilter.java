@@ -1631,7 +1631,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
 
     protected class MaxResultsField extends JTextField {
         private Integer value;
-        private final int ENTER_CODE = 10;
+        private static final int ENTER_CODE = 10;
 
         public MaxResultsField(int length) {
             TextComponentDocument doc = new TextComponentDocument();

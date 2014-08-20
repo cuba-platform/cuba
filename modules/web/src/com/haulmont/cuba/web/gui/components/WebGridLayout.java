@@ -25,10 +25,6 @@ public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implemen
     protected Map<String, Component> componentByIds = new HashMap<>();
     protected Collection<Component> ownComponents = new LinkedHashSet<>();
 
-    protected Alignment alignment = Alignment.TOP_LEFT;
-
-    protected boolean expandable = true;
-
     public WebGridLayout() {
         component = new CubaGridLayout();
     }
@@ -152,16 +148,6 @@ public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implemen
 
     @Override
     public void requestFocus() {
-    }
-
-    @Override
-    public boolean isExpandable() {
-        return expandable;
-    }
-
-    @Override
-    public void setExpandable(boolean expandable) {
-        this.expandable = expandable;
     }
 
     @Override

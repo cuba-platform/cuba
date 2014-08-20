@@ -32,9 +32,9 @@ public class RemotingServlet extends DispatcherServlet {
 
     private static final long serialVersionUID = 4142366570614871805L;
 
-    private Log log = LogFactory.getLog(getClass());
-
     public static final String SPRING_CONTEXT_CONFIG = "cuba.remotingSpringContextConfig";
+
+    private static final Log log = LogFactory.getLog(RemotingServlet.class);
 
     private volatile boolean checkCompleted;
 

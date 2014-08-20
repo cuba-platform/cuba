@@ -21,13 +21,13 @@ import java.util.List;
  * @author novikov
  * @version $Id$
  */
-public class MssqlDateOutOfRangeException implements ExceptionHandler {
+public class MssqlDateOutOfRangeExceptionHandler implements ExceptionHandler {
 
     private String className;
 
     private static final String MESSAGE = "Only dates between January 1, 1753 and December 31, 9999 are accepted";
 
-    public MssqlDateOutOfRangeException() {
+    public MssqlDateOutOfRangeExceptionHandler() {
         this.className = SQLException.class.getName();
     }
 

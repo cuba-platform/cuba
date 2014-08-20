@@ -109,7 +109,7 @@ public enum DbmsType {
 
     public abstract Map<String, String> getJpaParameters();
 
-    protected static Log log = LogFactory.getLog(DbmsType.class);
+    protected static final Log log = LogFactory.getLog(DbmsType.class);
 
     public String getId() {
         return name().toLowerCase();

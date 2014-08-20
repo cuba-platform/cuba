@@ -36,7 +36,7 @@ public class ClusterInvocationSupport {
         void urlListChanged(List<String> newUrlList);
     }
 
-    private Log log = LogFactory.getLog(getClass());
+    private final Log log = LogFactory.getLog(getClass());
 
     private List<String> urls;
     private ReadWriteLock lock = new ReentrantReadWriteLock();
@@ -84,7 +84,7 @@ public class ClusterInvocationSupport {
     public List<String> getUrlList(String serviceName) {
         lock.readLock().lock();
         try {
-            List<String> list = new ArrayList<String>(urls.size());
+            List<String> list = new ArrayList<>(urls.size());
             for (String url : urls) {
                 list.add(url + "/" + serviceName);
             }
@@ -95,7 +95,7 @@ public class ClusterInvocationSupport {
     }
 
     public synchronized void updateUrlPriority(String successfulUrl) {
-        List<String> newList = new ArrayList<String>();
+        List<String> newList = new ArrayList<>();
         String url = successfulUrl.substring(0, successfulUrl.lastIndexOf("/"));
         newList.add(url);
         lock.writeLock().lock();

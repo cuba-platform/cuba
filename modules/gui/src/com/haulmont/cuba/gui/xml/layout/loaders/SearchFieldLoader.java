@@ -34,8 +34,10 @@ public class SearchFieldLoader extends LookupFieldLoader {
 
         String modeString = element.attributeValue("mode");
         if (StringUtils.isNotEmpty(modeString)) {
-            SearchField.Mode mode = SearchField.Mode.valueOf(StringUtils.upperCase(modeString));
-            if (mode == null) {
+            SearchField.Mode mode;
+            try {
+                mode = SearchField.Mode.valueOf(StringUtils.upperCase(modeString));
+            } catch (IllegalArgumentException e) {
                 throw new GuiDevelopmentException("Unable to parse mode for search", context.getFullFrameId(), "mode", modeString);
             }
             component.setMode(mode);

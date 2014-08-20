@@ -80,7 +80,7 @@ public class WebTwinColumn extends WebAbstractOptionsField<TwinColumnSelect> imp
         };
     }
 
-    public class CollectionPropertyWrapper extends PropertyWrapper {
+    public static class CollectionPropertyWrapper extends PropertyWrapper {
         private static final long serialVersionUID = -7658086655306380094L;
 
         public CollectionPropertyWrapper(Object item, MetaPropertyPath propertyPath) {

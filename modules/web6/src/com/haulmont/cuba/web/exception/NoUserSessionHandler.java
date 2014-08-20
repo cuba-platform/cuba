@@ -56,7 +56,7 @@ public class NoUserSessionHandler extends AbstractExceptionHandler {
         }
     }
 
-    protected class LoginAction extends DialogAction {
+    protected static class LoginAction extends DialogAction {
         protected LoginAction() {
             super(DialogAction.Type.OK);
         }

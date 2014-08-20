@@ -16,8 +16,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.xml.DOMConfigurator;
 
 import javax.sql.DataSource;
-import java.io.File;
-import java.io.PrintWriter;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -190,7 +190,7 @@ public class DbUpdaterUtil extends DbUpdaterEngine {
                 }
                 log.info("Available create scripts: \n" + availableScripts);
                 log.info(String.format("Do you want to create database %s ? [y/n]", connectionStringParam));
-                Scanner scanner = new Scanner(System.in);
+                Scanner scanner = new Scanner(new InputStreamReader(System.in, StandardCharsets.UTF_8));
                 if ("y".equals(scanner.next())) {
                     doInit();
                 }
@@ -214,7 +214,7 @@ public class DbUpdaterUtil extends DbUpdaterEngine {
 
                 if (updatesAvailable && cmd.hasOption(applyUpdatesOption.getOpt())) {
                     log.info(String.format("Do you want to apply updates to %s ? [y/n]", connectionStringParam));
-                    Scanner scanner = new Scanner(System.in);
+                    Scanner scanner = new Scanner(new InputStreamReader(System.in, StandardCharsets.UTF_8));
                     if ("y".equals(scanner.next())) {
                         doUpdate();
                     }

@@ -107,7 +107,7 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
         compile(group: 'com.sun.mail', name: 'javax.mail', version: '1.5.1')
         compile(group: 'log4j', name: 'log4j', version: '1.2.16')
         compile(group: 'org.perf4j', name: 'perf4j', version: '0.9.16')
-        compile(group: 'com.google.code.findbugs', name: 'jsr305', version: '2.0.1')
+        compile(group: 'com.google.code.findbugs', name: 'jsr305', version: '2.0.3')
         compile(group: 'com.haulmont.thirdparty', name: 'javaee-api', version: '6.0.20091228')
         compile(group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.1.6')
         compile(group: 'antlr', name: 'antlr', version: '2.7.7')
@@ -154,7 +154,9 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
     }
 
     findbugs {
+        toolVersion = "2.0.3"
         ignoreFailures = true
+        omitVisitors = ['FindDoubleCheck']
     }
 
     findbugsMain {

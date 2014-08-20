@@ -36,6 +36,7 @@ import javax.inject.Inject;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -214,7 +215,7 @@ public class FoldersServiceBean implements FoldersService {
         zipOutputStream.setMethod(ZipArchiveOutputStream.STORED);
         zipOutputStream.setEncoding("UTF-8");
         String xml = createXStream().toXML(folder);
-        byte[] xmlBytes = xml.getBytes();
+        byte[] xmlBytes = xml.getBytes(StandardCharsets.UTF_8);
         ArchiveEntry zipEntryDesign = newStoredEntry("folder.xml", xmlBytes);
         zipOutputStream.putArchiveEntry(zipEntryDesign);
         zipOutputStream.write(xmlBytes);
@@ -242,7 +243,7 @@ public class FoldersServiceBean implements FoldersService {
 
         while (((archiveEntry = archiveReader.getNextZipEntry()) != null) && (folder == null)) {
             if (archiveEntry.getName().equals("folder.xml")) {
-                String xml = new String(IOUtils.toByteArray(archiveReader));
+                String xml = new String(IOUtils.toByteArray(archiveReader), StandardCharsets.UTF_8);
                 folder = (Folder) createXStream().fromXML(xml);
             }
         }

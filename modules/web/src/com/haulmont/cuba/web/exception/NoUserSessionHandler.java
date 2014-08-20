@@ -30,7 +30,7 @@ import java.util.Locale;
  */
 public class NoUserSessionHandler extends AbstractExceptionHandler {
 
-    private static Log log = LogFactory.getLog(NoUserSessionHandler.class);
+    private static final Log log = LogFactory.getLog(NoUserSessionHandler.class);
 
     private Locale locale;
 
@@ -60,7 +60,7 @@ public class NoUserSessionHandler extends AbstractExceptionHandler {
         }
     }
 
-    private class LoginAction extends DialogAction {
+    private static class LoginAction extends DialogAction {
         protected LoginAction() {
             super(DialogAction.Type.OK);
         }

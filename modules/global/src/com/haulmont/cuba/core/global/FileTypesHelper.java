@@ -13,14 +13,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+/**
+ * @author artamonov
+ * @version $Id$
+ */
 public class FileTypesHelper {
 
     /**
      * Default mime-type.
      */
-    public static String DEFAULT_MIME_TYPE = "application/octet-stream";
+    public static final String DEFAULT_MIME_TYPE = "application/octet-stream";
 
-    private static String initialExtToMIMEMap = "application/vnd.ms-word.document.macroEnabled.12   docm,"
+    private static final String initialExtToMIMEMap = "application/vnd.ms-word.document.macroEnabled.12   docm,"
             + "application/vnd.openxmlformats-officedocument.wordprocessingml.document              docx,"
             + "application/vnd.openxmlformats-officedocument.wordprocessingml.template              dotx,"
             + "application/vnd.ms-powerpoint.template.macroEnabled.12                               potm,"

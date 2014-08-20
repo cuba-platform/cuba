@@ -52,10 +52,10 @@ public class WebFieldGroup
 
     protected final com.haulmont.cuba.gui.components.FieldFactory fieldFactory = new WebFieldGroupFieldFactory();
 
-    protected Security security = AppBeans.get(Security.class);
+    protected Security security = AppBeans.get(Security.NAME);
 
-    protected MessageTools messageTools = AppBeans.get(MessageTools.class);
-    protected Messages messages = AppBeans.get(Messages.class);
+    protected MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+    protected Messages messages = AppBeans.get(Messages.NAME);
 
     public WebFieldGroup() {
         component = new com.haulmont.cuba.web.toolkit.ui.FieldGroup() {
@@ -843,7 +843,7 @@ public class WebFieldGroup
         }
     }
 
-    protected class FieldBasket {
+    protected static class FieldBasket {
 
         private com.vaadin.ui.Field composition;
 

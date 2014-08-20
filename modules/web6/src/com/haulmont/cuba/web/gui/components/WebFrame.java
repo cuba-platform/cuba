@@ -34,7 +34,6 @@ public class WebFrame extends WebAbstractBox implements IFrame, WrappedFrame {
     protected String messagePack;
     protected FrameContext context;
     protected DsContext dsContext;
-    protected Element element;
 
     protected IFrame wrapper;
 
@@ -264,16 +263,6 @@ public class WebFrame extends WebAbstractBox implements IFrame, WrappedFrame {
     @Override
     public void showWebPage(String url, @Nullable Map<String, Object> params) {
         App.getInstance().getWindowManager().showWebPage(url, params);
-    }
-
-    @Override
-    public Element getXmlDescriptor() {
-        return element;
-    }
-
-    @Override
-    public void setXmlDescriptor(Element element) {
-        this.element = element;
     }
 
     @Override

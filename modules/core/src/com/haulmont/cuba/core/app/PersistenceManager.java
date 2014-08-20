@@ -32,7 +32,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @ManagedBean(PersistenceManagerAPI.NAME)
 public class PersistenceManager implements PersistenceManagerAPI {
 
-    protected Log log = LogFactory.getLog(getClass());
+    protected final Log log = LogFactory.getLog(getClass());
 
     protected volatile Set<String> softDeleteTables;
 
@@ -196,7 +196,7 @@ public class PersistenceManager implements PersistenceManagerAPI {
         Transaction tx = persistence.createTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
-            Query q = em.createQuery("select s from sys$EntityStatistics s");
+            TypedQuery<EntityStatistics> q = em.createQuery("select s from sys$EntityStatistics s", EntityStatistics.class);
             List<EntityStatistics> list = q.getResultList();
             for (EntityStatistics es : list) {
                 statisticsCache.put(es.getName(), es);
@@ -267,6 +267,7 @@ public class PersistenceManager implements PersistenceManagerAPI {
         flushStatisticsCache();
     }
 
+    @Override
     public void refreshStatisticsForEntity(String name) {
         log.debug("Refreshing statistics for entity " + name);
         Transaction tx = persistence.createTransaction();
@@ -287,7 +288,8 @@ public class PersistenceManager implements PersistenceManagerAPI {
     }
 
     protected EntityStatistics getEntityStatisticsInstance(String name, EntityManager em) {
-        Query q = em.createQuery("select s from sys$EntityStatistics s where s.name = ?1");
+        TypedQuery<EntityStatistics> q =
+                em.createQuery("select s from sys$EntityStatistics s where s.name = ?1", EntityStatistics.class);
         q.setParameter(1, name);
         List<EntityStatistics> list = q.getResultList();
 

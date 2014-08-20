@@ -51,8 +51,9 @@ public class ControlLoggerWindow extends AbstractWindow {
         @SuppressWarnings("unchecked")
         Map<String, Level> loggersMap = (Map<String, Level>) params.get("loggersMap");
 
-        for (String loggerName : loggersMap.keySet()) {
-            Level level = loggersMap.get(loggerName);
+        for (Map.Entry<String, Level> levelEntry : loggersMap.entrySet()) {
+            String loggerName = levelEntry.getKey();
+            Level level = levelEntry.getValue();
 
             Pair<TextField, LookupField> editComponents = createEditComponents(loggerName, level);
 

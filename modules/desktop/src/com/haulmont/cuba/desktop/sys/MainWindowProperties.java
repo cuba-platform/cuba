@@ -5,7 +5,9 @@
 
 package com.haulmont.cuba.desktop.sys;
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -21,9 +23,8 @@ import java.io.IOException;
 import java.util.Properties;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class MainWindowProperties {
 
@@ -65,7 +66,8 @@ public class MainWindowProperties {
     public void load() {
         Properties properties = new Properties();
         try {
-            File file = new File(ConfigProvider.getConfig(GlobalConfig.class).getDataDir(), "main-window.properties");
+            Configuration configuration = AppBeans.get(Configuration.NAME);
+            File file = new File(configuration.getConfig(GlobalConfig.class).getDataDir(), "main-window.properties");
             if (file.exists()) {
                 FileInputStream stream = FileUtils.openInputStream(file);
                 try {
@@ -85,10 +87,10 @@ public class MainWindowProperties {
         if (maximized) {
             frame.setExtendedState(Frame.MAXIMIZED_BOTH);
         }
-        int x = Integer.valueOf(properties.getProperty("x", "0"));
-        int y = Integer.valueOf(properties.getProperty("y", "0"));
-        int width = Integer.valueOf(properties.getProperty("width", "1000"));
-        int height = Integer.valueOf(properties.getProperty("height", "700"));
+        int x = Integer.parseInt(properties.getProperty("x", "0"));
+        int y = Integer.parseInt(properties.getProperty("y", "0"));
+        int width = Integer.parseInt(properties.getProperty("width", "1000"));
+        int height = Integer.parseInt(properties.getProperty("height", "700"));
 
         frame.setBounds(x, y, width, height);
         if (x == 0 && y == 0)

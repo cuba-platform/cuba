@@ -10,7 +10,6 @@ import ca.odell.glazedlists.matchers.TextMatcherEditor;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
@@ -64,8 +63,6 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
 
     protected int minSearchStringLength = 0;
 
-    protected Messages messages;
-
     protected IFrame.NotificationType defaultNotificationType = IFrame.NotificationType.TRAY;
 
     protected Color searchEditBgColor = (Color) UIManager.get("cubaSearchEditBackground");
@@ -86,8 +83,6 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
     };
 
     public DesktopSearchField() {
-        messages = AppBeans.get(Messages.class);
-
         composition = new JPanel();
         composition.setLayout(new BorderLayout());
         composition.setFocusable(false);

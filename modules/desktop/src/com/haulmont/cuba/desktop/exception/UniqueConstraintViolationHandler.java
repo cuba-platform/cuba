@@ -24,13 +24,10 @@ import java.util.regex.Pattern;
  */
 public class UniqueConstraintViolationHandler implements ExceptionHandler {
 
-    private String marker;
-
     private Pattern pattern;
 
-    private Messages messages = AppBeans.get(Messages.class);
-
-    private DataService dataService = AppBeans.get(DataService.class);
+    private Messages messages = AppBeans.get(Messages.NAME);
+    private DataService dataService = AppBeans.get(DataService.NAME);
 
     private Pattern getPattern() {
         if (pattern == null) {

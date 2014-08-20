@@ -51,7 +51,7 @@ import java.util.*;
  */
 public class ServerLogWindow extends AbstractWindow {
 
-    private static final Log log = LogFactory.getLog(ServerLogWindow.class);
+    private final Log log = LogFactory.getLog(getClass());
 
     private static final int BYTES_IN_MB = (1024 * 1024);
 
@@ -481,9 +481,11 @@ public class ServerLogWindow extends AbstractWindow {
                 if (COMMIT_ACTION_ID.equals(actionId)) {
                     Map<String, Level> levels = controlLogger.getLevels();
                     try {
-                        for (String loggerName : levels.keySet()) {
+                        for (Map.Entry<String, Level> levelEntry : levels.entrySet()) {
+                            String loggerName = levelEntry.getKey();
+                            Level newLogLevel = levelEntry.getValue();
+
                             String logLevel = jmxRemoteLoggingAPI.getLoggerLevel(getSelectedConnection(), loggerName);
-                            Level newLogLevel = levels.get(loggerName);
 
                             if (!StringUtils.equals(logLevel, newLogLevel.toString())) {
                                 jmxRemoteLoggingAPI.setLoggerLevel(getSelectedConnection(), loggerName, newLogLevel.toString());

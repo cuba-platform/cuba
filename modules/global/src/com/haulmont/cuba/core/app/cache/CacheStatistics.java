@@ -9,9 +9,9 @@ import java.util.Date;
 
 /**
  * Statistics cache life cycle
- * <p>$Id$</p>
  *
  * @author artamonov
+ * @version $Id$
  */
 public class CacheStatistics {
 

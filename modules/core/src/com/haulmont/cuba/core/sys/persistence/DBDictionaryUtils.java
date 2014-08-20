@@ -155,8 +155,7 @@ public final class DBDictionaryUtils {
             SQLBuffer where = new SQLBuffer(dbDictionary);
             if (sel.getWhere() != null)
                 where.append(sel.getWhere());
-            if (joins != null)
-                sel.append(where, joins);
+            sel.append(where, joins);        // joins is not null here
             if (sel instanceof SelectImpl
                     && persistence.getEntityManagerContext().isSoftDeletion()) {
                 StringBuilder sb = new StringBuilder();

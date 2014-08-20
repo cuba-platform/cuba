@@ -34,7 +34,7 @@ import java.util.List;
  */
 public class SwingXTableSettings implements TableSettings {
 
-    protected static Log log = LogFactory.getLog(SwingXTableSettings.class);
+    protected final Log log = LogFactory.getLog(SwingXTableSettings.class);
 
     protected JXTable table;
     protected List<Table.Column> columns;
@@ -151,7 +151,7 @@ public class SwingXTableSettings implements TableSettings {
                 if (tableColumn != null) {
                     String width = colElem.attributeValue("width");
                     if (StringUtils.isNotEmpty(width)) {
-                        tableColumn.setPreferredWidth(Integer.valueOf(width));
+                        tableColumn.setPreferredWidth(Integer.parseInt(width));
                     }
 
                     String visible = colElem.attributeValue("visible");
@@ -176,7 +176,7 @@ public class SwingXTableSettings implements TableSettings {
                     }
                 } else {
                     // backward compatibility
-                    sortColumnIndex = Integer.valueOf(sortColumn);
+                    sortColumnIndex = Integer.parseInt(sortColumn);
                 }
 
                 if (sortColumnIndex >= 0) {

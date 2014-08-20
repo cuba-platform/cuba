@@ -43,7 +43,7 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
 
     protected Log log = LogFactory.getLog(getClass());
 
-    protected final String swingPropertyId = "cubaId";
+    protected static final String swingPropertyId = "cubaId";
     public static final String swingPropertyClass = "cubaClass";
 
     public boolean visible = true;

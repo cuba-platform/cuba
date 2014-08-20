@@ -29,7 +29,7 @@ public class TimeBetweenQueryMacroHandler implements QueryMacroHandler {
     protected static final Pattern MACRO_PATTERN = Pattern.compile("@between\\s*\\(([^\\)]+)\\)");
     protected static final Pattern PARAM_PATTERN = Pattern.compile("(now)\\s*([+-]*)\\s*(\\d*)");
     
-    protected static Map<String, Object> units = new HashMap<>();
+    protected static final Map<String, Object> units = new HashMap<>();
 
     static {
         units.put("year", Calendar.YEAR);
@@ -123,5 +123,4 @@ public class TimeBetweenQueryMacroHandler implements QueryMacroHandler {
             throw new RuntimeException("Invalid macro argument: " + unit);
         return calField;
     }
-
 }

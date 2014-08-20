@@ -9,6 +9,7 @@ import com.haulmont.chile.core.datatypes.Datatype;
 import org.apache.commons.codec.binary.Base64;
 
 import javax.annotation.Nonnull;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -40,7 +41,7 @@ public class ByteArrayDatatype implements Datatype<byte[]> {
         if (value == null)
             return "";
 
-        return new String(Base64.encodeBase64(value));
+        return new String(Base64.encodeBase64(value), StandardCharsets.UTF_8);
     }
 
     @Nonnull

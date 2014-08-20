@@ -238,7 +238,7 @@ public abstract class AbstractParam<T> {
                 if (v instanceof Instance)
                     return ((Instance) v).getInstanceName();
                 else
-                    v.toString();
+                    return v.toString();
 
             case ENUM:
                 return messages.getMessage((Enum) v);

@@ -68,7 +68,7 @@ public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> im
     }
 
     protected void uploadFile(File file) {
-        final Integer maxUploadSizeMb = AppBeans.get(Configuration.class).getConfig(ClientConfig.class).getMaxUploadSizeMb();
+        final long maxUploadSizeMb = AppBeans.get(Configuration.class).getConfig(ClientConfig.class).getMaxUploadSizeMb();
         final long maxSize = maxUploadSizeMb * BYTES_IN_MEGABYTE;
 
         if (file.length() > maxSize) {

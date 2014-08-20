@@ -840,9 +840,8 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
             }
 
             StringBuilder msgBuilder = new StringBuilder();
-            for (Iterator<FieldConfig> iterator = problemFields.keySet().iterator(); iterator.hasNext(); ) {
-                FieldConfig field = iterator.next();
-                Exception ex = problemFields.get(field);
+            for (Iterator<Exception> iterator = problemFields.values().iterator(); iterator.hasNext(); ) {
+                Exception ex =  iterator.next();
                 msgBuilder.append(ex.getMessage());
                 if (iterator.hasNext()) {
                     msgBuilder.append("\n");

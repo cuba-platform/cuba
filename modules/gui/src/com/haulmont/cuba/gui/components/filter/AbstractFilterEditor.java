@@ -32,6 +32,8 @@ public abstract class AbstractFilterEditor {
 
     public static final String MESSAGES_PACK = "com.haulmont.cuba.gui.components.filter";
 
+    protected static final List<String> defaultExcludedProps = Collections.unmodifiableList(Arrays.asList("version"));
+
     protected Filter filter;
     protected FilterEntity filterEntity;
     protected Element filterDescriptor;
@@ -45,8 +47,6 @@ public abstract class AbstractFilterEditor {
     protected ConditionsTree conditions = new ConditionsTree();
     protected String messagesPack;
     protected String filterComponentName;
-
-    protected static List<String> defaultExcludedProps = Arrays.asList("version");
 
     protected Boolean manualApplyRequired;
 

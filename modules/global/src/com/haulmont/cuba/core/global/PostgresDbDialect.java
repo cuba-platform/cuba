@@ -20,28 +20,28 @@ public class PostgresDbDialect extends DbDialect implements SequenceSupport {
 
     @Override
     public String createSequenceSql(String sequenceName, long startValue, long increment) {
-        return "create sequence " + (sequenceName != null ? sequenceName.toLowerCase() : sequenceName)
+        return "create sequence " + (sequenceName != null ? sequenceName.toLowerCase() : null)
                 + " increment by " + increment + " start with " + startValue + " minvalue 0";
     }
 
     @Override
     public String modifySequenceSql(String sequenceName, long startWith) {
-        return "select setval('" + (sequenceName != null ? sequenceName.toLowerCase() : sequenceName) + "', " + startWith + ")";
+        return "select setval('" + (sequenceName != null ? sequenceName.toLowerCase() : null) + "', " + startWith + ")";
     }
 
     @Override
     public String deleteSequenceSql(String sequenceName) {
-        return "drop sequence " + (sequenceName != null ? sequenceName.toLowerCase() : sequenceName);
+        return "drop sequence " + (sequenceName != null ? sequenceName.toLowerCase() : null);
     }
 
     @Override
     public String getNextValueSql(String sequenceName) {
-        return "select nextval('" + (sequenceName != null ? sequenceName.toLowerCase() : sequenceName) + "')";
+        return "select nextval('" + (sequenceName != null ? sequenceName.toLowerCase() : null) + "')";
     }
 
     @Override
     public String getCurrentValueSql(String sequenceName) {
-        return "select last_value from " + (sequenceName != null ? sequenceName.toLowerCase() : sequenceName);
+        return "select last_value from " + (sequenceName != null ? sequenceName.toLowerCase() : null);
     }
 
     @Override

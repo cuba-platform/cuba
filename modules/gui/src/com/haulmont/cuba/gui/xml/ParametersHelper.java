@@ -25,7 +25,7 @@ public final class ParametersHelper {
 
     public static final Pattern TEMPL_CLAUSE_PATTERN = Pattern.compile("<#[^>]*>");
 
-    public static Pattern TEMPL_PARAM_PATTERN; // "((component)|(param)|(ds)|(session)|(custom))\\$[\\w\\.]+"
+    public static final Pattern TEMPL_PARAM_PATTERN; // "((component)|(param)|(ds)|(session)|(custom))\\$[\\w\\.]+"
 
     static {
         StringBuilder sb = new StringBuilder("(");
@@ -44,7 +44,7 @@ public final class ParametersHelper {
     }
 
     public static Set<String> extractNames(String text) {
-        Set<String> set = new HashSet<String>();
+        Set<String> set = new HashSet<>();
         
         Matcher matcher = QUERY_PARAMETERS_PATTERN.matcher(text);
         while (matcher.find()) {
@@ -55,7 +55,7 @@ public final class ParametersHelper {
     }
 
     public static Set<ParameterInfo> parseQuery(String query) {
-        Set<ParameterInfo> infos = new HashSet<ParameterInfo>();
+        Set<ParameterInfo> infos = new HashSet<>();
 
         Matcher matcher = QUERY_PARAMETERS_PATTERN.matcher(query);
         while (matcher.find()) {
@@ -67,7 +67,7 @@ public final class ParametersHelper {
     }
 
     public static ParameterInfo[] parseQuery(String query, @Nullable QueryFilter filter) {
-        Set<ParameterInfo> infos = new HashSet<ParameterInfo>();
+        Set<ParameterInfo> infos = new HashSet<>();
 
         Matcher matcher = QUERY_PARAMETERS_PATTERN.matcher(query);
         while (matcher.find()) {

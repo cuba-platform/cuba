@@ -17,8 +17,6 @@ public abstract class WebAbstractTextArea<T extends TextField>
         implements
             com.haulmont.cuba.gui.components.TextArea {
 
-    protected boolean trimming = true;
-
     @Override
     public int getMaxLength() {
         return component.getMaxLength();

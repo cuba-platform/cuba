@@ -80,7 +80,7 @@ public class WebOptionsGroup
         };
     }
 
-    public class CollectionPropertyWrapper extends PropertyWrapper {
+    public static class CollectionPropertyWrapper extends PropertyWrapper {
         public CollectionPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
             super(item, propertyPath);
         }

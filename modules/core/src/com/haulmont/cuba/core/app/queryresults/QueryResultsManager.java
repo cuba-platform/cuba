@@ -35,9 +35,6 @@ import java.util.*;
 public class QueryResultsManager implements QueryResultsManagerAPI {
 
     @Inject
-    private Metadata metadata;
-
-    @Inject
     private Persistence persistence;
 
     @Inject

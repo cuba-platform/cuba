@@ -40,7 +40,7 @@ import java.util.Set;
 @ManagedBean("cuba_PersistenceManagerMBean")
 public class PersistenceManager implements PersistenceManagerMBean {
 
-    protected static Log log = LogFactory.getLog(PersistenceManager.class);
+    protected static final Log log = LogFactory.getLog(PersistenceManager.class);
 
     @Inject
     protected PersistenceManagerAPI persistenceManager;
@@ -272,9 +272,10 @@ public class PersistenceManager implements PersistenceManagerMBean {
                 sb.append("Displaying statistics for all entities.\n");
                 sb.append("To show a particular entity only, pass its name in the method parameter.\n\n");
 
-                for (String name : statistics.keySet()) {
-                    sb.append(statistics.get(name)).append("\n");
+                for (EntityStatistics stat : statistics.values()) {
+                    sb.append(stat).append("\n");
                 }
+
                 return sb.toString();
             } else {
                 EntityStatistics es = statistics.get(entityName);

@@ -244,13 +244,12 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer, 
             for (String range : ranges) {
                 String[] split = range.split("-");
                 Object startItemId = itemIdMapper.get(split[0]);
-                int length = Integer.valueOf(split[1]);
+                int length = Integer.parseInt(split[1]);
                 newValue.addAll(getItemIdsInRange(startItemId, length));
             }
         }
 
         setValue(newValue, true);
-
     }
 
     private Set<Object> getCurrentlyRenderedItemIds() {

@@ -76,7 +76,7 @@ public class WebOptionsGroup extends WebAbstractOptionsField<CubaOptionGroup> im
         };
     }
 
-    public class CollectionPropertyWrapper extends PropertyWrapper {
+    public static class CollectionPropertyWrapper extends PropertyWrapper {
         public CollectionPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
             super(item, propertyPath);
         }
@@ -199,9 +199,9 @@ public class WebOptionsGroup extends WebAbstractOptionsField<CubaOptionGroup> im
                 }
                 return ((Entity) o).getId();
             }
-        } else if (o instanceof Enum) {
+        } /*else if (o instanceof Enum) {
             t = o;
-        } else {
+        } */ else {
             t = o;
         }
         return t;

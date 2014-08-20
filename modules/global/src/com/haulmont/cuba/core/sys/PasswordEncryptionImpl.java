@@ -12,6 +12,7 @@ import com.haulmont.cuba.security.entity.User;
 import org.apache.commons.codec.binary.Base64;
 
 import javax.annotation.ManagedBean;
+import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.UUID;
@@ -39,7 +40,7 @@ public class PasswordEncryptionImpl implements PasswordEncryption {
         }
         byte[] passwordBytes = new byte[6];
         random.nextBytes(passwordBytes);
-        return new String(Base64.encodeBase64(passwordBytes)).replace("=", "");
+        return new String(Base64.encodeBase64(passwordBytes), StandardCharsets.UTF_8).replace("=", "");
     }
 
     @Override

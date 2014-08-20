@@ -134,11 +134,11 @@ public class RuntimePropertiesFrame extends AbstractWindow {
                 if (StringUtils.isNotBlank(cols)) {
                     int propertiesSize = propertiesCount;
                     if (propertiesSize % Integer.valueOf(cols) == 0)
-                        rowsPerColumn = propertiesSize / Integer.valueOf(cols);
+                        rowsPerColumn = propertiesSize / Integer.parseInt(cols);
                     else
-                        rowsPerColumn = propertiesSize / Integer.valueOf(cols) + 1;
+                        rowsPerColumn = propertiesSize / Integer.parseInt(cols) + 1;
                 } else if (StringUtils.isNotBlank(rows)) {
-                    rowsPerColumn = Integer.valueOf(rows);
+                    rowsPerColumn = Integer.parseInt(rows);
                 } else {
                     rowsPerColumn = propertiesCount;
                 }

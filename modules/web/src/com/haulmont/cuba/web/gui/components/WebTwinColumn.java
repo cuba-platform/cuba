@@ -78,7 +78,7 @@ public class WebTwinColumn extends WebAbstractOptionsField<CubaTwinColSelect> im
         };
     }
 
-    public class CollectionPropertyWrapper extends PropertyWrapper {
+    public static class CollectionPropertyWrapper extends PropertyWrapper {
 
         public CollectionPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
             super(item, propertyPath);
@@ -249,9 +249,9 @@ public class WebTwinColumn extends WebAbstractOptionsField<CubaTwinColSelect> im
         Object t;
         if (o instanceof Entity) {
             t = ((Entity) o).getId();
-        } else if (o instanceof Enum) {
+        } /*else if (o instanceof Enum) {
             t = o;
-        } else {
+        }*/ else {
             t = o;
         }
         return t;

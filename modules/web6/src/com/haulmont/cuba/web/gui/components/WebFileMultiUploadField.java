@@ -50,14 +50,16 @@ public class WebFileMultiUploadField extends WebAbstractComponent<MultiUpload> i
     };
 
     public WebFileMultiUploadField() {
-        messages = AppBeans.get(Messages.class);
+        messages = AppBeans.get(Messages.NAME);
 
         String caption = messages.getMessage(AppConfig.getMessagesPack(), "Upload");
         MultiUpload uploader = new MultiUpload(caption);
 
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+
         componentParams.getParameters().put("caption", "");
         componentParams.getParameters().put("fileSizeLimit",
-                AppBeans.get(Configuration.class).getConfig(ClientConfig.class).getMaxUploadSizeMb().toString() + " MB");
+                configuration.getConfig(ClientConfig.class).getMaxUploadSizeMb() + " MB");
 
         uploader.setValueProvider(componentParams);
         uploader.setWidth("90px");
@@ -101,7 +103,7 @@ public class WebFileMultiUploadField extends WebAbstractComponent<MultiUpload> i
                     case FILE_EXCEEDS_SIZE_LIMIT:
 
                         ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
-                        final Integer maxUploadSizeMb = clientConfig.getMaxUploadSizeMb();
+                        final int maxUploadSizeMb = clientConfig.getMaxUploadSizeMb();
 
                         wm.showNotification(messages.formatMessage(WebFileMultiUploadField.class,
                                 "multiupload.filesizeLimitExceed", fileName, maxUploadSizeMb),

@@ -89,7 +89,7 @@ public abstract class AbstractFieldFactory implements FieldFactory {
             final String rows = xmlDescriptor.attributeValue("rows");
             if (!StringUtils.isEmpty(rows)) {
                 WebAbstractTextArea textArea = new WebResizableTextArea();
-                textArea.setRows(Integer.valueOf(rows));
+                textArea.setRows(Integer.parseInt(rows));
                 textField = textArea;
             }
         }
@@ -103,7 +103,7 @@ public abstract class AbstractFieldFactory implements FieldFactory {
 
         final String maxLength = xmlDescriptor != null ? xmlDescriptor.attributeValue("maxLength") : null;
         if (!StringUtils.isEmpty(maxLength)) {
-            ((TextInputField.MaxLengthLimited) textField).setMaxLength(Integer.valueOf(maxLength));
+            ((TextInputField.MaxLengthLimited) textField).setMaxLength(Integer.parseInt(maxLength));
         } else {
             Integer len = (Integer) metaProperty.getAnnotations().get("length");
             if (len != null) {

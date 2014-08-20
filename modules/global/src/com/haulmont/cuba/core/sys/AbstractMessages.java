@@ -430,8 +430,8 @@ public abstract class AbstractMessages implements Messages {
                 public Properties call() throws Exception {
                     File file = new File(fileName);
                     if (file.exists()) {
-                        try (FileInputStream stream = new FileInputStream(file)) {
-                            InputStreamReader reader = new InputStreamReader(stream, ENCODING);
+                        try (FileInputStream stream = new FileInputStream(file);
+                             InputStreamReader reader = new InputStreamReader(stream, ENCODING)) {
                             Properties properties = new Properties();
                             properties.load(reader);
                             return properties;
@@ -453,8 +453,7 @@ public abstract class AbstractMessages implements Messages {
                 public Properties call() throws Exception {
                     InputStream stream = getClass().getResourceAsStream(name);
                     if (stream != null) {
-                        try {
-                            InputStreamReader reader = new InputStreamReader(stream, ENCODING);
+                        try (InputStreamReader reader = new InputStreamReader(stream, ENCODING)) {
                             Properties properties = new Properties();
                             properties.load(reader);
                             return properties;

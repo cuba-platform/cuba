@@ -5,10 +5,7 @@
 
 package com.haulmont.cuba.core.jmx;
 
-import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.Persistence;
-import com.haulmont.cuba.core.Query;
-import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.FileStorageException;
 import org.apache.commons.io.FileUtils;
@@ -49,7 +46,7 @@ public class FileStorage implements FileStorageMBean {
         Transaction tx = persistence.createTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
-            Query query = em.createQuery("select fd from sys$FileDescriptor fd");
+            TypedQuery<FileDescriptor> query = em.createQuery("select fd from sys$FileDescriptor fd", FileDescriptor.class);
             List<FileDescriptor> fileDescriptors = query.getResultList();
             for (FileDescriptor fileDescriptor : fileDescriptors) {
                 File dir = fileStorage.getStorageDir(roots[0], fileDescriptor.getCreateDate());
@@ -85,16 +82,18 @@ public class FileStorage implements FileStorageMBean {
             return ExceptionUtils.getStackTrace(
                     new FileStorageException(FileStorageException.Type.FILE_NOT_FOUND, storageFolder.getAbsolutePath()));
 
+        @SuppressWarnings("unchecked")
         Collection<File> systemFiles = FileUtils.listFiles(storageFolder, null, true);
+        @SuppressWarnings("unchecked")
         Collection<File> filesInRootFolder = FileUtils.listFiles(storageFolder, null, false);
         //remove files of root storage folder (e.g. storage.log) from files collection
         systemFiles.removeAll(filesInRootFolder);
 
-        List<FileDescriptor> fileDescriptors = new ArrayList<>();
+        List<FileDescriptor> fileDescriptors;
         Transaction tx = persistence.createTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
-            Query query = em.createQuery("select fd from sys$FileDescriptor fd");
+            TypedQuery<FileDescriptor> query = em.createQuery("select fd from sys$FileDescriptor fd", FileDescriptor.class);
             fileDescriptors = query.getResultList();
             tx.commit();
         } catch (Exception e) {

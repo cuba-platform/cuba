@@ -23,8 +23,6 @@ public class WebTextField
 
     protected Datatype datatype;
 
-    protected boolean trimming = true;
-
     @Override
     protected com.haulmont.cuba.web.toolkit.ui.TextField createTextFieldImpl() {
         return new com.haulmont.cuba.web.toolkit.ui.TextField();

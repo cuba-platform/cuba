@@ -1020,7 +1020,7 @@ public class DesktopWindowManager extends WindowManager {
                         if (dialog.isVisible()
                                 && (e.getSource() == optionPane)
                                 && (prop.equals(JOptionPane.VALUE_PROPERTY))
-                                && new Integer(-1).equals(e.getNewValue())) {
+                                && Integer.valueOf(-1).equals(e.getNewValue())) {
 
                             dialog.setVisible(false);
                             cleanupAfterModalDialogClosed(null);

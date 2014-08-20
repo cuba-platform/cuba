@@ -666,7 +666,7 @@ public class FilterEditor extends AbstractFilterEditor {
         }
     }
 
-    protected class ConditionsTable extends JXTable {
+    protected static class ConditionsTable extends JXTable {
         @Override
         public boolean isCellSelected(int row, int column) {
             return (row == getSelectedRow());

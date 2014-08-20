@@ -54,7 +54,7 @@ public interface ClientConfig extends Config {
      */
     @Property("cuba.client.maxUploadSizeMb")
     @DefaultInteger(20)
-    Integer getMaxUploadSizeMb();
+    int getMaxUploadSizeMb();
     void setMaxUploadSizeMb(int value);
 
     /**

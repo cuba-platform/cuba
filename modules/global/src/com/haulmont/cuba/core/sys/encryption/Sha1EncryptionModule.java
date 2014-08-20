@@ -13,6 +13,7 @@ import org.apache.commons.lang.StringUtils;
 import javax.annotation.ManagedBean;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
+import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
@@ -48,7 +49,7 @@ public class Sha1EncryptionModule implements EncryptionModule {
         String result;
         try {
             salt = generateSalt();
-            result = apply(content, salt.getBytes());
+            result = apply(content, salt.getBytes(StandardCharsets.UTF_8));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -67,7 +68,7 @@ public class Sha1EncryptionModule implements EncryptionModule {
             salt = STATIC_SALT;
         String result;
         try {
-            result = apply(content, salt.getBytes());
+            result = apply(content, salt.getBytes(StandardCharsets.UTF_8));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -23,8 +23,6 @@ class WebAbstractBox extends WebAbstractComponent<AbstractOrderedLayout> impleme
     protected Collection<Component> ownComponents = new LinkedHashSet<>();
     protected Map<String, Component> componentByIds = new HashMap<>();
 
-    protected Alignment alignment = Alignment.TOP_LEFT;
-
     @Override
     public void add(Component childComponent) {
         final com.vaadin.ui.Component vaadinComponent = WebComponentsHelper.getComposition(childComponent);

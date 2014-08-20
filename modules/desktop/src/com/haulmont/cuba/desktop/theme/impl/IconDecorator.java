@@ -23,7 +23,6 @@ import java.util.Set;
  */
 public class IconDecorator implements ComponentDecorator {
     private String iconName;
-    private Icon icon;
 
     public IconDecorator(String iconName) {
         this.iconName = iconName;

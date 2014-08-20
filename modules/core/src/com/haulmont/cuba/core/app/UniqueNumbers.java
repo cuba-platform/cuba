@@ -35,6 +35,7 @@ public class UniqueNumbers implements UniqueNumbersAPI {
 
     private Set<String> existingSequences = Collections.synchronizedSet(new HashSet<String>());
 
+    @Override
     public long getNextNumber(String domain) {
         String seqName = getSequenceName(domain);
         SequenceSupport support = getSequenceSqlProvider();

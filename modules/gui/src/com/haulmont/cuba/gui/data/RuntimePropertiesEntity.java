@@ -22,7 +22,6 @@ import java.util.*;
  * @author devyatkin
  * @version $Id$
  */
-
 public class RuntimePropertiesEntity implements BaseEntity {
 
     private static final long serialVersionUID = -8091230910619941201L;
@@ -30,8 +29,8 @@ public class RuntimePropertiesEntity implements BaseEntity {
     private MetaClass metaClass;
     private UUID id;
     private Map<String,Object> values;
-    private Map<String, Object> changed = new HashMap<String, Object>();
-    private Set<ValueListener> listeners = new LinkedHashSet<ValueListener>();
+    private Map<String, Object> changed = new HashMap<>();
+    private Set<ValueListener> listeners = new LinkedHashSet<>();
     private Map<String,CategoryAttributeValue> categoryValues;
 
     public RuntimePropertiesEntity(MetaClass metaClass, Map<String, Object> variables,
@@ -42,6 +41,7 @@ public class RuntimePropertiesEntity implements BaseEntity {
         this.categoryValues = categoryValues;
     }
 
+    @Override
     public UUID getId() {
         return id;
     }
@@ -55,38 +55,45 @@ public class RuntimePropertiesEntity implements BaseEntity {
     public void setDetached(boolean detached) {
     }
 
+    @Override
     public UUID getUuid() {
         return id;
     }
 
+    @Override
     public Date getCreateTs() {
         return null;
     }
 
+    @Override
     public void setCreateTs(Date date) {
-
     }
 
+    @Override
     public String getCreatedBy() {
         return null;
     }
 
+    @Override
     public void setCreatedBy(String createdBy) {
-
     }
 
+    @Override
     public MetaClass getMetaClass() {
         return metaClass;
     }
 
+    @Override
     public String getInstanceName() {
         return null;
     }
 
+    @Override
     public void addListener(com.haulmont.chile.core.common.ValueListener listener) {
         listeners.add(listener);
     }
 
+    @Override
     public void removeListener(ValueListener listener) {
         listeners.remove(listener);
     }
@@ -96,6 +103,7 @@ public class RuntimePropertiesEntity implements BaseEntity {
         listeners.clear();
     }
 
+    @Override
     public <T> T getValue(String name) {
         return (T) values.get(name);
     }
@@ -113,8 +121,9 @@ public class RuntimePropertiesEntity implements BaseEntity {
                 } else {
                     setValue(categoryValue, value);
                 }
-            } else
-                setValue(categoryValue, value);
+            } else {
+                setValue(categoryValue, null);
+            }
 
             for (ValueListener listener : listeners) {
                 listener.propertyChanged(this, name, oldValue, value);
@@ -122,6 +131,7 @@ public class RuntimePropertiesEntity implements BaseEntity {
         }
     }
 
+    @Override
     public <T> T getValueEx(String propertyPath) {
         return (T) values.get(propertyPath);
     }
@@ -140,8 +150,9 @@ public class RuntimePropertiesEntity implements BaseEntity {
                     setValue(attrValue, value);
                 }
             } else {
-                setValue(attrValue, value);
+                setValue(attrValue, null);
             }
+
             for (ValueListener listener : listeners) {
                 listener.propertyChanged(this, propertyPath, oldValue, value);
             }

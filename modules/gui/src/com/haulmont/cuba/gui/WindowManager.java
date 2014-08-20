@@ -83,7 +83,7 @@ public abstract class WindowManager {
 
     protected DataSupplier defaultDataSupplier;
 
-    protected Messages messages = AppBeans.get(Messages.class);
+    protected Messages messages = AppBeans.get(Messages.NAME);
 
     protected Scripting scripting = AppBeans.get(Scripting.NAME);
 

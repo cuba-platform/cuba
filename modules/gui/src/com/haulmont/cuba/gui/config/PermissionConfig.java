@@ -324,7 +324,7 @@ public class PermissionConfig {
         return getItem(locale).specific;
     }
 
-    private class MetadataObjectAlphabetComparator implements Comparator<MetadataObject> {
+    private static class MetadataObjectAlphabetComparator implements Comparator<MetadataObject> {
         @Override
         public int compare(MetadataObject o1, MetadataObject o2) {
             String n1 = o1 != null ? o1.getName() : null;

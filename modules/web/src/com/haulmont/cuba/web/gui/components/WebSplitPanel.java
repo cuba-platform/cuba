@@ -34,8 +34,6 @@ public class WebSplitPanel
     protected Map<String, Component> componentByIds = new HashMap<>();
     protected Collection<Component> ownComponents = new LinkedHashSet<>();
 
-    protected Alignment alignment = Alignment.TOP_LEFT;
-
     protected SplitPanel.PositionUpdateListener positionListener;
 
     protected int orientation;
@@ -141,7 +139,7 @@ public class WebSplitPanel
             if (!StringUtils.isBlank(value) && !StringUtils.isBlank(unit)) {
                 Sizeable.Unit convertedUnit;
                 if (NumberUtils.isNumber(unit)) {
-                    convertedUnit = convertLegacyUnit(Integer.valueOf(unit));
+                    convertedUnit = convertLegacyUnit(Integer.parseInt(unit));
                 } else {
                     convertedUnit = Sizeable.Unit.getUnitFromSymbol(unit);
                 }

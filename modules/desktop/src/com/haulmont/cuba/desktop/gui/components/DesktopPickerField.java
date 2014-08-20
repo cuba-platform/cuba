@@ -61,9 +61,9 @@ public class DesktopPickerField extends DesktopAbstractField<Picker> implements 
 
     protected Object nullValue = new Object();
 
-    protected Metadata metadata = AppBeans.get(Metadata.class);
+    protected Metadata metadata = AppBeans.get(Metadata.NAME);
 
-    protected MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
+    protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
 
     public DesktopPickerField() {
         impl = new Picker();
@@ -146,8 +146,7 @@ public class DesktopPickerField extends DesktopAbstractField<Picker> implements 
         });
 
         field.addKeyListener(new KeyAdapter() {
-
-            protected final int ENTER_CODE = 10;
+            protected static final int ENTER_CODE = 10;
 
             @Override
             public void keyPressed(KeyEvent e) {

@@ -6,7 +6,9 @@ package com.haulmont.cuba.web.sys;
 
 import com.google.common.collect.MapMaker;
 import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.RemoteException;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
@@ -343,7 +345,8 @@ public class CubaCommunicationManager extends CommunicationManager {
                         internalError(response);
                         return;
                     }
-                    final Integer maxUploadSizeMb = ConfigProvider.getConfig(ClientConfig.class).getMaxUploadSizeMb();
+                    Configuration configuration = AppBeans.get(Configuration.NAME);
+                    final long maxUploadSizeMb = configuration.getConfig(ClientConfig.class).getMaxUploadSizeMb();
 
                     AppContext.setSecurityContext(new SecurityContext(userSession));
 

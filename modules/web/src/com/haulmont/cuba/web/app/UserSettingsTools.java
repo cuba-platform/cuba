@@ -6,7 +6,6 @@
 package com.haulmont.cuba.web.app;
 
 import com.haulmont.cuba.core.global.ClientType;
-import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.security.app.UserSettingService;
 import com.haulmont.cuba.web.AppWindow;
 import com.haulmont.cuba.web.WebConfig;
@@ -82,7 +81,7 @@ public class UserSettingsTools {
             return null;
 
         try {
-            return new FoldersState(Boolean.valueOf(parts[0]), Integer.valueOf(parts[1]), Integer.valueOf(parts[2]));
+            return new FoldersState(Boolean.parseBoolean(parts[0]), Integer.parseInt(parts[1]), Integer.parseInt(parts[2]));
         } catch (Exception e) {
             return null;
         }

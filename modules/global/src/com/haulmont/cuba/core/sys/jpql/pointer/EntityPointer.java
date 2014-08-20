@@ -12,9 +12,8 @@ import com.haulmont.cuba.core.sys.jpql.model.Attribute;
 import com.haulmont.cuba.core.sys.jpql.model.Entity;
 
 /**
- * Author: Alexander Chevelev
- * Date: 21.10.2010
- * Time: 1:45:37
+ * @author chevelev
+ * @version $Id$
  */
 public class EntityPointer implements Pointer {
     private Entity entity;
@@ -31,6 +30,7 @@ public class EntityPointer implements Pointer {
         return entity == null ? NoPointer.instance() : new EntityPointer(entity);
     }
 
+    @Override
     public Pointer next(DomainModel model, String field) {
         Attribute attribute = entity.getAttributeByName(field);
         if (attribute == null) {
