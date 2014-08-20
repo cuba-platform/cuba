@@ -153,12 +153,16 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
                 style: "$checkstyleConfigDir/checkstyle.xsl")
     }
 
+    findbugs {
+        ignoreFailures = true
+    }
+
     findbugsMain {
         reports {
             xml.enabled = false
             html {
                 enabled = true
-                destination "${project.buildDir}/$project.name-findbugs.html"
+                destination "${project.buildDir}/findbugs/$project.name-findbugs.html"
             }
         }
     }
