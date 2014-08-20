@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.config.Property;
 import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
+import com.haulmont.cuba.core.config.defaults.DefaultInt;
 import com.haulmont.cuba.core.config.defaults.DefaultInteger;
 import com.haulmont.cuba.core.config.defaults.DefaultString;
 import com.haulmont.cuba.core.config.type.CommaSeparatedStringListTypeFactory;
@@ -53,7 +54,7 @@ public interface ClientConfig extends Config {
      * @return Maximum size of uploaded file in megabytes.
      */
     @Property("cuba.client.maxUploadSizeMb")
-    @DefaultInteger(20)
+    @DefaultInt(20)
     int getMaxUploadSizeMb();
     void setMaxUploadSizeMb(int value);
 
