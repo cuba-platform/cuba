@@ -5,11 +5,12 @@
 
 package com.haulmont.cuba.desktop.sys.config;
 
+import com.google.common.collect.ImmutableMap;
 import com.haulmont.cuba.core.app.ConfigStorageService;
 import com.haulmont.cuba.core.global.AppBeans;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Config storage service proxy with caching for desktop client. <br/>
@@ -23,14 +24,16 @@ public class DesktopConfigStorageCache implements ConfigStorageService {
     protected static final int SEQUENTIAL_INVALIDATE_THRESHOLD = 10000; // 10 seconds
 
     protected long lastInvalidateTs = 0;
-    protected final Map<String, String> properties = new ConcurrentHashMap<>();
+    protected final Map<String, String> properties = new HashMap<>();
 
     @Override
     public Map<String, String> getDbProperties() {
+        Map<String, String> props;
         synchronized (properties) {
             invalidateIfNeeded();
+            props = ImmutableMap.copyOf(properties);
         }
-        return properties;
+        return props;
     }
 
     @Override
