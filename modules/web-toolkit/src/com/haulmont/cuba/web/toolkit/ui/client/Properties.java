@@ -12,6 +12,9 @@ import java.util.Date;
 /**
  * A collection of properties of arbitrary type, for interoperability with
  * non-GWT JavaScript libraries.
+ *
+ * @author gorodnov
+ * @version $Id$
  */
 public abstract class Properties extends JavaScriptObject {
   /**
@@ -50,7 +53,7 @@ public abstract class Properties extends JavaScriptObject {
    */
   public final Boolean getBoolean(String key) throws TypeException {
     if (containsKey(key)) {
-      String type = typeof(key);
+      String type = typeofValue(key);
       if (type.equals("boolean")) {
         return nativeGetBoolean(key);
       } else {
@@ -85,7 +88,7 @@ public abstract class Properties extends JavaScriptObject {
    */
   public final Double getNumber(String key) throws TypeException {
     if (containsKey(key)) {
-      String type = typeof(key);
+      String type = typeofValue(key);
       if (type.equals("number")) {
         return nativeGetNumber(key);
       } else {
@@ -106,7 +109,7 @@ public abstract class Properties extends JavaScriptObject {
    */
   public final JavaScriptObject getObject(String key) throws TypeException {
     if (containsKey(key)) {
-      String type = typeof(key);
+      String type = typeofValue(key);
       if (type.equals("object")) {
         return nativeGetObject(key);
       } else {
@@ -127,7 +130,7 @@ public abstract class Properties extends JavaScriptObject {
    */
   public final String getString(String key) throws TypeException {
     if (containsKey(key)) {
-      String type = typeof(key);
+      String type = typeofValue(key);
       if (type.equals("string")) {
         return nativeGetString(key);
       } else {
@@ -214,7 +217,7 @@ public abstract class Properties extends JavaScriptObject {
    * @return The JavaScript type of the property, as defined by the JavaScipt
    * typeof operator.
    */
-  public final native String typeof(String key) /*-{
+  public final native String typeofValue(String key) /*-{
     return typeof this[key];
   }-*/;
 

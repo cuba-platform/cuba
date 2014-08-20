@@ -227,14 +227,11 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
             boolean reloadDataFromServer = true;
 
             if (cid.equals(sortColumn)) {
-                if (sortColumn == null) {
-                    // anyway sort ascending
-                    client.updateVariable(paintableId, "sortascending", !sortAscending, false);
-                } else if (sortAscending) {
+                if (sortAscending) {
                     if (sortClickCounter < 2) {
                         // special case for initial revert sorting instead of reset sort order
                         if (sortClickCounter == 0) {
-                            client.updateVariable(paintableId, "sortascending", !sortAscending, false);
+                            client.updateVariable(paintableId, "sortascending", false, false);
                         } else {
                             reloadDataFromServer = false;
                             sortClickCounter = 0;
@@ -244,13 +241,13 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
                             client.updateVariable(paintableId, "resetsortorder", "", true);
                         }
                     } else {
-                        client.updateVariable(paintableId, "sortascending", !sortAscending, false);
+                        client.updateVariable(paintableId, "sortascending", false, false);
                     }
                 } else {
                     if (sortClickCounter < 2) {
                         // special case for initial revert sorting instead of reset sort order
                         if (sortClickCounter == 0) {
-                            client.updateVariable(paintableId, "sortascending", !sortAscending, false);
+                            client.updateVariable(paintableId, "sortascending", true, false);
                         } else {
                             reloadDataFromServer = false;
                             sortClickCounter = 0;
@@ -480,9 +477,7 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
                             toggleSelection();
                         } else if ((isSingleSelectMode() || isMultiSelectModeSimple())
                                 && nullSelectionAllowed) {
-                            if (!isSelected()) {
-                                toggleSelection();
-                            }
+                            toggleSelection();
                         }
 
                         selectionChanged = true;

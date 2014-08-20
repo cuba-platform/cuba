@@ -309,19 +309,17 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
             @Override
             protected boolean addSpecificCell(Object columnId, int colIndex) {
                 if (GROUP_DIVIDER_COLUMN_KEY.equals(columnId)) {
-                    addDividerCell(aligns[colIndex], "", false, false, null);
+                    addDividerCell(aligns[colIndex]);
                     return true;
                 }
                 return false;
             }
 
-            public void addDividerCell(char align,
-                                String style, boolean textIsHTML, boolean sorted,
-                                String description) {
+            public void addDividerCell(char align) {
                 // String only content is optimized by not using Label widget
                 final TableCellElement td = DOM.createTD().cast();
                 this.groupDividerCell = td;
-                initCellWithText("", align, style, textIsHTML, sorted, description, td);
+                initCellWithText("", align, "", false, false, null, td);
                 td.addClassName(CLASSNAME + "-group-divider");
             }
 

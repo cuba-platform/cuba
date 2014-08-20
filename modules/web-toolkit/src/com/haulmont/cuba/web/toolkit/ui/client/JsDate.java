@@ -11,6 +11,9 @@ import java.util.Date;
 
 /**
  * Wraps a JavaScript Date object.
+ *
+ * @author gorodnov
+ * @version $Id$
  */
 public class JsDate extends JavaScriptObject {
     /**

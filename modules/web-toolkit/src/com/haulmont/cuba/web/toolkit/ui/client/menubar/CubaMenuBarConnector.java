@@ -8,7 +8,6 @@ package com.haulmont.cuba.web.toolkit.ui.client.menubar;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.CubaMenuBar;
-import com.vaadin.client.ApplicationConnection;
 import com.vaadin.client.UIDL;
 import com.vaadin.client.ui.VMenuBar;
 import com.vaadin.client.ui.menubar.MenuBarConnector;
@@ -20,11 +19,6 @@ import com.vaadin.shared.ui.Connect;
  */
 @Connect(CubaMenuBar.class)
 public class CubaMenuBarConnector extends MenuBarConnector {
-
-    @Override
-    public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
-        super.updateFromUIDL(uidl, client);
-    }
 
     @Override
     public CubaMenuBarState getState() {

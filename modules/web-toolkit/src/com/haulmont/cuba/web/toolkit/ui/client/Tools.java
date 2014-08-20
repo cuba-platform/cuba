@@ -6,13 +6,10 @@
 package com.haulmont.cuba.web.toolkit.ui.client;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Window;
 import com.haulmont.cuba.web.toolkit.ui.client.sys.ToolsImpl;
 import com.vaadin.client.BrowserInfo;
-import com.vaadin.client.RenderInformation;
 import com.vaadin.client.ui.VOverlay;
 
 /**
@@ -26,45 +23,8 @@ public class Tools {
         impl = GWT.create(ToolsImpl.class);
     }
 
-    public static int parseSize(String s) {
-        return impl.parseSize(s);
-    }
-
-    public static String format(String s) {
-        return impl.format(s);
-    }
-
-    public static void removeChildren(Element e) {
-        int childCount = DOM.getChildCount(e);
-        if (childCount > 0) {
-            for (int i = 0; i < childCount; i++) {
-                e.removeChild(DOM.getChild(e, 0));
-            }
-        }
-    }
-
-    public static void setInnerHTML(Element elem, String text) {
-        impl.setInnerHTML(elem, text);
-    }
-
-    public static void setInnerText(Element elem, String text) {
-        impl.setInnerText(elem, text);
-    }
-
-    public static boolean isRadio(Element elem) {
-        return impl.isRadio(elem);
-    }
-
-    public static boolean isCheckbox(Element elem) {
-        return impl.isCheckbox(elem);
-    }
-
     public static void textSelectionEnable(Element el, boolean b) {
         impl.textSelectionEnable(el, b);
-    }
-
-    public static void removeElementWithEvents(Element el) {
-        impl.removeElementWithEvents(el);
     }
 
     public static String setStyleName(Element el, String style) {
@@ -74,10 +34,6 @@ public class Tools {
         style = style.trim();
         el.setPropertyString("className", style);
         return style;
-    }
-
-    public static String getStyleName(Element el) {
-        return el.getPropertyString("className");
     }
 
     public static String addStyleName(Element el, String style) {
@@ -97,15 +53,6 @@ public class Tools {
         el.removeClassName(style);
     }
 
-    public static String setStylePrimaryName(Element el, String style) {
-        if (style == null) {
-            throw new RuntimeException("Style cannot be null");
-        }
-        style = style.trim();
-        impl.updatePrimaryAndDependentStyleNames(el, style);
-        return style;
-    }
-
     public static String getStylePrimaryName(Element el) {
         String className = el.getClassName();
         int spaceIdx = className.indexOf(' ');
@@ -123,43 +70,6 @@ public class Tools {
 
     public static void removeStyleDependentName(Element el, String styleSuffix) {
         removeStyleName(el, getStylePrimaryName(el) + '-' + styleSuffix);
-    }
-
-    public static boolean hasStyleDependentName(Element el, String styleSuffix) {
-        return hasStyleName(el, getStylePrimaryName(el) + '-' + styleSuffix);
-    }
-
-    public static boolean hasStyleName(Element el, String style) {
-        if (style == null) {
-            throw new RuntimeException("Style cannot be null");
-        }
-        style = style.trim();
-        return impl.hasStyleName(el, style);
-    }
-
-    public static String[] getStyleNames(Element el) {
-        return getStyleName(el).split("[\\s+]");
-    }
-
-    public static RenderInformation.Size definePaddingBorders(Element el) {
-        Style style = el.getStyle();
-
-        String w = style.getProperty("width");
-        String h = style.getProperty("height");
-
-        style.setProperty("overflow", "hidden");
-        style.setProperty("width", "0px");
-        style.setProperty("height", "0px");
-
-        RenderInformation.Size s = new RenderInformation.Size();
-        s.setWidth(el.getOffsetWidth());
-        s.setHeight(el.getOffsetHeight());
-
-        style.setProperty("width", w);
-        style.setProperty("height", h);
-        style.setProperty("overflow", "");
-
-        return s;
     }
 
     public static void replaceClassNames(Element element, String from, String to) {
