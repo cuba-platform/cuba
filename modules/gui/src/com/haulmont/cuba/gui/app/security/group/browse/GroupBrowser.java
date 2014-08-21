@@ -192,7 +192,7 @@ public class GroupBrowser extends AbstractWindow {
         groupsDs.refresh();
         groupsTree.expandTree();
 
-        final Collection<UUID> itemIds = groupsDs.getItemIds();
+        final Collection<UUID> itemIds = groupsDs.getRootItemIds();
         if (!itemIds.isEmpty()) {
             groupsTree.setSelected(groupsDs.getItem(itemIds.iterator().next()));
         }
