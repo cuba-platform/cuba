@@ -23,6 +23,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author krivopustov
@@ -30,12 +32,13 @@ import java.util.List;
  */
 @ManagedBean(TriggerFilesProcessor.NAME)
 public class TriggerFilesProcessor {
-
     public static final String NAME = "cuba_TriggerFilesProcessor";
 
     private Log log = LogFactory.getLog(TriggerFilesProcessor.class);
 
     protected String tempDir;
+
+    protected Pattern fileNamePattern = Pattern.compile("(.+?)\\.(.+?)(\\(.+?\\))?$");
 
     @Inject
     public void setConfiguration(Configuration configuration) {
@@ -67,17 +70,9 @@ public class TriggerFilesProcessor {
                 continue;
 
             String fileName = path.getFileName().toString();
-            int i = fileName.lastIndexOf(".");
-            if (i < 1)
-                continue;
 
-            String beanName = fileName.substring(0, i);
-            String methodName = fileName.substring(i + 1);
             try {
-                log.info("Calling " + fileName);
-                Object bean = AppBeans.get(beanName);
-                Method method = bean.getClass().getMethod(methodName);
-                method.invoke(bean);
+                processFile(fileName);
             } catch (Exception e) {
                 log.error("Trigger file " + path + " processing error: " + e);
             }
@@ -87,6 +82,41 @@ public class TriggerFilesProcessor {
             } catch (IOException e) {
                 log.error("Unable to delete trigger file " + path);
             }
+        }
+    }
+
+    protected void processFile(String fileName) throws Exception {
+        Matcher matcher = fileNamePattern.matcher(fileName);
+        if (matcher.find()) {
+            String beanName = matcher.group(1);
+            String methodName = matcher.group(2);
+            String paramsStr = matcher.groupCount() < 3 ? null : matcher.group(3);
+
+            String[] paramsArray = null;
+            Class[] typesArray = null;
+
+            if (paramsStr != null) {
+                paramsArray = paramsStr.substring(1, paramsStr.length() - 1).split(",");
+                typesArray = new Class[paramsArray.length];
+
+                for (int i = 0, paramsArrayLength = paramsArray.length; i < paramsArrayLength; i++) {
+                    String param = paramsArray[i];
+                    typesArray[i] = String.class;
+                    paramsArray[i] = param.replace("'", "");
+                }
+            }
+
+
+            log.info("Calling " + fileName);
+            Object bean = AppBeans.get(beanName);
+            Class<?> beanClass = bean.getClass();
+            Method method = typesArray == null ?
+                    beanClass.getMethod(methodName) :
+                    beanClass.getMethod(methodName, typesArray);
+            Object result = paramsArray == null ?
+                    method.invoke(bean) :
+                    method.invoke(bean, paramsArray);
+            log.debug("Result " + result);
         }
     }
 
