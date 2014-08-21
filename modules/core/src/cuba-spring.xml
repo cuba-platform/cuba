@@ -155,4 +155,7 @@
         <property name="queueCapacity" value="200"/>
     </bean>
 
+    <task:scheduled-tasks scheduler="scheduler">
+        <task:scheduled ref="cuba_TriggerFilesProcessor" method="process" fixed-delay="${cuba.triggerFilesCheckInterval?:5000}"/>
+    </task:scheduled-tasks>
 </beans>
