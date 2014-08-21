@@ -5,6 +5,7 @@
 package com.haulmont.cuba.toolkit.gwt.client.ui;
 
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.*;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
@@ -1053,7 +1054,7 @@ public abstract class Table
         updateHeaderColumns(colIds, colIndex);
 
         tHead.setVisible(showColHeaders);
-
+        setContainerHeight();
     }
 
     protected void updateHeaderColumns(String[] colIds, int colIndex) {
@@ -1340,6 +1341,8 @@ public abstract class Table
             if (h > bodyHeight) {
                 bodyHeight = h;
             }
+
+            VConsole.log(">> size init " + bodyHeight);
 
             bodyContainer.setHeight(bodyHeight + "px");
         }
@@ -2337,6 +2340,9 @@ public abstract class Table
                     containerHeight += row.getHeight();
                 }
             }
+
+            VConsole.log(">> setContainerHeight " + containerHeight);
+
             DOM.setStyleAttribute(container, "height", containerHeight + "px");
         }
 
@@ -3597,20 +3603,21 @@ public abstract class Table
         return borderWidth;
     }
 
-    /**
-     * Ensures scrollable area is properly sized.
-     */
+    /*
+     * Ensures scrollable area is properly sized. This method is used when fixed size is used.
+    */
     protected void setContainerHeight() {
         if (height != null && !"".equals(height)) {
-            int contentH = getOffsetHeight() - tHead.getOffsetHeight();
+            int containerHeight = getOffsetHeight();
+            containerHeight -= showColHeaders ? tHead.getOffsetHeight() : 0;
             if (aggregationRow != null) {
-                contentH -= aggregationRow.getOffsetHeight();
+                containerHeight -= aggregationRow.getOffsetHeight();
             }
-            contentH -= getContentAreaBorderHeight();
-            if (contentH < 0) {
-                contentH = 0;
+            containerHeight -= getContentAreaBorderHeight();
+            if (containerHeight < 0) {
+                containerHeight = 0;
             }
-            bodyContainer.setHeight(contentH + "px");
+            bodyContainer.setHeight(containerHeight + "px");
         }
     }
 

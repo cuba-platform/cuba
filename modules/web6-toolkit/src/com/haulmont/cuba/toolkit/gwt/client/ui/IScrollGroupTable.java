@@ -160,7 +160,7 @@ public class IScrollGroupTable extends IScrollTable {
         updateHeaderColumns(colIds, colIndex);
 
         tHead.setVisible(showColHeaders);
-
+        setContainerHeight();
     }
 
     @Override
