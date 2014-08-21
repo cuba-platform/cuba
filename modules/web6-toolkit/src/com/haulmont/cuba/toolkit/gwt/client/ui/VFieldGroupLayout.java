@@ -361,7 +361,7 @@ public class VFieldGroupLayout extends VGridLayout {
 
         @Override
         public void updateContainerDOMSize() {
-            int width = contSize.getWidth();
+            int width = contSize.getWidth() - alignmentLeftOffsetForCaption;
             int height = contSize.getHeight() - alignmentTopOffset;
             if (width < 0) {
                 width = 0;
@@ -389,6 +389,14 @@ public class VFieldGroupLayout extends VGridLayout {
                 }
 
                 captionWidth = caption.getRenderedWidth();
+                Element tooltip = caption.getTooltipElement();
+                if (tooltip != null) {
+                    captionWidth -= Util.getRequiredWidth(tooltip);
+                }
+                Element requiredElement = caption.getRequiredElement();
+                if (requiredElement != null) {
+                    captionWidth -= Util.getRequiredWidth(requiredElement);
+                }
 
                 // Remove initial height
                 caption.setHeight("");
