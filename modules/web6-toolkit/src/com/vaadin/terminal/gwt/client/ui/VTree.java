@@ -1692,7 +1692,6 @@ public class VTree extends FocusElementPanel implements Paintable, VHasDropHandl
         // If no node has focus, focus the first item in the tree
         if (focusedNode == null && lastSelection == null && selectable) {
             setFocusedNode(getFirstRootNode(), false);
-            selectNode(getFirstRootNode(),true);
         } else if (focusedNode != null && selectable) {
             setFocusedNode(focusedNode, false);
         } else if (lastSelection != null && selectable) {
