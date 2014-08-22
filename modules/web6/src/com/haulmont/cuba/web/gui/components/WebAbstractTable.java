@@ -982,6 +982,10 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         String textSelection = element.attributeValue("textSelection");
         if (StringUtils.isNotEmpty(textSelection)) {
             component.setTextSelectionEnabled(Boolean.valueOf(textSelection));
+
+            if (tablePresentations != null) {
+                tablePresentations.updateTextSelection();
+            }
         }
 
         final Element columnsElem = element.element("columns");

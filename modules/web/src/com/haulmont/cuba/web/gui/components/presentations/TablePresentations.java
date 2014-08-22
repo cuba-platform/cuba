@@ -84,8 +84,6 @@ public class TablePresentations extends VerticalLayout {
 
                     buildActions();
                 }
-
-                textSelectionCheckBox.setValue(tableImpl.isTextSelectionEnabled());
             }
 
             @Override
@@ -155,6 +153,10 @@ public class TablePresentations extends VerticalLayout {
         button.setPopupVisible(false);
         buildPresentationsList();
         buildActions();
+    }
+
+    public void updateTextSelection() {
+        textSelectionCheckBox.setValue(tableImpl.isTextSelectionEnabled());
     }
 
     protected void buildPresentationsList() {

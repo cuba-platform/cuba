@@ -992,6 +992,10 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         String textSelection = element.attributeValue("textSelection");
         if (StringUtils.isNotEmpty(textSelection)) {
             component.setTextSelectionEnabled(Boolean.valueOf(textSelection));
+
+            if (component.getPresentations() != null) {
+                component.getPresentations().updateTextSelection();
+            }
         }
 
         final Element columnsElem = element.element("columns");

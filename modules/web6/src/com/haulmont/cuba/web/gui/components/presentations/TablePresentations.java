@@ -80,8 +80,6 @@ public class TablePresentations extends CustomComponent {
 
                     buildActions();
                 }
-
-                textSelectionCheckBox.setValue(tableImpl.isTextSelectionEnabled());
             }
 
             @Override
@@ -148,6 +146,10 @@ public class TablePresentations extends CustomComponent {
         button.setPopupVisible(false);
         buildPresentationsList();
         buildActions();
+    }
+
+    public void updateTextSelection() {
+        textSelectionCheckBox.setValue(tableImpl.isTextSelectionEnabled());
     }
 
     private void buildPresentationsList() {

@@ -16,11 +16,10 @@ import com.vaadin.ui.Table;
  * @version $Id$
  */
 public interface CubaEnhancedTable {
-    TablePresentations getPresentations();
-
     void setContextMenuPopup(Layout contextMenu);
     void hideContextMenuPopup();
 
+    TablePresentations getPresentations();
     void setPresentations(TablePresentations presentations);
     void hidePresentationsPopup();
 
