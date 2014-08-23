@@ -9,6 +9,7 @@ import com.google.common.collect.Multimap;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.TimeSource;
+import com.haulmont.cuba.core.sys.CubaClassPathXmlApplicationContext;
 import com.haulmont.cuba.core.sys.javacl.compiler.CharSequenceCompiler;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -20,6 +21,7 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
@@ -40,7 +42,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 @ManagedBean("cuba_JavaClassLoader")
-public class JavaClassLoader extends URLClassLoader implements BeanFactoryAware {
+public class JavaClassLoader extends URLClassLoader implements BeanFactoryAware, ApplicationContextAware {
     private static final String JAVA_CLASSPATH = System.getProperty("java.class.path");
     private static final String PATH_SEPARATOR = System.getProperty("path.separator");
     private static final String JAR_EXT = ".jar";
@@ -58,6 +60,7 @@ public class JavaClassLoader extends URLClassLoader implements BeanFactoryAware 
     protected final ProxyClassLoader proxyClassLoader;
     protected final SourceProvider sourceProvider;
 
+    protected CubaClassPathXmlApplicationContext applicationContext;
     protected DefaultListableBeanFactory beanFactory;
 
     @Inject
@@ -93,6 +96,14 @@ public class JavaClassLoader extends URLClassLoader implements BeanFactoryAware 
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
         if (beanFactory instanceof DefaultListableBeanFactory) {
             this.beanFactory = (DefaultListableBeanFactory) beanFactory;
+        }
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        if (applicationContext instanceof CubaClassPathXmlApplicationContext) {
+//            ((DefaultResourceLoader) applicationContext).setClassLoader(this);
+            this.applicationContext = (CubaClassPathXmlApplicationContext) applicationContext;
         }
     }
 
@@ -184,7 +195,7 @@ public class JavaClassLoader extends URLClassLoader implements BeanFactoryAware 
                     beanFactory.registerBeanDefinition(beanName, beanDefinition);
                 }
 
-                if (serviceAnnotation != null) {
+                if (StringUtils.isNotBlank(beanName)) {
                     needToRefreshRemotingContext = true;
                 }
             }

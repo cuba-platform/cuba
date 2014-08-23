@@ -13,6 +13,28 @@ import java.lang.reflect.Method;
 import java.util.Date;
 
 public class JavaClassLoaderTest {
+
+
+    @Test
+    public void testSimple() throws Exception {
+        System.out.println(new File(".").getAbsolutePath());
+
+        JavaClassLoader javaClassLoader = new JavaClassLoader(Thread.currentThread().getContextClassLoader(), "./test-data/javacl-sources/", "") {
+            @Override
+            protected Date getCurrentTimestamp() {
+                return new Date();
+            }
+        };
+
+        Class<?> class1 = javaClassLoader.loadClass("com.haulmont.cuba.core.sys.javacl.test0.Simple");
+        System.out.println("Class loaded " + class1);
+//        Class<?> class2 = Class.forName("com.haulmont.cuba.core.sys.javacl.test.SimpleClass");
+        Class<?> class2 = Class.forName("com.haulmont.cuba.core.sys.javacl.test0.Simple", false, javaClassLoader);
+        System.out.println("Class loaded " + class2);
+
+        Assert.assertEquals(class1, class2);
+    }
+
     @Test
     public void testDependencies() throws Exception {
         System.out.println(new File(".").getAbsolutePath());
