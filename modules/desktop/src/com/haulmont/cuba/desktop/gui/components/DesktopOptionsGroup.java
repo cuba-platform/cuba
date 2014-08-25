@@ -80,11 +80,18 @@ public class DesktopOptionsGroup
             optionsDatasource.addListener(
                     new CollectionDsListenerAdapter<Entity<Object>>() {
                         @Override
-                        public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity<Object>> items) {
+                        public void collectionChanged(CollectionDatasource ds, Operation operation,
+                                                      List<Entity<Object>> items) {
+                            Object value = getValue();
+
                             removeAllItems();
                             for (Object id : ds.getItemIds()) {
                                 addItem(new EntityWrapper(ds.getItem(id)));
                             }
+
+                            updateComponent(value);
+                            fireChangeListeners(getValue());
+
                             impl.revalidate();
                             impl.repaint();
                         }
