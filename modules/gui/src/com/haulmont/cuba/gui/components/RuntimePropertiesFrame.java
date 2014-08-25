@@ -101,7 +101,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
         });
     }
 
-    private void loadComponent(Datasource ds) {
+    protected void loadComponent(Datasource ds) {
 
         ds.addListener(new DsListenerAdapter() {
             @Override
