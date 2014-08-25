@@ -376,14 +376,7 @@ public class CubaApplicationServlet extends ApplicationServlet {
     protected void writeAjaxPageHtmlHeader(HttpServletRequest request, BufferedWriter page, String title,
                                            String themeUri) throws IOException {
         page.write("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\n");
-        if (webConfig.getUseChromeFramePlugin()
-                && Browser.getBrowserInfo(request).isChromeFrame()) {
-            page.write("<meta http-equiv=\"X-UA-Compatible\" content=\"chrome=1\" />\n");
-/*
-        } else {
-            page.write("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=7\" />\n");
-*/
-        }
+
         page.write("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=9\"/>\n");
         page.write("<style type=\"text/css\">"
                 + "html, body {height:100%;margin:0;}</style>");

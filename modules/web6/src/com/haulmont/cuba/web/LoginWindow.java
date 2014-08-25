@@ -15,14 +15,11 @@ import com.haulmont.cuba.web.auth.ActiveDirectoryConnection;
 import com.haulmont.cuba.web.auth.ActiveDirectoryHelper;
 import com.haulmont.cuba.web.auth.CubaAuthProvider;
 import com.haulmont.cuba.web.auth.DomainAliasesResolver;
-import com.haulmont.cuba.web.sys.Browser;
 import com.haulmont.cuba.web.sys.CubaApplicationContext;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.vaadin.data.Property;
 import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
-import com.vaadin.terminal.gwt.server.WebApplicationContext;
-import com.vaadin.terminal.gwt.server.WebBrowser;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -246,16 +243,7 @@ public class LoginWindow extends Window implements Action.Handler {
         initFields(app);
         loginField.focus();
 
-        Layout userHintLayout = createUserHint(app);
-        if (userHintLayout != null) {
-            VerticalLayout wrapLayout = new VerticalLayout();
-            wrapLayout.setSpacing(true);
-            wrapLayout.addComponent(mainLayout);
-            wrapLayout.addComponent(userHintLayout);
-            setContent(wrapLayout);
-        } else {
-            setContent(mainLayout);
-        }
+        setContent(mainLayout);
     }
 
     @Nullable
@@ -512,24 +500,6 @@ public class LoginWindow extends Window implements Action.Handler {
     protected Locale getUserLocale() {
         String lang = (String) localesSelect.getValue();
         return locales.get(lang);
-    }
-
-    protected Layout createUserHint(App app) {
-        boolean enableChromeFrame = webConfig.getUseChromeFramePlugin();
-        WebApplicationContext context = (WebApplicationContext) app.getContext();
-        WebBrowser browser = context.getBrowser();
-
-        if (enableChromeFrame && browser.getBrowserApplication() != null) {
-            final Browser browserInfo = Browser.getBrowserInfo(browser.getBrowserApplication());
-            if (browserInfo.isIE() && !browserInfo.isChromeFrame()) {
-                final Layout layout = new VerticalLayout();
-                layout.setStyleName("loginUserHint");
-                layout.addComponent(new Label(messages.getMessage(getMessagesPack(), "chromeframe.hint", resolvedLocale),
-                        Label.CONTENT_XHTML));
-                return layout;
-            }
-        }
-        return null;
     }
 
     protected String getMessagesPack() {

@@ -81,13 +81,6 @@ public interface WebConfig extends Config {
     boolean getUseNativeButtons();
 
     /**
-     * @return If true and if IE browser is used, we suggest to install Chrome frame IE plugin.
-     */
-    @Property("cuba.web.useChromeFramePlugin")
-    @DefaultBoolean(false)
-    boolean getUseChromeFramePlugin();
-
-    /**
      * @return Request execution time in seconds, after which a message log will be logged.
      */
     @Property("cuba.web.logLongRequestsThresholdSec")
