@@ -6,12 +6,9 @@ package com.haulmont.cuba.web.sys;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.auth.ActiveDirectoryHelper;
 import com.haulmont.cuba.web.auth.CubaAuthProvider;
-import com.vaadin.Application;
-import com.vaadin.terminal.gwt.server.WebApplicationContext;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -19,10 +16,8 @@ import org.apache.commons.logging.LogFactory;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -45,11 +40,13 @@ public class CubaHttpFilter implements Filter {
                 throw new ServletException(e);
             }
             // Fill bypassUrls
-            String urls = AppBeans.get(Configuration.class).getConfig(WebConfig.class).getCubaHttpFilterBypassUrls();
+            Configuration configuration = AppBeans.get(Configuration.NAME);
+            String urls = configuration.getConfig(WebConfig.class).getCubaHttpFilterBypassUrls();
             String[] strings = urls.split("[, ]");
             for (String string : strings) {
-                if (StringUtils.isNotBlank(string))
+                if (StringUtils.isNotBlank(string)) {
                     bypassUrls.add(string);
+                }
             }
         }
     }
@@ -67,10 +64,11 @@ public class CubaHttpFilter implements Filter {
 
         boolean filtered = false;
 
-        if (ActiveDirectoryHelper.useActiveDirectory()) {
+        if (activeDirectoryFilter != null) {
             // Active Directory integration
-            if (!requestURI.endsWith("/"))
+            if (!requestURI.endsWith("/")) {
                 requestURI = requestURI + "/";
+            }
 
             boolean bypass = false;
             for (String bypassUrl : bypassUrls) {
@@ -81,10 +79,8 @@ public class CubaHttpFilter implements Filter {
                 }
             }
             if (!bypass) {
-                if (activeDirectoryFilter.needAuth(request) || !checkApplicationSession(request)) {
-                    activeDirectoryFilter.doFilter(request, response, chain);
-                    filtered = true;
-                }
+                activeDirectoryFilter.doFilter(request, response, chain);
+                filtered = true;
             }
         }
 
@@ -93,48 +89,10 @@ public class CubaHttpFilter implements Filter {
         }
     }
 
-    private boolean checkApplicationSession(HttpServletRequest request) {
-        if (request.getSession() == null)
-            return false;
-
-        final HttpSession session = request.getSession(true);
-        if (session == null)
-            return false;
-
-        if (isWebResourcesRequest(request))
-            return true;
-
-        WebApplicationContext applicationContext = CubaApplicationContext.getExistingApplicationContext(session);
-        if (applicationContext == null)
-            return false;
-
-        final Collection<Application> applications = applicationContext.getApplications();
-
-        for (Application app : applications) {
-            String appPath = app.getURL().getPath();
-
-            String servletPath = request.getContextPath();
-            if (!servletPath.equals("/"))
-                servletPath += "/";
-
-            if (servletPath.equals(appPath)) {
-                if (app.isRunning() && (app instanceof App)) {
-                    if (((App) app).getConnection().isConnected())
-                        return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    private boolean isWebResourcesRequest(HttpServletRequest request) {
-        return (request.getRequestURI() != null) && (request.getRequestURI().contains("/VAADIN/"));
-    }
-
     @Override
     public void destroy() {
-        if (activeDirectoryFilter != null)
+        if (activeDirectoryFilter != null) {
             activeDirectoryFilter.destroy();
+        }
     }
 }

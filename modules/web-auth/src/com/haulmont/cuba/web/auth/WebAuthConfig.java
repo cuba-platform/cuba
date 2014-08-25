@@ -11,6 +11,10 @@ import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
 import com.haulmont.cuba.core.config.defaults.DefaultString;
+import com.haulmont.cuba.core.config.type.CommaSeparatedStringListTypeFactory;
+import com.haulmont.cuba.core.config.type.Factory;
+
+import java.util.List;
 
 /**
  * @author kozyaikin
@@ -26,40 +30,6 @@ public interface WebAuthConfig extends Config {
     String getActiveDirectoryAliases();
 
     /**
-     * @return ActiveDirectory domains configuration info
-     */
-    @Property("cuba.web.activeDirectoryDomains")
-    String getActiveDirectoryDomains();
-
-    /**
-     * @return Kerberos auth module in JaasConf
-     */
-    @Property("cuba.web.kerberosAuthModule")
-    String getKerberosAuthModule();
-
-    /**
-     * @return Kerberos domain and realms config (krb5.ini)
-     */
-    @Property("cuba.web.kerberosConf")
-    String getKerberosConf();
-
-    /**
-     * @return Kerberos login module config (jaas.conf)
-     */
-    @Property("cuba.web.kerberosJaasConf")
-    String getKerberosJaasConf();
-
-    /**
-     * @return Kerberos single-sign-on module in JaasConf
-     */
-    @Property("cuba.web.kerberosLoginModule")
-    String getKerberosLoginModule();
-
-    @Property("cuba.web.activeDirectoryDebug")
-    @DefaultBoolean(false)
-    boolean getActiveDirectoryDebug();
-
-    /**
      * @return Whether to use the ActiveDirectory authentication
      */
     @Property("cuba.web.useActiveDirectory")
@@ -70,7 +40,7 @@ public interface WebAuthConfig extends Config {
      * @return ActiveDirectory authentification provider
      */
     @Property("cuba.web.activeDirectoryAuthClass")
-    @DefaultString("com.haulmont.cuba.web.auth.KerberosAuthProvider")
+    @DefaultString("com.haulmont.cuba.web.auth.LdapAuthProvider")
     String getActiveDirectoryAuthClass();
 
     /**
@@ -82,4 +52,17 @@ public interface WebAuthConfig extends Config {
     @Property("cuba.trustedClientPassword")
     @DefaultString("")
     String getTrustedClientPassword();
+
+    @Property("cuba.web.ldap.urls")
+    @Factory(factory = CommaSeparatedStringListTypeFactory.class)
+    List<String> getLdapUrls();
+
+    @Property("cuba.web.ldap.base")
+    String getLdapBase();
+
+    @Property("cuba.web.ldap.user")
+    String getLdapUser();
+
+    @Property("cuba.web.ldap.password")
+    String getLdapPassword();
 }

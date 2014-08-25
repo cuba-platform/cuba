@@ -39,8 +39,9 @@ public class DefaultDomainAliasesResolver implements DomainAliasesResolver {
                     if (aliasParts == null || aliasParts.length != 2 ||
                             StringUtils.isBlank(aliasParts[0]) || StringUtils.isBlank(aliasParts[1])) {
                         log.warn("Incorrect domain alias definition: \"" + String.valueOf(aliasDefinition) + "\"");
-                    } else
+                    } else {
                         aliases.put(aliasParts[0].toLowerCase(), aliasParts[1]);
+                    }
                 }
             }
         }
@@ -53,7 +54,8 @@ public class DefaultDomainAliasesResolver implements DomainAliasesResolver {
             String domain = aliases.get(alias_lc);
             log.debug(String.format("Resolved domain \"%s\" from alias \"%s\"", domain, alias));
             return domain;
-        } else
+        } else {
             return alias;
+        }
     }
 }

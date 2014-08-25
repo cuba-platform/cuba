@@ -9,6 +9,7 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppWindow;
 import com.haulmont.cuba.web.WebConfig;
@@ -18,6 +19,8 @@ import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
+import static com.haulmont.cuba.web.auth.ActiveDirectoryConnection.ACTIVE_DIRECTORY_USER_SESSION_ATTRIBUTE;
 
 /**
  * @author krivopustov
@@ -79,7 +82,8 @@ public class SettingsWindow extends AbstractWindow {
 
         appThemeField.setEditable(changeThemeEnabled);
 
-        final User user = userSessionSource.getUserSession().getUser();
+        UserSession session = userSessionSource.getUserSession();
+        final User user = session.getUser();
         changePasswordBtn.setAction(
                 new AbstractAction("changePassw") {
                     @Override
@@ -94,7 +98,8 @@ public class SettingsWindow extends AbstractWindow {
                     }
                 }
         );
-        if (!user.equals(userSessionSource.getUserSession().getCurrentOrSubstitutedUser())) {
+        if (!user.equals(session.getCurrentOrSubstitutedUser())
+                || Boolean.TRUE.equals(session.getAttribute(ACTIVE_DIRECTORY_USER_SESSION_ATTRIBUTE))) {
             changePasswordBtn.setEnabled(false);
         }
 

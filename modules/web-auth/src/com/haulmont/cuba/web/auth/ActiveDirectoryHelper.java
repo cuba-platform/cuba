@@ -14,21 +14,8 @@ import com.haulmont.cuba.core.global.Configuration;
 public class ActiveDirectoryHelper {
 
     public static boolean useActiveDirectory() {
-        WebAuthConfig config = AppBeans.get(Configuration.class).getConfig(WebAuthConfig.class);
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        WebAuthConfig config = configuration.getConfig(WebAuthConfig.class);
         return config.getUseActiveDirectory();
-    }
-
-    /**
-     * @return True if HTTP session support AD auth
-     */
-    public static boolean activeDirectorySupportedBySession() {
-        RequestContext requestContext = RequestContext.get();
-        return requestContext != null &&
-                requestContext.getSession() != null &&
-                getAuthProvider().authSupported(requestContext.getSession());
-    }
-
-    public static CubaAuthProvider getAuthProvider() {
-        return AppBeans.get(CubaAuthProvider.NAME);
     }
 }

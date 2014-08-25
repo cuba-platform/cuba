@@ -22,7 +22,7 @@ import java.util.Locale;
  */
 public class DefaultConnection extends AbstractConnection implements ActiveDirectoryConnection {
 
-    protected Configuration configuration = AppBeans.get(Configuration.class);
+    protected Configuration configuration = AppBeans.get(Configuration.NAME);
 
     @Override
     public void login(String login, String password, Locale locale) throws LoginException {
@@ -48,6 +48,8 @@ public class DefaultConnection extends AbstractConnection implements ActiveDirec
 
         String password = configuration.getConfig(WebAuthConfig.class).getTrustedClientPassword();
         update(loginService.loginTrusted(login, password, locale));
+
+        session.setAttribute(ACTIVE_DIRECTORY_USER_SESSION_ATTRIBUTE, true);
     }
 
     @Override

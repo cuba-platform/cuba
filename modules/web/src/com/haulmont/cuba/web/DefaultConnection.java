@@ -8,6 +8,7 @@ package com.haulmont.cuba.web;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.security.global.LoginException;
+import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.auth.ActiveDirectoryConnection;
 import com.haulmont.cuba.web.auth.ActiveDirectoryHelper;
 import com.haulmont.cuba.web.auth.WebAuthConfig;
@@ -22,7 +23,7 @@ import java.util.Locale;
  */
 public class DefaultConnection extends AbstractConnection implements ActiveDirectoryConnection {
 
-    protected Configuration configuration = AppBeans.get(Configuration.class);
+    protected Configuration configuration = AppBeans.get(Configuration.NAME);
 
     @Override
     public void login(String login, String password, Locale locale) throws LoginException {
@@ -50,6 +51,12 @@ public class DefaultConnection extends AbstractConnection implements ActiveDirec
 
         String password = configuration.getConfig(WebAuthConfig.class).getTrustedClientPassword();
         update(loginService.loginTrusted(login, password, locale));
+
+        UserSession session = getSession();
+        if (session == null) {
+            throw new IllegalStateException("Null session after login");
+        }
+        session.setAttribute(ACTIVE_DIRECTORY_USER_SESSION_ATTRIBUTE, true);
     }
 
     @Override

@@ -179,10 +179,12 @@ public abstract class App {
         log.debug("Initializing application");
 
         // get default locale from config
-        locale = AppBeans.get(MessageTools.class).getDefaultLocale();
+        MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+        locale = messageTools.getDefaultLocale();
 
-        if (ActiveDirectoryHelper.useActiveDirectory())
+        if (ActiveDirectoryHelper.useActiveDirectory()) {
             principal = RequestContext.get().getRequest().getUserPrincipal();
+        }
     }
 
     /**

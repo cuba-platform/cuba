@@ -40,11 +40,13 @@ public class CubaHttpFilter implements Filter {
                 throw new ServletException(e);
             }
             // Fill bypassUrls
-            String urls = AppBeans.get(Configuration.class).getConfig(WebConfig.class).getCubaHttpFilterBypassUrls();
+            Configuration configuration = AppBeans.get(Configuration.NAME);
+            String urls = configuration.getConfig(WebConfig.class).getCubaHttpFilterBypassUrls();
             String[] strings = urls.split("[, ]");
             for (String string : strings) {
-                if (StringUtils.isNotBlank(string))
+                if (StringUtils.isNotBlank(string)) {
                     bypassUrls.add(string);
+                }
             }
         }
     }
@@ -62,10 +64,11 @@ public class CubaHttpFilter implements Filter {
 
         boolean filtered = false;
 
-        if (ActiveDirectoryHelper.useActiveDirectory()) {
+        if (activeDirectoryFilter != null) {
             // Active Directory integration
-            if (!requestURI.endsWith("/"))
+            if (!requestURI.endsWith("/")) {
                 requestURI = requestURI + "/";
+            }
 
             boolean bypass = false;
             for (String bypassUrl : bypassUrls) {
@@ -76,10 +79,8 @@ public class CubaHttpFilter implements Filter {
                 }
             }
             if (!bypass) {
-                if (activeDirectoryFilter.needAuth(request) || !checkApplicationSession(request)) {
-                    activeDirectoryFilter.doFilter(request, response, chain);
-                    filtered = true;
-                }
+                activeDirectoryFilter.doFilter(request, response, chain);
+                filtered = true;
             }
         }
 
@@ -88,49 +89,10 @@ public class CubaHttpFilter implements Filter {
         }
     }
 
-    private boolean checkApplicationSession(HttpServletRequest request) {
-        // vaadin7 ActiveDirectory
-        /*if (request.getSession() == null)
-            return false;
-
-        final HttpSession session = request.getSession(true);
-        if (session == null)
-            return false;
-
-        if (isWebResourcesRequest(request))
-            return true;
-
-        WebApplicationContext applicationContext = CubaApplicationContext.getExistingApplicationContext(session);
-        if (applicationContext == null)
-            return false;
-
-        final Collection<Application> applications = applicationContext.getApplications();
-
-        for (Application app : applications) {
-            String appPath = app.getURL().getPath();
-
-            String servletPath = request.getContextPath();
-            if (!servletPath.equals("/"))
-                servletPath += "/";
-
-            if (servletPath.equals(appPath)) {
-                if (app.isRunning() && (app instanceof AppUI)) {
-                    if (((AppUI) app).getConnection().isConnected())
-                        return true;
-                }
-            }
-        }*/
-
-        return false;
-    }
-
-    private boolean isWebResourcesRequest(HttpServletRequest request) {
-        return (request.getRequestURI() != null) && (request.getRequestURI().contains("/VAADIN/"));
-    }
-
     @Override
     public void destroy() {
-        if (activeDirectoryFilter != null)
+        if (activeDirectoryFilter != null) {
             activeDirectoryFilter.destroy();
+        }
     }
 }

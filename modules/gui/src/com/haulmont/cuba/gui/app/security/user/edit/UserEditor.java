@@ -253,7 +253,7 @@ public class UserEditor extends AbstractEditor<User> {
 
         User user = getItem();
 
-        if (PersistenceHelper.isNew(user)) {
+        if (PersistenceHelper.isNew(user) && passwField.isRequired()) {
             String passw = passwField.getValue();
             String confPassw = confirmPasswField.getValue();
             if (StringUtils.isBlank(passw) || StringUtils.isBlank(confPassw)) {

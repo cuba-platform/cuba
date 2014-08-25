@@ -16,6 +16,8 @@ import java.util.Locale;
  */
 public interface ActiveDirectoryConnection {
 
+    String ACTIVE_DIRECTORY_USER_SESSION_ATTRIBUTE = "LOGGED_IN_WITH_ACTIVE_DIRECTORY";
+
     /**
      * Log in to the system using ActiveDirectory integration.
      * @param login             user login name

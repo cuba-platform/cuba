@@ -8,8 +8,6 @@ package com.haulmont.cuba.web.auth;
 import com.haulmont.cuba.security.global.LoginException;
 
 import javax.servlet.Filter;
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpSession;
 import java.util.Locale;
 
 /**
@@ -21,24 +19,12 @@ public interface CubaAuthProvider extends Filter {
     public static final String NAME = "cuba_AuthProvider";
 
     /**
-     * Login procedure with user and password
+     * Login procedure with user and password.
      *
-     * @param login    User login
-     * @param password User password
-     * @param loc      Locale
+     * @param login          User login
+     * @param password       User password
+     * @param messagesLocale Locale for error messages
      * @throws LoginException Login exception
      */
-    void authenticate(String login, String password, Locale loc) throws LoginException;
-
-    /**
-     * @param request Http request
-     * @return True if auth needed
-     */
-    boolean needAuth(ServletRequest request);
-
-    /**
-     * @param session HTTP sesstion
-     * @return True if session supported by auth mechanism
-     */
-    boolean authSupported(HttpSession session);
+    void authenticate(String login, String password, Locale messagesLocale) throws LoginException;
 }

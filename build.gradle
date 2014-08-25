@@ -453,6 +453,9 @@ configure(webAuthModule) {
     dependencies {
         compile(globalModule)
 
+        compile(group: 'org.springframework', name: 'spring-tx', version: springVersion)
+        compile(group: 'org.springframework.ldap', name: 'spring-ldap-core', version: '2.0.2.RELEASE')
+
         provided(servletApi)
     }
 }
@@ -469,7 +472,7 @@ configure(webToolkitModule) {
         widgetSetClass = 'com.haulmont.cuba.web.toolkit.ui.WidgetSet'
         // Debug flags:
         // draft = true
-        // compilerArgs = ['-style': 'PRETTY', '-logLevel': 'INFO']
+        compilerArgs = ['-style': 'DETAILED']
 
         // Performance and widgetset size:
         // disableCastChecking = true

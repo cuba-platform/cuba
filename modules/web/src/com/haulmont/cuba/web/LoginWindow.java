@@ -58,8 +58,6 @@ public class LoginWindow extends UIView implements Action.Handler {
     public static final String COOKIE_PASSWORD = "rememberMe.Password";
     public static final String COOKIE_REMEMBER_ME = "rememberMe";
 
-    private static final char[] DOMAIN_SEPARATORS = new char[]{'\\', '@'};
-
     protected Connection connection;
 
     protected final AppUI ui;
@@ -121,8 +119,7 @@ public class LoginWindow extends UIView implements Action.Handler {
 
         okButton = new CubaButton();
 
-        rememberMeAllowed = webConfig.getRememberMeEnabled()
-                && (!ActiveDirectoryHelper.useActiveDirectory() || !ActiveDirectoryHelper.activeDirectorySupportedBySession());
+        rememberMeAllowed = webConfig.getRememberMeEnabled();
 
         if (rememberMeAllowed) {
             rememberMe = new CubaCheckBox();
@@ -164,7 +161,8 @@ public class LoginWindow extends UIView implements Action.Handler {
                 return locale;
             }
         }
-            // if not found and application locale contains country, try to match by language only
+
+        // if not found and application locale contains country, try to match by language only
         if (!StringUtils.isEmpty(app.getLocale().getCountry())) {
             Locale appLocale = Locale.forLanguageTag(app.getLocale().getLanguage());
             for (Locale locale : locales.values()) {
@@ -356,10 +354,6 @@ public class LoginWindow extends UIView implements Action.Handler {
         if (ActiveDirectoryHelper.useActiveDirectory()) {
             loginField.setValue(app.getPrincipal() == null ? "" : app.getPrincipal().getName());
             passwordField.setValue("");
-
-            if (rememberMeAllowed && !ActiveDirectoryHelper.activeDirectorySupportedBySession()) {
-                initRememberMe();
-            }
         } else {
             String defaultUser = webConfig.getLoginDialogDefaultUser();
             if (!StringUtils.isBlank(defaultUser) && !"<disabled>".equals(defaultUser)) {
@@ -374,10 +368,10 @@ public class LoginWindow extends UIView implements Action.Handler {
             } else {
                 passwordField.setValue("");
             }
+        }
 
-            if (rememberMeAllowed) {
-                initRememberMe();
-            }
+        if (rememberMeAllowed) {
+            initRememberMe();
         }
     }
 
@@ -410,22 +404,32 @@ public class LoginWindow extends UIView implements Action.Handler {
 
     protected void login() {
         String login = loginField.getValue();
+        String password = passwordField.getValue() != null ? passwordField.getValue() : "";
+
+        if (StringUtils.isEmpty(login) || StringUtils.isEmpty(password)) {
+            String message = messages.getMessage(getMessagesPack(), "loginWindow.emptyLoginOrPassword", resolvedLocale);
+            new Notification(message, Notification.Type.WARNING_MESSAGE).show(ui.getPage());
+            return;
+        }
+
         try {
             Locale locale = getUserLocale();
             app.setLocale(locale);
 
-            String passwordValue = passwordField.getValue() != null ? passwordField.getValue() : "";
-
             if (loginByRememberMe && rememberMeAllowed) {
-                loginByRememberMe(login, passwordValue, locale);
-            } else if (ActiveDirectoryHelper.useActiveDirectory() && StringUtils.containsAny(login, DOMAIN_SEPARATORS)) {
-                CubaAuthProvider authProvider = ActiveDirectoryHelper.getAuthProvider();
-                authProvider.authenticate(login, passwordValue, resolvedLocale);
-                login = convertLoginString(login);
+                loginByRememberMe(login, password, locale);
+            } else if (ActiveDirectoryHelper.useActiveDirectory()) {
+                // try to login as AD user, fallback to regular authentication
+                // we use resolved locale for error messages
+                if (loginActiveDirectory(login, password, resolvedLocale)) {
+                    login = convertLoginString(login);
 
-                ((ActiveDirectoryConnection) connection).loginActiveDirectory(login, locale);
+                    ((ActiveDirectoryConnection) connection).loginActiveDirectory(login, locale);
+                } else {
+                    login(login, passwordEncryption.getPlainHash(password), locale);
+                }
             } else {
-                login(login, passwordEncryption.getPlainHash(passwordValue), locale);
+                login(login, passwordEncryption.getPlainHash(password), locale);
             }
         } catch (LoginException e) {
             log.info("Login failed: " + e.toString());
@@ -445,6 +449,17 @@ public class LoginWindow extends UIView implements Action.Handler {
         }
     }
 
+    protected boolean loginActiveDirectory(String login, String passwordValue, Locale locale) {
+        CubaAuthProvider authProvider = AppBeans.get(CubaAuthProvider.NAME);
+        try {
+            authProvider.authenticate(login, passwordValue, locale);
+        } catch (LoginException e) {
+            log.debug("Login to AD failed", e);
+            return false;
+        }
+        return true;
+    }
+
     /**
      * Convert userName to db form
      * In database users stores in form DOMAIN&#92;userName
@@ -462,10 +477,12 @@ public class LoginWindow extends UIView implements Action.Handler {
             login = domain + "\\" + userName;
         } else {
             int atSignPos = login.indexOf("@");
-            String domainAlias = login.substring(atSignPos + 1);
-            String domain = aliasesResolver.getDomainName(domainAlias).toUpperCase();
-            String userName = login.substring(0, atSignPos);
-            login = domain + "\\" + userName;
+            if (atSignPos >= 0) {
+                String domainAlias = login.substring(atSignPos + 1);
+                String domain = aliasesResolver.getDomainName(domainAlias).toUpperCase();
+                String userName = login.substring(0, atSignPos);
+                login = domain + "\\" + userName;
+            }
         }
         return login;
     }

@@ -54,8 +54,6 @@ public class LoginWindow extends Window implements Action.Handler {
     public static final String COOKIE_PASSWORD = "rememberMe.Password";
     public static final String COOKIE_REMEMBER_ME = "rememberMe";
 
-    private static final char[] DOMAIN_SEPARATORS = new char[]{'\\', '@'};
-
     protected Connection connection;
 
     protected TextField loginField;
@@ -108,10 +106,7 @@ public class LoginWindow extends Window implements Action.Handler {
         localesSelect.setImmediate(true);
 
         if (app.isCookiesEnabled() && webConfig.getRememberMeEnabled()) {
-            if (!ActiveDirectoryHelper.useActiveDirectory() ||
-                    !ActiveDirectoryHelper.activeDirectorySupportedBySession()) {
-                rememberMe = new CheckBox();
-            }
+            rememberMe = new CheckBox();
         }
 
         initUI(app);
@@ -315,36 +310,39 @@ public class LoginWindow extends Window implements Action.Handler {
     }
 
     protected void initFields(App app) {
-        String currLocale = messages.getTools().localeToString(resolvedLocale);
+        String currentLocale = messages.getTools().localeToString(resolvedLocale);
         String selected = null;
         for (Map.Entry<String, Locale> entry : locales.entrySet()) {
             localesSelect.addItem(entry.getKey());
-            if (messages.getTools().localeToString(entry.getValue()).equals(currLocale))
+            if (messages.getTools().localeToString(entry.getValue()).equals(currentLocale)) {
                 selected = entry.getKey();
+            }
         }
-        if (selected == null)
+        if (selected == null) {
             selected = locales.keySet().iterator().next();
+        }
         localesSelect.setValue(selected);
 
         if (ActiveDirectoryHelper.useActiveDirectory()) {
             loginField.setValue(app.getUser() == null ? "" : ((Principal) app.getUser()).getName());
             passwordField.setValue("");
-
-            if (!ActiveDirectoryHelper.activeDirectorySupportedBySession())
-                initRememberMe(app);
         } else {
             String defaultUser = webConfig.getLoginDialogDefaultUser();
-            if (!StringUtils.isBlank(defaultUser) && !"<disabled>".equals(defaultUser))
+            if (!StringUtils.isBlank(defaultUser) && !"<disabled>".equals(defaultUser)) {
                 loginField.setValue(defaultUser);
-            else
+            } else {
                 loginField.setValue("");
+            }
 
             String defaultPassw = webConfig.getLoginDialogDefaultPassword();
-            if (!StringUtils.isBlank(defaultPassw) && !"<disabled>".equals(defaultPassw))
+            if (!StringUtils.isBlank(defaultPassw) && !"<disabled>".equals(defaultPassw)) {
                 passwordField.setValue(defaultPassw);
-            else
+            } else {
                 passwordField.setValue("");
+            }
+        }
 
+        if (webConfig.getRememberMeEnabled()) {
             initRememberMe(app);
         }
     }
@@ -373,26 +371,36 @@ public class LoginWindow extends Window implements Action.Handler {
 
     protected void login() {
         String login = (String) loginField.getValue();
+        String password = passwordField.getValue() != null ? (String) passwordField.getValue() : "";
+
+        if (StringUtils.isEmpty(login) || StringUtils.isEmpty(password)) {
+            String message = messages.getMessage(getMessagesPack(), "loginWindow.emptyLoginOrPassword", resolvedLocale);
+            showNotification(message, Notification.TYPE_WARNING_MESSAGE);
+            return;
+        }
+
         try {
             Locale locale = getUserLocale();
             App.getInstance().setLocale(locale);
 
-            String passwordValue = passwordField.getValue() != null ? (String) passwordField.getValue() : "";
-
             if (loginByRememberMe && rememberMe != null) {
-                loginByRememberMe(login, passwordValue, locale);
-            } else if (ActiveDirectoryHelper.useActiveDirectory() && StringUtils.containsAny(login, DOMAIN_SEPARATORS)) {
-                CubaAuthProvider authProvider = ActiveDirectoryHelper.getAuthProvider();
-                authProvider.authenticate(login, passwordValue, resolvedLocale);
-                login = convertLoginString(login);
+                loginByRememberMe(login, password, locale);
+            } else if (ActiveDirectoryHelper.useActiveDirectory()) {
+                // try to login as AD user, fallback to regular authentication
+                // we use resolved locale for error messages
+                if (loginActiveDirectory(login, password, resolvedLocale)) {
+                    login = convertLoginString(login);
 
-                ((ActiveDirectoryConnection) connection).loginActiveDirectory(login, locale);
+                    ((ActiveDirectoryConnection) connection).loginActiveDirectory(login, locale);
+                } else {
+                    login(login, passwordEncryption.getPlainHash(password), locale);
+                }
             } else {
-                login(login, passwordEncryption.getPlainHash(passwordValue), locale);
+                login(login, passwordEncryption.getPlainHash(password), locale);
             }
         } catch (LoginException e) {
             log.info("Login failed: " + e.toString());
-            // todo Fix notification about exception while AD Auth
+
             String message = messages.getMessage(getMessagesPack(), "loginWindow.loginFailed", resolvedLocale);
             showNotification(
                     ComponentsHelper.preprocessHtmlMessage(message),
@@ -405,6 +413,17 @@ public class LoginWindow extends Window implements Action.Handler {
                 loginChangeListener = null;
             }
         }
+    }
+
+    protected boolean loginActiveDirectory(String login, String passwordValue, Locale locale) {
+        CubaAuthProvider authProvider = AppBeans.get(CubaAuthProvider.NAME);
+        try {
+            authProvider.authenticate(login, passwordValue, locale);
+        } catch (LoginException e) {
+            log.debug("Login to AD failed: " + e.toString());
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -424,10 +443,12 @@ public class LoginWindow extends Window implements Action.Handler {
             login = domain + "\\" + userName;
         } else {
             int atSignPos = login.indexOf("@");
-            String domainAlias = login.substring(atSignPos + 1);
-            String domain = aliasesResolver.getDomainName(domainAlias).toUpperCase();
-            String userName = login.substring(0, atSignPos);
-            login = domain + "\\" + userName;
+            if (atSignPos >= 0) {
+                String domainAlias = login.substring(atSignPos + 1);
+                String domain = aliasesResolver.getDomainName(domainAlias).toUpperCase();
+                String userName = login.substring(0, atSignPos);
+                login = domain + "\\" + userName;
+            }
         }
         return login;
     }
