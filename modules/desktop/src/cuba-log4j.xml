@@ -130,6 +130,10 @@
         <priority value="DEBUG"/>
     </category>
 
+    <category name="com.haulmont.cuba.core.sys">
+        <priority value="INFO"/>
+    </category>
+
     <!-- End Cuba categories -->
 
     <category name="org.springframework">
