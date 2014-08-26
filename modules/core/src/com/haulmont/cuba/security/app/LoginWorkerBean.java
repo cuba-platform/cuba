@@ -189,7 +189,8 @@ public class LoginWorkerBean implements LoginWorker {
             }
 
             Locale userLocale = locale;
-            if (!StringUtils.isBlank(user.getLanguage())) {
+            if (user.getLanguage() != null &&
+                    BooleanUtils.isFalse(configuration.getConfig(GlobalConfig.class).getLocaleSelectVisible())) {
                 userLocale = new Locale(user.getLanguage());
             }
             UserSession session = userSessionManager.createSession(user, userLocale, false);
@@ -226,7 +227,8 @@ public class LoginWorkerBean implements LoginWorker {
             }
 
             Locale userLocale = locale;
-            if (!StringUtils.isBlank(user.getLanguage())) {
+            if (user.getLanguage() != null &&
+                    BooleanUtils.isFalse(configuration.getConfig(GlobalConfig.class).getLocaleSelectVisible())) {
                 userLocale = new Locale(user.getLanguage());
             }
             UserSession session = userSessionManager.createSession(user, userLocale, false);
