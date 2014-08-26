@@ -8,6 +8,7 @@ import com.google.common.base.Strings;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.TextInputField;
@@ -78,7 +79,7 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
     protected abstract T createTextFieldImpl();
 
     @Override
-    public <T> T getValue() {
+    public <V> V getValue() {
         String value = super.getValue();
         if (isTrimming()) {
             value = StringUtils.trim(value);
@@ -88,13 +89,13 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
         Datatype datatype = getActualDatatype();
         if (value != null && datatype != null) {
             try {
-                return (T) datatype.parse(value, locale);
+                return (V) datatype.parse(value, locale);
             } catch (ParseException e) {
                 log.debug("Unable to parse value of component " + getId() + "\n" + e.getMessage());
                 return null;
             }
         } else {
-            return (T) value;
+            return (V) value;
         }
     }
 
@@ -105,10 +106,20 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
             return;
         }
 
-        Datatype datatype = getActualDatatype();
-        if (!(value instanceof String) && datatype != null) {
-            String str = datatype.format(value, locale);
-            super.setValue(str);
+        if (!(value instanceof String)) {
+            String formattedValue;
+
+            Datatype<String> stringDatatype = Datatypes.getNN(String.class);
+            Datatype datatype = getActualDatatype();
+
+            if (datatype != null && stringDatatype != datatype) {
+                formattedValue = datatype.format(value, locale);
+            } else {
+                MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
+                formattedValue = metadataTools.format(value);
+            }
+
+            super.setValue(formattedValue);
         } else {
             super.setValue(value);
         }

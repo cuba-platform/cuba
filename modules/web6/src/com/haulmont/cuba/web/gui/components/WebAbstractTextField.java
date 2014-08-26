@@ -10,6 +10,7 @@ import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.TextInputField;
@@ -120,19 +121,19 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
     protected abstract T createTextFieldImpl();
 
     @Override
-    public <T> T getValue() {
+    public <V> V getValue() {
         Object value = super.getValue();
         Datatype datatype = getActualDatatype();
         if (value instanceof String && datatype != null) {
             value = Strings.emptyToNull((String) value);
             try {
-                return (T) datatype.parse((String) value, locale);
+                return (V) datatype.parse((String) value, locale);
             } catch (ParseException e) {
                 log.debug("Unable to parse value of component " + getId() + "\n" + e.getMessage());
                 return null;
             }
         } else {
-            return (T) value;
+            return (V) value;
         }
     }
 
@@ -143,10 +144,20 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
             return;
         }
 
-        Datatype datatype = getActualDatatype();
-        if (!(value instanceof String) && datatype != null) {
-            String str = datatype.format(value, locale);
-            super.setValue(str);
+        if (!(value instanceof String)) {
+            String formattedValue;
+
+            Datatype<String> stringDatatype = Datatypes.getNN(String.class);
+            Datatype datatype = getActualDatatype();
+
+            if (datatype != null && stringDatatype != datatype) {
+                formattedValue = datatype.format(value, locale);
+            } else {
+                MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
+                formattedValue = metadataTools.format(value);
+            }
+
+            super.setValue(formattedValue);
         } else {
             super.setValue(value);
         }
