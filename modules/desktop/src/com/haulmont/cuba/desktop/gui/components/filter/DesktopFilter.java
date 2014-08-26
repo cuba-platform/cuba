@@ -714,7 +714,10 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
      * before it will be refreshed
      */
     protected void refreshDatasource() {
-        datasource.refresh();
+        if (datasource instanceof CollectionDatasource.Suspendable)
+            ((CollectionDatasource.Suspendable) datasource).refreshIfNotSuspended();
+        else
+            datasource.refresh();
     }
 
     protected void applyDatasourceFilter() {
