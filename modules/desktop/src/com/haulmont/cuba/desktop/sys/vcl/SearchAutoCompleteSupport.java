@@ -177,6 +177,8 @@ public final class SearchAutoCompleteSupport<E> {
     /** Marker object for indicating "not found". */
     private static final Object NOT_FOUND = new Object();
 
+    public static final String SEARCH_ENTER_COMMAND = "SEARCH_ENTER_COMMAND";
+
     //
     // These member variables control behaviour of the autocompletion support
     //
@@ -1984,7 +1986,7 @@ public final class SearchAutoCompleteSupport<E> {
                 // then the ENTER key transfers focus back to the ComboBoxEditor.
                 if (actionListeners != null) {
                     registerAllActionListeners(comboBox, actionListeners);
-                    comboBox.actionPerformed(new ActionEvent(e.getSource(), e.getID(), null));
+                    comboBox.actionPerformed(new ActionEvent(e.getSource(), e.getID(), SEARCH_ENTER_COMMAND));
                 }
 
                 // null out our own reference to the ActionListeners

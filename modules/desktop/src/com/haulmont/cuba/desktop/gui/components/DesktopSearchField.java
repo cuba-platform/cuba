@@ -96,6 +96,15 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
                     super.setPopupVisible(false);
                 }
             }
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (SearchAutoCompleteSupport.SEARCH_ENTER_COMMAND.equals(e.getActionCommand())) {
+                    enterHandling = true;
+                }
+
+                super.actionPerformed(e);
+            }
         };
         comboBox.addActionListener(new ActionListener() {
             @Override
@@ -154,13 +163,6 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
                         updateEditState();
                     }
                 });
-            }
-
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getExtendedKeyCode() == KeyEvent.VK_ENTER && e.getModifiers() == 0) {
-                    enterHandling = true;
-                }
             }
         });
 
