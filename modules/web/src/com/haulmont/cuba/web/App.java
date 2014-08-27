@@ -218,9 +218,14 @@ public abstract class App {
      * @throws IllegalStateException if no application instance is bound to the current {@link VaadinSession}
      */
     public static App getInstance() {
-        App app = VaadinSession.getCurrent().getAttribute(App.class);
-        if (app == null)
+        VaadinSession vSession = VaadinSession.getCurrent();
+        if (vSession == null) {
+            throw new IllegalStateException("No VaadinSession found");
+        }
+        App app = vSession.getAttribute(App.class);
+        if (app == null) {
             throw new IllegalStateException("No App is bound to the current VaadinSession");
+        }
         return app;
     }
 
@@ -228,7 +233,8 @@ public abstract class App {
      * @return true if an {@link App} instance is currently bound and can be safely obtained by {@link #getInstance()}
      */
     public static boolean isBound() {
-        return VaadinSession.getCurrent().getAttribute(App.class) != null;
+        VaadinSession vSession = VaadinSession.getCurrent();
+        return vSession != null && vSession.getAttribute(App.class) != null;
     }
 
     /**

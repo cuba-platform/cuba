@@ -12,6 +12,7 @@ import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.Connection;
 
 import javax.annotation.ManagedBean;
 
@@ -31,15 +32,18 @@ public class WebUserSessionSource extends AbstractUserSessionSource {
     @Override
     public boolean checkCurrentUserSession() {
         if (App.isBound()) {
-            return App.getInstance().getConnection().isConnected() && App.getInstance().getConnection().getSession() != null;
+            App app = App.getInstance();
+            Connection connection = app.getConnection();
+            return connection.isConnected() && connection.getSession() != null;
         } else {
             SecurityContext securityContext = AppContext.getSecurityContext();
-            if (securityContext == null)
+            if (securityContext == null) {
                 return false;
+            }
 
-            if (securityContext.getSession() != null)
+            if (securityContext.getSession() != null) {
                 return true;
-            else {
+            } else {
                 try {
                     userSessionService.getUserSession(securityContext.getSessionId());
                     return true;
@@ -57,8 +61,9 @@ public class WebUserSessionSource extends AbstractUserSessionSource {
             session = App.getInstance().getConnection().getSession();
         } else {
             SecurityContext securityContext = AppContext.getSecurityContext();
-            if (securityContext == null)
+            if (securityContext == null) {
                 throw new IllegalStateException("No security context bound to the current thread");
+            }
 
             if (securityContext.getSession() != null) {
                 session = securityContext.getSession();
@@ -66,8 +71,9 @@ public class WebUserSessionSource extends AbstractUserSessionSource {
                 session = userSessionService.getUserSession(securityContext.getSessionId());
             }
         }
-        if (session == null)
+        if (session == null) {
             throw new IllegalStateException("No user session");
+        }
         return session;
     }
 }
