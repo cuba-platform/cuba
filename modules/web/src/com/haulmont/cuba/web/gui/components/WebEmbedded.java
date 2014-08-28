@@ -19,10 +19,8 @@ import com.vaadin.server.StreamResource;
 
 import java.io.File;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -86,14 +84,8 @@ public class WebEmbedded
             }
         };
 
-        try {
-            resource = new StreamResource(
-                    source,
-                    URLEncoder.encode(fileName, "UTF-8"));
-            component.setSource(resource);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        resource = new StreamResource(source, fileName);
+        component.setSource(resource);
     }
 
     @Override
@@ -110,12 +102,8 @@ public class WebEmbedded
             }
         };
 
-        try {
-            resource = new StreamResource(streamSource, URLEncoder.encode(fileName, "UTF-8"));
-            component.setSource(resource);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        resource = new StreamResource(streamSource, fileName);
+        component.setSource(resource);
     }
 
     @Override

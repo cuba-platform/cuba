@@ -6,22 +6,20 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Embedded;
 import com.haulmont.cuba.gui.export.ExportDataProvider;
+import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.WebConfig;
+import com.vaadin.terminal.ApplicationResource;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.terminal.FileResource;
 import com.vaadin.terminal.StreamResource;
-import com.vaadin.terminal.ApplicationResource;
 
 import java.io.File;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.net.URLEncoder;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -84,28 +82,14 @@ public class WebEmbedded
             }
         };
 
-        try {
-            resource = new StreamResource(
-                    source,
-                    URLEncoder.encode(fileName, "UTF-8"),
-                    App.getInstance());
-            component.setSource(resource);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        resource = new StreamResource(source, fileName, App.getInstance());
+        component.setSource(resource);
     }
 
     @Override
     public void setSource(String fileName, ExportDataProvider dataProvider) {
-        try {
-            resource = new WebEmbeddedApplicationResource(
-                    dataProvider,
-                    URLEncoder.encode(fileName, "UTF-8"),
-                    App.getInstance());
-            component.setSource(resource);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        resource = new WebEmbeddedApplicationResource(dataProvider, fileName, App.getInstance());
+        component.setSource(resource);
     }
 
     @Override
