@@ -106,7 +106,7 @@ public class FetchPlanManager {
                     fetchPlanFields.add(field);
                     MetaProperty relatedMetaProp = metadata.getClassNN(entityClass).getPropertyNN(relatedProperty);
                     if (relatedMetaProp.getRange().isClass()) {
-                        View relatedView = viewRepository.getView(relatedMetaProp.getRange().asClass(), View.LOCAL);
+                        View relatedView = viewRepository.getView(relatedMetaProp.getRange().asClass(), View.MINIMAL);
                         processView(relatedView, fetchPlanFields);
                     }
                 }
