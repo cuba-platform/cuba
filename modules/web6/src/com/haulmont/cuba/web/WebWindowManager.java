@@ -19,6 +19,7 @@ import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.sys.WindowBreadCrumbs;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.ui.ActionsTabSheet;
+import com.haulmont.cuba.web.vaadin.FocusHandlerWindow;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.terminal.ExternalResource;
@@ -760,7 +761,7 @@ public class WebWindowManager extends WindowManager {
     }
 
     protected com.vaadin.ui.Window createDialogWindow(Window window) {
-        return new com.vaadin.ui.Window(window.getCaption());
+        return new FocusHandlerWindow(window.getCaption());
     }
 
     @Override

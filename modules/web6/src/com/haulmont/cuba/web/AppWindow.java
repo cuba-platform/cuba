@@ -34,6 +34,7 @@ import com.haulmont.cuba.web.toolkit.ui.ActionsTabSheet;
 import com.haulmont.cuba.web.toolkit.ui.JavaScriptHost;
 import com.haulmont.cuba.web.toolkit.ui.RichNotification;
 import com.haulmont.cuba.web.toolkit.ui.WindowOpenButton;
+import com.haulmont.cuba.web.vaadin.FocusHandlerWindow;
 import com.vaadin.data.Property;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.terminal.*;
@@ -55,7 +56,7 @@ import java.util.*;
  * @author krivopustov
  * @version $Id$
  */
-public class AppWindow extends Window implements UserSubstitutionListener,
+public class AppWindow extends FocusHandlerWindow implements UserSubstitutionListener,
         JavaScriptHost.HistoryBackHandler, JavaScriptHost.ServerCallHandler {
 
     /**
