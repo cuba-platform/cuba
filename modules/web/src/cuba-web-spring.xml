@@ -22,7 +22,7 @@
 
     <bean id="cuba_UserSession" factory-bean="cuba_UserSessionSource" factory-method="getUserSession" scope="prototype"/>
 
-    <bean id="cuba_AuthProvider" class="${cuba.web.activeDirectoryAuthClass}"/>
+    <bean id="cuba_AuthProvider" factory-bean="cuba_AuthProviderFactory" factory-method="createAuthProvider"/>
 
     <bean id="cuba_PasswordEncryption" class="com.haulmont.cuba.core.sys.PasswordEncryptionImpl">
         <property name="encryptionModule" ref="${cuba.passwordEncryptionModule}"/>
