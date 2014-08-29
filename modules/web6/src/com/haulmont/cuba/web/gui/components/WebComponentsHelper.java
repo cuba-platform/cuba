@@ -4,7 +4,6 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.web.App;
@@ -68,13 +67,13 @@ public class WebComponentsHelper {
      * @return          Vaadin component
      * @see #getComposition(com.haulmont.cuba.gui.components.Component)
      */
-    public static Component unwrap(com.haulmont.cuba.gui.components.Component component) {
+    public static <T extends com.vaadin.ui.Component> T unwrap(com.haulmont.cuba.gui.components.Component component) {
         Object comp = component;
         while (comp instanceof com.haulmont.cuba.gui.components.Component.Wrapper) {
             comp = ((com.haulmont.cuba.gui.components.Component.Wrapper) comp).getComponent();
         }
 
-        return (com.vaadin.ui.Component) comp;
+        return (T) comp;
     }
 
     /**
@@ -85,40 +84,13 @@ public class WebComponentsHelper {
      * @param component GUI component
      * @return          Vaadin component
      */
-    public static Component getComposition(com.haulmont.cuba.gui.components.Component component) {
+    public static <T extends com.vaadin.ui.Component> T getComposition(com.haulmont.cuba.gui.components.Component component) {
         Object comp = component;
         while (comp instanceof com.haulmont.cuba.gui.components.Component.Wrapper) {
             comp = ((com.haulmont.cuba.gui.components.Component.Wrapper) comp).getComposition();
         }
 
-        return (com.vaadin.ui.Component) comp;
-    }
-
-    /**
-     * @deprecated Use ComponentsHelper.getComponents() instead
-     */
-    @Deprecated
-    public static Collection<com.haulmont.cuba.gui.components.Component> getComponents(
-            com.haulmont.cuba.gui.components.Component.Container container) {
-        final Collection<com.haulmont.cuba.gui.components.Component> ownComponents = container.getOwnComponents();
-        Set<com.haulmont.cuba.gui.components.Component> res = new HashSet<>(ownComponents);
-
-        for (com.haulmont.cuba.gui.components.Component component : ownComponents) {
-            if (component instanceof com.haulmont.cuba.gui.components.Component.Container) {
-                res.addAll(getComponents((com.haulmont.cuba.gui.components.Component.Container) component));
-            }
-        }
-
-        return res;
-    }
-
-    /**
-     * @deprecated Use ComponentsHelper.getComponents() instead
-     */
-    @Deprecated
-    public static <T extends com.haulmont.cuba.gui.components.Component> T getComponent(
-            com.haulmont.cuba.gui.components.Component.Container container, String id) {
-        return ComponentsHelper.getComponent(container, id);
+        return (T) comp;
     }
 
     public static void expand(AbstractOrderedLayout layout, Component component, String height, String width) {

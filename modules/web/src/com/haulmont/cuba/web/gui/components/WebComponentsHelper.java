@@ -4,7 +4,6 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
@@ -22,7 +21,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import org.apache.commons.lang.StringUtils;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.util.*;
 
@@ -68,13 +66,13 @@ public class WebComponentsHelper {
      * @return          Vaadin component
      * @see #getComposition(com.haulmont.cuba.gui.components.Component)
      */
-    public static Component unwrap(com.haulmont.cuba.gui.components.Component component) {
+    public static <T extends Component> T unwrap(com.haulmont.cuba.gui.components.Component component) {
         Object comp = component;
         while (comp instanceof com.haulmont.cuba.gui.components.Component.Wrapper) {
             comp = ((com.haulmont.cuba.gui.components.Component.Wrapper) comp).getComponent();
         }
 
-        return (com.vaadin.ui.Component) comp;
+        return (T) comp;
     }
 
     /**
@@ -86,41 +84,13 @@ public class WebComponentsHelper {
      * @return          Vaadin component
      * @see #unwrap(com.haulmont.cuba.gui.components.Component)
      */
-    public static Component getComposition(com.haulmont.cuba.gui.components.Component component) {
+    public static <T extends Component> T getComposition(com.haulmont.cuba.gui.components.Component component) {
         Object comp = component;
         while (comp instanceof com.haulmont.cuba.gui.components.Component.Wrapper) {
             comp = ((com.haulmont.cuba.gui.components.Component.Wrapper) comp).getComposition();
         }
 
-        return (com.vaadin.ui.Component) comp;
-    }
-
-    /**
-     * @deprecated Use ComponentsHelper.getComponents() instead
-     */
-    @Deprecated
-    public static Collection<com.haulmont.cuba.gui.components.Component> getComponents(
-            com.haulmont.cuba.gui.components.Component.Container container) {
-        final Collection<com.haulmont.cuba.gui.components.Component> ownComponents = container.getOwnComponents();
-        Set<com.haulmont.cuba.gui.components.Component> res = new HashSet<>(ownComponents);
-
-        for (com.haulmont.cuba.gui.components.Component component : ownComponents) {
-            if (component instanceof com.haulmont.cuba.gui.components.Component.Container) {
-                res.addAll(getComponents((com.haulmont.cuba.gui.components.Component.Container) component));
-            }
-        }
-
-        return res;
-    }
-
-    /**
-     * @deprecated Use ComponentsHelper.getComponent() instead
-     */
-    @Deprecated
-    @Nullable
-    public static <T extends com.haulmont.cuba.gui.components.Component> T getComponent(
-            com.haulmont.cuba.gui.components.Component.Container container, String id) {
-        return ComponentsHelper.getComponent(container, id);
+        return (T) comp;
     }
 
     public static void expand(AbstractOrderedLayout layout, Component component, String height, String width) {
@@ -135,6 +105,11 @@ public class WebComponentsHelper {
         }
 
         layout.setExpandRatio(component, 1);
+    }
+
+    public static boolean isComponentExpanded(com.haulmont.cuba.gui.components.Component component) {
+        Component unwrap = WebComponentsHelper.unwrap(component);
+        return false;
     }
 
     public static boolean isVerticalLayout(AbstractOrderedLayout layout) {

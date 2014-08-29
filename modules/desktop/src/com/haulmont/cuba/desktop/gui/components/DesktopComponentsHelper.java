@@ -9,13 +9,11 @@ import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.DetachedFrame;
 import com.haulmont.cuba.desktop.TopLevelFrame;
 import com.haulmont.cuba.desktop.sys.vcl.Flushable;
-import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.AbstractFrame;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.KeyCombination;
 
-import javax.annotation.Nullable;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.InputEvent;
@@ -41,12 +39,12 @@ public class DesktopComponentsHelper {
      * @return          Swing component
      * @see #getComposition(com.haulmont.cuba.gui.components.Component)
      */
-    public static JComponent unwrap(Component component) {
+    public static <T extends JComponent> T unwrap(Component component) {
         Object comp = component;
         while (comp instanceof Component.Wrapper) {
             comp = ((Component.Wrapper) comp).getComponent();
         }
-        return (JComponent) comp;
+        return (T) comp;
     }
 
     /**
@@ -58,21 +56,12 @@ public class DesktopComponentsHelper {
      * @return          Swing component
      * @see #unwrap(com.haulmont.cuba.gui.components.Component)
      */
-    public static JComponent getComposition(Component component) {
+    public static <T extends JComponent> T getComposition(Component component) {
         Object comp = component;
         while (comp instanceof Component.Wrapper) {
             comp = ((Component.Wrapper) comp).getComposition();
         }
-        return (JComponent) comp;
-    }
-
-    /**
-     * @deprecated Use ComponentsHelper.getComponent() instead
-     */
-    @Deprecated
-    @Nullable
-    public static <T extends Component> T getComponent(Component.Container container, String id) {
-        return ComponentsHelper.getComponent(container, id);
+        return (T) comp;
     }
 
     public static int convertMessageType(IFrame.MessageType messageType) {
