@@ -30,6 +30,8 @@ public class DesktopScrollBoxLayout extends DesktopAbstractComponent<JScrollPane
     private ScrollBarPolicy scrollBarPolicy = ScrollBarPolicy.VERTICAL;
     private DesktopAbstractBox content;
 
+    protected boolean scheduledRepaint = false;
+
     public DesktopScrollBoxLayout() {
         impl = new JScrollPane();
         // by default it is turned off
@@ -78,7 +80,26 @@ public class DesktopScrollBoxLayout extends DesktopAbstractComponent<JScrollPane
         }
         view.setPreferredSize(preferredSize);
         view.setMaximumSize(preferredSize);
-        view.revalidate();
+
+        requestRepaint();
+    }
+
+    protected void requestRepaint() {
+        if (!scheduledRepaint) {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    JComponent view = DesktopComponentsHelper.getComposition(content);
+
+                    view.revalidate();
+                    view.repaint();
+
+                    scheduledRepaint = false;
+                }
+            });
+
+            scheduledRepaint = true;
+        }
     }
 
     @Override
