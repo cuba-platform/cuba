@@ -75,7 +75,7 @@ public class CubaGroupBoxConnector extends PanelConnector {
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
         super.updateFromUIDL(uidl, client);
 
-        // replace VPanel classnames
+        // replace VPanel class names
         CubaGroupBoxWidget widget = getWidget();
 
         Tools.replaceClassNames(widget.captionNode, VPanel.CLASSNAME, widget.getStylePrimaryName());
@@ -94,16 +94,21 @@ public class CubaGroupBoxConnector extends PanelConnector {
         if (bordersVisible) {
             if (isUndefinedWidth()) {
                 // do not set width: 100% for captionEndDeco in CSS
-                // it brokes layout with width: AUTO
-                panel.captionWrap.getStyle().setWidth(Util.getRequiredWidth(getWidget().contentNode), Style.Unit.PX);
+                // it breaks layout with width: AUTO
+                panel.captionWrap.getStyle().setWidth(Util.getRequiredWidth(panel.contentNode), Style.Unit.PX);
             } else {
                 panel.captionWrap.getStyle().setWidth(100, Style.Unit.PCT);
             }
 
             panel.captionEndDeco.getStyle().setWidth(100, Style.Unit.PCT);
 
-            int captionWidth = Util.getRequiredWidth(getWidget().captionNode);
-            int captionStartWidth = Util.getRequiredWidth(getWidget().captionStartDeco);
+            panel.captionNode.getStyle().clearWidth();
+
+            int captionWidth = Util.getRequiredWidth(panel.captionNode);
+            int captionStartWidth = Util.getRequiredWidth(panel.captionStartDeco);
+
+            // Fix caption width to avoid problems with fractional width of caption text
+            panel.captionNode.getStyle().setWidth(captionWidth, Style.Unit.PX);
 
             panel.captionWrap.getStyle().setPaddingLeft(captionWidth + captionStartWidth, Style.Unit.PX);
             panel.captionStartDeco.getStyle().setMarginLeft(-captionStartWidth - captionWidth, Style.Unit.PX);
@@ -112,11 +117,11 @@ public class CubaGroupBoxConnector extends PanelConnector {
         LayoutManager layoutManager = getLayoutManager();
         Profiler.enter("PanelConnector.layout getHeights");
         // Haulmont API get max height of caption components
-        int top = layoutManager.getOuterHeight(getWidget().captionNode);
-        top = Math.max(layoutManager.getOuterHeight(getWidget().captionStartDeco), top);
-        top = Math.max(layoutManager.getOuterHeight(getWidget().captionEndDeco), top);
+        int top = layoutManager.getOuterHeight(panel.captionNode);
+        top = Math.max(layoutManager.getOuterHeight(panel.captionStartDeco), top);
+        top = Math.max(layoutManager.getOuterHeight(panel.captionEndDeco), top);
 
-        int bottom = layoutManager.getInnerHeight(getWidget().bottomDecoration);
+        int bottom = layoutManager.getInnerHeight(panel.bottomDecoration);
         Profiler.leave("PanelConnector.layout getHeights");
 
         Profiler.enter("PanelConnector.layout modify style");
