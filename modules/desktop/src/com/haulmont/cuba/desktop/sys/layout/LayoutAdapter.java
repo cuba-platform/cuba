@@ -8,9 +8,8 @@ package com.haulmont.cuba.desktop.sys.layout;
 import java.awt.*;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public abstract class LayoutAdapter
         implements
@@ -30,6 +29,7 @@ public abstract class LayoutAdapter
 
     protected abstract void update();
 
+    @Override
     public void setMargin(boolean enable) {
         margins[0] = enable;
         margins[1] = enable;
@@ -38,6 +38,7 @@ public abstract class LayoutAdapter
         update();
     }
 
+    @Override
     public void setMargin(boolean topEnable, boolean rightEnable, boolean bottomEnable, boolean leftEnable) {
         margins[0] = topEnable;
         margins[1] = rightEnable;
@@ -46,6 +47,7 @@ public abstract class LayoutAdapter
         update();
     }
 
+    @Override
     public void setSpacing(boolean enabled) {
         spacing = enabled;
         update();
@@ -57,5 +59,4 @@ public abstract class LayoutAdapter
     public Object getConstraints(com.haulmont.cuba.gui.components.Component component) {
         return null;
     }
-
 }
