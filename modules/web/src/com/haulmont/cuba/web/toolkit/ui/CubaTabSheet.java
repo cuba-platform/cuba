@@ -77,7 +77,7 @@ public class CubaTabSheet extends com.vaadin.ui.TabSheet implements Action.Conta
     }
 
     protected HashSet<Action> getActions(Component actionTarget) {
-        HashSet<Action> actions = new HashSet<>();
+        HashSet<Action> actions = new LinkedHashSet<>();
         if (actionHandlers != null) {
             for (Action.Handler handler : actionHandlers) {
                 Action[] as = handler.getActions(actionTarget, this);

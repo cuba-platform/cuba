@@ -11,7 +11,6 @@ import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
 import com.haulmont.cuba.core.config.defaults.DefaultInt;
-import com.haulmont.cuba.core.config.defaults.DefaultInteger;
 import com.haulmont.cuba.core.config.defaults.DefaultString;
 import com.haulmont.cuba.core.config.type.CommaSeparatedStringListTypeFactory;
 import com.haulmont.cuba.core.config.type.Factory;
@@ -189,4 +188,8 @@ public interface ClientConfig extends Config {
     @Property("cuba.gui.loadObsoleteSettingsForTable")
     @DefaultBoolean(false)
     boolean getLoadObsoleteSettingsForTable();
+
+    @Property("cuba.gui.layoutAnalyzer.enabled")
+    @DefaultBoolean(true)
+    boolean getLayoutAnalyzerEnabled();
 }

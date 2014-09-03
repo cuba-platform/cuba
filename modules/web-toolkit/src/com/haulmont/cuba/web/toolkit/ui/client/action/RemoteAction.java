@@ -3,8 +3,9 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-package com.haulmont.cuba.web.toolkit.ui.client.tabsheet;
+package com.haulmont.cuba.web.toolkit.ui.client.action;
 
+import com.haulmont.cuba.web.toolkit.ui.client.tabsheet.ClientAction;
 import com.vaadin.client.ui.Action;
 import com.vaadin.client.ui.ActionOwner;
 
@@ -19,8 +20,8 @@ public abstract class RemoteAction extends Action {
     protected RemoteAction(ClientAction clientAction, ActionOwner owner) {
         super(owner);
 
+        // copy properties from client action
         this.caption = clientAction.getCaption();
         this.actionId = clientAction.getActionId();
-        // copy properties from client action
     }
 }

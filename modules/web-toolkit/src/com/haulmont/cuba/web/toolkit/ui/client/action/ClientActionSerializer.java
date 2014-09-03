@@ -2,10 +2,11 @@
  * Copyright (c) 2008-2013 Haulmont. All rights reserved.
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
-package com.haulmont.cuba.web.toolkit.ui.client.tabsheet;
+package com.haulmont.cuba.web.toolkit.ui.client.action;
 
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONValue;
+import com.haulmont.cuba.web.toolkit.ui.client.tabsheet.ClientAction;
 import com.vaadin.client.ApplicationConnection;
 import com.vaadin.client.communication.JSONSerializer;
 import com.vaadin.client.metadata.Type;

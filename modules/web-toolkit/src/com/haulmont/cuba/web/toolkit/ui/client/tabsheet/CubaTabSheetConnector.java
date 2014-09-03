@@ -9,6 +9,8 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ContextMenuEvent;
 import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.CubaTabSheet;
+import com.haulmont.cuba.web.toolkit.ui.client.action.RemoteAction;
+import com.haulmont.cuba.web.toolkit.ui.client.action.StaticActionOwner;
 import com.vaadin.client.Util;
 import com.vaadin.client.communication.RpcProxy;
 import com.vaadin.client.ui.Action;
@@ -72,11 +74,12 @@ public class CubaTabSheetConnector extends TabsheetConnector {
                 lastContextMenuX = Util.getTouchOrMouseClientX(event.getNativeEvent());
                 lastContextMenuY = Util.getTouchOrMouseClientY(event.getNativeEvent());
 
-                event.stopPropagation();
-                event.preventDefault();
-
-                if (getState().hasActionsHandlers)
+                if (getState().hasActionsHandlers) {
                     rpc.onTabContextMenu(tabIndex);
+
+                    event.stopPropagation();
+                    event.preventDefault();
+                }
             }
         };
         return widget;

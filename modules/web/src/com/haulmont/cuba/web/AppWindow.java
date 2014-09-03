@@ -4,8 +4,10 @@
  */
 package com.haulmont.cuba.web;
 
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
@@ -976,6 +978,8 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
 
         protected com.vaadin.event.Action showInfo;
 
+        protected com.vaadin.event.Action analyzeLayout;
+
         public AppTabSheet() {
             setCloseHandler(new CloseHandler() {
                 @Override
@@ -996,6 +1000,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
             closeOtherTabs = new com.vaadin.event.Action(messages.getMainMessage("actions.closeOtherTabs"));
             closeCurrentTab = new com.vaadin.event.Action(messages.getMainMessage("actions.closeCurrentTab"));
             showInfo = new com.vaadin.event.Action(messages.getMainMessage("actions.showInfo"));
+            analyzeLayout = new com.vaadin.event.Action(messages.getMainMessage("actions.analyzeLayout"));
         }
 
         @Override
@@ -1034,7 +1039,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
             closeHandlers.put(tabContent, closeHandler);
         }
 
-         public com.haulmont.cuba.gui.components.Window.Editor findEditor(Layout layout) {
+        public com.haulmont.cuba.gui.components.Window.Editor findEditor(Layout layout) {
              for (Object component : layout) {
                  if (component instanceof WindowBreadCrumbs) {
                      WindowBreadCrumbs breadCrumbs = (WindowBreadCrumbs) component;
@@ -1045,36 +1050,55 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
              return null;
         }
 
+        public com.haulmont.cuba.gui.components.Window findWindow(Layout layout) {
+            for (Object component : layout) {
+                if (component instanceof WindowBreadCrumbs) {
+                    WindowBreadCrumbs breadCrumbs = (WindowBreadCrumbs) component;
+                    if (breadCrumbs.getCurrentWindow() != null) {
+                        return breadCrumbs.getCurrentWindow();
+                    }
+                }
+            }
+            return null;
+        }
+
         @Override
         public com.vaadin.event.Action[] getActions(Object target, Object sender) {
+            List<com.vaadin.event.Action> actions = new ArrayList<>(5);
+            actions.add(closeCurrentTab);
+            actions.add(closeOtherTabs);
+            actions.add(closeAllTabs);
+
             if (target != null) {
-                UserSession userSession = AppBeans.get(UserSessionSource.class).getUserSession();
+                UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
+                UserSession userSession = sessionSource.getUserSession();
                 if (userSession.isSpecificPermitted(ShowInfoAction.ACTION_PERMISSION) &&
-                        findEditor((Layout) target) != null ) {
-                    return new com.vaadin.event.Action[]{
-                            closeCurrentTab, closeOtherTabs, closeAllTabs, showInfo
-                    };
+                        findEditor((Layout) target) != null) {
+                    actions.add(showInfo);
                 }
-            } else {
-                return new com.vaadin.event.Action[]{
-                        closeCurrentTab, closeOtherTabs, closeAllTabs, showInfo
-                };
+
+                Configuration configuration = AppBeans.get(Configuration.NAME);
+                ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
+                if (clientConfig.getLayoutAnalyzerEnabled()) {
+                    actions.add(analyzeLayout);
+                }
             }
-            return new com.vaadin.event.Action[]{
-                    closeCurrentTab, closeOtherTabs, closeAllTabs
-            };
+
+            return actions.toArray(new com.vaadin.event.Action[actions.size()]);
         }
 
         @Override
         public void handleAction(com.vaadin.event.Action action, Object sender, Object target) {
-            if (action.equals(closeCurrentTab)) {
+            if (closeCurrentTab == action) {
                 closeTab((com.vaadin.ui.Component) target);
-            } else if (action.equals(closeOtherTabs)) {
+            } else if (closeOtherTabs == action) {
                 closeOtherTabs((com.vaadin.ui.Component) target);
-            } else if (action.equals(closeAllTabs)) {
+            } else if (closeAllTabs == action) {
                 closeAllTabs();
-            } else if (action.equals(showInfo)) {
+            } else if (showInfo == action) {
                 showInfo(target);
+            } else if (analyzeLayout == action) {
+                analyzeLayout(target);
             }
         }
 
@@ -1096,8 +1120,20 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
         public void showInfo(Object target) {
             com.haulmont.cuba.gui.components.Window.Editor editor = findEditor((Layout) target);
             Entity entity = editor.getItem();
-            MetaClass metaClass = AppBeans.get(Metadata.class).getSession().getClass(entity.getClass());
+
+            Metadata metadata = AppBeans.get(Metadata.NAME);
+            MetaClass metaClass = metadata.getSession().getClass(entity.getClass());
+
             new ShowInfoAction().showInfo(entity, metaClass, editor);
+        }
+
+        public void analyzeLayout(Object target) {
+            Window window = findWindow((Layout) target);
+            if (window != null) {
+                window.openWindow("layoutAnalyzer",
+                        WindowManager.OpenType.DIALOG,
+                        ParamsMap.of("window", window));
+            }
         }
 
         public interface TabCloseHandler {
@@ -1119,8 +1155,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
                     new Runnable() {
                         @Override
                         public void run() {
-                            String redirectionUrl = connection.logout();
-                            // vaadin7 unused redirectionUrl
+                            connection.logout();
                         }
                     },
                     null

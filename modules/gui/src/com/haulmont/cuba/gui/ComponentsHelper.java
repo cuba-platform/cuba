@@ -201,11 +201,14 @@ public abstract class ComponentsHelper {
                     && ((Component.ActionOwner) component).getAction() != null) {
                 id = ((Component.ActionOwner) component).getAction().getId();
             }
+            if (id == null) {
+                id = component.getClass().getSimpleName();
+            }
             visitor.visit(component, path + id);
 
             if (component instanceof com.haulmont.cuba.gui.components.Component.Container) {
                 String p = component instanceof IFrame ?
-                        path + component.getId() + "." :
+                        path + id + "." :
                         path;
                 __walkComponents(((com.haulmont.cuba.gui.components.Component.Container) component), visitor, p);
             }

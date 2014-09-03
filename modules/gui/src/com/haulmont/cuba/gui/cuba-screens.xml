@@ -144,4 +144,7 @@
 
     <screen id="bulkEditor"
             template="/com/haulmont/cuba/gui/app/core/bulk/bulk-edit.xml"/>
+
+    <screen id="layoutAnalyzer"
+            template="/com/haulmont/cuba/gui/dev/layout-analyzer.xml"/>
 </screen-config>

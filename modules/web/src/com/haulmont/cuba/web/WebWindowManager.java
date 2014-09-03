@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.web;
 
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
@@ -21,6 +22,7 @@ import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.sys.WindowBreadCrumbs;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.ui.CubaTabSheet;
+import com.haulmont.cuba.web.toolkit.ui.CubaWindow;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.Page;
@@ -41,6 +43,8 @@ import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.Nullable;
 import java.util.*;
+
+import static com.haulmont.cuba.gui.components.Component.AUTO_SIZE;
 
 /**
  * @author krivopustov
@@ -671,13 +675,12 @@ public class WebWindowManager extends WindowManager {
             win.setId(ui.getTestIdManager().getTestId("dialog_" + window.getId()));
         }
 
-        Layout layout = (Layout) WebComponentsHelper.getComposition(window);
+        Layout layout = WebComponentsHelper.getComposition(window);
 
         // surround window layout with outer layout to prevent double painting
         VerticalLayout outerLayout = new VerticalLayout();
         outerLayout.setStyleName("cuba-app-dialog-window");
         outerLayout.addComponent(layout);
-        outerLayout.setExpandRatio(layout, 1);
         outerLayout.setMargin(new MarginInfo(true, false, false, false));
 
         win.setContent(outerLayout);
@@ -716,9 +719,12 @@ public class WebWindowManager extends WindowManager {
 
         if (forciblyDialog && dialogParamsIsNull) {
             outerLayout.setHeight(100, Sizeable.Unit.PERCENTAGE);
+            outerLayout.setExpandRatio(layout, 1);
+
             win.setWidth(theme.getInt("cuba.web.WebWindowManager.forciblyDialog.width"), Sizeable.Unit.PIXELS);
             win.setHeight(theme.getInt("cuba.web.WebWindowManager.forciblyDialog.height"), Sizeable.Unit.PIXELS);
             win.setResizable(true);
+
             window.setHeight("100%");
         } else {
             if (dialogParams.getWidth() != null) {
@@ -729,7 +735,12 @@ public class WebWindowManager extends WindowManager {
 
             if (dialogParams.getHeight() != null) {
                 win.setHeight(dialogParams.getHeight().floatValue(), Sizeable.Unit.PIXELS);
-                win.getContent().setHeight("100%");
+                outerLayout.setHeight("100%");
+                outerLayout.setExpandRatio(layout, 1);
+
+                window.setHeight("100%");
+            } else {
+                window.setHeight(AUTO_SIZE);
             }
 
             if (dialogParams.getCloseable() != null) {
@@ -755,9 +766,13 @@ public class WebWindowManager extends WindowManager {
     }
 
     protected com.vaadin.ui.Window createDialogWindow(Window window) {
-        com.vaadin.ui.Window vWindow = new com.vaadin.ui.Window(window.getCaption());
-        vWindow.setErrorHandler(ui);
-        return vWindow;
+        CubaWindow dialogWindow = new CubaWindow(window.getCaption());
+        dialogWindow.setErrorHandler(ui);
+        // if layout analyzer allowed
+        if (clientConfig.getLayoutAnalyzerEnabled()) {
+            dialogWindow.addContextActionHandler(new LayoutAnalyzerOpener(window));
+        }
+        return dialogWindow;
     }
 
     @Override
@@ -1242,6 +1257,28 @@ public class WebWindowManager extends WindowManager {
 
                     throw new SilentException();
                 }
+            }
+        }
+    }
+
+    protected class LayoutAnalyzerOpener implements com.vaadin.event.Action.Handler {
+        protected Window window;
+        protected com.vaadin.event.Action analyzeAction =
+                new com.vaadin.event.Action(messages.getMainMessage("actions.analyzeLayout"));
+
+        public LayoutAnalyzerOpener(Window window) {
+            this.window = window;
+        }
+
+        @Override
+        public com.vaadin.event.Action[] getActions(Object target, Object sender) {
+            return new com.vaadin.event.Action[]{analyzeAction};
+        }
+
+        @Override
+        public void handleAction(com.vaadin.event.Action action, Object sender, Object target) {
+            if (analyzeAction == action) {
+                window.openWindow("layoutAnalyzer", OpenType.DIALOG, ParamsMap.of("window", window));
             }
         }
     }
