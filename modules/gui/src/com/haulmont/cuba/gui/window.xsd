@@ -463,7 +463,7 @@
         <xs:attributeGroup ref="hasStyle"/>
 
         <xs:attributeGroup ref="hasDatasource"/>
-        <xs:attributeGroup ref="hasValue"/>
+        <xs:attribute name="value" type="xs:string" default="msg://"/>
 
         <xs:attribute name="htmlEnabled" type="xs:boolean"/>
     </xs:complexType>
