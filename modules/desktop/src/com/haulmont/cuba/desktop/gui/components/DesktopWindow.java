@@ -34,6 +34,7 @@ import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.settings.Settings;
 import net.miginfocom.layout.CC;
 import net.miginfocom.swing.MigLayout;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
@@ -98,6 +99,9 @@ public class DesktopWindow implements Window, Component.Disposable,
 
     protected Configuration configuration = AppBeans.get(Configuration.class);
     protected Messages messages = AppBeans.get(Messages.class);
+
+    protected ComponentSize widthSize;
+    protected ComponentSize heightSize;
 
     protected boolean scheduledRepaint = false;
 
@@ -571,6 +575,11 @@ public class DesktopWindow implements Window, Component.Disposable,
             ((DesktopComponent) expandedComponent).setExpanded(false);
         }
 
+        // only Y direction
+        if (StringUtils.isEmpty(height) || "-1px".equals(height) || height.endsWith("%")) {
+            component.setHeight("100%");
+        }
+
         JComponent composition = DesktopComponentsHelper.getComposition(component);
         layoutAdapter.expand(composition, height, width);
 
@@ -763,12 +772,12 @@ public class DesktopWindow implements Window, Component.Disposable,
 
     @Override
     public float getHeight() {
-        return 0;
+        return heightSize != null ? heightSize.value : -1;
     }
 
     @Override
     public int getHeightUnits() {
-        return 0;
+        return heightSize != null ? heightSize.unit : 0;
     }
 
     @Override
@@ -780,8 +789,7 @@ public class DesktopWindow implements Window, Component.Disposable,
             Dimension dimension = new Dimension(w, (int) h.value);
             getContainer().setMinimumSize(dimension);
             getContainer().setPreferredSize(dimension);
-        }
-        else if (h.inPercents()) {
+        } else if (h.inPercents()) {
             // TODO determine height of main frame, and multiply by percents
             // such method is used in permission-show.xml
             int hValue = 400;
@@ -789,20 +797,23 @@ public class DesktopWindow implements Window, Component.Disposable,
             getContainer().setMinimumSize(dimension);
             getContainer().setPreferredSize(dimension);
         }
+
+        heightSize = ComponentSize.parse(height);
     }
 
     @Override
     public float getWidth() {
-        return 0;
+        return widthSize != null ? widthSize.value : -1;
     }
 
     @Override
     public int getWidthUnits() {
-        return 0;
+        return widthSize != null ? widthSize.unit : 0;
     }
 
     @Override
     public void setWidth(String width) {
+        widthSize = ComponentSize.parse(width);
     }
 
     @Override

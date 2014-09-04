@@ -5,10 +5,13 @@
 
 package com.haulmont.cuba.gui.dev;
 
+import com.haulmont.cuba.core.global.ClientType;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentVisitor;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.*;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -19,7 +22,6 @@ import static com.haulmont.cuba.gui.dev.LayoutTip.warn;
 /**
  * @author artamonov
  * @version $Id$
- * @since 5.2.0
  */
 public class LayoutAnalyzer {
 
@@ -31,10 +33,15 @@ public class LayoutAnalyzer {
         inspections.add(new AlignInsideUndefinedSizedContainer());
     }
 
+    protected List<Inspection> rootInspections = new ArrayList<>();
+    {
+        rootInspections.add(new RelativeHeightComponentInsideUndefinedHeightDialog());
+    }
+
     public List<LayoutTip> analyze(Window window) {
         final List<LayoutTip> errors = new ArrayList<>();
 
-        for (Inspection inspection : inspections) {
+        for (Inspection inspection : rootInspections) {
             errors.addAll(inspection.analyze(window, "window"));
         }
 
@@ -51,11 +58,13 @@ public class LayoutAnalyzer {
     }
 
     public interface Inspection {
+        @Nonnull
         List<LayoutTip> analyze(Component component, String path);
     }
 
     public static class ComponentUndefinedSize implements Inspection {
 
+        @Nonnull
         @Override
         public List<LayoutTip> analyze(Component c, String path) {
 
@@ -79,6 +88,7 @@ public class LayoutAnalyzer {
 
     public static class ScrollBoxInnerComponentRelativeSize implements Inspection {
 
+        @Nonnull
         @Override
         public List<LayoutTip> analyze(Component c, String path) {
             if (c instanceof ScrollBoxLayout) {
@@ -121,6 +131,7 @@ public class LayoutAnalyzer {
 
     public static class ComponentRelativeSizeInsideUndefinedSizedContainer implements Inspection {
 
+        @Nonnull
         @Override
         public List<LayoutTip> analyze(Component c, String path) {
             if (c instanceof Component.Container) {
@@ -163,6 +174,7 @@ public class LayoutAnalyzer {
 
     public static class AlignInsideUndefinedSizedContainer implements Inspection {
 
+        @Nonnull
         @Override
         public List<LayoutTip> analyze(Component c, String path) {
             if (c instanceof Component.Container) {
@@ -174,7 +186,14 @@ public class LayoutAnalyzer {
                         if (tips == null) {
                             tips = new ArrayList<>();
                         }
-                        if (component.getAlignment() != Component.Alignment.TOP_LEFT) {
+                        if (component.getAlignment() != null && component.getAlignment() != Component.Alignment.TOP_LEFT) {
+                            if (AppConfig.getClientType() == ClientType.DESKTOP
+                                    && component instanceof Label
+                                    && component.getAlignment() == Component.Alignment.MIDDLE_LEFT) {
+                                // ignore default align for desktop label
+                                continue;
+                            }
+
                             String id = component.getId() != null ? component.getId() : component.getClass().getSimpleName();
                             tips.add(warn("Container '" + path + "', nested component '" + id + "'",
                                     "Nested component has align %s inside container with undefined size",
@@ -184,6 +203,33 @@ public class LayoutAnalyzer {
 
                     return tips != null ? tips : Collections.<LayoutTip>emptyList();
                 }
+            }
+            return Collections.emptyList();
+        }
+    }
+
+    public static class RelativeHeightComponentInsideUndefinedHeightDialog implements Inspection {
+
+        @Nonnull
+        @Override
+        public List<LayoutTip> analyze(Component c, String path) {
+            if (c instanceof Window && c.getHeight() < 0) {
+                List<LayoutTip> tips = null;
+
+                Component.Container container = (Component.Container) c;
+                for (Component component : container.getOwnComponents()) {
+                    if (tips == null) {
+                        tips = new ArrayList<>();
+                    }
+                    if (component.getHeightUnits() == Component.UNITS_PERCENTAGE && component.getHeight() > 0) {
+                        String id = component.getId() != null ? component.getId() : component.getClass().getSimpleName();
+                        tips.add(warn("Nested component '" + id + "'",
+                                "Nested component has relative height %s%% inside window with undefined height",
+                                component.getHeight()));
+                    }
+                }
+
+                return tips != null ? tips : Collections.<LayoutTip>emptyList();
             }
             return Collections.emptyList();
         }

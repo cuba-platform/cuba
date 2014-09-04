@@ -14,6 +14,8 @@ import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.gui.dev.LayoutAnalyzer;
+import com.haulmont.cuba.gui.dev.LayoutTip;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
@@ -1278,7 +1280,14 @@ public class WebWindowManager extends WindowManager {
         @Override
         public void handleAction(com.vaadin.event.Action action, Object sender, Object target) {
             if (analyzeAction == action) {
-                window.openWindow("layoutAnalyzer", OpenType.DIALOG, ParamsMap.of("window", window));
+                LayoutAnalyzer analyzer = new LayoutAnalyzer();
+                List<LayoutTip> tipsList = analyzer.analyze(window);
+
+                if (tipsList.isEmpty()) {
+                    showNotification("No layout problems found", IFrame.NotificationType.HUMANIZED);
+                } else {
+                    window.openWindow("layoutAnalyzer", OpenType.DIALOG, ParamsMap.of("tipsList", tipsList));
+                }
             }
         }
     }

@@ -56,6 +56,8 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> imple
 
     public DesktopTabSheet() {
         impl = new JTabbedPane();
+
+        setWidth("100%");
     }
 
     @Override
@@ -120,7 +122,28 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> imple
         int tabIndex = impl.indexOfComponent(comp);
         tabContents.put(comp, tab);
         setTabComponent(tab, tabIndex);
+
+        adjustTabSize(component);
+
         return tab;
+    }
+
+    @Override
+    public void setWidth(String width) {
+        super.setWidth(width);
+
+        for (Component tab : components.keySet()) {
+            adjustTabSize(tab);
+        }
+    }
+
+    @Override
+    public void setHeight(String height) {
+        super.setHeight(height);
+
+        for (Component tab : components.keySet()) {
+            adjustTabSize(tab);
+        }
     }
 
     protected void setTabComponent(final TabImpl tab, int componentIndex) {
@@ -150,7 +173,7 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> imple
     @Override
     public Tab addLazyTab(String name, Element descriptor, ComponentLoader loader) {
         DesktopVBox tabContent = new DesktopVBox();
-        tabContent.setWidth("100%");
+        adjustTabSize(tabContent);
 
         TabImpl tab = new TabImpl(name, tabContent, true);
         tabs.add(tab);
@@ -191,6 +214,20 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> imple
             postInitTaskAdded = true;
         }
         return tab;
+    }
+
+    protected void adjustTabSize(Component tabComponent) {
+        if (getWidth() >= 0) {
+            tabComponent.setWidth("100%");
+        } else {
+            tabComponent.setWidth(Component.AUTO_SIZE);
+        }
+
+        if (getHeight() >= 0) {
+            tabComponent.setHeight("100%");
+        } else {
+            tabComponent.setHeight(Component.AUTO_SIZE);
+        }
     }
 
     @Override

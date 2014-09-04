@@ -11,6 +11,7 @@ import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import net.miginfocom.layout.CC;
+import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -191,6 +192,16 @@ public abstract class DesktopAbstractBox
         if (expandedComponent != null
                 && expandedComponent instanceof DesktopComponent) {
             ((DesktopComponent) expandedComponent).setExpanded(false);
+        }
+
+        if (layoutAdapter.getFlowDirection() == BoxLayoutAdapter.FlowDirection.Y) {
+            if (StringUtils.isEmpty(height) || "-1px".equals(height) || height.endsWith("%")) {
+                component.setHeight("100%");
+            }
+        } else if (layoutAdapter.getFlowDirection() == BoxLayoutAdapter.FlowDirection.X) {
+            if (StringUtils.isEmpty(width) || "-1px".equals(width) || width.endsWith("%")) {
+                component.setWidth("100%");
+            }
         }
 
         JComponent composition = DesktopComponentsHelper.getComposition(component);

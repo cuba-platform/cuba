@@ -11,9 +11,8 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public abstract class BoxLayoutAdapter extends LayoutAdapter {
 
@@ -39,9 +38,9 @@ public abstract class BoxLayoutAdapter extends LayoutAdapter {
             MigBoxLayoutAdapter layoutAdapter = new MigBoxLayoutAdapter((MigLayout) layout, container);
             container.setLayout(layoutAdapter.getLayout());
             return layoutAdapter;
-        }
-        else
+        } else {
             throw new UnsupportedOperationException("Unsupported layout manager: " + layout);
+        }
     }
 
     public void expand(Component component) {
@@ -56,6 +55,10 @@ public abstract class BoxLayoutAdapter extends LayoutAdapter {
     public void setFlowDirection(BoxLayoutAdapter.FlowDirection direction) {
         this.direction = direction;
         update();
+    }
+
+    public FlowDirection getFlowDirection() {
+        return direction;
     }
 
     public abstract void updateConstraints(JComponent component, Object constraints);

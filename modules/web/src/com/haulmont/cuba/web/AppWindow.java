@@ -19,6 +19,8 @@ import com.haulmont.cuba.gui.components.ShowInfoAction;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.gui.dev.LayoutAnalyzer;
+import com.haulmont.cuba.gui.dev.LayoutTip;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.entity.User;
@@ -1130,9 +1132,14 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
         public void analyzeLayout(Object target) {
             Window window = findWindow((Layout) target);
             if (window != null) {
-                window.openWindow("layoutAnalyzer",
-                        WindowManager.OpenType.DIALOG,
-                        ParamsMap.of("window", window));
+                LayoutAnalyzer analyzer = new LayoutAnalyzer();
+                List<LayoutTip> tipsList = analyzer.analyze(window);
+
+                if (tipsList.isEmpty()) {
+                    window.showNotification("No layout problems found", IFrame.NotificationType.HUMANIZED);
+                } else {
+                    window.openWindow("layoutAnalyzer", WindowManager.OpenType.DIALOG, ParamsMap.of("tipsList", tipsList));
+                }
             }
         }
 

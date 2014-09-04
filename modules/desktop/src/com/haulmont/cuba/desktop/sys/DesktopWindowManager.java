@@ -7,6 +7,7 @@ package com.haulmont.cuba.desktop.sys;
 
 import com.google.common.base.Strings;
 import com.haulmont.bali.util.Dom4j;
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
@@ -16,11 +17,13 @@ import com.haulmont.cuba.desktop.TopLevelFrame;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.desktop.gui.components.DesktopWindow;
 import com.haulmont.cuba.gui.*;
-import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.gui.dev.LayoutAnalyzer;
+import com.haulmont.cuba.gui.dev.LayoutTip;
 import com.haulmont.cuba.gui.executors.*;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
 import org.apache.commons.lang.BooleanUtils;
@@ -369,10 +372,14 @@ public class DesktopWindowManager extends WindowManager {
     private JComponent showNewWindow(Window window, String caption) {
         getDialogParams().reset();
 
+        window.setWidth("100%");
+        window.setHeight("100%");
+
         TopLevelFrame windowFrame = createTopLevelFrame(caption);
 
         WindowBreadCrumbs breadCrumbs = createBreadCrumbs();
         breadCrumbs.addWindow(window);
+
         JComponent tabContent = createTabPanel(window, breadCrumbs);
 
         WindowOpenMode openMode = new WindowOpenMode(window, OpenType.NEW_WINDOW);
@@ -526,6 +533,8 @@ public class DesktopWindowManager extends WindowManager {
             dim.width = 800;
             dim.height = 500;
             dialog.setResizable(true);
+
+            window.setHeight("100%");
         } else {
             if (dialogParams.getWidth() != null)
                 dim.width = dialogParams.getWidth();
@@ -539,7 +548,11 @@ public class DesktopWindowManager extends WindowManager {
                 if (!resizable) {
                     dialog.setFixedHeight(dim.height);
                 }
+                window.setHeight("100%");
+            } else {
+                window.setHeight(Component.AUTO_SIZE);
             }
+
             dialog.setResizable(resizable);
             if (!resizable) {
                 dialog.setFixedWidth(dim.width);
@@ -564,11 +577,19 @@ public class DesktopWindowManager extends WindowManager {
 
         dialog.setVisible(true);
 
+        JPopupMenu popupMenu = createWindowPopupMenu(window);
+        if (popupMenu.getComponentCount() > 0) {
+            jComponent.setComponentPopupMenu(popupMenu);
+        }
+
         return dialog;
     }
 
     private JComponent showWindowThisTab(Window window, String caption, String description) {
         getDialogParams().reset();
+
+        window.setWidth("100%");
+        window.setHeight("100%");
 
         JComponent layout;
         if (isMainWindowManager) {
@@ -648,8 +669,12 @@ public class DesktopWindowManager extends WindowManager {
     protected JComponent showWindowNewTab(Window window, String caption, String description, Integer tabPosition) {
         getDialogParams().reset();
 
+        window.setWidth("100%");
+        window.setHeight("100%");
+
         final WindowBreadCrumbs breadCrumbs = createBreadCrumbs();
         stacks.put(breadCrumbs, new Stack<Map.Entry<Window, Integer>>());
+
         breadCrumbs.addWindow(window);
         JComponent tabContent = createNewTab(window, caption, description, breadCrumbs, tabPosition);
         tabs.put(tabContent, breadCrumbs);
@@ -697,7 +722,111 @@ public class DesktopWindowManager extends WindowManager {
         tabsPane.setTabComponentAt(idx, tabComponent);
         tabsPane.setSelectedIndex(idx);
 
+        initTabContextMenu(tabComponent);
+
         return panel;
+    }
+
+    protected void initTabContextMenu(JComponent tabComponent) {
+        tabComponent.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                dispatchToParent(e);
+                if (e.isPopupTrigger()) {
+                    showTabPopup(e);
+                }
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                dispatchToParent(e);
+                if (e.isPopupTrigger()) {
+                    showTabPopup(e);
+                }
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                dispatchToParent(e);
+            }
+
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                dispatchToParent(e);
+            }
+
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                dispatchToParent(e);
+            }
+
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e) {
+                dispatchToParent(e);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                dispatchToParent(e);
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                dispatchToParent(e);
+            }
+
+            public void dispatchToParent(MouseEvent e) {
+                tabsPane.dispatchEvent(SwingUtilities.convertMouseEvent(e.getComponent(), e, tabsPane));
+            }
+        });
+    }
+
+    public void showTabPopup(MouseEvent e) {
+        JComponent tabHeaderComponent = (JComponent) e.getComponent();
+        int tabIndex = getTabIndex(tabHeaderComponent);
+        JComponent tabContent = (JComponent) tabsPane.getComponentAt(tabIndex);
+        WindowBreadCrumbs windowBreadCrumbs = tabs.get(tabContent);
+
+        Window window = windowBreadCrumbs.getCurrentWindow();
+
+        JPopupMenu popupMenu = createWindowPopupMenu(window);
+        if (popupMenu.getComponentCount() > 0) {
+            popupMenu.show(tabHeaderComponent, e.getX(), e.getY());
+        }
+    }
+
+    protected int getTabIndex(java.awt.Component tabHeaderComponent) {
+        for (int i = 0; i < tabsPane.getTabCount(); i++) {
+            if (tabsPane.getTabComponentAt(i) == tabHeaderComponent)
+                return i;
+        }
+        return -1;
+    }
+
+    protected JPopupMenu createWindowPopupMenu(final Window window) {
+        JPopupMenu popupMenu = new JPopupMenu();
+
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
+
+        if (clientConfig.getLayoutAnalyzerEnabled()) {
+            JMenuItem analyzeLayoutItem = new JMenuItem(messages.getMainMessage("actions.analyzeLayout"));
+            analyzeLayoutItem.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    LayoutAnalyzer analyzer = new LayoutAnalyzer();
+                    List<LayoutTip> tipsList = analyzer.analyze(window);
+
+                    if (tipsList.isEmpty()) {
+                        showNotification("No layout problems found", IFrame.NotificationType.HUMANIZED);
+                    } else {
+                        window.openWindow("layoutAnalyzer", OpenType.DIALOG, ParamsMap.of("tipsList", tipsList));
+                    }
+                }
+            });
+            popupMenu.add(analyzeLayoutItem);
+        }
+        return popupMenu;
     }
 
     private void detachTab(int tabIndex) {
@@ -755,6 +884,11 @@ public class DesktopWindowManager extends WindowManager {
         window.setWindowManager(this);
         if (hashCode != null) {
             windows.put(window, hashCode);
+        }
+
+        JPopupMenu popupMenu = createWindowPopupMenu(window);
+        if (popupMenu.getComponentCount() > 0) {
+            frame.getRootPane().setComponentPopupMenu(popupMenu);
         }
     }
 

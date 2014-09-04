@@ -38,7 +38,9 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
     protected IFrame frame;
     protected Element xmlDescriptor;
 
-    protected ComponentSize widthSize, heightSize;
+    protected ComponentSize widthSize;
+    protected ComponentSize heightSize;
+
     protected Alignment alignment;
 
     protected Log log = LogFactory.getLog(getClass());
@@ -135,7 +137,7 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
 
     @Override
     public float getHeight() {
-        return heightSize != null ? heightSize.value : 0.0f;
+        return heightSize != null ? heightSize.value : -1;
     }
 
     @Override
@@ -151,7 +153,7 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
 
     @Override
     public float getWidth() {
-        return widthSize != null ? widthSize.value : 0.0f;
+        return widthSize != null ? widthSize.value : -1;
     }
 
     @Override
