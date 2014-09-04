@@ -17,17 +17,18 @@ import java.util.regex.Matcher;
  * @author krivopustov
  * @version $Id$
  */
-public class QueryTransformerRegex extends QueryParserRegex implements QueryTransformer
-{
+public class QueryTransformerRegex extends QueryParserRegex implements QueryTransformer {
+
     private StringBuffer buffer;
     private Set<String> addedParams;
 
     QueryTransformerRegex(String source, String targetEntity) {
         super(source);
         buffer = new StringBuffer(source);
-        addedParams = new HashSet<String>();
+        addedParams = new HashSet<>();
     }
 
+    @Override
     public void addWhere(String where) {
         Matcher entityMatcher = FROM_ENTITY_PATTERN.matcher(buffer);
         String alias = findAlias(entityMatcher);
@@ -59,6 +60,7 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
         }
     }
 
+    @Override
     public void addWhereAsIs(String where) {
         Matcher entityMatcher = FROM_ENTITY_PATTERN.matcher(buffer);
         findAlias(entityMatcher);
@@ -85,6 +87,7 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
         }
     }
 
+    @Override
     public void addJoinAsIs(String join) {
         Matcher entityMatcher = FROM_ENTITY_PATTERN.matcher(buffer);
         findAlias(entityMatcher);
@@ -111,6 +114,7 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
         }
     }
 
+    @Override
     public void addJoinAndWhere(String join, String where) {
         Matcher entityMatcher = FROM_ENTITY_PATTERN.matcher(buffer);
         String alias = findAlias(entityMatcher);
@@ -168,6 +172,7 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
         }
     }
 
+    @Override
     public void mergeWhere(String query) {
         int startPos = 0;
         Matcher whereMatcher = WHERE_PATTERN.matcher(query);
@@ -182,6 +187,7 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
         addWhere(query.substring(startPos, endPos));
     }
 
+    @Override
     public void replaceWithCount() {
         Matcher entityMatcher = FROM_ENTITY_PATTERN.matcher(buffer);
         String alias = findAlias(entityMatcher);
@@ -223,6 +229,7 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
         return false;
     }
 
+    @Override
     public void replaceOrderBy(String property, boolean desc) {
         Matcher entityMatcher = FROM_ENTITY_PATTERN.matcher(buffer);
         String alias = findAlias(entityMatcher);
@@ -272,15 +279,18 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
         error("Unable to find entity name");
     }
 
+    @Override
     public void reset() {
         buffer = new StringBuffer(source);
         addedParams.clear();
     }
 
+    @Override
     public String getResult() {
         return buffer.toString().trim();
     }
 
+    @Override
     public Set<String> getAddedParams() {
         return Collections.unmodifiableSet(addedParams);
     }

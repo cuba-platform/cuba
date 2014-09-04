@@ -49,6 +49,7 @@ public class QueryParserRegex implements QueryParser {
         this.source = source;
     }
 
+    @Override
     public Set<String> getParamNames() {
         Set<String> result = new HashSet<>();
 
@@ -69,6 +70,7 @@ public class QueryParserRegex implements QueryParser {
         throw new RuntimeException("Unable to find entity name [" + source + "]");
     }
 
+    @Override
     public String getEntityAlias(String targetEntity) {
         String alias = null;
         Matcher entityMatcher = FROM_ENTITY_PATTERN.matcher(source);
