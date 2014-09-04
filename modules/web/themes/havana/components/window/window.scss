@@ -18,7 +18,7 @@
 
       .#{$primaryStyleName}-outerheader {
         margin-left: 0;
-        padding: 0 0 0 5px;
+        padding: 0 70px 0 5px;
         background: $theme_windowHeaderColor no-repeat left top;
         cursor: move;
         height: auto;
@@ -35,8 +35,10 @@
           overflow: hidden;
           font-family: $theme_fonts;
 
+          margin-right: -45px; // min width for window title
+
           .v-icon {
-            vertical-align: middle; /* This has to be 'middle', not 'bottom', to allow larger icons than 16px */
+            vertical-align: middle; /* Here should be 'middle', not 'bottom', to allow larger icons than 16px */
           }
         }
       }
