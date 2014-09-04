@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.core.sys.remoting.ClusterInvocationSupport;
 import com.haulmont.cuba.security.app.UserSessionService;
+import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
@@ -171,17 +172,20 @@ public class FileDownloadController {
         }
     }
 
-    protected UserSession getSession(HttpServletRequest request, HttpServletResponse response) {
+    protected UserSession getSession(HttpServletRequest request, HttpServletResponse response) throws IOException {
         UUID sessionId;
         try {
             sessionId = UUID.fromString(request.getParameter("s"));
         } catch (Exception e) {
             return null;
         }
+
         AppContext.setSecurityContext(new SecurityContext(sessionId));
         try {
             UserSession userSession = userSessionService.getUserSession(sessionId);
             return userSession;
+        } catch (NoUserSessionException e) {
+            return null;
         } finally {
             AppContext.setSecurityContext(null);
         }
