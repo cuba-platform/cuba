@@ -255,7 +255,7 @@ WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 DAMAGE.]]></license>
         </item>
 
-        <item name="Google Web Toolkit" web="http://code.google.com/intl/en/webtoolkit/" license="apache-2.0"/>
+        <item name="Google Web Toolkit" web="http://www.gwtproject.org/" license="apache-2.0"/>
 
         <item name="Merlin Hughes Config Framework" web="http://www.ibm.com/developerworks/java/library/j-configint/index.html" license="apache-2.0"/>
 
