@@ -23,7 +23,6 @@ import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.UserSession;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.inject.Inject;
@@ -253,30 +252,27 @@ public class UserEditor extends AbstractEditor<User> {
 
         User user = getItem();
 
-        if (PersistenceHelper.isNew(user) && passwField.isRequired()) {
+        if (PersistenceHelper.isNew(user)) {
             String passw = passwField.getValue();
             String confPassw = confirmPasswField.getValue();
-            if (StringUtils.isBlank(passw) || StringUtils.isBlank(confPassw)) {
+            if (passwField.isRequired() && (StringUtils.isBlank(passw) || StringUtils.isBlank(confPassw))) {
                 showNotification(getMessage("emptyPassword"), NotificationType.WARNING);
                 return false;
             } else {
-                if (ObjectUtils.equals(passw, confPassw)) {
+                if (StringUtils.equals(passw, confPassw)) {
                     ClientConfig passwordPolicyConfig = configuration.getConfig(ClientConfig.class);
                     if (passwordPolicyConfig.getPasswordPolicyEnabled()) {
                         String regExp = passwordPolicyConfig.getPasswordPolicyRegExp();
-                        if (passw.matches(regExp)) {
-                            return true;
-
-                        } else {
+                        if (!passw.matches(regExp)) {
                             showNotification(getMessage("simplePassword"), NotificationType.WARNING);
                             return false;
                         }
-                    } else {
-                        String passwordHash = passwordEncryption.getPasswordHash(user.getId(), passw);
-
-                        user.setPassword(passwordHash);
-                        return true;
                     }
+
+                    String passwordHash = passwordEncryption.getPasswordHash(user.getId(), passw);
+                    user.setPassword(passwordHash);
+
+                    return true;
                 } else {
                     showNotification(getMessage("passwordsDoNotMatch"), NotificationType.WARNING);
                     return false;
