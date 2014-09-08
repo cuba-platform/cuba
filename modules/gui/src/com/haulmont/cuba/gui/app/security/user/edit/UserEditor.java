@@ -253,24 +253,27 @@ public class UserEditor extends AbstractEditor<User> {
         User user = getItem();
 
         if (PersistenceHelper.isNew(user)) {
-            String passw = passwField.getValue();
-            String confPassw = confirmPasswField.getValue();
-            if (passwField.isRequired() && (StringUtils.isBlank(passw) || StringUtils.isBlank(confPassw))) {
+            String password = passwField.getValue();
+            String passwordConfirmation = confirmPasswField.getValue();
+
+            if (passwField.isRequired() && (StringUtils.isBlank(password) || StringUtils.isBlank(passwordConfirmation))) {
                 showNotification(getMessage("emptyPassword"), NotificationType.WARNING);
                 return false;
             } else {
-                if (StringUtils.equals(passw, confPassw)) {
-                    ClientConfig passwordPolicyConfig = configuration.getConfig(ClientConfig.class);
-                    if (passwordPolicyConfig.getPasswordPolicyEnabled()) {
-                        String regExp = passwordPolicyConfig.getPasswordPolicyRegExp();
-                        if (!passw.matches(regExp)) {
-                            showNotification(getMessage("simplePassword"), NotificationType.WARNING);
-                            return false;
+                if (StringUtils.equals(password, passwordConfirmation)) {
+                    if (StringUtils.isNotEmpty(password)) {
+                        ClientConfig passwordPolicyConfig = configuration.getConfig(ClientConfig.class);
+                        if (passwordPolicyConfig.getPasswordPolicyEnabled()) {
+                            String regExp = passwordPolicyConfig.getPasswordPolicyRegExp();
+                            if (!password.matches(regExp)) {
+                                showNotification(getMessage("simplePassword"), NotificationType.WARNING);
+                                return false;
+                            }
                         }
-                    }
 
-                    String passwordHash = passwordEncryption.getPasswordHash(user.getId(), passw);
-                    user.setPassword(passwordHash);
+                        String passwordHash = passwordEncryption.getPasswordHash(user.getId(), password);
+                        user.setPassword(passwordHash);
+                    }
 
                     return true;
                 } else {
