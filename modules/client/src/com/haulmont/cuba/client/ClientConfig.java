@@ -189,7 +189,7 @@ public interface ClientConfig extends Config {
     @DefaultBoolean(false)
     boolean getLoadObsoleteSettingsForTable();
 
-    @Property("cuba.gui.layoutAnalyzer.enabled")
+    @Property("cuba.gui.layoutAnalyzerEnabled")
     @DefaultBoolean(true)
     boolean getLayoutAnalyzerEnabled();
 }
