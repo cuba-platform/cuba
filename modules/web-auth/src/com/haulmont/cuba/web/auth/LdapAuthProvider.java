@@ -9,6 +9,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.security.global.LoginException;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.ldap.filter.AndFilter;
@@ -18,6 +19,7 @@ import org.springframework.ldap.support.LdapUtils;
 import javax.inject.Inject;
 import javax.servlet.*;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -56,6 +58,8 @@ public class LdapAuthProvider implements CubaAuthProvider {
         Configuration configuration = AppBeans.get(Configuration.NAME);
         WebAuthConfig webAuthConfig = configuration.getConfig(WebAuthConfig.class);
 
+        checkRequiredConfigProperties(webAuthConfig);
+
         ldapContextSource.setBase(webAuthConfig.getLdapBase());
         List<String> ldapUrls = webAuthConfig.getLdapUrls();
         ldapContextSource.setUrls(ldapUrls.toArray(new String[ldapUrls.size()]));
@@ -66,6 +70,27 @@ public class LdapAuthProvider implements CubaAuthProvider {
 
         ldapTemplate = new LdapTemplate(ldapContextSource);
         ldapTemplate.setIgnorePartialResultException(true);
+    }
+
+    protected void checkRequiredConfigProperties(WebAuthConfig webAuthConfig) {
+        List<String> missingProperties = new ArrayList<>();
+        if (StringUtils.isBlank(webAuthConfig.getLdapBase())) {
+            missingProperties.add("cuba.web.ldap.base");
+        }
+        if (webAuthConfig.getLdapUrls().isEmpty()) {
+            missingProperties.add("cuba.web.ldap.urls");
+        }
+        if (StringUtils.isBlank(webAuthConfig.getLdapUser())) {
+            missingProperties.add("cuba.web.ldap.user");
+        }
+        if (StringUtils.isBlank(webAuthConfig.getLdapPassword())) {
+            missingProperties.add("cuba.web.ldap.password");
+        }
+
+        if (!missingProperties.isEmpty()) {
+            throw new IllegalStateException("Please configure required application properties for LDAP integration: \n" +
+                StringUtils.join(missingProperties, "\n"));
+        }
     }
 
     @Override
