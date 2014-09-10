@@ -198,16 +198,13 @@ public class DesktopTreeTable extends DesktopAbstractTable<JXTreeTableExt> imple
                             return;
                         }
                         selectedItems = getSelected();
-//                        disabled for #PL-2035
-//                        disableItemListener = true;
+
                         // noinspection unchecked
                         if (selectedItems.isEmpty()) {
                             datasource.setItem(null);
                         } else {
                             datasource.setItem(selectedItems.iterator().next());
                         }
-//                        disabled for #PL-2035
-//                        disableItemListener = false;
                     }
                 }
         );

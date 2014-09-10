@@ -496,8 +496,6 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                 if (datasource == null) return;
 
                 final Set<Entity> selected = getSelected();
-//                disabled for #PL-2035
-//                disableItemListener = true;
                 if (selected.isEmpty()) {
                     datasource.setItem(null);
                 } else {
@@ -506,8 +504,6 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                         datasource.setItem(null);
                     datasource.setItem(selected.iterator().next());
                 }
-//                disabled for #PL-2035
-//                disableItemListener = false;
             }
         });
 
@@ -793,7 +789,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             rowsCount.setDatasource(datasource);
         }
 
-        datasource.addListener(new CollectionDsActionsNotifier(this){
+        datasource.addListener(new CollectionDsListenerAdapter<Entity>() {
             @Override
             public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
                 // #PL-2035, reload selection from ds
@@ -820,19 +816,6 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                 }
             }
         });
-
-        // noinspection unchecked
-//        disabled for #PL-2035
-//        datasource.addListener(new CollectionDsActionsNotifier(this) {
-//            @Override
-//            public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
-//                super.itemChanged(ds, prevItem, item);
-//
-//                if (!disableItemListener && !getSelected().contains(item)) {
-//                    setSelected(item);
-//                }
-//            }
-//        });
 
         datasource.addListener(new CollectionDsActionsNotifier(this));
 

@@ -112,10 +112,6 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
     protected boolean columnAdjustRequired = false;
 
-//    disable for #PL-2035
-    // Disable listener that points selection model to folow ds item.
-//    protected boolean disableItemListener = false;
-
     protected boolean fontInitialized = false;
 
     protected int defaultRowHeight = 24;
@@ -622,8 +618,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
             action.setDatasource(datasource);
         }
 
-        datasource.addListener(
-                new CollectionDsListenerAdapter<Entity>() {
+        datasource.addListener(new CollectionDsListenerAdapter<Entity>() {
                     @SuppressWarnings("unchecked")
                     @Override
                     public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
@@ -676,14 +671,6 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                         }
                         packRows();
                     }
-
-//                    disabled for #PL-2035
-//                    @Override
-//                    public void itemChanged(Datasource<Entity> ds, @Nullable Entity prevItem, @Nullable Entity item) {
-//                        if (!disableItemListener && !selectedItems.contains(item)) {
-//                            setSelected(item);
-//                        }
-//                    }
                 }
         );
 
@@ -999,8 +986,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                         }
 
                         selectedItems = getSelected();
-//                        disabled for #PL-2035
-//                        disableItemListener = true;
+
                         if (selectedItems.isEmpty()) {
                             datasource.setItem(null);
                         } else {
@@ -1009,8 +995,6 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                                 datasource.setItem(null);
                             datasource.setItem(selectedItems.iterator().next());
                         }
-//                        disabled for #PL-2035
-//                        disableItemListener = false;
                     }
                 }
         );

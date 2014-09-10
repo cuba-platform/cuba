@@ -748,11 +748,9 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             rowsCount.setDatasource(datasource);
         }
 
-        datasource.addListener(new CollectionDsActionsNotifier(this) {
+        datasource.addListener(new CollectionDsListenerAdapter<Entity>() {
             @Override
             public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
-                super.collectionChanged(ds, operation, items);
-
                 // #PL-2035, reload selection from ds
                 Set<Object> selectedItemIds = getSelectedItemIds();
                 if (selectedItemIds == null) {
@@ -777,6 +775,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                 }
             }
         });
+
+        datasource.addListener(new CollectionDsActionsNotifier(this));
 
         for (Action action : getActions()) {
             action.refreshState();
