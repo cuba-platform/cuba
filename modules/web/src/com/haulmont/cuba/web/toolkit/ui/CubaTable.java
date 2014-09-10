@@ -26,7 +26,6 @@ import com.vaadin.ui.Layout;
 import java.util.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 /**
  * @author artamonov
@@ -246,17 +245,6 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
 
             refreshRowCache();
         }
-    }
-
-    /**
-     * Just add generated column to table without checks and without cells refresh. <br/>
-     * <b>For internal use only.</b>
-     */
-    @Override
-    public void addGeneratedColumnInternal(Object id, ColumnGenerator generatedColumn) {
-        checkNotNullArgument(generatedColumn, "Can not add null as a GeneratedColumn");
-
-        columnGenerators.put(id, generatedColumn);
     }
 
     @Override
