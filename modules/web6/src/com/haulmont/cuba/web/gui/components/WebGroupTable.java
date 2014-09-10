@@ -71,6 +71,23 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
     }
 
     @Override
+    protected StyleGeneratorAdapter createStyleGenerator() {
+        return new StyleGeneratorAdapter(){
+            @Override
+            public String getStyle(Object itemId, Object propertyId) {
+                if (!component.getGroupProperties().contains(propertyId)) {
+                    return super.getStyle(itemId, propertyId);
+                }
+
+                if (styleProvider != null) {
+                    return getGeneratedCellStyle(itemId, propertyId);
+                }
+                return null;
+            }
+        };
+    }
+
+    @Override
     public boolean saveSettings(Element element) {
         super.saveSettings(element);
 

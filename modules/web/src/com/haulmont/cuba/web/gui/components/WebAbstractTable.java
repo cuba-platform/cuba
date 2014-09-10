@@ -517,7 +517,11 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         component.setSizeFull();
         componentComposition.setExpandRatio(component, 1);
 
-        component.setCellStyleGenerator(new StyleGeneratorAdapter());
+        component.setCellStyleGenerator(createStyleGenerator());
+    }
+
+    protected StyleGeneratorAdapter createStyleGenerator() {
+        return new StyleGeneratorAdapter();
     }
 
     @SuppressWarnings("unchecked")

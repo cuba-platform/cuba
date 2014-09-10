@@ -66,6 +66,23 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
     }
 
     @Override
+    protected StyleGeneratorAdapter createStyleGenerator() {
+        return new StyleGeneratorAdapter(){
+            @Override
+            public String getStyle(com.vaadin.ui.Table source, Object itemId, Object propertyId) {
+                if (!component.getGroupProperties().contains(propertyId)) {
+                    return super.getStyle(source, itemId, propertyId);
+                }
+
+                if (styleProvider != null) {
+                    return getGeneratedCellStyle(itemId, propertyId);
+                }
+                return null;
+            }
+        };
+    }
+
+    @Override
     public boolean saveSettings(Element element) {
         super.saveSettings(element);
 
