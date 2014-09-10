@@ -19,9 +19,9 @@
     <assign name="width" value="200"/>
 
     <layout expand="permissionsTabsheet" spacing="true">
-        <groupBox>
-            <hbox spacing="true">
-                <grid spacing="true">
+        <groupBox id="roleGroupBox">
+            <hbox id="rolePropertiesHBox" spacing="true">
+                <grid id="roleNameGrid" spacing="true">
                     <columns count="3"/>
                     <rows>
                         <row>
@@ -36,7 +36,7 @@
                     </rows>
                 </grid>
 
-                <grid spacing="true">
+                <grid id="roleTypeGrid" spacing="true">
                     <columns count="3"/>
                     <rows>
                         <row>
@@ -51,7 +51,7 @@
                     </rows>
                 </grid>
 
-                <hbox spacing="true" id="descrBox" height="100%">
+                <hbox id="descrBox" spacing="true" height="100%">
                     <label value="msg://description"/>
                     <textArea id="description" datasource="roleDs" property="description" rows="4"
                               height="100%" width="theme://cuba.gui.role-edit.description.width"/>
