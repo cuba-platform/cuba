@@ -4,13 +4,13 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.chile.core.model.MetaPropertyPath;
+
 /**
- * @param <P>
- *
  * @author gorodnov
  * @version $Id$
  */
-public class AggregationInfo<P> {
+public class AggregationInfo {
 
     public enum Type {
         SUM,
@@ -20,15 +20,15 @@ public class AggregationInfo<P> {
         MAX
     }
 
-    private P propertyPath;
+    private MetaPropertyPath propertyPath;
     private Type type;
     private Formatter formatter;
 
-    public P getPropertyPath() {
+    public MetaPropertyPath getPropertyPath() {
         return propertyPath;
     }
 
-    public void setPropertyPath(P propertyPath) {
+    public void setPropertyPath(MetaPropertyPath propertyPath) {
         this.propertyPath = propertyPath;
     }
 

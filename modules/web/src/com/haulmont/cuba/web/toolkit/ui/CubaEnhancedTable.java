@@ -6,6 +6,7 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.web.gui.components.presentations.TablePresentations;
+import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Table;
 
@@ -15,7 +16,7 @@ import com.vaadin.ui.Table;
  * @author artamonov
  * @version $Id$
  */
-public interface CubaEnhancedTable {
+public interface CubaEnhancedTable extends AggregationContainer {
     void setContextMenuPopup(Layout contextMenu);
     void hideContextMenuPopup();
 
@@ -50,4 +51,10 @@ public interface CubaEnhancedTable {
      * <b>For internal use only.</b>
      */
     void addGeneratedColumnInternal(Object id, Table.ColumnGenerator generatedColumn);
+
+    boolean isAggregatable();
+    void setAggregatable(boolean aggregatable);
+
+    boolean isShowTotalAggregation();
+    void setShowTotalAggregation(boolean showTotalAggregation);
 }

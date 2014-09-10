@@ -9,6 +9,10 @@ import com.haulmont.cuba.gui.aggregation.NumberAggregationHelper;
 import java.util.Date;
 import java.util.Collection;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 public class DateAggregation extends BasicAggregation<Date> {
     public DateAggregation() {
         super(Date.class);

@@ -6,17 +6,19 @@
 package com.haulmont.cuba.web.toolkit.ui.client.table;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.TableCellElement;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.haulmont.cuba.web.toolkit.ui.client.Tools;
+import com.haulmont.cuba.web.toolkit.ui.client.aggregation.AggregatableTable;
+import com.haulmont.cuba.web.toolkit.ui.client.aggregation.TableAggregationRow;
 import com.haulmont.cuba.web.toolkit.ui.client.logging.ClientLogger;
 import com.haulmont.cuba.web.toolkit.ui.client.logging.ClientLoggerFactory;
 import com.vaadin.client.Focusable;
@@ -46,6 +48,8 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
     protected Widget customContextMenu;
 
     protected boolean allowMultiStringCells = false;
+
+    protected TableAggregationRow aggregationRow;
 
     protected CubaScrollTableWidget() {
         // handle shortcuts
@@ -151,6 +155,23 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
     }
 
     @Override
+    protected void setColWidth(int colIndex, int w, boolean isDefinedWidth) {
+        super.setColWidth(colIndex, w, isDefinedWidth);
+
+        if (aggregationRow != null && aggregationRow.isInitialized()) {
+            aggregationRow.setCellWidth(colIndex, w);
+        }
+    }
+
+    @Override
+    public int getAdditionalRowsHeight() {
+        if (aggregationRow != null) {
+            return aggregationRow.getOffsetHeight();
+        }
+        return 0;
+    }
+
+    @Override
     protected TableHead createTableHead() {
         return new CubaScrollTableHead();
     }
@@ -169,6 +190,71 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
 
         if (customContextMenuPopup != null) {
             customContextMenuPopup.hide();
+        }
+    }
+
+    protected void updateAggregationRow(UIDL uidl) {
+        if (aggregationRow == null) {
+            aggregationRow = createAggregationRow();
+            insert(aggregationRow, getWidgetIndex(scrollBodyPanel));
+        }
+        aggregationRow.updateFromUIDL(uidl);
+        aggregationRow.setHorizontalScrollPosition(scrollLeft);
+    }
+
+    protected TableAggregationRow createAggregationRow() {
+        return new TableAggregationRow(getAggregatableTable());
+    }
+
+    protected AggregatableTable getAggregatableTable() {
+        return new AggregatableTable() {
+            @Override
+            public TableHead getHead() {
+                return tHead;
+            }
+
+            @Override
+            public String getStylePrimaryName() {
+                return CubaScrollTableWidget.this.getStylePrimaryName();
+            }
+
+            @Override
+            public String[] getVisibleColOrder() {
+                return visibleColOrder;
+            }
+
+            @Override
+            public String getColKeyByIndex(int index) {
+                return CubaScrollTableWidget.this.getColKeyByIndex(index);
+            }
+
+            @Override
+            public int getColWidth(String colKey) {
+                return CubaScrollTableWidget.this.getColWidth(colKey);
+            }
+
+            @Override
+            public void setColWidth(int colIndex, int w, boolean isDefinedWidth) {
+                CubaScrollTableWidget.this.setColWidth(colIndex, w, isDefinedWidth);
+            }
+
+            @Override
+            public boolean isTextSelectionEnabled() {
+                return textSelectionEnabled;
+            }
+        };
+    }
+
+    @Override
+    public void onScroll(ScrollEvent event) {
+        if (isLazyScrollerActive()) {
+            return;
+        }
+
+        super.onScroll(event);
+
+        if (aggregationRow != null) {
+            aggregationRow.setHorizontalScrollPosition(scrollLeft);
         }
     }
 

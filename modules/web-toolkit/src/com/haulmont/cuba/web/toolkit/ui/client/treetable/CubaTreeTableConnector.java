@@ -125,4 +125,12 @@ public class CubaTreeTableConnector extends TreeTableConnector {
             }
         }
     }
+
+    @Override
+    protected void updateAdditionalRowData(UIDL uidl) {
+        UIDL arow = uidl.getChildByTagName("arow");
+        if (arow != null) {
+            getWidget().updateAggregationRow(arow);
+        }
+    }
 }

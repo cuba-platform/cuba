@@ -297,7 +297,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         Element aggregationElement = columnElement.element("aggregation");
         if (aggregationElement != null) {
             final AggregationInfo aggregation = new AggregationInfo();
-            aggregation.setPropertyPath(column.getId());
+            aggregation.setPropertyPath((MetaPropertyPath) column.getId());
             aggregation.setType(AggregationInfo.Type.valueOf(aggregationElement.attributeValue("type")));
             Formatter formatter = loadFormatter(aggregationElement);
             aggregation.setFormatter(formatter == null ? column.getFormatter() : formatter);

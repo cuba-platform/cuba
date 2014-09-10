@@ -160,11 +160,13 @@ public class WebTreeTable extends WebAbstractTable<CubaTreeTable> implements Tre
             };
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public boolean isCaption(Object itemId) {
             return treeTableDatasource && ((TreeTableDatasource) datasource).isCaption(itemId);
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public String getCaption(Object itemId) {
             if (treeTableDatasource) {
@@ -212,11 +214,13 @@ public class WebTreeTable extends WebAbstractTable<CubaTreeTable> implements Tre
             return properties;
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public Object nextItemId(Object itemId) {
             return ((CollectionDatasource.Sortable) datasource).nextItemId(itemId);
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public Object prevItemId(Object itemId) {
             return ((CollectionDatasource.Sortable) datasource).prevItemId(itemId);
@@ -232,11 +236,13 @@ public class WebTreeTable extends WebAbstractTable<CubaTreeTable> implements Tre
             return ((CollectionDatasource.Sortable) datasource).lastItemId();
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public boolean isFirstId(Object itemId) {
             return ((CollectionDatasource.Sortable) datasource).isFirstId(itemId);
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public boolean isLastId(Object itemId) {
             return ((CollectionDatasource.Sortable) datasource).isLastId(itemId);
@@ -268,7 +274,7 @@ public class WebTreeTable extends WebAbstractTable<CubaTreeTable> implements Tre
         @Override
         public void addContainerPropertyAggregation(Object propertyId, Type type) {
             if (aggregationProperties == null) {
-                aggregationProperties = new LinkedList<Object>();
+                aggregationProperties = new LinkedList<>();
             } else if (aggregationProperties.contains(propertyId)) {
                 throw new IllegalStateException("Such aggregation property is already exists");
             }

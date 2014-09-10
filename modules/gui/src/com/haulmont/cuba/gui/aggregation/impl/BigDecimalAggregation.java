@@ -6,12 +6,17 @@ package com.haulmont.cuba.gui.aggregation.impl;
 
 import java.math.BigDecimal;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 public class BigDecimalAggregation extends BasicNumberAggregation<BigDecimal> {
 
     public BigDecimalAggregation() {
         super(BigDecimal.class);
     }
 
+    @Override
     public BigDecimal convert(Double result) {
         return BigDecimal.valueOf(result);
     }

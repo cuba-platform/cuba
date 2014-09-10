@@ -122,4 +122,12 @@ public class CubaScrollTableConnector extends TableConnector {
             }
         }
     }
+
+    @Override
+    protected void updateAdditionalRowData(UIDL uidl) {
+        UIDL arow = uidl.getChildByTagName("arow");
+        if (arow != null) {
+            getWidget().updateAggregationRow(arow);
+        }
+    }
 }

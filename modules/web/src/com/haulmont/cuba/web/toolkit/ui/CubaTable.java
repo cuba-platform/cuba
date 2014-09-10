@@ -9,6 +9,7 @@ import com.google.common.collect.Iterables;
 import com.haulmont.cuba.web.gui.components.presentations.TablePresentations;
 import com.haulmont.cuba.web.gui.data.PropertyValueStringify;
 import com.haulmont.cuba.web.toolkit.ShortcutActionManager;
+import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.data.TableContainer;
 import com.haulmont.cuba.web.toolkit.ui.client.table.CubaTableClientRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.table.CubaTableState;
@@ -41,6 +42,10 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
     protected ActionManager shortcutActionManager;
 
     protected boolean autowirePropertyDsForFields = false;
+
+    protected boolean showTotalAggregation = true;
+
+    protected boolean aggregatable = false;
 
     @Override
     protected CubaTableState getState() {
@@ -329,5 +334,130 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
     @Override
     public void refreshCellStyles() {
         super.refreshRenderedCells();
+    }
+
+    @Override
+    public boolean removeContainerProperty(Object propertyId) throws UnsupportedOperationException {
+        if (editableColumns != null) {
+            editableColumns.remove(propertyId);
+        }
+
+        if (isAggregatable() && items instanceof AggregationContainer) {
+            removeContainerPropertyAggregation(propertyId);
+        }
+
+        boolean removed = super.removeContainerProperty(propertyId);
+
+        if (removed) {
+            resetPageBuffer();
+        }
+
+        return removed;
+    }
+
+    @Override
+    public boolean isAggregatable() {
+        return this.aggregatable;
+    }
+
+    @Override
+    public void setAggregatable(boolean aggregatable) {
+        if (this.aggregatable != aggregatable) {
+            this.aggregatable = aggregatable;
+            markAsDirty();
+        }
+    }
+
+    @Override
+    public boolean isShowTotalAggregation() {
+        return showTotalAggregation;
+    }
+
+    @Override
+    public void setShowTotalAggregation(boolean showTotalAggregation) {
+        if (this.showTotalAggregation != showTotalAggregation) {
+            this.showTotalAggregation = showTotalAggregation;
+            markAsDirty();
+        }
+    }
+
+    @Override
+    public Collection getAggregationPropertyIds() {
+        if (items instanceof AggregationContainer) {
+            return ((AggregationContainer) items).getAggregationPropertyIds();
+        }
+        throw new IllegalStateException("Table container is not AggregationContainer: " + items.getClass());
+    }
+
+    @Override
+    public Type getContainerPropertyAggregation(Object propertyId) {
+        if (items instanceof AggregationContainer) {
+            return ((AggregationContainer) items).getContainerPropertyAggregation(propertyId);
+        }
+        throw new IllegalStateException("Table container is not AggregationContainer: " + items.getClass());
+    }
+
+    @Override
+    public void addContainerPropertyAggregation(Object propertyId, Type type) {
+        if (items instanceof AggregationContainer) {
+            ((AggregationContainer) items).addContainerPropertyAggregation(propertyId, type);
+        } else {
+            throw new IllegalStateException("Table container is not AggregationContainer: " + items.getClass());
+        }
+    }
+
+    @Override
+    public void removeContainerPropertyAggregation(Object propertyId) {
+        if (items instanceof AggregationContainer) {
+            ((AggregationContainer) items).removeContainerPropertyAggregation(propertyId);
+        } else {
+            throw new IllegalStateException("Table container is not AggregationContainer: " + items.getClass());
+        }
+    }
+
+    @Override
+    public Map<Object, Object> aggregate(Context context) {
+        if (items instanceof AggregationContainer && isAggregatable()) {
+            return ((AggregationContainer) items).aggregate(context);
+        }
+        throw new IllegalStateException("Table container is not AggregationContainer: " + items.getClass());
+    }
+
+    @Override
+    protected void paintAdditionalData(PaintTarget target) throws PaintException {
+        if (reqFirstRowToPaint == -1) {
+            boolean hasAggregation = items instanceof AggregationContainer && isAggregatable()
+                    && !((AggregationContainer) items).getAggregationPropertyIds().isEmpty();
+
+            if (hasAggregation && isShowTotalAggregation()) {
+                Context context = new Context(getAggregationItemIds());
+                paintAggregationRow(target, ((AggregationContainer) items).aggregate(context));
+            }
+        }
+    }
+
+    protected Collection<?> getAggregationItemIds() {
+        return items.getItemIds();
+    }
+
+    protected void paintAggregationRow(PaintTarget target, Map<Object, Object> aggregations) throws PaintException {
+        target.startTag("arow");
+        for (final Object columnId : visibleColumns) {
+            if (columnId == null || isColumnCollapsed(columnId)) {
+                continue;
+            }
+
+            if (getCellStyleGenerator() != null) {
+                String cellStyle = getCellStyleGenerator().getStyle(this, null, columnId);
+                if (cellStyle != null && !cellStyle.equals("")) {
+                    target.addAttribute("style-"
+                            + columnIdMap.key(columnId), cellStyle + "-ag");
+                }
+            }
+
+            String value = (String) aggregations.get(columnId);
+            target.addText(value);
+        }
+        target.endTag("arow");
     }
 }

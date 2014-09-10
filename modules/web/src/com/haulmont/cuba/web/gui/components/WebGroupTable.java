@@ -114,30 +114,29 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
 
     @Override
     protected Map<Object, Object> __handleAggregationResults(AggregationContainer.Context context, Map<Object, Object> results) {
-//        vaadin7
-//        if (context instanceof com.haulmont.cuba.web.toolkit.ui.GroupTable.GroupAggregationContext) {
-//
-//            com.haulmont.cuba.web.toolkit.ui.GroupTable.GroupAggregationContext groupContext =
-//                    (com.haulmont.cuba.web.toolkit.ui.GroupTable.GroupAggregationContext) context;
-//
-//            for (final Map.Entry<Object, Object> entry : results.entrySet()) {
-//                final Table.Column column = columns.get(entry.getKey());
-//                GroupAggregationCells cells;
-//                if ((cells = groupAggregationCells.get(column)) != null) {
-//                    com.vaadin.ui.Label cell = cells.getCell(groupContext.getGroupId());
-//                    if (cell != null) {
-//                        WebComponentsHelper.setLabelText(cell, entry.getValue(), column.getFormatter());
-//                        entry.setValue(cell);
-//                    }
-//                }
-//            }
-//
-//            return results;
-//
-//        } else {
-//            return super.__handleAggregationResults(context, results);
-//        }
-        return Collections.emptyMap();
+        if (context instanceof CubaGroupTable.GroupAggregationContext) {
+            CubaGroupTable.GroupAggregationContext groupContext = (CubaGroupTable.GroupAggregationContext) context;
+
+            for (final Map.Entry<Object, Object> entry : results.entrySet()) {
+                final Table.Column column = columns.get(entry.getKey());
+                GroupAggregationCells cells;
+                if ((cells = groupAggregationCells.get(column)) != null) {
+                    String value = cells.getValue(groupContext.getGroupId());
+                    String cellText = getFormattedValue(column, value);
+                    entry.setValue(cellText);
+
+                    String groupValue = cells.getValue(groupContext.getGroupId());
+                    if (groupValue != null) {
+                        String groupCellText = getFormattedValue(column, groupValue);
+                        entry.setValue(groupCellText);
+                    }
+                }
+            }
+
+            return results;
+        } else {
+            return super.__handleAggregationResults(context, results);
+        }
     }
 
     @Override
@@ -155,6 +154,7 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
         component.expand(groupId);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void expandPath(Entity item) {
         if (component.hasGroups()) {
@@ -214,8 +214,7 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
     }
 
     protected class GroupTableDsWrapper extends SortableCollectionDsWrapper
-            implements GroupTableContainer,
-            AggregationContainer {
+            implements GroupTableContainer, AggregationContainer {
 
         private boolean groupDatasource;
         private List<Object> aggregationProperties = null;
@@ -324,7 +323,7 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
                         groupCells = new GroupAggregationCells();
                         cells.put(column, groupCells);
                     }
-                    groupCells.addCell(groupId, createAggregationCell());
+                    groupCells.addCell(groupId, "");
                 }
             }
 
@@ -724,13 +723,13 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
     }
 
     protected class GroupAggregationCells {
-        private Map<Object, com.vaadin.ui.Label> cells = new HashMap<>();
+        private Map<Object, String> cells = new HashMap<>();
 
-        public void addCell(Object groupId, com.vaadin.ui.Label cell) {
-            cells.put(groupId, cell);
+        public void addCell(Object groupId, String value) {
+            cells.put(groupId, value);
         }
 
-        public com.vaadin.ui.Label getCell(Object groupId) {
+        public String getValue(Object groupId) {
             return cells.get(groupId);
         }
     }
@@ -748,11 +747,7 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
         }
 
         protected void recalcAggregation(GroupInfo groupInfo) {
-//            vaadin7
-//            component.aggregate(new com.haulmont.cuba.web.toolkit.ui.GroupTable.GroupAggregationContext(
-//                    component,
-//                    groupInfo
-//            ));
+            component.aggregate(new CubaGroupTable.GroupAggregationContext(component, groupInfo));
         }
     }
 }

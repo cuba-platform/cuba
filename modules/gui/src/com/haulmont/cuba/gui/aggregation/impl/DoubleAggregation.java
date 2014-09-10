@@ -4,11 +4,16 @@
  */
 package com.haulmont.cuba.gui.aggregation.impl;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 public class DoubleAggregation extends BasicNumberAggregation<Double> {
     public DoubleAggregation() {
         super(Double.class);
     }
 
+    @Override
     public Double convert(Double result) {
         return result;
     }

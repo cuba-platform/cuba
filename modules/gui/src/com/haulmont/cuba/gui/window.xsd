@@ -311,6 +311,7 @@
         <xs:attribute name="columnControlVisible" type="xs:boolean"/>
 
         <xs:attribute name="aggregatable" type="xs:boolean"/>
+        <xs:attribute name="showTotalAggregation" type="xs:boolean"/>
         <xs:attribute name="presentations" type="xs:boolean"/>
         <xs:attribute name="allowPopupMenu" type="xs:boolean"/>
         <xs:attribute name="allowMultiStringCells" type="xs:boolean"/>
@@ -834,15 +835,14 @@
     <xs:complexType name="tableColumnComponent">
         <xs:sequence>
             <xs:element name="formatter" minOccurs="0" maxOccurs="1" type="formatterType"/>
-            <!--<xs:element name="calculatable" minOccurs="0" maxOccurs="1"/>-->
-            <!--<xs:element name="aggregation" minOccurs="0" maxOccurs="1">-->
-                <!--<xs:complexType>-->
-                    <!--<xs:sequence>-->
-                        <!--<xs:element name="formatter" minOccurs="0" maxOccurs="1" type="formatterType"/>-->
-                    <!--</xs:sequence>-->
-                    <!--<xs:attribute name="type" type="aggregation" use="required"/>-->
-                <!--</xs:complexType>-->
-            <!--</xs:element>-->
+            <xs:element name="aggregation" minOccurs="0" maxOccurs="1">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="formatter" minOccurs="0" maxOccurs="1" type="formatterType"/>
+                    </xs:sequence>
+                    <xs:attribute name="type" type="aggregation" use="required"/>
+                </xs:complexType>
+            </xs:element>
         </xs:sequence>
 
         <xs:attributeGroup ref="requiresId"/>
@@ -853,6 +853,7 @@
         <xs:attribute name="clickAction" type="xs:string"/>
         <xs:attribute name="collapsed" type="xs:boolean"/>
         <xs:attribute name="maxTextLength" type="xs:integer"/>
+        <xs:attribute name="calculatable" type="xs:boolean"/>
 
         <!-- Additional attributes, use only for editable table -->
         <xs:attributeGroup ref="hasOptions"/>

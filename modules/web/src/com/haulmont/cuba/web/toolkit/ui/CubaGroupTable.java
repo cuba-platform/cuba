@@ -8,6 +8,7 @@ package com.haulmont.cuba.web.toolkit.ui;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.gui.data.GroupInfo;
 import com.haulmont.cuba.web.gui.data.PropertyValueStringify;
+import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.data.GroupTableContainer;
 import com.haulmont.cuba.web.toolkit.data.util.GroupTableContainerWrapper;
 import com.vaadin.data.Container;
@@ -190,6 +191,9 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
     protected void paintRowAttributes(PaintTarget target, Object itemId) throws PaintException {
         super.paintRowAttributes(target, itemId);
 
+        boolean hasAggregation = items instanceof AggregationContainer && isAggregatable()
+                && !((AggregationContainer) items).getAggregationPropertyIds().isEmpty();
+
         boolean hasGroups = hasGroups();
         if (hasGroups) {
             if (isGroup(itemId)) {
@@ -201,7 +205,58 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
                 final Object propertyValue = getGroupPropertyValue(itemId);
                 target.addAttribute("groupCaption", formatGroupPropertyValue(itemId, propertyValue));
 
-                // todo aggregation
+                if (hasAggregation) {
+                    paintGroupAggregation(target, itemId,
+                            ((AggregationContainer) items).aggregate(new GroupAggregationContext(this, itemId)));
+                }
+            }
+        }
+    }
+
+    @Override
+    protected Collection<?> getAggregationItemIds() {
+        if (hasGroups()) {
+            List itemIds = new LinkedList();
+            for (final Object groupId : rootGroups()) {
+                itemIds.addAll(getGroupItemIds(groupId));
+            }
+            return itemIds;
+        } else {
+            return items.getItemIds();
+        }
+    }
+
+    protected void paintGroupAggregation(PaintTarget target, Object groupId, Map<Object, Object> aggregations)
+            throws PaintException {
+        boolean paintGroupProperty = false;
+
+        final Collection groupProperties = getGroupProperties();
+        final Object groupProperty = getGroupProperty(groupId);
+
+        for (final Object columnId : visibleColumns) {
+            if (columnId == null || isColumnCollapsed(columnId)) {
+                continue;
+            }
+
+            if (groupProperties.contains(columnId) && !paintGroupProperty) {
+                if (columnId.equals(groupProperty)) {
+                    paintGroupProperty = true;
+                }
+                continue;
+            }
+
+            if (getCellStyleGenerator() != null) {
+                String cellStyle = getCellStyleGenerator().getStyle(this, null, columnId);
+                if (cellStyle != null && !cellStyle.equals("")) {
+                    target.addAttribute("style-" + columnIdMap.key(columnId), cellStyle + "-ag");
+                }
+            }
+
+            String value = (String) aggregations.get(columnId);
+            if (value != null) {
+                target.addText(value);
+            } else {
+                target.addText("");
             }
         }
     }
@@ -403,5 +458,18 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
 
     public interface GroupPropertyValueFormatter {
         String format(Object groupId, @Nullable Object value);
+    }
+
+    public static class GroupAggregationContext extends Context {
+        private Object groupId;
+
+        public GroupAggregationContext(GroupTableContainer datasource, Object groupId) {
+            super(datasource.getGroupItemIds(groupId));
+            this.groupId = groupId;
+        }
+
+        public Object getGroupId() {
+            return groupId;
+        }
     }
 }

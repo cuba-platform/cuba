@@ -4,11 +4,16 @@
  */
 package com.haulmont.cuba.gui.aggregation.impl;
 
+/**
+ * @author gorodnov
+ * @version $Id$
+ */
 public class LongAggregation extends BasicNumberAggregation<Long> {
     public LongAggregation() {
         super(Long.class);
     }
 
+    @Override
     protected Long convert(Double result) {
         return result.longValue();
     }
