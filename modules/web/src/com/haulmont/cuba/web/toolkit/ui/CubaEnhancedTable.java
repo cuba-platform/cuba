@@ -46,12 +46,6 @@ public interface CubaEnhancedTable extends AggregationContainer {
 
     void refreshCellStyles();
 
-    /**
-     * Just add generated column to table without checks and without cells refresh. <br/>
-     * <b>For internal use only.</b>
-     */
-    void addGeneratedColumnInternal(Object id, Table.ColumnGenerator generatedColumn);
-
     boolean isAggregatable();
     void setAggregatable(boolean aggregatable);
 
