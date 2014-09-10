@@ -21,12 +21,6 @@
     </dsContext>
 
     <layout width="100%" spacing="true">
-        <hbox spacing="true">
-            <button id="insert" caption="msg://caption.generateInsert" invoke="generateInsert"/>
-            <button id="update" caption="msg://caption.generateUpdate" invoke="generateUpdate"/>
-            <button id="select" caption="msg://caption.generateSelect" invoke="generateSelect"/>
-        </hbox>
-
         <table id="infoTable" width="100%" height="250px"
                columnControlVisible="false" sortable="false" reorderingAllowed="false">
             <columns>
@@ -35,6 +29,12 @@
             </columns>
             <rows datasource="paramsDs"/>
         </table>
+        <hbox spacing="true">
+            <button id="insert" caption="msg://caption.generateInsert" invoke="generateInsert"/>
+            <button id="update" caption="msg://caption.generateUpdate" invoke="generateUpdate"/>
+            <button id="select" caption="msg://caption.generateSelect" invoke="generateSelect"/>
+        </hbox>
+
         <textArea id="scriptArea" visible="false" width="100%" height="150"/>
     </layout>
 </window>
