@@ -5,20 +5,19 @@
 
 package com.haulmont.cuba.core.app.domain;
 
+import com.haulmont.chile.core.datatypes.Enumeration;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
+import freemarker.template.*;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.MappedSuperclass;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author chevelev
@@ -60,7 +59,7 @@ public class MetaClassRepresentation {
             return null;
         }
 
-        return "Parent is " + asHref(ancestor);
+        return "Parent is " + asHref(ancestor.getName());
     }
 
     public String getDescription() {
@@ -116,16 +115,44 @@ public class MetaClassRepresentation {
         }
 
         public String getEnum() {
-            return property.getRange().isEnum() ? "(enum)" : "";
+            return property.getRange().isEnum() ? asHref(property.getRange().asEnumeration().toString()) : null;
+        }
+
+        /**
+         * @return map representing Enumeration with localized Enumeration item values
+         */
+        public TemplateHashModel getEnumValues() {
+            if (property.getRange().isEnum()) {
+
+                Enumeration<?> enumeration = property.getRange().asEnumeration();
+                SimpleHash wrappedEnum = new SimpleHash();
+                wrappedEnum.put("name", enumeration.toString());
+                SimpleSequence values = new SimpleSequence();
+
+                for (Enum enumItem : enumeration.getValues()) {
+                    SimpleHash wrappedEnumElement = new SimpleHash();
+                    try {
+                        wrappedEnumElement.put("idObj", ObjectWrapper.BEANS_WRAPPER.wrap(enumItem)); //Some enums don't implement EnumClass interface so we'll get id field here via reflection.
+                        wrappedEnumElement.put("name", AppBeans.get(Messages.class).getMessage(enumItem));
+                        values.add(wrappedEnumElement);
+                    } catch (TemplateModelException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                wrappedEnum.put("values", values);
+
+                return wrappedEnum;
+            }
+            return null;
         }
 
         public String getJavaType() {
             String type = property.getJavaType().getName();
             String simpleName = property.getJavaType().getSimpleName();
-            return type.startsWith("java.lang.") && ("java.lang.".length() + simpleName.length() == type.length()) ?
+            return type.startsWith("java.lang.") && ("java.lang.".length() + simpleName.length() == type.length()) || type.startsWith("[")?
                     simpleName :
                     property.getRange().isClass() ?
-                            asHref(property.getRange().asClass()) :
+                            asHref(property.getRange().asClass().getName()) :
                             type;
         }
 
@@ -146,24 +173,12 @@ public class MetaClassRepresentation {
             }
         }
 
-        public String getOrdered() {
-            return property.getRange().isOrdered() ? "Ordered" : "";
-        }
-
-        public String getMandatory() {
-            return property.isMandatory() ? "Mandatory" : "Optional";
-        }
-
-        public String getReadOnly() {
-            return property.isReadOnly() ? "Read Only" : "Read/Write";
-        }
-
         public Collection<String> getAnnotations() {
             Collection<String> result = new ArrayList<>();
             Map<String, Object> map = property.getAnnotations();
             for (Map.Entry<String, Object> entry : map.entrySet()) {
                 String annotationName = entry.getKey();
-                if ("length".equals(annotationName) && !String.class.equals(property.getJavaType()))
+                if (("length".equals(annotationName) && !String.class.equals(property.getJavaType())) || "persistent".equals(annotationName))
                     continue;
 
                 result.add(annotationName + ": " + entry.getValue());
@@ -278,7 +293,7 @@ public class MetaClassRepresentation {
         return security.isEntityOpPermitted(metaClass, entityOp);
     }
 
-    private static String asHref(MetaClass metaClass) {
-        return "<a href=\"#" + metaClass.getName() + "\">" + metaClass.getName() + "</a>";
+    private static String asHref(String element) {
+        return "<a href=\"#" + element + "\">" + element + "</a>";
     }
 }
