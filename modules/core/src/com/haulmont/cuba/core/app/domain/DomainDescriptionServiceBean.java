@@ -5,13 +5,12 @@
 
 package com.haulmont.cuba.core.app.domain;
 
-import com.haulmont.chile.core.datatypes.*;
+import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.DomainDescriptionService;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AbstractViewRepository;
 import com.haulmont.cuba.security.entity.EntityOp;
-import freemarker.template.*;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -44,7 +43,6 @@ public class DomainDescriptionServiceBean implements DomainDescriptionService {
         List<View> views = ((AbstractViewRepository) viewRepository).getAll();
 
         List<MetaClassRepresentation> classes = new ArrayList<>();
-        List<TemplateHashModel> enums = new ArrayList<>();
 
         Set<MetaClass> metas = new HashSet<>(metadataTools.getAllPersistentMetaClasses());
         metas.addAll(metadataTools.getAllEmbeddableMetaClasses());
@@ -63,27 +61,10 @@ public class DomainDescriptionServiceBean implements DomainDescriptionService {
 
             MetaClassRepresentation rep = new MetaClassRepresentation(meta, metaClassViews);
             classes.add(rep);
-
-            for (MetaClassRepresentation.MetaClassRepProperty metaProperty : rep.getProperties()) {
-                TemplateHashModel enumValues = metaProperty.getEnumValues();
-                if (enumValues!=null) enums.add(enumValues);
-            }
-
         }
         Collections.sort(classes, new Comparator<MetaClassRepresentation>() {
             public int compare(MetaClassRepresentation o1, MetaClassRepresentation o2) {
                 return o1.getName().compareTo(o2.getName());
-            }
-        });
-
-        Collections.sort(enums, new Comparator<TemplateHashModel>() {
-            @Override
-            public int compare(TemplateHashModel o1, TemplateHashModel o2) {
-                try {
-                    return o1.get("name").toString().compareTo(o2.get("name").toString());
-                } catch (TemplateModelException e) {
-                    return 0;
-                }
             }
         });
 
@@ -92,8 +73,6 @@ public class DomainDescriptionServiceBean implements DomainDescriptionService {
 
         String[] availableTypes = getAvailableBasicTypes();
         values.put("availableTypes", availableTypes);
-
-        values.put("enums", enums);
 
         String template = resources.getResourceAsString("/com/haulmont/cuba/core/app/domain/DomainDescription.ftl");
         return TemplateHelper.processTemplate(template, values);

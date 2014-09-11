@@ -76,9 +76,8 @@
         <col width="15%">
         <col width="20%">
         <col width="15%">
-        <col width="30%">
-        <col width="5%">
-        <col width="15%">
+        <col width="25%">
+        <col width="25%">
         <tr>
             <th>Property</th>
             <th>Column</th>
@@ -92,12 +91,12 @@
             <tr>
                         <td class="propertyName">${property.name}</td>
                         <td>${property.tableName}</td>
-                        <td>${property.enum!property.javaType}</td>
+                        <td>${property.javaType} ${property.enum}</td>
                         <td>${property.description}</td>
-                        <td><i>${property.cardinality}</i></td>
+                        <td><i>${property.cardinality} ${property.ordered} ${property.mandatory}. ${property.readOnly}.</i></td>
                         <td>
                             <#list property.annotations as ann>
-                                ${ann};&nbsp;
+                                ${ann}<br>
                             </#list>
                         </td>
             </tr>
@@ -116,33 +115,6 @@
     </#if>
     <p>&nbsp;</p>
 </#list>
-
-<h2>Enumerations:</h2>
-<ul>
-    <#list enums as enum>
-        <li><a href="#${enum.name}">${enum.name}</a></li>
-    </#list>
-</ul>
-
-    <#list enums as enum>
-        <a name="${enum.name}"></a>
-        <h2>${enum.name}</h2>
-        <h3>Values</h3>
-        <table border="1" bordercolor="lightgray" cellspacing="0" cellpadding="0" width="30%">
-            <col width="20%">
-            <col width="80%">
-            <tr>
-                <th>Id</th>
-                <th>Value</th>
-            </tr>
-            <#list enum.values as value>
-                <tr>
-                    <td class="propertyName">${value.idObj.id!}</td>
-                    <td>${value.name}</td>
-                </tr>
-            </#list>
-        </table>
-    </#list>
 
 </body>
 </html>
