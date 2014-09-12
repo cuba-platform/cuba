@@ -128,9 +128,9 @@
         <a name="${enum.name}"></a>
         <h2>${enum.name}</h2>
         <h3>Values</h3>
-        <table border="1" bordercolor="lightgray" cellspacing="0" cellpadding="0" width="30%">
-            <col width="20%">
-            <col width="80%">
+        <table border="1" bordercolor="lightgray" cellspacing="0" cellpadding="0" width="50%">
+            <col width="30%">
+            <col width="70%">
             <tr>
                 <th>Id</th>
                 <th>Value</th>
