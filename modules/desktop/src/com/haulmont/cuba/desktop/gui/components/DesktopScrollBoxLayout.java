@@ -23,12 +23,13 @@ import java.util.List;
  * @author budarov
  * @version $Id$
  */
-public class DesktopScrollBoxLayout extends DesktopAbstractComponent<JScrollPane> implements ScrollBoxLayout, AutoExpanding {
+public class DesktopScrollBoxLayout extends DesktopAbstractComponent<JScrollPane>
+        implements ScrollBoxLayout, AutoExpanding, DesktopContainer {
 
     protected List<Component> components = new ArrayList<>();
-    private Orientation orientation = Orientation.VERTICAL;
-    private ScrollBarPolicy scrollBarPolicy = ScrollBarPolicy.VERTICAL;
-    private DesktopAbstractBox content;
+    protected Orientation orientation = Orientation.VERTICAL;
+    protected ScrollBarPolicy scrollBarPolicy = ScrollBarPolicy.VERTICAL;
+    protected DesktopAbstractBox content;
 
     protected boolean scheduledRepaint = false;
 
@@ -42,6 +43,7 @@ public class DesktopScrollBoxLayout extends DesktopAbstractComponent<JScrollPane
         content = new DesktopVBox();
 
         DesktopVBox contentPane = new DesktopVBox();
+        contentPane.setContainer(this);
         contentPane.add(content);
 
         impl.setViewportView(DesktopComponentsHelper.getComposition(contentPane));
@@ -55,6 +57,8 @@ public class DesktopScrollBoxLayout extends DesktopAbstractComponent<JScrollPane
                 adjustViewPreferredSize();
             }
         });
+
+        setWidth("100%");
     }
 
     private void adjustViewPreferredSize() {
@@ -79,7 +83,6 @@ public class DesktopScrollBoxLayout extends DesktopAbstractComponent<JScrollPane
                 break;
         }
         view.setPreferredSize(preferredSize);
-        view.setMaximumSize(preferredSize);
 
         requestRepaint();
     }
@@ -116,6 +119,7 @@ public class DesktopScrollBoxLayout extends DesktopAbstractComponent<JScrollPane
 
             DesktopVBox contentPane = new DesktopVBox();
             contentPane.add(content);
+            contentPane.setContainer(this);
 
             impl.setViewportView(DesktopComponentsHelper.getComposition(contentPane));
 
@@ -250,5 +254,10 @@ public class DesktopScrollBoxLayout extends DesktopAbstractComponent<JScrollPane
     @Override
     public void setSpacing(boolean enabled) {
         content.setSpacing(enabled);
+    }
+
+    @Override
+    public void updateComponent(Component child) {
+        adjustViewPreferredSize();
     }
 }

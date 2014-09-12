@@ -8,9 +8,8 @@ package com.haulmont.cuba.desktop.gui.components;
 import com.haulmont.cuba.gui.components.Component;
 
 /**
- * <p>$Id$</p>
- *
  * @author Alexander Budarov
+ * @version $Id$
  */
 public interface DesktopContainer extends Component.Container {
 
