@@ -14,6 +14,7 @@ import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
 import java.util.*;
@@ -43,6 +44,7 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
         final Element rowsElement = element.element("rows");
 
         int columnCount;
+        @SuppressWarnings("unchecked")
         final List<Element> columnElements = columnsElement.elements("column");
         if (columnElements.size() == 0) {
             try {
@@ -68,6 +70,7 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
             }
         }
 
+        @SuppressWarnings("unchecked")
         final List<Element> rowElements = rowsElement.elements("row");
         final Set<Element> invisibleRows = new HashSet<>();
 
@@ -135,6 +138,7 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
 
         int col = 0;
 
+        //noinspection unchecked
         for (Element subElement : (Collection<Element>) element.elements()) {
             final Component subComponent = loader.loadComponent(subElement, component);
 
@@ -148,11 +152,37 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
             if (StringUtils.isEmpty(colspan) && StringUtils.isEmpty(rowspan)) {
                 addSubComponent(component, subComponent, col, row, col, row);
             } else {
-                int cspan = StringUtils.isEmpty(colspan) ? 0 : Integer.parseInt(colspan);
-                int rspan = StringUtils.isEmpty(rowspan) ? 0 : Integer.parseInt(rowspan);
+                int cspan = 1;
+                int rspan = 1;
+
+                if (StringUtils.isNotEmpty(colspan)) {
+                    cspan = Integer.parseInt(colspan);
+                    if (cspan < 1) {
+                        throw new GuiDevelopmentException("GridLayout colspan can not be less than 1",
+                                context.getFullFrameId(), "colspan", cspan);
+                    }
+                    if (cspan == 1) {
+                        LogFactory.getLog(getClass()).warn("Do not use colspan=\"1\", it will have no effect");
+                    }
+                }
+
+                if (StringUtils.isNotEmpty(rowspan)) {
+                    rspan = Integer.parseInt(rowspan);
+                    if (rspan < 1) {
+                        throw new GuiDevelopmentException("GridLayout rowspan can not be less than 1",
+                                context.getFullFrameId(), "rowspan", rspan);
+                    }
+                    if (rspan == 1) {
+                        LogFactory.getLog(getClass()).warn("Do not use rowspan=\"1\", it will have no effect");
+                    }
+                }
 
                 fillSpanMatrix(col, row, cspan, rspan);
-                addSubComponent(component, subComponent, col, row, col + cspan, row + rspan);
+
+                int endColumn = col + cspan - 1;
+                int endRow = row + rspan - 1;
+
+                addSubComponent(component, subComponent, col, row, endColumn, endRow);
             }
 
             col++;
@@ -167,7 +197,7 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
                 grid.remove(comp);
                 grid.add(comp, c1, r1, c2, r2);
             } else {
-                Label label = factory.createComponent("label");
+                Label label = factory.createComponent(Label.NAME);
                 grid.add(label, c1, r1, c2, r2);
             }
         } else {
@@ -176,9 +206,13 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
     }
 
     protected void fillSpanMatrix(int col, int row, int cspan, int rspan) {
-        for (int i = col; i <= (col + cspan); i++) {
-            for (int j = row; j <= (row + rspan); j++) {
-                if (spanMatrix[i][j]) throw new IllegalStateException();
+        for (int i = col; i < (col + cspan); i++) {
+            for (int j = row; j < (row + rspan); j++) {
+                if (spanMatrix[i][j]) {
+                    throw new GuiDevelopmentException("Grid layout prohibits component overlapping",
+                            context.getFullFrameId());
+                }
+
                 spanMatrix[i][j] = true;
             }
         }
