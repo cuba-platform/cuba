@@ -134,8 +134,9 @@ public class RelatedAction extends AbstractAction {
 
         Configuration configuration = AppBeans.get(Configuration.NAME);
         ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
-        if (BooleanUtils.isTrue(component.getManualApplyRequired())
-                || clientConfig.getGenericFilterManualApplyRequired()) {
+
+        if (Boolean.TRUE.equals(component.getManualApplyRequired())
+                || (component.getManualApplyRequired() == null && clientConfig.getGenericFilterManualApplyRequired())) {
             component.apply(true);
         }
     }
