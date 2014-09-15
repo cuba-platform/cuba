@@ -135,7 +135,8 @@ public class StandardCacheLoader implements CacheLoader {
                     entity = em.find(entity.getClass(), entity.getId());
 
                     items.remove(item);
-                    items.add(entity);
+                    if(entity != null)
+                        items.add(entity);
                 }
 
                 tx.commit();
