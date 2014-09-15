@@ -7,9 +7,11 @@ package com.haulmont.cuba.gui.components.actions;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.RelatedEntitiesService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.ExtendedEntities;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.gui.ComponentFinder;
@@ -17,6 +19,7 @@ import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.security.entity.FilterEntity;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -128,6 +131,13 @@ public class RelatedAction extends AbstractAction {
         filterEntity.setXml(assistant.getRelatedEntitiesFilterXml(effectiveMetaClass, relatedIds, component));
 
         component.setFilterEntity(filterEntity);
+
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
+        if (BooleanUtils.isTrue(component.getManualApplyRequired())
+                || clientConfig.getGenericFilterManualApplyRequired()) {
+            component.apply(true);
+        }
     }
 
     protected List<UUID> getRelatedIds(Set<Entity> selectedParents) {
