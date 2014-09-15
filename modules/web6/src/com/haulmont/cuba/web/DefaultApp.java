@@ -136,6 +136,8 @@ public class DefaultApp extends App implements ConnectionListener {
                 removeWindow((Window) win);
             }
 
+            initExceptionHandlers(true);
+
             String name = currentWindowName.get();
             if (name == null)
                 name = createWindowName(true);
@@ -144,8 +146,6 @@ public class DefaultApp extends App implements ConnectionListener {
 
             setMainWindow(window);
             currentWindowName.set(window.getName());
-
-            initExceptionHandlers(true);
 
             if (linkHandler != null) {
                 linkHandler.handle();
@@ -180,7 +180,8 @@ public class DefaultApp extends App implements ConnectionListener {
      */
     protected void afterLoggedIn() {
         if (!webAuthConfig.getUseActiveDirectory()) {
-            final User user = AppBeans.get(UserSessionSource.class).getUserSession().getUser();
+            UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
+            final User user = sessionSource.getUserSession().getUser();
             // Change password on logon
             if (Boolean.TRUE.equals(user.getChangePasswordAtNextLogon())) {
                 final WebWindowManager wm = getWindowManager();

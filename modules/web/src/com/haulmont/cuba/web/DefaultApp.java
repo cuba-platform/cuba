@@ -47,12 +47,12 @@ public class DefaultApp extends App implements ConnectionListener {
     public void connectionStateChanged(Connection connection) throws LoginException {
         if (connection.isConnected()) {
             log.debug("Creating AppWindow");
+
+            initExceptionHandlers(true);
             for (AppUI ui : getAppUIs()) {
                 AppWindow appWindow = createAppWindow(ui);
                 ui.showView(appWindow);
             }
-
-            initExceptionHandlers(true);
 
             if (linkHandler != null) {
                 linkHandler.handle();
@@ -91,7 +91,8 @@ public class DefaultApp extends App implements ConnectionListener {
      */
     protected void afterLoggedIn() {
         if (!webAuthConfig.getUseActiveDirectory()) {
-            final User user = AppBeans.get(UserSessionSource.class).getUserSession().getUser();
+            UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
+            final User user = sessionSource.getUserSession().getUser();
             // Change password on logon
             if (Boolean.TRUE.equals(user.getChangePasswordAtNextLogon())) {
                 final WebWindowManager wm = getWindowManager();

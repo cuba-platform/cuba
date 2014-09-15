@@ -555,13 +555,13 @@ public class App implements ConnectionListener {
             applicationSession = new ApplicationSession(new ConcurrentHashMap<String, Object>());
 
             messagesClient.setRemoteSearch(true);
+            initExceptionHandlers(true);
 
             DesktopWindowManager windowManager = mainFrame.getWindowManager();
             mainFrame.setContentPane(createContentPane());
             mainFrame.repaint();
             windowManager.setTabsPane(tabsPane);
 
-            initExceptionHandlers(true);
             initClientTime();
 
             messagesNotifier.activate();
@@ -626,7 +626,8 @@ public class App implements ConnectionListener {
      * Perform actions after success login
      */
     protected void afterLoggedIn() {
-        final User user = AppBeans.get(UserSessionSource.class).getUserSession().getUser();
+        UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
+        final User user = sessionSource.getUserSession().getUser();
         // Change password on logon
         if (Boolean.TRUE.equals(user.getChangePasswordAtNextLogon())) {
             mainFrame.deactivate("");
