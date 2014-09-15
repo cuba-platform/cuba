@@ -106,6 +106,8 @@ public class DesktopGridLayout extends DesktopAbstractComponent<JPanel> implemen
         ownComponents.add(component);
 
         DesktopContainerHelper.assignContainer(component, this);
+
+        requestRepaint();
     }
 
     @Override
