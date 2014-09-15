@@ -122,13 +122,18 @@ public class CollapsiblePanel extends JPanel {
             Rectangle compR = new Rectangle(20 - insets.left, 0, compD.width, compD.height);
             titleBtn.setBounds(compR);
         }
+    }
 
-        int preferredHeight = getPreferredSize().height;
+    @Override
+    public Dimension getPreferredSize() {
+        int preferredHeight = super.getPreferredSize().height;
         int preferredWidth = titleBtn.getPreferredSize().width + titleBtn.getBounds().x * 2;
 
-        if (preferredWidth > getPreferredSize().width) {
-            setPreferredSize(new Dimension(preferredWidth, preferredHeight));
+        if (preferredWidth > super.getPreferredSize().width) {
+            return new Dimension(preferredWidth, preferredHeight);
         }
+
+        return super.getPreferredSize();
     }
 
     private void loadIcons() {
