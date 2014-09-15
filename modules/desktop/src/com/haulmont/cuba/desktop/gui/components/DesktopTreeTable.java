@@ -194,7 +194,7 @@ public class DesktopTreeTable extends DesktopAbstractTable<JXTreeTableExt> imple
                     @Override
                     @SuppressWarnings("unchecked")
                     public void valueChanged(TreeSelectionEvent e) {
-                        if (isAdjusting) {
+                        if (isAdjusting || datasource == null) {
                             return;
                         }
                         selectedItems = getSelected();
@@ -203,6 +203,9 @@ public class DesktopTreeTable extends DesktopAbstractTable<JXTreeTableExt> imple
                         if (selectedItems.isEmpty()) {
                             datasource.setItem(null);
                         } else {
+                            // reset selection and select new item
+                            if (isMultiSelect())
+                                datasource.setItem(null);
                             datasource.setItem(selectedItems.iterator().next());
                         }
                     }
