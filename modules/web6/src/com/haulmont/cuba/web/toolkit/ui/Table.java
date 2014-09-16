@@ -375,8 +375,10 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer, 
 
         boolean removed = super.removeContainerProperty(propertyId);
 
-        if (removed)
+        if (removed) {
+//            collapsedColumns.remove(propertyId);
             this.resetPageBuffer();
+        }
 
         return removed;
     }
@@ -679,7 +681,13 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer, 
             if (collapsedColumns == null || collapsedColumns.isEmpty()) {
                 collapsedkeys = new String[0];
             } else {
-                collapsedkeys = new String[collapsedColumns.size()];
+                final HashSet<Object> ccs = new HashSet<>();
+                for (final Object o : visibleColumns) {
+                    if (isColumnCollapsed(o)) {
+                        ccs.add(o);
+                    }
+                }
+                collapsedkeys = new String[ccs.size()];
 
                 int nextColumn = 0;
                 for (final Iterator it = visibleColumns.iterator(); it.hasNext()
