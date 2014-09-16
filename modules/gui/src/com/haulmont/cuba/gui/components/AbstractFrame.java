@@ -201,6 +201,11 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
     }
 
     @Override
+    public boolean isExpanded(Component component) {
+        return frame.isExpanded(component);
+    }
+
+    @Override
     public FrameContext getContext() {
         return frame.getContext();
     }

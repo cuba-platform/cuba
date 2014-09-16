@@ -747,6 +747,11 @@ public class WebWindow implements Window, Component.Wrapper,
     }
 
     @Override
+    public boolean isExpanded(Component component) {
+        return ownComponents.contains(component) && WebComponentsHelper.isComponentExpanded(component);
+    }
+
+    @Override
     public <T> T getComponent() {
         //noinspection unchecked
         return (T) component;

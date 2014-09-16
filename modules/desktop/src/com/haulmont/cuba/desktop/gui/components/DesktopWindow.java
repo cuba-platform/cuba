@@ -595,6 +595,11 @@ public class DesktopWindow implements Window, Component.Disposable,
         expand(component, "", "");
     }
 
+    @Override
+    public boolean isExpanded(Component component) {
+        return expandedComponent == component;
+    }
+
     protected void requestRepaint() {
         if (!scheduledRepaint) {
             SwingUtilities.invokeLater(new Runnable() {

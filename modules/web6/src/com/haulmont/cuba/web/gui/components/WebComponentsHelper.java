@@ -107,6 +107,16 @@ public class WebComponentsHelper {
         layout.setExpandRatio(component, 1);
     }
 
+    public static boolean isComponentExpanded(com.haulmont.cuba.gui.components.Component component) {
+        Component vComponent = WebComponentsHelper.unwrap(component);
+        if (vComponent.getParent() instanceof AbstractOrderedLayout) {
+            AbstractOrderedLayout layout = (AbstractOrderedLayout) vComponent.getParent();
+            return (int)layout.getExpandRatio(vComponent) == 1;
+        }
+
+        return false;
+    }
+
     public static boolean isVerticalLayout(AbstractOrderedLayout layout) {
         return (layout instanceof VerticalLayout)
                 || (layout instanceof VerticalActionsLayout);

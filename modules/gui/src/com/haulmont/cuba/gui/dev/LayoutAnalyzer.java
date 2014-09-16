@@ -13,6 +13,7 @@ import com.haulmont.cuba.gui.components.*;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -31,11 +32,13 @@ public class LayoutAnalyzer {
         inspections.add(new ScrollBoxInnerComponentRelativeSize());
         inspections.add(new ComponentRelativeSizeInsideUndefinedSizedContainer());
         inspections.add(new AlignInsideUndefinedSizedContainer());
+        inspections.add(new ExpandOfSingleComponent());
     }
 
     protected List<Inspection> rootInspections = new ArrayList<>();
     {
         rootInspections.add(new RelativeHeightComponentInsideUndefinedHeightDialog());
+        rootInspections.add(new ExpandOfSingleComponent());
     }
 
     public List<LayoutTip> analyze(Window window) {
@@ -230,6 +233,31 @@ public class LayoutAnalyzer {
                 }
 
                 return tips != null ? tips : Collections.<LayoutTip>emptyList();
+            }
+            return Collections.emptyList();
+        }
+    }
+
+    public static class ExpandOfSingleComponent implements Inspection {
+
+        @Nonnull
+        @Override
+        public List<LayoutTip> analyze(Component c, String path) {
+            if (c instanceof ExpandingLayout) {
+                ExpandingLayout container = (ExpandingLayout) c;
+
+                Collection<Component> ownComponents = container.getOwnComponents();
+                if (ownComponents.size() == 1) {
+                    Component innerComponent = ownComponents.iterator().next();
+                    if (container.isExpanded(innerComponent)) {
+                        String id = innerComponent.getId() != null ?
+                                innerComponent.getId() : innerComponent.getClass().getSimpleName();
+                        return Collections.singletonList(warn("Nested component '" + id + "'",
+                                "Single component expanded inside container"));
+                    }
+                }
+
+                return Collections.emptyList();
             }
             return Collections.emptyList();
         }

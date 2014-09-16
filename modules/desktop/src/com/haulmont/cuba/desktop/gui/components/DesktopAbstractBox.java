@@ -220,6 +220,11 @@ public abstract class DesktopAbstractBox
     }
 
     @Override
+    public boolean isExpanded(Component component) {
+        return expandedComponent == component;
+    }
+
+    @Override
     public void setMargin(boolean enable) {
         layoutAdapter.setMargin(enable);
     }

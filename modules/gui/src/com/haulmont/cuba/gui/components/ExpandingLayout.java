@@ -14,4 +14,6 @@ public interface ExpandingLayout extends Component.Container {
 
     void expand(Component component);
     void expand(Component component, String height, String width);
+
+    boolean isExpanded(Component component);
 }

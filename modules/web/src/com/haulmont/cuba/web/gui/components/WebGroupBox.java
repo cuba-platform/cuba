@@ -148,6 +148,11 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
     }
 
     @Override
+    public boolean isExpanded(Component component) {
+        return components.contains(component) && WebComponentsHelper.isComponentExpanded(component);
+    }
+
+    @Override
     public boolean isExpanded() {
         return component.isExpanded();
     }

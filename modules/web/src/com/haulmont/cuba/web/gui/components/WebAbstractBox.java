@@ -95,6 +95,11 @@ class WebAbstractBox extends WebAbstractComponent<AbstractOrderedLayout> impleme
     }
 
     @Override
+    public boolean isExpanded(Component component) {
+        return ownComponents.contains(component) && WebComponentsHelper.isComponentExpanded(component);
+    }
+
+    @Override
     public void setMargin(boolean enable) {
         component.setMargin(enable);
     }
