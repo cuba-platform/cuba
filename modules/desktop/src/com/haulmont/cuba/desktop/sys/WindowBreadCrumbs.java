@@ -7,6 +7,7 @@ package com.haulmont.cuba.desktop.sys;
 
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.gui.components.Window;
+import org.apache.commons.lang.StringUtils;
 import org.jdesktop.swingx.JXHyperlink;
 
 import javax.swing.*;
@@ -86,7 +87,7 @@ public class WindowBreadCrumbs extends JPanel {
             Window window = it.next();
             JButton button = new JXHyperlink();
             button.setFocusable(false);
-            button.setText(window.getCaption().trim());
+            button.setText(StringUtils.trimToEmpty(window.getCaption()));
             button.addActionListener(
                     new ActionListener() {
                         @Override

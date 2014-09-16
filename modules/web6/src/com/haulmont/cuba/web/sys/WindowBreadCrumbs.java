@@ -14,6 +14,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.BaseTheme;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 
@@ -137,17 +138,13 @@ public class WindowBreadCrumbs extends HorizontalLayout {
         }
     }
 
-    protected void setSubTitleContents() {
-
-    }
-
     public void update() {
         linksLayout.removeAllComponents();
         btn2win.clear();
         boolean isTestMode = App.getInstance().isTestMode();
         for (Iterator<Window> it = windows.iterator(); it.hasNext();) {
             Window window = it.next();
-            Button button = new Button(window.getCaption().trim(), new BtnClickListener());
+            Button button = new Button(StringUtils.trimToEmpty(window.getCaption()), new BtnClickListener());
             button.setStyleName(BaseTheme.BUTTON_LINK);
             button.setTabIndex(-1);
 
