@@ -293,6 +293,9 @@ public interface Component {
         void setButtonsPanel(ButtonsPanel panel);
     }
 
+    /**
+     * A component which can be validated
+     */
     interface Validatable {
         boolean isValid();
         void validate() throws ValidationException;

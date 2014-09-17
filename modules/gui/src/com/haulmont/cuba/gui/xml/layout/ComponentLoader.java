@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Copyright (c) 2008-2014 Haulmont. All rights reserved.
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.cuba.gui.xml.layout;
@@ -14,6 +14,8 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
+ * Base interface for loaders which create components by XML definitions.
+ *
  * @author abramov
  * @version $Id$
  */
@@ -60,5 +62,13 @@ public interface ComponentLoader {
     String getMessagesPack();
     void setMessagesPack(String name);
 
+    /**
+     * Load component by XML definition.
+     *
+     * @param factory   factory instance
+     * @param element   XML-element defining the component
+     * @param parent    already created parent component instance
+     * @return          a new component instance initialized according to XML definition
+     */
     Component loadComponent(ComponentsFactory factory, Element element, Component parent);
 }
