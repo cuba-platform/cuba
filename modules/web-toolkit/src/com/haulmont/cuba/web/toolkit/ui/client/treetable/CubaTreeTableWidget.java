@@ -54,24 +54,17 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
     }
 
     @Override
-    public void handleBodyContextMenu(ContextMenuEvent event) {
+    public boolean handleBodyContextMenu(int left, int top) {
         if (allowPopupMenu) {
             if (customContextMenu == null) {
-                super.handleBodyContextMenu(event);
+                return super.handleBodyContextMenu(left, top);
             } else if (enabled) {
-                int left = Util.getTouchOrMouseClientX(event.getNativeEvent());
-                int top = Util.getTouchOrMouseClientY(event.getNativeEvent());
-                top += Window.getScrollTop();
-                left += Window.getScrollLeft();
-
                 showContextMenuPopup(left, top);
 
-                // Only prevent browser context menu if there are action handlers
-                // registered
-                event.stopPropagation();
-                event.preventDefault();
+                return true;
             }
         }
+        return false;
     }
 
     @Override

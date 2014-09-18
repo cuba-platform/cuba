@@ -8,6 +8,7 @@ package com.haulmont.cuba.web.toolkit.ui.client.orderedactionslayout;
 import com.haulmont.cuba.web.toolkit.ui.CubaOrderedActionsLayout;
 import com.vaadin.client.*;
 import com.vaadin.client.ui.AbstractFieldConnector;
+import com.vaadin.client.ui.Icon;
 import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.aria.AriaHelper;
 import com.vaadin.client.ui.orderedlayout.AbstractOrderedLayoutConnector;
@@ -55,6 +56,8 @@ public class CubaOrderedActionsLayoutConnector extends AbstractOrderedLayoutConn
         URLReference iconUrl = child.getState().resources
                 .get(ComponentConstants.ICON_RESOURCE);
         String iconUrlString = iconUrl != null ? iconUrl.getURL() : null;
+        Icon icon = child.getConnection().getIcon(iconUrlString);
+
         List<String> styles = child.getState().styles;
         String error = child.getState().errorMessage;
         boolean showError = error != null;
@@ -69,13 +72,18 @@ public class CubaOrderedActionsLayoutConnector extends AbstractOrderedLayoutConn
         }
         boolean enabled = child.isEnabled();
 
+        if (slot.hasCaption() && null == caption) {
+            slot.setCaptionResizeListener(null);
+        }
+
         String description = null;
         if (ComponentStateUtil.hasDescription(child.getState())) {
             description = child.getState().description;
         }
 
-        slot.setCaption(caption, description,  iconUrlString, styles, error, showError,
-                required, enabled);
+        // Haulmont API
+        slot.setCaption(caption, description, icon, styles, error, showError, required,
+                enabled);
 
         AriaHelper.handleInputRequired(child.getWidget(), required);
         AriaHelper.handleInputInvalid(child.getWidget(), showError);
@@ -83,8 +91,7 @@ public class CubaOrderedActionsLayoutConnector extends AbstractOrderedLayoutConn
 
         if (slot.hasCaption()) {
             CaptionPosition pos = slot.getCaptionPosition();
-            getLayoutManager().addElementResizeListener(
-                    slot.getCaptionElement(), slotCaptionResizeListener);
+            slot.setCaptionResizeListener(slotCaptionResizeListener);
             if (child.isRelativeHeight()
                     && (pos == CaptionPosition.TOP || pos == CaptionPosition.BOTTOM)) {
                 getWidget().updateCaptionOffset(slot.getCaptionElement());

@@ -8,6 +8,7 @@ package com.haulmont.cuba.web.toolkit.ui.client.tooltip;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.DomEvent;
+import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -106,7 +107,7 @@ public class CubaTooltip extends VTooltip {
         }
 
         @Override
-        public void onClick(ClickEvent event) {
+        public void onMouseDown(MouseDownEvent event) {
             if (isTooltipElement(event.getNativeEvent().getEventTarget().<Element>cast())) {
                 closeNow();
                 handleShowHide(event, false);
@@ -117,6 +118,7 @@ public class CubaTooltip extends VTooltip {
 
         @Override
         protected void handleShowHide(DomEvent domEvent, boolean isFocused) {
+            // CAUTION copied from parent with changes
             Event event = Event.as(domEvent.getNativeEvent());
             Element element = Element.as(event.getEventTarget());
 
@@ -148,8 +150,8 @@ public class CubaTooltip extends VTooltip {
                     }
                 }
             } else {
-                if ((domEvent instanceof ClickEvent && !isStandardTooltip(currentConnector))
-                        || (!(domEvent instanceof ClickEvent) && isStandardTooltip(currentConnector))) {
+                if ((domEvent instanceof MouseDownEvent && !isStandardTooltip(currentConnector))
+                        || (!(domEvent instanceof MouseDownEvent) && isStandardTooltip(currentConnector))) {
                     if (closing) {
                         closeTimer.cancel();
                         closing = false;

@@ -42,7 +42,7 @@ public class CubaHistoryControlConnector extends AbstractExtensionConnector {
     public void handleHistoryBackAction() {
         // handle notifications
         if (VNotification.getLastNotification() != null) {
-            VNotification.getLastNotification().fade();
+            VNotification.getLastNotification().hide();
         } else {
             getRpcProxy(CubaHistoryControlServerRpc.class).onHistoryBackPerformed();
         }

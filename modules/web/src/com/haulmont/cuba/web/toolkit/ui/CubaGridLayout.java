@@ -12,4 +12,8 @@ import com.vaadin.ui.GridLayout;
  * @version $Id$
  */
 public class CubaGridLayout extends GridLayout {
+
+    public CubaGridLayout() {
+        setHideEmptyRowsAndColumns(true);
+    }
 }

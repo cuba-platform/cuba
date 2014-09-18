@@ -6,11 +6,15 @@
 package com.haulmont.cuba.web.toolkit.ui.client.orderedactionslayout;
 
 import com.google.gwt.aria.client.Roles;
-import com.google.gwt.user.client.DOM;
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Widget;
+import com.vaadin.client.BrowserInfo;
 import com.vaadin.client.StyleConstants;
-import com.vaadin.client.ui.ImageIcon;
+import com.vaadin.client.Util;
+import com.vaadin.client.ui.Icon;
 import com.vaadin.client.ui.orderedlayout.CaptionPosition;
 import com.vaadin.client.ui.orderedlayout.Slot;
 import com.vaadin.client.ui.orderedlayout.VAbstractOrderedLayout;
@@ -32,12 +36,15 @@ public class CubaOrderedLayoutSlot extends Slot {
         super(layout, widget);
     }
 
-    public void setCaption(String captionText, String descriptionText, String iconUrl, List<String> styles, String error,
-                           boolean showError, boolean required, boolean enabled) {
+    public void setCaption(String captionText, String descriptionText, Icon icon, List<String> styles,
+                           String error, boolean showError, boolean required, boolean enabled) {
         // CAUTION copied from super
         // Caption wrappers
         Widget widget = getWidget();
-        if (captionText != null || descriptionText != null || iconUrl != null || error != null || required) {
+        final Element focusedElement = Util.getFocusedElement();
+        // By default focus will not be lost
+        boolean focusLost = false;
+        if (captionText != null || icon != null || error != null || required) {
             if (caption == null) {
                 caption = DOM.createDiv();
                 captionWrap = DOM.createDiv();
@@ -47,6 +54,11 @@ public class CubaOrderedLayoutSlot extends Slot {
                 orphan(widget);
                 captionWrap.appendChild(widget.getElement());
                 adopt(widget);
+
+                // Made changes to DOM. Focus can be lost if it was in the
+                // widget.
+                focusLost = (focusedElement == null ? false : widget
+                        .getElement().isOrHasChild(focusedElement));
             }
         } else if (caption != null) {
             orphan(widget);
@@ -55,6 +67,10 @@ public class CubaOrderedLayoutSlot extends Slot {
             captionWrap.removeFromParent();
             caption = null;
             captionWrap = null;
+
+            // Made changes to DOM. Focus can be lost if it was in the widget.
+            focusLost = (focusedElement == null ? false : widget.getElement()
+                    .isOrHasChild(focusedElement));
         }
 
         // Caption text
@@ -75,16 +91,13 @@ public class CubaOrderedLayoutSlot extends Slot {
         }
 
         // Icon
-        if (iconUrl != null) {
-            if (icon == null) {
-                icon = new ImageIcon();
-                caption.insertFirst(icon.getElement());
-            }
-            icon.setUri(iconUrl);
-        } else if (icon != null) {
-            icon.getElement().removeFromParent();
-            icon = null;
+        if (this.icon != null) {
+            this.icon.getElement().removeFromParent();
         }
+        if (icon != null) {
+            caption.insertFirst(icon.getElement());
+        }
+        this.icon = icon;
 
         // Required
         if (required) {
@@ -106,7 +119,7 @@ public class CubaOrderedLayoutSlot extends Slot {
             requiredIcon = null;
         }
 
-        // Desciption
+        // Description
         // Haulmont API
         this.descriptionText = descriptionText;
         if (descriptionText != null) {
@@ -157,10 +170,49 @@ public class CubaOrderedLayoutSlot extends Slot {
             }
 
             // Caption position
-            if (captionText != null || iconUrl != null) {
+            if (captionText != null || icon != null) {
                 setCaptionPosition(CaptionPosition.TOP);
             } else {
                 setCaptionPosition(CaptionPosition.RIGHT);
+            }
+        }
+
+        if (focusLost) {
+            // Find out what element is currently focused.
+            Element currentFocus = Util.getFocusedElement();
+            if (currentFocus != null
+                    && currentFocus.equals(Document.get().getBody())) {
+                // Focus has moved to BodyElement and should be moved back to
+                // original location. This happened because of adding or
+                // removing the captionWrap
+                focusedElement.focus();
+            } else if (currentFocus != focusedElement) {
+                // Focus is either moved somewhere else on purpose or IE has
+                // lost it. Investigate further.
+                Timer focusTimer = new Timer() {
+
+                    @Override
+                    public void run() {
+                        if (Util.getFocusedElement() == null) {
+                            // This should never become an infinite loop and
+                            // even if it does it will be stopped once something
+                            // is done with the browser.
+                            schedule(25);
+                        } else if (Util.getFocusedElement().equals(
+                                Document.get().getBody())) {
+                            // Focus found it's way to BodyElement. Now it can
+                            // be restored
+                            focusedElement.focus();
+                        }
+                    }
+                };
+                if (BrowserInfo.get().isIE8()) {
+                    // IE8 can't fix the focus immediately. It will fail.
+                    focusTimer.schedule(25);
+                } else {
+                    // Newer IE versions can handle things immediately.
+                    focusTimer.run();
+                }
             }
         }
     }

@@ -325,7 +325,7 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
             }
 
             @Override
-            protected boolean addSpecificCell(Object columnId, int colIndex) {
+            protected boolean addSpecificCell(Object columnId, int colIndex, char[] aligns) {
                 if (GROUP_DIVIDER_COLUMN_KEY.equals(columnId)) {
                     addDividerCell(aligns[colIndex]);
                     return true;

@@ -62,6 +62,7 @@ public class CubaLabelConnector extends LabelConnector {
                 break;
         }
 
+        // Haulmont API
         if ("".equals(getWidget().getText()) || getWidget().getText() == null) {
             getWidget().addStyleDependentName("empty");
         } else {

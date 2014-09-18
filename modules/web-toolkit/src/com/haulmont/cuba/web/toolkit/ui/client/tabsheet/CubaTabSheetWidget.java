@@ -5,9 +5,7 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.tabsheet;
 
-import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.ContextMenuEvent;
-import com.google.gwt.event.dom.client.FocusEvent;
 import com.vaadin.client.ui.VTabsheet;
 
 /**
@@ -26,19 +24,5 @@ public class CubaTabSheetWidget extends VTabsheet {
 
     public interface TabContextMenuHandler {
         void onContextMenu(final int tabIndex, ContextMenuEvent event);
-    }
-
-    @Override
-    public void onFocus(FocusEvent event) {
-        super.onFocus(event);
-
-        addStyleDependentName("focus");
-    }
-
-    @Override
-    public void onBlur(BlurEvent event) {
-        super.onBlur(event);
-
-        removeStyleDependentName("focus");
     }
 }

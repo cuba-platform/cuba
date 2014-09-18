@@ -46,6 +46,8 @@ public class CubaCaptionWidget extends VCaption {
 
     @Override
     public boolean updateCaption() {
+        ComponentConnector owner = getOwner();
+
         /* CAUTION copied from super class with small changes */
         boolean wasPlacedAfterComponent = placedAfterComponent;
 
@@ -77,25 +79,27 @@ public class CubaCaptionWidget extends VCaption {
             showRequired = ((AbstractFieldConnector) owner).isRequired();
         }
 
-        if (hasIcon) {
-            if (icon == null) {
-                icon = new ImageIcon();
-                icon.setWidth("0");
-                icon.setHeight("0");
-
-                DOM.insertChild(getElement(), icon.getElement(),
-                        getInsertPosition(InsertPosition.ICON));
-            }
-            // Icon forces the caption to be above the component
-            placedAfterComponent = false;
-
-            icon.setUri(owner.getState().resources.get(
-                    ComponentConstants.ICON_RESOURCE).getURL());
-
-        } else if (icon != null) {
-            // Remove existing
+        if (icon != null) {
             getElement().removeChild(icon.getElement());
             icon = null;
+        }
+        if (hasIcon) {
+            String uri = owner.getState().resources.get(
+                    ComponentConstants.ICON_RESOURCE).getURL();
+
+            icon = getOwner().getConnection().getIcon(uri);
+
+            if (icon instanceof ImageIcon) {
+                // onload will set appropriate size later
+                icon.setWidth("0");
+                icon.setHeight("0");
+            }
+
+            DOM.insertChild(getElement(), icon.getElement(),
+                    getInsertPosition(InsertPosition.ICON));
+
+            // Icon forces the caption to be above the component
+            placedAfterComponent = false;
         }
 
         if (owner.getState().caption != null) {
@@ -133,6 +137,13 @@ public class CubaCaptionWidget extends VCaption {
             // Remove existing
             getElement().removeChild(captionText);
             captionText = null;
+        }
+
+        if (ComponentStateUtil.hasDescription(owner.getState())
+                && captionText != null) {
+            addStyleDependentName("hasdescription");
+        } else {
+            removeStyleDependentName("hasdescription");
         }
 
         AriaHelper.handleInputRequired(owner.getWidget(), showRequired);
