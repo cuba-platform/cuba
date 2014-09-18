@@ -172,7 +172,9 @@ public class BulkEditorWindow extends AbstractWindow {
             grid.add(label);
 
             Datasource<Entity> fieldDs = datasource;
-            if (metadataTools.isEmbeddable(fieldDs.getMetaClass())) {
+            // field owner metaclass is embeddable only if field domain embeddable,
+            // so we can check field domain
+            if (metadataTools.isEmbeddable(field.getMetaProperty().getDomain())) {
                 fieldDs = datasources.get(field.getParentFqn());
             }
 
@@ -301,7 +303,8 @@ public class BulkEditorWindow extends AbstractWindow {
         @SuppressWarnings("unchecked")
         View view = new View(meta.getJavaClass(), false);
         for (MetaProperty metaProperty : meta.getProperties()) {
-            if (!managedFields.containsKey(metaProperty.getName())) {
+            if (!managedFields.containsKey(metaProperty.getName())
+                    && !managedEmbeddedProperties.contains(metaProperty.getName())) {
                 continue;
             }
 
@@ -315,13 +318,14 @@ public class BulkEditorWindow extends AbstractWindow {
                     View propView;
                     if (!metadataTools.isEmbedded(metaProperty)) {
                         propView = viewRepository.getView(metaProperty.getRange().asClass(), View.MINIMAL);
+                        //in some cases JPA loads extended entities as instance of base class which leads to ClassCastException
+                        //loading property lazy prevents this from happening
+                        view.addProperty(metaProperty.getName(), propView, true);
                     } else {
                         // build view for embedded property
                         propView = createEmbeddedView(metaProperty.getRange().asClass(), metaProperty.getName());
+                        view.addProperty(metaProperty.getName(), propView, false);
                     }
-                    //in some cases JPA loads extended entities as instance of base class which leads to ClassCastException
-                    //loading property lazy prevents this from happening
-                    view.addProperty(metaProperty.getName(), propView, true);
                     break;
                 default:
                     throw new IllegalStateException("unknown property type");
