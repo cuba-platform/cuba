@@ -21,6 +21,11 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
+ * This bean allows to register and fire entity listeners.
+ * <p>Usually entity listeners are registered declaratively with {@code @Listeners} annotation on entity class.
+ * Methods {@link #addListener(Class, Class)} and {@link #addListener(Class, String)} allow to add listeners dynamically,
+ * e.g. to an entity from a base project.
+ *
  * @author krivopustov
  * @version $Id$
  */
@@ -71,6 +76,12 @@ public class EntityListenerManager {
 
     private volatile boolean enabled = true;
 
+    /**
+     * Register an entity listener by its class. The listener instance will be instatiated as a plain object.
+     *
+     * @param entityClass   entity
+     * @param listenerClass listener class
+     */
     public void addListener(Class<? extends BaseEntity> entityClass, Class<?> listenerClass) {
         lock.writeLock().lock();
         try {
@@ -80,6 +91,26 @@ public class EntityListenerManager {
                 dynamicListeners.put(entityClass, set);
             }
             set.add(listenerClass.getName());
+        } finally {
+            lock.writeLock().unlock();
+        }
+    }
+
+    /**
+     * Register an entity listener which is a ManagedBean.
+     *
+     * @param entityClass       entity
+     * @param listenerBeanName  listener bean name
+     */
+    public void addListener(Class<? extends BaseEntity> entityClass, String listenerBeanName) {
+        lock.writeLock().lock();
+        try {
+            Set<String> set = dynamicListeners.get(entityClass);
+            if (set == null) {
+                set = new HashSet<>();
+                dynamicListeners.put(entityClass, set);
+            }
+            set.add(listenerBeanName);
         } finally {
             lock.writeLock().unlock();
         }
