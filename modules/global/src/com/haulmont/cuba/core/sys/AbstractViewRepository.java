@@ -482,6 +482,12 @@ public class AbstractViewRepository implements ViewRepository {
                 loadView(rootElem, propElem, refView);
             }
             boolean lazy = Boolean.valueOf(propElem.attributeValue("lazy"));
+            if (lazy && metadata.getTools().isEmbedded(metaProperty)) {
+                log.warn(String.format(
+                        "Embedded property '%s' of class '%s' cannot have lazy view",
+                        metaProperty.getName(), metaClass.getName()));
+                lazy = false;
+            }
             view.addProperty(propertyName, refView, lazy);
         }
     }

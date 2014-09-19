@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.core.sys;
 
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.Entity;
@@ -12,6 +13,7 @@ import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.Updatable;
 import com.haulmont.cuba.core.global.*;
 import org.apache.commons.lang.ClassUtils;
+import org.apache.commons.logging.LogFactory;
 import org.apache.openjpa.persistence.FetchPlan;
 
 import javax.annotation.ManagedBean;
@@ -87,11 +89,22 @@ public class FetchPlanManager {
         }
 
         for (ViewProperty property : view.getProperties()) {
-            if (property.isLazy())
-                continue;
-
             String propertyName = property.getName();
-            if (metadataTools.isPersistent(metadata.getClassNN(entityClass).getPropertyNN(propertyName))) {
+            MetaClass metaClass = metadata.getClassNN(entityClass);
+
+            if (property.isLazy()) {
+                Class propertyClass = metaClass.getPropertyNN(propertyName).getJavaType();
+                MetaClass propertyMetaClass = metadata.getClass(propertyClass);
+                if (propertyMetaClass == null || !metadataTools.isEmbeddable(propertyMetaClass)) {
+                    continue;
+                } else {
+                    LogFactory.getLog(getClass()).warn(String.format(
+                            "Embedded property '%s' of class '%s' cannot have lazy view",
+                            propertyName, metaClass.getName()));
+                }
+            }
+
+            if (metadataTools.isPersistent(metaClass.getPropertyNN(propertyName))) {
                 FetchPlanField field = createFetchPlanField(entityClass, propertyName);
                 fetchPlanFields.add(field);
                 if (property.getView() != null) {
@@ -104,7 +117,7 @@ public class FetchPlanManager {
                 if (!view.containsProperty(relatedProperty)) {
                     FetchPlanField field = createFetchPlanField(entityClass, relatedProperty);
                     fetchPlanFields.add(field);
-                    MetaProperty relatedMetaProp = metadata.getClassNN(entityClass).getPropertyNN(relatedProperty);
+                    MetaProperty relatedMetaProp = metaClass.getPropertyNN(relatedProperty);
                     if (relatedMetaProp.getRange().isClass()) {
                         View relatedView = viewRepository.getView(relatedMetaProp.getRange().asClass(), View.MINIMAL);
                         processView(relatedView, fetchPlanFields);
