@@ -102,6 +102,7 @@ public enum WindowParams {
      * @param params    parameters map
      * @return          parameter value
      */
+    @SuppressWarnings("unchecked")
     public <T extends Entity> T getEntity(Map<String, Object> params) {
         return (T) params.get(name());
     }
@@ -113,6 +114,29 @@ public enum WindowParams {
      */
     public UUID getUuid(Map<String, Object> params) {
         return (UUID) params.get(name());
+    }
+
+    /**
+     * Get value from the WindowContext.
+     * @param context   window context
+     * @return          parameter value
+     */
+    @SuppressWarnings("unchecked")
+    public <T> T get(@Nullable FrameContext context) {
+        if (context == null)
+            return null;
+        else
+            return (T) context.getParams().get(name());
+    }
+
+    /**
+     * Get value from the parameters map.
+     * @param params    parameters map
+     * @return          parameter value
+     */
+    @SuppressWarnings("unchecked")
+    public <T> T get(Map<String, Object> params) {
+        return (T) params.get(name());
     }
 
     /**
