@@ -46,7 +46,7 @@
         <scrollBox id="contentScrollbox" spacing="true" scrollBars="vertical">
             <label value="msg://mbean.attributes" stylename="h2"/>
             <table id="attributesTable" width="100%" height="theme://cuba.web.mbean-inspect.attributesTable.height"
-                   columnControlVisible="false" allowMultiStringCells="true">
+                   columnControlVisible="false" multiLineCells="true">
                 <actions>
                     <action id="refresh" caption="msg://refresh" icon="icons/refresh.png"
                             invoke="reloadAttributes"/>

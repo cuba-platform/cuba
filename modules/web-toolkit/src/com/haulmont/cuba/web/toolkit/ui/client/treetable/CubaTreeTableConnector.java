@@ -61,8 +61,8 @@ public class CubaTreeTableConnector extends TreeTableConnector {
                 getWidget().updateTextSelection();
             }
         }
-        if (stateChangeEvent.hasPropertyChanged("allowPopupMenu")){
-            getWidget().allowPopupMenu = getState().allowPopupMenu;
+        if (stateChangeEvent.hasPropertyChanged("contextMenuEnabled")) {
+            getWidget().contextMenuEnabled = getState().contextMenuEnabled;
         }
         if (stateChangeEvent.hasPropertyChanged("presentations")) {
             if (getState().presentations != null) {
@@ -79,8 +79,8 @@ public class CubaTreeTableConnector extends TreeTableConnector {
                 getWidget().customContextMenu = null;
             }
         }
-        if (stateChangeEvent.hasPropertyChanged("allowMultiStringCells")) {
-            getWidget().allowMultiStringCells = getState().allowMultiStringCells;
+        if (stateChangeEvent.hasPropertyChanged("multiLineCells")) {
+            getWidget().multiLineCells = getState().multiLineCells;
         }
     }
 
@@ -111,7 +111,7 @@ public class CubaTreeTableConnector extends TreeTableConnector {
             getWidget().removeStyleName("collapsing-allowed");
         }
 
-        // We may have actions attached to this panel
+        // We may have actions attached to this table
         if (uidl.getChildCount() > 1) {
             final int cnt = uidl.getChildCount();
             for (int i = 1; i < cnt; i++) {

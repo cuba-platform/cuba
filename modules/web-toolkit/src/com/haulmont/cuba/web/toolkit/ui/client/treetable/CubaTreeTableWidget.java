@@ -34,7 +34,7 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
     protected static final String WIDGET_CELL_CLASSNAME = "widget-container";
 
     protected boolean textSelectionEnabled = false;
-    protected boolean allowPopupMenu = true;
+    protected boolean contextMenuEnabled = true;
 
     protected VOverlay presentationsEditorPopup;
     protected VOverlay customContextMenuPopup;
@@ -45,7 +45,7 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
     protected Widget customContextMenu;
 
     protected ClientLogger logger = ClientLoggerFactory.getLogger("CubaTreeTableWidget");
-    protected boolean allowMultiStringCells = false;
+    protected boolean multiLineCells = false;
 
     protected TableAggregationRow aggregationRow;
 
@@ -55,7 +55,7 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
 
     @Override
     public boolean handleBodyContextMenu(int left, int top) {
-        if (allowPopupMenu) {
+        if (contextMenuEnabled) {
             if (customContextMenu == null) {
                 return super.handleBodyContextMenu(left, top);
             } else if (enabled) {
@@ -505,7 +505,7 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
                 Element tdElement = td.cast();
                 Tools.textSelectionEnable(tdElement, textSelectionEnabled);
 
-                if (allowMultiStringCells) {
+                if (multiLineCells) {
                     Style wrapperStyle = tdElement.getFirstChildElement().getStyle();
                     wrapperStyle.setWhiteSpace(Style.WhiteSpace.PRE_LINE);
                 }
@@ -513,7 +513,7 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
 
             @Override
             public void showContextMenu(Event event) {
-                if (allowPopupMenu && enabled && (customContextMenu != null || actionKeys != null)) {
+                if (contextMenuEnabled && enabled && (customContextMenu != null || actionKeys != null)) {
                     // Show context menu if there are registered action handlers
                     int left = Util.getTouchOrMouseClientX(event)
                             + Window.getScrollLeft();

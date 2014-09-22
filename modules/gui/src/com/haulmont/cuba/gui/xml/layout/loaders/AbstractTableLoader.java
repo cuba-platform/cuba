@@ -69,8 +69,8 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         loadPresentations(component, element);
 
         loadActions(component, element);
-        loadAllowPopupMenu(component, element);
-        loadAllowMultiStringCells(component, element);
+        loadContextMenuEnabled(component, element);
+        loadMultilineCells(component, element);
 
         final Element columnsElement = element.element("columns");
         final Element rowsElement = element.element("rows");
@@ -126,17 +126,28 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         return component;
     }
 
-    protected void loadAllowMultiStringCells(T table, Element element) {
+    protected void loadMultilineCells(T table, Element element) {
         final String allowMultiStringCells = element.attributeValue("allowMultiStringCells");
         if (StringUtils.isNotBlank(allowMultiStringCells)) {
             table.setAllowMultiStringCells(BooleanUtils.toBoolean(allowMultiStringCells));
         }
+
+        final String multiLineCells = element.attributeValue("multiLineCells");
+        if (StringUtils.isNotBlank(multiLineCells)) {
+            table.setMultiLineCells(BooleanUtils.toBoolean(multiLineCells));
+        }
     }
 
-    protected void loadAllowPopupMenu(T table, Element element) {
+    protected void loadContextMenuEnabled(T table, Element element) {
         final String allowPopupMenu = element.attributeValue("allowPopupMenu");
-        if (!StringUtils.isBlank(allowPopupMenu))
+        if (StringUtils.isNotBlank(allowPopupMenu)) {
             table.setAllowPopupMenu(BooleanUtils.toBoolean(allowPopupMenu));
+        }
+
+        final String contextMenuEnabled = element.attributeValue("contextMenuEnabled");
+        if (StringUtils.isNotBlank(contextMenuEnabled)) {
+            table.setContextMenuEnabled(BooleanUtils.toBoolean(contextMenuEnabled));
+        }
     }
 
     protected void loadRowsCount(T table, Element element) {

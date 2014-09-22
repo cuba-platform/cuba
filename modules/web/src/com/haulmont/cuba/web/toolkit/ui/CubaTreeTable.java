@@ -30,7 +30,6 @@ import com.vaadin.ui.Layout;
 import java.util.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 /**
  * @author artamonov
@@ -99,15 +98,15 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
     }
 
     @Override
-    public void setAllowMultiStringCells(boolean allowMultiStringCells) {
-        if (isAllowMultiStringCells() != allowMultiStringCells) {
-            getState(true).allowMultiStringCells = allowMultiStringCells;
+    public void setMultiLineCells(boolean multiLineCells) {
+        if (isMultiLineCells() != multiLineCells) {
+            getState(true).multiLineCells = multiLineCells;
         }
     }
 
     @Override
-    public boolean isAllowMultiStringCells() {
-        return getState(false).allowMultiStringCells;
+    public boolean isMultiLineCells() {
+        return getState(false).multiLineCells;
     }
 
     @Override
@@ -151,14 +150,14 @@ public class CubaTreeTable extends com.vaadin.ui.TreeTable implements TreeTableC
     }
 
     @Override
-    public boolean isAllowPopupMenu() {
-        return getState(false).allowPopupMenu;
+    public boolean isContextMenuEnabled() {
+        return getState(false).contextMenuEnabled;
     }
 
     @Override
-    public void setAllowPopupMenu(boolean allowPopupMenu) {
-        if (isAllowPopupMenu() != allowPopupMenu) {
-            getState(true).allowPopupMenu = allowPopupMenu;
+    public void setContextMenuEnabled(boolean contextMenuEnabled) {
+        if (isContextMenuEnabled() != contextMenuEnabled) {
+            getState(true).contextMenuEnabled = contextMenuEnabled;
         }
     }
 

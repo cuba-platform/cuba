@@ -37,7 +37,7 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
     protected ShortcutActionHandler shortcutHandler;
 
     protected boolean textSelectionEnabled = false;
-    protected boolean allowPopupMenu = true;
+    protected boolean contextMenuEnabled = true;
 
     protected ClientLogger logger = ClientLoggerFactory.getLogger("CubaScrollTableWidget");
 
@@ -47,7 +47,7 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
     protected Widget presentationsMenu;
     protected Widget customContextMenu;
 
-    protected boolean allowMultiStringCells = false;
+    protected boolean multiLineCells = false;
 
     protected TableAggregationRow aggregationRow;
 
@@ -112,7 +112,7 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
 
     @Override
     public boolean handleBodyContextMenu(int left, int top) {
-        if (allowPopupMenu) {
+        if (contextMenuEnabled) {
             if (customContextMenu == null) {
                 return super.handleBodyContextMenu(left, top);
             } else if (enabled) {
@@ -512,7 +512,7 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
                 Element tdElement = td.cast();
                 Tools.textSelectionEnable(tdElement, textSelectionEnabled);
 
-                if (allowMultiStringCells) {
+                if (multiLineCells) {
                     Style wrapperStyle = tdElement.getFirstChildElement().getStyle();
                     wrapperStyle.setWhiteSpace(Style.WhiteSpace.PRE_LINE);
                 }
@@ -533,7 +533,7 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
 
             @Override
             public void showContextMenu(Event event) {
-                if (allowPopupMenu && enabled && (customContextMenu != null || actionKeys != null)) {
+                if (contextMenuEnabled && enabled && (customContextMenu != null || actionKeys != null)) {
                     // Show context menu if there are registered action handlers
                     int left = Util.getTouchOrMouseClientX(event)
                             + Window.getScrollLeft();

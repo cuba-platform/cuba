@@ -76,7 +76,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
     protected static final int DEFAULT_ROW_MARGIN = 4;
 
-    protected boolean allowPopupMenu = true;
+    protected boolean contextMenuEnabled = true;
     protected MigLayout layout;
     protected JPanel panel;
     protected JPanel topPanel;
@@ -127,7 +127,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     protected boolean contentRepaintEnabled = true;
 
     protected Document defaultSettings;
-    protected boolean allowMultiStringCells;
+    protected boolean multiLineCells;
 
     protected DesktopAbstractTable() {
         shortcutsDelegate.setAllowEnterShortcut(false);
@@ -168,7 +168,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                     }
 
                     protected void showPopup(MouseEvent e) {
-                        if (e.isPopupTrigger() && allowPopupMenu) {
+                        if (e.isPopupTrigger() && contextMenuEnabled) {
                             // select row
                             Point p = e.getPoint();
                             int rowNumber = impl.convertRowIndexToModel(impl.rowAtPoint(p));
@@ -1011,12 +1011,22 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
     @Override
     public boolean isAllowPopupMenu() {
-        return allowPopupMenu;
+        return contextMenuEnabled;
     }
 
     @Override
     public void setAllowPopupMenu(boolean allowPopupMenu) {
-        this.allowPopupMenu = allowPopupMenu;
+        this.contextMenuEnabled = allowPopupMenu;
+    }
+
+    @Override
+    public boolean isContextMenuEnabled() {
+        return contextMenuEnabled;
+    }
+
+    @Override
+    public void setContextMenuEnabled(boolean contextMenuEnabled) {
+        this.contextMenuEnabled = contextMenuEnabled;
     }
 
     protected void setEditableColumns(List<MetaPropertyPath> editableColumns) {
@@ -1179,12 +1189,22 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
     @Override
     public boolean isAllowMultiStringCells() {
-        return allowMultiStringCells;
+        return multiLineCells;
     }
 
     @Override
     public void setAllowMultiStringCells(boolean allowMultiStringCells) {
-        this.allowMultiStringCells = allowMultiStringCells;
+        this.multiLineCells = allowMultiStringCells;
+    }
+
+    @Override
+    public void setMultiLineCells(boolean multiLineCells) {
+        this.multiLineCells = multiLineCells;
+    }
+
+    @Override
+    public boolean isMultiLineCells() {
+        return multiLineCells;
     }
 
     @Override
@@ -1932,7 +1952,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                 final CellProvider cellViewProvider = getCustomCellView(propertyPath);
                 if (cellViewProvider != null) {
                     return new CellProviderRenderer(cellViewProvider);
-                } else if (allowMultiStringCells && String.class == columnConf.getType()) {
+                } else if (multiLineCells && String.class == columnConf.getType()) {
                     return new MultiLineTableCellRenderer();
                 }
             }

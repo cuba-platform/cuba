@@ -410,6 +410,16 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     }
 
     @Override
+    public void setMultiLineCells(boolean multiLineCells) {
+        component.setAllowMultiStringCells(multiLineCells);
+    }
+
+    @Override
+    public boolean isMultiLineCells() {
+        return component.isAllowMultiStringCells();
+    }
+
+    @Override
     public boolean isAggregatable() {
         return component.isAggregatable();
     }
@@ -1058,13 +1068,20 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
     @Override
     public boolean isAllowPopupMenu() {
-        // todo not yet implemented
-        return false;
+        return true;
     }
 
     @Override
     public void setAllowPopupMenu(boolean value) {
-        // todo not yet implemented
+    }
+
+    @Override
+    public boolean isContextMenuEnabled() {
+        return true;
+    }
+
+    @Override
+    public void setContextMenuEnabled(boolean contextMenuEnabled) {
     }
 
     @Override

@@ -729,16 +729,6 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
         return columns;
     }
 
-    @Override
-    public boolean isAllowPopupMenu() {
-        return component.isAllowPopupMenu();
-    }
-
-    @Override
-    public void setAllowPopupMenu(boolean value) {
-        component.setAllowPopupMenu(value);
-    }
-
     protected class GroupAggregationCells {
         private Map<Object, String> cells = new HashMap<>();
 

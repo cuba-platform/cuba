@@ -386,13 +386,23 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     }
 
     @Override
+    public void setMultiLineCells(boolean multiLineCells) {
+        component.setMultiLineCells(multiLineCells);
+    }
+
+    @Override
+    public boolean isMultiLineCells() {
+        return component.isMultiLineCells();
+    }
+
+    @Override
     public boolean isAllowMultiStringCells() {
-        return component.isAllowMultiStringCells();
+        return component.isMultiLineCells();
     }
 
     @Override
     public void setAllowMultiStringCells(boolean value) {
-        component.setAllowMultiStringCells(value);
+        component.setMultiLineCells(value);
         component.setPageLength(0);
     }
 
@@ -423,12 +433,22 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
     @Override
     public boolean isAllowPopupMenu() {
-        return component.isAllowPopupMenu();
+        return component.isContextMenuEnabled();
     }
 
     @Override
     public void setAllowPopupMenu(boolean value) {
-        component.setAllowPopupMenu(value);
+        component.setContextMenuEnabled(value);
+    }
+
+    @Override
+    public boolean isContextMenuEnabled() {
+        return component.isContextMenuEnabled();
+    }
+
+    @Override
+    public void setContextMenuEnabled(boolean contextMenuEnabled) {
+        component.setContextMenuEnabled(contextMenuEnabled);
     }
 
     protected void setTablePresentations(TablePresentations tablePresentations) {

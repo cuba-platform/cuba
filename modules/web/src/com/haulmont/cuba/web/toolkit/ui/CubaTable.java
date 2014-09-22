@@ -134,27 +134,27 @@ public class CubaTable extends com.vaadin.ui.Table implements TableContainer, Cu
     }
 
     @Override
-    public boolean isAllowPopupMenu() {
-        return getState(false).allowPopupMenu;
+    public boolean isContextMenuEnabled() {
+        return getState(false).contextMenuEnabled;
     }
 
     @Override
-    public void setAllowPopupMenu(boolean allowPopupMenu) {
-        if (isAllowPopupMenu() != allowPopupMenu) {
-            getState(true).allowPopupMenu = allowPopupMenu;
+    public void setContextMenuEnabled(boolean contextMenuEnabled) {
+        if (isContextMenuEnabled() != contextMenuEnabled) {
+            getState(true).contextMenuEnabled = contextMenuEnabled;
         }
     }
 
     @Override
-    public void setAllowMultiStringCells(boolean allowMultiStringCells) {
-        if (isAllowMultiStringCells() != allowMultiStringCells) {
-            getState(true).allowMultiStringCells = allowMultiStringCells;
+    public void setMultiLineCells(boolean multiLineCells) {
+        if (isMultiLineCells() != multiLineCells) {
+            getState(true).multiLineCells = multiLineCells;
         }
     }
 
     @Override
-    public boolean isAllowMultiStringCells() {
-        return getState(false).allowMultiStringCells;
+    public boolean isMultiLineCells() {
+        return getState(false).multiLineCells;
     }
 
     @Override

@@ -29,11 +29,11 @@ public interface CubaEnhancedTable extends AggregationContainer {
 
     boolean isColumnEditable(Object columnId);
 
-    void setAllowMultiStringCells(boolean allowMultiStringCells);
-    boolean isAllowMultiStringCells();
+    void setMultiLineCells(boolean multiLineCells);
+    boolean isMultiLineCells();
 
-    boolean isAllowPopupMenu();
-    void setAllowPopupMenu(boolean allowPopupMenu);
+    boolean isContextMenuEnabled();
+    void setContextMenuEnabled(boolean contextMenuEnabled);
 
     boolean isTextSelectionEnabled();
     void setTextSelectionEnabled(boolean textSelectionEnabled);
