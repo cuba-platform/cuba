@@ -41,14 +41,6 @@ public class CubaResizableTextAreaConnector extends TextAreaConnector {
         if (stateChangeEvent.hasPropertyChanged("resizable")) {
             getWidget().setResizable(getState().resizable);
         }
-
-        // Remove after fix #PL-4019
-        if (stateChangeEvent.hasPropertyChanged("rows")) {
-            getWidget().setRows(getState().rows);
-        }
-        if (stateChangeEvent.hasPropertyChanged("wordwrap")) {
-            getWidget().setWordwrap(getState().wordwrap);
-        }
     }
 
     @Override
