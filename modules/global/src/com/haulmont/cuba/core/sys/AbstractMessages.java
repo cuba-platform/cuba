@@ -401,19 +401,18 @@ public abstract class AbstractMessages implements Messages {
     @Nullable
     protected String searchIncludes(Properties properties, String key, Locale locale, boolean defaultLocale,
                                     Set<String> passedPacks) {
-        for (String k : properties.stringPropertyNames()) {
-            if (k.startsWith("@include")) {
-                String includesProperty = properties.getProperty(k);
-                // multiple includes separated by comma
-                String[] includes = StringUtils.split(includesProperty, " ,");
-                if (includes != null && includes.length > 0) {
-                    ArrayUtils.reverse(includes);
-                    for (String includePath : includes) {
-                        includePath = StringUtils.trimToNull(includePath);
-                        if (includePath != null) {
-                            String message = searchMessage(includePath, key, locale, defaultLocale, passedPacks);
-                            if (message != null)
-                                return message;
+        String includesProperty = properties.getProperty("@include");
+        if (includesProperty != null) {
+            // multiple includes separated by comma
+            String[] includes = StringUtils.split(includesProperty, " ,");
+            if (includes != null && includes.length > 0) {
+                ArrayUtils.reverse(includes);
+                for (String includePath : includes) {
+                    includePath = StringUtils.trimToNull(includePath);
+                    if (includePath != null) {
+                        String message = searchMessage(includePath, key, locale, defaultLocale, passedPacks);
+                        if (message != null) {
+                            return message;
                         }
                     }
                 }
