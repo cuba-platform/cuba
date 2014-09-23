@@ -6,13 +6,9 @@
 package com.haulmont.cuba.desktop.gui.components.filter;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.CategorizedEntity;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.desktop.TopLevelFrame;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
@@ -106,7 +102,8 @@ public class AddConditionDlg extends JDialog {
         add(cancelBtn);
         cancelBtn.addActionListener(cancelAction);
 
-        ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
         KeyCombination close = KeyCombination.create(clientConfig.getCloseShortcut());
         KeyCombination commit = KeyCombination.create(clientConfig.getCommitShortcut());
 
@@ -204,7 +201,8 @@ public class AddConditionDlg extends JDialog {
                 rootModelItems.add(new RootRuntimePropertiesModelItem(descriptorBuilder));
             }
 
-            if (AppBeans.get(UserSessionSource.class).getUserSession().isSpecificPermitted("cuba.gui.filter.customConditions")) {
+            Security security = AppBeans.get(Security.NAME);
+            if (security.isSpecificPermitted("cuba.gui.filter.customConditions")) {
                 rootModelItems.add(new NewCustomConditionModelItem(descriptorBuilder));
             }
 

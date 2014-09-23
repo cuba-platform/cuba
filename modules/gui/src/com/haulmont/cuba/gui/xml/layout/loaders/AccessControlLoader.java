@@ -185,7 +185,7 @@ public class AccessControlLoader extends ContainerLoader {
                 if (action != null) {
                     if (renamingActions.containsKey(action.getId().toLowerCase())) {
                         action.setEnabled(true);
-                        Messages messages = AppBeans.get(Messages.class);
+                        Messages messages = AppBeans.get(Messages.NAME);
                         ((Button) component).setCaption(messages.getMainMessage(renamingActions.get(action.getId().toLowerCase())));
                     } else if (enabledActions.contains(action.getId().toLowerCase())) {
                         action.setEnabled(true);

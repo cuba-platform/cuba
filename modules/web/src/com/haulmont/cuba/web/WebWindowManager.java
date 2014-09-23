@@ -83,7 +83,7 @@ public class WebWindowManager extends WindowManager {
         webConfig = configuration.getConfig(WebConfig.class);
         clientConfig = configuration.getConfig(ClientConfig.class);
 
-        messages = AppBeans.get(Messages.class);
+        messages = AppBeans.get(Messages.NAME);
 
         screenHistorySupport = new ScreenHistorySupport();
     }

@@ -47,13 +47,13 @@ public class ExceptionDialog extends Window {
 
     protected boolean isStackTraceVisible = false;
 
-    protected Messages messages = AppBeans.get(Messages.class);
+    protected Messages messages = AppBeans.get(Messages.NAME);
 
-    protected WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
+    protected WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
 
-    protected WebConfig webConfig = AppBeans.get(Configuration.class).getConfig(WebConfig.class);
+    protected WebConfig webConfig = AppBeans.<Configuration>get(Configuration.NAME).getConfig(WebConfig.class);
 
-    protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.class);
+    protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
 
     public ExceptionDialog(Throwable throwable) {
         this(throwable, null, null);
@@ -198,7 +198,7 @@ public class ExceptionDialog extends Window {
                     if (guiDevException.getFrameId() != null) {
                         params.put("Frame ID", guiDevException.getFrameId());
                         try {
-                            WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
+                            WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
                             params.put("XML descriptor",
                                     windowConfig.getWindowInfo(guiDevException.getFrameId()).getTemplate());
                         } catch (Exception e) {
@@ -254,7 +254,7 @@ public class ExceptionDialog extends Window {
     public void sendSupportEmail(String message, String stackTrace) {
         try {
             User user = userSessionSource.getUserSession().getUser();
-            TimeSource timeSource = AppBeans.get(TimeSource.class);
+            TimeSource timeSource = AppBeans.get(TimeSource.NAME);
             String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(timeSource.currentTimestamp());
 
             StringBuilder sb = new StringBuilder("<html><body>");
@@ -270,7 +270,8 @@ public class ExceptionDialog extends Window {
             if (user.getEmail() != null)
                 info.setFrom(user.getEmail());
 
-            AppBeans.get(EmailService.class).sendEmail(info);
+            EmailService emailService = AppBeans.get(EmailService.NAME);
+            emailService.sendEmail(info);
             Notification.show(messages.getMessage(getClass(), "exceptionDialog.emailSent"));
         } catch (Throwable e) {
             log.error("Error sending exception report", e);

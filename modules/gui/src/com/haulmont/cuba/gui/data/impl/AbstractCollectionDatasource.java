@@ -54,7 +54,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
     protected CollectionDatasourceListener.Operation lastCollectionChangeOperation;
     protected List<Entity> lastCollectionChangeItems;
     protected RefreshMode refreshMode = RefreshMode.ALWAYS;
-    protected UserSession userSession = AppBeans.get(UserSessionSource.class).getUserSession();
+    protected UserSession userSession = AppBeans.<UserSessionSource>get(UserSessionSource.NAME).getUserSession();
 
     @Override
     public T getItemNN(K id) {

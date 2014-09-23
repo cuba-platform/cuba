@@ -263,7 +263,7 @@ public final class InstanceUtils {
                     values[i] = getInstanceName((Instance) value);
                 } else if (value instanceof EnumClass) {
                     if (messages == null) {
-                        messages = AppBeans.get(Messages.class);
+                        messages = AppBeans.get(Messages.NAME);
                     }
 
                     values[i] = messages.getMessage((Enum)value);

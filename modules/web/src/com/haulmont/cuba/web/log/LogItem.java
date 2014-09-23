@@ -23,13 +23,15 @@ public class LogItem {
     private String stacktrace;
 
     public LogItem(LogLevel level, String message, Throwable throwable) {
-        this.timestamp = AppBeans.get(TimeSource.class).currentTimestamp();
+        TimeSource timeSource = AppBeans.get(TimeSource.NAME);
+        this.timestamp = timeSource.currentTimestamp();
         this.level = level;
         this.message = message;
         if (throwable != null) {
             if (throwable instanceof RemoteException) {
                 RemoteException re = (RemoteException) throwable;
                 for (int i = re.getCauses().size() - 1; i >= 0; i--) {
+                    //noinspection ThrowableResultOfMethodCallIgnored
                     if (re.getCauses().get(i).getThrowable() != null) {
                         throwable = re.getCauses().get(i).getThrowable();
                         break;

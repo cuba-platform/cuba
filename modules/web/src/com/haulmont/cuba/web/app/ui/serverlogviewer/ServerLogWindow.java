@@ -204,7 +204,8 @@ public class ServerLogWindow extends AbstractWindow {
             }
         });
 
-        UserSession userSession = AppBeans.get(UserSessionSource.class).getUserSession();
+        UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
+        UserSession userSession = sessionSource.getUserSession();
         downloadButton.setEnabled(userSession.isSpecificPermitted("cuba.gui.administration.downloadlogs"));
 
         ComboBox comboBox = (ComboBox) WebComponentsHelper.unwrap(logFileNameField);

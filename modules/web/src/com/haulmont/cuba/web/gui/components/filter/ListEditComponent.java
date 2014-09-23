@@ -359,15 +359,14 @@ public class ListEditComponent extends CustomField {
         }
 
         private ListEditWindow(Map<Object, String> values) {
-            super(AppBeans.get(Messages.class).getMessage(MESSAGES_PACK, "ListEditWindow.caption"));
+            this.messages = AppBeans.get(Messages.NAME);
+            setCaption(messages.getMessage(MESSAGES_PACK, "ListEditWindow.caption"));
 
             ThemeConstants theme = App.getInstance().getThemeConstants();
 
             setWidth(theme.get("cuba.web.filter.ListEditComponent.window.width"));
             setHeight(theme.get("cuba.web.filter.ListEditComponent.window.height"));
             setModal(true);
-
-            this.messages = AppBeans.get(Messages.class);
 
             this.values = new HashMap<>(values);
 
@@ -620,7 +619,8 @@ public class ListEditComponent extends CustomField {
         }
 
         private String addDate(Date date) {
-            Locale locale = AppBeans.get(UserSessionSource.class).getUserSession().getLocale();
+            UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
+            Locale locale = sessionSource.getUserSession().getLocale();
             Datatype datatype = Datatypes.get(itemClass);
 
             String str = datatype.format(date, locale);

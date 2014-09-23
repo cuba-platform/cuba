@@ -98,7 +98,8 @@ public class EnumerationContainer implements com.vaadin.data.Container {
         public EnumerationItem(Object itemId) {
             this.item = (Enum) itemId;
 
-            name = AppBeans.get(Messages.class).getMessage(item);
+            Messages messages = AppBeans.get(Messages.NAME);
+            name = messages.getMessage(item);
             if (StringUtils.isEmpty(name))
                 name = item.toString();
         }

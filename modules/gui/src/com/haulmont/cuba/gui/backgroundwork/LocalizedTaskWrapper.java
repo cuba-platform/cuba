@@ -23,7 +23,7 @@ public class LocalizedTaskWrapper<T, V> extends BackgroundTask<T, V> {
 
     protected BackgroundTask<T, V> wrappedTask;
     protected Window window;
-    protected Messages messages = AppBeans.get(Messages.class);
+    protected Messages messages = AppBeans.get(Messages.NAME);
 
     protected LocalizedTaskWrapper(BackgroundTask<T, V> wrappedTask, Window window) {
         super(wrappedTask.getTimeoutSeconds(), window);

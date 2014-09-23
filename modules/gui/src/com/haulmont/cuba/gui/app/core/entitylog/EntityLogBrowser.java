@@ -355,7 +355,8 @@ public class EntityLogBrowser extends AbstractWindow {
     }
 
     public void setDateFieldTime() {
-        Date date = AppBeans.get(TimeSource.class).currentTimestamp();
+        TimeSource timeSource = AppBeans.get(TimeSource.NAME);
+        Date date = timeSource.currentTimestamp();
         fromDateField.setValue(DateUtils.addDays(date, -1));
         tillDateField.setValue(DateUtils.addMinutes(date, 1));
     }

@@ -45,7 +45,8 @@ public class DesktopFileMultiUploadField extends DesktopAbstractComponent<JButto
         fileChooser.setMultiSelectionEnabled(true);
 
         DesktopResources resources = App.getInstance().getResources();
-        String caption = AppBeans.get(Messages.class).getMessage(getClass(), "upload.selectFiles");
+        Messages messages = AppBeans.get(Messages.NAME);
+        String caption = messages.getMessage(getClass(), "upload.selectFiles");
         impl = new JButton();
         impl.setAction(new AbstractAction(caption, resources.getIcon(DEFAULT_ICON)) {
             @Override
@@ -86,7 +87,8 @@ public class DesktopFileMultiUploadField extends DesktopAbstractComponent<JButto
     }
 
     protected boolean checkFiles(File[] files) {
-        ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
         final long maxUploadSizeMb = clientConfig.getMaxUploadSizeMb();
         final long maxSize = maxUploadSizeMb * BYTES_IN_MEGABYTE;
 
@@ -120,7 +122,7 @@ public class DesktopFileMultiUploadField extends DesktopAbstractComponent<JButto
     }
 
     protected void notifyFileSizeExceedLimit(File file) {
-        Messages messages = AppBeans.get(Messages.class);
+        Messages messages = AppBeans.get(Messages.NAME);
 
         Configuration configuration = AppBeans.get(Configuration.NAME);
         ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);

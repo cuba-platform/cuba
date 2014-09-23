@@ -22,7 +22,7 @@ public class DomainProvider implements Runnable {
 
     @Override
     public void run() {
-        DomainDescriptionService service = AppBeans.get(DomainDescriptionService.class);
+        DomainDescriptionService service = AppBeans.get(DomainDescriptionService.NAME);
         String description = service.getDomainDescription();
 
         WebExportDisplay exportDisplay = new WebExportDisplay(true);

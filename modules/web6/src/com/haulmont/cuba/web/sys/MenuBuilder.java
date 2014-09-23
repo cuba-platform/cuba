@@ -37,7 +37,7 @@ public class MenuBuilder {
 
     protected com.haulmont.cuba.web.toolkit.ui.MenuBar menuBar;
 
-    protected MenuConfig menuConfig = AppBeans.get(MenuConfig.class);
+    protected MenuConfig menuConfig = AppBeans.get(MenuConfig.NAME);
 
     public MenuBuilder(AppWindow appWindow, UserSession session, com.haulmont.cuba.web.toolkit.ui.MenuBar menuBar) {
         this.appWindow = appWindow;
@@ -125,7 +125,7 @@ public class MenuBuilder {
             return null;
 
         WindowInfo windowInfo = null;
-        final WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
+        final WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
         try {
             windowInfo = windowConfig.getWindowInfo(item.getId());
         } catch (NoSuchScreenException e) {

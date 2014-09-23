@@ -28,6 +28,7 @@ public enum ParamType {
 
     @Override
     public String toString() {
-        return AppBeans.get(Messages.class).getMessage(this);
+        Messages messages = AppBeans.get(Messages.NAME);
+        return messages.getMessage(this);
     }
 }

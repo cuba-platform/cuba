@@ -33,7 +33,7 @@ public class ItemWrapper implements Item, Item.PropertySetChangeNotifier {
     protected MetaClass metaClass;
 
     public ItemWrapper(Object item, MetaClass metaClass) {
-        this(item, metaClass, AppBeans.get(MetadataTools.class).getPropertyPaths(metaClass));
+        this(item, metaClass, AppBeans.<MetadataTools>get(MetadataTools.NAME).getPropertyPaths(metaClass));
     }
 
     public ItemWrapper(Object item, MetaClass metaClass, Collection<MetaPropertyPath> properties) {

@@ -39,7 +39,8 @@ public class Navigator extends Window
     private void initUI() {
         tree = new Tree();
 
-        List<MenuItem> rootItems = AppBeans.get(MenuConfig.class).getRootItems();
+        MenuConfig menuConfig = AppBeans.get(MenuConfig.NAME);
+        List<MenuItem> rootItems = menuConfig.getRootItems();
         for (MenuItem menuItem : rootItems) {
             createTreeItem(menuItem, null);
         }
@@ -50,7 +51,7 @@ public class Navigator extends Window
             public void itemClick(ItemClickEvent event) {
                 MenuItem menuItem = (MenuItem) event.getItemId();
                 String caption = MenuConfig.getMenuItemCaption(menuItem.getId());
-                final WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
+                final WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
                 WindowInfo windowInfo = windowConfig.getWindowInfo(menuItem.getId());
                 App.getInstance().getWindowManager().openWindow(
                         windowInfo,

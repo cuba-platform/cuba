@@ -23,7 +23,8 @@ public class EntityRestoreCompanion implements EntityRestore.Companion {
 
     @Override
     public List<String> getClientSpecificRestoreEntities() {
-        String restoreEntitiesProp = AppBeans.get(Configuration.class).getConfig(WebConfig.class).getRestoreEntityId();
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        String restoreEntitiesProp = configuration.getConfig(WebConfig.class).getRestoreEntityId();
         if (StringUtils.isNotBlank(restoreEntitiesProp)) {
             return Arrays.asList(StringUtils.split(restoreEntitiesProp, ','));
         }

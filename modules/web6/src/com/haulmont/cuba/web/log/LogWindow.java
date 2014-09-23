@@ -26,7 +26,8 @@ public class LogWindow extends Window {
     private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     public LogWindow() {
-        super(AppBeans.get(Messages.class).getMessage(LogWindow.class, "logWindow.caption"));
+        Messages messages = AppBeans.get(Messages.NAME);
+        setCaption(messages.getMessage(LogWindow.class, "logWindow.caption"));
         setHeight("80%");
         setWidth("80%");
         center();
@@ -74,7 +75,8 @@ public class LogWindow extends Window {
         topLayout.setWidth("100%");
         topLayout.setHeight(SIZE_UNDEFINED, 0);
 
-        Button refreshBtn = new Button(AppBeans.get(Messages.class).getMessage(getClass(), "logWindow.refreshBtn"),
+        Messages messages = AppBeans.get(Messages.NAME);
+        Button refreshBtn = new Button(messages.getMessage(getClass(), "logWindow.refreshBtn"),
                 new Button.ClickListener() {
                     @Override
                     public void buttonClick(Button.ClickEvent event) {

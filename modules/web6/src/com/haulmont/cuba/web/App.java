@@ -123,7 +123,7 @@ public abstract class App extends Application
     protected App() {
         log.trace("Creating application " + this);
         try {
-            Configuration configuration = AppBeans.get(Configuration.class);
+            Configuration configuration = AppBeans.get(Configuration.NAME);
             webConfig = configuration.getConfig(WebConfig.class);
             globalConfig = configuration.getConfig(GlobalConfig.class);
             webAuthConfig = configuration.getConfig(WebAuthConfig.class);
@@ -195,7 +195,8 @@ public abstract class App extends Application
         if (!AppContext.isStarted()) {
             defaultLocale = Locale.getDefault();
         } else {
-            defaultLocale = AppBeans.get(MessageTools.class).getDefaultLocale();
+            MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+            defaultLocale = messageTools.getDefaultLocale();
         }
         return compileSystemMessages(defaultLocale);
     }
@@ -207,7 +208,7 @@ public abstract class App extends Application
 
         if (AppContext.isStarted()) {
             try {
-                Messages messages = AppBeans.get(Messages.class);
+                Messages messages = AppBeans.get(Messages.NAME);
                 String messagePack = messages.getMainMessagePack();
 
                 msgs.setSessionExpiredCaption(messages.getMessage(messagePack, "sessionExpiredCaption", locale));

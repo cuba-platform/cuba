@@ -47,7 +47,7 @@ public class DeletePolicyHandler implements ExceptionHandler {
     }
 
     protected void doHandle(String message, App app) {
-        Messages messages = AppBeans.get(Messages.class);
+        Messages messages = AppBeans.get(Messages.NAME);
 
         String localizedEntityName;
         MetaClass metaClass = recognizeMetaClass(message);
@@ -70,7 +70,8 @@ public class DeletePolicyHandler implements ExceptionHandler {
                 .matcher(message);
         if (matcher.find()) {
             String entityName = matcher.group(1);
-            return AppBeans.get(Metadata.class).getClass(entityName);
+            Metadata metadata = AppBeans.get(Metadata.NAME);
+            return metadata.getClass(entityName);
         } else {
             return null;
         }

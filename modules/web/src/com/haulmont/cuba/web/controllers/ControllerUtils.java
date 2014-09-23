@@ -62,7 +62,8 @@ public final class ControllerUtils {
 
     public static String getControllerURL(String mapping) {
         if (mapping == null) throw new IllegalArgumentException("Mapping cannot be null");
-        GlobalConfig globalConfig = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class);
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        GlobalConfig globalConfig = configuration.getConfig(GlobalConfig.class);
 
         StringBuilder sb = new StringBuilder(globalConfig.getWebAppUrl()).append(getControllerPrefix());
         if (!mapping.startsWith("/")) {
@@ -93,7 +94,7 @@ public final class ControllerUtils {
         if (s != null) {
             try {
                 UUID id = UUID.fromString(s);
-                LoginService service = AppBeans.get(LoginService.class);
+                LoginService service = AppBeans.get(LoginService.NAME);
                 UserSession session = service.getSession(id);
                 if (session != null) {
                     req.getSession().setAttribute(App.USER_SESSION_ATTR, session);

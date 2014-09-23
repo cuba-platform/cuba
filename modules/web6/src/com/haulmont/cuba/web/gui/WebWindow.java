@@ -82,8 +82,8 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
 
     protected WebFrameActionsHolder actionsHolder = new WebFrameActionsHolder();
 
-    protected Configuration configuration = AppBeans.get(Configuration.class);
-    protected Messages messages = AppBeans.get(Messages.class);
+    protected Configuration configuration = AppBeans.get(Configuration.NAME);
+    protected Messages messages = AppBeans.get(Messages.NAME);
 
     public WebWindow() {
         component = createLayout();
@@ -293,7 +293,7 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
             buffer.append(error.description).append("\n");
         }
 
-        showNotification(AppBeans.get(Messages.class).getMessage(WebWindow.class, "validationFail.caption"),
+        showNotification(messages.getMessage(WebWindow.class, "validationFail.caption"),
                 buffer.toString(), NotificationType.TRAY);
     }
 

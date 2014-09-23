@@ -11,6 +11,10 @@ import com.haulmont.cuba.core.global.Messages;
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 @MappedSuperclass
 @SystemLevel
 public abstract class AbstractSearchFolder extends Folder {
@@ -65,7 +69,7 @@ public abstract class AbstractSearchFolder extends Folder {
     }
 
     public String getLocName() {
-        return AppBeans.get(Messages.class).getMainMessage(name);
+        Messages messages = AppBeans.get(Messages.NAME);
+        return messages.getMainMessage(name);
     }
-
 }

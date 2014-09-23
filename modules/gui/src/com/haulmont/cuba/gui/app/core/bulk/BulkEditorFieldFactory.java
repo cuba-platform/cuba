@@ -17,7 +17,6 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
 import javax.annotation.Nullable;
-import javax.persistence.TemporalType;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,7 +27,7 @@ import java.util.Map;
 public class BulkEditorFieldFactory {
 
     protected ComponentsFactory componentsFactory = AppConfig.getFactory();
-    protected Messages messages = AppBeans.get(Messages.class);
+    protected Messages messages = AppBeans.get(Messages.NAME);
 
     protected static final int MAX_TEXTFIELD_STRING_LENGTH = 255;
 

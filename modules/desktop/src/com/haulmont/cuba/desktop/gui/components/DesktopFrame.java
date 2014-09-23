@@ -48,7 +48,7 @@ public class DesktopFrame
 
     private List<DetachListener> detachListeners = new ArrayList<>();
     
-    private WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
+    private WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
 
     private DesktopFrameActionsHolder actionsHolder;
 

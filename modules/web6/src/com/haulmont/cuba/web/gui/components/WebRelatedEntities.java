@@ -113,7 +113,7 @@ public class WebRelatedEntities extends WebPopupButton implements RelatedEntitie
         actionOrder.clear();
 
         if (listComponent != null) {
-            ExtendedEntities extendedEntities = AppBeans.get(ExtendedEntities.class);
+            ExtendedEntities extendedEntities = AppBeans.get(ExtendedEntities.NAME);
             MetaClass metaClass = extendedEntities.getEffectiveMetaClass(listComponent.getDatasource().getMetaClass());
 
             Pattern excludePattern = null;

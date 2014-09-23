@@ -53,7 +53,8 @@ public final class WindowCreationHelper {
             return;
         }
 
-        UserSession userSession = AppBeans.get(UserSessionSource.class).getUserSession();
+        UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
+        UserSession userSession = sessionSource.getUserSession();
 
         String screenId = window.getId();
         Map<String, Integer> uiPermissions = userSession.getPermissionsByType(PermissionType.UI);
@@ -150,7 +151,8 @@ public final class WindowCreationHelper {
             AbstractViewRepository viewRepository = AppBeans.get(ViewRepository.NAME);
             for (Element fileEl : Dom4j.elements(metadataContextEl, "deployViews")) {
                 String resource = fileEl.attributeValue("name");
-                InputStream resourceInputStream = AppBeans.get(Resources.class).getResourceAsStream(resource);
+                Resources resources = AppBeans.get(Resources.NAME);
+                InputStream resourceInputStream = resources.getResourceAsStream(resource);
                 if (resourceInputStream == null)
                     throw new RuntimeException("View resource not found: " + resource);
 

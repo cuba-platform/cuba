@@ -116,7 +116,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
     protected static final int MAX_TEXT_LENGTH_GAP = 10;
 
-    protected Security security = AppBeans.get(Security.class);
+    protected Security security = AppBeans.get(Security.NAME);
 
     @Override
     public java.util.List<Table.Column> getColumns() {
@@ -652,8 +652,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
     @Override
     public void setDatasource(CollectionDatasource datasource) {
-        MessageTools messageTools = AppBeans.get(MessageTools.class);
-        MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
+        MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+        MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
 
         final Collection<Object> columns;
         if (this.columns.isEmpty()) {

@@ -34,7 +34,8 @@ public class WebPickerFieldActionHandler implements Action.Handler {
 
     public WebPickerFieldActionHandler(PickerField component) {
         this.component = component;
-        ClientConfig config = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        ClientConfig config = configuration.getConfig(ClientConfig.class);
         String[] strModifiers = StringUtils.split(config.getPickerShortcutModifiers().toUpperCase(), "-");
         modifiers = new int[strModifiers.length];
         for (int i = 0; i < modifiers.length; i++) {

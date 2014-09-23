@@ -6,9 +6,10 @@ package com.haulmont.cuba.web.gui.components.presentations;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.AbstractAction;
+import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.presentations.PresentationsChangeListener;
@@ -21,9 +22,6 @@ import com.haulmont.cuba.web.toolkit.ui.CubaMenuBar;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.AbstractProperty;
 import com.vaadin.ui.*;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Label;
 import org.dom4j.Element;
 
 import java.util.ArrayList;
@@ -50,7 +48,7 @@ public class TablePresentations extends VerticalLayout {
 
     public TablePresentations(Table component) {
         this.table = component;
-        this.messages = AppBeans.get(Messages.class);
+        this.messages = AppBeans.get(Messages.NAME);
 
         this.tableImpl = (CubaEnhancedTable) WebComponentsHelper.unwrap(table);
 
@@ -210,8 +208,8 @@ public class TablePresentations extends VerticalLayout {
             }
         });
 
-        final boolean allowGlobalPresentations = AppBeans.get(UserSessionSource.class).getUserSession()
-                .isSpecificPermitted("cuba.gui.presentations.global");
+        Security security = AppBeans.get(Security.NAME);
+        final boolean allowGlobalPresentations = security.isSpecificPermitted("cuba.gui.presentations.global");
         if (current != null && (!p.isGlobal(current) || allowGlobalPresentations)) {
             button.addAction(new AbstractAction(getMessage("PresentationsPopup.save")) {
                 @Override

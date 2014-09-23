@@ -28,10 +28,11 @@ public class CustomOperationEditor extends OperationEditor implements HasAction<
 
         btn.setStyleName(BaseTheme.BUTTON_LINK);
 
-        btn.setCaption(AppBeans.get(Messages.class).getMessage(AppConfig.getMessagesPack(), "actions.Edit"));
+        Messages messages = AppBeans.get(Messages.NAME);
+        btn.setCaption(messages.getMessage(AppConfig.getMessagesPack(), "actions.Edit"));
 
-        btn.setEnabled(AppBeans.get(UserSessionSource.class).getUserSession()
-                .isSpecificPermitted("cuba.gui.filter.customConditions"));
+        Security security = AppBeans.get(Security.NAME);
+        btn.setEnabled(security.isSpecificPermitted("cuba.gui.filter.customConditions"));
 
         btn.addClickListener(new Button.ClickListener() {
             @Override

@@ -25,7 +25,7 @@ public class InvalidValueExceptionHandler extends AbstractExceptionHandler {
 
     @Override
     protected void doHandle(App app, String className, String message, @Nullable Throwable throwable) {
-        Messages messages = AppBeans.get(Messages.class);
+        Messages messages = AppBeans.get(Messages.NAME);
         app.getWindowManager().showNotification(
                 messages.getMessage(getClass(), "validationFail.caption"),
                 messages.getMessage(getClass(), "validationFail"),

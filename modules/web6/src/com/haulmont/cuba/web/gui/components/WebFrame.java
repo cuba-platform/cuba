@@ -39,7 +39,7 @@ public class WebFrame extends WebAbstractBox implements IFrame, WrappedFrame {
 
     protected Map<String, com.haulmont.cuba.gui.components.Component> allComponents = new HashMap<>();
 
-    protected WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
+    protected WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
 
     protected WebFrameActionsHolder actionsHolder = new WebFrameActionsHolder();
 

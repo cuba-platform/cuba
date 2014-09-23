@@ -32,7 +32,8 @@ public class LockInfo extends AbstractNotPersistentEntity {
     public LockInfo(User user, String entityName, String entityId) {
         this.entityName = entityName;
         this.entityId = entityId;
-        this.since = AppBeans.get(TimeSource.class).currentTimestamp();
+        TimeSource timeSource = AppBeans.get(TimeSource.NAME);
+        this.since = timeSource.currentTimestamp();
         this.user = user;
     }
 

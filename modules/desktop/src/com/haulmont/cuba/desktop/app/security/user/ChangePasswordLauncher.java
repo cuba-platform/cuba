@@ -28,7 +28,7 @@ public class ChangePasswordLauncher implements Runnable {
 
         WindowManager windowManager = App.getInstance().getMainFrame().getWindowManager();
 
-        WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
+        WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
         WindowInfo windowInfo = windowConfig.getWindowInfo("sec$User.changePassw");
 
         windowManager.openEditor(windowInfo, user, WindowManager.OpenType.DIALOG,

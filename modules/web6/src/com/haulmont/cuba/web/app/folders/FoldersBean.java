@@ -52,7 +52,8 @@ public class FoldersBean implements Folders {
         String[] strings = ValuePathHelper.parse(folder.getFilterComponentId());
         String screenId = strings[0];
 
-        WindowInfo windowInfo = AppBeans.get(WindowConfig.class).getWindowInfo(screenId);
+        WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
+        WindowInfo windowInfo = windowConfig.getWindowInfo(screenId);
 
         Map<String, Object> params = new HashMap<>();
 

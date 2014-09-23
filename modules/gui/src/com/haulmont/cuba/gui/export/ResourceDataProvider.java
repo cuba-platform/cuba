@@ -26,7 +26,8 @@ public class ResourceDataProvider implements ExportDataProvider {
 
     @Override
     public InputStream provide() throws ResourceException {
-        return AppBeans.get(Resources.class).getResourceAsStream(resourcePath);
+        Resources resources = AppBeans.get(Resources.NAME);
+        return resources.getResourceAsStream(resourcePath);
     }
 
     @Override

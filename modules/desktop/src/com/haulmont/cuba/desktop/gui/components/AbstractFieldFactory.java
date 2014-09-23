@@ -135,7 +135,7 @@ public abstract class AbstractFieldFactory implements FieldFactory {
                 dateFormat = "msg://dateTimeFormat";
             }
         }
-        Messages messages = AppBeans.get(Messages.class);
+        Messages messages = AppBeans.get(Messages.NAME);
 
         if (!StringUtils.isEmpty(dateFormat)) {
             if (dateFormat.startsWith("msg://")) {

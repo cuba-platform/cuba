@@ -18,7 +18,7 @@ import com.haulmont.cuba.gui.security.entity.BasicPermissionTarget;
 public class ScreenPermissionTreeDatasource extends BasicPermissionTreeDatasource {
 
     protected PermissionConfig permissionConfig = AppBeans.get(PermissionConfig.class);
-    protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.class);
+    protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
 
     @Override
     public Tree<BasicPermissionTarget> getPermissions() {

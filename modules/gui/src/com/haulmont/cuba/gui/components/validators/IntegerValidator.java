@@ -26,7 +26,7 @@ public class IntegerValidator implements Field.Validator {
     protected String message;
     protected String messagesPack;
     protected String onlyPositive;
-    protected Messages messages = AppBeans.get(Messages.class);
+    protected Messages messages = AppBeans.get(Messages.NAME);
 
     public IntegerValidator(Element element, String messagesPack) {
         message = element.attributeValue("message");
@@ -52,7 +52,8 @@ public class IntegerValidator implements Field.Validator {
         if (value instanceof String) {
             try {
                 Datatype<Integer> datatype = Datatypes.get(IntegerDatatype.NAME);
-                Integer num = datatype.parse((String) value, AppBeans.get(UserSessionSource.class).getLocale());
+                UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
+                Integer num = datatype.parse((String) value, sessionSource.getLocale());
                 result = checkIntegerOnPositive(num);
             } catch (ParseException e) {
                 result = false;

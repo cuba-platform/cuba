@@ -52,7 +52,8 @@ public abstract class AppConfig {
      * <p/> To obtain a message from the main message pack use {@link com.haulmont.cuba.core.global.Messages#getMainMessage(String)}.
      */
     public static String getMessagesPack() {
-        return AppBeans.get(Messages.class).getMainMessagePack();
+        Messages messages = AppBeans.get(Messages.NAME);
+        return messages.getMainMessagePack();
     }
 
     /**
@@ -89,6 +90,6 @@ public abstract class AppConfig {
      * @return  ComponentsFactory instance
      */
     public static ComponentsFactory getFactory() {
-        return AppBeans.get(ComponentsFactory.class);
+        return AppBeans.get(ComponentsFactory.NAME);
     }
 }

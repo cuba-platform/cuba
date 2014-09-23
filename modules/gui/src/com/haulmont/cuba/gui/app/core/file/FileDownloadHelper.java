@@ -37,8 +37,9 @@ public class FileDownloadHelper {
 
     public static String makeUrl(FileDescriptor fd, boolean attachment) {
         StringBuilder sb = new StringBuilder();
+        UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
         sb.append("dispatch/download?")
-                .append("s=").append(AppBeans.get(UserSessionSource.class).getUserSession().getId()).append("&")
+                .append("s=").append(sessionSource.getUserSession().getId()).append("&")
                 .append("f=").append(fd.getId());
         if (attachment)
             sb.append("&a=true");
@@ -46,8 +47,8 @@ public class FileDownloadHelper {
     }
 
     public static void initGeneratedColumn(final Table table) {
-        final ComponentsFactory componentsFactory = AppBeans.get(ComponentsFactory.class);
-        final ExportDisplay exportDisplay = AppBeans.get(ExportDisplay.class);
+        final ComponentsFactory componentsFactory = AppBeans.get(ComponentsFactory.NAME);
+        final ExportDisplay exportDisplay = AppBeans.get(ExportDisplay.NAME);
 
         table.addGeneratedColumn("name", new Table.ColumnGenerator<FileDescriptor>() {
             @Override
@@ -81,8 +82,8 @@ public class FileDownloadHelper {
     }
 
     public static void initGeneratedColumn(final Table table, final String fileProperty) {
-        final ComponentsFactory componentsFactory = AppBeans.get(ComponentsFactory.class);
-        final ExportDisplay exportDisplay = AppBeans.get(ExportDisplay.class);
+        final ComponentsFactory componentsFactory = AppBeans.get(ComponentsFactory.NAME);
+        final ExportDisplay exportDisplay = AppBeans.get(ExportDisplay.NAME);
 
         table.addGeneratedColumn(fileProperty + ".name", new Table.ColumnGenerator() {
             @Override

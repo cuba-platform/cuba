@@ -17,7 +17,8 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 public class RuntimePropConditionCreator extends ConditionCreator {
     public RuntimePropConditionCreator(String filterComponentName, CollectionDatasource datasource) {
         super(filterComponentName, datasource);
-        locCaption = AppBeans.get(Messages.class).getMessage(MESSAGES_PACK, "runtimePropConditionCreator");
+        Messages messages = AppBeans.get(Messages.NAME);
+        locCaption = messages.getMessage(MESSAGES_PACK, "runtimePropConditionCreator");
         showImmediately = true;
     }
 

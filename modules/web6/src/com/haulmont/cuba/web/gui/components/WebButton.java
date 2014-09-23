@@ -35,7 +35,8 @@ public class WebButton extends WebAbstractComponent<com.vaadin.ui.Button> implem
     protected boolean useResponsePending = true;
 
     public WebButton() {
-        if (AppBeans.get(Configuration.class).getConfig(WebConfig.class).getUseNativeButtons()) {
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        if (configuration.getConfig(WebConfig.class).getUseNativeButtons()) {
             component = new NativeButton();
         } else {
             component = new com.vaadin.ui.Button() {

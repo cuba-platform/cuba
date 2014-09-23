@@ -31,9 +31,8 @@ public class AppliedFilter {
     private FilterEntity filterEntity;
     private LinkedHashMap<String, String> params = new LinkedHashMap<>();
 
-    protected Messages messages = AppBeans.get(Messages.class);
-    protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.class);
-
+    protected Messages messages = AppBeans.get(Messages.NAME);
+    protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
 
     public AppliedFilter(FilterEntity filterEntity, ComponentContainer container) {
         this.filterEntity = filterEntity;

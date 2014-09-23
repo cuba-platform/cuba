@@ -48,8 +48,9 @@ public abstract class AbstractAction implements Action {
 
     protected AbstractAction(String id) {
         this.id = id;
-        messages = AppBeans.get(Messages.class);
-        userSession = AppBeans.get(UserSessionSource.class).getUserSession();
+        messages = AppBeans.get(Messages.NAME);
+        UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
+        userSession = sessionSource.getUserSession();
     }
 
     protected AbstractAction(String id, @Nullable String shortcut) {

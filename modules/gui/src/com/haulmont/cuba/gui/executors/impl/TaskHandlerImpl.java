@@ -46,7 +46,8 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
     public TaskHandlerImpl(TaskExecutor<T, V> taskExecutor, WatchDog watchDog) {
         this.taskExecutor = taskExecutor;
         this.watchDog = watchDog;
-        this.userSession = AppBeans.get(UserSessionSource.class).getUserSession();
+        UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
+        this.userSession = sessionSource.getUserSession();
 
         BackgroundTask<T, V> task = taskExecutor.getTask();
         if (task.getOwnerFrame() != null) {
@@ -88,7 +89,8 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
 
         this.started = true;
 
-        this.startTimeStamp = AppBeans.get(TimeSource.class).currentTimestamp().getTime();
+        TimeSource timeSource = AppBeans.get(TimeSource.NAME);
+        this.startTimeStamp = timeSource.currentTimestamp().getTime();
 
         this.watchDog.manageTask(this);
 

@@ -80,8 +80,10 @@ public class SaveSetWindow extends AbstractWindow {
             QueryParser parser = QueryTransformerFactory.createParser(query);
             String entityAlias = parser.getEntityAlias(entityType);
             String filterXml = WebFilter.UserSetHelper.generateSetFilter(ids, entityClass, componentId, entityAlias);
-            final SearchFolder folder = AppBeans.get(Metadata.class).create(SearchFolder.class);
-            folder.setUser(AppBeans.get(UserSessionSource.class).getUserSession().getUser());
+            Metadata metadata = AppBeans.get(Metadata.NAME);
+            final SearchFolder folder = metadata.create(SearchFolder.class);
+            UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
+            folder.setUser(sessionSource.getUserSession().getUser());
             folder.setName("");
             folder.setFilterXml(filterXml);
             folder.setFilterComponentId(componentPath);

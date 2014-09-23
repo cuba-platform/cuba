@@ -79,7 +79,8 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
         this.owner = owner;
         this.openType = openType;
         this.icon = "icons/edit.png";
-        ClientConfig config = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        ClientConfig config = configuration.getConfig(ClientConfig.class);
         setShortcut(config.getTableEditShortcut());
 
         refreshState();

@@ -48,8 +48,10 @@ public class WindowInfo {
     public Class getScreenClass() {
         if (screenClass == null) {
             String className = descriptor.attributeValue("class");
-            if (className != null)
-                screenClass = AppBeans.get(Scripting.class).loadClass(className);
+            if (className != null) {
+                Scripting scripting = AppBeans.get(Scripting.NAME);
+                screenClass = scripting.loadClass(className);
+            }
         }
 
         return screenClass;
@@ -70,6 +72,7 @@ public class WindowInfo {
         this.descriptor = descriptor;
     }
 
+    @Override
     public String toString() {
         String template = getTemplate();
         return "id='" + id + '\'' +

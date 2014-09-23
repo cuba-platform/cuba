@@ -71,7 +71,8 @@ public class EntityLoadInfo {
     public static EntityLoadInfo create(Entity entity, @Nullable String viewName) {
         Objects.requireNonNull(entity, "entity is null");
 
-        MetaClass metaClass = AppBeans.get(Metadata.class).getSession().getClassNN(entity.getClass());
+        Metadata metadata = AppBeans.get(Metadata.NAME);
+        MetaClass metaClass = metadata.getSession().getClassNN(entity.getClass());
         return new EntityLoadInfo((UUID) entity.getId(), metaClass, viewName);
     }
 
@@ -100,7 +101,8 @@ public class EntityLoadInfo {
 
         int idDashPos = str.indexOf('-');
         String entityName = str.substring(0, idDashPos);
-        MetaClass metaClass = AppBeans.get(Metadata.class).getSession().getClass(entityName);
+        Metadata metadata = AppBeans.get(Metadata.NAME);
+        MetaClass metaClass = metadata.getSession().getClass(entityName);
         if (metaClass == null) {
             return null;
         }
@@ -139,7 +141,8 @@ public class EntityLoadInfo {
 
         int dashPos = str.indexOf('-');
         String entityName = str.substring(dashPos + 1);
-        MetaClass metaClass = AppBeans.get(Metadata.class).getSession().getClass(entityName);
+        Metadata metadata = AppBeans.get(Metadata.NAME);
+        MetaClass metaClass = metadata.getSession().getClass(entityName);
         if (metaClass == null) {
             return null;
         }

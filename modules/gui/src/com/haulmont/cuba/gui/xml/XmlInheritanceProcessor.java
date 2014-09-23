@@ -36,7 +36,7 @@ public class XmlInheritanceProcessor {
 
     private List<ElementTargetLocator> targetLocators = new ArrayList<>();
 
-    protected Resources resources = AppBeans.get(Resources.class);
+    protected Resources resources = AppBeans.get(Resources.NAME);
 
     public XmlInheritanceProcessor(Document document, Map<String, Object> params) {
         this.document = document;

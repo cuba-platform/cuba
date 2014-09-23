@@ -48,7 +48,7 @@ public abstract class AbstractRuntimePropConditionEditDlg<T> {
 
     public AbstractRuntimePropConditionEditDlg(AbstractRuntimePropCondition condition) {
         dataService = AppBeans.get(DataService.NAME);
-        metadata = AppBeans.get(Metadata.class);
+        metadata = AppBeans.get(Metadata.NAME);
         this.condition = condition;
         messagesPack = AppConfig.getMessagesPack();
 

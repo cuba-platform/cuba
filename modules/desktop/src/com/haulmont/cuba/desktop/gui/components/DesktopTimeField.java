@@ -92,8 +92,9 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
     }
 
     private void showValidationMessage() {
+        Messages messages = AppBeans.get(Messages.NAME);
         DesktopComponentsHelper.getTopLevelFrame(this).showNotification(
-                AppBeans.get(Messages.class).getMessage(AppConfig.getMessagesPack(), "validationFail"),
+                messages.getMessage(AppConfig.getMessagesPack(), "validationFail"),
                 IFrame.NotificationType.TRAY
         );
     }

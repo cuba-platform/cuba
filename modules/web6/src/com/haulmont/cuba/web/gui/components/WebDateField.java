@@ -63,7 +63,8 @@ public class WebDateField extends WebAbstractField<DateFieldWrapper> implements 
         composition.setSpacing(true);
         dateField = new com.haulmont.cuba.web.toolkit.ui.DateField();
 
-        Locale userLocale = AppBeans.get(UserSessionSource.class).getLocale();
+        UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
+        Locale userLocale = sessionSource.getLocale();
         dateField.setDateFormat(Datatypes.getFormatStringsNN(userLocale).getDateFormat());
 
         dateField.setResolution(com.haulmont.cuba.web.toolkit.ui.DateField.RESOLUTION_DAY);
@@ -356,7 +357,8 @@ public class WebDateField extends WebAbstractField<DateFieldWrapper> implements 
             return null;
         }
 
-        Locale locale = AppBeans.get(UserSessionSource.class).getLocale();
+        UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
+        Locale locale = sessionSource.getLocale();
 
         Calendar c = Calendar.getInstance(locale);
         c.setTime(datePickerDate);

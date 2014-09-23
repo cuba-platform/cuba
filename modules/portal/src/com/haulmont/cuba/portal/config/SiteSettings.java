@@ -31,7 +31,8 @@ public class SiteSettings {
      * @return Full relative path on server
      */
     public String composeFullRelativePath(String path) {
-        GlobalConfig globalConfig = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class);
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        GlobalConfig globalConfig = configuration.getConfig(GlobalConfig.class);
         String webAppPrefix = "/".concat(globalConfig.getWebContextName().intern());
         return path.startsWith("/") ? webAppPrefix.concat(path) : webAppPrefix.concat("/").concat(path);
     }
@@ -41,13 +42,15 @@ public class SiteSettings {
      * @return Full absolute path including protocol, domain and webapp prefix
      */
     public String composeFullAbsolutePath(String path) {
-        String webAppUrl = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class).getWebAppUrl();
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        String webAppUrl = configuration.getConfig(GlobalConfig.class).getWebAppUrl();
         webAppUrl = StringUtils.chomp(webAppUrl, "/"); //remove last slash
         return path.startsWith("/") ? webAppUrl.concat(path) : webAppUrl.concat("/").concat(path);
     }
 
     public Properties getFreeMarkerSettings() {
-        GlobalConfig globalConfig = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class);
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        GlobalConfig globalConfig = configuration.getConfig(GlobalConfig.class);
         Map<String,Locale> availableLocales = globalConfig.getAvailableLocales();
         if (availableLocales.isEmpty())
             throw new IllegalStateException("Property cuba.availableLocales is not configured");

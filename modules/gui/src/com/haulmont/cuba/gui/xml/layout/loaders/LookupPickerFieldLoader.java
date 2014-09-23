@@ -34,7 +34,8 @@ public class LookupPickerFieldLoader extends LookupFieldLoader {
 
         final String metaClass = element.attributeValue("metaClass");
         if (!StringUtils.isEmpty(metaClass)) {
-            component.setMetaClass(AppBeans.get(Metadata.class).getSession().getClass(metaClass));
+            Metadata metadata = AppBeans.get(Metadata.NAME);
+            component.setMetaClass(metadata.getSession().getClass(metaClass));
         }
 
         loadActions(component, element);

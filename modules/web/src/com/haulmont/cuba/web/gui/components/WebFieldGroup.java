@@ -53,10 +53,10 @@ public class WebFieldGroup
 
     protected int cols = 1;
 
-    protected Security security = AppBeans.get(Security.class);
+    protected Security security = AppBeans.get(Security.NAME);
 
-    protected MessageTools messageTools = AppBeans.get(MessageTools.class);
-    protected Messages messages = AppBeans.get(Messages.class);
+    protected MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+    protected Messages messages = AppBeans.get(Messages.NAME);
 
     public WebFieldGroup() {
         component = new CubaFieldGroup() {

@@ -99,7 +99,8 @@ public class DefaultApp extends App implements ConnectionListener {
                 for (com.haulmont.cuba.gui.components.Window window : wm.getOpenWindows())
                     window.setEnabled(false);
 
-                WindowInfo changePasswordDialog = AppBeans.get(WindowConfig.class).getWindowInfo("sec$User.changePassw");
+                WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
+                WindowInfo changePasswordDialog = windowConfig.getWindowInfo("sec$User.changePassw");
                 wm.getDialogParams().setCloseable(false);
                 Map<String, Object> params = Collections.singletonMap("cancelEnabled", (Object) Boolean.FALSE);
                 com.haulmont.cuba.gui.components.Window changePasswordWindow = wm.openEditor(changePasswordDialog, user,

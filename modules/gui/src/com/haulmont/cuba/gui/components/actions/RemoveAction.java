@@ -77,7 +77,8 @@ public class RemoveAction extends ItemTrackingAction {
 
         this.security = AppBeans.get(Security.NAME);
 
-        ClientConfig config = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        ClientConfig config = configuration.getConfig(ClientConfig.class);
         setShortcut(config.getTableRemoveShortcut());
 
         refreshState();

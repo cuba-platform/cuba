@@ -27,8 +27,8 @@ public class NumberFormatter implements Formatter<Number> {
 
     private Element element;
 
-    protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.class);
-    protected Messages messages = AppBeans.get(Messages.class);
+    protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
+    protected Messages messages = AppBeans.get(Messages.NAME);
 
     public NumberFormatter() {
     }

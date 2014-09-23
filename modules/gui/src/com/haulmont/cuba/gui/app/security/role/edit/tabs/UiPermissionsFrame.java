@@ -93,7 +93,7 @@ public class UiPermissionsFrame extends AbstractFrame {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
+        WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
         Collection<WindowInfo> windows = sortWindowInfos(windowConfig.getWindows());
         Map<String, Object> screens = new LinkedHashMap<>();
         for (WindowInfo windowInfo : windows) {

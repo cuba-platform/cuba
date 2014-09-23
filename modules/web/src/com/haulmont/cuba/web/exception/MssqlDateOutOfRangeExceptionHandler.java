@@ -55,11 +55,12 @@ public class MssqlDateOutOfRangeExceptionHandler implements ExceptionHandler {
     }
 
     protected boolean isDateOutOfRangeMessage(String message) {
-        return message != null ? message.contains(MESSAGE) : false;
+        return message != null && message.contains(MESSAGE);
     }
 
     protected void doHandle(App app, String className, String message, @Nullable Throwable throwable) {
-        String msg = AppBeans.get(Messages.class).formatMessage(getClass(), "mssqlDateOutOfRangeException.message");
+        Messages messages = AppBeans.get(Messages.NAME);
+        String msg = messages.formatMessage(getClass(), "mssqlDateOutOfRangeException.message");
         app.getWindowManager().showNotification(msg, IFrame.NotificationType.WARNING);
     }
 }

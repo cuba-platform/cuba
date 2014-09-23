@@ -143,12 +143,12 @@ public class AppWindow extends FocusHandlerWindow implements UserSubstitutionLis
         log.trace("Creating " + this);
         this.app = app;
 
-        Configuration configuration = AppBeans.get(Configuration.class);
+        Configuration configuration = AppBeans.get(Configuration.NAME);
         globalConfig = configuration.getConfig(GlobalConfig.class);
         webConfig = configuration.getConfig(WebConfig.class);
 
-        messages = AppBeans.get(Messages.class);
-        userSettingsTools = AppBeans.get(UserSettingsTools.class);
+        messages = AppBeans.get(Messages.NAME);
+        userSettingsTools = AppBeans.get(UserSettingsTools.NAME);
 
         this.connection = app.getConnection();
         windowManager = createWindowManager();
@@ -225,7 +225,8 @@ public class AppWindow extends FocusHandlerWindow implements UserSubstitutionLis
     }
 
     private void checkSessions() {
-        Map<String, Object> info = AppBeans.get(UserSessionService.class).getLicenseInfo();
+        UserSessionService userSessionService = AppBeans.get(UserSessionService.NAME);
+        Map<String, Object> info = userSessionService.getLicenseInfo();
         Integer licensed = (Integer) info.get("licensedSessions");
         if (licensed < 0) {
             showNotification("Invalid CUBA platform license", Notification.TYPE_WARNING_MESSAGE);
@@ -547,7 +548,8 @@ public class AppWindow extends FocusHandlerWindow implements UserSubstitutionLis
      * @param layout parent layout
      */
     protected void createSearchLayout(HorizontalLayout layout) {
-        if (AppBeans.get(Configuration.class).getConfig(FtsConfig.class).getEnabled()) {
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        if (configuration.getConfig(FtsConfig.class).getEnabled()) {
             HorizontalLayout searchLayout = new HorizontalLayout();
             searchLayout.setMargin(false, true, false, true);
 
@@ -593,7 +595,8 @@ public class AppWindow extends FocusHandlerWindow implements UserSubstitutionLis
         Map<String, Object> params = new HashMap<>();
         params.put("searchTerm", searchTerm);
 
-        WindowInfo windowInfo = AppBeans.get(WindowConfig.class).getWindowInfo("ftsSearch");
+        WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
+        WindowInfo windowInfo = windowConfig.getWindowInfo("ftsSearch");
         getWindowManager().openWindow(
                 windowInfo,
                 WindowManager.OpenType.NEW_TAB,
@@ -761,9 +764,11 @@ public class AppWindow extends FocusHandlerWindow implements UserSubstitutionLis
                 "and (us.startDate is null or us.startDate <= :currentDate) " +
                 "and (us.substitutedUser.active = true or us.substitutedUser.active is null) order by us.substitutedUser.name");
         query.setParameter("userId", userSession.getUser().getId());
-        query.setParameter("currentDate", AppBeans.get(TimeSource.class).currentTimestamp());
+        TimeSource timeSource = AppBeans.get(TimeSource.NAME);
+        query.setParameter("currentDate", timeSource.currentTimestamp());
         ctx.setView("app");
-        return AppBeans.get(DataService.class).loadList(ctx);
+        DataService dataService = AppBeans.get(DataService.NAME);
+        return dataService.loadList(ctx);
     }
 
     protected Button createLogoutButton() {
@@ -975,7 +980,7 @@ public class AppWindow extends FocusHandlerWindow implements UserSubstitutionLis
             });
             addActionHandler(this);
 
-            Messages messages = AppBeans.get(Messages.class);
+            Messages messages = AppBeans.get(Messages.NAME);
             closeAllTabs = new com.vaadin.event.Action(messages.getMainMessage("actions.closeAllTabs"));
             closeOtherTabs = new com.vaadin.event.Action(messages.getMainMessage("actions.closeOtherTabs"));
             closeCurrentTab = new com.vaadin.event.Action(messages.getMainMessage("actions.closeCurrentTab"));
@@ -1034,7 +1039,8 @@ public class AppWindow extends FocusHandlerWindow implements UserSubstitutionLis
         @Override
         public com.vaadin.event.Action[] getActions(Object target, Object sender) {
             if (target != null) {
-                UserSession userSession = AppBeans.get(UserSessionSource.class).getUserSession();
+                UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
+                UserSession userSession = sessionSource.getUserSession();
                 if (userSession.isSpecificPermitted(ShowInfoAction.ACTION_PERMISSION) &&
                         findEditor((Layout) target) != null ) {
                     return new com.vaadin.event.Action[]{
@@ -1082,7 +1088,8 @@ public class AppWindow extends FocusHandlerWindow implements UserSubstitutionLis
         public void showInfo(Object target) {
             com.haulmont.cuba.gui.components.Window.Editor editor = findEditor((Layout) target);
             Entity entity = editor.getItem();
-            MetaClass metaClass = AppBeans.get(Metadata.class).getSession().getClass(entity.getClass());
+            Metadata metadata = AppBeans.get(Metadata.NAME);
+            MetaClass metaClass = metadata.getSession().getClass(entity.getClass());
             new ShowInfoAction().showInfo(entity, metaClass, editor);
         }
 

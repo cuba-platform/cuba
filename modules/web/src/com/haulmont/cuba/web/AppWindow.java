@@ -158,12 +158,12 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
         connection = app.getConnection();
         windowManager = createWindowManager();
 
-        Configuration configuration = AppBeans.get(Configuration.class);
+        Configuration configuration = AppBeans.get(Configuration.NAME);
         globalConfig = configuration.getConfig(GlobalConfig.class);
         webConfig = configuration.getConfig(WebConfig.class);
 
-        messages = AppBeans.get(Messages.class);
-        userSettingsTools = AppBeans.get(UserSettingsTools.class);
+        messages = AppBeans.get(Messages.NAME);
+        userSettingsTools = AppBeans.get(UserSettingsTools.NAME);
 
         mode = userSettingsTools.loadAppWindowMode();
 
@@ -204,7 +204,8 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
 
     protected void updateClientSystemMessages() {
         CubaClientManager.SystemMessages msgs = new CubaClientManager.SystemMessages();
-        Locale locale = AppBeans.get(UserSessionSource.class).getLocale();
+        UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
+        Locale locale = sessionSource.getLocale();
 
         msgs.communicationErrorCaption = messages.getMainMessage("communicationErrorCaption", locale);
         msgs.communicationErrorMessage = messages.getMainMessage("communicationErrorMessage", locale);
@@ -250,7 +251,8 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
     }
 
     private void checkSessions() {
-        Map<String, Object> info = AppBeans.get(UserSessionService.class).getLicenseInfo();
+        UserSessionService userSessionService = AppBeans.get(UserSessionService.NAME);
+        Map<String, Object> info = userSessionService.getLicenseInfo();
         Integer licensed = (Integer) info.get("licensedSessions");
         if (licensed < 0) {
             Notification.show("Invalid CUBA platform license", Notification.Type.WARNING_MESSAGE);
@@ -597,7 +599,8 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
      * @param layout parent layout
      */
     protected void createSearchLayout(HorizontalLayout layout) {
-        if (AppBeans.get(Configuration.class).getConfig(FtsConfig.class).getEnabled()) {
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        if (configuration.getConfig(FtsConfig.class).getEnabled()) {
             HorizontalLayout searchLayout = new HorizontalLayout();
             searchLayout.setMargin(new MarginInfo(false, true, false, true));
 
@@ -646,7 +649,8 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
         Map<String, Object> params = new HashMap<>();
         params.put("searchTerm", searchTerm);
 
-        WindowInfo windowInfo = AppBeans.get(WindowConfig.class).getWindowInfo("ftsSearch");
+        WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
+        WindowInfo windowInfo = windowConfig.getWindowInfo("ftsSearch");
         App.getInstance().getWindowManager().openWindow(
                 windowInfo,
                 WindowManager.OpenType.NEW_TAB,
@@ -811,9 +815,11 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
                 "and (us.startDate is null or us.startDate <= :currentDate) " +
                 "and (us.substitutedUser.active = true or us.substitutedUser.active is null) order by us.substitutedUser.name");
         query.setParameter("userId", userSession.getUser().getId());
-        query.setParameter("currentDate", AppBeans.get(TimeSource.class).currentTimestamp());
+        TimeSource timeSource = AppBeans.get(TimeSource.NAME);
+        query.setParameter("currentDate", timeSource.currentTimestamp());
         ctx.setView("app");
-        return AppBeans.get(DataService.class).loadList(ctx);
+        DataService dataService = AppBeans.get(DataService.NAME);
+        return dataService.loadList(ctx);
     }
 
     protected String getSubstitutedUserCaption(User user) {
@@ -997,7 +1003,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
 
             addActionHandler(this);
 
-            Messages messages = AppBeans.get(Messages.class);
+            Messages messages = AppBeans.get(Messages.NAME);
             closeAllTabs = new com.vaadin.event.Action(messages.getMainMessage("actions.closeAllTabs"));
             closeOtherTabs = new com.vaadin.event.Action(messages.getMainMessage("actions.closeOtherTabs"));
             closeCurrentTab = new com.vaadin.event.Action(messages.getMainMessage("actions.closeCurrentTab"));

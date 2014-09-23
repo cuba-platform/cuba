@@ -34,7 +34,7 @@ public class OptimisticExceptionHandler extends AbstractExceptionHandler {
             entityClassName = matcher.group(1);
         }
 
-        Messages messages = AppBeans.get(Messages.class);
+        Messages messages = AppBeans.get(Messages.NAME);
 
         String entityName = entityClassName.substring(entityClassName.lastIndexOf(".") + 1);
         String packageName = entityClassName.substring(0, entityClassName.lastIndexOf("."));

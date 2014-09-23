@@ -4,9 +4,10 @@
  */
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Messages;
-
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class DialogAction extends AbstractAction {
 
     public enum Type {
@@ -36,7 +37,7 @@ public class DialogAction extends AbstractAction {
 
     @Override
     public String getCaption() {
-        return AppBeans.get(Messages.class).getMainMessage(type.msgKey);
+        return messages.getMainMessage(type.msgKey);
     }
 
     @Override
@@ -48,6 +49,7 @@ public class DialogAction extends AbstractAction {
         return type;
     }
 
+    @Override
     public void actionPerform(Component component) {
     }
 }

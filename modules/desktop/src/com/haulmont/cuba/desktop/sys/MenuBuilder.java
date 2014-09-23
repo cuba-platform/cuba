@@ -40,7 +40,7 @@ public class MenuBuilder {
     public MenuBuilder(UserSession userSession, JMenuBar menuBar) {
         this.userSession = userSession;
         this.menuBar = menuBar;
-        menuConfig = AppBeans.get(MenuConfig.class);
+        menuConfig = AppBeans.get(MenuConfig.NAME);
     }
 
     public void build() {
@@ -85,9 +85,10 @@ public class MenuBuilder {
     }
 
     private void assignCommand(final JMenuItem jMenuItem, MenuItem item) {
+        WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
         WindowInfo windowInfo;
         try {
-            windowInfo = AppBeans.get(WindowConfig.class).getWindowInfo(item.getId());
+            windowInfo = windowConfig.getWindowInfo(item.getId());
         } catch (NoSuchScreenException e) {
             return;
         }

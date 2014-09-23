@@ -28,7 +28,7 @@ public class LinkColumnHelper {
 
     public static void initColumn(Table table, final String propertyName, final Handler handler) {
 
-        final ComponentsFactory componentsFactory = AppBeans.get(ComponentsFactory.class);
+        final ComponentsFactory componentsFactory = AppBeans.get(ComponentsFactory.NAME);
 
         table.addGeneratedColumn(propertyName, new Table.ColumnGenerator() {
             @Override
@@ -57,7 +57,8 @@ public class LinkColumnHelper {
                             String str;
                             Datatype datatype = Datatypes.get(value.getClass());
                             if (datatype != null) {
-                                str = datatype.format(value, AppBeans.get(UserSessionSource.class).getLocale());
+                                UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
+                                str = datatype.format(value, sessionSource.getLocale());
                             } else {
                                 str = value.toString();
                             }

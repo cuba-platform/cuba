@@ -255,7 +255,7 @@ public class XMLConvertor implements Convertor {
 
     private void parseEntity(CommitRequest commitRequest, Object bean, MetaClass metaClass, Node node)
             throws InstantiationException, IllegalAccessException, InvocationTargetException, IntrospectionException, ParseException {
-        MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
+        MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
         NodeList fields = node.getChildNodes();
         for (int i = 0; i < fields.getLength(); i++) {
             Node fieldNode = fields.item(i);
@@ -464,7 +464,7 @@ public class XMLConvertor implements Convertor {
         parent.appendChild(root);
         root.setAttribute(ATTR_ID, ior(entity));
 
-        MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
+        MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
         List<MetaProperty> properties = ConvertorHelper.getOrderedProperties(metaClass);
         for (MetaProperty property : properties) {
             Element child;
@@ -619,7 +619,8 @@ public class XMLConvertor implements Convertor {
     }
 
     protected MetaClass getMetaClass(Entity entity) {
-        return AppBeans.get(Metadata.class).getSession().getClass(entity.getClass());
+        Metadata metadata = AppBeans.get(Metadata.NAME);
+        return metadata.getSession().getClass(entity.getClass());
     }
 
     protected boolean attrViewPermitted(MetaClass metaClass, String property) {

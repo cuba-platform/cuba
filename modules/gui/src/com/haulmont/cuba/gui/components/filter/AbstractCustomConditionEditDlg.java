@@ -66,7 +66,7 @@ public abstract class AbstractCustomConditionEditDlg<T> {
     public AbstractCustomConditionEditDlg(final AbstractCustomCondition condition) {
         this.condition = condition;
         this.messagesPack = AppConfig.getMessagesPack();
-        this.messages = AppBeans.get(Messages.class);
+        this.messages = AppBeans.get(Messages.NAME);
 
         ThemeConstantsManager themeManager = AppBeans.get(ThemeConstantsManager.NAME);
         ThemeConstants theme = themeManager.getConstants();
@@ -324,8 +324,8 @@ public abstract class AbstractCustomConditionEditDlg<T> {
         if (!entitySelect.isEnabled())
             return;
 
-        MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
-        MessageTools messageTools = AppBeans.get(MessageTools.class);
+        MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
+        MessageTools messageTools = AppBeans.get(MessageTools.NAME);
 
         Map<String, Object> items = new TreeMap<>();
         Object selectedItem = null;
@@ -338,7 +338,8 @@ public abstract class AbstractCustomConditionEditDlg<T> {
 
             if (param != null && AbstractParam.Type.ENTITY.equals(param.getType())) {
                 Class javaClass = param.getJavaClass();
-                selectedItem = AppBeans.get(Metadata.class).getClass(javaClass);
+                Metadata metadata = AppBeans.get(Metadata.NAME);
+                selectedItem = metadata.getClass(javaClass);
             }
             entitySelect.setOptionsMap(items);
             entitySelect.setValue(selectedItem);

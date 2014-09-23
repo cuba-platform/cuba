@@ -16,9 +16,8 @@ import javax.annotation.Nullable;
 /**
  * Handles {@link NoSuchScreenException}.
  *
- * <p>$Id$</p>
- *
  * @author devyatkin
+ * @version $Id$
  */
 public class NoSuchScreenHandler extends AbstractExceptionHandler {
 
@@ -28,7 +27,8 @@ public class NoSuchScreenHandler extends AbstractExceptionHandler {
 
     @Override
     protected void doHandle(Thread thread, String className, String message, @Nullable Throwable throwable) {
-        String msg = AppBeans.get(Messages.class).getMessage(getClass(), "noSuchScreen.message");
+        Messages messages = AppBeans.get(Messages.NAME);
+        String msg = messages.getMessage(getClass(), "noSuchScreen.message");
         App.getInstance().getMainFrame().showNotification(msg, throwable != null ? throwable.getMessage() : null,
                 IFrame.NotificationType.ERROR);
     }

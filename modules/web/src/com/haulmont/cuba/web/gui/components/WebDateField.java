@@ -66,7 +66,8 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
         composition.setSpacing(true);
         dateField = new CubaDateField();
 
-        Locale userLocale = AppBeans.get(UserSessionSource.class).getLocale();
+        UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
+        Locale userLocale = sessionSource.getLocale();
         dateField.setDateFormat(Datatypes.getFormatStringsNN(userLocale).getDateFormat());
 
         dateField.setResolution(com.vaadin.shared.ui.datefield.Resolution.DAY);
@@ -358,7 +359,8 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
             return null;
         }
 
-        Locale locale = AppBeans.get(UserSessionSource.class).getLocale();
+        UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
+        Locale locale = sessionSource.getLocale();
 
         Calendar c = Calendar.getInstance(locale);
         c.setTime(datePickerDate);

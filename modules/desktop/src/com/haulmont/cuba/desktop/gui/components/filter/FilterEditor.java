@@ -8,7 +8,9 @@ package com.haulmont.cuba.desktop.gui.components.filter;
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.CategorizedEntity;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.TopLevelFrame;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
@@ -23,7 +25,6 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.FilterEntity;
-import com.haulmont.cuba.security.global.UserSession;
 import net.miginfocom.layout.CC;
 import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
@@ -74,9 +75,7 @@ public class FilterEditor extends AbstractFilterEditor {
     protected JCheckBox defaultCb;
     protected JCheckBox applyDefaultCb;
 
-    protected UserSession userSession = AppBeans.get(UserSessionSource.class).getUserSession();
-
-    protected Security security = AppBeans.get(Security.class);
+    protected Security security = AppBeans.get(Security.NAME);
 
     public FilterEditor(final DesktopFilter desktopFilter, FilterEntity filterEntity,
                         Element filterDescriptor, List<String> existingNames) {
@@ -175,7 +174,7 @@ public class FilterEditor extends AbstractFilterEditor {
 
         globalCb = new JCheckBox(getMessage("FilterEditor.global"));
         globalCb.setSelected(filterEntity.getUser() == null);
-        globalCb.setEnabled(userSession.isSpecificPermitted("cuba.gui.filter.global"));
+        globalCb.setEnabled(security.isSpecificPermitted("cuba.gui.filter.global"));
 
         checkBoxes.add(globalCb, new CC().hideMode(3));
 
@@ -288,7 +287,7 @@ public class FilterEditor extends AbstractFilterEditor {
         GroupCreator orGroupCreator = new GroupCreator(GroupType.OR, filterComponentName, datasource);
         addSelect.addItem(new ItemWrapper<AbstractConditionDescriptor>(orGroupCreator, orGroupCreator.getLocCaption()));
 
-        if (userSession.isSpecificPermitted("cuba.gui.filter.customConditions")) {
+        if (security.isSpecificPermitted("cuba.gui.filter.customConditions")) {
             ConditionCreator conditionCreator = new ConditionCreator(filterComponentName, datasource);
             addSelect.addItem(new ItemWrapper<AbstractConditionDescriptor>(conditionCreator, conditionCreator.getLocCaption()));
         }

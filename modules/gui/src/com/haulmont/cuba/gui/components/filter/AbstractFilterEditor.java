@@ -64,9 +64,10 @@ public abstract class AbstractFilterEditor {
         this.metaClass = datasource.getMetaClass();
         this.existingNames = existingNames;
 
+        Configuration configuration = AppBeans.get(Configuration.NAME);
         this.manualApplyRequired = filter.getManualApplyRequired() != null ?
                 filter.getManualApplyRequired() :
-                AppBeans.get(Configuration.class).getConfig(ClientConfig.class).getGenericFilterManualApplyRequired();
+                configuration.getConfig(ClientConfig.class).getGenericFilterManualApplyRequired();
 
         String[] strings = ValuePathHelper.parse(filterEntity.getComponentId());
         this.filterComponentName = ValuePathHelper.format(Arrays.copyOfRange(strings, 1, strings.length));

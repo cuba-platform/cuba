@@ -76,7 +76,8 @@ public class AppUI extends UI implements ErrorHandler {
             app = App.getInstance();
         }
 
-        testMode = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class).getTestMode();
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        testMode = configuration.getConfig(GlobalConfig.class).getTestMode();
 
         // do not grab focus
         setTabIndex(-1);
@@ -142,7 +143,8 @@ public class AppUI extends UI implements ErrorHandler {
         if (applicationInitRequired) {
             app.init();
 
-            Locale locale = AppBeans.get(MessageTools.class).trimLocale(request.getLocale());
+            MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+            Locale locale = messageTools.trimLocale(request.getLocale());
             app.setLocale(locale);
 
             applicationInitRequired = false;
@@ -217,7 +219,8 @@ public class AppUI extends UI implements ErrorHandler {
     public void processExternalLink(VaadinRequest request) {
         String action = (String) request.getWrappedSession().getAttribute(LAST_REQUEST_ACTION_ATTR);
 
-        WebConfig webConfig = AppBeans.get(Configuration.class).getConfig(WebConfig.class);
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        WebConfig webConfig = configuration.getConfig(WebConfig.class);
         if (webConfig.getLinkHandlerActions().contains(action)) {
             //noinspection unchecked
             Map<String, String> params =

@@ -27,7 +27,8 @@ public class AccessDeniedHandler extends AbstractExceptionHandler {
 
     @Override
     protected void doHandle(App app, String className, String message, @Nullable Throwable throwable) {
-        String msg = AppBeans.get(Messages.class).getMessage(getClass(), "accessDenied.message");
+        Messages messages = AppBeans.get(Messages.NAME);
+        String msg = messages.getMessage(getClass(), "accessDenied.message");
         new Notification(msg, Notification.Type.ERROR_MESSAGE).show(Page.getCurrent());
     }
 

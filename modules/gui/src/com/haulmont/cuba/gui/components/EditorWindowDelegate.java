@@ -38,11 +38,11 @@ public class EditorWindowDelegate extends WindowDelegate {
     protected boolean commitAndCloseButtonExists;
     protected boolean readOnly;
 
-    protected Metadata metadata = AppBeans.get(Metadata.class);
-    protected Messages messages = AppBeans.get(Messages.class);
-    protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.class);
-    protected LockService lockService = AppBeans.get(LockService.class);
-    protected Configuration configuration = AppBeans.get(Configuration.class);
+    protected Metadata metadata = AppBeans.get(Metadata.NAME);
+    protected Messages messages = AppBeans.get(Messages.NAME);
+    protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
+    protected LockService lockService = AppBeans.get(LockService.NAME);
+    protected Configuration configuration = AppBeans.get(Configuration.NAME);
 
     public EditorWindowDelegate(Window window) {
         super(window);

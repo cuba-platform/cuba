@@ -23,7 +23,8 @@ public class GroupCreator extends AbstractGroupConditionDescriptor {
 
     public GroupCreator(GroupType groupType, String filterComponentName, CollectionDatasource datasource) {
         super(groupType, "groupCreator", filterComponentName, datasource);
-        locCaption = AppBeans.get(Messages.class).getMessage(MESSAGES_PACK, "groupCreator." + groupType);
+        Messages messages = AppBeans.get(Messages.NAME);
+        locCaption = messages.getMessage(MESSAGES_PACK, "groupCreator." + groupType);
     }
 
     @Override

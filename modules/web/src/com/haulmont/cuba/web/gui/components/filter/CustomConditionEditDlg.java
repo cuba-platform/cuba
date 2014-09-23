@@ -39,7 +39,8 @@ public class CustomConditionEditDlg extends AbstractCustomConditionEditDlg<Windo
     }
 
     protected void initShortcuts() {
-        ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
         KeyCombination close = KeyCombination.create(clientConfig.getCloseShortcut());
         KeyCombination commit = KeyCombination.create(clientConfig.getCommitShortcut());
 

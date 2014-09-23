@@ -17,7 +17,7 @@ import org.antlr.runtime.RecognitionException;
  */
 public class QueryTransformerFactory {
 
-    private static boolean useAst = AppBeans.get(Configuration.class)
+    private static boolean useAst = AppBeans.<Configuration>get(Configuration.NAME)
             .getConfig(GlobalConfig.class).getUseAstBasedJpqlTransformer();
 
     private static volatile DomainModel domainModel;
@@ -26,8 +26,9 @@ public class QueryTransformerFactory {
         if (useAst) {
             try {
                 if (domainModel == null) {
-                    DomainModelBuilder builder = new DomainModelBuilder(
-                            AppBeans.get(MetadataTools.class), AppBeans.get(MessageTools.class));
+                    MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
+                    MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+                    DomainModelBuilder builder = new DomainModelBuilder(metadataTools, messageTools);
                     domainModel = builder.produce();
                 }
                 return new QueryTransformerAstBased(domainModel, query, targetEntity);

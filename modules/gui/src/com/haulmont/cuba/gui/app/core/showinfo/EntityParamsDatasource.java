@@ -30,7 +30,7 @@ public class EntityParamsDatasource extends CollectionDatasourceImpl<KeyValueEnt
     protected Messages messages;
 
     public EntityParamsDatasource() {
-        messages = AppBeans.get(Messages.class);
+        messages = AppBeans.get(Messages.NAME);
     }
 
     @Override

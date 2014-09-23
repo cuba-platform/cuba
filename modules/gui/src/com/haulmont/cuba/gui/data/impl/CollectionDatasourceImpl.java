@@ -73,7 +73,8 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
     protected int firstResult;
 
-    protected boolean sortOnDb = AppBeans.get(Configuration.class).getConfig(ClientConfig.class).getCollectionDatasourceDbSortEnabled();
+    protected boolean sortOnDb = AppBeans.<Configuration>get(Configuration.NAME)
+            .getConfig(ClientConfig.class).getCollectionDatasourceDbSortEnabled();
 
     protected LoadContext.Query lastQuery;
     protected LinkedList<LoadContext.Query> prevQueries = new LinkedList<>();

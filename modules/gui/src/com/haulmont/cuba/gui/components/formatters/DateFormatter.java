@@ -37,8 +37,8 @@ public class DateFormatter implements Formatter<Date> {
 
     private Element element;
 
-    protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.class);
-    protected Messages messages = AppBeans.get(Messages.class);
+    protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
+    protected Messages messages = AppBeans.get(Messages.NAME);
 
     public DateFormatter(Element element) {
         this.element = element;

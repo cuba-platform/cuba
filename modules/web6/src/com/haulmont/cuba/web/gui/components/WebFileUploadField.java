@@ -48,7 +48,7 @@ public class WebFileUploadField extends WebAbstractComponent<Upload> implements 
 
     public WebFileUploadField() {
         fileUploading = AppBeans.get(FileUploadingAPI.NAME);
-        messages = AppBeans.get(Messages.class);
+        messages = AppBeans.get(Messages.NAME);
         component = new Upload(
                 null,
                 new Upload.Receiver() {

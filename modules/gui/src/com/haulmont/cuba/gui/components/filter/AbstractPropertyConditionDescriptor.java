@@ -31,7 +31,7 @@ public abstract class AbstractPropertyConditionDescriptor<T extends AbstractPara
         super(name, filterComponentName, datasource);
         this.caption = caption;
 
-        Messages messages = AppBeans.get(Messages.class);
+        Messages messages = AppBeans.get(Messages.NAME);
 
         if (!isBlank(caption)) {
             this.locCaption = messages.getTools().loadString(messagesPack, caption);

@@ -43,11 +43,11 @@ public class LogDataProvider implements ExportDataProvider {
 
     protected ClientConnectionManager connectionManager;
 
-    protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.class);
+    protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
 
-    protected Configuration configuration = AppBeans.get(Configuration.class);
+    protected Configuration configuration = AppBeans.get(Configuration.NAME);
 
-    protected JmxRemoteLoggingAPI jmxRemoteLoggingAPI = AppBeans.get(JmxRemoteLoggingAPI.class);
+    protected JmxRemoteLoggingAPI jmxRemoteLoggingAPI = AppBeans.get(JmxRemoteLoggingAPI.NAME);
 
     protected final String logFileName;
 

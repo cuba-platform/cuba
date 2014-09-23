@@ -74,7 +74,8 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
 
         private DesktopTaskExecutor(BackgroundTask<T, V> runnableTask) {
             this.runnableTask = runnableTask;
-            userId = AppBeans.get(UserSessionSource.class).getUserSession().getId();
+            UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
+            userId = sessionSource.getUserSession().getId();
 
             //noinspection unchecked
             this.params = runnableTask.getParams();

@@ -25,7 +25,7 @@ public class DateValidator implements Field.Validator {
 
     protected String message;
     protected String messagesPack;
-    protected Messages messages = AppBeans.get(Messages.class);
+    protected Messages messages = AppBeans.get(Messages.NAME);
 
     public DateValidator(Element element, String messagesPack) {
         this.message = element.attributeValue("message");
@@ -49,7 +49,8 @@ public class DateValidator implements Field.Validator {
         if (value instanceof String) {
             try {
                 Datatype datatype = Datatypes.get(DateDatatype.NAME);
-                datatype.parse((String) value, AppBeans.get(UserSessionSource.class).getLocale());
+                UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
+                datatype.parse((String) value, sessionSource.getLocale());
                 result = true;
             } catch (ParseException e) {
                 result = false;

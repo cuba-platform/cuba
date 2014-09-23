@@ -38,7 +38,7 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
 
     private static Log log = LogFactory.getLog(WebAbstractTextField.class);
 
-    protected Locale locale = AppBeans.get(UserSessionSource.class).getLocale();
+    protected Locale locale = AppBeans.<UserSessionSource>get(UserSessionSource.NAME).getLocale();
 
     public WebAbstractTextField() {
         this.component = createTextFieldImpl();

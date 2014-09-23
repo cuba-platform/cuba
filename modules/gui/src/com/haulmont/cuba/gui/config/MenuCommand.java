@@ -73,7 +73,8 @@ public class MenuCommand {
                     throw new UnsupportedOperationException();
                 }
 
-                entityItem = AppBeans.get(Metadata.class).create(metaClassName);
+                Metadata metadata = AppBeans.get(Metadata.NAME);
+                entityItem = metadata.create(metaClassName);
             }
             windowManager.openEditor(
                     windowInfo,
@@ -119,7 +120,7 @@ public class MenuCommand {
     }
 
     private Entity loadEntityInstance(EntityLoadInfo info) {
-        DataService ds = AppBeans.get(DataService.class);
+        DataService ds = AppBeans.get(DataService.NAME);
         LoadContext ctx = new LoadContext(info.getMetaClass()).setId(info.getId());
         if (info.getViewName() != null)
             ctx.setView(info.getViewName());

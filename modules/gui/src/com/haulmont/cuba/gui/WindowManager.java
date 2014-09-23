@@ -89,7 +89,7 @@ public abstract class WindowManager {
 
     protected Resources resources = AppBeans.get(Resources.NAME);
 
-    protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.class);
+    protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
 
     private DialogParams dialogParams;
 
@@ -169,7 +169,8 @@ public abstract class WindowManager {
         componentLoaderContext.setFrame(windowWrapper);
         componentLoaderContext.executePostInitTasks();
 
-        if (AppBeans.get(Configuration.class).getConfig(GlobalConfig.class).getTestMode()) {
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        if (configuration.getConfig(GlobalConfig.class).getTestMode()) {
             initDebugIds(window);
         }
 

@@ -96,7 +96,7 @@ public class DefaultExceptionHandler implements ExceptionHandler {
                     if (guiDevException.getFrameId() != null) {
                         params.put("Frame ID", guiDevException.getFrameId());
                         try {
-                            WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
+                            WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
                             params.put("XML descriptor",
                                     windowConfig.getWindowInfo(guiDevException.getFrameId()).getTemplate());
                         } catch (Exception e) {
@@ -130,6 +130,7 @@ public class DefaultExceptionHandler implements ExceptionHandler {
     }
 
     protected String getMessage(String key) {
-        return AppBeans.get(Messages.class).getMainMessage(key, App.getInstance().getLocale());
+        Messages messages = AppBeans.get(Messages.NAME);
+        return messages.getMainMessage(key, App.getInstance().getLocale());
     }
 }

@@ -40,10 +40,10 @@ public class ScreenHistorySupport {
     protected Configuration configuration;
 
     public ScreenHistorySupport() {
-        metadata = AppBeans.get(Metadata.class);
-        messages = AppBeans.get(Messages.class);
-        uss = AppBeans.get(UserSessionSource.class);
-        configuration = AppBeans.get(Configuration.class);
+        metadata = AppBeans.get(Metadata.NAME);
+        messages = AppBeans.get(Messages.NAME);
+        uss = AppBeans.get(UserSessionSource.NAME);
+        configuration = AppBeans.get(Configuration.NAME);
 
         String property = configuration.getConfig(ClientConfig.class).getScreenIdsToSaveHistory();
         if (StringUtils.isNotBlank(property)) {
@@ -60,7 +60,8 @@ public class ScreenHistorySupport {
     }
 
     public void saveScreenHistory(Window window, WindowManager.OpenType openType) {
-        if (AppBeans.get(Security.class).isEntityOpPermitted(ScreenHistoryEntity.class, EntityOp.CREATE)
+        Security security = AppBeans.get(Security.NAME);
+        if (security.isEntityOpPermitted(ScreenHistoryEntity.class, EntityOp.CREATE)
                 && window.getFrame() != null
                 && (window.getFrame() instanceof Window.Editor)
                 && !openType.equals(WindowManager.OpenType.DIALOG)
@@ -89,7 +90,8 @@ public class ScreenHistorySupport {
             addAdditionalFields(screenHistoryEntity, entity);
 
             CommitContext cc = new CommitContext(Collections.singleton(screenHistoryEntity));
-            AppBeans.get(DataService.class).commit(cc);
+            DataService dataService = AppBeans.get(DataService.NAME);
+            dataService.commit(cc);
         }
     }
 

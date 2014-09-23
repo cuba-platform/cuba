@@ -52,8 +52,8 @@ public abstract class AbstractParam<T> {
     protected List<String> runtimeEnum;
     protected UUID categoryAttrId;
 
-    protected Messages messages = AppBeans.get(Messages.class);
-    protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.class);
+    protected Messages messages = AppBeans.get(Messages.NAME);
+    protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
 
     private List<ValueListener> listeners = new ArrayList<>();
 
@@ -184,7 +184,8 @@ public abstract class AbstractParam<T> {
 
     private Object loadEntity(String id) {
         LoadContext ctx = new LoadContext(javaClass).setId(UUID.fromString(id));
-        Entity entity = AppBeans.get(DataService.class).load(ctx);
+        DataService dataService = AppBeans.get(DataService.NAME);
+        Entity entity = dataService.load(ctx);
         return entity;
     }
 

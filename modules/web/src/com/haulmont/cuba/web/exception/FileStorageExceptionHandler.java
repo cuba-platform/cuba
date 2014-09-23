@@ -26,7 +26,7 @@ public class FileStorageExceptionHandler extends AbstractExceptionHandler {
     @Override
     protected void doHandle(App app, String className, String message, @Nullable Throwable throwable) {
         String msg = null;
-        Messages messages = AppBeans.get(Messages.class);
+        Messages messages = AppBeans.get(Messages.NAME);
         if (throwable != null) {
             FileStorageException storageException = (FileStorageException) throwable;
             String fileName = storageException.getFileName();

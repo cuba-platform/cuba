@@ -13,7 +13,6 @@ import com.haulmont.cuba.core.global.UuidProvider;
 import com.haulmont.cuba.core.sys.CubaEnhanced;
 import org.apache.commons.lang.ObjectUtils;
 
-import javax.persistence.MappedSuperclass;
 import java.util.UUID;
 
 /**
@@ -40,7 +39,8 @@ public abstract class AbstractNotPersistentEntity extends AbstractInstance imple
 
     @Override
     public MetaClass getMetaClass() {
-        return AppBeans.get(Metadata.class).getSession().getClass(getClass());
+        Metadata metadata = AppBeans.get(Metadata.NAME);
+        return metadata.getSession().getClass(getClass());
     }
 
     @MetaProperty

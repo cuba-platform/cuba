@@ -28,10 +28,12 @@ public abstract class AbstractCustomCondition<T extends AbstractParam> extends A
     public AbstractCustomCondition(Element element, String messagesPack, String filterComponentName, Datasource datasource) {
         super(element, filterComponentName, datasource);
 
-        if (isBlank(caption))
+        if (isBlank(caption)) {
             locCaption = element.attributeValue("locCaption");
-        else
-            locCaption = AppBeans.get(MessageTools.class).loadString(messagesPack, caption);
+        } else {
+            MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+            locCaption = messageTools.loadString(messagesPack, caption);
+        }
 
         entityAlias = element.attributeValue("entityAlias");
         text = element.getText();
@@ -82,10 +84,12 @@ public abstract class AbstractCustomCondition<T extends AbstractParam> extends A
         if (res != null)
             return res;
 
-        if (param == null)
-            return locCaption + ": " + AppBeans.get(Messages.class).getMessage(MESSAGES_PACK, "CustomCondition.paramNotDefined");
-        else
+        if (param == null) {
+            Messages messages = AppBeans.get(Messages.NAME);
+            return locCaption + ": " + messages.getMessage(MESSAGES_PACK, "CustomCondition.paramNotDefined");
+        } else {
             return null;
+        }
     }
 
     public String getJoin() {

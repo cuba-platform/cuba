@@ -7,7 +7,10 @@ package com.haulmont.cuba.web.gui.components.filter;
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.CategorizedEntity;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.Security;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.filter.*;
@@ -55,7 +58,7 @@ public class FilterEditor extends AbstractFilterEditor {
     protected Button upBtn;
     protected Button downBtn;
 
-    protected Security security = AppBeans.get(Security.class);
+    protected Security security = AppBeans.get(Security.NAME);
     protected ThemeConstants themeConstants;
 
     public FilterEditor(final WebFilter webFilter, FilterEntity filterEntity,
@@ -153,7 +156,7 @@ public class FilterEditor extends AbstractFilterEditor {
         globalCb = new CheckBox();
         globalCb.setCaption(getMessage("FilterEditor.global"));
         globalCb.setValue(filterEntity.getUser() == null);
-        globalCb.setEnabled(AppBeans.get(UserSessionSource.class).getUserSession().isSpecificPermitted("cuba.gui.filter.global"));
+        globalCb.setEnabled(security.isSpecificPermitted("cuba.gui.filter.global"));
 
         flagsLayout.addComponent(globalCb);
 
@@ -211,7 +214,8 @@ public class FilterEditor extends AbstractFilterEditor {
         HorizontalLayout addLayout = new HorizontalLayout();
         addLayout.setSpacing(true);
 
-        if (AppBeans.get(Configuration.class).getConfig(ClientConfig.class).getGenericFilterTreeConditionSelect()) {
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        if (configuration.getConfig(ClientConfig.class).getGenericFilterTreeConditionSelect()) {
             initAddDialog(addLayout);
         } else {
             initAddSelect(addLayout);
@@ -326,7 +330,8 @@ public class FilterEditor extends AbstractFilterEditor {
         addSelect.addItem(orGroupCreator);
         addSelect.setItemCaption(orGroupCreator, orGroupCreator.getLocCaption());
 
-        if (AppBeans.get(UserSessionSource.class).getUserSession().isSpecificPermitted("cuba.gui.filter.customConditions")) {
+        UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
+        if (sessionSource.getUserSession().isSpecificPermitted("cuba.gui.filter.customConditions")) {
             ConditionCreator conditionCreator = new ConditionCreator(filterComponentName, datasource);
             addSelect.addItem(conditionCreator);
             addSelect.setItemCaption(conditionCreator, conditionCreator.getLocCaption());

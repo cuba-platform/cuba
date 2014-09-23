@@ -58,7 +58,7 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
 
     protected String caption;
 
-    protected Locale locale = AppBeans.get(UserSessionSource.class).getLocale();
+    protected Locale locale = AppBeans.<UserSessionSource>get(UserSessionSource.NAME).getLocale();
     protected DefaultValueFormatter valueFormatter;
 
     protected DesktopAbstractTextField() {
@@ -266,8 +266,9 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
     }
 
     protected void showValidationMessage() {
+        Messages messages = AppBeans.get(Messages.NAME);
         DesktopComponentsHelper.getTopLevelFrame(this).showNotification(
-                AppBeans.get(Messages.class).getMessage(AppConfig.getMessagesPack(), "validationFail"),
+                messages.getMessage(AppConfig.getMessagesPack(), "validationFail"),
                 IFrame.NotificationType.TRAY
         );
     }

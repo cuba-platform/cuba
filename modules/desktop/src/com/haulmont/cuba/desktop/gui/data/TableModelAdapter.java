@@ -37,7 +37,7 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
     protected boolean autoRefresh;
     protected List<DataChangeListener> changeListeners = new ArrayList<>();
 
-    protected MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
+    protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
 
     public TableModelAdapter(CollectionDatasource datasource, List<Table.Column> columns, boolean autoRefresh) {
 

@@ -704,7 +704,7 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
                 }
             }
 
-            MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
+            MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
             return metadataTools.format(value, propertyPath.getMetaProperty());
         }
     }

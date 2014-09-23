@@ -43,7 +43,8 @@ public class SearchFolder extends AbstractSearchFolder {
     public void copyFrom(AbstractSearchFolder srcFolder) {
         super.copyFrom(srcFolder);
 
-        setUser(AppBeans.get(UserSessionSource.class).getUserSession().getUser());
+        UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
+        setUser(sessionSource.getUserSession().getUser());
     }
 
     public User getUser() {
@@ -69,7 +70,8 @@ public class SearchFolder extends AbstractSearchFolder {
 
     @Override
     public String getCaption() {
-        return AppBeans.get(Messages.class).getMainMessage(name);
+        Messages messages = AppBeans.get(Messages.NAME);
+        return messages.getMainMessage(name);
     }
 
     public Boolean getIsSet(){

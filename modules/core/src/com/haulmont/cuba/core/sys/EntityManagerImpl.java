@@ -86,7 +86,8 @@ public class EntityManagerImpl implements EntityManager {
             entity = delegate.merge(entity);
         }
         if (entity instanceof SoftDelete && softDeletion) {
-            ((SoftDelete) entity).setDeleteTs(AppBeans.get(TimeSource.class).currentTimestamp());
+            TimeSource timeSource = AppBeans.get(TimeSource.NAME);
+            ((SoftDelete) entity).setDeleteTs(timeSource.currentTimestamp());
             ((SoftDelete) entity).setDeletedBy(userSession != null ? userSession.getUser().getLogin() : "<unknown>");
         } else {
             delegate.remove(entity);

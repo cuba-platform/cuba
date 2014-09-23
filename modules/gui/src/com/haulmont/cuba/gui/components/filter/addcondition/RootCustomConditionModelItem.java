@@ -55,7 +55,8 @@ public class RootCustomConditionModelItem implements ModelItem {
 
     @Override
     public String getCaption() {
-        return AppBeans.get(Messages.class).getMessage(AbstractFilterEditor.MESSAGES_PACK, "NewConditionDlg.specialConditions");
+        Messages messages = AppBeans.get(Messages.NAME);
+        return messages.getMessage(AbstractFilterEditor.MESSAGES_PACK, "NewConditionDlg.specialConditions");
     }
 
     @Override

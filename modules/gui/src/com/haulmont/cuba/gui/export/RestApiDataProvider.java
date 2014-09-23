@@ -40,7 +40,8 @@ public class RestApiDataProvider implements ExportDataProvider {
 
     public RestApiDataProvider(String query) {
         this.query = query;
-        restApiUrl = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class).getRestApiUrl();
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        restApiUrl = configuration.getConfig(GlobalConfig.class).getRestApiUrl();
         if (!restApiUrl.endsWith("/"))
             restApiUrl = restApiUrl + "/";
     }

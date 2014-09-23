@@ -132,24 +132,28 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
     protected LinkedList<AppliedFilterHolder> appliedFilters = new LinkedList<>();
     protected VerticalLayout appliedFiltersLayout;
 
-    protected GlobalConfig globalConfig = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class);
-    protected ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+    protected GlobalConfig globalConfig;
+    protected ClientConfig clientConfig;
     protected String defaultFilterCaption;
 
     protected HorizontalLayout topLayout = null;
 
-    protected Metadata metadata = AppBeans.get(Metadata.class);
+    protected Metadata metadata = AppBeans.get(Metadata.NAME);
 
     protected String userStyleName = null;
 
     protected String initialWindowCaption;
 
     public WebFilter() {
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        globalConfig = configuration.getConfig(GlobalConfig.class);
+        clientConfig = configuration.getConfig(ClientConfig.class);
+
         persistenceManager = AppBeans.get(PersistenceManagerService.NAME);
         component = new CubaVerticalActionsLayout();
 
-        messages = AppBeans.get(Messages.class);
-        userSessionSource = AppBeans.get(UserSessionSource.class);
+        messages = AppBeans.get(Messages.NAME);
+        userSessionSource = AppBeans.get(UserSessionSource.NAME);
 
         defaultFilterCaption = messages.getMessage(MESSAGES_PACK, "defaultFilter");
 
@@ -872,8 +876,9 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
     @Override
     public void setUseMaxResults(boolean useMaxResults) {
         this.useMaxResults = useMaxResults;
-        maxResultsLayout.setVisible(useMaxResults
-                && AppBeans.get(UserSessionSource.class).getUserSession().isSpecificPermitted("cuba.gui.filter.maxResults"));
+
+        Security security = AppBeans.get(Security.NAME);
+        maxResultsLayout.setVisible(useMaxResults && security.isSpecificPermitted("cuba.gui.filter.maxResults"));
     }
 
     @Override
@@ -985,11 +990,11 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
     }
 
     protected void loadFilterEntities() {
-        DataService ds = AppBeans.get(DataService.class);
+        DataService ds = AppBeans.get(DataService.NAME);
         LoadContext ctx = new LoadContext(metadata.getExtendedEntities().getEffectiveMetaClass(FilterEntity.class));
         ctx.setView("app");
 
-        UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.class);
+        UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
 
         User user = userSessionSource.getUserSession().getSubstitutedUser();
         if (user == null)
@@ -1072,7 +1077,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         Boolean isDefault = filterEntity.getIsDefault();
         Boolean applyDefault = filterEntity.getApplyDefault();
         if (filterEntity.getFolder() == null) {
-            DataService ds = AppBeans.get(DataService.class);
+            DataService ds = AppBeans.get(DataService.NAME);
             CommitContext ctx = new CommitContext(Collections.singletonList(filterEntity));
             Set<Entity> result = ds.commit(ctx);
             for (Entity entity : result) {
@@ -1099,7 +1104,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
     }
 
     protected void deleteFilterEntity() {
-        DataService ds = AppBeans.get(DataService.class);
+        DataService ds = AppBeans.get(DataService.NAME);
         CommitContext ctx = new CommitContext();
         ctx.setRemoveInstances(Collections.singletonList(filterEntity));
         ds.commit(ctx);
@@ -1141,7 +1146,8 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
     @Override
     public void setFrame(IFrame frame) {
         super.setFrame(frame);
-        ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
         frame.addAction(new AbstractAction("applyFilter", clientConfig.getFilterApplyShortcut()) {
             @Override
             public void actionPerform(Component component) {
@@ -1639,7 +1645,8 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
     }
 
     protected boolean isEditFiltersPermitted() {
-        return AppBeans.get(UserSessionSource.class).getUserSession().isSpecificPermitted("cuba.gui.filter.edit");
+        Security security = AppBeans.get(Security.NAME);
+        return security.isSpecificPermitted("cuba.gui.filter.edit");
     }
 
     @Override

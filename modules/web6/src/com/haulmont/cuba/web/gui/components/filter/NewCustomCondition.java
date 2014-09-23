@@ -20,6 +20,7 @@ public class NewCustomCondition extends CustomCondition {
         super(descriptor, where, join, entityAlias);
 
         name = RandomStringUtils.randomAlphabetic(10);
-        locCaption = AppBeans.get(Messages.class).getMessage(MESSAGES_PACK, "newCustomCondition");
+        Messages messages = AppBeans.get(Messages.NAME);
+        locCaption = messages.getMessage(MESSAGES_PACK, "newCustomCondition");
     }
 }

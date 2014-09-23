@@ -78,7 +78,8 @@ public abstract class BaseUuidEntity extends AbstractInstance implements BaseEnt
 
     @Override
     public MetaClass getMetaClass() {
-        return AppBeans.get(Metadata.class).getSession().getClassNN(getClass());
+        Metadata metadata = AppBeans.get(Metadata.NAME);
+        return metadata.getSession().getClassNN(getClass());
     }
 
     @Override

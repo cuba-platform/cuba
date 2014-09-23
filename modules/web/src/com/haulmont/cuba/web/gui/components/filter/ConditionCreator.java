@@ -20,7 +20,8 @@ public class ConditionCreator extends AbstractConditionDescriptor {
 
     public ConditionCreator(String filterComponentName, CollectionDatasource datasource) {
         super("creator", filterComponentName, datasource);
-        locCaption = AppBeans.get(Messages.class).getMessage(MESSAGES_PACK, "conditionCreator");
+        Messages messages = AppBeans.get(Messages.NAME);
+        locCaption = messages.getMessage(MESSAGES_PACK, "conditionCreator");
         showImmediately = true;
     }
 

@@ -46,7 +46,7 @@ public abstract class AbstractConnection implements Connection {
 
     protected LoginService loginService = AppBeans.get(LoginService.NAME);
     protected UserSessionService userSessionService = AppBeans.get(UserSessionService.NAME);
-    protected Messages messages = AppBeans.get(Messages.class);
+    protected Messages messages = AppBeans.get(Messages.NAME);
 
     @Override
     public boolean isConnected() {
@@ -131,7 +131,8 @@ public abstract class AbstractConnection implements Connection {
         Page page = AppUI.getCurrent().getPage();
         WebBrowser webBrowser = page.getWebBrowser();
 
-        GlobalConfig globalConfig = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class);
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        GlobalConfig globalConfig = configuration.getConfig(GlobalConfig.class);
         String serverInfo = "Web (" +
                 globalConfig.getWebHostName() + ":" +
                 globalConfig.getWebPort() + "/" +

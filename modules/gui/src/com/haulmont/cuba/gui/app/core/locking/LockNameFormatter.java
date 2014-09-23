@@ -16,9 +16,10 @@ import com.haulmont.cuba.gui.components.Formatter;
  */
 public class LockNameFormatter implements Formatter<String> {
 
-    protected Metadata metadata = AppBeans.get(Metadata.class);
-    protected MessageTools messageTools = AppBeans.get(MessageTools.class);
+    protected Metadata metadata = AppBeans.get(Metadata.NAME);
+    protected MessageTools messageTools = AppBeans.get(MessageTools.NAME);
 
+    @Override
     public String format(String value) {
         MetaClass mc = metadata.getSession().getClass(value);
         if (mc != null) {

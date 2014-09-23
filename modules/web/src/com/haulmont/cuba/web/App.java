@@ -85,7 +85,7 @@ public abstract class App {
     public App() {
         log.trace("Creating application " + this);
         try {
-            Configuration configuration = AppBeans.get(Configuration.class);
+            Configuration configuration = AppBeans.get(Configuration.NAME);
 
             webConfig = configuration.getConfig(WebConfig.class);
             webAuthConfig = configuration.getConfig(WebAuthConfig.class);

@@ -1238,7 +1238,8 @@ public class DesktopWindowManager extends WindowManager {
 
         if (isMainWindowManager) {
             // Stop background tasks
-            AppBeans.get(WatchDog.class).stopTasks();
+            WatchDog watchDog = AppBeans.get(WatchDog.NAME);
+            watchDog.stopTasks();
         }
 
         // Dispose windows

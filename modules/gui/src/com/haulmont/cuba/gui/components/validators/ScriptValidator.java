@@ -27,7 +27,7 @@ public class ScriptValidator implements Field.Validator {
     private String scriptPath;
     private boolean innerScript;
     private Map<String, Object> params;
-    protected Messages messages = AppBeans.get(Messages.class);
+    protected Messages messages = AppBeans.get(Messages.NAME);
 
     public ScriptValidator(Element element, String messagesPack) {
         this.script = element.getText();
@@ -61,10 +61,11 @@ public class ScriptValidator implements Field.Validator {
         } else {
             params.put("value", value);
         }
+        Scripting scripting = AppBeans.get(Scripting.NAME);
         if (innerScript) {
-            isValid = AppBeans.get(Scripting.class).evaluateGroovy(script, params);
+            isValid = scripting.evaluateGroovy(script, params);
         } else if (scriptPath != null) {
-            isValid = AppBeans.get(Scripting.class).runGroovyScript(scriptPath, params);
+            isValid = scripting.runGroovyScript(scriptPath, params);
         }
         if (!isValid) {
             String msg = message != null ? messages.getTools().loadString(messagesPack, message) : "Invalid value '%s'";

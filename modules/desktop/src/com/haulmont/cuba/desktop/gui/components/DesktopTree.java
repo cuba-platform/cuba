@@ -202,7 +202,7 @@ public class DesktopTree extends DesktopAbstractActionsHolderComponent<JTree> im
 
         impl.addTreeSelectionListener(new SelectionListener());
 
-        UserSessionSource uss = AppBeans.get(UserSessionSource.class);
+        UserSessionSource uss = AppBeans.get(UserSessionSource.NAME);
         if (uss.getUserSession().isSpecificPermitted(ShowInfoAction.ACTION_PERMISSION)) {
             ShowInfoAction action = (ShowInfoAction) getAction(ShowInfoAction.ACTION_ID);
             if (action == null) {

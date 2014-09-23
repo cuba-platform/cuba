@@ -56,10 +56,11 @@ public class FolderEditWindow extends Window {
         this.folder = folder;
         this.commitHandler = commitHandler;
 
-        messages = AppBeans.get(Messages.class);
+        messages = AppBeans.get(Messages.NAME);
         messagesPack = AppConfig.getMessagesPack();
-        userSessionSource = AppBeans.get(UserSessionSource.class);
-        clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+        userSessionSource = AppBeans.get(UserSessionSource.NAME);
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        clientConfig = configuration.getConfig(ClientConfig.class);
 
         setCaption(adding ? getMessage("folders.folderEditWindow.adding") : getMessage("folders.folderEditWindow"));
 

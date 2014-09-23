@@ -192,7 +192,7 @@ public class Param extends AbstractParam<Component> {
         } else if (javaClass.equals(java.sql.Date.class)) {
             dateOnly = true;
         }
-        Messages messages = AppBeans.get(Messages.class);
+        Messages messages = AppBeans.get(Messages.NAME);
 
         if (dateOnly) {
             resolution = com.haulmont.cuba.gui.components.DateField.Resolution.DAY;
@@ -226,8 +226,8 @@ public class Param extends AbstractParam<Component> {
                 if (value == null || value instanceof Number)
                     setValue(value);
                 else if (value instanceof String && !StringUtils.isBlank((String) value)) {
-                    UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.class);
-                    Messages messages = AppBeans.get(Messages.class);
+                    UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
+                    Messages messages = AppBeans.get(Messages.NAME);
 
                     Object v;
                     if (inExpr) {
@@ -261,12 +261,13 @@ public class Param extends AbstractParam<Component> {
             }
         });
 
-        field.setValue(datatype.format(value, AppBeans.get(UserSessionSource.class).getLocale()));
+        UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
+        field.setValue(datatype.format(value, sessionSource.getLocale()));
         return field;
     }
 
     private AbstractField createBooleanField() {
-        Messages messages = AppBeans.get(Messages.class);
+        Messages messages = AppBeans.get(Messages.NAME);
 
         final AbstractSelect field = new ComboBox();
         field.setNullSelectionAllowed(true);
@@ -300,7 +301,7 @@ public class Param extends AbstractParam<Component> {
                 if (value == null)
                     setValue(value);
                 else if ((!StringUtils.isBlank(value))) {
-                    Messages messages = AppBeans.get(Messages.class);
+                    Messages messages = AppBeans.get(Messages.NAME);
 
                     if (inExpr) {
                         List list = new ArrayList();
@@ -342,7 +343,8 @@ public class Param extends AbstractParam<Component> {
     }
 
     private Component createEntityLookup() {
-        MetaClass metaClass = AppBeans.get(Metadata.class).getSession().getClass(javaClass);
+        Metadata metadata = AppBeans.get(Metadata.NAME);
+        MetaClass metaClass = metadata.getSession().getClass(javaClass);
 
         PersistenceManagerService persistenceManager = AppBeans.get(PersistenceManagerService.NAME);
         boolean useLookupScreen = persistenceManager.useLookupScreen(metaClass.getName());
@@ -504,7 +506,7 @@ public class Param extends AbstractParam<Component> {
 
         } else {
             Map<String, Object> options = new HashMap<>();
-            Messages messages = AppBeans.get(Messages.class);
+            Messages messages = AppBeans.get(Messages.NAME);
             for (Object obj : javaClass.getEnumConstants()) {
                 options.put(messages.getMessage((Enum) obj), obj);
             }

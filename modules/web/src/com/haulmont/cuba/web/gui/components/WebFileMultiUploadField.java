@@ -46,7 +46,7 @@ public class WebFileMultiUploadField extends WebAbstractComponent<CubaMultiUploa
 
     public WebFileMultiUploadField() {
         fileUploading = AppBeans.get(FileUploadingAPI.NAME);
-        messages = AppBeans.get(Messages.class);
+        messages = AppBeans.get(Messages.NAME);
 
         CubaMultiUpload uploader = new CubaMultiUpload();
 
@@ -62,7 +62,8 @@ public class WebFileMultiUploadField extends WebAbstractComponent<CubaMultiUploa
         uploader.setButtonHeight(Integer.parseInt(width.replace("px", "")));
 
         uploader.setCaption(messages.getMessage(AppConfig.getMessagesPack(), "multiupload.submit"));
-        uploader.setFileSizeLimitMB(AppBeans.get(Configuration.class).getConfig(ClientConfig.class).getMaxUploadSizeMb());
+        final Configuration configuration = AppBeans.get(Configuration.NAME);
+        uploader.setFileSizeLimitMB(configuration.getConfig(ClientConfig.class).getMaxUploadSizeMb());
 
         uploader.setButtonImage(new VersionedThemeResource("components/multiupload/images/multiupload-button.png"));
         uploader.setBootstrapFailureHandler(new CubaMultiUpload.BootstrapFailureHandler() {
@@ -132,7 +133,7 @@ public class WebFileMultiUploadField extends WebAbstractComponent<CubaMultiUploa
                         break;
                     case FILE_EXCEEDS_SIZE_LIMIT:
 
-                        ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+                        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
                         final int maxUploadSizeMb = clientConfig.getMaxUploadSizeMb();
 
                         wm.showNotification(messages.formatMessage(WebFileMultiUploadField.class, "multiupload.filesizeLimitExceed", fileName, maxUploadSizeMb),

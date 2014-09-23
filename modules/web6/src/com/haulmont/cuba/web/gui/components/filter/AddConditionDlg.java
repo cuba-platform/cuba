@@ -8,10 +8,7 @@ package com.haulmont.cuba.web.gui.components.filter;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.CategorizedEntity;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.gui.components.filter.AbstractConditionDescriptor;
@@ -51,8 +48,8 @@ public class AddConditionDlg extends Window {
                            List<AbstractConditionDescriptor> propertyDescriptors,
                            Map<AbstractConditionDescriptor, String> descriptoMessages, DescriptorBuilder descriptorBuilder,
                            SelectionHandler selectionHandler) {
-
-        super(AppBeans.get(Messages.class).getMessage(AbstractFilterEditor.MESSAGES_PACK, "FilterEditor.addCondition"));
+        Messages messages = AppBeans.get(Messages.NAME);
+        setCaption(messages.getMessage(AbstractFilterEditor.MESSAGES_PACK, "FilterEditor.addCondition"));
 
         this.selectionHandler = selectionHandler;
 
@@ -152,7 +149,8 @@ public class AddConditionDlg extends Window {
     }
 
     protected void initShortcuts() {
-        ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
         KeyCombination close = KeyCombination.create(clientConfig.getCloseShortcut());
         KeyCombination commit = KeyCombination.create(clientConfig.getCommitShortcut());
 
@@ -321,8 +319,8 @@ public class AddConditionDlg extends Window {
                 rootModelItems.add(new RootRuntimePropertiesModelItem(descriptorBuilder));
             }
 
-            if (AppBeans.get(UserSessionSource.class).getUserSession()
-                    .isSpecificPermitted("cuba.gui.filter.customConditions")) {
+            Security security = AppBeans.get(Security.NAME);
+            if (security.isSpecificPermitted("cuba.gui.filter.customConditions")) {
                 rootModelItems.add(new NewCustomConditionModelItem(descriptorBuilder));
             }
         }

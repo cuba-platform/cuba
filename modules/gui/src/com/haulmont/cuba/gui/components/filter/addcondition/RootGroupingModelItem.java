@@ -49,7 +49,8 @@ public class RootGroupingModelItem implements ModelItem {
 
     @Override
     public String getCaption() {
-        return AppBeans.get(Messages.class).getMessage(AbstractFilterEditor.MESSAGES_PACK, "NewConditionDlg.grouping");
+        Messages messages = AppBeans.get(Messages.NAME);
+        return messages.getMessage(AbstractFilterEditor.MESSAGES_PACK, "NewConditionDlg.grouping");
     }
 
     @Override

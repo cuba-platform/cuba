@@ -41,6 +41,7 @@ public class ShowLinkAction extends AbstractAction {
         return messages.getMessage(mp, "table.showLinkAction");
     }
 
+    @Override
     public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
         if (ds == null)
             return;

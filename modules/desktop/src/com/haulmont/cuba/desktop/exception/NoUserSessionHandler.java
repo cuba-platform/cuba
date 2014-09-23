@@ -53,7 +53,8 @@ public class NoUserSessionHandler extends AbstractExceptionHandler {
     }
 
     protected String getMessage(String key) {
-        return AppBeans.get(Messages.class).getMainMessage(key, App.getInstance().getLocale());
+        Messages messages = AppBeans.get(Messages.NAME);
+        return messages.getMainMessage(key, App.getInstance().getLocale());
     }
 
     private class LoginAction extends DialogAction {
@@ -61,6 +62,7 @@ public class NoUserSessionHandler extends AbstractExceptionHandler {
             super(DialogAction.Type.OK);
         }
 
+        @Override
         public void actionPerform(Component component) {
             App app = App.getInstance();
             app.getConnection().logout();

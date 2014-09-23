@@ -58,10 +58,10 @@ public class ListEditComponent extends Picker {
 
     protected List<ValueListener> listeners = new ArrayList<>();
 
-    protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.class);
+    protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
 
     public ListEditComponent(Class itemClass) {
-        messages = AppBeans.get(Messages.class);
+        messages = AppBeans.get(Messages.NAME);
         setOpaque(false);
         contentPanel.setOpaque(false);
         actionsPanel.setOpaque(false);

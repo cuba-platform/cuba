@@ -84,8 +84,8 @@ public class EntityLogAttr extends AbstractNotPersistentEntity {
                     return getValue();
                 } else if (property.getRange().isEnum()) {
                     String nameKey = property.getRange().asEnumeration().getJavaClass().getSimpleName() + "." + getValue();
-                    return AppBeans.get(Messages.class).getMessage(
-                            entityName.substring(0, entityName.lastIndexOf(".")), nameKey);
+                    Messages messages = AppBeans.get(Messages.NAME);
+                    return messages.getMessage(entityName.substring(0, entityName.lastIndexOf(".")), nameKey);
                 } else {
                     return getValue();
                 }
@@ -116,10 +116,11 @@ public class EntityLogAttr extends AbstractNotPersistentEntity {
     @MetaProperty
     public String getDisplayName() {
         String entityName = getLogItem().getEntity();
-        String message = null;
+        String message;
         com.haulmont.chile.core.model.MetaClass metaClass = getClassFromEntityName(entityName);
         if (metaClass != null) {
-            message = AppBeans.get(Messages.class).getTools().getPropertyCaption(metaClass, getName());
+            Messages messages = AppBeans.get(Messages.NAME);
+            message = messages.getTools().getPropertyCaption(metaClass, getName());
         } else {
             return getName();
         }
@@ -127,7 +128,7 @@ public class EntityLogAttr extends AbstractNotPersistentEntity {
     }
 
     private com.haulmont.chile.core.model.MetaClass getClassFromEntityName(String entityName) {
-        Metadata metadata = AppBeans.get(Metadata.class);
+        Metadata metadata = AppBeans.get(Metadata.NAME);
         com.haulmont.chile.core.model.MetaClass metaClass = metadata.getSession().getClass(entityName);
         return metaClass == null ? null : metadata.getExtendedEntities().getEffectiveMetaClass(metaClass);
     }
@@ -135,7 +136,8 @@ public class EntityLogAttr extends AbstractNotPersistentEntity {
     @MetaProperty
     public String getLocValue() {
         if (!StringUtils.isBlank(messagesPack)) {
-            return AppBeans.get(Messages.class).getMessage(messagesPack, value);
+            Messages messages = AppBeans.get(Messages.NAME);
+            return messages.getMessage(messagesPack, value);
         } else {
             return value;
         }

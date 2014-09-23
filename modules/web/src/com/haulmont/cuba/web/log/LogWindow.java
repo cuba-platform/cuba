@@ -29,7 +29,8 @@ public class LogWindow extends Window {
     private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     public LogWindow() {
-        super(AppBeans.get(Messages.class).getMessage(LogWindow.class, "logWindow.caption"));
+        Messages messages = AppBeans.get(Messages.NAME);
+        setCaption(messages.getMessage(LogWindow.class, "logWindow.caption"));
 
         AppUI ui = AppUI.getCurrent();
         if (ui.isTestMode()) {
@@ -81,9 +82,10 @@ public class LogWindow extends Window {
 
         HorizontalLayout topLayout = new HorizontalLayout();
         topLayout.setWidth("100%");
-        topLayout.setHeight(SIZE_UNDEFINED, Unit.PIXELS);
+        topLayout.setHeightUndefined();
 
-        Button refreshBtn = new CubaButton(AppBeans.get(Messages.class).getMessage(getClass(), "logWindow.refreshBtn"),
+        Messages messages = AppBeans.get(Messages.NAME);
+        Button refreshBtn = new CubaButton(messages.getMessage(getClass(), "logWindow.refreshBtn"),
                 new Button.ClickListener() {
                     @Override
                     public void buttonClick(Button.ClickEvent event) {

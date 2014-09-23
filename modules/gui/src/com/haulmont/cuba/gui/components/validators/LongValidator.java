@@ -26,7 +26,7 @@ public class LongValidator implements Field.Validator {
     protected String message;
     protected String messagesPack;
     protected String onlyPositive;
-    protected Messages messages = AppBeans.get(Messages.class);
+    protected Messages messages = AppBeans.get(Messages.NAME);
 
     public LongValidator(Element element, String messagesPack) {
         message = element.attributeValue("message");
@@ -48,7 +48,8 @@ public class LongValidator implements Field.Validator {
         if (value instanceof String) {
             try {
                 Datatype<Long> datatype = Datatypes.get(LongDatatype.NAME);
-                Long num = datatype.parse((String) value, AppBeans.get(UserSessionSource.class).getLocale());
+                UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
+                Long num = datatype.parse((String) value, sessionSource.getLocale());
                 result = checkPositive(num);
             }
             catch (ParseException e) {

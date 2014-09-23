@@ -44,7 +44,8 @@ public class CubaVaadinServletService extends VaadinServletService {
             throws ServiceException {
         super(servlet, deploymentConfiguration);
 
-        webConfig = AppBeans.get(Configuration.class).getConfig(WebConfig.class);
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        webConfig = configuration.getConfig(WebConfig.class);
 
         ServletContext sc = servlet.getServletContext();
         String resourcesTimestamp = sc.getInitParameter("webResourcesTs");
@@ -83,7 +84,7 @@ public class CubaVaadinServletService extends VaadinServletService {
 
                 if (AppContext.isStarted()) {
                     try {
-                        Messages messages = AppBeans.get(Messages.class);
+                        Messages messages = AppBeans.get(Messages.NAME);
 
                         msgs.setInternalErrorCaption(messages.getMainMessage("internalErrorCaption", locale));
                         msgs.setInternalErrorMessage(messages.getMainMessage("internalErrorMessage", locale));

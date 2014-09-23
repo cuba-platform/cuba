@@ -39,7 +39,7 @@ public class ShowLinkAction extends AbstractAction {
 
     @Override
     public String getCaption() {
-        return AppBeans.get(Messages.class).getMessage(mp, "table.showLinkAction");
+        return messages.getMessage(mp, "table.showLinkAction");
     }
 
     @Override
@@ -48,7 +48,7 @@ public class ShowLinkAction extends AbstractAction {
             return;
 
         App.getInstance().getWindowManager().showMessageDialog(
-                AppBeans.get(Messages.class).getMessage(mp, "table.showLinkAction"),
+                messages.getMessage(mp, "table.showLinkAction"),
                 compileLink(ds),
                 IFrame.MessageType.CONFIRMATION_HTML
         );
@@ -57,7 +57,7 @@ public class ShowLinkAction extends AbstractAction {
     protected String compileLink(CollectionDatasource ds) {
         StringBuilder sb = new StringBuilder();
 
-        sb.append(AppBeans.get(Messages.class).getMessage(mp, "table.showLinkAction.link")).append("<br/>");
+        sb.append(messages.getMessage(mp, "table.showLinkAction.link")).append("<br/>");
         sb.append("<textarea cols=\"55\" rows=\"5\" autofocus=\"true\" readonly=\"true\">").
                 append(handler.makeLink(ds.getItem()).replace("&", "&amp")).append(" </textarea>");
 

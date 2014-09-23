@@ -44,7 +44,8 @@ public class CreditsLoader {
         String[] locations = tokenizer.getTokenArray();
 
         for (String location : locations) {
-            String xml = AppBeans.get(Resources.class).getResourceAsString(location);
+            Resources resources = AppBeans.get(Resources.NAME);
+            String xml = resources.getResourceAsString(location);
             if (xml == null) {
                 log.debug("Resource " + location + " not found, ignore it");
                 continue;

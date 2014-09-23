@@ -105,7 +105,8 @@ public class JSONConvertor implements Convertor {
     }
 
     private MetaClass getMetaClass(Entity entity) {
-        return AppBeans.get(Metadata.class).getSession().getClass(entity.getClass());
+        Metadata metadata = AppBeans.get(Metadata.NAME);
+        return metadata.getSession().getClass(entity.getClass());
     }
 
     @Override
@@ -303,7 +304,7 @@ public class JSONConvertor implements Convertor {
             return root;
         }
 
-        MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
+        MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
         List<MetaProperty> properties = ConvertorHelper.getOrderedProperties(metaClass);
         for (MetaProperty property : properties) {
             if (metadataTools.isTransient(property))

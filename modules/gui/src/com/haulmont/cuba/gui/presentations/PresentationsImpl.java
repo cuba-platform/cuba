@@ -198,7 +198,7 @@ public class PresentationsImpl implements Presentations {
     @Override
     public void commit() {
         if (!needToUpdate.isEmpty() || !needToRemove.isEmpty()) {
-            DataService ds = AppBeans.get(DataService.class);
+            DataService ds = AppBeans.get(DataService.NAME);
 
             CommitContext ctx = new CommitContext(
                     Collections.unmodifiableSet(needToUpdate),
@@ -272,11 +272,12 @@ public class PresentationsImpl implements Presentations {
 
     private void checkLoad() {
         if (presentations == null) {
-            DataService ds = AppBeans.get(DataService.class);
+            DataService ds = AppBeans.get(DataService.NAME);
             LoadContext ctx = new LoadContext(Presentation.class);
             ctx.setView("app");
 
-            UserSession session = AppBeans.get(UserSessionSource.class).getUserSession();
+            UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
+            UserSession session = sessionSource.getUserSession();
             User user = session.getCurrentOrSubstitutedUser();
 
             ctx.setQueryString("select p from sec$Presentation p " +

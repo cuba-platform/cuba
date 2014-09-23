@@ -411,11 +411,10 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
         }
 
         private ListEditWindow(Map<Object, String> values) {
-            super(AppBeans.get(Messages.class).getMessage(MESSAGES_PACK, "ListEditWindow.caption"));
+            this.messages = AppBeans.get(Messages.NAME);
+            setCaption(messages.getMessage(MESSAGES_PACK, "ListEditWindow.caption"));
             setWidth(200, Sizeable.UNITS_PIXELS);
             setModal(true);
-
-            this.messages = AppBeans.get(Messages.class);
 
             this.values = new HashMap<>(values);
 
@@ -644,7 +643,8 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
         }
 
         private String addDate(Date date) {
-            String str = Datatypes.get(itemClass).format(date, AppBeans.get(UserSessionSource.class).getUserSession().getLocale());
+            UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
+            String str = Datatypes.get(itemClass).format(date, sessionSource.getUserSession().getLocale());
 
             values.put(date, str);
             return str;

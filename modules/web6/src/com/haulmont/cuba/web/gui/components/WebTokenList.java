@@ -70,7 +70,8 @@ public class WebTokenList extends WebAbstractField<WebTokenList.TokenListImpl> i
 
     public WebTokenList() {
         addButton = new WebButton();
-        addButton.setCaption(AppBeans.get(Messages.class).getMessage(TokenList.class, "actions.Add"));
+        Messages messages = AppBeans.get(Messages.NAME);
+        addButton.setCaption(messages.getMessage(TokenList.class, "actions.Add"));
 
         lookupPickerField = new WebLookupPickerField();
         component = new TokenListImpl();
@@ -516,7 +517,7 @@ public class WebTokenList extends WebAbstractField<WebTokenList.TokenListImpl> i
                             windowAlias = windowConfig.getBrowseScreenId(getDatasource().getMetaClass());
                         }
 
-                        WindowInfo windowInfo = AppBeans.get(WindowConfig.class).getWindowInfo(windowAlias);
+                        WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
 
                         Map<String, Object> params = new HashMap<>();
                         params.put("windowOpener", WebTokenList.this.getFrame().getId());

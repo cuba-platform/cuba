@@ -92,21 +92,21 @@ public class FoldersPane extends VerticalLayout {
     protected SplitPanel vertSplit;
     protected SplitPanel horSplit;
 
-    protected WebConfig webConfig = AppBeans.get(Configuration.class).getConfig(WebConfig.class);
+    protected WebConfig webConfig = AppBeans.<Configuration>get(Configuration.NAME).getConfig(WebConfig.class);
 
-    protected Messages messages = AppBeans.get(Messages.class);
+    protected Messages messages = AppBeans.get(Messages.NAME);
 
-    protected Metadata metadata = AppBeans.get(Metadata.class);
+    protected Metadata metadata = AppBeans.get(Metadata.NAME);
 
-    protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.class);
+    protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
 
-    protected UserSettingService userSettingService = AppBeans.get(UserSettingService.class);
+    protected UserSettingService userSettingService = AppBeans.get(UserSettingService.NAME);
 
-    protected FoldersService foldersService = AppBeans.get(FoldersService.class);
+    protected FoldersService foldersService = AppBeans.get(FoldersService.NAME);
 
-    protected DataService dataService = AppBeans.get(DataService.class);
+    protected DataService dataService = AppBeans.get(DataService.NAME);
 
-    protected UserSettingsTools userSettingsTools = AppBeans.get(UserSettingsTools.class);
+    protected UserSettingsTools userSettingsTools = AppBeans.get(UserSettingsTools.NAME);
 
     protected BackgroundTaskWrapper<Integer, List<AppFolder>> folderUpdateBackgroundTaskWrapper;
 
@@ -598,7 +598,8 @@ public class FoldersPane extends VerticalLayout {
         String[] strings = ValuePathHelper.parse(folder.getFilterComponentId());
         String screenId = strings[0];
 
-        WindowInfo windowInfo = AppBeans.get(WindowConfig.class).getWindowInfo(screenId);
+        WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
+        WindowInfo windowInfo = windowConfig.getWindowInfo(screenId);
 
         Map<String, Object> params = new HashMap<String, Object>();
 
@@ -1057,7 +1058,7 @@ public class FoldersPane extends VerticalLayout {
 
         @Override
         public void perform(final Folder folder) {
-            WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
+            WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
             final FileUploadDialog dialog = App.getInstance().getWindowManager().
                     openWindow(windowConfig.getWindowInfo("fileUploadDialog"), WindowManager.OpenType.DIALOG);
 
@@ -1066,7 +1067,7 @@ public class FoldersPane extends VerticalLayout {
                 public void windowClosed(String actionId) {
                     if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                         try {
-                            FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.class);
+                            FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
                             byte[] data = FileUtils.readFileToByteArray(fileUploading.getFile(dialog.getFileId()));
                             fileUploading.deleteFile(dialog.getFileId());
                             foldersService.importFolder(folder, data);

@@ -108,7 +108,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
     protected Map<Table.Column, String> requiredColumns = new HashMap<>();
 
-    protected Security security = AppBeans.get(Security.class);
+    protected Security security = AppBeans.get(Security.NAME);
 
     protected boolean columnAdjustRequired = false;
 
@@ -197,7 +197,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
             }
         });
 
-        Messages messages = AppBeans.get(Messages.class);
+        Messages messages = AppBeans.get(Messages.NAME);
         // localize default column control actions
         for (Object actionKey : impl.getActionMap().allKeys()) {
             if ("column.packAll".equals(actionKey)) {
@@ -498,7 +498,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
     @Override
     public void setDatasource(final CollectionDatasource datasource) {
-        MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
+        MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
 
         final Collection<Object> properties;
         if (this.columns.isEmpty()) {
@@ -508,7 +508,8 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                 if (!property.getRange().getCardinality().isMany() && !metadataTools.isSystem(property)) {
                     Table.Column column = new Table.Column(metaPropertyPath);
 
-                    column.setCaption(AppBeans.get(MessageTools.class).getPropertyCaption(property));
+                    MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+                    column.setCaption(messageTools.getPropertyCaption(property));
                     column.setType(metaPropertyPath.getRangeJavaClass());
 
                     Element element = DocumentHelper.createElement("column");
@@ -609,7 +610,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
         setVisibleColumns(columnsOrder);
 
-        if (AppBeans.get(UserSessionSource.class).getUserSession().isSpecificPermitted(ShowInfoAction.ACTION_PERMISSION)) {
+        if (security.isSpecificPermitted(ShowInfoAction.ACTION_PERMISSION)) {
             ShowInfoAction action = (ShowInfoAction) getAction(ShowInfoAction.ACTION_ID);
             if (action == null) {
                 action = new ShowInfoAction();

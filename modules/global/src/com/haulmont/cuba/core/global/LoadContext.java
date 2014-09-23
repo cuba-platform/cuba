@@ -41,7 +41,8 @@ public class LoadContext implements Serializable {
      * @param javaClass class of the loaded entities
      */
     public LoadContext(Class javaClass) {
-        this.metaClass = AppBeans.get(Metadata.class).getSession().getClassNN(javaClass).getName();
+        Metadata metadata = AppBeans.get(Metadata.NAME);
+        this.metaClass = metadata.getSession().getClassNN(javaClass).getName();
     }
 
     /**
@@ -96,7 +97,7 @@ public class LoadContext implements Serializable {
      * @return this instance for chaining
      */
     public LoadContext setView(String viewName) {
-        Metadata metadata = AppBeans.get(Metadata.class);
+        Metadata metadata = AppBeans.get(Metadata.NAME);
         this.view = metadata.getViewRepository().getView(metadata.getSession().getClass(metaClass), viewName);
         return this;
     }

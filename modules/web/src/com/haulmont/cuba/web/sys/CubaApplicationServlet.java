@@ -50,7 +50,7 @@ public class CubaApplicationServlet extends VaadinServlet {
 
     @Override
     public void init(ServletConfig servletConfig) throws ServletException {
-        Configuration configuration = AppBeans.get(Configuration.class);
+        Configuration configuration = AppBeans.get(Configuration.NAME);
         webConfig = configuration.getConfig(WebConfig.class);
 
         super.init(servletConfig);

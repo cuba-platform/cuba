@@ -42,11 +42,12 @@ public class PropertyModelItem implements ModelItem {
             this.descriptor = descriptor;
         } else {
             StringBuilder name = new StringBuilder(metaProperty.getName());
-            StringBuilder caption = new StringBuilder(AppBeans.get(MessageTools.class).getPropertyCaption(metaProperty));
+            MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+            StringBuilder caption = new StringBuilder(messageTools.getPropertyCaption(metaProperty));
             ModelItem item = parent;
             while (item != null && item instanceof PropertyModelItem) {
                 name.insert(0, ((PropertyModelItem) item).metaProperty.getName() + ".");
-                caption.insert(0, AppBeans.get(MessageTools.class).getPropertyCaption(((PropertyModelItem) item).metaProperty) + ".");
+                caption.insert(0, messageTools.getPropertyCaption(((PropertyModelItem) item).metaProperty) + ".");
                 item = item.getParent();
             }
             this.descriptor = descriptorBuilder.buildPropertyConditionDescriptor(name.toString(), caption.toString());
@@ -87,7 +88,8 @@ public class PropertyModelItem implements ModelItem {
         if (caption != null) {
             return caption;
         }
-        return AppBeans.get(MessageTools.class).getPropertyCaption(metaProperty);
+        MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+        return messageTools.getPropertyCaption(metaProperty);
     }
 
     @Override

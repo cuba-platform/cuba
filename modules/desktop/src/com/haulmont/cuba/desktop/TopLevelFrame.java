@@ -145,7 +145,8 @@ public class TopLevelFrame extends JFrame {
     }
 
     public void showNotification(String caption, String description, IFrame.NotificationType type) {
-        DesktopConfig config = AppBeans.get(Configuration.class).getConfig(DesktopConfig.class);
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        DesktopConfig config = configuration.getConfig(DesktopConfig.class);
 
         caption = Strings.nullToEmpty(ComponentsHelper.preprocessHtmlMessage(
                 IFrame.NotificationType.isHTML(type) ? caption : StringEscapeUtils.escapeHtml(caption)));
@@ -165,12 +166,13 @@ public class TopLevelFrame extends JFrame {
     }
 
     protected void showNotificationDialog(String caption, String description, IFrame.NotificationType type) {
-        String title = AppBeans.get(Messages.class).getMessage(AppConfig.getMessagesPack(), "notification.title." + type);
+        Messages messages = AppBeans.get(Messages.NAME);
+        String title = messages.getMessage(AppConfig.getMessagesPack(), "notification.title." + type);
         String text = preparePopupText(caption, description);
 
         int messageType = DesktopComponentsHelper.convertNotificationType(type);
 
-        String closeText = AppBeans.get(Messages.class).getMainMessage("actions.Close");
+        String closeText = messages.getMainMessage("actions.Close");
         JButton option = new JButton(closeText);
         option.setPreferredSize(new Dimension(80, DesktopComponentsHelper.BUTTON_HEIGHT));
 

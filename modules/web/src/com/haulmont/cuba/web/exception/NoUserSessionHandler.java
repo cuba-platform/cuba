@@ -45,7 +45,7 @@ public class NoUserSessionHandler extends AbstractExceptionHandler {
     @Override
     protected void doHandle(App app, String className, String message, @Nullable Throwable throwable) {
         try {
-            Messages messages = AppBeans.get(Messages.class);
+            Messages messages = AppBeans.get(Messages.NAME);
 
             WebWindowManager wm = app.getWindowManager();
             wm.showOptionDialog(

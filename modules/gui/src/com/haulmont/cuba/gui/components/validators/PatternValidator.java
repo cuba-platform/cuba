@@ -21,7 +21,7 @@ public class PatternValidator implements Field.Validator {
     protected Pattern pattern;
     protected String message;
     protected String messagesPack;
-    protected Messages messages = AppBeans.get(Messages.class);
+    protected Messages messages = AppBeans.get(Messages.NAME);
 
     public PatternValidator(Element element, String messagesPack) {
         this(element.attributeValue("pattern"));

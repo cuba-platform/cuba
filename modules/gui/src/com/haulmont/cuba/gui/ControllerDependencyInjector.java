@@ -191,7 +191,8 @@ public class ControllerDependencyInjector {
 
         } else if (Config.class.isAssignableFrom(type)) {
             //noinspection unchecked
-            return AppBeans.get(Configuration.class).getConfig((Class<? extends Config>) type);
+            Configuration configuration = AppBeans.get(Configuration.NAME);
+            return configuration.getConfig((Class<? extends Config>) type);
 
         } else {
             Object instance;

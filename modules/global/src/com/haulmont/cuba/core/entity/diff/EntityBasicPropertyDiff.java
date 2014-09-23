@@ -79,7 +79,8 @@ public class EntityBasicPropertyDiff extends EntityPropertyDiff {
 
     private String getEnumItemName(Object enumItem) {
         String nameKey = enumItem.getClass().getSimpleName() + "." + enumItem.toString();
-        return AppBeans.get(Messages.class).getMessage(enumItem.getClass(), nameKey);
+        Messages messages = AppBeans.get(Messages.NAME);
+        return messages.getMessage(enumItem.getClass(), nameKey);
     }
 
     @Override

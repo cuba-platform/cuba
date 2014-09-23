@@ -54,7 +54,8 @@ public class JmxLogControl implements JmxLogControlMBean {
         // check log file exists
         logControl.getLogFile(fileName);
 
-        GlobalConfig globalConfig = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class);
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        GlobalConfig globalConfig = configuration.getConfig(GlobalConfig.class);
 
         String encodedFileName;
         try {

@@ -94,7 +94,8 @@ public class RemotingServlet extends DispatcherServlet {
     protected void doService(HttpServletRequest request, HttpServletResponse response) throws Exception {
         if (!checkCompleted) {
             // Check correctness of some configuration parameters and log the warning if necesary
-            GlobalConfig config = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class);
+            Configuration configuration = AppBeans.get(Configuration.NAME);
+            GlobalConfig config = configuration.getConfig(GlobalConfig.class);
             StringBuilder sb = new StringBuilder();
             if (!request.getServerName().equals(config.getWebHostName())) {
                 sb.append("***** cuba.webHostName=").append(config.getWebHostName())

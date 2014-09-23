@@ -52,9 +52,9 @@ public class WebPickerField
 
     protected WebPickerFieldActionHandler actionHandler;
 
-    protected Metadata metadata = AppBeans.get(Metadata.class);
+    protected Metadata metadata = AppBeans.get(Metadata.NAME);
 
-    protected MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
+    protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
 
     public WebPickerField() {
         component = new Picker(this);

@@ -30,7 +30,7 @@ public class PropertyWrapper extends AbstractPropertyWrapper {
 
     protected MetaPropertyPath propertyPath;
 
-    protected MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
+    protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
 
     public PropertyWrapper(Object item, MetaPropertyPath propertyPath) {
         this.item = item;

@@ -92,7 +92,8 @@ public class FontDialog extends JDialog {
     }
 
     private void initUI() {
-        DesktopConfig desktopConfig = AppBeans.get(Configuration.class).getConfig(DesktopConfig.class);
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        DesktopConfig desktopConfig = configuration.getConfig(DesktopConfig.class);
 
         setIconImage(null);
         setIconImages(null);

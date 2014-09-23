@@ -41,9 +41,9 @@ public class SimpleFileDataProvider implements ExportDataProvider {
 
     protected ClusterInvocationSupport clusterInvocationSupport = AppBeans.get(ClusterInvocationSupport.NAME);
 
-    protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.class);
+    protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
 
-    protected Configuration configuration = AppBeans.get(Configuration.class);
+    protected Configuration configuration = AppBeans.get(Configuration.NAME);
 
     protected String fileDownloadContext;
 

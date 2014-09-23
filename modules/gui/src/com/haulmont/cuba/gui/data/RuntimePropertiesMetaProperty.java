@@ -37,7 +37,8 @@ public class RuntimePropertiesMetaProperty extends MetadataObjectImpl<MetaProper
         this.javaClass = javaClass;
         this.metaClass = metaClass;
         this.name = name;
-        Session metadataSession = AppBeans.get(Metadata.class).getSession();
+        Metadata metadata = AppBeans.get(Metadata.NAME);
+        Session metadataSession = metadata.getSession();
         if (SetValueEntity.class.isAssignableFrom(javaClass)) {
             range = new ClassRange(metadataSession.getClass(SetValueEntity.class));
             ((AbstractRange) range).setCardinality(Range.Cardinality.ONE_TO_ONE);

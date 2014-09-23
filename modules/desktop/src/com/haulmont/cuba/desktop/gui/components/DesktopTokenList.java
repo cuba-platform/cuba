@@ -74,7 +74,8 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
     public DesktopTokenList() {
         impl = new TokenListImpl();
         addButton = new DesktopButton();
-        addButton.setCaption(AppBeans.get(Messages.class).getMessage(TokenList.class, "actions.Add"));
+        Messages messages = AppBeans.get(Messages.NAME);
+        addButton.setCaption(messages.getMessage(TokenList.class, "actions.Add"));
 
         lookupPickerField = new DesktopLookupPickerField();
 

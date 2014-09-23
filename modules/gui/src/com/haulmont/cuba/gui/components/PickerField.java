@@ -106,13 +106,11 @@ public interface PickerField extends Field, Component.ActionsHolder {
         public abstract Action createAction(PickerField pickerField);
     }
 
-    ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
-
     public static abstract class StandardAction extends AbstractAction {
 
         protected PickerField pickerField;
 
-        protected ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+        protected ClientConfig clientConfig = AppBeans.<Configuration>get(Configuration.NAME).getConfig(ClientConfig.class);
 
         public StandardAction(String id, PickerField pickerField) {
             super(id);

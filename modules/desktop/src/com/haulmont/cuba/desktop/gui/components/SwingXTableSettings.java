@@ -227,7 +227,8 @@ public class SwingXTableSettings implements TableSettings {
                     return;
                 }
 
-                DesktopConfig desktopConfig = AppBeans.get(Configuration.class).getConfig(DesktopConfig.class);
+                Configuration configuration = AppBeans.get(Configuration.NAME);
+                DesktopConfig desktopConfig = configuration.getConfig(DesktopConfig.class);
                 int sizeIndex = desktopConfig.getAvailableFontSizes().indexOf(size);
 
                 if (sizeIndex < 0) {

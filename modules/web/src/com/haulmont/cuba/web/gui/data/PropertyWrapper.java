@@ -32,7 +32,7 @@ public class PropertyWrapper extends AbstractPropertyWrapper implements Property
 
     protected MetaPropertyPath propertyPath;
 
-    protected MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
+    protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
 
     public PropertyWrapper(Object item, MetaPropertyPath propertyPath) {
         this.item = item;
@@ -95,7 +95,8 @@ public class PropertyWrapper extends AbstractPropertyWrapper implements Property
                 if (newValue instanceof String) {
                     try {
                         newValue = Strings.emptyToNull((String) newValue);
-                        obj = datatype.parse((String) newValue, AppBeans.get(UserSessionSource.class).getLocale());
+                        UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
+                        obj = datatype.parse((String) newValue, sessionSource.getLocale());
                     } catch (ParseException e) {
                         throw new Converter.ConversionException(e);
                     }

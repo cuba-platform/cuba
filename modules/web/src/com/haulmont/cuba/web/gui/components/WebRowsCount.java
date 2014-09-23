@@ -220,7 +220,7 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
             default:
                 throw new UnsupportedOperationException();
         }
-        Messages messages = AppBeans.get(Messages.class);
+        Messages messages = AppBeans.get(Messages.NAME);
 
         String messagesPack = AppConfig.getMessagesPack();
         component.getLabel().setValue(messages.formatMessage(messagesPack, msgKey, countValue));

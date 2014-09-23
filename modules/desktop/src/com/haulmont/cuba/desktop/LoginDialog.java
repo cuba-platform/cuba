@@ -35,8 +35,8 @@ public class LoginDialog extends JDialog {
 
     protected Connection connection;
     protected Map<String,Locale> locales;
-    protected Messages messages = AppBeans.get(Messages.class);
-    protected PasswordEncryption passwordEncryption = AppBeans.get(PasswordEncryption.class);
+    protected Messages messages = AppBeans.get(Messages.NAME);
+    protected PasswordEncryption passwordEncryption = AppBeans.get(PasswordEncryption.NAME);
 
     protected JTextField nameField;
     protected JTextField passwordField;
@@ -48,7 +48,7 @@ public class LoginDialog extends JDialog {
         super(owner);
         this.connection = connection;
         this.loginProperties = new LoginProperties();
-        Configuration configuration = AppBeans.get(Configuration.class);
+        Configuration configuration = AppBeans.get(Configuration.NAME);
         this.locales = configuration.getConfig(GlobalConfig.class).getAvailableLocales();
 
         addWindowListener(
@@ -95,7 +95,7 @@ public class LoginDialog extends JDialog {
             passwordField.setText(defaultPassword);
         panel.add(passwordField, "width 150!, wrap");
 
-        Configuration configuration = AppBeans.get(Configuration.class);
+        Configuration configuration = AppBeans.get(Configuration.NAME);
 
         localeCombo = new JComboBox<>();
         initLocales(localeCombo);

@@ -66,7 +66,7 @@ public class CubaApplicationServlet extends ApplicationServlet {
     public void init(ServletConfig servletConfig) throws ServletException {
         super.init(servletConfig);
 
-        Configuration configuration = AppBeans.get(Configuration.class);
+        Configuration configuration = AppBeans.get(Configuration.NAME);
         webConfig = configuration.getConfig(WebConfig.class);
         globalConfig = configuration.getConfig(GlobalConfig.class);
 

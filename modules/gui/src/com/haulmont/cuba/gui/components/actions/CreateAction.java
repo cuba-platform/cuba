@@ -75,7 +75,8 @@ public class CreateAction extends AbstractAction implements Action.HasOpenType {
         this.caption = messages.getMainMessage("actions.Create");
         this.icon = "icons/create.png";
         this.metadata = AppBeans.get(Metadata.NAME);
-        ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
         setShortcut(clientConfig.getTableInsertShortcut());
 
         refreshState();

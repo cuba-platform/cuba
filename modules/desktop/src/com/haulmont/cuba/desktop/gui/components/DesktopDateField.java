@@ -73,7 +73,8 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
         initComponentParts();
         setResolution(Resolution.MIN);
 
-        Locale locale = AppBeans.get(UserSessionSource.class).getLocale();
+        UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
+        Locale locale = sessionSource.getLocale();
         setDateFormat(Datatypes.getFormatStringsNN(locale).getDateTimeFormat());
         DesktopComponentsHelper.adjustDateFieldSize(impl);
     }
@@ -415,7 +416,8 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
         if (datePickerDate == null) {
             return null;
         }
-        Locale locale = AppBeans.get(UserSessionSource.class).getLocale();
+        UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
+        Locale locale = sessionSource.getLocale();
 
         Calendar c = Calendar.getInstance(locale);
         c.setTime(datePickerDate);

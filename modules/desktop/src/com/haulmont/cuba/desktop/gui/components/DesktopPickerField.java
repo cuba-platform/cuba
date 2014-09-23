@@ -166,7 +166,8 @@ public class DesktopPickerField extends DesktopAbstractField<Picker> implements 
     }
 
     protected void initModifiersMask() {
-        ClientConfig config = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        ClientConfig config = configuration.getConfig(ClientConfig.class);
         String[] strModifiers = StringUtils.split(config.getPickerShortcutModifiers().toUpperCase(), "-");
 
         for (String strModifier : strModifiers) {

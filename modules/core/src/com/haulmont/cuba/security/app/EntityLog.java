@@ -121,8 +121,8 @@ public class EntityLog implements EntityLogAPI {
 
     private void loadEntities() {
         log.debug("Loading entities");
-        entitiesManual = new HashMap<String, Set<String>>();
-        entitiesAuto = new HashMap<String, Set<String>>();
+        entitiesManual = new HashMap<>();
+        entitiesAuto = new HashMap<>();
         Transaction tx = persistence.createTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
@@ -266,7 +266,8 @@ public class EntityLog implements EntityLogAPI {
         if (valueId != null)
             properties.setProperty(attr + EntityLogAttr.VALUE_ID_SUFFIX, valueId.toString());
 
-        String mp = AppBeans.get(MessageTools.class).inferMessagePack(attr, entity);
+        MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+        String mp = messageTools.inferMessagePack(attr, entity);
         if (mp != null)
             properties.setProperty(attr + EntityLogAttr.MP_SUFFIX, mp);
     }

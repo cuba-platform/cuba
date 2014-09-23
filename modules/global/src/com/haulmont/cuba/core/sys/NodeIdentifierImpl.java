@@ -20,7 +20,8 @@ import javax.annotation.ManagedBean;
 public class NodeIdentifierImpl implements NodeIdentifier {
     @Override
     public String getNodeName() {
-        GlobalConfig globalConfig = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class);
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        GlobalConfig globalConfig = configuration.getConfig(GlobalConfig.class);
         return globalConfig.getWebHostName() + ":" + globalConfig.getWebPort();
     }
 }

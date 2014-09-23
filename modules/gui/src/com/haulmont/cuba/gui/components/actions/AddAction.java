@@ -88,7 +88,8 @@ public class AddAction extends AbstractAction implements Action.HasOpenType {
         this.openType = openType;
         this.caption = messages.getMainMessage("actions.Add");
         this.icon = "icons/add.png";
-        ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
         setShortcut(clientConfig.getTableAddShortcut());
 
         refreshState();
@@ -182,7 +183,7 @@ public class AddAction extends AbstractAction implements Action.HasOpenType {
         if (windowId != null) {
             return windowId;
         } else {
-            WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
+            WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
             MetaClass metaClass = owner.getDatasource().getMetaClass();
 
             return windowConfig.getAvailableLookupScreenId(metaClass);
@@ -230,7 +231,7 @@ public class AddAction extends AbstractAction implements Action.HasOpenType {
                 return;
             }
 
-            Metadata metadata = AppBeans.get(Metadata.class);
+            Metadata metadata = AppBeans.get(Metadata.NAME);
             ExtendedEntities extendedEntities = metadata.getExtendedEntities();
 
             ds.suspendListeners();

@@ -17,9 +17,9 @@ import java.io.Serializable;
 
 /**
  * Diff between properties in entity snapshots
- * <p>$Id$</p>
  *
  * @author artamonov
+ * @version $Id$
  */
 @MetaClass(name = "sys$EntityPropertyDiff")
 @SystemLevel
@@ -43,7 +43,8 @@ public abstract class EntityPropertyDiff extends AbstractNotPersistentEntity imp
 
     protected EntityPropertyDiff(ViewProperty viewProperty, com.haulmont.chile.core.model.MetaProperty metaProperty) {
         this.viewProperty = viewProperty;
-        this.propertyCaption = AppBeans.get(MessageTools.class).getPropertyCaption(metaProperty);
+        MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+        this.propertyCaption = messageTools.getPropertyCaption(metaProperty);
         this.metaClassName = metaProperty.getDomain().getFullName();
     }
 

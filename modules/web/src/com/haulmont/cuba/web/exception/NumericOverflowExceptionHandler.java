@@ -33,7 +33,8 @@ public class NumericOverflowExceptionHandler extends AbstractExceptionHandler {
 
     @Override
     protected void doHandle(App app, String className, String message, @Nullable Throwable throwable) {
-        String msg = AppBeans.get(Messages.class).getMessage(getClass(), "numericFieldOverflow.message");
+        Messages messages = AppBeans.get(Messages.NAME);
+        String msg = messages.getMessage(getClass(), "numericFieldOverflow.message");
         app.getWindowManager().showNotification(msg, IFrame.NotificationType.ERROR);
     }
 }

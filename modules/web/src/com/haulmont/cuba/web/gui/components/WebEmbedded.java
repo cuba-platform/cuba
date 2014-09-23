@@ -60,7 +60,8 @@ public class WebEmbedded
         } else {
             File file = new File(src);
             if (!file.isAbsolute()) {
-                String root = AppBeans.get(Configuration.class).getConfig(WebConfig.class).getResourcesRoot();
+                Configuration configuration = AppBeans.get(Configuration.NAME);
+                String root = configuration.getConfig(WebConfig.class).getResourcesRoot();
                 if (root != null) {
                     if (!root.endsWith(File.separator)) {
                         root += File.separator;

@@ -34,9 +34,11 @@ public abstract class AbstractPropertyCondition<T extends AbstractParam> extends
         Class itemsClass = datasource.getMetaClass().getJavaClass();
         String propertyPath = itemsClass.getSimpleName() + "." + name;
 
-        this.locCaption = AppBeans.get(Messages.class).getMessage(itemsClass, propertyPath);
+        Messages messages = AppBeans.get(Messages.NAME);
+        this.locCaption = messages.getMessage(itemsClass, propertyPath);
         if (locCaption == null || locCaption.equals(propertyPath)) {
-            this.locCaption = AppBeans.get(MessageTools.class).loadString(messagesPack, caption);
+            MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+            this.locCaption = messageTools.loadString(messagesPack, caption);
         }
 
         String text = element.getText();
@@ -148,7 +150,8 @@ public abstract class AbstractPropertyCondition<T extends AbstractParam> extends
         }
 
         if (operator == null) {
-            return locCaption + ": " + AppBeans.get(Messages.class).getMessage(MESSAGES_PACK, "PropertyCondition.operatorNotDefined");
+            Messages messages = AppBeans.get(Messages.NAME);
+            return locCaption + ": " + messages.getMessage(MESSAGES_PACK, "PropertyCondition.operatorNotDefined");
         } else {
             return null;
         }
@@ -156,6 +159,7 @@ public abstract class AbstractPropertyCondition<T extends AbstractParam> extends
 
     @Override
     public String getOperationCaption() {
-        return AppBeans.get(Messages.class).getMessage(operator);
+        Messages messages = AppBeans.get(Messages.NAME);
+        return messages.getMessage(operator);
     }
 }

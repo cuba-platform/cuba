@@ -688,7 +688,7 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
 
     protected class DefaultGroupPropertyValueFormatter implements CubaGroupTable.GroupPropertyValueFormatter {
 
-        protected Messages messages = AppBeans.get(Messages.class);
+        protected Messages messages = AppBeans.get(Messages.NAME);
 
         @SuppressWarnings("unchecked")
         @Override
@@ -707,7 +707,7 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
                 }
             }
 
-            MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
+            MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
             return metadataTools.format(value, propertyPath.getMetaProperty());
         }
     }

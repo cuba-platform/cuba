@@ -50,7 +50,8 @@ public class MenuConfig {
      */
     public static String getMenuItemCaption(String id) {
         try {
-            return AppBeans.get(Messages.class).getMainMessage("menu-config." + id);
+            Messages messages = AppBeans.get(Messages.NAME);
+            return messages.getMainMessage("menu-config." + id);
         } catch (MissingResourceException e) {
             return id;
         }

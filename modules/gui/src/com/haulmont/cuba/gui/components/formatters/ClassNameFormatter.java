@@ -12,9 +12,9 @@ import com.haulmont.cuba.gui.components.Formatter;
  * @author tulupov
  * @version $Id$
  */
-public class ClassNameFormatter implements Formatter{
+public class ClassNameFormatter implements Formatter {
 
-    protected Messages messages = AppBeans.get(Messages.class);
+    protected Messages messages = AppBeans.get(Messages.NAME);
 
     @Override
     public String format(Object value) {

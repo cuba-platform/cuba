@@ -152,7 +152,8 @@ public class DesktopLookupField
 
         textField = new JTextField();
         textField.setEditable(false);
-        valueFormatter = new DefaultValueFormatter(AppBeans.get(UserSessionSource.class).getLocale());
+        UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
+        valueFormatter = new DefaultValueFormatter(sessionSource.getLocale());
 
         composition.add(comboBox, BorderLayout.CENTER);
         impl = comboBox;

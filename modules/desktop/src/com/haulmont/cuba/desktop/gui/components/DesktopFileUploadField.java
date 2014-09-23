@@ -52,7 +52,7 @@ public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> im
 
     public DesktopFileUploadField() {
         fileUploading = AppBeans.get(FileUploadingAPI.NAME);
-        messages = AppBeans.get(Messages.class);
+        messages = AppBeans.get(Messages.NAME);
 
         final JFileChooser fileChooser = new JFileChooser();
         String caption = messages.getMessage(getClass(), "export.selectFile");
@@ -68,7 +68,8 @@ public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> im
     }
 
     protected void uploadFile(File file) {
-        final long maxUploadSizeMb = AppBeans.get(Configuration.class).getConfig(ClientConfig.class).getMaxUploadSizeMb();
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        final long maxUploadSizeMb = configuration.getConfig(ClientConfig.class).getMaxUploadSizeMb();
         final long maxSize = maxUploadSizeMb * BYTES_IN_MEGABYTE;
 
         if (file.length() > maxSize) {

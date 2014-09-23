@@ -38,8 +38,8 @@ public class DsContextLoader {
 
     public DsContextLoader(DataSupplier dataservice) {
         this.dataservice = dataservice;
-        this.scripting = AppBeans.get(Scripting.class);
-        this.metadata = AppBeans.get(Metadata.class);
+        this.scripting = AppBeans.get(Scripting.NAME);
+        this.metadata = AppBeans.get(Metadata.NAME);
     }
 
     public DsContext loadDatasources(@Nullable Element element,@Nullable DsContext parent) {

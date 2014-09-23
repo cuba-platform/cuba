@@ -64,7 +64,8 @@ public class DesktopAppContextLoader extends AbstractAppContextLoader {
     }
 
     protected void initEnvironment() {
-        String tempPath = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class).getTempDir();
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        String tempPath = configuration.getConfig(GlobalConfig.class).getTempDir();
         File tempDir = new File(tempPath);
         if (!tempDir.exists()) {
             try {

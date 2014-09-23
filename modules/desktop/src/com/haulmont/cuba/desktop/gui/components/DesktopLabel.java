@@ -57,7 +57,8 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
         impl.setFocusable(false);
         setAlignment(Alignment.MIDDLE_LEFT);
 
-        Locale locale = AppBeans.get(UserSessionSource.class).getLocale();
+        UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
+        Locale locale = sessionSource.getLocale();
         valueFormatter = new DefaultValueFormatter(locale);
     }
 

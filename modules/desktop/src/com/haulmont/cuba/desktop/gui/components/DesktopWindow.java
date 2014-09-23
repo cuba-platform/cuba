@@ -97,8 +97,8 @@ public class DesktopWindow implements Window, Component.Disposable,
 
     protected DesktopWindowManager windowManager;
 
-    protected Configuration configuration = AppBeans.get(Configuration.class);
-    protected Messages messages = AppBeans.get(Messages.class);
+    protected Configuration configuration = AppBeans.get(Configuration.NAME);
+    protected Messages messages = AppBeans.get(Messages.NAME);
 
     protected ComponentSize widthSize;
     protected ComponentSize heightSize;

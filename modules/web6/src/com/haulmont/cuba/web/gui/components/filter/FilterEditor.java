@@ -7,10 +7,7 @@ package com.haulmont.cuba.web.gui.components.filter;
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.CategorizedEntity;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.UserSessionProvider;
-import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.filter.*;
 import com.haulmont.cuba.gui.components.filter.addcondition.SelectionHandler;
@@ -147,8 +144,8 @@ public class FilterEditor extends AbstractFilterEditor {
         globalCb = new CheckBox();
         globalCb.setCaption(getMessage("FilterEditor.global"));
         globalCb.setValue(filterEntity.getUser() == null);
-        globalCb.setEnabled(AppBeans.get(UserSessionSource.class).getUserSession()
-                .isSpecificPermitted("cuba.gui.filter.global"));
+        Security security = AppBeans.get(Security.NAME);
+        globalCb.setEnabled(security.isSpecificPermitted("cuba.gui.filter.global"));
         controlLayout.addComponent(globalCb);
 
         flagsLayout.addComponent(globalCb);
@@ -207,7 +204,8 @@ public class FilterEditor extends AbstractFilterEditor {
         HorizontalLayout addLayout = new HorizontalLayout();
         addLayout.setSpacing(true);
 
-        if (AppBeans.get(Configuration.class).getConfig(ClientConfig.class).getGenericFilterTreeConditionSelect()) {
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        if (configuration.getConfig(ClientConfig.class).getGenericFilterTreeConditionSelect()) {
             initAddDialog(addLayout);
         } else {
             initAddSelect(addLayout);

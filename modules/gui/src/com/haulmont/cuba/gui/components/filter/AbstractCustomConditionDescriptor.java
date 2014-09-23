@@ -25,7 +25,8 @@ public abstract class AbstractCustomConditionDescriptor<T extends AbstractParam>
 
         this.caption = element.attributeValue("caption");
         if (this.caption != null) {
-            this.locCaption = AppBeans.get(MessageTools.class).loadString(messagesPack, this.caption);
+            MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+            this.locCaption = messageTools.loadString(messagesPack, this.caption);
         }
 
         inExpr = Boolean.valueOf(element.attributeValue("inExpr"));
@@ -41,7 +42,8 @@ public abstract class AbstractCustomConditionDescriptor<T extends AbstractParam>
         if (className == null) {
             return null;
         } else {
-            return AppBeans.get(Scripting.class).loadClass(element.attributeValue("paramClass"));
+            Scripting scripting = AppBeans.get(Scripting.NAME);
+            return scripting.loadClass(element.attributeValue("paramClass"));
         }
     }
 

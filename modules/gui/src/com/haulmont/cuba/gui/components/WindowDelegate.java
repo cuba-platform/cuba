@@ -26,9 +26,8 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class WindowDelegate {
 
@@ -40,7 +39,7 @@ public class WindowDelegate {
     protected Window wrapper;
     protected Settings settings;
 
-    protected WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
+    protected WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
 
     private Log log = LogFactory.getLog(getClass());
 

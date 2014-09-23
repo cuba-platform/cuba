@@ -41,7 +41,8 @@ public class RuntimePropConditionEditDlg extends AbstractRuntimePropConditionEdi
     }
 
     protected void initShortcuts() {
-        ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
         KeyCombination close = KeyCombination.create(clientConfig.getCloseShortcut());
         KeyCombination commit = KeyCombination.create(clientConfig.getCommitShortcut());
 
@@ -114,8 +115,7 @@ public class RuntimePropConditionEditDlg extends AbstractRuntimePropConditionEdi
             categories.setNullSelectionAllowed(false);
             grid.addComponent(categories, 1, 1);
 
-            Label attributeLabel = new Label(AppBeans.get(Messages.class)
-                    .getMessage(MESSAGES_PACK, "RuntimePropConditionEditDlg.attributeLabel"));
+            Label attributeLabel = new Label(messages.getMessage(MESSAGES_PACK, "RuntimePropConditionEditDlg.attributeLabel"));
             grid.addComponent(attributeLabel, 0, 2);
             grid.setComponentAlignment(attributeLabel, Alignment.MIDDLE_RIGHT);
 

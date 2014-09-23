@@ -27,7 +27,7 @@ public class StringToEnumConverter implements Converter<String, Enum> {
 
     public StringToEnumConverter(Class<Enum> enumClass) {
         this.enumClass = enumClass;
-        this.messages = AppBeans.get(Messages.class);
+        this.messages = AppBeans.get(Messages.NAME);
     }
 
     @Override

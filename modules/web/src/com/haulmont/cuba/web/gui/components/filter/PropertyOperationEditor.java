@@ -27,7 +27,8 @@ public class PropertyOperationEditor extends OperationEditor {
 
         for (Op op : Op.availableOps(condition.getJavaClass())) {
             select.addItem(op);
-            select.setItemCaption(op, AppBeans.get(Messages.class).getMessage(op));
+            Messages messages = AppBeans.get(Messages.NAME);
+            select.setItemCaption(op, messages.getMessage(op));
         }
         select.select(((PropertyCondition) condition).getOperator());
 

@@ -298,7 +298,7 @@ public class UserEditor extends AbstractEditor<User> {
             super("add");
             icon = "icons/add.png";
 
-            ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+            ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
             setShortcut(clientConfig.getTableAddShortcut());
         }
 
@@ -442,7 +442,7 @@ public class UserEditor extends AbstractEditor<User> {
             super("add");
             icon = "icons/add.png";
 
-            ClientConfig clientConfig = AppBeans.get(Configuration.class).getConfig(ClientConfig.class);
+            ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
             setShortcut(clientConfig.getTableAddShortcut());
         }
 

@@ -342,7 +342,8 @@ public class Param extends AbstractParam<ParamEditorComponent> {
     }
 
     protected ParamEditorComponent createEntityLookup() {
-        MetaClass metaClass = AppBeans.get(Metadata.class).getSession().getClass(javaClass);
+        Metadata metadata = AppBeans.get(Metadata.NAME);
+        MetaClass metaClass = metadata.getSession().getClass(javaClass);
 
         PersistenceManagerService persistenceManager = AppBeans.get(PersistenceManagerService.NAME);
         boolean useLookupScreen = persistenceManager.useLookupScreen(metaClass.getName());

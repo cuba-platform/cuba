@@ -82,7 +82,8 @@ public class RootPropertyModelItem implements ModelItem {
 
     @Override
     public String getCaption() {
-        return AppBeans.get(Messages.class).getMessage(AbstractFilterEditor.MESSAGES_PACK, "NewConditionDlg.attributes");
+        Messages messages = AppBeans.get(Messages.NAME);
+        return messages.getMessage(AbstractFilterEditor.MESSAGES_PACK, "NewConditionDlg.attributes");
     }
 
     @Override

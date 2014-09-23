@@ -34,7 +34,8 @@ public class AppFolderEditWindow extends FolderEditWindow {
 
     public static FolderEditWindow create(boolean isAppFolder, boolean adding,
                                           Folder folder, Presentations presentations, Runnable commitHandler) {
-        GlobalConfig globalConfig = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class);
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        GlobalConfig globalConfig = configuration.getConfig(GlobalConfig.class);
         String className = isAppFolder ? globalConfig.getAppFolderEditWindowClassName()
                                        : globalConfig.getFolderEditWindowClassName();
 

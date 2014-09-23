@@ -66,6 +66,7 @@ public class SessionAttribute extends StandardEntity {
 
     @MetaProperty
     public String getDatatypeCaption() {
-        return AppBeans.get(Messages.class).getMainMessage("Datatype." + datatype);
+        Messages messages = AppBeans.get(Messages.NAME);
+        return messages.getMainMessage("Datatype." + datatype);
     }
 }

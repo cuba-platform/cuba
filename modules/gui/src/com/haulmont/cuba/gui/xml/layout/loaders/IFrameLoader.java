@@ -42,7 +42,8 @@ public class IFrameLoader extends ContainerLoader implements ComponentLoader {
         if (src == null && screenId == null)
             throw new GuiDevelopmentException("Either 'src' or 'screen' must be specified for 'iframe'", context.getFullFrameId());
         if (src == null) {
-            WindowInfo windowInfo = AppBeans.get(WindowConfig.class).getWindowInfo(screenId);
+            WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
+            WindowInfo windowInfo = windowConfig.getWindowInfo(screenId);
             src = windowInfo.getTemplate();
             if (src == null)
                 throw new GuiDevelopmentException("Screen " + screenId + " doesn't have template path configured", context.getFullFrameId());

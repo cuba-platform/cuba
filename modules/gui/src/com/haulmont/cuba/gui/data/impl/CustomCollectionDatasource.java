@@ -26,7 +26,7 @@ import java.util.Map;
 public class CustomCollectionDatasource<T extends Entity<K>, K>
         extends CollectionDatasourceImpl<T, K> {
 
-    protected Scripting scripting = AppBeans.get(Scripting.class);
+    protected Scripting scripting = AppBeans.get(Scripting.NAME);
 
     @Override
     public void commit() {

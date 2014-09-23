@@ -63,7 +63,8 @@ public class MetaClassRepresentation {
     }
 
     public String getDescription() {
-        String result = AppBeans.get(MessageTools.class).getEntityCaption(meta);
+        MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+        String result = messageTools.getEntityCaption(meta);
         return result == null ? "" : result;
     }
 
@@ -110,7 +111,8 @@ public class MetaClassRepresentation {
         }
 
         public String getDescription() {
-            String result = AppBeans.get(MessageTools.class).getPropertyCaption(property);
+            MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+            String result = messageTools.getPropertyCaption(property);
             return result == null ? "" : result;
         }
 
@@ -133,7 +135,8 @@ public class MetaClassRepresentation {
                     SimpleHash wrappedEnumElement = new SimpleHash();
                     try {
                         wrappedEnumElement.put("idObj", ObjectWrapper.BEANS_WRAPPER.wrap(enumItem)); //Some enums don't implement EnumClass interface so we'll get id field here via reflection.
-                        wrappedEnumElement.put("name", AppBeans.get(Messages.class).getMessage(enumItem));
+                        Messages messages = AppBeans.get(Messages.NAME);
+                        wrappedEnumElement.put("name", messages.getMessage(enumItem));
                         values.add(wrappedEnumElement);
                     } catch (TemplateModelException e) {
                         throw new RuntimeException(e);
@@ -187,7 +190,8 @@ public class MetaClassRepresentation {
         }
 
         public boolean isPersistent() {
-            return AppBeans.get(MetadataTools.class).isPersistent(property);
+            MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
+            return metadataTools.isPersistent(property);
         }
     }
 
@@ -211,7 +215,7 @@ public class MetaClassRepresentation {
     }
 
     private static MetaClass getMetaClass(Class clazz) {
-        Metadata metadata = AppBeans.get(Metadata.class);
+        Metadata metadata = AppBeans.get(Metadata.NAME);
         return metadata.getExtendedEntities().getEffectiveMetaClass(metadata.getClassNN(clazz));
     }
 

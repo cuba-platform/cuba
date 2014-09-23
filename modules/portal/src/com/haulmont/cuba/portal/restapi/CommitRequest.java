@@ -75,7 +75,8 @@ public class CommitRequest {
         EntityLoadInfo loadInfo = EntityLoadInfo.parse(id);
         if (loadInfo == null) {
             if (isNew) {
-                UUID uuid = AppBeans.get(UuidSource.class).createUuid();
+                UuidSource uuidSource = AppBeans.get(UuidSource.NAME);
+                UUID uuid = uuidSource.createUuid();
                 id = id + "-" + uuid;
                 loadInfo = EntityLoadInfo.parse(id);
                 if (loadInfo == null) {

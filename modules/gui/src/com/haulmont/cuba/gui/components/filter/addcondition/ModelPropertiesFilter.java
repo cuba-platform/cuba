@@ -25,8 +25,8 @@ public class ModelPropertiesFilter {
 
     public ModelPropertiesFilter() {
         security = AppBeans.get(Security.NAME);
-        messageTools = AppBeans.get(MessageTools.class);
-        metadataTools = AppBeans.get(MetadataTools.class);
+        messageTools = AppBeans.get(MessageTools.NAME);
+        metadataTools = AppBeans.get(MetadataTools.NAME);
     }
 
     public boolean isPropertyFilterAllowed(MetaClass metaClass, MetaProperty property) {

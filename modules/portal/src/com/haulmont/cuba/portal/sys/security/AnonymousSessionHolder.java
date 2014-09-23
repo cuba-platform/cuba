@@ -74,7 +74,8 @@ public class AnonymousSessionHolder {
         String login = portalConfig.getAnonymousUserLogin();
         String password = portalConfig.getTrustedClientPassword();
 
-        GlobalConfig globalConfig = AppBeans.get(Configuration.class).getConfig(GlobalConfig.class);
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        GlobalConfig globalConfig = configuration.getConfig(GlobalConfig.class);
         Collection<Locale> locales = globalConfig.getAvailableLocales().values();
 
         Locale defaultLocale = locales.iterator().next();

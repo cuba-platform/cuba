@@ -174,10 +174,11 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
         }
 
         String messagesPack = AppConfig.getMessagesPack();
-        impl.getLabel().setText(AppBeans.get(Messages.class).formatMessage(messagesPack, msgKey, countValue));
+        Messages messages = AppBeans.get(Messages.NAME);
+        impl.getLabel().setText(messages.formatMessage(messagesPack, msgKey, countValue));
 
         if (impl.getCountButton().isVisible() && !refreshing) {
-            impl.getCountButton().setText(AppBeans.get(Messages.class).getMessage(messagesPack, "table.rowsCount.msg3"));
+            impl.getCountButton().setText(messages.getMessage(messagesPack, "table.rowsCount.msg3"));
         }
         impl.repaint();
         impl.revalidate();

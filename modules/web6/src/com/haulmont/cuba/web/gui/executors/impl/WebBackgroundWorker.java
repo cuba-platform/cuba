@@ -115,7 +115,8 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
             @Override
             public void onTimer(Timer timer) {
-                if (AppBeans.get(UserSessionSource.class).getUserSession() == null) {
+                UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
+                if (sessionSource.getUserSession() == null) {
                     log.debug("Null UserSession in background task");
                     return;
                 }
@@ -134,7 +135,8 @@ public class WebBackgroundWorker implements BackgroundWorker {
                     taskExecutor.handleDone();
                 } else {
                     if (!taskExecutor.isCancelled()) {
-                        long actualTimeMs = AppBeans.get(TimeSource.class).currentTimestamp().getTime();
+                        TimeSource timeSource = AppBeans.get(TimeSource.NAME);
+                        long actualTimeMs = timeSource.currentTimestamp().getTime();
                         long timeout = taskHandler.getTimeoutMs();
 
                         if (timeout > 0 && (actualTimeMs - taskHandler.getStartTimeStamp()) > timeout) {

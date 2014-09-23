@@ -51,8 +51,8 @@ public class PresentationEditor extends Window {
         this.presentation = presentation;
         this.component = component;
 
-        messages = AppBeans.get(Messages.class);
-        sessionSource = AppBeans.get(UserSessionSource.class);
+        messages = AppBeans.get(Messages.NAME);
+        sessionSource = AppBeans.get(UserSessionSource.NAME);
 
         isNew = PersistenceHelper.isNew(presentation);
 

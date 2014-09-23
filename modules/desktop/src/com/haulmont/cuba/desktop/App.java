@@ -124,8 +124,8 @@ public class App implements ConnectionListener {
             DesktopAppContextLoader contextLoader = new DesktopAppContextLoader(getDefaultAppPropertiesConfig(), args);
             contextLoader.load();
 
-            messages = AppBeans.get(Messages.class);
-            configuration = AppBeans.get(Configuration.class);
+            messages = AppBeans.get(Messages.NAME);
+            configuration = AppBeans.get(Configuration.NAME);
 
             initTheme();
             initLookAndFeelDefaults();
@@ -229,7 +229,8 @@ public class App implements ConnectionListener {
     protected void initTheme() throws Exception {
         DesktopConfig config = configuration.getConfig(DesktopConfig.class);
         String themeName = config.getTheme();
-        theme = AppBeans.get(DesktopThemeLoader.class).loadTheme(themeName);
+        DesktopThemeLoader desktopThemeLoader = AppBeans.get(DesktopThemeLoader.NAME);
+        theme = desktopThemeLoader.loadTheme(themeName);
         theme.init();
 
         ThemeConstantsRepository themeRepository = AppBeans.get(ThemeConstantsRepository.NAME);
@@ -609,7 +610,8 @@ public class App implements ConnectionListener {
     }
 
     private void checkSessions() {
-        Map<String, Object> info = AppBeans.get(UserSessionService.class).getLicenseInfo();
+        UserSessionService userSessionService = AppBeans.get(UserSessionService.NAME);
+        Map<String, Object> info = userSessionService.getLicenseInfo();
         Integer licensed = (Integer) info.get("licensedSessions");
         if (licensed < 0) {
             mainFrame.showNotification("Invalid CUBA platform license", IFrame.NotificationType.WARNING);
@@ -635,7 +637,8 @@ public class App implements ConnectionListener {
             for (Window window : wm.getOpenWindows())
                 window.setEnabled(false);
 
-            WindowInfo changePasswordDialog = AppBeans.get(WindowConfig.class).getWindowInfo("sec$User.changePassw");
+            WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
+            WindowInfo changePasswordDialog = windowConfig.getWindowInfo("sec$User.changePassw");
             wm.getDialogParams().setCloseable(false);
             Map<String, Object> params = Collections.singletonMap("cancelEnabled", (Object) Boolean.FALSE);
             Window changePasswordWindow = wm.openEditor(changePasswordDialog, user, WindowManager.OpenType.DIALOG, params);

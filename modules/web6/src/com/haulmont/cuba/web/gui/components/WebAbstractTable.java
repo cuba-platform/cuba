@@ -120,7 +120,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
     protected String customStyle;
 
-    protected Security security = AppBeans.get(Security.class);
+    protected Security security = AppBeans.get(Security.NAME);
 
     protected boolean sendHideContextMenuPopup = false;
 
@@ -684,7 +684,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         UserSessionSource uss = AppBeans.get(UserSessionSource.NAME);
 
         UserSession userSession = uss.getUserSession();
-        MetadataTools metadataTools = AppBeans.get(MetadataTools.class);
+        MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
 
         final Collection<Object> columns;
         if (this.columns.isEmpty()) {
@@ -694,7 +694,8 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                 if (!property.getRange().getCardinality().isMany() && !metadataTools.isSystem(property)) {
                     Table.Column column = new Table.Column(metaPropertyPath);
 
-                    column.setCaption(AppBeans.get(MessageTools.class).getPropertyCaption(property));
+                    MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+                    column.setCaption(messageTools.getPropertyCaption(property));
                     column.setType(metaPropertyPath.getRangeJavaClass());
 
                     Element element = DocumentHelper.createElement("column");

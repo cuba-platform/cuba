@@ -7,9 +7,7 @@ package com.haulmont.cuba.web.app.domain;
 
 import com.haulmont.cuba.core.app.DomainDescriptionService;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.export.ExportFormat;
-import com.haulmont.cuba.gui.export.RestApiDataProvider;
 import com.haulmont.cuba.web.filestorage.WebExportDisplay;
 
 import java.io.UnsupportedEncodingException;
@@ -23,7 +21,7 @@ import java.io.UnsupportedEncodingException;
 public class DomainProvider implements Runnable {
     @Override
     public void run() {
-        DomainDescriptionService service = AppBeans.get(DomainDescriptionService.class);
+        DomainDescriptionService service = AppBeans.get(DomainDescriptionService.NAME);
         String description = service.getDomainDescription();
 
         WebExportDisplay exportDisplay = new WebExportDisplay(true);

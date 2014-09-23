@@ -69,7 +69,7 @@ public class ExcelExporter {
     private final Messages messages;
 
     public ExcelExporter() {
-        messages = AppBeans.get(Messages.class);
+        messages = AppBeans.get(Messages.NAME);
 
         trueStr = messages.getMessage(getClass(), "excelExporter.true");
         falseStr = messages.getMessage(getClass(), "excelExporter.false");
@@ -193,7 +193,11 @@ public class ExcelExporter {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        fileName = fileName == null ? AppBeans.get(MessageTools.class).getEntityCaption(datasource.getMetaClass()) : fileName;
+        if (fileName == null) {
+            MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+            fileName = messageTools.getEntityCaption(datasource.getMetaClass());
+        }
+
         display.show(new ByteArrayDataProvider(out.toByteArray()), fileName + ".xls", ExportFormat.XLS);
     }
 
@@ -232,7 +236,11 @@ public class ExcelExporter {
         HSSFRow row = sheet.createRow(rowNumber);
         HSSFCell cell = row.createCell(groupNumber);
         Object val = groupInfo.getValue();
-        val = val == null ? AppBeans.get(Messages.class).getMessage(getClass(), "excelExporter.empty") : val;
+
+        if (val == null) {
+            val = messages.getMessage(getClass(), "excelExporter.empty");
+        }
+
         formatValueCell(cell, val, groupNumber++, rowNumber, 0, true);
 
         int oldRowNumber = rowNumber;
