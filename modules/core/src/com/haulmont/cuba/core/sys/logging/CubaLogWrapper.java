@@ -11,6 +11,10 @@ import com.haulmont.cuba.security.sys.UserSessionManager;
 import org.apache.commons.logging.Log;
 import org.springframework.context.ApplicationContext;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class CubaLogWrapper extends AbstractLogWrapper {
 
     public CubaLogWrapper(Log delegate) {
@@ -23,9 +27,9 @@ public class CubaLogWrapper extends AbstractLogWrapper {
         if (logUserName == null || logUserName.equals("") || Boolean.valueOf(logUserName)) {
             SecurityContext securityContext = AppContext.getSecurityContext();
             if (securityContext != null) {
-                if (securityContext.getUser() != null)
+                if (securityContext.getUser() != null) {
                     return securityContext.getUser();
-                else {
+                } else {
                     ApplicationContext context = AppContext.getApplicationContext();
                     if (context != null) {
                         UserSessionManager usm = context.getBean(UserSessionManager.NAME, UserSessionManager.class);
