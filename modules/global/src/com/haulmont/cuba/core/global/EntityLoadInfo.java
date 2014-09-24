@@ -34,11 +34,11 @@ public class EntityLoadInfo {
     private String viewName;
     private boolean newEntity;
 
-    private EntityLoadInfo(UUID id, MetaClass metaClass, String viewName) {
+    protected EntityLoadInfo(UUID id, MetaClass metaClass, String viewName) {
         this(id, metaClass, viewName, false);
     }
 
-    private EntityLoadInfo(UUID id, MetaClass metaClass, String viewName, boolean newEntity) {
+    protected EntityLoadInfo(UUID id, MetaClass metaClass, String viewName, boolean newEntity) {
         this.id = id;
         this.metaClass = metaClass;
         this.viewName = viewName;

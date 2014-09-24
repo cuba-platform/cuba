@@ -6,7 +6,7 @@
 package com.haulmont.cuba.core.config.type;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.EntityLoadInfo;
+import com.haulmont.cuba.core.global.OriginalEntityLoadInfo;
 
 /**
  * @author krivopustov
@@ -16,7 +16,7 @@ public class EntityStringify extends TypeStringify {
 
     @Override
     public String stringify(Object value) {
-        EntityLoadInfo entityLoadInfo = EntityLoadInfo.create((Entity) value);
+        OriginalEntityLoadInfo entityLoadInfo = OriginalEntityLoadInfo.create((Entity) value);
         return entityLoadInfo.toString();
     }
 }
