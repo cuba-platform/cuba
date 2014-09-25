@@ -18,8 +18,8 @@
         </collectionDatasource>
     </dsContext>
 
-    <layout expand="jmxInstancesTable" spacing="true">
-        <table id="jmxInstancesTable" width="100%">
+    <layout spacing="true">
+        <table id="jmxInstancesTable" width="100%" height="100%">
             <actions>
                 <action id="create"/>
                 <action id="edit"/>

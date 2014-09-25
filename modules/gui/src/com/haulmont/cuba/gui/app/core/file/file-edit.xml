@@ -3,8 +3,7 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<window
-        xmlns="http://schemas.haulmont.com/cuba/5.2/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/5.2/window.xsd"
         class="com.haulmont.cuba.gui.app.core.file.FileEditor"
         datasource="fileDs"
         caption="msg://editorCaption"
@@ -18,7 +17,7 @@
         <datasource id="fileDs" class="com.haulmont.cuba.core.entity.FileDescriptor" view="browse"/>
     </dsContext>
 
-    <layout expand="windowActions" spacing="true">
+    <layout spacing="true">
         <upload id="uploadField"/>
         <grid spacing="true">
             <columns>

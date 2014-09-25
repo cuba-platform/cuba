@@ -16,7 +16,7 @@
                               view="browse" refreshMode="NEVER"/>
     </dsContext>
 
-    <layout expand="windowActions" spacing="true">
+    <layout spacing="true">
         <hbox spacing="true">
             <multiUpload id="multiUpload"/>
             <button action="uploadsTable.remove" icon="icons/remove.png"/>

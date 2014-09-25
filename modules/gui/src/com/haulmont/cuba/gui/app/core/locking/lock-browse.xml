@@ -26,10 +26,11 @@
             </query>
         </groupDatasource>
     </dsContext>
-    <layout expand="tabSheet" spacing="true">
-        <tabSheet id="tabSheet" width="100%">
-            <tab expand="locks" margin="true" id="viewTab" caption="msg://view">
-                <table id="locks" editable="false" width="100%">
+
+    <layout spacing="true">
+        <tabSheet id="tabSheet" width="100%" height="100%">
+            <tab margin="true" id="viewTab" caption="msg://view">
+                <table id="locks" editable="false" width="100%" height="100%">
                     <buttonsPanel>
                         <button invoke="refresh" caption="msg://refresh"/>
                         <button invoke="unlock" caption="msg://unlock"/>
@@ -45,7 +46,7 @@
                     <rows datasource="locksDs"/>
                 </table>
             </tab>
-            <tab expand="setupTable" margin="true" id="setupTab" caption="msg://setup">
+            <tab margin="true" id="setupTab" caption="msg://setup">
                 <table id="setupTable" height="100%" width="100%">
                     <actions>
                         <action id="create"/>

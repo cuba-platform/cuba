@@ -108,7 +108,7 @@ public class WebComponentsHelper {
     }
 
     public static boolean isComponentExpanded(com.haulmont.cuba.gui.components.Component component) {
-        Component vComponent = WebComponentsHelper.unwrap(component);
+        Component vComponent = WebComponentsHelper.getComposition(component);
         if (vComponent.getParent() instanceof AbstractOrderedLayout) {
             AbstractOrderedLayout layout = (AbstractOrderedLayout) vComponent.getParent();
             return (int)layout.getExpandRatio(vComponent) == 1;

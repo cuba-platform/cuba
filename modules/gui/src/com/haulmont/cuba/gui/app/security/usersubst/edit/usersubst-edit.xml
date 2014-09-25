@@ -30,7 +30,7 @@
 
     <assign name="fieldWidth" value="theme://cuba.gui.user-subst-edit.field.width"/>
 
-    <layout expand="windowActions" spacing="true">
+    <layout spacing="true">
         <grid spacing="true">
             <columns>
                 <column flex="1"/>

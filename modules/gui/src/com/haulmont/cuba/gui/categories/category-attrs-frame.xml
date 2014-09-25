@@ -5,14 +5,10 @@
 
 <window xmlns="http://schemas.haulmont.com/cuba/5.2/window.xsd"
         class="com.haulmont.cuba.gui.categories.CategoryAttrsFrame"
-        messagesPack="com.haulmont.cuba.gui.categories"
-        >
+        messagesPack="com.haulmont.cuba.gui.categories">
 
-    <dsContext>
-    </dsContext>
-
-    <layout expand="categoryAttrsTable" height="100%" spacing="true">
-        <table id="categoryAttrsTable" presentations="true" width="100%">
+    <layout height="100%" spacing="true">
+        <table id="categoryAttrsTable" presentations="true" width="100%" height="100%">
             <buttonsPanel>
                 <button action="categoryAttrsTable.create" icon="icons/create.png" caption="msg://categoryAttrsTable.create"/>
                 <button action="categoryAttrsTable.edit" icon="icons/edit.png" caption="msg://categoryAttrsTable.edit"/>

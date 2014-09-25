@@ -29,7 +29,7 @@
     </dsContext>
 
     <layout expand="contentPane">
-        <hbox expand="spacer" width="100%" spacing="true" margin="true">
+        <hbox spacing="true" margin="true">
             <hbox margin="false,true,false,false" spacing="true" align="MIDDLE_LEFT">
                 <checkBox id="assignedOnlyCheckBox" caption="msg://assignedOnly"/>
                 <checkBox id="systemLevelCheckBox" caption="msg://systemLevel"/>
@@ -40,14 +40,12 @@
                 <textField id="entityFilter" width="theme://cuba.gui.attributes-permission-tab.entityFilter.width"/>
                 <button id="applyFilterBtn" caption="msg://actions.Apply" invoke="applyFilter"/>
             </hbox>
-
-            <label id="spacer"/>
         </hbox>
 
-        <hbox id="contentPane" expand="contentSplit" margin="true" width="100%">
-            <split id="contentSplit" height="100%" orientation="horizontal" pos="60">
-                <vbox id="tablePane" expand="propertyPermissionsTable" height="100%">
-                    <table id="propertyPermissionsTable" width="100%">
+        <hbox id="contentPane" margin="true" width="100%">
+            <split id="contentSplit" width="100%" height="100%" orientation="horizontal" pos="60">
+                <vbox id="tablePane" height="100%">
+                    <table id="propertyPermissionsTable" width="100%" height="100%">
                         <columns>
                             <column id="caption" caption="msg://entities"/>
                             <column id="permissionsInfo"/>

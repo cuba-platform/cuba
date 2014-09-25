@@ -53,7 +53,7 @@
 
                 <hbox id="descrBox" spacing="true" height="100%">
                     <label value="msg://description"/>
-                    <textArea id="description" datasource="roleDs" property="description" rows="4"
+                    <textArea id="description" datasource="roleDs" property="description"
                               height="100%" width="theme://cuba.gui.role-edit.description.width"/>
                 </hbox>
             </hbox>

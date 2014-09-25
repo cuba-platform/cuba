@@ -3,27 +3,24 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<window
-    xmlns="http://schemas.haulmont.com/cuba/5.2/window.xsd"
-    messagesPack="com.haulmont.cuba.gui.app.security.group"
-    class="com.haulmont.cuba.gui.app.security.group.lookup.GroupLookup"
-    lookupComponent="groups"
-    caption="msg://browser.caption"
-    focusComponent="groups"
->
+<window xmlns="http://schemas.haulmont.com/cuba/5.2/window.xsd"
+        messagesPack="com.haulmont.cuba.gui.app.security.group"
+        class="com.haulmont.cuba.gui.app.security.group.lookup.GroupLookup"
+        lookupComponent="groups"
+        caption="msg://browser.caption"
+        focusComponent="groups">
+
     <dsContext>
-        <hierarchicalDatasource
-            id="groupsDs"
-            class="com.haulmont.cuba.security.entity.Group"
-            view="group.browse"
-            hierarchyProperty="parent"
-        >
+        <hierarchicalDatasource id="groupsDs"
+                                class="com.haulmont.cuba.security.entity.Group"
+                                view="group.browse"
+                                hierarchyProperty="parent">
             <query><![CDATA[select g from sec$Group g]]></query>
         </hierarchicalDatasource>
     </dsContext>
 
-    <layout expand="groups">
-        <tree id="groups" width="100%">
+    <layout>
+        <tree id="groups" width="100%" height="100%">
             <treechildren datasource="groupsDs" captionProperty="name" hierarchyProperty="parent"/>
         </tree>
     </layout>

@@ -14,7 +14,7 @@
         <datasource id="jmxInstanceDs" class="com.haulmont.cuba.core.entity.JmxInstance" view="_local"/>
     </dsContext>
 
-    <layout expand="windowActions">
+    <layout>
         <fieldGroup id="jmxFieldGroup" datasource="jmxInstanceDs" width="100%">
             <column width="100%">
                 <field id="address"/>
