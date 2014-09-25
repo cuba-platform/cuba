@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.window;
 
+import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.vaadin.client.ui.VWindow;
@@ -31,5 +32,10 @@ public class CubaWindowWidget extends VWindow {
             contextMenuHandler.onContextMenu(event);
         }
         super.onBrowserEvent(event);
+    }
+
+    @Override
+    public void onKeyUp(KeyUpEvent event) {
+        // disabled Vaadin close by ESCAPE #PL-4355
     }
 }
