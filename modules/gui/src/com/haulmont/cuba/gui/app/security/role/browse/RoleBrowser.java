@@ -48,6 +48,7 @@ public class RoleBrowser extends AbstractLookup {
         super.init(params);
 
         rolesTable.addAction(new ItemTrackingAction("assignToUsers") {
+            @Override
             public void actionPerform(Component component) {
                 if (rolesTable.getSelected().size() < 1) {
                     showNotification(getMessage("selectRole.msg"), NotificationType.HUMANIZED);
@@ -57,6 +58,7 @@ public class RoleBrowser extends AbstractLookup {
                 Map<String, Object> params = new HashMap<>();
                 WindowParams.MULTI_SELECT.set(params, true);
                 openLookup("sec$User.lookup", new Handler() {
+                    @Override
                     public void handleLookup(Collection items) {
                         if (items == null) return;
                         List<Entity> toCommit = new ArrayList<>();
