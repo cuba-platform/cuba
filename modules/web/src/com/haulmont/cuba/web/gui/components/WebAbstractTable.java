@@ -1086,7 +1086,9 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
     @Override
     public boolean saveSettings(Element element) {
-        element.addAttribute("textSelection", String.valueOf(component.isTextSelectionEnabled()));
+        if (isUsePresentations()) {
+            element.addAttribute("textSelection", String.valueOf(component.isTextSelectionEnabled()));
+        }
 
         Element columnsElem = element.element("columns");
         if (columnsElem != null) {
