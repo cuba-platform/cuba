@@ -9,6 +9,10 @@
         caption="msg://browserCaption"
         lookupComponent="loggedEntityTable">
 
+    <companions>
+        <web class="com.haulmont.cuba.web.app.core.entitylog.EntityLogBrowserCompanion"/>
+    </companions>
+
     <dsContext>
         <collectionDatasource id="loggedEntityDs"
                               class="com.haulmont.cuba.security.entity.LoggedEntity"
@@ -57,20 +61,20 @@
                     <columns count="7"/>
                     <rows>
                         <row>
-                            <label value="msg://user"/>
+                            <label value="msg://user" align="MIDDLE_LEFT"/>
                             <lookupField id="userField" optionsDatasource="usersDs" width="${fieldWidth}"/>
-                            <label value="msg://changeType"/>
+                            <label value="msg://changeType" align="MIDDLE_LEFT"/>
                             <lookupField id="changeTypeField" width="${fieldWidth}"/>
-                            <label value="msg://from"/>
+                            <label value="msg://from" align="MIDDLE_LEFT"/>
                             <dateField id="fromDateField"/>
                             <button width="${buttonWidth}" caption="msg://search" invoke="search"/>
                         </row>
                         <row>
-                            <label value="msg://entity"/>
+                            <label value="msg://entity" align="MIDDLE_LEFT"/>
                             <lookupField id="filterEntityNameField" width="${fieldWidth}"/>
-                            <label value="msg://instance"/>
+                            <label value="msg://instance" align="MIDDLE_LEFT"/>
                             <pickerField id="instancePicker" width="${fieldWidth}"/>
-                            <label value="msg://till"/>
+                            <label value="msg://till" align="MIDDLE_LEFT"/>
                             <dateField id="tillDateField"/>
                             <button width="${buttonWidth}" caption="msg://clear" invoke="clearEntityLogTable"/>
                         </row>

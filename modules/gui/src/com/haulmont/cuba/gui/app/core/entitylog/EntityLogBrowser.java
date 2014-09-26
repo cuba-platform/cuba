@@ -38,6 +38,10 @@ import java.util.*;
  */
 public class EntityLogBrowser extends AbstractWindow {
 
+    public interface Companion {
+        void enableSelectTable(Table table);
+    }
+
     protected static final String SELECT_ALL_CHECK_BOX = "selectAllCheckBox";
 
     protected static final int DEFAULT_SHOW_ROWS = 50;
@@ -88,6 +92,9 @@ public class EntityLogBrowser extends AbstractWindow {
     protected Table entityLogTable;
 
     @Inject
+    private Table entityLogAttrTable;
+
+    @Inject
     protected GroupBoxLayout attributesBox;
 
     @Inject
@@ -130,6 +137,12 @@ public class EntityLogBrowser extends AbstractWindow {
         usersDs.refresh();
         loggedEntityDs.refresh();
 
+        Companion companion = getCompanion();
+        if (companion != null) {
+            companion.enableSelectTable(entityLogTable);
+            companion.enableSelectTable(entityLogAttrTable);
+        }
+
         systemAttrsList = Arrays.asList("createTs", "createdBy", "updateTs", "updatedBy", "deleteTs", "deletedBy", "version", "id");
         Map<String, Object> changeTypeMap = new TreeMap<>();
         changeTypeMap.put(messages.getMessage(getClass(),"createField"), "C");
@@ -149,8 +162,10 @@ public class EntityLogBrowser extends AbstractWindow {
         addAction(new CancelAction());
         Label label1 = factory.createComponent(Label.NAME);
         label1.setValue(messages.getMessage(getClass(),"show"));
+        label1.setAlignment(Alignment.MIDDLE_LEFT);
         Label label2 = factory.createComponent(Label.NAME);
         label2.setValue(messages.getMessage(getClass(),"rows"));
+        label2.setAlignment(Alignment.MIDDLE_LEFT);
         ButtonsPanel panel = entityLogTable.getButtonsPanel();
         showRowField = factory.createComponent(TextField.NAME);
         showRowField.setWidth(themeConstants.get("cuba.gui.EntityLogBrowser.showRowField.width"));
