@@ -37,6 +37,11 @@ public class VWidgetsTree extends VTree implements Container {
     }
 
     @Override
+    public boolean allowTextSelection() {
+        return true;
+    }
+
+    @Override
     protected TreeNode createTreeNode(UIDL childUidl) {
         VConsole.log("[?] Has Widget " + childUidl.getBooleanAttribute("hasWidget"));
 
