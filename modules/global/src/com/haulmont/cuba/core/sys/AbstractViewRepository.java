@@ -417,10 +417,10 @@ public class AbstractViewRepository implements ViewRepository {
             String propertyName = propElem.attributeValue("name");
 
             MetaProperty metaProperty = metaClass.getProperty(propertyName);
-            if (metaProperty == null)
-                throw new DevelopmentException(
-                        String.format("View %s/%s definition error: property %s doesn't exists", metaClass.getName(), viewName, propertyName)
-                );
+            if (metaProperty == null) {
+                throw new DevelopmentException(String.format("View %s/%s definition error: property %s doesn't exists",
+                        metaClass.getName(), viewName, propertyName));
+            }
 
             View refView = null;
             String refViewName = propElem.attributeValue("view");
@@ -434,13 +434,12 @@ public class AbstractViewRepository implements ViewRepository {
             final List<Element> propertyElements = propElem.elements("property");
             boolean inlineView = !propertyElements.isEmpty();
 
-            if (refViewName != null && !inlineView) {
+            if (!range.isClass() && (refViewName != null || inlineView)) {
+                throw new DevelopmentException(String.format("View %s/%s definition error: property %s is not an entity",
+                        metaClass.getName(), viewName, propertyName));
+            }
 
-                if (!range.isClass())
-                    throw new DevelopmentException(
-                            String.format("View %s/%s definition error: property %s is not an entity", metaClass.getName(), viewName, propertyName)
-                    );
-
+            if (refViewName != null) {
                 refMetaClass = getMetaClass(propElem, range);
 
                 refView = retrieveView(refMetaClass, refViewName, false);
@@ -455,32 +454,31 @@ public class AbstractViewRepository implements ViewRepository {
 
                     if (refView == null) {
                         MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalMetaClass(refMetaClass);
-                        if (originalMetaClass != null)
+                        if (originalMetaClass != null) {
                             refView = retrieveView(originalMetaClass, refViewName, false);
+                        }
                     }
 
-                    if (refView == null)
+                    if (refView == null) {
                         throw new DevelopmentException(
-                                String.format(
-                                        "View %s/%s definition error: unable to find/deploy referenced view %s/%s",
-                                        metaClass.getName(), viewName, range.asClass().getName(), refViewName)
-                        );
+                                String.format("View %s/%s definition error: unable to find/deploy referenced view %s/%s",
+                                              metaClass.getName(), viewName, range.asClass().getName(), refViewName));
+                    }
                 }
             }
-            if (range.isClass() && refView == null && inlineView) {
+
+            if (inlineView) {
                 // try to import anonymous views
-                String ancestorViewName = propElem.attributeValue("view");
                 Class rangeClass = range.asClass().getJavaClass();
 
-                if (ancestorViewName == null) {
+                if (refView == null) {
                     refView = new View(rangeClass);
                 } else {
-                    refMetaClass = getMetaClass(propElem, range);
-                    View ancestorView = getAncestorView(refMetaClass, ancestorViewName);
-                    refView = new View(ancestorView, rangeClass, "", true);
+                    refView = new View(refView, rangeClass, "", true);
                 }
                 loadView(rootElem, propElem, refView);
             }
+
             boolean lazy = Boolean.valueOf(propElem.attributeValue("lazy"));
             if (lazy && metadata.getTools().isEmbedded(metaProperty)) {
                 log.warn(String.format(
