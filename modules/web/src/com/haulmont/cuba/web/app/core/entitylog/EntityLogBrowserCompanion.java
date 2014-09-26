@@ -15,7 +15,7 @@ import com.haulmont.cuba.web.toolkit.ui.CubaTable;
  */
 public class EntityLogBrowserCompanion implements EntityLogBrowser.Companion {
     @Override
-    public void enableSelectTable(Table table) {
+    public void enableTextSelection(Table table) {
         CubaTable webTable = WebComponentsHelper.unwrap(table);
         webTable.setTextSelectionEnabled(true);
     }

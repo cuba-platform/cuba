@@ -39,7 +39,7 @@ import java.util.*;
 public class EntityLogBrowser extends AbstractWindow {
 
     public interface Companion {
-        void enableSelectTable(Table table);
+        void enableTextSelection(Table table);
     }
 
     protected static final String SELECT_ALL_CHECK_BOX = "selectAllCheckBox";
@@ -139,8 +139,8 @@ public class EntityLogBrowser extends AbstractWindow {
 
         Companion companion = getCompanion();
         if (companion != null) {
-            companion.enableSelectTable(entityLogTable);
-            companion.enableSelectTable(entityLogAttrTable);
+            companion.enableTextSelection(entityLogTable);
+            companion.enableTextSelection(entityLogAttrTable);
         }
 
         systemAttrsList = Arrays.asList("createTs", "createdBy", "updateTs", "updatedBy", "deleteTs", "deletedBy", "version", "id");
