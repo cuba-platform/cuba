@@ -231,6 +231,10 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
                     if (datasource instanceof CollectionDatasource.SupportsApplyToSelected) {
                         ((CollectionDatasource.SupportsApplyToSelected) datasource).pinQuery();
                         addApplied();
+
+                        if (!required) {
+                            select.setValue(noFilter);
+                        }
                     }
                 }
             });
