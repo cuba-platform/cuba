@@ -189,7 +189,7 @@ public class AbstractViewRepository implements ViewRepository {
 
         checkInitialized();
 
-        View view = retrieveView(metaClass, name, false);
+        View view = retrieveView(metaClass, name, new HashSet<ViewInfo>());
         return copyView(view);
     }
 
@@ -207,10 +207,15 @@ public class AbstractViewRepository implements ViewRepository {
     }
 
     @SuppressWarnings("unchecked")
-    protected View deployDefaultView(MetaClass metaClass, String name) {
-        List<MetaProperty> deferredMinimalProperties = null;
-
+    protected View deployDefaultView(MetaClass metaClass, String name, Set<ViewInfo> visited) {
         Class<? extends Entity> javaClass = metaClass.getJavaClass();
+
+        ViewInfo info = new ViewInfo(javaClass, name);
+        if (visited.contains(info)) {
+            throw new DevelopmentException(String.format("Views cannot have cyclic references. View %s for class %s",
+                    name, metaClass.getName()));
+        }
+
         View view = new View(javaClass, name, false);
         if (View.LOCAL.equals(name)) {
             for (MetaProperty property : metaClass.getProperties()) {
@@ -232,11 +237,11 @@ public class AbstractViewRepository implements ViewRepository {
                     if (refMinimalView != null) {
                         view.addProperty(metaProperty.getName(), refMinimalView);
                     } else {
-                        if (deferredMinimalProperties == null) {
-                            deferredMinimalProperties = new ArrayList<>();
-                        }
+                        visited.add(info);
+                        View referenceMinimalView = deployDefaultView(metaProperty.getRange().asClass(), View.MINIMAL, visited);
+                        visited.remove(info);
 
-                        deferredMinimalProperties.add(metaProperty);
+                        view.addProperty(metaProperty.getName(), referenceMinimalView);
                     }
                 } else {
                     view.addProperty(metaProperty.getName());
@@ -247,14 +252,6 @@ public class AbstractViewRepository implements ViewRepository {
         }
 
         storeView(metaClass, view);
-
-        // init deferred minimal view properties
-        if (deferredMinimalProperties != null) {
-            for (MetaProperty deferredProperty : deferredMinimalProperties) {
-                View referenceMinimalView = deployDefaultView(deferredProperty.getRange().asClass(), View.MINIMAL);
-                view.addProperty(deferredProperty.getName(), referenceMinimalView);
-            }
-        }
 
         return view;
     }
@@ -294,21 +291,30 @@ public class AbstractViewRepository implements ViewRepository {
         }
     }
 
-    protected View retrieveView(MetaClass metaClass, String name, boolean deploying) {
+    protected View retrieveView(MetaClass metaClass, String name, Set<ViewInfo> visited) {
         Map<String, View> views = storage.get(metaClass);
         View view = (views == null ? null : views.get(name));
         if (view == null && (name.equals(View.LOCAL) || name.equals(View.MINIMAL))) {
-            view = deployDefaultView(metaClass, name);
+            view = deployDefaultView(metaClass, name, visited);
         }
         return view;
     }
 
-    @SuppressWarnings("unchecked")
     public View deployView(Element rootElem, Element viewElem) {
+        return deployView(rootElem, viewElem, new HashSet<ViewInfo>());
+    }
+
+    public View deployView(Element rootElem, Element viewElem, Set<ViewInfo> visited) {
         String viewName = getViewName(viewElem);
         MetaClass metaClass = getMetaClass(viewElem);
 
-        View v = retrieveView(metaClass, viewName, true);
+        ViewInfo info = new ViewInfo(metaClass.getJavaClass(), viewName);
+        if (visited.contains(info)) {
+            throw new DevelopmentException(String.format("Views cannot have cyclic references. View %s for class %s",
+                    viewName, metaClass.getName()));
+        }
+
+        View v = retrieveView(metaClass, viewName, visited);
         boolean overwrite = BooleanUtils.toBoolean(viewElem.attributeValue("overwrite"));
 
         String ancestor = viewElem.attributeValue("extends");
@@ -324,7 +330,7 @@ public class AbstractViewRepository implements ViewRepository {
 
         View view;
         if (ancestor != null) {
-            View ancestorView = getAncestorView(metaClass, ancestor);
+            View ancestorView = getAncestorView(metaClass, ancestor, visited);
 
             boolean includeSystemProperties = systemProperties == null ?
                     ancestorView.isIncludeSystemProperties() : Boolean.valueOf(systemProperties);
@@ -332,7 +338,11 @@ public class AbstractViewRepository implements ViewRepository {
         } else {
             view = new View(metaClass.getJavaClass(), viewName, Boolean.valueOf(systemProperties));
         }
-        loadView(rootElem, viewElem, view);
+
+        visited.add(info);
+        loadView(rootElem, viewElem, view, visited);
+        visited.remove(info);
+
         storeView(metaClass, view);
 
         if (overwrite) {
@@ -384,32 +394,33 @@ public class AbstractViewRepository implements ViewRepository {
         }
     }
 
-    protected View getAncestorView(MetaClass metaClass, String ancestor) {
-        View ancestorView = retrieveView(metaClass, ancestor, false);
+    protected View getAncestorView(MetaClass metaClass, String ancestor, Set<ViewInfo> visited) {
+        View ancestorView = retrieveView(metaClass, ancestor, visited);
         if (ancestorView == null) {
             ExtendedEntities extendedEntities = metadata.getExtendedEntities();
             MetaClass originalMetaClass = extendedEntities.getOriginalMetaClass(metaClass);
             if (originalMetaClass != null) {
-                ancestorView = retrieveView(originalMetaClass, ancestor, false);
+                ancestorView = retrieveView(originalMetaClass, ancestor, visited);
             }
             if (ancestorView == null) {
                 // Last resort - search for all ancestors
                 for (MetaClass ancestorMetaClass : metaClass.getAncestors()) {
                     if (ancestorMetaClass.equals(metaClass)) {
-                        ancestorView = retrieveView(ancestorMetaClass, ancestor, false);
+                        ancestorView = retrieveView(ancestorMetaClass, ancestor, visited);
                         if (ancestorView != null)
                             break;
                     }
                 }
             }
-            if (ancestorView == null)
-                throw new DevelopmentException("No ancestor view found: " + ancestor);
+            if (ancestorView == null) {
+                throw new DevelopmentException("No ancestor view found: " + ancestor + " for " + metaClass.getName());
+            }
         }
         return ancestorView;
     }
 
     @SuppressWarnings("unchecked")
-    protected void loadView(Element rootElem, Element viewElem, View view) {
+    protected void loadView(Element rootElem, Element viewElem, View view, Set<ViewInfo> visited) {
         final MetaClass metaClass = metadata.getClassNN(view.getEntityClass());
         final String viewName = view.getName();
 
@@ -442,12 +453,12 @@ public class AbstractViewRepository implements ViewRepository {
             if (refViewName != null) {
                 refMetaClass = getMetaClass(propElem, range);
 
-                refView = retrieveView(refMetaClass, refViewName, false);
+                refView = retrieveView(refMetaClass, refViewName, visited);
                 if (refView == null) {
                     for (Element e : (List<Element>) rootElem.elements("view")) {
                         if (refMetaClass.equals(getMetaClass(e.attributeValue("entity"), e.attributeValue("class")))
                                 && refViewName.equals(e.attributeValue("name"))) {
-                            refView = deployView(rootElem, e);
+                            refView = deployView(rootElem, e, visited);
                             break;
                         }
                     }
@@ -455,7 +466,7 @@ public class AbstractViewRepository implements ViewRepository {
                     if (refView == null) {
                         MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalMetaClass(refMetaClass);
                         if (originalMetaClass != null) {
-                            refView = retrieveView(originalMetaClass, refViewName, false);
+                            refView = retrieveView(originalMetaClass, refViewName, visited);
                         }
                     }
 
@@ -476,7 +487,7 @@ public class AbstractViewRepository implements ViewRepository {
                 } else {
                     refView = new View(refView, rangeClass, "", true);
                 }
-                loadView(rootElem, propElem, refView);
+                loadView(rootElem, propElem, refView, visited);
             }
 
             boolean lazy = Boolean.valueOf(propElem.attributeValue("lazy"));
@@ -556,5 +567,48 @@ public class AbstractViewRepository implements ViewRepository {
             list.addAll(viewMap.values());
         }
         return list;
+    }
+
+    protected static class ViewInfo {
+        protected Class javaClass;
+        protected String name;
+
+        public ViewInfo(Class javaClass, String name) {
+            this.javaClass = javaClass;
+            this.name = name;
+        }
+
+        public Class getJavaClass() {
+            return javaClass;
+        }
+
+        public void setJavaClass(Class javaClass) {
+            this.javaClass = javaClass;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (!(obj instanceof ViewInfo)) {
+                return false;
+            }
+
+            ViewInfo that = (ViewInfo) obj;
+            return this.javaClass == that.javaClass && Objects.equals(this.name, that.name);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = javaClass.hashCode();
+            result = 31 * result + name.hashCode();
+            return result;
+        }
     }
 }
