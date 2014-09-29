@@ -208,7 +208,7 @@ public class AbstractViewRepository implements ViewRepository {
 
     @SuppressWarnings("unchecked")
     protected View deployDefaultView(MetaClass metaClass, String name) {
-        List<MetaProperty> defferedMinimalProperties = null;
+        List<MetaProperty> deferredMinimalProperties = null;
 
         Class<? extends Entity> javaClass = metaClass.getJavaClass();
         View view = new View(javaClass, name, false);
@@ -232,11 +232,11 @@ public class AbstractViewRepository implements ViewRepository {
                     if (refMinimalView != null) {
                         view.addProperty(metaProperty.getName(), refMinimalView);
                     } else {
-                        if (defferedMinimalProperties == null) {
-                            defferedMinimalProperties = new ArrayList<>();
+                        if (deferredMinimalProperties == null) {
+                            deferredMinimalProperties = new ArrayList<>();
                         }
 
-                        defferedMinimalProperties.add(metaProperty);
+                        deferredMinimalProperties.add(metaProperty);
                     }
                 } else {
                     view.addProperty(metaProperty.getName());
@@ -248,11 +248,11 @@ public class AbstractViewRepository implements ViewRepository {
 
         storeView(metaClass, view);
 
-        // init deffered minimal view properties
-        if (defferedMinimalProperties != null) {
-            for (MetaProperty defferedProperty : defferedMinimalProperties) {
-                View referenceMinimalView = deployDefaultView(defferedProperty.getRange().asClass(), View.MINIMAL);
-                view.addProperty(defferedProperty.getName(), referenceMinimalView);
+        // init deferred minimal view properties
+        if (deferredMinimalProperties != null) {
+            for (MetaProperty deferredProperty : deferredMinimalProperties) {
+                View referenceMinimalView = deployDefaultView(deferredProperty.getRange().asClass(), View.MINIMAL);
+                view.addProperty(deferredProperty.getName(), referenceMinimalView);
             }
         }
 
