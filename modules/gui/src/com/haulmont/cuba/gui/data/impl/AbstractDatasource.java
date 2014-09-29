@@ -172,7 +172,8 @@ public abstract class AbstractDatasource<T extends Entity> implements Datasource
         dsListeners.remove(listener);
     }
 
-    protected void clearCommitLists() {
+    @Override
+    public void clearCommitLists() {
         itemToCreate.clear();
         itemToUpdate.clear();
         itemToDelete.clear();

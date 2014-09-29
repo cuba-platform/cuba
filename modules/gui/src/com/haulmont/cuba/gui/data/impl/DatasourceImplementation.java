@@ -38,4 +38,6 @@ public interface DatasourceImplementation<T extends Entity> {
      * @return          previous state
      */
     boolean enableListeners(boolean enable);
+
+    void clearCommitLists();
 }
