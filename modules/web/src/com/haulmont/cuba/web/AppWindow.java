@@ -153,10 +153,11 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
 
     public AppWindow(AppUI ui) {
         log.trace("Creating " + this);
+
         this.ui = ui;
-        app = ui.getApp();
-        connection = app.getConnection();
-        windowManager = createWindowManager();
+        this.app = ui.getApp();
+        this.connection = app.getConnection();
+        this.windowManager = createWindowManager();
 
         Configuration configuration = AppBeans.get(Configuration.NAME);
         globalConfig = configuration.getConfig(GlobalConfig.class);
@@ -169,6 +170,8 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
 
         setSizeFull();
         setBaseStyle("cuba-app-window");
+
+        beforeInitLayout();
 
         rootLayout = new VerticalLayout();
 
@@ -481,19 +484,25 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
         }
     }
 
+    protected void beforeInitLayout() {
+        // load theme from user settings
+        String themeName = webConfig.getAppWindowTheme();
+        themeName = userSettingsTools.loadAppWindowTheme() == null ? themeName : userSettingsTools.loadAppWindowTheme();
+
+        if (!Objects.equals(themeName, ui.getTheme())) {
+            // check theme support
+            List<String> supportedThemes = webConfig.getAvailableAppThemes();
+            if (supportedThemes.contains(themeName)) {
+                app.applyTheme(themeName);
+                ui.setTheme(themeName);
+            }
+        }
+    }
+
     /**
      * Called by constructor when all layouts are created but before {@link #initStartupScreen()}.
      */
     protected void postInitLayout() {
-//        String themeName = AppContext.getProperty("cuba.web.theme");
-//        vaadin7 Theme switch
-//        if (themeName == null) themeName = AppUI.THEME_NAME;
-//        themeName = userSettingsTools.loadAppWindowTheme() == null ? themeName : userSettingsTools.loadAppWindowTheme();
-//        if (!StringUtils.equals(themeName, getTheme())) {
-//            setTheme(themeName);
-//            // set cookie
-//            AppUI.getInstance().setUserAppTheme(themeName);
-//        }
     }
 
     /**
@@ -606,7 +615,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
 
             final TextField searchField = new CubaTextField();
 
-            ThemeConstants theme = App.getInstance().getThemeConstants();
+            ThemeConstants theme = app.getThemeConstants();
             searchField.setWidth(theme.get("cuba.web.AppWindow.searchField.width"));
 
             if (ui.isTestMode()) {
@@ -651,7 +660,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
 
         WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
         WindowInfo windowInfo = windowConfig.getWindowInfo("ftsSearch");
-        App.getInstance().getWindowManager().openWindow(
+        windowManager.openWindow(
                 windowInfo,
                 WindowManager.OpenType.NEW_TAB,
                 params
@@ -762,7 +771,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
     }
 
     protected void addUserIndicator(HorizontalLayout parentLayout) {
-        UserSession session = App.getInstance().getConnection().getSession();
+        UserSession session = connection.getSession();
         if (session == null)
             throw new RuntimeException("No user session found");
 
@@ -778,7 +787,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
             if (webConfig.getUseLightHeader()) {
                 substUserSelect = new ComboBox();
 
-                ThemeConstants theme = App.getInstance().getThemeConstants();
+                ThemeConstants theme = app.getThemeConstants();
                 substUserSelect.setWidth(theme.get("cuba.web.AppWindow.substUserSelect.width"));
             } else {
                 substUserSelect = new NativeSelect();
@@ -1163,7 +1172,6 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
             if (foldersPane != null) {
                 foldersPane.savePosition();
             }
-            app.reinitializeAppearanceProperties();
             app.getWindowManager().checkModificationsAndCloseAll(
                     new Runnable() {
                         @Override

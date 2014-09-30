@@ -50,6 +50,8 @@ public abstract class App {
 
     public static final String USER_SESSION_ATTR = "userSessionId";
 
+    public static final String APP_THEME_COOKIE_PREFIX = "APP_THEME_NAME_";
+
     private static Log log = LogFactory.getLog(App.class);
 
     protected AppLog appLog;
@@ -73,8 +75,6 @@ public abstract class App {
     protected Principal principal;
 
     protected Locale locale = Locale.getDefault();
-
-    protected boolean themeInitialized = false;
 
     protected String webResourceTimestamp = "DEBUG";
 
@@ -115,6 +115,17 @@ public abstract class App {
 
     protected ThemeConstants loadTheme() {
         String appWindowTheme = webConfig.getAppWindowTheme();
+        String userAppTheme = cookies.getCookieValue(APP_THEME_COOKIE_PREFIX + globalConfig.getWebContextName());
+        if (userAppTheme != null) {
+            if (!StringUtils.equals(userAppTheme, appWindowTheme)) {
+                // check theme support
+                List<String> supportedThemes = webConfig.getAvailableAppThemes();
+                if (supportedThemes.contains(userAppTheme)) {
+                    appWindowTheme = userAppTheme;
+                }
+            }
+        }
+
         ThemeConstantsRepository themeRepository = AppBeans.get(ThemeConstantsRepository.NAME);
         ThemeConstants theme = themeRepository.getConstants(appWindowTheme);
 
@@ -123,6 +134,18 @@ public abstract class App {
         }
 
         return theme;
+    }
+
+    protected void applyTheme(String appWindowTheme) {
+        ThemeConstantsRepository themeRepository = AppBeans.get(ThemeConstantsRepository.NAME);
+        ThemeConstants theme = themeRepository.getConstants(appWindowTheme);
+
+        if (theme == null) {
+            log.warn("Unable to use theme constants '" + appWindowTheme + "'");
+        } else {
+            this.themeConstants = theme;
+            setUserAppTheme(appWindowTheme);
+        }
     }
 
     /**
@@ -329,8 +352,8 @@ public abstract class App {
         return clientAddress;
     }
 
-    public void reinitializeAppearanceProperties() {
-        themeInitialized = false;
+    public void setUserAppTheme(String themeName) {
+        addCookie(APP_THEME_COOKIE_PREFIX + globalConfig.getWebContextName(), themeName);
     }
 
     public String getWebResourceTimestamp() {

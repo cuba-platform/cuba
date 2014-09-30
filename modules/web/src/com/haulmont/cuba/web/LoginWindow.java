@@ -37,6 +37,7 @@ import javax.annotation.Nullable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -151,6 +152,24 @@ public class LoginWindow extends UIView implements Action.Handler {
         }
 
         addActionHandler(this);
+
+        // load theme from cookies if it is changed by user in settings dialog
+        applyUserTheme();
+    }
+
+    protected void applyUserTheme() {
+        String uiTheme = ui.getTheme();
+        String userAppTheme = app.getCookieValue(App.APP_THEME_COOKIE_PREFIX + globalConfig.getWebContextName());
+
+        if (userAppTheme != null) {
+            if (!StringUtils.equals(userAppTheme, uiTheme)) {
+                // check theme support
+                List<String> supportedThemes = webConfig.getAvailableAppThemes();
+                if (supportedThemes.contains(userAppTheme)) {
+                    ui.setTheme(userAppTheme);
+                }
+            }
+        }
     }
 
     protected Locale resolveLocale(App app) {

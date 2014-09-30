@@ -21,6 +21,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
@@ -105,7 +106,8 @@ public class CubaVaadinServletService extends VaadinServletService {
 
                 String redirectUri;
                 if (RequestContext.get() != null) {
-                    redirectUri = StringUtils.replace(RequestContext.get().getRequest().getRequestURI(), "/UIDL", "");
+                    HttpServletRequest request = RequestContext.get().getRequest();
+                    redirectUri = StringUtils.replace(request.getRequestURI(), "/UIDL", "");
                 } else {
                     String webContext = AppContext.getProperty("cuba.webContextName");
                     redirectUri = "/" + webContext;
@@ -120,7 +122,6 @@ public class CubaVaadinServletService extends VaadinServletService {
 
     @Override
     public String getConfiguredTheme(VaadinRequest request) {
-        // vaadin7 return theme from user settings or use system default
         return webConfig.getAppWindowTheme();
     }
 

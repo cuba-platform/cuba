@@ -162,16 +162,28 @@ public abstract class App extends Application
         cookies.updateCookies(request);
 
         if (!themeInitialized) {
+            String appWindowTheme = webConfig.getAppWindowTheme();
             String userAppTheme = cookies.getCookieValue(APP_THEME_COOKIE_PREFIX + globalConfig.getWebContextName());
             if (userAppTheme != null) {
-                if (!StringUtils.equals(userAppTheme, getTheme())) {
-                    // check theme support
-                    List<String> supportedThemes = webConfig.getAvailableAppThemes();
-                    if (supportedThemes.contains(userAppTheme)) {
+                // check theme support
+                List<String> supportedThemes = webConfig.getAvailableAppThemes();
+                if (supportedThemes.contains(userAppTheme)) {
+                    if (!StringUtils.equals(userAppTheme, getTheme())) {
                         setTheme(userAppTheme);
                     }
+                    appWindowTheme = userAppTheme;
                 }
             }
+
+            ThemeConstantsRepository themeRepository = AppBeans.get(ThemeConstantsRepository.NAME);
+            ThemeConstants theme = themeRepository.getConstants(appWindowTheme);
+
+            if (theme == null) {
+                throw new IllegalStateException("Unable to use theme constants '" + appWindowTheme + "'");
+            }
+
+            this.themeConstants = theme;
+
             themeInitialized = true;
         }
 
@@ -232,6 +244,18 @@ public abstract class App extends Application
         msgs.setInternalErrorURL("/" + webContext + "?restartApp");
         msgs.setOutOfSyncNotificationEnabled(false);
         return msgs;
+    }
+
+    protected void applyTheme(String appWindowTheme) {
+        ThemeConstantsRepository themeRepository = AppBeans.get(ThemeConstantsRepository.NAME);
+        ThemeConstants theme = themeRepository.getConstants(appWindowTheme);
+
+        if (theme == null) {
+            log.warn("Unable to use theme constants '" + appWindowTheme + "'");
+        } else {
+            this.themeConstants = theme;
+            setUserAppTheme(appWindowTheme);
+        }
     }
 
     public static class CubaSystemMessages extends Application.CustomizedSystemMessages {

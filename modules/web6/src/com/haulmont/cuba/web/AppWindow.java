@@ -9,7 +9,6 @@ import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Action;
@@ -37,7 +36,10 @@ import com.haulmont.cuba.web.toolkit.ui.WindowOpenButton;
 import com.haulmont.cuba.web.vaadin.FocusHandlerWindow;
 import com.vaadin.data.Property;
 import com.vaadin.event.ShortcutListener;
-import com.vaadin.terminal.*;
+import com.vaadin.terminal.ExternalResource;
+import com.vaadin.terminal.PaintException;
+import com.vaadin.terminal.PaintTarget;
+import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.StringUtils;
@@ -157,6 +159,8 @@ public class AppWindow extends FocusHandlerWindow implements UserSubstitutionLis
         mode = userSettingsTools.loadAppWindowMode();
 
         setSizeFull();
+
+        beforeInitLayout();
 
         rootLayout = new VerticalLayout();
 
@@ -486,18 +490,25 @@ public class AppWindow extends FocusHandlerWindow implements UserSubstitutionLis
         }
     }
 
+    protected void beforeInitLayout() {
+        // load theme from user settings
+        String themeName = webConfig.getAppWindowTheme();
+        themeName = userSettingsTools.loadAppWindowTheme() == null ? themeName : userSettingsTools.loadAppWindowTheme();
+
+        if (!Objects.equals(themeName, getTheme())) {
+            // check theme support
+            List<String> supportedThemes = webConfig.getAvailableAppThemes();
+            if (supportedThemes.contains(themeName)) {
+                app.applyTheme(themeName);
+                setTheme(themeName);
+            }
+        }
+    }
+
     /**
      * Called by constructor when all layouts are created but before {@link #initStartupScreen()}.
      */
     protected void postInitLayout() {
-        String themeName = AppContext.getProperty("cuba.web.theme");
-        if (themeName == null) themeName = App.THEME_NAME;
-        themeName = userSettingsTools.loadAppWindowTheme() == null ? themeName : userSettingsTools.loadAppWindowTheme();
-        if (!StringUtils.equals(themeName, getTheme())) {
-            setTheme(themeName);
-            // set cookie
-            App.getInstance().setUserAppTheme(themeName);
-        }
     }
 
     /**
