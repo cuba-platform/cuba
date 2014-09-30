@@ -5,12 +5,18 @@
 
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author artamonov
@@ -78,6 +84,36 @@ public class BulkEditorLoader extends ComponentLoader {
             }
         });
 
+        loadValidators(component, element);
+
         return component;
+    }
+
+    private void loadValidators(BulkEditor component, Element element) {
+        List<Element> validatorElements = Dom4j.elements(element, "validator");
+        if (!validatorElements.isEmpty()) {
+            List<Field.Validator> moduleValidators = new ArrayList<>();
+            Map<String, Field.Validator> fieldValidators = new LinkedHashMap<>();
+
+            for (Element validatorElement : validatorElements) {
+                Field.Validator validator = loadValidator(validatorElement);
+                String field = validatorElement.attributeValue("field");
+
+                if (StringUtils.isNotBlank(field)) {
+                    fieldValidators.put(field, validator);
+                } else {
+                    moduleValidators.add(validator);
+                }
+            }
+
+            if (!fieldValidators.isEmpty()) {
+                component.setFieldValidators(fieldValidators);
+            }
+
+            if (!moduleValidators.isEmpty()) {
+                component.setModuleValidators(moduleValidators);
+            }
+        }
+
     }
 }

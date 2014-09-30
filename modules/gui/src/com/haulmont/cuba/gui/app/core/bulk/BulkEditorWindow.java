@@ -85,6 +85,12 @@ public class BulkEditorWindow extends AbstractWindow {
     @WindowParam
     protected String exclude;
 
+    @WindowParam
+    protected Map<String, Field.Validator> fieldValidators;
+
+    @WindowParam
+    protected List<Field.Validator> moduleValidators;
+
     protected Pattern excludeRegex;
 
     protected DsContextImpl dsContext;
@@ -219,6 +225,12 @@ public class BulkEditorWindow extends AbstractWindow {
 
                 editField.setRequired(false);
                 editField.setValue(null);
+                if (fieldValidators != null) {
+                    Field.Validator validator = fieldValidators.get(field.getFqn());
+                    if (validator != null) {
+                        editField.addValidator(validator);
+                    }
+                }
 
                 grid.add(boxLayout);
 
@@ -449,42 +461,59 @@ public class BulkEditorWindow extends AbstractWindow {
     }
 
     public void applyChanges() {
-        List<String> fields = new ArrayList<>();
-        for (Map.Entry<String, Field> fieldEntry : dataFields.entrySet()) {
-            Field field = fieldEntry.getValue();
-            if (field.getValue() != null || !field.isEnabled()) {
-                String localizedName = managedFields.get(fieldEntry.getKey()).getLocalizedName();
-                fields.add("- " + localizedName);
+        if (validateAll()) {
+            StringBuilder sb = new StringBuilder();
+            if (moduleValidators != null) {
+                for (Field.Validator moduleValidator : moduleValidators) {
+                    try {
+                        moduleValidator.validate(datasource);
+                    } catch (ValidationException e) {
+                        sb.append(e.getMessage());
+                        sb.append("\n");
+                    }
+                }
             }
-        }
+            if (sb.length() == 0) {
+                List<String> fields = new ArrayList<>();
+                for (Map.Entry<String, Field> fieldEntry : dataFields.entrySet()) {
+                    Field field = fieldEntry.getValue();
+                    if (field.getValue() != null || !field.isEnabled()) {
+                        String localizedName = managedFields.get(fieldEntry.getKey()).getLocalizedName();
+                        fields.add("- " + localizedName);
+                    }
+                }
 
-        if (!fields.isEmpty()) {
-            showOptionDialog(getMessage("bulk.confirmation"),
-                    formatMessage("bulk.applyConfirmation", items.size(), StringUtils.join(fields, "\n")),
-                    MessageType.CONFIRMATION, new Action[]{
-                            new AbstractAction("actions.Apply") {
-                                {
-                                    setIcon("icons/ok.png");
-                                }
+                if (!fields.isEmpty()) {
+                    showOptionDialog(getMessage("bulk.confirmation"),
+                            formatMessage("bulk.applyConfirmation", items.size(), StringUtils.join(fields, "\n")),
+                            MessageType.CONFIRMATION, new Action[]{
+                                    new AbstractAction("actions.Apply") {
+                                        {
+                                            setIcon("icons/ok.png");
+                                        }
 
-                                @Override
-                                public void actionPerform(Component component) {
-                                    commitChanges();
-                                }
-                            },
-                            new AbstractAction("actions.Cancel") {
-                                {
-                                    setIcon("icons/cancel.png");
-                                }
+                                        @Override
+                                        public void actionPerform(Component component) {
+                                            commitChanges();
+                                        }
+                                    },
+                                    new AbstractAction("actions.Cancel") {
+                                        {
+                                            setIcon("icons/cancel.png");
+                                        }
 
-                                @Override
-                                public void actionPerform(Component component) {
+                                        @Override
+                                        public void actionPerform(Component component) {
 
-                                }
-                            }
-                    });
-        } else {
-            showNotification(getMessage("bulk.noChanges"), NotificationType.HUMANIZED);
+                                        }
+                                    }
+                            });
+                } else {
+                    showNotification(getMessage("bulk.noChanges"), NotificationType.HUMANIZED);
+                }
+            } else {
+                showNotification(sb.toString(), NotificationType.TRAY);
+            }
         }
     }
 

@@ -14,6 +14,7 @@ import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -25,6 +26,8 @@ public class BulkEditAction extends ItemTrackingAction {
     protected ListComponent owner;
     protected WindowManager.OpenType openType = WindowManager.OpenType.DIALOG;
     protected String exclude;
+    protected Map<String, Field.Validator> fieldValidators;
+    protected List<Field.Validator> moduleValidators;
 
     public BulkEditAction(ListComponent owner) {
         super("bulkEdit");
@@ -55,6 +58,22 @@ public class BulkEditAction extends ItemTrackingAction {
         this.exclude = exclude;
     }
 
+    public List<Field.Validator> getModuleValidators() {
+        return moduleValidators;
+    }
+
+    public void setModuleValidators(List<Field.Validator> moduleValidators) {
+        this.moduleValidators = moduleValidators;
+    }
+
+    public Map<String, Field.Validator> getFieldValidators() {
+        return fieldValidators;
+    }
+
+    public void setFieldValidators(Map<String, Field.Validator> fieldValidators) {
+        this.fieldValidators = fieldValidators;
+    }
+
     @Override
     public void refreshState() {
         super.refreshState();
@@ -82,6 +101,8 @@ public class BulkEditAction extends ItemTrackingAction {
         params.put("metaClass", owner.getDatasource().getMetaClass());
         params.put("selected", owner.getSelected());
         params.put("exclude", exclude);
+        params.put("fieldValidators", fieldValidators);
+        params.put("moduleValidators", moduleValidators);
 
         if (openType == WindowManager.OpenType.DIALOG) {
             ThemeConstantsManager themeManager = AppBeans.get(ThemeConstantsManager.NAME);

@@ -7,8 +7,13 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.BulkEditor;
+import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.actions.BulkEditAction;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author artamonov
@@ -20,6 +25,8 @@ public class DesktopBulkEditor extends DesktopButton implements BulkEditor {
     protected WindowManager.OpenType openType = WindowManager.OpenType.DIALOG;
     protected BulkEditAction bulkEditAction;
     protected ListComponent listComponent;
+    protected Map<String, Field.Validator> fieldValidators;
+    protected List<Field.Validator> moduleValidators;
 
     public DesktopBulkEditor() {
         setCaption(null);
@@ -79,6 +86,14 @@ public class DesktopBulkEditor extends DesktopButton implements BulkEditor {
                 bulkEditAction.setExcludePropertyRegex(exclude);
             }
 
+            if (fieldValidators != null) {
+                bulkEditAction.setFieldValidators(fieldValidators);
+            }
+
+            if (moduleValidators != null) {
+                bulkEditAction.setModuleValidators(moduleValidators);
+            }
+
             if (caption != null) {
                 bulkEditAction.setCaption(caption);
             }
@@ -92,6 +107,32 @@ public class DesktopBulkEditor extends DesktopButton implements BulkEditor {
             bulkEditAction.setVisible(visible);
 
             listComponent.addAction(bulkEditAction);
+        }
+    }
+
+    @Override
+    public Map<String, Field.Validator> getFieldValidators() {
+        return fieldValidators == null ? null : Collections.unmodifiableMap(fieldValidators);
+    }
+
+    @Override
+    public void setFieldValidators(Map<String, Field.Validator> fieldValidators) {
+        this.fieldValidators = fieldValidators;
+        if (bulkEditAction != null) {
+            bulkEditAction.setFieldValidators(fieldValidators);
+        }
+    }
+
+    @Override
+    public List<Field.Validator> getModuleValidators() {
+        return moduleValidators == null ? null : Collections.unmodifiableList(moduleValidators);
+    }
+
+    @Override
+    public void setModuleValidators(List<Field.Validator> moduleValidators) {
+        this.moduleValidators = moduleValidators;
+        if (bulkEditAction != null) {
+            bulkEditAction.setModuleValidators(moduleValidators);
         }
     }
 }

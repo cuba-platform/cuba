@@ -1317,6 +1317,16 @@
     </xs:complexType>
 
     <xs:complexType name="bulkEditorComponent">
+        <xs:sequence>
+            <xs:element name="validator" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:attribute name="field" type="xs:string"/>
+                    <xs:attribute name="class" type="xs:string"/>
+                    <xs:attribute name="script" type="xs:string"/>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+
         <xs:attributeGroup ref="hasId"/>
 
         <xs:attributeGroup ref="hasCaption"/>

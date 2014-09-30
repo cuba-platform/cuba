@@ -7,6 +7,9 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.gui.WindowManager;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * @author artamonov
  * @version $Id$
@@ -24,4 +27,10 @@ public interface BulkEditor extends Component, Component.HasCaption, Component.B
 
     ListComponent getListComponent();
     void setListComponent(ListComponent listComponent);
+
+    Map<String, Field.Validator> getFieldValidators();
+    void setFieldValidators(Map <String, Field.Validator> fieldValidators);
+
+    List<Field.Validator> getModuleValidators();
+    void setModuleValidators(List<Field.Validator> moduleValidators);
 }
