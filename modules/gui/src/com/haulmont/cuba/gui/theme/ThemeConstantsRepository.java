@@ -104,17 +104,20 @@ public class ThemeConstantsRepository {
                 throw new DevelopmentException("Unable to parse theme constants for: '" + fileName + "'");
             }
 
+            Object includeValue = properties.get("@include");
+            if (includeValue != null) {
+                String[] themeIncludes = StringUtils.split(includeValue.toString(), " ,");
+
+                for (String include : themeIncludes) {
+                    loadThemeProperties(include, themeMap);
+                }
+            }
+
             for (Map.Entry<Object, Object> entry : properties.entrySet()) {
                 Object key = entry.getKey();
                 Object value = entry.getValue();
 
-                if ("@include".equals(key)) {
-                    String[] themeIncludes = StringUtils.split(value.toString(), " ,");
-
-                    for (String include : themeIncludes) {
-                        loadThemeProperties(include, themeMap);
-                    }
-                } else if (key != null && value != null) {
+                if (key != null && !"@include".equals(key) && value != null) {
                     themeMap.put(key.toString(), value.toString());
                 }
             }
