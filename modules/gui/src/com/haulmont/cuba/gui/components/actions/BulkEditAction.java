@@ -27,7 +27,7 @@ public class BulkEditAction extends ItemTrackingAction {
     protected WindowManager.OpenType openType = WindowManager.OpenType.DIALOG;
     protected String exclude;
     protected Map<String, Field.Validator> fieldValidators;
-    protected List<Field.Validator> moduleValidators;
+    protected List<Field.Validator> modelValidators;
 
     public BulkEditAction(ListComponent owner) {
         super("bulkEdit");
@@ -58,12 +58,12 @@ public class BulkEditAction extends ItemTrackingAction {
         this.exclude = exclude;
     }
 
-    public List<Field.Validator> getModuleValidators() {
-        return moduleValidators;
+    public List<Field.Validator> getModelValidators() {
+        return modelValidators;
     }
 
-    public void setModuleValidators(List<Field.Validator> moduleValidators) {
-        this.moduleValidators = moduleValidators;
+    public void setModelValidators(List<Field.Validator> modelValidators) {
+        this.modelValidators = modelValidators;
     }
 
     public Map<String, Field.Validator> getFieldValidators() {
@@ -102,7 +102,7 @@ public class BulkEditAction extends ItemTrackingAction {
         params.put("selected", owner.getSelected());
         params.put("exclude", exclude);
         params.put("fieldValidators", fieldValidators);
-        params.put("moduleValidators", moduleValidators);
+        params.put("modelValidators", modelValidators);
 
         if (openType == WindowManager.OpenType.DIALOG) {
             ThemeConstantsManager themeManager = AppBeans.get(ThemeConstantsManager.NAME);

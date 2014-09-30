@@ -31,6 +31,6 @@ public interface BulkEditor extends Component, Component.HasCaption, Component.B
     Map<String, Field.Validator> getFieldValidators();
     void setFieldValidators(Map <String, Field.Validator> fieldValidators);
 
-    List<Field.Validator> getModuleValidators();
-    void setModuleValidators(List<Field.Validator> moduleValidators);
+    List<Field.Validator> getModelValidators();
+    void setModelValidators(List<Field.Validator> modelValidators);
 }

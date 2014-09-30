@@ -92,7 +92,7 @@ public class BulkEditorLoader extends ComponentLoader {
     private void loadValidators(BulkEditor component, Element element) {
         List<Element> validatorElements = Dom4j.elements(element, "validator");
         if (!validatorElements.isEmpty()) {
-            List<Field.Validator> moduleValidators = new ArrayList<>();
+            List<Field.Validator> modelValidators = new ArrayList<>();
             Map<String, Field.Validator> fieldValidators = new LinkedHashMap<>();
 
             for (Element validatorElement : validatorElements) {
@@ -102,7 +102,7 @@ public class BulkEditorLoader extends ComponentLoader {
                 if (StringUtils.isNotBlank(field)) {
                     fieldValidators.put(field, validator);
                 } else {
-                    moduleValidators.add(validator);
+                    modelValidators.add(validator);
                 }
             }
 
@@ -110,10 +110,9 @@ public class BulkEditorLoader extends ComponentLoader {
                 component.setFieldValidators(fieldValidators);
             }
 
-            if (!moduleValidators.isEmpty()) {
-                component.setModuleValidators(moduleValidators);
+            if (!modelValidators.isEmpty()) {
+                component.setModelValidators(modelValidators);
             }
         }
-
     }
 }

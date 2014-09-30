@@ -24,7 +24,7 @@ public class WebBulkEditor extends WebButton implements BulkEditor {
     protected BulkEditAction bulkEditAction;
     protected ListComponent listComponent;
     protected Map<String, Field.Validator> fieldValidators;
-    protected List<Field.Validator> moduleValidators;
+    protected List<Field.Validator> modelValidators;
 
     @Override
     public WindowManager.OpenType getOpenType() {
@@ -84,8 +84,8 @@ public class WebBulkEditor extends WebButton implements BulkEditor {
                 bulkEditAction.setFieldValidators(fieldValidators);
             }
 
-            if (moduleValidators != null) {
-                bulkEditAction.setModuleValidators(moduleValidators);
+            if (modelValidators != null) {
+                bulkEditAction.setModelValidators(modelValidators);
             }
 
             if (caption != null) {
@@ -118,15 +118,15 @@ public class WebBulkEditor extends WebButton implements BulkEditor {
     }
 
     @Override
-    public List<Field.Validator> getModuleValidators() {
-        return moduleValidators == null ? null : Collections.unmodifiableList(moduleValidators);
+    public List<Field.Validator> getModelValidators() {
+        return modelValidators == null ? null : Collections.unmodifiableList(modelValidators);
     }
 
     @Override
-    public void setModuleValidators(List<Field.Validator> moduleValidators) {
-        this.moduleValidators = moduleValidators;
+    public void setModelValidators(List<Field.Validator> modelValidators) {
+        this.modelValidators = modelValidators;
         if (bulkEditAction != null) {
-            bulkEditAction.setModuleValidators(moduleValidators);
+            bulkEditAction.setModelValidators(modelValidators);
         }
     }
 }

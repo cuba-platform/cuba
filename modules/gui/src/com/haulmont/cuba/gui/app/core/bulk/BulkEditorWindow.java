@@ -89,7 +89,7 @@ public class BulkEditorWindow extends AbstractWindow {
     protected Map<String, Field.Validator> fieldValidators;
 
     @WindowParam
-    protected List<Field.Validator> moduleValidators;
+    protected List<Field.Validator> modelValidators;
 
     protected Pattern excludeRegex;
 
@@ -463,8 +463,8 @@ public class BulkEditorWindow extends AbstractWindow {
     public void applyChanges() {
         if (validateAll()) {
             StringBuilder sb = new StringBuilder();
-            if (moduleValidators != null) {
-                for (Field.Validator moduleValidator : moduleValidators) {
+            if (modelValidators != null) {
+                for (Field.Validator moduleValidator : modelValidators) {
                     try {
                         moduleValidator.validate(datasource);
                     } catch (ValidationException e) {
