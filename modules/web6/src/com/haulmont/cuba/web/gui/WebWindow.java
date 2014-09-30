@@ -221,7 +221,7 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
                 else if (log.isDebugEnabled())
                     log.debug("Validation failed: " + e);
 
-                ComponentsHelper.fillErrorMessages((Validatable) component, e, errors);
+                ComponentsHelper.fillErrorMessages(field, e, errors);
             }
         }
 
