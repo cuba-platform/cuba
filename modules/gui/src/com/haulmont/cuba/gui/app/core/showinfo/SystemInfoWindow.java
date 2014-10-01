@@ -6,10 +6,9 @@
 package com.haulmont.cuba.gui.app.core.showinfo;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.app.ConfigStorageService;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.script.ScriptGenerationService;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
@@ -45,7 +44,7 @@ public class SystemInfoWindow extends AbstractWindow {
     protected ScriptGenerationService scriptGenerationService;
 
     @Inject
-    protected GlobalConfig globalConfig;
+    protected ClientConfig clientConfig;
 
     @WindowParam(name = "item")
     protected Entity item;
@@ -78,7 +77,7 @@ public class SystemInfoWindow extends AbstractWindow {
         for (Action action : tableActions)
             infoTable.removeAction(action);
 
-        if (!globalConfig.getSystemInfoScriptsEnabled()) {
+        if (!clientConfig.getSystemInfoScriptsEnabled()) {
             insert.setVisible(false);
             update.setVisible(false);
             select.setVisible(false);

@@ -156,11 +156,6 @@ public interface GlobalConfig extends Config {
     @Property("cuba.classpath.directories")
     String getCubaClasspathDirectories();
 
-    @Property("cuba.system.info.systemInfoScriptsEnabled")
-    @DefaultBoolean(true)
-    boolean getSystemInfoScriptsEnabled();
-    void setSystemInfoScriptsEnabled(boolean enabled);
-
     /**
      * @return the maximum number of idle instances of compiled groovy expressions in {@code Scripting.evaluateGroovy()}
      * @see org.apache.commons.pool.impl.GenericKeyedObjectPool#setMaxIdle(int)

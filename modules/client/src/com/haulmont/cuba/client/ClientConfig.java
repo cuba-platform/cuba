@@ -205,4 +205,9 @@ public interface ClientConfig extends Config {
     @Property("cuba.gui.layoutAnalyzerEnabled")
     @DefaultBoolean(true)
     boolean getLayoutAnalyzerEnabled();
+
+    @Property("cuba.systemInfoScriptsEnabled")
+    @DefaultBoolean(true)
+    boolean getSystemInfoScriptsEnabled();
+    void setSystemInfoScriptsEnabled(boolean enabled);
 }
