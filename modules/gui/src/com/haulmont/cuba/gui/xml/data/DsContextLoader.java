@@ -29,12 +29,12 @@ import java.util.Objects;
  */
 public class DsContextLoader {
 
-    private DsBuilder builder;
+    protected DsBuilder builder;
     private DataSupplier dataservice;
     private Scripting scripting;
     private Metadata metadata;
 
-    private DsContextImplementation context;
+    protected DsContextImplementation context;
 
     public DsContextLoader(DataSupplier dataservice) {
         this.dataservice = dataservice;
@@ -212,7 +212,7 @@ public class DsContextLoader {
                 .setAllowCommit(getAllowCommit(element));
     }
 
-    private void loadDatasources(Element element, Datasource datasource) {
+    protected void loadDatasources(Element element, Datasource datasource) {
         //noinspection unchecked
         List<Element> elements = element.elements("datasource");
         for (Element ds : elements) {
@@ -312,7 +312,7 @@ public class DsContextLoader {
         return datasource;
     }
 
-    private MetaClass loadMetaClass(Element element) {
+    protected MetaClass loadMetaClass(Element element) {
         final String className = element.attributeValue("class");
         if (className == null)
             return null;
@@ -410,7 +410,7 @@ public class DsContextLoader {
         return datasource;
     }
 
-    private String getDatasourceId(Element element) {
+    protected String getDatasourceId(Element element) {
         String id = element.attributeValue("id");
         for (Datasource datasource : context.getAll()) {
             if (Objects.equals(datasource.getId(), id))

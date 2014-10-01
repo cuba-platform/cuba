@@ -225,7 +225,7 @@ public class DsBuilder {
         return this;
     }
 
-    private void init() {
+    protected void init() {
         if (metaClass == null && javaClass != null) {
             metaClass = metadata.getSession().getClass(javaClass);
         }

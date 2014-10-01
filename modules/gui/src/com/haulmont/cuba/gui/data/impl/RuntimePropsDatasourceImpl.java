@@ -28,17 +28,17 @@ public class RuntimePropsDatasourceImpl
         extends AbstractDatasource<RuntimePropertiesEntity>
         implements RuntimePropsDatasource<RuntimePropertiesEntity> {
 
-    private DsContext dsContext;
-    private DataSupplier dataSupplier;
-    private MetaClass metaClass;
-    private View view;
-    private Datasource mainDs;
-    private boolean inittedBefore = false;
-    private boolean categoryChanged = false;
+    protected DsContext dsContext;
+    protected DataSupplier dataSupplier;
+    protected MetaClass metaClass;
+    protected View view;
+    protected Datasource mainDs;
+    protected boolean inittedBefore = false;
+    protected boolean categoryChanged = false;
 
     protected State state = State.NOT_INITIALIZED;
 
-    private RuntimePropertiesEntity item;
+    protected RuntimePropertiesEntity item;
 
     public RuntimePropsDatasourceImpl(DsContext dsContext, DataSupplier dataSupplier, String id, String mainDsId) {
         this.id = id;
@@ -152,7 +152,7 @@ public class RuntimePropsDatasourceImpl
         inittedBefore = true;
     }
 
-    private void createOptionsDatasource(CategoryAttribute attribute, final SetValueEntity attributeValue) {
+    protected void createOptionsDatasource(CategoryAttribute attribute, final SetValueEntity attributeValue) {
         final String property = attribute.getName();
         final String id = property;
 
@@ -180,7 +180,7 @@ public class RuntimePropsDatasourceImpl
         //datasource.setItem(attributeValue);
     }
 
-    private List<SetValueEntity> getOptions(CategoryAttribute attribute, SetValueEntity attributeValue) {
+    protected List<SetValueEntity> getOptions(CategoryAttribute attribute, SetValueEntity attributeValue) {
         String enumeration = attribute.getEnumeration();
         String[] values = StringUtils.split(enumeration, ',');
         List<SetValueEntity> options = new LinkedList<>();
@@ -196,7 +196,7 @@ public class RuntimePropsDatasourceImpl
         return options;
     }
 
-    private CategoryAttributeValue getValue(CategoryAttribute attribute, List<CategoryAttributeValue> entityValues) {
+    protected CategoryAttributeValue getValue(CategoryAttribute attribute, List<CategoryAttributeValue> entityValues) {
 
         for (CategoryAttributeValue attrValue : entityValues) {
             if (attrValue.getCategoryAttribute().equals(attribute))
@@ -205,7 +205,7 @@ public class RuntimePropsDatasourceImpl
         return null;
     }
 
-    private Object parseValue(CategoryAttribute attribute, CategoryAttributeValue attrValue) {
+    protected Object parseValue(CategoryAttribute attribute, CategoryAttributeValue attrValue) {
         String dataType = attribute.getDataType();
 
         if (BooleanUtils.isTrue(attribute.getIsEntity())) {
@@ -263,7 +263,7 @@ public class RuntimePropsDatasourceImpl
         return attrValue.getStringValue();
     }
 
-    private Entity parseEntity(String entityType, UUID uuid) {
+    protected Entity parseEntity(String entityType, UUID uuid) {
 
         Entity entity;
         try {
@@ -384,7 +384,7 @@ public class RuntimePropsDatasourceImpl
         clearCommitLists();
     }
 
-    private void setMainDs(String name) {
+    protected void setMainDs(String name) {
         mainDs = dsContext.get(name);
         mainDs.addListener(
                 new DsListenerAdapter() {

@@ -38,17 +38,17 @@ import java.util.Map;
  */
 public class RuntimePropertiesFrame extends AbstractWindow {
 
-    private RuntimePropsDatasource rds;
+    protected RuntimePropsDatasource rds;
     private CollectionDatasource categoriesDs;
 
     public static final String NAME = "runtimeProperties";
 
     private static final String DEFAULT_FIELD_WIDTH = "100%";
-    private String rows;
-    private String cols;
+    protected String rows;
+    protected String cols;
     private String fieldWidth;
-    private Boolean borderVisible;
-    private BoxLayout contentPane;
+    protected Boolean borderVisible;
+    protected BoxLayout contentPane;
     private FieldGroup categoryFieldGroup;
     private boolean requiredControlEnabled = true;
 
