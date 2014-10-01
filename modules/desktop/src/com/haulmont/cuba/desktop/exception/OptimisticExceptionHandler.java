@@ -5,7 +5,8 @@
 
 package com.haulmont.cuba.desktop.exception;
 
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.gui.components.IFrame;
 
@@ -19,6 +20,7 @@ import java.util.regex.Pattern;
  * <p>$Id$</p>
  *
  * @author artamonov
+ * @version $Id$
  */
 public class OptimisticExceptionHandler extends AbstractExceptionHandler {
 
@@ -30,17 +32,24 @@ public class OptimisticExceptionHandler extends AbstractExceptionHandler {
     protected void doHandle(Thread thread, String className, String message, @Nullable Throwable throwable) {
         Pattern pattern = Pattern.compile("\\[([^-]*)-");
         Matcher matcher = pattern.matcher(message);
-        String localizedEntityName;
+        String entityClassName = "";
         if (matcher.find()) {
-            String entityClassName = matcher.group(1);
-            String entityName = entityClassName.substring(entityClassName.lastIndexOf(".") + 1);
-            String packageName = entityClassName.substring(0, entityClassName.lastIndexOf("."));
-            localizedEntityName = MessageProvider.getMessage(packageName, entityName);
-        } else {
-            localizedEntityName = "?";
+            entityClassName = matcher.group(1);
         }
 
-        String msg = MessageProvider.formatMessage(getClass(), "optimisticException.message", "\"" + localizedEntityName + "\"");
+        Messages messages = AppBeans.get(Messages.NAME);
+        String msg;
+
+        if (entityClassName.contains(".")) {
+            String entityName = entityClassName.substring(entityClassName.lastIndexOf(".") + 1);
+            String packageName = entityClassName.substring(0, entityClassName.lastIndexOf("."));
+            String localizedEntityName = messages.getMessage(packageName, entityName);
+
+            msg = messages.formatMessage(messages.getMainMessagePack(),
+                    "optimisticException.message", "\"" + localizedEntityName + "\"");
+        } else {
+            msg = messages.getMessage(messages.getMainMessagePack(), "optimisticExceptionUnknownObject.message");
+        }
         App.getInstance().getMainFrame().showNotification(msg, IFrame.NotificationType.ERROR);
     }
 }
