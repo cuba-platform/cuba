@@ -20,6 +20,7 @@ import org.jdesktop.swingx.error.ErrorInfo;
 import org.jdesktop.swingx.error.ErrorReporter;
 import org.jdesktop.swingx.plaf.basic.BasicErrorPaneUI;
 
+import javax.swing.*;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
@@ -34,6 +35,21 @@ public class JXErrorPaneExt extends JXErrorPane {
 
         Configuration configuration = AppBeans.get(Configuration.NAME);
         ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
+        Messages messages = AppBeans.get(Messages.NAME);
+        Locale locale = App.getInstance().getLocale();
+
+        UIManager.put("JXErrorPane.details_expand_text",
+                messages.getMainMessage("JXErrorPane.details_expand_text", locale));
+        UIManager.put("JXErrorPane.details_contract_text",
+                messages.getMainMessage("JXErrorPane.details_contract_text", locale));
+        UIManager.put("JXErrorPane.ok_button_text",
+                messages.getMainMessage("JXErrorPane.ok_button_text", locale));
+        UIManager.put("JXErrorPane.fatal_button_text",
+                messages.getMainMessage("JXErrorPane.fatal_button_text", locale));
+        UIManager.put("JXErrorPane.report_button_text",
+                messages.getMainMessage("JXErrorPane.report_button_text", locale));
+        UIManager.put("JXErrorPane.copy_to_clipboard_button_text",
+                messages.getMainMessage("JXErrorPane.copy_to_clipboard_button_text", locale));
 
         setUI(new ErrorPaneUIExt());
 
