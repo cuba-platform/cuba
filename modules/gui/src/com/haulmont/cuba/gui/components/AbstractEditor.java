@@ -158,7 +158,7 @@ public class AbstractEditor<T extends Entity> extends AbstractWindow implements 
                 frame.showNotification(
                         messages.formatMessage(AppConfig.getMessagesPack(), "info.EntitySave",
                                 messages.getTools().getEntityCaption(entity.getMetaClass()), entity.getInstanceName()),
-                        NotificationType.HUMANIZED);
+                        NotificationType.TRAY);
             }
             postInit();
         }
