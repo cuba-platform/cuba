@@ -4,13 +4,13 @@
  */
 package com.haulmont.cuba.web.exception;
 
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.EmailService;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.WebConfig;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -47,7 +47,7 @@ public class ExceptionDialog extends Window {
 
     protected WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
 
-    protected WebConfig webConfig = AppBeans.<Configuration>get(Configuration.NAME).getConfig(WebConfig.class);
+    protected ClientConfig clientConfig = AppBeans.<Configuration>get(Configuration.NAME).getConfig(ClientConfig.class);
 
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
 
@@ -109,7 +109,7 @@ public class ExceptionDialog extends Window {
         });
         leftButtonsLayout.addComponent(showStackTraceButton);
 
-        if (!StringUtils.isBlank(webConfig.getSupportEmail()) && userSessionSource.getUserSession() != null) {
+        if (!StringUtils.isBlank(clientConfig.getSupportEmail()) && userSessionSource.getUserSession() != null) {
             final Button reportButton = new Button(messages.getMessage(getClass(), "exceptionDialog.reportBtn"));
             reportButton.addListener(new Button.ClickListener() {
                 @Override
@@ -259,8 +259,8 @@ public class ExceptionDialog extends Window {
             sb.append("</body></html>");
 
             EmailInfo info = new EmailInfo(
-                    webConfig.getSupportEmail(),
-                    "[" + webConfig.getSystemID() + "] [" + user.getLogin() + "] Exception Report",
+                    clientConfig.getSupportEmail(),
+                    "[" + clientConfig.getSystemID() + "] [" + user.getLogin() + "] Exception Report",
                     sb.toString());
             if (user.getEmail() != null)
                 info.setFrom(user.getEmail());

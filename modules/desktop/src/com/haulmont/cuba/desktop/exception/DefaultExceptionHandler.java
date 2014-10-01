@@ -5,12 +5,10 @@
 
 package com.haulmont.cuba.desktop.exception;
 
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.DevelopmentException;
-import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.RemoteException;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.sys.DialogWindow;
+import com.haulmont.cuba.desktop.sys.JXErrorPaneHelper;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import org.apache.commons.lang.StringUtils;
@@ -33,7 +31,8 @@ public class DefaultExceptionHandler implements ExceptionHandler {
 
     @Override
     public boolean handle(Thread thread, Throwable exception) {
-        JXErrorPane errorPane = new JXErrorPane();
+        JXErrorPane errorPane = JXErrorPaneHelper.getDefaultPane();
+
         errorPane.setErrorInfo(createErrorInfo(exception));
         JDialog dialog = JXErrorPane.createDialog(App.getInstance().getMainFrame(), errorPane);
         dialog.setMinimumSize(new Dimension(600, (int) dialog.getMinimumSize().getHeight()));

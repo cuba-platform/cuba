@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.web.exception;
 
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.EmailService;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
@@ -51,7 +52,7 @@ public class ExceptionDialog extends Window {
 
     protected WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
 
-    protected WebConfig webConfig = AppBeans.<Configuration>get(Configuration.NAME).getConfig(WebConfig.class);
+    protected ClientConfig clientConfig = AppBeans.<Configuration>get(Configuration.NAME).getConfig(ClientConfig.class);
 
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
 
@@ -115,7 +116,7 @@ public class ExceptionDialog extends Window {
         });
         leftButtonsLayout.addComponent(showStackTraceButton);
 
-        if (!StringUtils.isBlank(webConfig.getSupportEmail()) && userSessionSource.getUserSession() != null) {
+        if (!StringUtils.isBlank(clientConfig.getSupportEmail()) && userSessionSource.getUserSession() != null) {
             final Button reportButton = new CubaButton(messages.getMessage(getClass(), "exceptionDialog.reportBtn"));
             reportButton.addClickListener(new Button.ClickListener() {
                 @Override
@@ -264,8 +265,8 @@ public class ExceptionDialog extends Window {
             sb.append("</body></html>");
 
             EmailInfo info = new EmailInfo(
-                    webConfig.getSupportEmail(),
-                    "[" + webConfig.getSystemID() + "] [" + user.getLogin() + "] Exception Report",
+                    clientConfig.getSupportEmail(),
+                    "[" + clientConfig.getSystemID() + "] [" + user.getLogin() + "] Exception Report",
                     sb.toString());
             if (user.getEmail() != null)
                 info.setFrom(user.getEmail());

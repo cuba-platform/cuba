@@ -122,6 +122,19 @@ public interface ClientConfig extends Config {
     @DefaultBoolean(true)
     boolean getGenericFilterTrimParamValues();
 
+    /**
+     * Support e-mail. Exception reports and feedback emails are sent to this address.
+     */
+    @Property("cuba.supportEmail")
+    String getSupportEmail();
+
+    /**
+     * @return System ID. Use for identification (support emails).
+     */
+    @Property("cuba.systemId")
+    @DefaultString("CUBA")
+    String getSystemID();
+
     @DefaultString("CTRL-INSERT")
     @Property("cuba.gui.tableInsertShortcut")
     String getTableInsertShortcut();

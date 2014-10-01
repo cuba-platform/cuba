@@ -5,6 +5,7 @@
 package com.haulmont.cuba.web.app.ui.core.feedback;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.EmailService;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.*;
@@ -85,10 +86,10 @@ public class FeedbackWindow extends AbstractWindow {
         }
         if (result) {
             try {
-                WebConfig webConfig = configuration.getConfig(WebConfig.class);
+                ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
                 String infoHeader = "";
                 infoHeader += (getMessage("supportEmail") + ".\n");
-                infoHeader += (getMessage("systemID") + ": " + (webConfig.getSystemID() == null ? "none" : webConfig.getSystemID()) + "\n");
+                infoHeader += (getMessage("systemID") + ": " + (clientConfig.getSystemID() == null ? "none" : clientConfig.getSystemID()) + "\n");
                 User user = userSessionSource.getUserSession().getUser();
                 infoHeader += (getMessage("userLogin") + ": " + (user.getLogin() == null ? "none" : user.getLogin()) + "\n");
                 infoHeader += (getMessage("userEmail") + ": " + (user.getEmail() == null ? "none" : user.getEmail()) + "\n");
@@ -103,8 +104,8 @@ public class FeedbackWindow extends AbstractWindow {
                 infoHeader += (getMessage("mailBody") + ": \n");
                 infoHeader += mainBody.getValue();
                 EmailInfo emailInfo = new EmailInfo(
-                        webConfig.getSupportEmail(),
-                        "[Feedback Form][" + webConfig.getSystemID() + "]["
+                        clientConfig.getSupportEmail(),
+                        "[Feedback Form][" + clientConfig.getSystemID() + "]["
                                 + user.getLogin() + "]["
                                 + Datatypes.getNN(Date.class).format(timeSource.currentTimestamp()) + "] "
                                 + (otherReason.equals(reason.getValue())

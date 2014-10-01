@@ -209,12 +209,6 @@ public interface WebConfig extends Config {
     String getRestoreEntityId();
 
     /**
-     * Support e-mail. Exception reports and feedback emails are sent to this address.
-     */
-    @Property("cuba.supportEmail")
-    String getSupportEmail();
-
-    /**
      * Timeout for check changes from browser <br/>
      * Used by BackgroundWorker for timers
      *
@@ -234,13 +228,6 @@ public interface WebConfig extends Config {
     @Property("cuba.backgroundWorker.maxClientLatencySeconds")
     @DefaultInt(60)
     int getClientBackgroundTasksLatencySeconds();
-
-    /**
-     * @return System ID. Use for identification (support emails).
-     */
-    @Property("cuba.systemId")
-    @DefaultString("CUBA")
-    String getSystemID();
 
     /**
      * @return an action to force login.
