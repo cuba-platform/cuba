@@ -18,40 +18,49 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.jdesktop.swingx.JXErrorPane;
 import org.jdesktop.swingx.error.ErrorInfo;
 import org.jdesktop.swingx.error.ErrorReporter;
+import org.jdesktop.swingx.plaf.basic.BasicErrorPaneUI;
 
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 /**
  * @author zlatoverov
  * @version $Id$
  */
-public class JXErrorPaneHelper {
+public class JXErrorPaneExt extends JXErrorPane {
 
-    private static ClientConfig clientConfig = AppBeans.<Configuration>get(Configuration.NAME).getConfig(ClientConfig.class);
+    public JXErrorPaneExt() {
+        super();
 
-    public static JXErrorPane getDefaultPane() {
-        final JXErrorPane errorPane = new JXErrorPane();
-        errorPane.setUI(new CustomErrorPaneUI());
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
+
+        setUI(new ErrorPaneUIExt());
 
         if (StringUtils.isNotBlank(clientConfig.getSupportEmail())) {
-            errorPane.setErrorReporter(new ErrorReporter() {
+            setErrorReporter(new ErrorReporter() {
                 @Override
                 public void reportError(ErrorInfo info) throws NullPointerException {
                     sendSupportEmail(info);
-                    ((CustomErrorPaneUI) errorPane.getUI()).setEnabled(false);
+                    ((ErrorPaneUIExt) getUI()).setEnabled(false);
                 }
             });
         }
-
-        return errorPane;
     }
 
-    private static void sendSupportEmail(ErrorInfo jXErrorPaneInfo) {
+    private void sendSupportEmail(ErrorInfo jXErrorPaneInfo) {
+
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
         TopLevelFrame mainFrame = App.getInstance().getMainFrame();
+        Messages messages = AppBeans.get(Messages.NAME);
+        Locale locale = App.getInstance().getLocale();
+
         try {
             TimeSource timeSource = AppBeans.get(TimeSource.NAME);
             String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(timeSource.currentTimestamp());
 
+            //noinspection StringBufferReplaceableByString
             StringBuilder sb = new StringBuilder("<html><body>");
             sb.append("<p>").append(date).append("</p>");
             sb.append("<p>").append(jXErrorPaneInfo.getBasicErrorMessage().replace("\n", "<br/>")).append("</p>");
@@ -72,18 +81,15 @@ public class JXErrorPaneHelper {
             EmailService emailService = AppBeans.get(EmailService.NAME);
             emailService.sendEmail(info);
 
-            mainFrame.showNotification(getMessage("errorPane.emailSent"), IFrame.NotificationType.TRAY);
+            mainFrame.showNotification(messages.getMainMessage("errorPane.emailSent", locale),
+                    IFrame.NotificationType.TRAY);
         } catch (Throwable e) {
-            mainFrame.showNotification(getMessage("errorPane.emailSendingErr"), IFrame.NotificationType.ERROR);
+            mainFrame.showNotification(messages.getMainMessage("errorPane.emailSendingErr", locale),
+                    IFrame.NotificationType.ERROR);
         }
     }
 
-    private static String getMessage(String key) {
-        Messages messages = AppBeans.get(Messages.NAME);
-        return messages.getMainMessage(key, App.getInstance().getLocale());
-    }
-
-    private static String getStackTrace(Throwable throwable) {
+    private String getStackTrace(Throwable throwable) {
         if (throwable instanceof RemoteException) {
             RemoteException re = (RemoteException) throwable;
             for (int i = re.getCauses().size() - 1; i >= 0; i--) {
@@ -100,5 +106,14 @@ public class JXErrorPaneHelper {
         html = StringUtils.replace(html, "\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
 
         return html;
+    }
+
+    public static class ErrorPaneUIExt extends BasicErrorPaneUI {
+
+        public void setEnabled(boolean enabled) {
+            if (reportButton != null) {
+                reportButton.setEnabled(enabled);
+            }
+        }
     }
 }
