@@ -11,6 +11,7 @@ import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.Default;
 import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
+import com.haulmont.cuba.core.config.defaults.DefaultInt;
 import com.haulmont.cuba.core.config.defaults.DefaultString;
 import com.haulmont.cuba.core.config.type.Factory;
 import com.haulmont.cuba.core.sys.AvailableLocalesFactory;
@@ -159,5 +160,13 @@ public interface GlobalConfig extends Config {
     @DefaultBoolean(true)
     boolean getSystemInfoScriptsEnabled();
     void setSystemInfoScriptsEnabled(boolean enabled);
+
+    /**
+     * @return the maximum number of idle instances of compiled groovy expressions in {@code Scripting.evaluateGroovy()}
+     * @see org.apache.commons.pool.impl.GenericKeyedObjectPool#setMaxIdle(int)
+     */
+    @Property("cuba.groovyEvaluationPoolMaxIdle")
+    @DefaultInt(8)
+    int getGroovyEvaluationPoolMaxIdle();
 }
 

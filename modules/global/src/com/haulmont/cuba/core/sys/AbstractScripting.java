@@ -57,10 +57,12 @@ public abstract class AbstractScripting implements Scripting {
 
     protected GenericKeyedObjectPool pool;
 
+    protected GlobalConfig globalConfig;
+
     public AbstractScripting(JavaClassLoader javaClassLoader, Configuration configuration) {
         this.javaClassLoader = javaClassLoader;
-
-        groovyClassPath = configuration.getConfig(GlobalConfig.class).getConfDir() + File.pathSeparator;
+        globalConfig = configuration.getConfig(GlobalConfig.class);
+        groovyClassPath = globalConfig.getConfDir() + File.pathSeparator;
 
         String classPathProp = AppContext.getProperty("cuba.groovyClassPath");
         if (StringUtils.isNotBlank(classPathProp)) {
@@ -111,6 +113,7 @@ public abstract class AbstractScripting implements Scripting {
         if (pool == null) {
             GenericKeyedObjectPool.Config poolConfig = new GenericKeyedObjectPool.Config();
             poolConfig.maxActive = -1;
+            poolConfig.maxIdle = globalConfig.getGroovyEvaluationPoolMaxIdle();
             pool = new GenericKeyedObjectPool(
                     new BaseKeyedPoolableObjectFactory() {
                         public Object makeObject(Object key) throws Exception {
