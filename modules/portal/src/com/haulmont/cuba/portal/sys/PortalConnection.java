@@ -157,7 +157,9 @@ public class PortalConnection implements Connection {
     }
 
     protected void internalLogout() {
-        loginService.logout();
+        if (session != null && session.isAuthenticated()) {
+            loginService.logout();
+        }
 
         AppContext.setSecurityContext(null);
 
