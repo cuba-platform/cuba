@@ -31,7 +31,6 @@ import java.util.Locale;
 public class JXErrorPaneExt extends JXErrorPane {
 
     public JXErrorPaneExt() {
-        super();
 
         Configuration configuration = AppBeans.get(Configuration.NAME);
         ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
