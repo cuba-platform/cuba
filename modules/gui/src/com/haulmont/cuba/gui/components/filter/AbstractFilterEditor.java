@@ -172,8 +172,9 @@ public abstract class AbstractFilterEditor {
 
         String exclRe = element.attributeValue("exclude");
         Pattern exclPattern = null;
-        if (!StringUtils.isBlank(exclRe))
-            exclPattern = Pattern.compile(exclRe);
+        if (!StringUtils.isBlank(exclRe)) {
+            exclPattern = Pattern.compile(exclRe.replaceAll(" ", ""));
+        }
 
         for (String prop : includedProps) {
             if (exclPattern == null || !exclPattern.matcher(prop).matches()) {
