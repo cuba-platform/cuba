@@ -117,4 +117,23 @@ public class DataServiceTest extends CubaTestCase {
         List<Server> list = dataService.loadList(loadContext);
         assertTrue(list.size() > 0);
     }
+
+    public void testUnexistingQueryParameters() throws Exception {
+        LoadContext loadContext = new LoadContext(Server.class);
+        loadContext.setQueryString("select u from sec$User u where u.login = :login")
+                .setParameter("name", "admin");
+
+        try {
+            dataService.loadList(loadContext);
+            fail("DataService must throw exception for nonexistent parameters");
+        } catch (Exception e) {
+            // ok
+        }
+
+        loadContext = new LoadContext(Server.class);
+        loadContext.setQueryString("select u from sec$User u where u.login = :login")
+                .setParameter("login", "admin");
+        List<Entity> list = dataService.loadList(loadContext);
+        assertEquals(1, list.size());
+    }
 }

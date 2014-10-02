@@ -11,10 +11,7 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.PersistenceSecurity;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.QueryParser;
-import com.haulmont.cuba.core.global.QueryTransformer;
-import com.haulmont.cuba.core.global.QueryTransformerFactory;
+import com.haulmont.cuba.core.global.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -76,7 +73,7 @@ public class DataServiceQueryBuilder {
         Set<String> paramNames = parser.getParamNames();
 
         for (Map.Entry<String, Object> entry : queryParams.entrySet()) {
-            final String name = entry.getKey();
+            String name = entry.getKey();
             if (paramNames.contains(name)) {
                 Object value = entry.getValue();
 
@@ -100,7 +97,8 @@ public class DataServiceQueryBuilder {
                 }
 
                 query.setParameter(name, value);
-            }
+            } else
+                throw new DevelopmentException("Parameter '" + name + "' is not used in the query");
         }
 
         return query;
@@ -112,7 +110,7 @@ public class DataServiceQueryBuilder {
 
         String str = StringHelper.removeExtraSpaces(query.replace("\n", " "));
 
-        if (ConfigProvider.getConfig(ServerConfig.class).getCutLoadListQueries()) {
+        if (AppBeans.get(Configuration.class).getConfig(ServerConfig.class).getCutLoadListQueries()) {
             str = StringUtils.abbreviate(str.replaceAll("[\\n\\r]", " "), 50);
         }
 
