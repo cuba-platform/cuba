@@ -6,6 +6,8 @@ package com.haulmont.cuba.web.exception;
 
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.ExceptionHandlersConfig;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.web.App;
@@ -23,17 +25,20 @@ import java.util.regex.Pattern;
  * @version $Id$
  */
 public class UniqueConstraintViolationHandler implements ExceptionHandler {
-    private Pattern pattern;
 
     private Messages messages = AppBeans.get(Messages.NAME);
     private DataService dataService = AppBeans.get(DataService.NAME);
 
     private Pattern getPattern() {
-        if (pattern == null) {
-            String s = dataService.getDbDialect().getUniqueConstraintViolationPattern();
-            pattern = Pattern.compile(s);
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        ExceptionHandlersConfig exceptionHandlersConfig = configuration.getConfig(ExceptionHandlersConfig.class);
+
+        String s = exceptionHandlersConfig.getUniqueConstraintViolationPattern();
+        if (StringUtils.isBlank(s)) {
+            s = dataService.getDbDialect().getUniqueConstraintViolationPattern();
         }
-        return pattern;
+
+        return Pattern.compile(s);
     }
 
     @Override
@@ -57,10 +62,11 @@ public class UniqueConstraintViolationHandler implements ExceptionHandler {
         String constraintName = "";
         Matcher matcher = getPattern().matcher(throwable.toString());
         if (matcher.find()) {
-            if (matcher.groupCount() > 1)
+            if (matcher.groupCount() > 1) {
                 constraintName = matcher.group(2);
-            else
+            } else {
                 constraintName = matcher.group(1);
+            }
         }
 
         String msg = "";
@@ -70,8 +76,9 @@ public class UniqueConstraintViolationHandler implements ExceptionHandler {
 
         if (msg.equalsIgnoreCase(constraintName)) {
             msg = messages.getMainMessage("uniqueConstraintViolation.message");
-            if (StringUtils.isNotBlank(constraintName))
+            if (StringUtils.isNotBlank(constraintName)) {
                 msg = msg + " (" + constraintName + ")";
+            }
         }
 
         app.getWindowManager().showNotification(msg, IFrame.NotificationType.ERROR);
