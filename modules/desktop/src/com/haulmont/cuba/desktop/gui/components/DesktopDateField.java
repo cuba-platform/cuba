@@ -202,7 +202,10 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
         }
 
         if (!ObjectUtils.equals(prevValue, value)) {
-            updateComponent((Date) value);
+            Date targetDate = (Date) value;
+
+            updateInstance(targetDate);
+            updateComponent(targetDate);
             fireChangeListeners(value);
         }
     }
@@ -385,19 +388,7 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
                     return;
                 }
 
-                if (datasource.getItem() != null) {
-                    Object obj = value;
-                    Datatype<Object> datatype = metaProperty.getRange().asDatatype();
-                    if (!datatype.getJavaClass().equals(Date.class)) {
-                        String str = Datatypes.getNN(Date.class).format(value);
-                        try {
-                            obj = datatype.parse(str);
-                        } catch (ParseException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                    InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), obj);
-                }
+                setValueToDs(value);
             }
             valid = true;
         } catch (RuntimeException e) {
@@ -408,6 +399,40 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
         if (valid) {
             Object newValue = getValue();
             fireChangeListeners(newValue);
+        }
+    }
+
+    protected void updateInstance(Date value) {
+        if (updatingInstance) {
+            return;
+        }
+
+        updatingInstance = true;
+        try {
+            if (datasource != null && metaPropertyPath != null) {
+                setValueToDs(value);
+            }
+            valid = true;
+        } catch (RuntimeException e) {
+            valid = false;
+        } finally {
+            updatingInstance = false;
+        }
+    }
+
+    protected void setValueToDs(Date value) {
+        if (datasource.getItem() != null) {
+            Object obj = value;
+            Datatype<Object> datatype = metaProperty.getRange().asDatatype();
+            if (!datatype.getJavaClass().equals(Date.class)) {
+                String str = Datatypes.getNN(Date.class).format(value);
+                try {
+                    obj = datatype.parse(str);
+                } catch (ParseException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), obj);
         }
     }
 
