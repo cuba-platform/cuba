@@ -4,6 +4,9 @@
  */
 package com.haulmont.cuba.core.sys;
 
+import com.google.common.base.Predicate;
+
+import java.io.File;
 import java.util.List;
 
 public interface DbUpdater {
@@ -13,4 +16,6 @@ public interface DbUpdater {
     void updateDatabase();
 
     List<String> findUpdateDatabaseScripts() throws DBNotInitializedException;
+
+    List<String> findUpdateDatabaseScripts(Predicate<File> predicate) throws DBNotInitializedException;
 }

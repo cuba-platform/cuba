@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.core.sys;
 
+import com.google.common.collect.Iterables;
 import com.haulmont.bali.db.DbUtils;
 import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.bali.db.ResultSetHandler;
@@ -26,6 +27,7 @@ import org.apache.commons.lang.text.StrTokenizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.annotation.Nullable;
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.FilenameFilter;
@@ -180,6 +182,12 @@ public class DbUpdaterEngine implements DbUpdater {
 
     @Override
     public List<String> findUpdateDatabaseScripts() throws DBNotInitializedException {
+        return findUpdateDatabaseScripts(null);
+    }
+
+    @Override
+    public List<String> findUpdateDatabaseScripts(@Nullable com.google.common.base.Predicate<File>
+                                                          predicate) throws DBNotInitializedException {
         List<String> list = new ArrayList<>();
         if (dbInitialized()) {
             if (!changelogTableExists) {
@@ -188,7 +196,15 @@ public class DbUpdaterEngine implements DbUpdater {
             } else {
                 List<File> files = getUpdateScripts();
                 Set<String> scripts = getExecutedScripts();
-                for (File file : files) {
+
+                Iterable<File> filesFiltered;
+                if (predicate != null) {
+                    filesFiltered = Iterables.filter(files, predicate);
+                } else {
+                    filesFiltered = files;
+                }
+
+                for (File file : filesFiltered) {
                     String name = getScriptName(file);
                     if (!scripts.contains(name)) {
                         list.add(name);

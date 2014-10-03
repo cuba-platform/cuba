@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.core.sys.utils;
 
+import com.google.common.base.Predicate;
 import com.haulmont.cuba.core.global.MssqlDbDialect;
 import com.haulmont.cuba.core.global.OracleDbDialect;
 import com.haulmont.cuba.core.global.PostgresDbDialect;
@@ -15,6 +16,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.xml.DOMConfigurator;
 
+import javax.annotation.Nullable;
 import javax.sql.DataSource;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -80,6 +82,11 @@ public class DbUpdaterUtil extends DbUpdaterEngine {
                 .isRequired()
                 .create("dialect");
 
+        Option dbExecuteGroovyOption = OptionBuilder.withArgName("executeGroovy").
+                hasArgs().
+                withDescription("Ignoring Groovy scripts").
+                create("executeGroovy");
+
         Option showUpdatesOption = OptionBuilder
                 .withDescription("Print update scripts")
                 .create("check");
@@ -98,6 +105,7 @@ public class DbUpdaterUtil extends DbUpdaterEngine {
         cliOptions.addOption(dbPasswordOption);
         cliOptions.addOption(dbDirOption);
         cliOptions.addOption(dbDialectOption);
+        cliOptions.addOption(dbExecuteGroovyOption);
         cliOptions.addOption(showUpdatesOption);
         cliOptions.addOption(applyUpdatesOption);
         cliOptions.addOption(createDbOption);
@@ -197,7 +205,20 @@ public class DbUpdaterUtil extends DbUpdaterEngine {
             } else {
                 boolean updatesAvailable = false;
                 try {
-                    List<String> scripts = findUpdateDatabaseScripts();
+                    List<String> scripts;
+                    if (cmd.hasOption(dbExecuteGroovyOption.getOpt())
+                            && cmd.getOptionValue(dbExecuteGroovyOption.getOpt()).equals("false")) {
+
+                        scripts = findUpdateDatabaseScripts(new Predicate<File>() {
+                            @Override
+                            public boolean apply(@Nullable File input) {
+                                return input != null && !input.getName().endsWith("groovy");
+                            }
+                        });
+
+                    } else {
+                        scripts = findUpdateDatabaseScripts();
+                    }
                     if (!scripts.isEmpty()) {
                         StringBuilder availableScripts = new StringBuilder();
                         for (String script : scripts) {
