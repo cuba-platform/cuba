@@ -455,10 +455,10 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
     protected LoadContext.Query createLoadContextQuery(LoadContext context, Map<String, Object> params) {
         LoadContext.Query q;
         if (query != null && queryParameters != null) {
-            final Map<String, Object> parameters = getQueryParameters(params);
+            Map<String, Object> parameters = getQueryParameters(params);
             for (ParameterInfo info : queryParameters) {
                 if (ParameterInfo.Type.DATASOURCE.equals(info.getType())) {
-                    final Object value = parameters.get(info.getFlatName());
+                    Object value = parameters.get(info.getFlatName());
                     if (value == null)
                         return null;
                 }
@@ -466,7 +466,13 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
 
             String queryString = getJPQLQuery(getTemplateParams(params));
             q = context.setQueryString(queryString);
-            q.setParameters(parameters);
+            // Pass only parameters used in the resulting query
+            QueryParser parser = QueryTransformerFactory.createParser(queryString);
+            Set<String> paramNames = parser.getParamNames();
+            for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+                if (paramNames.contains(entry.getKey()))
+                    q.setParameter(entry.getKey(), entry.getValue());
+            }
         } else {
             Collection<MetaProperty> properties = metadata.getTools().getNamePatternProperties(metaClass);
             if (!properties.isEmpty()) {
