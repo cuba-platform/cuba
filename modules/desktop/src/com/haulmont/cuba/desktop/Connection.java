@@ -9,11 +9,9 @@ import com.haulmont.cuba.client.ClientUserSession;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
-import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -29,7 +27,7 @@ import java.util.Locale;
  */
 public class Connection {
 
-    private List<ConnectionListener> listeners = new ArrayList<ConnectionListener>();
+    private List<ConnectionListener> listeners = new ArrayList<>();
 
     protected boolean connected;
 
@@ -42,6 +40,7 @@ public class Connection {
         UserSession userSession = loginService.login(login, password, locale);
         session = new ClientUserSession(userSession);
         AppContext.setSecurityContext(new SecurityContext(session));
+        log.info("Logged in: " + session);
 
         updateSessionClientInfo();
 
@@ -79,6 +78,7 @@ public class Connection {
             LoginService loginService = AppBeans.get(LoginService.NAME);
             loginService.logout();
             AppContext.setSecurityContext(null);
+            log.info("Logged out: " + session);
         } catch (Exception e) {
             log.warn("Error on logout", e);
         }
