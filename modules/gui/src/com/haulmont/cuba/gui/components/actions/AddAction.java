@@ -249,7 +249,7 @@ public class AddAction extends AbstractAction implements Action.HasOpenType {
                         if (metaProperty != null) {
                             inverseProp = metaProperty.getInverse();
 
-                            if (inverseProp != null) {
+                            if (inverseProp != null && !inverseProp.getRange().getCardinality().isMany()) {
                                 Class inversePropClass = extendedEntities.getEffectiveClass(inverseProp.getDomain());
                                 Class dsClass = extendedEntities.getEffectiveClass(ds.getMetaClass());
 
