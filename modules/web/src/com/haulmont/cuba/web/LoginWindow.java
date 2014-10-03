@@ -23,7 +23,6 @@ import com.haulmont.cuba.web.toolkit.ui.CubaCheckBox;
 import com.vaadin.data.Property;
 import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
-import com.vaadin.server.Sizeable;
 import com.vaadin.server.VaadinService;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -199,22 +198,22 @@ public class LoginWindow extends UIView implements Action.Handler {
         FormLayout loginFormLayout = new FormLayout();
         Panel form = new Panel(loginFormLayout);
         form.setStyleName(getStyle("form"));
-        form.setWidth(Sizeable.SIZE_UNDEFINED,  Unit.PIXELS);
-        form.setHeight(Sizeable.SIZE_UNDEFINED,  Unit.PIXELS);
+        form.setWidthUndefined();
+        form.setHeightUndefined();
 
         loginFormLayout.setSpacing(true);
-        loginFormLayout.setWidth(Sizeable.SIZE_UNDEFINED,  Unit.PIXELS);
+        loginFormLayout.setWidthUndefined();
 
         HorizontalLayout welcomeLayout = new HorizontalLayout();
         welcomeLayout.setStyleName(getStyle("form-caption"));
-        welcomeLayout.setWidth(Sizeable.SIZE_UNDEFINED,  Unit.PIXELS);
-        welcomeLayout.setHeight(Sizeable.SIZE_UNDEFINED,  Unit.PIXELS);
+        welcomeLayout.setWidthUndefined();
+        welcomeLayout.setHeightUndefined();
         welcomeLayout.setSpacing(true);
 
         String welcomeMsg = messages.getMessage(getMessagesPack(), "loginWindow.welcomeLabel", resolvedLocale);
         Label label = new Label(welcomeMsg.replace("\n", "<br/>"));
         label.setContentMode(ContentMode.HTML);
-        label.setWidth(Sizeable.SIZE_UNDEFINED,  Unit.PIXELS);
+        label.setWidthUndefined();
         label.setStyleName(getStyle("caption"));
 
         VerticalLayout centerLayout = new VerticalLayout();
