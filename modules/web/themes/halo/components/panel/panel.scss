@@ -1,0 +1,28 @@
+/*
+ * Copyright (c) 2008-2014 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+ */
+
+// Version: $Id$
+
+@mixin halo-panel($primaryStyleName : v-panel) {
+  .#{$primaryStyleName} {
+    .#{$primaryStyleName} {
+      border: 0;
+      box-shadow: none;
+      background: transparent;
+    }
+
+    .#{$primaryStyleName}-content {
+      border: 0;
+    }
+
+    .#{$primaryStyleName}-deco {
+      display: none;
+    }
+
+    .#{$primaryStyleName}-captionwrap {
+      display: none;
+    }
+  }
+}

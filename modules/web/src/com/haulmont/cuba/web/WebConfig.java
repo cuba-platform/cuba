@@ -155,7 +155,7 @@ public interface WebConfig extends Config {
      */
     @Property("cuba.web.availableAppThemes")
     @Factory(factory = StringListTypeFactory.class)
-    @Default("havana")
+    @Default("havana|halo")
     List<String> getAvailableAppThemes();
 
     /**

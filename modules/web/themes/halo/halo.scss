@@ -1,0 +1,33 @@
+/*
+ * Copyright (c) 2008-2014 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+ */
+
+// Halo - Vaadin Valo SCSS theme for Platform
+// Version: $Id$
+
+// Import valo after setting the parameters
+@import "../valo/valo";
+
+// Common
+@import "components/common/common";
+
+// Components
+@import "components/panel/panel";
+@import "components/button/button";
+@import "components/orderedlayout/orderedlayout";
+
+// Application specific
+@import "app/login-window";
+
+@mixin halo {
+  @include valo;
+
+  @include halo-common;
+
+  @include halo-panel;
+  @include halo-button;
+  @include halo-orderedlayout;
+
+  @include cuba-login-window;
+}
