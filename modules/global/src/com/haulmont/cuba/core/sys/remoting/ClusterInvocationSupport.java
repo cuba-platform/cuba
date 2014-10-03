@@ -38,15 +38,15 @@ public class ClusterInvocationSupport {
 
     private final Log log = LogFactory.getLog(getClass());
 
-    private List<String> urls;
-    private ReadWriteLock lock = new ReentrantReadWriteLock();
+    protected List<String> urls;
+    protected ReadWriteLock lock = new ReentrantReadWriteLock();
 
     protected String baseUrl = AppContext.getProperty("cuba.connectionUrlList");
     protected boolean randomPriority = Boolean.valueOf(AppContext.getProperty("cuba.randomServerPriority"));
 
     protected String servletPath = "remoting";
 
-    private List<Listener> listeners = new ArrayList<Listener>();
+    protected List<Listener> listeners = new ArrayList<>();
 
     public String getBaseUrl() {
         return baseUrl;
