@@ -13,9 +13,12 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.gui.components.IFrame;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * Handles database unique constraint violations. Determines the exception type by searching a special marker string
@@ -28,17 +31,29 @@ public class UniqueConstraintViolationHandler implements ExceptionHandler {
 
     private Messages messages = AppBeans.get(Messages.NAME);
     private DataService dataService = AppBeans.get(DataService.NAME);
+    private Log log = LogFactory.getLog(getClass());
 
     private Pattern getPattern() {
         Configuration configuration = AppBeans.get(Configuration.NAME);
         ExceptionHandlersConfig exceptionHandlersConfig = configuration.getConfig(ExceptionHandlersConfig.class);
 
         String s = exceptionHandlersConfig.getUniqueConstraintViolationPattern();
-        if (StringUtils.isBlank(s)) {
+        if (StringUtils.isBlank(s) || isSyntaxInvalid(s)) {
             s = dataService.getDbDialect().getUniqueConstraintViolationPattern();
         }
 
         return Pattern.compile(s);
+    }
+
+    private boolean isSyntaxInvalid(String s) {
+        try {
+            Pattern.compile(s);
+            return false;
+        } catch (PatternSyntaxException e) {
+            log.warn(String.format(messages.getMainMessage("incorrectRegexp"),
+                    "cuba.uniqueConstraintViolationPattern"), e);
+            return true;
+        }
     }
 
     @Override
