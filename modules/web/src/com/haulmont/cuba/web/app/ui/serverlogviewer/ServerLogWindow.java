@@ -520,7 +520,7 @@ public class ServerLogWindow extends AbstractWindow {
         loggers.add(0, getMessage("logger.new"));
         loggerNameField.setOptionsList(loggers);
 
-        logFileNameField.setValue(null);
+        loggerNameField.setValue(null);
         loggerLevelField.setValue(null);
     }
 
@@ -535,11 +535,17 @@ public class ServerLogWindow extends AbstractWindow {
     }
 
     protected void refreshLogFileNames() {
+        // try to keep previously selected file name
+        String selectedFileName = logFileNameField.getValue();
+
         List<String> logFiles = jmxRemoteLoggingAPI.getLogFileNames(getSelectedConnection());
+        logFileNameField.setValue(null);
         logFileNameField.setOptionsList(logFiles);
 
         autoRefreshCheck.setValue(false);
-        logFileNameField.setValue(null);
+        if (selectedFileName != null && logFiles.contains(selectedFileName)) {
+            logFileNameField.setValue(selectedFileName);
+        }
 
         logTailLabel.setValue("");
     }
