@@ -45,7 +45,10 @@
 @import "components/upload/upload";
 @import "components/widgetstree/widgetstree";
 @import "components/window/window";
-@import "components/boxlayout/onHoverVisible";
+
+.on-hover-visible-layout {
+  visibility: hidden;
+}
 
 /*
  * Focus outline
