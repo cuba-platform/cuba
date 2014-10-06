@@ -72,8 +72,6 @@
             <!-- OpenJPA-2.1.1: have to switch it off because these caches don't work properly with FetchPlans -->
             <property name="openjpa.jdbc.QuerySQLCache"
                       value="false"/>
-            <property name="openjpa.jdbc.FinderCache"
-                      value="false"/>
         </properties>
     </persistence-unit>
 </persistence>
