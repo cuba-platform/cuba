@@ -310,7 +310,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         button.addListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                removeLastApplied();
+                removeApplied();
             }
         });
         layout.addComponent(button);
@@ -321,18 +321,31 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         appliedFilters.add(new AppliedFilterHolder(lastAppliedFilter, layout, button));
     }
 
-    protected void removeLastApplied() {
+    protected void removeApplied() {
         if (!appliedFilters.isEmpty()) {
-            AppliedFilterHolder holder = appliedFilters.removeLast();
-            appliedFiltersLayout.removeComponent(holder.layout);
-
-            if (!appliedFilters.isEmpty()) {
-                holder = appliedFilters.getLast();
-                holder.layout.addComponent(holder.button);
-                holder.layout.setComponentAlignment(holder.button, com.vaadin.ui.Alignment.MIDDLE_LEFT);
+            if (appliedFilters.size() == 1) {
+                AppliedFilterHolder holder = appliedFilters.removeLast();
+                appliedFiltersLayout.removeComponent(holder.layout);
+                ((CollectionDatasource.SupportsApplyToSelected) datasource).unpinAllQuery();
+            } else {
+                WebWindowManager wm = App.getInstance().getWindowManager();
+                wm.showOptionDialog(messages.getMainMessage("removeApplied.title"),
+                        messages.getMainMessage("removeApplied.message"), IFrame.MessageType.WARNING,
+                        new Action[]{
+                                new DialogAction(DialogAction.Type.YES) {
+                                    @Override
+                                    public void actionPerform(Component component) {
+                                        for (AppliedFilterHolder holder : appliedFilters) {
+                                            appliedFiltersLayout.removeComponent(holder.layout);
+                                        }
+                                        appliedFilters.clear();
+                                        ((CollectionDatasource.SupportsApplyToSelected) datasource).unpinAllQuery();
+                                    }
+                                },
+                                new DialogAction(DialogAction.Type.NO)
+                        });
             }
         }
-        ((CollectionDatasource.SupportsApplyToSelected) datasource).unpinLastQuery();
     }
 
     @Override

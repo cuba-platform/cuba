@@ -341,6 +341,7 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
 
         void pinQuery();
         void unpinLastQuery();
+        void unpinAllQuery();
     }
 
     /**

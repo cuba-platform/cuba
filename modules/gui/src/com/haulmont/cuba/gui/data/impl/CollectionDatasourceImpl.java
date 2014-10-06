@@ -606,4 +606,11 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
             prevQueries.removeLast();
         }
     }
+
+    @Override
+    public void unpinAllQuery() {
+        if (!prevQueries.isEmpty()) {
+            prevQueries.clear();
+        }
+    }
 }
