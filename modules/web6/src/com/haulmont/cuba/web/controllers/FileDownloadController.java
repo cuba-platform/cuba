@@ -91,6 +91,11 @@ public class FileDownloadController {
             }
 
             FileDescriptor fd = dataService.load(new LoadContext(FileDescriptor.class).setId(fileId));
+            if (fd == null) {
+                log.warn("Unable to find file with id " + fileId);
+                error(response);
+                return null;
+            }
 
             String fileName;
             try {
