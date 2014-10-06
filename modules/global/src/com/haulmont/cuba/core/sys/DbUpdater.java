@@ -16,6 +16,4 @@ public interface DbUpdater {
     void updateDatabase();
 
     List<String> findUpdateDatabaseScripts() throws DBNotInitializedException;
-
-    List<String> findUpdateDatabaseScripts(Predicate<File> predicate) throws DBNotInitializedException;
 }

@@ -5,13 +5,13 @@
 
 package com.haulmont.cuba.core.sys.utils;
 
-import com.google.common.base.Predicate;
 import com.haulmont.cuba.core.global.MssqlDbDialect;
 import com.haulmont.cuba.core.global.OracleDbDialect;
 import com.haulmont.cuba.core.global.PostgresDbDialect;
 import com.haulmont.cuba.core.sys.DBNotInitializedException;
 import com.haulmont.cuba.core.sys.DbUpdaterEngine;
 import org.apache.commons.cli.*;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.xml.DOMConfigurator;
@@ -24,6 +24,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.logging.Logger;
@@ -35,6 +36,8 @@ import java.util.logging.Logger;
 public class DbUpdaterUtil extends DbUpdaterEngine {
 
     private static Log log = LogFactory.getLog(DbUpdaterEngine.class);
+
+    private boolean executeGroovy = true;
 
     public static void main(String[] args) {
         DOMConfigurator.configure(DbUpdaterUtil.class.getResource("/com/haulmont/cuba/core/sys/utils/dbutil-log4j.xml"));
@@ -206,19 +209,12 @@ public class DbUpdaterUtil extends DbUpdaterEngine {
                 boolean updatesAvailable = false;
                 try {
                     List<String> scripts;
-                    if (cmd.hasOption(dbExecuteGroovyOption.getOpt())
-                            && cmd.getOptionValue(dbExecuteGroovyOption.getOpt()).equals("false")) {
 
-                        scripts = findUpdateDatabaseScripts(new Predicate<File>() {
-                            @Override
-                            public boolean apply(@Nullable File input) {
-                                return input != null && !input.getName().endsWith("groovy");
-                            }
-                        });
+                    executeGroovy = !(cmd.hasOption(dbExecuteGroovyOption.getOpt())
+                            && cmd.getOptionValue(dbExecuteGroovyOption.getOpt()).equals("false"));
 
-                    } else {
-                        scripts = findUpdateDatabaseScripts();
-                    }
+                    scripts = findUpdateDatabaseScripts();
+
                     if (!scripts.isEmpty()) {
                         StringBuilder availableScripts = new StringBuilder();
                         for (String script : scripts) {
@@ -241,6 +237,24 @@ public class DbUpdaterUtil extends DbUpdaterEngine {
                     }
                 }
             }
+        }
+    }
+
+    @Override
+    protected List<File> getUpdateScripts() {
+        if (executeGroovy) {
+            return super.getUpdateScripts();
+        } else {
+            final List<File> files = new ArrayList<>(super.getUpdateScripts());
+
+            CollectionUtils.filter(files, new org.apache.commons.collections.Predicate() {
+                @Override
+                public boolean evaluate(Object object) {
+                    return !(object == null || ((File) object).getName().endsWith("groovy"));
+                }
+            });
+
+            return files;
         }
     }
 
