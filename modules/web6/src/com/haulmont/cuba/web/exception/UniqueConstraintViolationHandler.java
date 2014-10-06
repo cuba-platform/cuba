@@ -30,31 +30,6 @@ import java.util.regex.PatternSyntaxException;
 public class UniqueConstraintViolationHandler implements ExceptionHandler {
 
     private Messages messages = AppBeans.get(Messages.NAME);
-    private DataService dataService = AppBeans.get(DataService.NAME);
-    private Log log = LogFactory.getLog(getClass());
-
-    private Pattern getPattern() {
-        Configuration configuration = AppBeans.get(Configuration.NAME);
-        ExceptionHandlersConfig exceptionHandlersConfig = configuration.getConfig(ExceptionHandlersConfig.class);
-
-        String constraintViolationPattern = exceptionHandlersConfig.getUniqueConstraintViolationPattern();
-        if (StringUtils.isBlank(constraintViolationPattern) || isSyntaxInvalid(constraintViolationPattern)) {
-            constraintViolationPattern = dataService.getDbDialect().getUniqueConstraintViolationPattern();
-        }
-
-        return Pattern.compile(constraintViolationPattern);
-    }
-
-    private boolean isSyntaxInvalid(String pattern) {
-        try {
-            Pattern.compile(pattern);
-            return false;
-        } catch (PatternSyntaxException e) {
-            log.warn(String.format(messages.getMainMessage("incorrectRegexp"),
-                    "cuba.uniqueConstraintViolationPattern"), e);
-            return true;
-        }
-    }
 
     @Override
     public boolean handle(Terminal.ErrorEvent event, App app) {
@@ -74,12 +49,14 @@ public class UniqueConstraintViolationHandler implements ExceptionHandler {
     }
 
     private void doHandle(Throwable throwable, App app) {
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        ExceptionHandlersConfig exceptionHandlersConfig = configuration.getConfig(ExceptionHandlersConfig.class);
         String constraintName = "";
-        Matcher matcher = getPattern().matcher(throwable.toString());
+        Matcher matcher = exceptionHandlersConfig.getUniqueConstraintViolationPattern().matcher(throwable.toString());
         if (matcher.find()) {
             if (matcher.groupCount() > 1) {
                 constraintName = matcher.group(2);
-            } else {
+            } else if (matcher.groupCount() == 1) {
                 constraintName = matcher.group(1);
             }
         }
