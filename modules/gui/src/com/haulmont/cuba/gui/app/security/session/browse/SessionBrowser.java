@@ -25,6 +25,10 @@ import java.util.*;
  */
 public class SessionBrowser extends AbstractLookup {
 
+    public interface Companion {
+        void enableTextSelection(Table table);
+    }
+
     @Inject
     protected UserSessionSource userSessionSource;
 
@@ -61,6 +65,11 @@ public class SessionBrowser extends AbstractLookup {
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
+
+        Companion companion = getCompanion();
+        if (companion != null) {
+            companion.enableTextSelection(sessionsTable);
+        }
 
         sessionsDs.addListener(new CollectionDsListenerAdapter<UserSessionEntity>() {
             @Override

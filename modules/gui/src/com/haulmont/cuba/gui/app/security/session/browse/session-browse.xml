@@ -9,6 +9,10 @@
         messagesPack="com.haulmont.cuba.gui.app.security.session.browse"
         focusComponent="sessionsTable">
 
+    <companions>
+        <web class="com.haulmont.cuba.web.app.security.session.browse.SessionBrowserCompanion"/>
+    </companions>
+
     <dsContext>
         <groupDatasource id="sessionsDs" class="com.haulmont.cuba.security.entity.UserSessionEntity"
                          datasourceClass="com.haulmont.cuba.gui.app.security.session.browse.UserSessionsDatasource">
