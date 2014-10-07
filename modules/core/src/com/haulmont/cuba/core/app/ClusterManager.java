@@ -15,11 +15,14 @@ import org.jgroups.*;
 import org.jgroups.conf.XmlConfigurator;
 
 import javax.annotation.ManagedBean;
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Standard implementation of middleware clustering based on JGroups.
@@ -38,13 +41,23 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
 
     protected View currentView;
 
+    protected ExecutorService executor;
+
     @Inject
     protected Resources resources;
+
+    @Inject
+    protected ServerConfig serverConfig;
 
     protected static final String STATE_MAGIC = "CUBA_STATE";
 
     public ClusterManager() {
         AppContext.addListener(this);
+    }
+
+    @PostConstruct
+    public void init() {
+        executor = Executors.newFixedThreadPool(serverConfig.getClusterMessageSendingThreadPoolSize());
     }
 
     @Override
@@ -53,7 +66,7 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
             return;
 
         log.debug("Sending message " + message.getClass() + ": " + message);
-        Thread thread = new Thread(new Runnable() {
+        executor.submit(new Runnable() {
             @Override
             public void run() {
                 byte[] bytes = SerializationUtils.serialize(message);
@@ -61,12 +74,10 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
                 try {
                     channel.send(msg);
                 } catch (ChannelNotConnectedException | ChannelClosedException e) {
-                    log.error("Send error", e);
+                    log.error("Error sending message", e);
                 }
             }
         });
-        thread.setDaemon(true);
-        thread.start();
     }
 
     @Override
@@ -86,6 +97,7 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
 
     @Override
     public void applicationStopped() {
+        executor.shutdown();
         stop();
     }
 
@@ -182,7 +194,7 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             DataOutputStream out = new DataOutputStream(outputStream);
             try {
-                Map<String, byte[]> state = new HashMap<String, byte[]>();
+                Map<String, byte[]> state = new HashMap<>();
                 for (Map.Entry<String, ClusterListener> entry : listeners.entrySet()) {
                     byte[] data = entry.getValue().getState();
                     if (data != null && data.length > 0) {

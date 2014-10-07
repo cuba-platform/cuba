@@ -136,4 +136,11 @@ public interface ServerConfig extends Config {
     @Property("cuba.licensePath")
     @Default("/cuba.license")
     String getLicensePath();
+
+    /**
+     * @return Maximum size of thread pool which is used to send messages to the cluster members
+     */
+    @Property("cuba.clusterMessageSendingThreadPoolSize")
+    @DefaultInt(100)
+    int getClusterMessageSendingThreadPoolSize();
 }
