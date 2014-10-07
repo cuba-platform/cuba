@@ -51,8 +51,10 @@ public class UniqueConstraintViolationHandler implements ExceptionHandler {
     private void doHandle(Throwable throwable, App app) {
         Configuration configuration = AppBeans.get(Configuration.NAME);
         ExceptionHandlersConfig exceptionHandlersConfig = configuration.getConfig(ExceptionHandlersConfig.class);
+        Pattern pattern = exceptionHandlersConfig.getUniqueConstraintViolationPattern();
         String constraintName = "";
-        Matcher matcher = exceptionHandlersConfig.getUniqueConstraintViolationPattern().matcher(throwable.toString());
+
+        Matcher matcher = pattern.matcher(throwable.toString());
         if (matcher.find()) {
             if (matcher.groupCount() > 1) {
                 constraintName = matcher.group(2);
