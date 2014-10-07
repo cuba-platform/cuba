@@ -250,7 +250,8 @@ public class DbUpdaterUtil extends DbUpdaterEngine {
             CollectionUtils.filter(files, new org.apache.commons.collections.Predicate() {
                 @Override
                 public boolean evaluate(Object object) {
-                    return !(object == null || ((File) object).getName().endsWith("groovy"));
+                    File file = ((File) object);
+                    return !(file.getName().endsWith("groovy"));
                 }
             });
 
