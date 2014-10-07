@@ -101,7 +101,7 @@ public class DataServiceController {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             } else {
                 Convertor convertor = conversionFactory.getConvertor(type);
-                Object result = convertor.process(entity, metaClass, request.getRequestURI());
+                Object result = convertor.process(entity, metaClass, request.getRequestURI(), loadCtx.getView());
                 convertor.write(response, result);
             }
         } catch (Throwable e) {
@@ -179,7 +179,7 @@ public class DataServiceController {
             }
             List<Entity> entities = dataService.loadList(loadCtx);
             Convertor convertor = conversionFactory.getConvertor(type);
-            Object result = convertor.process(entities, metaClass, request.getRequestURI());
+            Object result = convertor.process(entities, metaClass, request.getRequestURI(), loadCtx.getView());
             convertor.write(response, result);
         } catch (Throwable e) {
             log.error("Error processing request: " + request.getRequestURI() + "?" + request.getQueryString(), e);

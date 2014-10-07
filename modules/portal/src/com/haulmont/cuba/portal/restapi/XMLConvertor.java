@@ -102,21 +102,21 @@ public class XMLConvertor implements Convertor {
     }
 
     @Override
-    public Document process(Entity entity, MetaClass metaclass, String requestURI)
+    public Document process(Entity entity, MetaClass metaclass, String requestURI, View view)
             throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         Element root = newDocument(ROOT_ELEMENT_INSTANCE);
-        encodeEntityInstance(new HashSet<Entity>(), entity, root, false, metaclass);
+        encodeEntityInstance(new HashSet<Entity>(), entity, root, false, metaclass, view);
         Document doc = root.getOwnerDocument();
         decorate(doc, requestURI);
         return doc;
     }
 
     @Override
-    public Document process(List<Entity> entities, MetaClass metaClass, String requestURI)
+    public Document process(List<Entity> entities, MetaClass metaClass, String requestURI, View view)
             throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         Element root = newDocument(ROOT_ELEMENT_INSTANCE);
         for (Entity entity : entities) {
-            encodeEntityInstance(new HashSet<Entity>(), entity, root, false, metaClass);
+            encodeEntityInstance(new HashSet<Entity>(), entity, root, false, metaClass, view);
         }
         Document doc = root.getOwnerDocument();
         decorate(doc, requestURI);
@@ -134,12 +134,14 @@ public class XMLConvertor implements Convertor {
             encodeEntityInstance(
                     new HashSet<Entity>(), entry.getKey(),
                     pair, false,
-                    getMetaClass(entry.getKey())
+                    getMetaClass(entry.getKey()),
+                    null
             );
             encodeEntityInstance(
                     new HashSet<Entity>(), entry.getValue(),
                     pair, false,
-                    getMetaClass(entry.getValue())
+                    getMetaClass(entry.getValue()),
+                    null
             );
         }
         return doc;
@@ -437,9 +439,10 @@ public class XMLConvertor implements Convertor {
      *                  owned by a document.
      * @param isRef
      * @param metaClass @return the new element. The element has been appended as a child to the given parent in this method.
+     * @param view view on which loaded the entity
      */
     private Element encodeEntityInstance(HashSet<Entity> visited, final Entity entity, final Element parent,
-                                         boolean isRef, MetaClass metaClass)
+                                         boolean isRef, MetaClass metaClass, View view)
             throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         if (!readPermitted(metaClass))
             return null;
@@ -473,6 +476,10 @@ public class XMLConvertor implements Convertor {
 
             if (!attrViewPermitted(metaClass, property.getName()))
                 continue;
+
+            if (view != null && view.getProperty(property.getName()) == null){
+                continue;
+            }
 
             Object value = entity.getValue(property.getName());
             switch (property.getType()) {
@@ -514,6 +521,8 @@ public class XMLConvertor implements Convertor {
                         break;
                     }
 
+                    View propertyView = (view == null ? null : view.getProperty(property.getName()).getView());
+
                     if (!property.getRange().getCardinality().isMany()) {
                         boolean isEmbedded = property.getAnnotatedElement().isAnnotationPresent(Embedded.class);
                         child = doc.createElement(isEmbedded ?
@@ -522,9 +531,11 @@ public class XMLConvertor implements Convertor {
                         );
                         child.setAttribute(ATTR_NAME, property.getName());
                         if (isEmbedded) {
-                            encodeEntityInstance(visited, (Entity) value, child, false, property.getRange().asClass());
+                            encodeEntityInstance(visited, (Entity) value, child, false,
+                                    property.getRange().asClass(), propertyView);
                         } else {
-                            encodeEntityInstance(visited, (Entity) value, child, false, property.getRange().asClass());
+                            encodeEntityInstance(visited, (Entity) value, child, false,
+                                    property.getRange().asClass(), propertyView);
                         }
                     } else {
                         child = doc.createElement(getCollectionReferenceTag(property));
@@ -541,7 +552,8 @@ public class XMLConvertor implements Convertor {
                             if (o == null) {
                                 encodeNull(member);
                             } else {
-                                encodeEntityInstance(visited, (Entity) o, member, true, property.getRange().asClass());
+                                encodeEntityInstance(visited, (Entity) o, member, true,
+                                        property.getRange().asClass(), propertyView);
                             }
                         }
                     }

@@ -7,6 +7,7 @@ package com.haulmont.cuba.portal.restapi;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.View;
 
 import javax.activation.MimeType;
 import javax.servlet.http.HttpServletResponse;
@@ -22,10 +23,10 @@ import java.util.Map;
 public interface Convertor {
     public MimeType getMimeType();
 
-    Object process(Entity entity, MetaClass metaclass, String requestURI)
+    Object process(Entity entity, MetaClass metaclass, String requestURI, View view)
             throws InvocationTargetException, NoSuchMethodException, IllegalAccessException;
 
-    Object process(List<Entity> entities, MetaClass metaClass, String requestURI)
+    Object process(List<Entity> entities, MetaClass metaClass, String requestURI, View view)
             throws InvocationTargetException, NoSuchMethodException, IllegalAccessException;
 
     Object process(Map<Entity, Entity> entityMap, String requestURI)

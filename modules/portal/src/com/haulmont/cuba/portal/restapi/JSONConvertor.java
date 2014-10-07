@@ -70,17 +70,17 @@ public class JSONConvertor implements Convertor {
     }
 
     @Override
-    public MyJSONObject process(Entity entity, MetaClass metaclass, String requestURI)
+    public MyJSONObject process(Entity entity, MetaClass metaclass, String requestURI, View view)
             throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-        return encodeInstance(entity, new HashSet<Entity>(), metaclass);
+        return encodeInstance(entity, new HashSet<Entity>(), metaclass, view);
     }
 
     @Override
-    public MyJSONObject.Array process(List<Entity> entities, MetaClass metaClass, String requestURI)
+    public MyJSONObject.Array process(List<Entity> entities, MetaClass metaClass, String requestURI, View view)
             throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         MyJSONObject.Array result = new MyJSONObject.Array();
         for (Entity entity : entities) {
-            MyJSON item = encodeInstance(entity, new HashSet<Entity>(), metaClass);
+            MyJSON item = encodeInstance(entity, new HashSet<Entity>(), metaClass, view);
             result.add(item);
         }
         return result;
@@ -93,8 +93,8 @@ public class JSONConvertor implements Convertor {
         for (Map.Entry<Entity, Entity> entry : entityMap.entrySet()) {
             Entity key = entry.getKey();
             Entity value = entry.getValue();
-            MyJSONObject keyJson = encodeInstance(key, new HashSet<Entity>(), getMetaClass(key));
-            MyJSONObject valueJson = encodeInstance(value, new HashSet<Entity>(), getMetaClass(value));
+            MyJSONObject keyJson = encodeInstance(key, new HashSet<Entity>(), getMetaClass(key), null);
+            MyJSONObject valueJson = encodeInstance(value, new HashSet<Entity>(), getMetaClass(value), null);
 
             MyJSONObject.Array mapping = new MyJSONObject.Array();
             mapping.add(keyJson);
@@ -285,9 +285,10 @@ public class JSONConvertor implements Convertor {
      *
      * @param entity  the managed instance to be encoded. Can be null.
      * @param visited the persistent instances that had been encoded already. Must not be null or immutable.
+     * @param view view on which loaded the entity
      * @return the new element. The element has been appended as a child to the given parent in this method.
      */
-    protected MyJSONObject encodeInstance(final Entity entity, final Set<Entity> visited, MetaClass metaClass)
+    protected MyJSONObject encodeInstance(final Entity entity, final Set<Entity> visited, MetaClass metaClass, View view)
             throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         if (visited == null) {
             throw new IllegalArgumentException("null closure for encoder");
@@ -318,6 +319,11 @@ public class JSONConvertor implements Convertor {
                 //skipping: we encoded it before
                 continue;
             }
+
+            if (view != null && view.getProperty(property.getName()) == null){
+                continue;
+            }
+
             switch (property.getType()) {
                 case DATATYPE:
                     if (value != null) {
@@ -342,12 +348,14 @@ public class JSONConvertor implements Convertor {
                     if (!readPermitted(meta))
                         break;
 
+                    View propertyView = (view == null ? null : view.getProperty(property.getName()).getView());
+
                     if (!property.getRange().getCardinality().isMany()) {
                         if (value == null) {
                             root.set(property.getName(), null);
                         } else {
                             root.set(property.getName(), encodeInstance((Entity) value, visited,
-                                    property.getRange().asClass()));
+                                    property.getRange().asClass(), propertyView));
                         }
                     } else {
                         if (value == null) {
@@ -364,7 +372,7 @@ public class JSONConvertor implements Convertor {
                                 array.add(null);
                             } else {
                                 array.add(encodeInstance((Entity) o, visited,
-                                        property.getRange().asClass()));
+                                        property.getRange().asClass(), propertyView));
                             }
                         }
                     }
