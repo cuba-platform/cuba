@@ -24,10 +24,8 @@ import com.haulmont.cuba.desktop.sys.vcl.FocusableComponent;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Timer;
-import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -44,13 +42,11 @@ import javax.annotation.Nullable;
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
 import javax.swing.tree.TreePath;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.*;
-import java.util.List;
 
 /**
  * @author krivopustov
@@ -787,22 +783,6 @@ public class DesktopWindow implements Window, Component.Disposable,
 
     @Override
     public void setHeight(String height) {
-        int w = getContainer().getWidth();
-
-        ComponentSize h = ComponentSize.parse(height);
-        if (h.inPixels()) {
-            Dimension dimension = new Dimension(w, (int) h.value);
-            getContainer().setMinimumSize(dimension);
-            getContainer().setPreferredSize(dimension);
-        } else if (h.inPercents()) {
-            // TODO determine height of main frame, and multiply by percents
-            // such method is used in permission-show.xml
-            int hValue = 400;
-            Dimension dimension = new Dimension(w, hValue);
-            getContainer().setMinimumSize(dimension);
-            getContainer().setPreferredSize(dimension);
-        }
-
         heightSize = ComponentSize.parse(height);
     }
 

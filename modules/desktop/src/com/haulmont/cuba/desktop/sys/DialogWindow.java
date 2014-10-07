@@ -47,6 +47,11 @@ public class DialogWindow extends JDialog {
 
     @Override
     public Dimension getPreferredSize() {
+        if (fixedHeight != null && fixedWidth != null) {
+            // dialog does not grow
+            return new Dimension(fixedWidth, fixedHeight);
+        }
+
         if (fixedWidth != null) {
             // dialog does not grow by horizontal axis
             return new Dimension(fixedWidth, super.getPreferredSize().height);
