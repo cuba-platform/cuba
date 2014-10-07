@@ -98,6 +98,9 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
     @Inject
     protected ThemeConstants themeConstants;
 
+    @Inject
+    private LinkButton cronHelpButton;
+
     private void show(Component... components) {
         for (Component component : components) {
             component.setVisible(true);
@@ -149,7 +152,8 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
             }
 
             private void hideAll() {
-                hide(classNameField, classNameLabel, scriptNameField, scriptNameLabel, beanNameField, beanNameLabel, methodNameField, methodNameLabel, methodParamsBox);
+                hide(classNameField, classNameLabel, scriptNameField, scriptNameLabel, beanNameField, beanNameLabel,
+                        methodNameField, methodNameLabel, methodParamsBox);
             }
         });
 
@@ -198,10 +202,10 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
         if (SchedulingType.CRON == value) {
             hide(periodField, periodLabel, startDateField, startDateLabel);
             clear(periodField, startDateField);
-            show(cronField, cronLabel);
+            show(cronField, cronLabel, cronHelpButton);
         } else {
             show(periodField, periodLabel, startDateField, startDateLabel);
-            hide(cronField, cronLabel);
+            hide(cronField, cronLabel, cronHelpButton);
             clear(cronField);
         }
     }
@@ -277,5 +281,9 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
         for (Component component : methodParamsBox.getComponents()) {
             methodParamsBox.remove(component);
         }
+    }
+
+    public void getCronHelp() {
+        showMessageDialog("Cron", getMessage("cronDescription"), MessageType.CONFIRMATION_HTML);
     }
 }
