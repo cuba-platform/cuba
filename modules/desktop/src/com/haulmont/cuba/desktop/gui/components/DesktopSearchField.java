@@ -46,6 +46,7 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
     protected boolean enterHandling = false;
     protected boolean popupItemSelectionHandling = false;
     protected boolean settingValue;
+    protected boolean disableActionListener = false;
 
     protected boolean editable = true;
     protected boolean enabled = true;
@@ -109,6 +110,9 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
         comboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if (settingValue || disableActionListener)
+                    return;
+
                 if ("comboBoxEdited".equals(e.getActionCommand())) {
                     Object selectedItem = comboBox.getSelectedItem();
 
@@ -521,6 +525,16 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
         }
     }
 
+    protected void updateTextRepresentation() {
+        disableActionListener = true;
+        try {
+            Object value = comboBox.getSelectedItem();
+            comboBox.getEditor().setItem(value);
+        } finally {
+            disableActionListener = false;
+        }
+    }
+
     @Override
     protected Object getSelectedItem() {
         return comboBox.getSelectedItem();
@@ -555,6 +569,8 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
             value = new NullOption();
         }
         super.updateComponent(value);
+
+        updateTextRepresentation();
     }
 
     @Override
