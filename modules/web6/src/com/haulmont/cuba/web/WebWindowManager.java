@@ -1037,6 +1037,31 @@ public class WebWindowManager extends WindowManager {
         messageLab.setContentMode(Label.CONTENT_XHTML);
         layout.addComponent(messageLab);
 
+        HorizontalLayout buttonsContainer = new HorizontalLayout();
+        buttonsContainer.setSpacing(true);
+
+        DialogAction action = new DialogAction(DialogAction.Type.OK);
+        final Button button = WebComponentsHelper.createButton();
+
+        button.setCaption(action.getCaption());
+        button.setIcon(new VersionedThemeResource(action.getIcon()));
+        button.addStyleName(WebButton.ICON_STYLE);
+        button.addListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                appWindow.removeWindow(window);
+            }
+        });
+
+        buttonsContainer.addComponent(button);
+        button.focus();
+
+        layout.addComponent(buttonsContainer);
+
+        messageLab.setSizeFull();
+        layout.setExpandRatio(messageLab, 1);
+        layout.setComponentAlignment(buttonsContainer, com.vaadin.ui.Alignment.BOTTOM_RIGHT);
+
         float width;
         if (getDialogParams().getWidth() != null) {
             width = getDialogParams().getWidth().floatValue();
