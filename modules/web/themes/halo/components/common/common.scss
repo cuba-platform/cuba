@@ -6,7 +6,9 @@
 // Version: $Id$
 
 @mixin halo-common {
-
+  .v-link > a {
+    white-space: nowrap;
+  }
 }
 
 @mixin box-defaults {

@@ -15,7 +15,11 @@
 // Components
 @import "components/panel/panel";
 @import "components/button/button";
+@import "components/groupbox/groupbox";
+@import "components/datefield/datefield";
+@import "components/fieldgroup/fieldgroup";
 @import "components/orderedlayout/orderedlayout";
+@import "components/fieldgrouplayout/fieldgrouplayout";
 
 // Application specific
 @import "app/login-window";
@@ -27,7 +31,11 @@
 
   @include halo-panel;
   @include halo-button;
+  @include halo-datefield;
+  @include halo-fieldgroup;
   @include halo-orderedlayout;
+  @include halo-cuba-groupbox;
+  @include halo-fieldgrouplayout;
 
   @include cuba-login-window;
 }

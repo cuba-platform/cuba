@@ -5,13 +5,13 @@
 
 package com.haulmont.cuba.gui.app.core.credits;
 
-import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
+import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -24,51 +24,62 @@ public class CreditsFrame extends AbstractFrame {
     @Named("scroll")
     protected ScrollBoxLayout scrollBox;
 
+    @Inject
+    protected ComponentsFactory componentsFactory;
+
     @Override
     public void init(final Map<String, Object> params) {
-        ComponentsFactory factory = AppConfig.getFactory();
+        getDialogParams().setResizable(true);
 
-        GridLayout grid = factory.createComponent(GridLayout.NAME);
+        GridLayout grid = componentsFactory.createComponent(GridLayout.NAME);
         grid.setSpacing(true);
+        grid.setMargin(false, true, false, true);
         grid.setColumns(5);
         grid.setFrame(frame);
 
         List<CreditsItem> items = new CreditsLoader().load().getItems();
         if (items.size() > 0) {
             grid.setRows(items.size());
+
             for (int i = 0, itemsSize = items.size(); i < itemsSize; i++) {
                 final CreditsItem item = items.get(i);
 
-                Label nameLab = factory.createComponent(Label.NAME);
+                Label nameLab = componentsFactory.createComponent(Label.NAME);
                 nameLab.setValue(item.getName());
                 nameLab.setFrame(frame);
+                nameLab.setAlignment(Alignment.MIDDLE_LEFT);
                 grid.add(nameLab, 0, i);
 
-                Label dash = factory.createComponent(Label.NAME);
+                Label dash = componentsFactory.createComponent(Label.NAME);
                 dash.setValue("-");
                 dash.setFrame(frame);
+                dash.setAlignment(Alignment.MIDDLE_LEFT);
                 grid.add(dash, 1, i);
 
-                Link webpage = factory.createComponent(Link.NAME);
+                Link webpage = componentsFactory.createComponent(Link.NAME);
                 webpage.setCaption(getMessage("webpage"));
                 webpage.setUrl(item.getWebPage());
                 webpage.setTarget("_blank");
                 webpage.setFrame(frame);
+                webpage.setAlignment(Alignment.MIDDLE_LEFT);
                 grid.add(webpage, 2, i);
 
-                dash = factory.createComponent(Label.NAME);
+                dash = componentsFactory.createComponent(Label.NAME);
                 dash.setValue("-");
                 dash.setFrame(frame);
+                dash.setAlignment(Alignment.MIDDLE_LEFT);
                 grid.add(dash, 3, i);
 
-                LinkButton license = factory.createComponent(LinkButton.NAME);
+                LinkButton license = componentsFactory.createComponent(LinkButton.NAME);
                 license.setFrame(frame);
                 license.setCaption(getMessage("license"));
+                license.setAlignment(Alignment.MIDDLE_LEFT);
                 license.setAction(new AbstractAction("license") {
                     @Override
                     public void actionPerform(Component component) {
-                        openWindow("thirdpartyLicenseWindow", WindowManager.OpenType.DIALOG,
-                                Collections.<String, Object>singletonMap("licenseText", item.getLicense()));
+                        openWindow("thirdpartyLicenseWindow",
+                                   WindowManager.OpenType.DIALOG,
+                                   ParamsMap.of("licenseText", item.getLicense()));
                     }
                 });
                 grid.add(license, 4, i);

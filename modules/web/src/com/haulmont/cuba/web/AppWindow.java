@@ -1018,6 +1018,9 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
             closeCurrentTab = new com.vaadin.event.Action(messages.getMainMessage("actions.closeCurrentTab"));
             showInfo = new com.vaadin.event.Action(messages.getMainMessage("actions.showInfo"));
             analyzeLayout = new com.vaadin.event.Action(messages.getMainMessage("actions.analyzeLayout"));
+
+            // add halo style
+            addStyleName("padded-tabbar");
         }
 
         @Override

@@ -7,12 +7,12 @@
 
 @mixin halo-panel($primaryStyleName : v-panel) {
   .#{$primaryStyleName} {
-    .#{$primaryStyleName} {
-      border: 0;
-      box-shadow: none;
-      background: transparent;
-    }
+    border: 0;
+    box-shadow: none;
+    background: transparent;
+  }
 
+  .#{$primaryStyleName} {
     .#{$primaryStyleName}-content {
       border: 0;
     }

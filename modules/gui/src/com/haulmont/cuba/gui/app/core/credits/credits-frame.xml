@@ -3,15 +3,11 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<window
-        xmlns="http://schemas.haulmont.com/cuba/5.2/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/5.2/window.xsd"
         class="com.haulmont.cuba.gui.app.core.credits.CreditsFrame"
-        messagesPack="com.haulmont.cuba.gui.app.core.credits"
-        >
-    <dsContext/>
-
+        messagesPack="com.haulmont.cuba.gui.app.core.credits">
     <layout>
-        <scrollBox id="scroll" width="100%" height="100%">
+        <scrollBox id="scroll" width="100%" height="100%" scrollBars="both">
 
         </scrollBox>
     </layout>

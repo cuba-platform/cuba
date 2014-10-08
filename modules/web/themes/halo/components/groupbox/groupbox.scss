@@ -5,10 +5,7 @@
 
 // Version: $Id$
 
-@mixin halo-button($primaryStyleName: v-button) {
+@mixin halo-cuba-groupbox($primaryStyleName : cuba-groupbox) {
+  @include halo-panel($primaryStyleName);
 
-  .#{$primaryStyleName}-link {
-    padding-left: 0;
-    padding-right: 0;
-  }
 }
