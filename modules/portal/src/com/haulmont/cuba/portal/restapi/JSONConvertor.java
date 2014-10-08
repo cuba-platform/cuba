@@ -320,7 +320,7 @@ public class JSONConvertor implements Convertor {
                 continue;
             }
 
-            if (view != null && view.getProperty(property.getName()) == null){
+            if (!isPropertyIncluded(view, property, metadataTools)){
                 continue;
             }
 
@@ -389,6 +389,15 @@ public class JSONConvertor implements Convertor {
 
     protected String idof(Entity entity) {
         return EntityLoadInfo.create(entity).toString();
+    }
+
+    protected boolean isPropertyIncluded(View view, MetaProperty metaProperty, MetadataTools metadataTools) {
+        if (view == null) {
+            return true;
+        }
+
+        ViewProperty viewProperty = view.getProperty(metaProperty.getName());
+        return (viewProperty != null || (view.isIncludeSystemProperties() && metadataTools.isSystem(metaProperty)));
     }
 
     protected boolean attrViewPermitted(MetaClass metaClass, String property) {

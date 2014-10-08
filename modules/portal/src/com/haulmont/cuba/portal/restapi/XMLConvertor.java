@@ -477,7 +477,7 @@ public class XMLConvertor implements Convertor {
             if (!attrViewPermitted(metaClass, property.getName()))
                 continue;
 
-            if (view != null && view.getProperty(property.getName()) == null){
+            if (!isPropertyIncluded(view, property, metadataTools)){
                 continue;
             }
 
@@ -585,6 +585,15 @@ public class XMLConvertor implements Convertor {
      */
     protected void encodeNull(Element element) {
         element.setAttribute(ATTR_NULL, "true");
+    }
+
+    protected boolean isPropertyIncluded(View view, MetaProperty metaProperty, MetadataTools metadataTools) {
+        if (view == null) {
+            return true;
+        }
+
+        ViewProperty viewProperty = view.getProperty(metaProperty.getName());
+        return (viewProperty != null || (view.isIncludeSystemProperties() && metadataTools.isSystem(metaProperty)));
     }
 
     protected boolean isNullValue(Node fieldNode) {
