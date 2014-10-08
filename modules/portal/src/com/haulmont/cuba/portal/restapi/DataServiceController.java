@@ -93,8 +93,12 @@ public class DataServiceController {
             LoadContext loadCtx = new LoadContext(metaClass);
             loadCtx.setId(idObject);
             loadCtx.setUseSecurityConstraints(true);
-            if (loadInfo.getViewName() != null)
+            if (loadInfo.getViewName() != null) {
                 loadCtx.setView(loadInfo.getViewName());
+            } else {
+                View view = metadata.getViewRepository().getView(metaClass, View.LOCAL);
+                loadCtx.setView(new View(view, "local-with-system-props", true));
+            }
 
             Entity entity = dataService.load(loadCtx);
             if (entity == null) {
