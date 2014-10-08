@@ -26,14 +26,14 @@
                         <optionsGroup id="definedByField" datasource="taskDs" property="definedBy"
                                       width="${smallFieldWidth}"
                                       required="true" multiselect="false" orientation="horizontal"/>
-                        <label value=""/> <!-- temporary workaround until #PL-1701 is fixed -->
+                        <label id="definedByEmptyLabel" value=""/> <!-- temporary workaround until #PL-1701 is fixed -->
                     </row>
                     <row>
                         <label id="beanNameLabel" value="msg://com.haulmont.cuba.core.entity/ScheduledTask.beanName"
                                align="MIDDLE_LEFT"/>
                         <lookupField id="beanNameField" datasource="taskDs" property="beanName" width="${fieldWidth}"
                                      required="true"/>
-                        <label value=""/>
+                        <label id="beanNameEmptyLabel" value=""/>
                     </row>
                     <row>
                         <label id="methodNameLabel"
@@ -48,14 +48,14 @@
                                align="MIDDLE_LEFT"/>
                         <textField id="classNameField" datasource="taskDs" property="className" width="${fieldWidth}"
                                    required="true"/>
-                        <label value=""/>
+                        <label id="classNameEmptyLabel" value=""/>
                     </row>
                     <row>
                         <label id="scriptNameLabel"
                                value="msg://com.haulmont.cuba.core.entity/ScheduledTask.scriptName" align="MIDDLE_LEFT"/>
                         <textField id="scriptNameField" datasource="taskDs" property="scriptName" width="${fieldWidth}"
                                    required="true"/>
-                        <label value=""/>
+                        <label id="scriptNameEmptyLabel" value=""/>
                     </row>
                     <row>
                         <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.userName" align="MIDDLE_LEFT"/>
@@ -72,13 +72,13 @@
                                align="MIDDLE_LEFT"/>
                         <optionsGroup id="schedulingTypeField" datasource="taskDs" property="schedulingType"
                                       required="true" multiselect="false" orientation="horizontal"/>
-                        <label value=""/>
+                        <label id="schedulingTypeEmptyLabel" value=""/>
                     </row>
                     <!--scheduling type options start-->
                     <row>
                         <label id="cronLabel" value="msg://com.haulmont.cuba.core.entity/ScheduledTask.cron"
                                align="MIDDLE_LEFT"/>
-                        <hbox spacing="true">
+                        <hbox id="cronHbox" spacing="true">
                             <textField id="cronField" datasource="taskDs" property="cron"
                                        width="${smallFieldWidth}" required="true">
                                 <validator class="com.haulmont.cuba.gui.app.core.scheduled.CronValidator"
@@ -86,19 +86,19 @@
                             </textField>
                             <linkButton id="cronHelpButton" caption="[?]" invoke="getCronHelp" align="MIDDLE_LEFT"/>
                         </hbox>
-                        <label value=""/>
+                        <label id="cronEmptyLabel" value=""/>
                     </row>
                     <row>
                         <label id="periodLabel" value="msg://com.haulmont.cuba.core.entity/ScheduledTask.period"
                                align="MIDDLE_LEFT"/>
                         <textField id="periodField" datasource="taskDs" property="period" width="${smallFieldWidth}" required="true"/>
-                        <label value=""/>
+                        <label id="periodEmptyLabel" value=""/>
                     </row>
                     <row>
                         <label id="startDateLabel" value="msg://com.haulmont.cuba.core.entity/ScheduledTask.startDate"
                                align="MIDDLE_LEFT"/>
                         <dateField id="startDateField" datasource="taskDs" property="startDate" width="${smallFieldWidth}"/>
-                        <label value=""/>
+                        <label id="startDateEmptyLabel" value=""/>
                     </row>
                     <!--scheduling type options end-->
                     <row>
