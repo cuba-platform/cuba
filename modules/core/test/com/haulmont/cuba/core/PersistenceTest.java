@@ -356,4 +356,30 @@ public class PersistenceTest extends CubaTestCase {
             tx.end();
         }
     }
+
+    /**
+     * OpenJPA silently ignores setting null in nullable=false attribute.
+     */
+    public void testNonNullAttribute() throws Exception {
+        Transaction tx = persistence.createTransaction();
+        try {
+            EntityManager em = persistence.getEntityManager();
+            User user = em.find(User.class, userId);
+            assertNotNull(user);
+            user.setLogin(null);
+            user.setName(null);
+            tx.commitRetaining();
+
+            em = persistence.getEntityManager();
+            user = em.find(User.class, userId);
+            assertNotNull(user);
+            assertNotNull(user.getLogin()); // null was not saved
+            assertNull(user.getName());     // null was saved
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+
+    }
 }
