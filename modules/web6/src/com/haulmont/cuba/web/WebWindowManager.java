@@ -1028,7 +1028,7 @@ public class WebWindowManager extends WindowManager {
             }
         });
 
-        final VerticalLayout layout = new VerticalLayout();
+        VerticalLayout layout = new VerticalLayout();
         layout.setMargin(true);
         window.setContent(layout);
 
@@ -1041,7 +1041,7 @@ public class WebWindowManager extends WindowManager {
         buttonsContainer.setSpacing(true);
 
         DialogAction action = new DialogAction(DialogAction.Type.OK);
-        final Button button = WebComponentsHelper.createButton();
+        Button button = WebComponentsHelper.createButton();
 
         button.setCaption(action.getCaption());
         button.setIcon(new VersionedThemeResource(action.getIcon()));
@@ -1058,8 +1058,7 @@ public class WebWindowManager extends WindowManager {
 
         layout.addComponent(buttonsContainer);
 
-        messageLab.setSizeFull();
-        layout.setExpandRatio(messageLab, 1);
+        messageLab.setWidth("100%");
         layout.setComponentAlignment(buttonsContainer, com.vaadin.ui.Alignment.BOTTOM_RIGHT);
 
         float width;
