@@ -164,14 +164,18 @@ public class WindowBreadCrumbs extends HorizontalLayout {
 
             if (it.hasNext()) {
                 linksLayout.addComponent(button);
+                linksLayout.setComponentAlignment(button, Alignment.MIDDLE_LEFT);
+
                 Label separatorLab = new Label("&nbsp;&gt;&nbsp;");
                 separatorLab.setSizeUndefined();
                 separatorLab.setContentMode(ContentMode.HTML);
                 linksLayout.addComponent(separatorLab);
+                linksLayout.setComponentAlignment(separatorLab, Alignment.MIDDLE_LEFT);
             } else {
                 Label captionLabel = new Label(window.getCaption());
                 captionLabel.setSizeUndefined();
                 linksLayout.addComponent(captionLabel);
+                linksLayout.setComponentAlignment(captionLabel, Alignment.MIDDLE_LEFT);
             }
         }
     }

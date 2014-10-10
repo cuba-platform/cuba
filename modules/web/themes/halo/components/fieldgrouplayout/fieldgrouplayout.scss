@@ -3,7 +3,39 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-@mixin halo-fieldgrouplayout($primaryStyleName: cuba-fieldgrouplayout) {
+@mixin halo-cuba-fieldgrouplayout($primaryStyleName: cuba-fieldgrouplayout) {
   @include valo-gridlayout-global($primaryStyleName);
   @include valo-gridlayout($primaryStyleName);
+
+  .#{$primaryStyleName}-spacing-on {
+    padding-top: $v-layout-spacing-vertical/2;
+  }
+
+  .#{$primaryStyleName}-slot.inline > .v-caption {
+    margin-right: $v-layout-spacing-horizontal/2;
+    vertical-align: middle;
+    line-height: $v-unit-size;
+    overflow: hidden;
+  }
+
+  .#{$primaryStyleName}-slot > .v-checkbox {
+    vertical-align: middle;
+  }
+
+  .#{$primaryStyleName}-slot.inline > .v-caption.caption-indicators {
+    margin-right: 0;
+  }
+
+  .#{$primaryStyleName}-slot.inline > .v-caption .v-captiontext {
+    padding-bottom: 0px;
+  }
+
+  // set line-height for all captions exclude captions for CheckBox and Label
+  .#{$primaryStyleName}-slot.cuba-full-height-widget .v-caption {
+    height: $v-unit-size;
+  }
+
+  .#{$primaryStyleName}-slot.cuba-full-height-widget .v-caption .v-captiontext {
+    line-height: $v-unit-size;
+  }
 }

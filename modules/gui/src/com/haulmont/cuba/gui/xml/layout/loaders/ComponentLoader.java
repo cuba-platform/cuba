@@ -282,10 +282,15 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
                 final String[] margins = margin.split("[;,]");
                 if (margins.length != 4) {
                     throw new GuiDevelopmentException(
-                            "Margin attribute must contain 1 or 4 boolean values separated by ',' or ';", context.getFullFrameId());
+                        "Margin attribute must contain 1 or 4 boolean values separated by ',' or ';", context.getFullFrameId());
                 }
-                layout.setMargin(Boolean.valueOf(margins[0]), Boolean.valueOf(margins[1]),
-                        Boolean.valueOf(margins[2]), Boolean.valueOf(margins[3]));
+
+                layout.setMargin(
+                    Boolean.valueOf(StringUtils.trimToEmpty(margins[0])),
+                    Boolean.valueOf(StringUtils.trimToEmpty(margins[1])),
+                    Boolean.valueOf(StringUtils.trimToEmpty(margins[2])),
+                    Boolean.valueOf(StringUtils.trimToEmpty(margins[3]))
+                );
             } else {
                 layout.setMargin(Boolean.valueOf(margin));
             }

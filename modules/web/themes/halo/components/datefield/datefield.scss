@@ -16,4 +16,22 @@
   .#{$primaryStyleName}-popup .popupContent > div > table:focus {
     outline: 0;
   }
+
+  .#{$primaryStyleName}-popup {
+    @include valo-datefield-calendarpanel-style(#{$primaryStyleName}-calendarpanel);
+  }
+
+  .#{$primaryStyleName} {
+    $border-width: first-number($v-textfield-border) or 0;
+    $padding-width: ceil($v-unit-size/6) + ceil($v-textfield-border-radius/3);
+
+    [class*="textfield"] {
+      padding-left: $padding-width;
+    }
+
+    [class*="button"] {
+      left: auto;
+      right: $border-width;
+    }
+  }
 }

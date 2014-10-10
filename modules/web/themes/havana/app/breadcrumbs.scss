@@ -8,6 +8,10 @@
 @mixin cuba-breadcrumbs {
   $breadCrumbsHeight: 25px;
 
+  .v-horizontallayout.cuba-breadcrumbs-logo {
+    padding: 0;
+  }
+
   .cuba-breadcrumbs {
     .v-label {
       font-family: $theme_fonts;

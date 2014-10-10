@@ -28,7 +28,6 @@
     </dsContext>
 
     <layout expand="contentPane">
-        <!-- Filter -->
         <hbox spacing="true" margin="true">
             <hbox margin="false,true,false,false" spacing="true" align="MIDDLE_LEFT">
                 <checkBox id="assignedOnlyCheckBox" caption="msg://assignedOnly"/>
@@ -41,7 +40,8 @@
                 <button id="applyFilterBtn" caption="msg://actions.Apply" invoke="applyFilter"/>
             </hbox>
         </hbox>
-        <hbox id="contentPane" spacing="true" margin="true" width="100%">
+
+        <hbox id="contentPane" spacing="true" margin="false,true,true,true" width="100%">
             <split id="contentSplit" width="100%" height="100%" orientation="horizontal" pos="80">
                 <!-- Table -->
                 <vbox id="tablePane" height="100%">

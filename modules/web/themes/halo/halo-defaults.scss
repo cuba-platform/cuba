@@ -6,17 +6,21 @@
 $theme_loginFormBackgroundColor: #fbfdff;
 $theme_loginFormBorderColor: #e9f1f4;
 
+$theme_windowHeaderLineWidth: 1px;
+
+$theme_splitPanelSplitterWidth: 3px;
+
 $v-line-height: 1.3;
 $v-font-size: 14px;
 $v-unit-size: 30px;
 
-$v-layout-margin-top: 15px;
-$v-layout-margin-left: 15px;
-$v-layout-margin-right: 15px;
-$v-layout-margin-bottom: 15px;
+$v-layout-margin-top: 10px;
+$v-layout-margin-left: 10px;
+$v-layout-margin-right: 10px;
+$v-layout-margin-bottom: 10px;
 
 $v-layout-spacing-vertical: 10px;
 $v-layout-spacing-horizontal: 10px;
 
 $v-table-row-height: 30px;
-$v-focus-style: 0 0 0 0px;
+$v-focus-style: $v-focus-color;

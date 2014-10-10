@@ -94,32 +94,32 @@
   @include havana-datefield;
   @include havana-popupview;
   @include havana-splitpanel;
-  @include havana-fieldgroup;
   @include havana-gridlayout;
   @include havana-popupbutton;
   @include havana-contextmenu;
   @include havana-pickerfield;
   @include havana-optiongroup;
-  @include havana-maskedfield;
   @include havana-notification;
   @include havana-filterselect;
   @include havana-richtextarea;
   @include havana-orderedlayout;
   @include havana-errorindicator;
-  @include havana-fieldgrouplayout;
   @include havana-loadingindicator;
   @include havana-sourcecodeeditor;
   @include havana-progressindicator;
 
   @include havana-cuba-groupbox;
-  @include havana-cuba-flowlayout;
   @include havana-cuba-tokenlist;
+  @include havana-cuba-flowlayout;
+  @include havana-cuba-fieldgroup;
   @include havana-cuba-grouptable;
   @include havana-cuba-twincolumn;
   @include havana-cuba-multiupload;
   @include havana-cuba-widgetstree;
+  @include havana-cuba-maskedfield;
   @include havana-cuba-contextmenu;
   @include havana-cuba-searchselect;
+  @include havana-cuba-fieldgrouplayout;
   @include havana-cuba-resizabletextarea;
 
   @include cuba-login-window;

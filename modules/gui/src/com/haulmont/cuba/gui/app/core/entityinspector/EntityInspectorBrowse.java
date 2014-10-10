@@ -92,6 +92,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
             if (frame instanceof Lookup) {
                 setLookupComponent(entitiesTable);
             }
+            lookupBox.setVisible(false);
         } else {
             entities = componentsFactory.createComponent(LookupField.NAME);
             entities.setWidth(themeConstants.get("cuba.gui.EntityInspectorBrowse.entitiesSelect.width"));

@@ -1,0 +1,28 @@
+/*
+ * Copyright (c) 2008-2014 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+ */
+
+// Version: $Id$
+
+
+@mixin halo-window($primaryStyleName: v-window) {
+  .#{$primaryStyleName}-contents {
+    padding-left: round($v-unit-size/2);
+    padding-right: round($v-unit-size/2);
+  }
+
+  .#{$primaryStyleName}-footer {
+    padding-bottom: round($v-unit-size/2);
+  }
+
+  .#{$primaryStyleName}-outerheader:after {
+    display: none;
+  }
+
+  .#{$primaryStyleName}-outerheader {
+    border-bottom: $theme_windowHeaderLineWidth solid first-color(valo-border($strength: 0.5));
+//    $border-color: first-color(valo-border($strength: 1));
+//    border-color: rgba($border-color, .5);
+  }
+}

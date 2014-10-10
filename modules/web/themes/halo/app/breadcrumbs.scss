@@ -1,0 +1,33 @@
+/*
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+ */
+
+// Version: $Id$
+
+@mixin cuba-breadcrumbs {
+  .cuba-breadcrumbs-logo {
+    padding: 0;
+  }
+
+  .v-button.cuba-closetab-button {
+    border: none;
+    background: transparent none;
+
+    .v-button-wrap {
+      background: transparent none;
+      padding: 0;
+    }
+  }
+
+  .v-button.cuba-closetab-button:hover {
+    .v-button-wrap {
+      background: transparent none;
+      padding: 0;
+    }
+  }
+
+  .cuba-headline-container {
+    margin-bottom: $v-layout-margin-bottom;
+  }
+}

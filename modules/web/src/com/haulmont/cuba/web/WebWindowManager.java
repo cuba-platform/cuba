@@ -1045,7 +1045,7 @@ public class WebWindowManager extends WindowManager {
 
         VerticalLayout layout = new VerticalLayout();
         layout.setStyleName("cuba-app-message-dialog");
-        layout.setMargin(true);
+        layout.setMargin(new MarginInfo(true, false, false, false));
         window.setContent(layout);
 
         Label messageLab = new Label(ComponentsHelper.preprocessHtmlMessage(
@@ -1128,7 +1128,8 @@ public class WebWindowManager extends WindowManager {
         window.setModal(true);
 
         final VerticalLayout layout = new VerticalLayout();
-        layout.setMargin(true);
+        layout.setStyleName("cuba-app-option-dialog");
+        layout.setMargin(new MarginInfo(true, false, false, false));
         layout.setSpacing(true);
         window.setContent(layout);
 

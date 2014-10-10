@@ -25,6 +25,7 @@ import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.VaadinService;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.server.WrappedSession;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -210,7 +211,7 @@ public class LoginWindow extends UIView implements Action.Handler {
         welcomeLayout.setHeightUndefined();
         welcomeLayout.setSpacing(true);
 
-        String welcomeMsg = messages.getMessage(getMessagesPack(), "loginWindow.welcomeLabel", resolvedLocale);
+        String welcomeMsg = messages.getMainMessage("loginWindow.welcomeLabel", resolvedLocale);
         Label label = new Label(welcomeMsg.replace("\n", "<br/>"));
         label.setContentMode(ContentMode.HTML);
         label.setWidthUndefined();
@@ -218,7 +219,6 @@ public class LoginWindow extends UIView implements Action.Handler {
 
         VerticalLayout centerLayout = new VerticalLayout();
         centerLayout.setStyleName(getStyle("bottom"));
-        centerLayout.setSpacing(false);
         centerLayout.setWidth(formWidth + "px");
         centerLayout.setHeight(formHeight + "px");
 
@@ -244,20 +244,20 @@ public class LoginWindow extends UIView implements Action.Handler {
         centerLayout.addComponent(form);
         centerLayout.setComponentAlignment(form, Alignment.MIDDLE_CENTER);
 
-        loginField.setCaption(messages.getMessage(getMessagesPack(), "loginWindow.loginField", resolvedLocale));
+        loginField.setCaption(messages.getMainMessage("loginWindow.loginField", resolvedLocale));
         loginFormLayout.addComponent(loginField);
         loginField.setWidth(fieldWidth + "px");
         loginField.setStyleName(getStyle("username-field"));
         loginFormLayout.setComponentAlignment(loginField, Alignment.MIDDLE_CENTER);
 
-        passwordField.setCaption(messages.getMessage(getMessagesPack(), "loginWindow.passwordField", resolvedLocale));
+        passwordField.setCaption(messages.getMainMessage("loginWindow.passwordField", resolvedLocale));
         passwordField.setWidth(fieldWidth + "px");
         passwordField.setStyleName(getStyle("password-field"));
         loginFormLayout.addComponent(passwordField);
         loginFormLayout.setComponentAlignment(passwordField, Alignment.MIDDLE_CENTER);
 
         if (localesSelectVisible) {
-            localesSelect.setCaption(messages.getMessage(getMessagesPack(), "loginWindow.localesSelect", resolvedLocale));
+            localesSelect.setCaption(messages.getMainMessage("loginWindow.localesSelect", resolvedLocale));
             localesSelect.setWidth(fieldWidth + "px");
             localesSelect.setNullSelectionAllowed(false);
             loginFormLayout.addComponent(localesSelect);
@@ -265,13 +265,13 @@ public class LoginWindow extends UIView implements Action.Handler {
         }
 
         if (rememberMeAllowed) {
-            rememberMe.setCaption(messages.getMessage(getMessagesPack(), "loginWindow.rememberMe", resolvedLocale));
+            rememberMe.setCaption(messages.getMainMessage("loginWindow.rememberMe", resolvedLocale));
             rememberMe.setStyleName(getStyle("remember-me"));
             loginFormLayout.addComponent(rememberMe);
             loginFormLayout.setComponentAlignment(rememberMe, Alignment.MIDDLE_CENTER);
         }
 
-        okButton.setCaption(messages.getMessage(getMessagesPack(), "loginWindow.okButton", resolvedLocale));
+        okButton.setCaption(messages.getMainMessage("loginWindow.okButton", resolvedLocale));
         okButton.addClickListener(new SubmitListener());
         okButton.setStyleName(getStyle("submit"));
         okButton.setIcon(new VersionedThemeResource("app/images/login-button.png"));
@@ -301,7 +301,7 @@ public class LoginWindow extends UIView implements Action.Handler {
     protected void initUI() {
         boolean localeSelectVisible = configuration.getConfig(GlobalConfig.class).getLocaleSelectVisible();
 
-        ThemeConstants theme = App.getInstance().getThemeConstants();
+        ThemeConstants theme = app.getThemeConstants();
         int formWidth = theme.getInt("cuba.web.LoginWindow.form.width");
         int formHeight = theme.getInt("cuba.web.LoginWindow.form.height");
         int fieldWidth = theme.getInt("cuba.web.LoginWindow.field.width");
@@ -384,7 +384,7 @@ public class LoginWindow extends UIView implements Action.Handler {
 
     @Override
     public String getTitle() {
-        return messages.getMessage(getMessagesPack(), "loginWindow.caption", resolvedLocale);
+        return messages.getMainMessage("loginWindow.caption", resolvedLocale);
     }
 
     public class SubmitListener implements Button.ClickListener {
@@ -414,7 +414,7 @@ public class LoginWindow extends UIView implements Action.Handler {
         String password = passwordField.getValue() != null ? passwordField.getValue() : "";
 
         if (StringUtils.isEmpty(login) || StringUtils.isEmpty(password)) {
-            String message = messages.getMessage(getMessagesPack(), "loginWindow.emptyLoginOrPassword", resolvedLocale);
+            String message = messages.getMainMessage("loginWindow.emptyLoginOrPassword", resolvedLocale);
             new Notification(message, Notification.Type.WARNING_MESSAGE).show(ui.getPage());
             return;
         }
@@ -441,7 +441,7 @@ public class LoginWindow extends UIView implements Action.Handler {
         } catch (LoginException e) {
             log.info("Login failed: " + e.toString());
 
-            String message = messages.getMessage(getMessagesPack(), "loginWindow.loginFailed", resolvedLocale);
+            String message = messages.getMainMessage("loginWindow.loginFailed", resolvedLocale);
             new Notification(
                     ComponentsHelper.preprocessHtmlMessage(message),
                     StringUtils.abbreviate(e.getMessage(), 1000), Notification.Type.ERROR_MESSAGE, true)
@@ -543,7 +543,8 @@ public class LoginWindow extends UIView implements Action.Handler {
             if (webConfig.getUseSessionFixationProtection()) {
                 VaadinService.reinitializeSession(VaadinService.getCurrentRequest());
 
-                VaadinSession.getCurrent().getSession().setMaxInactiveInterval(webConfig.getHttpSessionExpirationTimeoutSec());
+                WrappedSession session = VaadinSession.getCurrent().getSession();
+                session.setMaxInactiveInterval(webConfig.getHttpSessionExpirationTimeoutSec());
             }
         }
     }

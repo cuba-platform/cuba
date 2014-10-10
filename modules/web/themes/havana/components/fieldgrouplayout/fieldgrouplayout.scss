@@ -5,7 +5,7 @@
 
 // Version: $Id$
 
-@mixin havana-fieldgrouplayout($primaryStyleName: cuba-fieldgrouplayout) {
+@mixin havana-cuba-fieldgrouplayout($primaryStyleName: cuba-fieldgrouplayout) {
   @include base-gridlayout($primaryStyleName);
 
   .#{$primaryStyleName}-spacing-on {

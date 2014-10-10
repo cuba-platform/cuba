@@ -10,6 +10,7 @@
   .cuba-login-bottom {
     background: $theme_loginFormBackgroundColor;
     border: thin solid $theme_loginFormBorderColor;
+    padding: $v-layout-margin-top $v-layout-margin-right $v-layout-margin-bottom $v-layout-margin-left;
   }
 
   .cuba-login-main-layout {
@@ -17,7 +18,7 @@
   }
 
   .cuba-login-title {
-    padding-top: $v-layout-spacing-horizontal;
+    padding-bottom: $v-layout-spacing-horizontal;
   }
 
   .cuba-login-form {
@@ -28,19 +29,5 @@
       border: 0;
       border-image: none;
     }
-
-    .v-formlayout {
-      padding-right: $v-layout-spacing-vertical;
-      padding-top: $v-layout-spacing-horizontal;
-      padding-bottom: $v-layout-spacing-horizontal;
-    }
-  }
-
-  .cuba-login-form-caption {
-    padding-top: 5px;
-  }
-
-  .cuba-login-bottom > div:first-child {
-    padding-top: 5px;
   }
 }

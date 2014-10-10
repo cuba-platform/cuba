@@ -3,11 +3,10 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<window
-        xmlns="http://schemas.haulmont.com/cuba/5.2/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/5.2/window.xsd"
         class="com.haulmont.cuba.gui.app.core.entityinspector.EntityInspectorBrowse"
         caption="msg://browserCaption">
-    <dsContext/>
+
     <layout expand="tableBox" spacing="true">
         <hbox id="lookupBox" spacing="true"/>
         <vbox id="filterBox" spacing="true">
@@ -15,6 +14,6 @@
                 <properties include=".*"/>
             </filter>
         </vbox>
-        <vbox id="tableBox" width="100%"/>
+        <vbox id="tableBox"/>
     </layout>
 </window>

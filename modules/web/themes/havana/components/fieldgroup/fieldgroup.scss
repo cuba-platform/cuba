@@ -5,7 +5,7 @@
 
 // Version: $Id$
 
-@mixin havana-fieldgroup($primaryStyleName: cuba-fieldgroup) {
+@mixin havana-cuba-fieldgroup($primaryStyleName: cuba-fieldgroup) {
   @include havana-cuba-groupbox($primaryStyleName);
 
   /*

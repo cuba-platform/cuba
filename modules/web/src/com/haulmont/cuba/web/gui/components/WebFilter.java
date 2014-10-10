@@ -284,6 +284,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
 
         Label label = new Label(lastAppliedFilter.getText());
         layout.addComponent(label);
+        layout.setComponentAlignment(label, com.vaadin.ui.Alignment.MIDDLE_LEFT);
 
         Button button = new CubaButton();
         button.setStyleName(BaseTheme.BUTTON_LINK);
@@ -1149,6 +1150,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 if (BooleanUtils.isTrue(filterEntity.getIsDefault())) {
+                    @SuppressWarnings("unchecked")
                     Collection<FilterEntity> filters = (Collection<FilterEntity>) select.getItemIds();
                     for (FilterEntity filter : filters) {
                         if (!filter.equals(filterEntity))
@@ -1353,7 +1355,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
 
     @Override
     public Collection<Component> getOwnComponents() {
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     @Override
@@ -1398,6 +1400,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
 
         UUID defaultId = null;
         Boolean applyDefault = false;
+        @SuppressWarnings("unchecked")
         Collection<FilterEntity> filters = (Collection<FilterEntity>) select.getItemIds();
         for (FilterEntity filter : filters) {
             if (BooleanUtils.isTrue(filter.getIsDefault())) {
@@ -2264,7 +2267,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
             return Dom4j.writeDocument(document, true);
         }
 
-        public static Set parseSet(String text) {
+        public static Set<String> parseSet(String text) {
             Set<String> set = new HashSet<>();
             if ("NULL".equals(StringUtils.trimToEmpty(text)))
                 return set;
@@ -2330,7 +2333,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
             }
             Element param = document.getRootElement().element("and").element("c").element("param");
             String currentIds = param.getTextTrim();
-            Set set = parseSet(currentIds);
+            Set<String> set = parseSet(currentIds);
             String listOfIds = removeIds(set, ids);
             param.setText(listOfIds);
             return document.asXML();
@@ -2345,7 +2348,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
             }
             Element param = document.getRootElement().element("and").element("c").element("param");
             String currentIds = param.getTextTrim();
-            Set set = parseSet(currentIds);
+            Set<String> set = parseSet(currentIds);
             String listOfIds = createIdsString(set, ids);
             param.setText(listOfIds);
             return document.asXML();

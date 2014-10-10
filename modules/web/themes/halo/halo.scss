@@ -15,14 +15,20 @@
 // Components
 @import "components/panel/panel";
 @import "components/button/button";
+@import "components/window/window";
 @import "components/groupbox/groupbox";
 @import "components/datefield/datefield";
 @import "components/fieldgroup/fieldgroup";
+@import "components/splitpanel/splitpanel";
+@import "components/maskedfield/maskedfield";
 @import "components/orderedlayout/orderedlayout";
 @import "components/fieldgrouplayout/fieldgrouplayout";
 
 // Application specific
 @import "app/login-window";
+@import "app/generic-filter";
+@import "app/report-wizard";
+@import "app/breadcrumbs";
 
 @mixin halo {
   @include valo;
@@ -31,11 +37,17 @@
 
   @include halo-panel;
   @include halo-button;
+  @include halo-window;
   @include halo-datefield;
-  @include halo-fieldgroup;
+  @include halo-splitpanel;
   @include halo-orderedlayout;
   @include halo-cuba-groupbox;
-  @include halo-fieldgrouplayout;
+  @include halo-cuba-fieldgroup;
+  @include halo-cuba-maskedfield;
+  @include halo-cuba-fieldgrouplayout;
 
   @include cuba-login-window;
+  @include cuba-generic-filter;
+  @include cuba-report-wizard;
+  @include cuba-breadcrumbs;
 }
