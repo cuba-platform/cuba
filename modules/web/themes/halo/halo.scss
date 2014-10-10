@@ -16,6 +16,7 @@
 @import "components/panel/panel";
 @import "components/button/button";
 @import "components/window/window";
+@import "components/menubar/menubar";
 @import "components/groupbox/groupbox";
 @import "components/datefield/datefield";
 @import "components/fieldgroup/fieldgroup";
@@ -39,6 +40,7 @@
   @include halo-panel;
   @include halo-button;
   @include halo-window;
+  @include halo-menubar;
   @include halo-datefield;
   @include halo-splitpanel;
   @include halo-optiongroup;

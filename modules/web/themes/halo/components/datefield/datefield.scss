@@ -32,6 +32,8 @@
     [class*="button"] {
       left: auto;
       right: $border-width;
+      border-right: 0;
+      border-left: valo-border($color: $v-textfield-background-color, $border: $v-textfield-border, $strength: 0.5);
     }
   }
 }

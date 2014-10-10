@@ -5,8 +5,9 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.tooltip;
 
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.DomEvent;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.user.client.DOM;
@@ -26,6 +27,9 @@ import com.vaadin.client.ui.table.TableConnector;
 public class CubaTooltip extends VTooltip {
 
     public static final String REQUIRED_INDICATOR = "v-required-field-indicator";
+
+    // If required indicators are not visible we show toolip on mouse hover otherwise only by mouse click
+    protected static Boolean requiredIndicatorVisible = null;
 
     public CubaTooltip() {
         tooltipEventHandler = new CubaTooltipEventHandler();
@@ -55,8 +59,32 @@ public class CubaTooltip extends VTooltip {
                     || element.getClassName().equals(CubaCaptionWidget.TOOLTIP_CLASSNAME));
         }
 
+        protected void checkRequiredIndicatorVisible() {
+            if (requiredIndicatorVisible == null) {
+                Element requiredIndicatorFake = DOM.createDiv();
+                requiredIndicatorFake.setClassName(REQUIRED_INDICATOR);
+                requiredIndicatorFake.getStyle().setPosition(Style.Position.ABSOLUTE);
+
+                String rootPanelId = ac.getConfiguration().getRootPanelId();
+                Element rootPanel = Document.get().getElementById(rootPanelId);
+                rootPanel.appendChild(requiredIndicatorFake);
+
+                String display = new ComputedStyle(requiredIndicatorFake).getProperty("display");
+
+                requiredIndicatorVisible = !"none".equals(display);
+
+                rootPanel.removeChild(requiredIndicatorFake);
+            }
+        }
+
         @Override
         protected TooltipInfo getTooltipFor(Element element) {
+            checkRequiredIndicatorVisible();
+
+            if (!requiredIndicatorVisible) {
+                return super.getTooltipFor(element);
+            }
+
             if (isTooltipElement(element)) {
                 element = element.getParentElement().cast();
 
@@ -108,16 +136,26 @@ public class CubaTooltip extends VTooltip {
 
         @Override
         public void onMouseDown(MouseDownEvent event) {
-            if (isTooltipElement(event.getNativeEvent().getEventTarget().<Element>cast())) {
-                closeNow();
-                handleShowHide(event, false);
-            } else {
-                hideTooltip();
+            checkRequiredIndicatorVisible();
+
+            if (requiredIndicatorVisible) {
+                if (isTooltipElement(event.getNativeEvent().getEventTarget().<Element>cast())) {
+                    closeNow();
+                    handleShowHide(event, false);
+                } else {
+                    hideTooltip();
+                }
             }
         }
 
         @Override
         protected void handleShowHide(DomEvent domEvent, boolean isFocused) {
+            checkRequiredIndicatorVisible();
+
+            if (!requiredIndicatorVisible) {
+                super.handleShowHide(domEvent, isFocused);
+            }
+
             // CAUTION copied from parent with changes
             Event event = Event.as(domEvent.getNativeEvent());
             Element element = Element.as(event.getEventTarget());

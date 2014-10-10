@@ -9,6 +9,11 @@
   .v-link > a {
     white-space: nowrap;
   }
+
+  .v-required-field-indicator,
+  .cuba-tooltip-button {
+    display: none;
+  }
 }
 
 @mixin box-defaults {

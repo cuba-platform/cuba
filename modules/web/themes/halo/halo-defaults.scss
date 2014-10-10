@@ -23,4 +23,4 @@ $v-layout-spacing-vertical: 10px;
 $v-layout-spacing-horizontal: 10px;
 
 $v-table-row-height: 30px;
-$v-focus-style: $v-focus-color;
+$v-focus-style: inset 0px 0px 5px 1px rgba($v-focus-color, 0.5);
