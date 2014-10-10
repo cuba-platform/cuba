@@ -285,15 +285,16 @@ public class XMLConvertor implements Convertor {
                         continue;
                     }
 
-                    String typeName = property.getRange().<Object>asDatatype().getName();
-
-                    if (property.getType() == MetaProperty.Type.DATATYPE)
-                        if (!StringDatatype.NAME.equals(typeName) && "null".equals(xmlValue))
+                    if (property.getType() == MetaProperty.Type.DATATYPE) {
+                        String typeName = property.getRange().asDatatype().getName();
+                        if (!StringDatatype.NAME.equals(typeName) && "null".equals(xmlValue)) {
                             value = null;
-                        else
-                            value = property.getRange().<Object>asDatatype().parse(xmlValue);
-                    else
+                        } else {
+                            value = property.getRange().asDatatype().parse(xmlValue);
+                        }
+                    } else {
                         value = property.getRange().asEnumeration().parse(xmlValue);
+                    }
 
                     setField(bean, fieldName, value);
                     break;
