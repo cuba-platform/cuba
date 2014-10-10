@@ -24,7 +24,6 @@
                     <row>
                         <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.definedBy" align="MIDDLE_LEFT"/>
                         <optionsGroup id="definedByField" datasource="taskDs" property="definedBy"
-                                      width="${smallFieldWidth}"
                                       required="true" multiselect="false" orientation="horizontal"/>
                         <label id="definedByEmptyLabel" value=""/> <!-- temporary workaround until #PL-1701 is fixed -->
                     </row>

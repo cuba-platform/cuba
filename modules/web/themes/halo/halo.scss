@@ -21,6 +21,7 @@
 @import "components/fieldgroup/fieldgroup";
 @import "components/splitpanel/splitpanel";
 @import "components/maskedfield/maskedfield";
+@import "components/optiongroup/optiongroup";
 @import "components/orderedlayout/orderedlayout";
 @import "components/fieldgrouplayout/fieldgrouplayout";
 
@@ -40,6 +41,7 @@
   @include halo-window;
   @include halo-datefield;
   @include halo-splitpanel;
+  @include halo-optiongroup;
   @include halo-orderedlayout;
   @include halo-cuba-groupbox;
   @include halo-cuba-fieldgroup;
