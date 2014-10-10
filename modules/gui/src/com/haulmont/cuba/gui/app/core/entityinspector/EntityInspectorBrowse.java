@@ -35,6 +35,10 @@ import java.util.*;
  */
 public class EntityInspectorBrowse extends AbstractLookup {
 
+    public interface Companion {
+        void setHorizontalScrollEnabled(Table table, boolean enabled);
+    }
+
     public static final String SCREEN_NAME = "entityInspector.browse";
     public static final WindowManager.OpenType WINDOW_OPEN_TYPE = WindowManager.OpenType.THIS_TAB;
     public static final int MAX_TEXT_LENGTH = 50;
@@ -164,6 +168,10 @@ public class EntityInspectorBrowse extends AbstractLookup {
 
         entitiesTable = componentsFactory.createComponent(Table.NAME);
         entitiesTable.setFrame(frame);
+        Companion companion = getCompanion();
+        if (companion != null) {
+            companion.setHorizontalScrollEnabled(entitiesTable, true);
+        }
 
         //collect properties in order to add non-system columns first
         LinkedList<Table.Column> nonSystemPropertyColumns = new LinkedList<>();
