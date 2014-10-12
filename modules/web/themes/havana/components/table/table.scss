@@ -9,7 +9,7 @@
   .#{$primaryStyleName} {
     text-align: left;
 
-    .v-table-arow {
+    .#{$primaryStyleName}-arow {
       @include box-defaults;
 
       border-top: 1px solid $theme_fieldBorderColor;
@@ -17,7 +17,7 @@
       border-right: 1px solid $theme_fieldBorderColor;
     }
 
-    .v-table-arow-row {
+    .#{$primaryStyleName}-arow-row {
       @include box-defaults;
 
       height: 24px;
@@ -25,11 +25,11 @@
       border-right: 1px solid $theme_fieldBorderColor;
     }
 
-    .v-table-arow-row > .v-table-cell-content {
+    .#{$primaryStyleName}-arow-row > .#{$primaryStyleName}-cell-content {
       border-bottom: 0;
     }
 
-    .v-table-cell-content.boolean-cell-true .v-table-cell-wrapper {
+    .#{$primaryStyleName}-cell-content.boolean-cell-true .#{$primaryStyleName}-cell-wrapper {
       color: transparent;
       font-size: 0px;
       height: 13px;
@@ -37,7 +37,7 @@
       background-image: url(sprites/checkbox-checked.png); /** sprite-ref: components; */
     }
 
-    .v-table-cell-content.boolean-cell-false .v-table-cell-wrapper {
+    .#{$primaryStyleName}-cell-content.boolean-cell-false .#{$primaryStyleName}-cell-wrapper {
       color: transparent;
       font-size: 0px;
       height: 13px;
@@ -98,7 +98,7 @@
       }
     }
 
-    .v-table-body-wrapper {
+    .#{$primaryStyleName}-body-wrapper {
       border: 1px solid $theme_fieldBorderColor;
     }
 

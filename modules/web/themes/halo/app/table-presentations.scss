@@ -1,0 +1,83 @@
+/*
+ * Copyright (c) 2008-2014 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+ */
+
+// Version: $Id$
+
+@mixin cuba-table-presentations {
+
+  .cuba-table-presentations-icon {
+    @include valo-button-style;
+
+    position: absolute;
+    z-index: 2;
+    top: round($v-unit-size/2) - round($v-unit-size/4);
+    right: round($v-unit-size/2) - round($v-unit-size/4);
+    height: round($v-unit-size/2);
+    line-height: round($v-unit-size/2);
+    width: round($v-unit-size/2);
+    padding: 0;
+    border-radius: 50%;
+    cursor: pointer;
+    text-align: center;
+
+    @include opacity(0);
+    @if $v-animations-enabled {
+      @include transition(opacity 200ms 1s);
+    }
+
+    &:after {
+      content: "";
+      position: absolute;
+      $v-button-border-width: first-number($v-border);
+      top: -$v-button-border-width;
+      right: -$v-button-border-width;
+      bottom: -$v-button-border-width;
+      left: -$v-button-border-width;
+      border-radius: inherit;
+    }
+    &:active:after {
+      @include valo-button-active-style;
+    }
+    &:before {
+      font-family: FontAwesome;
+      content: "\f0ce";
+    }
+  }
+
+  .v-table-header-wrap:hover .cuba-table-presentations-icon {
+    @include opacity(1);
+    @include transition-delay(100ms);
+  }
+
+  .collapsing-allowed .cuba-table-presentations-icon {
+    right: 2 * round($v-unit-size/2);
+  }
+
+  .cuba-table-presentations-editor  {
+    @include valo-selection-overlay-style;
+
+    z-index: 19000 !important;  // do not hide parts of popup menu
+    padding: $v-layout-margin-top $v-layout-margin-right $v-layout-margin-bottom $v-layout-margin-left;
+  }
+
+  .cuba-table-presentations-title {
+    border-bottom: valo-border();
+    border-bottom-style: dotted;
+  }
+
+  .cuba-table-presentations-list.v-menubar {
+    border: 0;
+    height: auto;
+  }
+
+  .cuba-table-presentations-list.v-menubar .v-menubar-menuitem {
+    display: block;
+    border-right: transparent;
+  }
+
+  .cuba-table-presentations-list.v-menubar .v-menubar-menuitem-current {
+    font-weight: bold;
+  }
+}

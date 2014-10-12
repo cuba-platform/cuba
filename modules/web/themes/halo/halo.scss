@@ -6,6 +6,8 @@
 // Halo - Vaadin Valo SCSS theme for Platform
 // Version: $Id$
 
+/** sprite: components; sprite-image: url('compiled/components.png'); sprite-layout: vertical */
+
 // Import valo after setting the parameters
 @import "../valo/valo";
 
@@ -16,6 +18,7 @@
 @import "components/panel/panel";
 @import "components/button/button";
 @import "components/window/window";
+@import "components/table/table";
 @import "components/menubar/menubar";
 @import "components/groupbox/groupbox";
 @import "components/datefield/datefield";
@@ -31,6 +34,7 @@
 @import "app/generic-filter";
 @import "app/report-wizard";
 @import "app/breadcrumbs";
+@import "app/table-presentations";
 
 @mixin halo {
   @include valo;
@@ -38,6 +42,7 @@
   @include halo-common;
 
   @include halo-panel;
+  @include halo-table;
   @include halo-button;
   @include halo-window;
   @include halo-menubar;
@@ -54,4 +59,5 @@
   @include cuba-generic-filter;
   @include cuba-report-wizard;
   @include cuba-breadcrumbs;
+  @include cuba-table-presentations;
 }

@@ -1,0 +1,42 @@
+/*
+ * Copyright (c) 2008-2014 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+ */
+
+// Version: $Id$
+
+@mixin halo-table($primaryStyleName: v-table) {
+  .#{$primaryStyleName}-cell-content.boolean-cell-true .#{$primaryStyleName}-cell-wrapper,
+  .#{$primaryStyleName}-cell-content.boolean-cell-false .#{$primaryStyleName}-cell-wrapper {
+    color: transparent;
+    height: round($v-unit-size/2);
+    line-height: round($v-unit-size/2);
+    width: round($v-unit-size/2);
+  }
+
+  .#{$primaryStyleName}-cell-content.boolean-cell-true .#{$primaryStyleName}-cell-wrapper {
+    &:before {
+      color: $v-font-color;
+      font-family: FontAwesome;
+      content: "\f046";
+    }
+  }
+
+  .#{$primaryStyleName}-cell-content.boolean-cell-false .#{$primaryStyleName}-cell-wrapper {
+    &:before {
+      color: $v-font-color;
+      font-family: FontAwesome;
+      content: "\f096";
+    }
+  }
+
+  .#{$primaryStyleName}-column-selector {
+    top: round($v-unit-size/2) - round($v-unit-size/4);
+    right: round($v-unit-size/2) - round($v-unit-size/4);
+  }
+
+  .v-scrollable > .#{$primaryStyleName} .#{$primaryStyleName}-column-selector {
+    top: round($v-unit-size/2) - round($v-unit-size/4);
+    right: round($v-unit-size/2) - round($v-unit-size/4);
+  }
+}
