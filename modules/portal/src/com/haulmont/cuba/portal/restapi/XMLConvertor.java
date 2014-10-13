@@ -279,23 +279,21 @@ public class XMLConvertor implements Convertor {
 
             switch (property.getType()) {
                 case DATATYPE:
-                case ENUM:
                     if (property.getAnnotatedElement().isAnnotationPresent(Id.class)) {
                         // it was parsed in the beginning
                         continue;
                     }
 
-                    if (property.getType() == MetaProperty.Type.DATATYPE) {
-                        String typeName = property.getRange().asDatatype().getName();
-                        if (!StringDatatype.NAME.equals(typeName) && "null".equals(xmlValue)) {
-                            value = null;
-                        } else {
-                            value = property.getRange().asDatatype().parse(xmlValue);
-                        }
+                    String typeName = property.getRange().asDatatype().getName();
+                    if (!StringDatatype.NAME.equals(typeName) && "null".equals(xmlValue)) {
+                        value = null;
                     } else {
-                        value = property.getRange().asEnumeration().parse(xmlValue);
+                        value = property.getRange().asDatatype().parse(xmlValue);
                     }
-
+                    setField(bean, fieldName, value);
+                    break;
+                case ENUM:
+                    value = property.getRange().asEnumeration().parse(xmlValue);
                     setField(bean, fieldName, value);
                     break;
                 case COMPOSITION:
