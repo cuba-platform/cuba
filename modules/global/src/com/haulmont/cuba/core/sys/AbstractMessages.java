@@ -273,42 +273,48 @@ public abstract class AbstractMessages implements Messages {
             if (!enterPack(pack, locale, defaultLocale, passedPacks))
                 continue;
 
-            String cacheKey = makeCacheKey(pack, key, locale, defaultLocale);
-
-            String msg = strCache.get(cacheKey);
+            String msg = searchOnePack(pack, key, locale, defaultLocale, passedPacks);
             if (msg != null)
                 return msg;
 
-            msg = searchFiles(pack, key, locale, defaultLocale, passedPacks);
-            if (msg == null) {
-                msg = searchClasspath(pack, key, locale, defaultLocale, passedPacks);
+            if (!defaultLocale) {
+                msg = searchOnePack(pack, key, locale, true, passedPacks);
+                if (msg != null)
+                    return msg;
             }
-            if (msg == null && !defaultLocale) {
-                msg = searchRemotely(pack, key, locale);
-                if (msg != null) {
-                    cache(cacheKey, msg);
-                }
-            }
-
-            if (msg != null)
-                return msg;
         }
-        if (!defaultLocale)
-            return searchMessage(packs, key, locale, true, passedPacks);
-        else {
-            if (log.isTraceEnabled()) {
-                String packName = new StrBuilder().appendWithSeparators(list, ",").toString();
-                log.trace("Resource '" + makeCacheKey(packName, key, locale, defaultLocale) + "' not found");
-            }
-            return null;
+        if (log.isTraceEnabled()) {
+            String packName = new StrBuilder().appendWithSeparators(list, ",").toString();
+            log.trace("Resource '" + makeCacheKey(packName, key, locale, defaultLocale) + "' not found");
         }
+        return null;
     }
 
-    private boolean enterPack(String pack, Locale locale, boolean defaultLocale, Set<String> passedPacks) {
+    protected boolean enterPack(String pack, Locale locale, boolean defaultLocale, Set<String> passedPacks) {
         String k = defaultLocale ?
                 pack + "/default" :
                 pack + "/" + (locale == null ? "default" : locale);
         return passedPacks.add(k);
+    }
+
+    protected String searchOnePack(String pack, String key, Locale locale, boolean defaultLocale, Set<String> passedPacks) {
+        String cacheKey = makeCacheKey(pack, key, locale, defaultLocale);
+
+        String msg = strCache.get(cacheKey);
+        if (msg != null)
+            return msg;
+
+        msg = searchFiles(pack, key, locale, defaultLocale, passedPacks);
+        if (msg == null) {
+            msg = searchClasspath(pack, key, locale, defaultLocale, passedPacks);
+        }
+        if (msg == null && !defaultLocale) {
+            msg = searchRemotely(pack, key, locale);
+            if (msg != null) {
+                cache(cacheKey, msg);
+            }
+        }
+        return msg;
     }
 
     protected void cache(String key, String msg) {
