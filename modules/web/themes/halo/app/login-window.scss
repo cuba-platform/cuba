@@ -6,10 +6,9 @@
 // Version: $Id$
 
 @mixin cuba-login-window {
-
   .cuba-login-bottom {
     background: $theme_loginFormBackgroundColor;
-    border: thin solid $theme_loginFormBorderColor;
+    border: valo-border();
     padding: $v-layout-margin-top $v-layout-margin-right $v-layout-margin-bottom $v-layout-margin-left;
   }
 

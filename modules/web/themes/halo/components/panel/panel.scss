@@ -25,4 +25,8 @@
       display: none;
     }
   }
+
+  .v-scrollable > .#{$primaryStyleName} {
+    overflow: auto;
+  }
 }
