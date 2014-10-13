@@ -555,6 +555,8 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
         public GroupDividerHeaderCell() {
             super(GROUP_DIVIDER_COLUMN_KEY, null);
             addStyleName(CLASSNAME + "-group-divider-header");
+
+            setText("&nbsp;");
         }
 
         @Override

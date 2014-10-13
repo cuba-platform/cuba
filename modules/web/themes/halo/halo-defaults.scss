@@ -3,8 +3,7 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-$theme_loginFormBackgroundColor: #fbfdff;
-$theme_splitPanelSplitterWidth: 3px;
+// Vaadin Valo theme defaults
 
 $v-line-height: 1.3;
 $v-font-size: 14px;
@@ -20,3 +19,8 @@ $v-layout-spacing-horizontal: 10px;
 
 $v-table-row-height: 30px;
 $v-focus-style: inset 0px 0px 5px 1px rgba($v-focus-color, 0.5);
+
+// CUBA specific variables
+
+$theme_loginFormBackgroundColor: #fbfdff;
+$theme_splitPanelSplitterWidth: 3px;

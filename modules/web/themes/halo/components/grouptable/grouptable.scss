@@ -1,0 +1,37 @@
+/*
+ * Copyright (c) 2008-2014 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+ */
+
+// Version: $Id$
+
+@mixin halo-cuba-grouptable($primaryStyleName : cuba-grouptable) {
+  .#{$primaryStyleName} {
+    .#{$primaryStyleName}-group-cell-expander {
+      @include box-defaults;
+
+      vertical-align: middle;
+      display: inline-block;
+      cursor: pointer;
+
+      &:before {
+        color: $v-font-color;
+        font-family: FontAwesome;
+        content: "\f196";
+      }
+    }
+
+    .v-expanded .#{$primaryStyleName}-group-cell-expander {
+      &:before {
+        color: $v-font-color;
+        font-family: FontAwesome;
+        content: "\f147";
+      }
+    }
+
+    .#{$primaryStyleName}-float {
+      display: inline-block;
+      vertical-align: middle;
+    }
+  }
+}

@@ -303,6 +303,15 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
         }
 
         @Override
+        public void setText(String headerText) {
+            if ("".equals(headerText) || headerText == null) {
+                headerText = "&nbsp;";
+            }
+
+            super.setText(headerText);
+        }
+
+        @Override
         protected void sortColumn() {
             // CAUTION copied from superclass
             // Added ability to reset sort order

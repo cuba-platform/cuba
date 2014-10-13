@@ -5,13 +5,11 @@
 
 // Version: $Id$
 
-@mixin halo-popupbutton($primaryStyleName: v-popupbutton) {
-  .#{$primaryStyleName}-popup {
+@mixin halo-cuba-contextmenu($primaryStyleName: cuba-context-menu) {
+  .#{$primaryStyleName}-container {
     @include valo-selection-overlay-style;
 
     .v-button {
-      font-size: $v-font-size;
-
       @include valo-button-borderless-style;
       @include valo-selection-item-style;
       height: $v-selection-item-height;

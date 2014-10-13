@@ -21,8 +21,11 @@
 @import "components/menubar/menubar";
 @import "components/groupbox/groupbox";
 @import "components/datefield/datefield";
+@import "components/grouptable/grouptable";
 @import "components/fieldgroup/fieldgroup";
 @import "components/splitpanel/splitpanel";
+@import "components/pickerfield/pickerfield";
+@import "components/contextmenu/contextmenu";
 @import "components/maskedfield/maskedfield";
 @import "components/optiongroup/optiongroup";
 @import "components/popupbutton/popupbutton";
@@ -30,6 +33,7 @@
 @import "components/fieldgrouplayout/fieldgrouplayout";
 
 // Application specific
+@import "app/log-control";
 @import "app/login-window";
 @import "app/generic-filter";
 @import "app/report-wizard";
@@ -52,11 +56,16 @@
   @include halo-optiongroup;
   @include halo-popupbutton;
   @include halo-orderedlayout;
+
   @include halo-cuba-groupbox;
+  @include halo-cuba-grouptable;
   @include halo-cuba-fieldgroup;
   @include halo-cuba-maskedfield;
+  @include halo-cuba-pickerfield;
+  @include halo-cuba-contextmenu;
   @include halo-cuba-fieldgrouplayout;
 
+  @include cuba-log-control;
   @include cuba-login-window;
   @include cuba-generic-filter;
   @include cuba-report-wizard;

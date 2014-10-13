@@ -5,7 +5,7 @@
 
 // Version: $Id$
 
-@mixin havana-pickerfield($primaryStyleName: cuba-pickerfield) {
+@mixin havana-cuba-pickerfield($primaryStyleName: cuba-pickerfield) {
   .#{$primaryStyleName} {
     .v-textfield {
       height: 25px;

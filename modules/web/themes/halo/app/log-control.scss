@@ -1,0 +1,49 @@
+/*
+ * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+ */
+
+// Version: $Id$
+
+@mixin cuba-log-control {
+
+  .cuba-log-panel {
+    border: $theme_fieldFocusedBorderColor 1px solid;
+  }
+
+  .v-label.cuba-log-content {
+    font-family: monospace;
+  }
+
+  .v-label {
+    span.cuba-log-level {
+      font-weight: bold;
+    }
+
+    span.cuba-log-level-DEBUG {
+      color: #000000;
+    }
+
+    span.cuba-log-level-INFO {
+      color: blue;
+    }
+
+    span.cuba-log-level-ERROR {
+      color: red;
+    }
+
+    span.cuba-log-level-SEVERE,
+    span.cuba-log-level-WARNING,
+    span.cuba-log-level-WARN {
+      color: orange;
+    }
+
+    span.cuba-log-level-TRACE {
+      color: #c0c0c0;
+    }
+
+    span.cuba-log-level-FATAL {
+      color: red;
+    }
+  }
+}

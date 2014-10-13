@@ -1,0 +1,99 @@
+/*
+ * Copyright (c) 2008-2014 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+ */
+
+// Version: $Id$
+
+@mixin halo-cuba-pickerfield($primaryStyleName: cuba-pickerfield) {
+  .#{$primaryStyleName} {
+
+    .v-textfield.v-readonly,
+    .v-filterselect {
+      background-color: $v-textfield-background-color;
+    }
+
+    .v-textfield {
+      @if type-of($v-background-color) == color {
+        $bg: scale-color($v-background-color, $lightness: -50%, $saturation: saturation($v-background-color));
+
+        border-right-color: rgba($bg, .2);
+      }
+
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+
+    .v-button {
+      min-width: $v-unit-size;
+      height: $v-unit-size;
+
+      border: valo-border();
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+      border-left: 0;
+      background: $v-textfield-background-color;
+
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+
+      @if $v-hover-styles-enabled and type-of($v-background-color) == color {
+        &:hover:before {
+          color: valo-font-color($v-background-color);
+        }
+      }
+
+      &:active:after {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        @if type-of($v-background-color) == color {
+          @include valo-button-active-style($v-background-color);
+        }
+        border: 0;
+      }
+
+      &:focus:after {
+        box-shadow: none;
+        border: none;
+      }
+
+      &:focus {
+        border: valo-border();
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        border-left: 0;
+
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+      }
+    }
+
+    .v-slot:last-child .v-button {
+      border-top-right-radius: $v-border-radius;
+      border-bottom-right-radius: $v-border-radius;
+
+      &:focus {
+        border-top-right-radius: $v-border-radius;
+        border-bottom-right-radius: $v-border-radius;
+      }
+    }
+
+    .v-slot:last-child .v-textfield {
+      border-right: valo-border();
+
+      border-top-right-radius: $v-border-radius;
+      border-bottom-right-radius: $v-border-radius;
+    }
+  }
+
+  .#{$primaryStyleName}.v-readonly {
+    .v-textfield.v-readonly,
+    .v-filterselect {
+      background-color: $v-textfield-background-color--readonly;
+    }
+  }
+}

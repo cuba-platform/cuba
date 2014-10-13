@@ -97,7 +97,6 @@
   @include havana-gridlayout;
   @include havana-popupbutton;
   @include havana-contextmenu;
-  @include havana-pickerfield;
   @include havana-optiongroup;
   @include havana-notification;
   @include havana-filterselect;
@@ -114,6 +113,7 @@
   @include havana-cuba-fieldgroup;
   @include havana-cuba-grouptable;
   @include havana-cuba-twincolumn;
+  @include havana-cuba-pickerfield;
   @include havana-cuba-multiupload;
   @include havana-cuba-widgetstree;
   @include havana-cuba-maskedfield;

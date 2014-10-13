@@ -9,6 +9,7 @@
   .cuba-login-bottom {
     background: $theme_loginFormBackgroundColor;
     border: valo-border();
+    border-radius: $v-border-radius;
     padding: $v-layout-margin-top $v-layout-margin-right $v-layout-margin-bottom $v-layout-margin-left;
   }
 

@@ -6,6 +6,6 @@
 // Version: $Id$
 
 @mixin halo-cuba-groupbox($primaryStyleName : cuba-groupbox) {
+  @include valo-panel($primaryStyleName);
   @include halo-panel($primaryStyleName);
-
 }

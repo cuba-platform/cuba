@@ -14,7 +14,7 @@
   .#{$primaryStyleName}-slot.inline > .v-caption {
     margin-right: $v-layout-spacing-horizontal/2;
     vertical-align: middle;
-    line-height: $v-unit-size;
+    line-height: $v-line-height;
     overflow: hidden;
   }
 

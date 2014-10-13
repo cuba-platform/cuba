@@ -8,15 +8,6 @@
 @mixin halo-datefield($primaryStyleName : cuba-datefield) {
   @include valo-datefield($primaryStyleName);
 
-  .#{$primaryStyleName}-popup .popupContent,
-  .#{$primaryStyleName}-popup .popupContent:focus,
-  .#{$primaryStyleName}-popup .popupContent > div,
-  .#{$primaryStyleName}-popup .popupContent > div:focus,
-  .#{$primaryStyleName}-popup .popupContent > div > table,
-  .#{$primaryStyleName}-popup .popupContent > div > table:focus {
-    outline: 0;
-  }
-
   .#{$primaryStyleName}-popup {
     @include valo-datefield-calendarpanel-style(#{$primaryStyleName}-calendarpanel);
   }
