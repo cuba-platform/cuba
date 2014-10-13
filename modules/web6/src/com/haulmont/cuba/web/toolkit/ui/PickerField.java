@@ -7,7 +7,6 @@ package com.haulmont.cuba.web.toolkit.ui;
 
 import com.vaadin.event.FieldEvents;
 import com.vaadin.ui.AbstractField;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 
@@ -48,7 +47,6 @@ public class PickerField extends CustomField {
         container.setWidth("100%");
 
         container.addComponent(field);
-        container.setComponentAlignment(field, Alignment.BOTTOM_LEFT);
         field.setWidth("100%");
         container.setExpandRatio(field, 1);
 
@@ -100,14 +98,12 @@ public class PickerField extends CustomField {
         buttons.remove(oldButton);
 
         container.replaceComponent(oldButton, button);
-        container.setComponentAlignment(button, Alignment.BOTTOM_LEFT);
     }
 
     public void addButton(Button button) {
         button.setTabIndex(-1);
         buttons.add(button);
         container.addComponent(button);
-        container.setComponentAlignment(button, Alignment.BOTTOM_LEFT);
     }
 
     public void removeButton(Button button) {

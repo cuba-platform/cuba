@@ -42,10 +42,11 @@
   }
 
   .v-widget {
-    font-family: $theme_fonts;
-  }
+    @include box-defaults;
 
-  .v-widget {
+    display: inline-block;
+    vertical-align: top;
+    font-family: $theme_fonts;
     font-size: 12px;
     color: $theme_fontColor;
   }

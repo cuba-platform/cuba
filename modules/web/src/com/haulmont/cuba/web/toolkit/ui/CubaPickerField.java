@@ -57,9 +57,8 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
         container = new CubaHorizontalActionsLayout();
         container.setWidth("100%");
 
-        container.addComponent(field);
-        container.setComponentAlignment(field, Alignment.BOTTOM_LEFT);
         field.setWidth("100%");
+        container.addComponent(field);
         container.setExpandRatio(field, 1);
 
         setPrimaryStyleName("cuba-pickerfield");
@@ -132,7 +131,6 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
         buttons.remove(oldButton);
 
         container.replaceComponent(oldButton, button);
-        container.setComponentAlignment(button, Alignment.BOTTOM_LEFT);
     }
 
     public void addButton(Button button) {
@@ -140,7 +138,6 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
 
         buttons.add(button);
         container.addComponent(button);
-        container.setComponentAlignment(button, Alignment.BOTTOM_LEFT);
     }
 
     public void removeButton(Button button) {
