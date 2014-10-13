@@ -35,7 +35,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 @ManagedBean(EntityLogAPI.NAME)
 public class EntityLog implements EntityLogAPI {
 
-    private Log log = LogFactory.getLog(EntityLog.class);
+    protected Log log = LogFactory.getLog(EntityLog.class);
 
     private volatile boolean loaded;
 
@@ -88,7 +88,7 @@ public class EntityLog implements EntityLogAPI {
         }
     }
 
-    private Set<String> getLoggedAttributes(String entity, boolean auto) {
+    protected Set<String> getLoggedAttributes(String entity, boolean auto) {
         lock.readLock().lock();
         try {
             if (!loaded) {
@@ -315,7 +315,7 @@ public class EntityLog implements EntityLogAPI {
         }
     }
 
-    private Set<String> getAllAttributes(Entity entity) {
+    protected Set<String> getAllAttributes(Entity entity) {
         if (entity == null) return null;
         Set<String> attributes = new HashSet<String>();
         for (MetaProperty metaProperty : metadata.getSession().getClassNN(entity.getClass()).getProperties()) {
@@ -324,7 +324,7 @@ public class EntityLog implements EntityLogAPI {
         return attributes;
     }
 
-    private UUID getValueId(Object value) {
+    protected UUID getValueId(Object value) {
         if (value instanceof Entity) {
             return (UUID) ((Entity) value).getId();
         } else {
