@@ -63,6 +63,10 @@
     border-right: #EDF3F9 1px solid;
 }
 
+td.v-table-header-cell {
+  border-right: #CBDAE9 1px solid;
+}
+
 .v-table-header td {
     height: 23px;
     cursor: pointer;
@@ -72,7 +76,7 @@
 	display: block;
 	height: 23px;
 	float: right;
-    border-right: #CBDAE9 1px solid;
+    border-right: transparent 1px solid;
 	cursor: col-resize;
 }
 
