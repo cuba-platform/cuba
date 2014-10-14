@@ -303,10 +303,6 @@ public class EntityManagerImpl implements EntityManager {
         delegate.flush();
     }
 
-    public Collection getManagedObjects() {
-        return delegate.getManagedObjects();
-    }
-
     @Override
     public Connection getConnection() {
         return (Connection) delegate.getConnection();
