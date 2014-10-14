@@ -19,11 +19,7 @@
               $background-color:
               $v-textfield-background-color, $gradient: none));
       &:focus {
-        @include valo-textfield-focus-style(
-        $bevel: $v-textfield-bevel,
-        $shadow: $v-textfield-shadow,
-        $gradient: none,
-        $background-color: $v-textfield-background-color);
+        @include valo-textfield-focus-style;
       }
 
       border-top-right-radius: 0;

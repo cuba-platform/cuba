@@ -20,18 +20,22 @@
 @import "components/window/window";
 @import "components/menubar/menubar";
 @import "components/groupbox/groupbox";
+@import "components/tokenlist/tokenlist";
 @import "components/datefield/datefield";
 @import "components/grouptable/grouptable";
 @import "components/fieldgroup/fieldgroup";
 @import "components/splitpanel/splitpanel";
+@import "components/twincolumn/twincolumn";
 @import "components/pickerfield/pickerfield";
 @import "components/contextmenu/contextmenu";
 @import "components/maskedfield/maskedfield";
 @import "components/optiongroup/optiongroup";
+@import "components/widgetstree/widgetstree";
 @import "components/popupbutton/popupbutton";
 @import "components/searchselect/searchselect";
 @import "components/orderedlayout/orderedlayout";
 @import "components/fieldgrouplayout/fieldgrouplayout";
+@import "components/sourcecodeeditor/sourcecodeeditor";
 
 // Application specific
 @import "app/log-control";
@@ -54,16 +58,20 @@
   @include halo-menubar;
   @include halo-datefield;
   @include halo-splitpanel;
+  @include halo-twincolumn;
   @include halo-optiongroup;
   @include halo-popupbutton;
   @include halo-orderedlayout;
+  @include halo-sourcecodeeditor;
 
   @include halo-cuba-groupbox;
+  @include halo-cuba-tokenlist;
   @include halo-cuba-grouptable;
   @include halo-cuba-fieldgroup;
   @include halo-cuba-maskedfield;
   @include halo-cuba-pickerfield;
   @include halo-cuba-contextmenu;
+  @include halo-cuba-widgetstree;
   @include halo-cuba-searchselect;
   @include halo-cuba-fieldgrouplayout;
 

@@ -1,0 +1,68 @@
+/*
+ * Copyright (c) 2008-2014 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+ */
+
+// Version: $Id$
+
+@mixin halo-cuba-tokenlist($primaryStyleName: cuba-tokenlist) {
+  .#{$primaryStyleName} .v-csslayout {
+    clear: both;
+  }
+
+  .#{$primaryStyleName} .cuba-tokenlist-label.v-widget {
+    clear: both;
+    margin: 0 $v-layout-margin-right $v-layout-margin-bottom 0;
+    height: $v-unit-size;
+    cursor: pointer;
+    display: inline-block;
+    padding-left: $v-layout-margin-left;
+  }
+
+  .#{$primaryStyleName} .cuba-tokenlist-label-close {
+    height: $v-unit-size;
+    width: $v-unit-size;
+    cursor: pointer;
+    display: inline-block;
+    text-align: center;
+
+    &:before {
+      font-family: FontAwesome;
+      content: "\f00d";
+      line-height: $v-unit-size;
+    }
+  }
+
+  .#{$primaryStyleName} .cuba-tokenlist-label-content {
+    white-space: nowrap;
+    outline: none;
+  }
+
+  .#{$primaryStyleName} .cuba-tokenlist-label-content .content {
+    white-space: nowrap;
+    cursor: default;
+    overflow: hidden;
+    display: inline-block;
+    line-height: $v-unit-size;
+    vertical-align: top;
+  }
+
+  .#{$primaryStyleName}.inline .cuba-tokenlist-label.v-widget {
+    clear: none;
+    margin-right: $v-layout-margin-right;
+    float: left;
+  }
+
+  .#{$primaryStyleName} .cuba-tokenlist-label.noedit {
+    background-image: none;
+    padding-right: $v-layout-margin-right;
+  }
+
+  .#{$primaryStyleName} .cuba-tokenlist-label-content.noedit .content {
+    margin-right: 0;
+  }
+
+  .#{$primaryStyleName} .cuba-tokenlist-label.open .content {
+    cursor: pointer;
+  }
+}

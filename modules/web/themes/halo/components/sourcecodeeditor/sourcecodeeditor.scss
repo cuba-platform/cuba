@@ -1,0 +1,34 @@
+/*
+ * Copyright (c) 2008-2014 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+ */
+
+// Version: $Id$
+
+@mixin halo-sourcecodeeditor($primaryStyleName : AceEditorWidget) {
+  .#{$primaryStyleName} {
+    $padding-width: ceil($v-unit-size/6);
+
+    @include valo-textfield-style($padding: $padding-width);
+
+    .ace_cursor {
+      visibility: hidden;
+      border-left-width: 1px;
+    }
+  }
+
+  .#{$primaryStyleName} .ace_focus {
+    .ace_cursor {
+      visibility: visible;
+    }
+  }
+
+  .#{$primaryStyleName}-focus {
+    @include valo-textfield-focus-style;
+  }
+
+  .#{$primaryStyleName},
+  .#{$primaryStyleName}:focus {
+    outline: none;
+  }
+}

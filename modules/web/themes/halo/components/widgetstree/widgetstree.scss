@@ -1,18 +1,19 @@
 /*
- * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Copyright (c) 2008-2014 Haulmont. All rights reserved.
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
 // Version: $Id$
 
-@mixin havana-cuba-widgetstree($primaryStyleName: cuba-widgetstree){
+@mixin halo-cuba-widgetstree($primaryStyleName: cuba-widgetstree){
   .#{$primaryStyleName} {
     .v-tree-node .v-tree-node-content {
-      margin-left: 16px;
+      margin-left: $v-unit-size;
     }
 
     .v-tree-node .v-tree-node-caption {
       position: absolute;
+      width: $v-unit-size;
     }
 
     .v-tree-node.v-tree-node-leaf.v-tree-node-leaf-last,
@@ -21,10 +22,10 @@
     }
 
     .v-tree-node .v-tree-node-widget {
-      margin: 5px 0;
-      padding: 10px;
-      border: 1px solid #d3d3d3;
-      border-radius: 4px;
+      margin: $v-layout-margin-left 0;
+      padding: $v-layout-margin-top $v-layout-margin-right $v-layout-margin-bottom $v-layout-margin-left;
+      border: valo-border();
+      border-radius: $v-border-radius;
     }
   }
 }
