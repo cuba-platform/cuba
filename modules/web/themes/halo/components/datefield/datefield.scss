@@ -27,4 +27,21 @@
       border-left: valo-border($color: $v-textfield-background-color, $border: $v-textfield-border, $strength: 0.5);
     }
   }
+
+  .#{$primaryStyleName}-composition-error {
+    .#{$primaryStyleName} {
+      .#{$primaryStyleName}-textfield {
+        @include valo-textfield-error-style;
+      }
+
+      .#{$primaryStyleName}-button {
+        color: $v-error-indicator-color;
+        border-color: $v-error-indicator-color;
+      }
+    }
+
+    .cuba-maskedfield {
+      @include valo-textfield-error-style;
+    }
+  }
 }

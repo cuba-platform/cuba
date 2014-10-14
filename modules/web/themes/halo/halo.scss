@@ -29,6 +29,7 @@
 @import "components/maskedfield/maskedfield";
 @import "components/optiongroup/optiongroup";
 @import "components/popupbutton/popupbutton";
+@import "components/searchselect/searchselect";
 @import "components/orderedlayout/orderedlayout";
 @import "components/fieldgrouplayout/fieldgrouplayout";
 
@@ -63,6 +64,7 @@
   @include halo-cuba-maskedfield;
   @include halo-cuba-pickerfield;
   @include halo-cuba-contextmenu;
+  @include halo-cuba-searchselect;
   @include halo-cuba-fieldgrouplayout;
 
   @include cuba-log-control;

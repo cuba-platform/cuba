@@ -22,8 +22,7 @@ public class CubaTextArea extends TextArea {
     @Override
     public ErrorMessage getErrorMessage() {
         ErrorMessage superError = super.getErrorMessage();
-        if (isRequired() && isEmpty()) {
-
+        if (!isReadOnly() && isRequired() && isEmpty()) {
             ErrorMessage error = AbstractErrorMessage.getErrorMessageForException(
                     new com.vaadin.data.Validator.EmptyValueException(getRequiredError()));
             if (error != null) {

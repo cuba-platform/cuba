@@ -26,7 +26,6 @@ import com.haulmont.cuba.web.toolkit.ui.converters.StringToEntityConverter;
 import com.vaadin.data.Property;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.LogFactory;
@@ -71,7 +70,8 @@ public class WebPickerField
 
                     Object propertyValue = value.getValue(captionProperty);
 
-                    MetaProperty property = metadata.getClass(value.getClass()).getProperty(captionProperty);
+                    MetaClass metaClass = metadata.getClass(value.getClass());
+                    MetaProperty property = metaClass.getProperty(captionProperty);
                     return metadataTools.format(propertyValue, property);
                 }
 
@@ -162,12 +162,11 @@ public class WebPickerField
 
         final MetaClass metaClass = datasource.getMetaClass();
         metaPropertyPath = metaClass.getPropertyPath(property);
-        try {
-            metaProperty = metaPropertyPath.getMetaProperty();
-        } catch (ArrayIndexOutOfBoundsException e) {
+        if (metaPropertyPath == null) {
             throw new RuntimeException(String.format("Property '%s' not found in class %s", property, metaClass));
         }
 
+        this.metaProperty = metaPropertyPath.getMetaProperty();
         this.metaClass = metaProperty.getRange().asClass();
 
         final ItemWrapper wrapper = createDatasourceWrapper(datasource, Collections.singleton(metaPropertyPath));
@@ -361,9 +360,8 @@ public class WebPickerField
 
         @Override
         public void setIcon(String icon) {
-            if (!StringUtils.isBlank(icon)) {
+            if (StringUtils.isNotBlank(icon)) {
                 component.setIcon(new VersionedThemeResource(icon));
-                component.addStyleName(BaseTheme.BUTTON_LINK);
             } else {
                 component.setIcon(null);
             }
@@ -387,8 +385,9 @@ public class WebPickerField
         public void setReadOnly(boolean readOnly) {
             super.setReadOnly(readOnly);
             if (readOnly) {
-                field.setReadOnly(readOnly);
+                field.setReadOnly(true);
             }
+
             for (Action action : owner.getActions()) {
                 if (action instanceof StandardAction) {
                     ((StandardAction) action).setEditable(!readOnly);

@@ -192,8 +192,7 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
     @Override
     public ErrorMessage getErrorMessage() {
         ErrorMessage superError = super.getErrorMessage();
-        if (isRequired() && isEmpty()) {
-
+        if (!isReadOnly() && isRequired() && isEmpty()) {
             ErrorMessage error = AbstractErrorMessage.getErrorMessageForException(
                     new com.vaadin.data.Validator.EmptyValueException(getRequiredError()));
             if (error != null) {
@@ -202,6 +201,11 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
         }
 
         return superError;
+    }
+
+    @Override
+    protected boolean isEmpty() {
+        return getValue() == null;
     }
 
     public Converter getCaptionFormatter() {

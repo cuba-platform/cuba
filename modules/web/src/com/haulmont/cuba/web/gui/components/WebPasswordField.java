@@ -6,34 +6,17 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.PasswordField;
-import com.vaadin.server.AbstractErrorMessage;
-import com.vaadin.server.CompositeErrorMessage;
-import com.vaadin.server.ErrorMessage;
+import com.haulmont.cuba.web.toolkit.ui.CubaPasswordField;
 
 /**
  * @author artamonov
  * @version $Id$
  */
-public class WebPasswordField extends WebAbstractTextField<com.vaadin.ui.PasswordField> implements PasswordField {
+public class WebPasswordField extends WebAbstractTextField<CubaPasswordField> implements PasswordField {
 
     @Override
-    protected com.vaadin.ui.PasswordField createTextFieldImpl() {
-        return new com.vaadin.ui.PasswordField() {
-            @Override
-            public ErrorMessage getErrorMessage() {
-                ErrorMessage superError = super.getErrorMessage();
-                if (isRequired() && isEmpty()) {
-
-                    ErrorMessage error = AbstractErrorMessage.getErrorMessageForException(
-                            new com.vaadin.data.Validator.EmptyValueException(getRequiredError()));
-                    if (error != null) {
-                        return new CompositeErrorMessage(superError, error);
-                    }
-                }
-
-                return superError;
-            }
-        };
+    protected CubaPasswordField createTextFieldImpl() {
+        return new CubaPasswordField();
     }
 
     @Override

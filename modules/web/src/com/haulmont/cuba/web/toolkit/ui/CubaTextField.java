@@ -10,7 +10,6 @@ import com.vaadin.event.ActionManager;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.*;
 import com.vaadin.ui.TextField;
-import org.apache.commons.lang.StringUtils;
 
 import java.util.Map;
 
@@ -33,7 +32,7 @@ public class CubaTextField extends TextField implements Action.Container {
     @Override
     public ErrorMessage getErrorMessage() {
         ErrorMessage superError = super.getErrorMessage();
-        if (isRequired() && isEmpty() && StringUtils.isNotEmpty(getRequiredError())) {
+        if (!isReadOnly() && isRequired() && isEmpty()) {
             ErrorMessage error = AbstractErrorMessage.getErrorMessageForException(
                     new com.vaadin.data.Validator.EmptyValueException(getRequiredError()));
             if (error != null) {

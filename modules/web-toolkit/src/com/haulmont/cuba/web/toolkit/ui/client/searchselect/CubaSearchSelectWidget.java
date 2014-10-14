@@ -186,6 +186,8 @@ public class CubaSearchSelectWidget extends VFilterSelect {
                     logger.log("Update edit state. Current=null");
                 }
             }
+        } else {
+            removeStyleDependentName(INPUT_STATE);
         }
     }
 

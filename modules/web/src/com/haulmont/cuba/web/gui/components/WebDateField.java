@@ -87,6 +87,11 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 updateInstance();
+
+                if (component != null) {
+                    // Repaint error state
+                    component.markAsDirty();
+                }
             }
         });
 

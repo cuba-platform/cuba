@@ -1,0 +1,24 @@
+/*
+ * Copyright (c) 2008-2014 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+ */
+
+// Version: $Id$
+
+@mixin halo-cuba-searchselect($primaryStyleName: cuba-searchselect) {
+  @include valo-combobox($primaryStyleName);
+
+  .#{$primaryStyleName} {
+    padding-right: 0px;
+
+    .#{$primaryStyleName}-button {
+      background: none;
+      display: none;
+    }
+  }
+
+  .#{$primaryStyleName}-edit-filter.#{$primaryStyleName}-focus,
+  .#{$primaryStyleName}-edit-filter.#{$primaryStyleName}-focus .#{$primaryStyleName}-input:focus {
+    background-color: $theme_searchSelectEditColor;
+  }
+}

@@ -7,7 +7,12 @@
 
 @mixin halo-cuba-maskedfield($primaryStyleName: cuba-maskedfield) {
   .#{$primaryStyleName} {
-    @include box-defaults;@include valo-textfield-style($padding: null);
+    @include box-defaults;
+    @include valo-textfield-style($padding: null);
     height: $v-unit-size;
+  }
+
+  .#{$primaryStyleName}.v-readonly {
+    @include valo-textfield-readonly-style;
   }
 }

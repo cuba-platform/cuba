@@ -78,7 +78,10 @@ public class CubaOrderedLayoutSlot extends Slot {
             if (this.captionText == null) {
                 this.captionText = DOM.createSpan();
                 this.captionText.addClassName("v-captiontext");
-                caption.appendChild(this.captionText);
+
+                if (caption != null) {
+                    caption.appendChild(this.captionText);
+                }
             }
             if (captionText.trim().equals("")) {
                 this.captionText.setInnerHTML("&nbsp;");
@@ -95,7 +98,9 @@ public class CubaOrderedLayoutSlot extends Slot {
             this.icon.getElement().removeFromParent();
         }
         if (icon != null) {
-            caption.insertFirst(icon.getElement());
+            if (caption != null) {
+                caption.insertFirst(icon.getElement());
+            }
         }
         this.icon = icon;
 
@@ -113,7 +118,9 @@ public class CubaOrderedLayoutSlot extends Slot {
                 // the screen reader.
                 Roles.getTextboxRole().setAriaHiddenState(requiredIcon, true);
             }
-            caption.appendChild(requiredIcon);
+            if (caption != null) {
+                caption.appendChild(requiredIcon);
+            }
         } else if (requiredIcon != null) {
             requiredIcon.removeFromParent();
             requiredIcon = null;
@@ -135,7 +142,9 @@ public class CubaOrderedLayoutSlot extends Slot {
                 // the screen reader.
                 Roles.getTextboxRole().setAriaHiddenState(tooltipIcon, true);
             }
-            caption.appendChild(tooltipIcon);
+            if (caption != null) {
+                caption.appendChild(tooltipIcon);
+            }
         } else if (this.tooltipIcon != null) {
             this.tooltipIcon.removeFromParent();
             this.tooltipIcon = null;
@@ -147,7 +156,9 @@ public class CubaOrderedLayoutSlot extends Slot {
                 errorIcon = DOM.createSpan();
                 errorIcon.setClassName("v-errorindicator");
             }
-            caption.appendChild(errorIcon);
+            if (caption != null) {
+                caption.appendChild(errorIcon);
+            }
         } else if (errorIcon != null) {
             errorIcon.removeFromParent();
             errorIcon = null;
