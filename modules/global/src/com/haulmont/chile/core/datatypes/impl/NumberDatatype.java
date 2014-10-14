@@ -17,25 +17,29 @@ import java.text.*;
  */
 public abstract class NumberDatatype {
 
-    protected NumberFormat format;
+    protected String formatPattern;
+    protected String decimalSeparator;
+    protected String groupingSeparator;
 
     protected NumberDatatype(Element element) {
-        final String pattern = element.attributeValue("format");
-        if (pattern != null) {
-            final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols();
+        formatPattern = element.attributeValue("format");
+        decimalSeparator = element.attributeValue("decimalSeparator");
+        groupingSeparator = element.attributeValue("groupingSeparator");
+    }
 
-            String decimalSeparator = element.attributeValue("decimalSeparator");
+    protected NumberFormat createFormat() {
+        if (formatPattern != null) {
+            DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols();
+
             if (!StringUtils.isBlank(decimalSeparator))
                 formatSymbols.setDecimalSeparator(decimalSeparator.charAt(0));
 
-            String groupingSeparator = element.attributeValue("groupingSeparator");
             if (!StringUtils.isBlank(groupingSeparator))
                 formatSymbols.setGroupingSeparator(groupingSeparator.charAt(0));
 
-
-            format = new DecimalFormat(pattern, formatSymbols);
+            return new DecimalFormat(formatPattern, formatSymbols);
         } else {
-            format = NumberFormat.getNumberInstance();
+            return NumberFormat.getNumberInstance();
         }
     }
 

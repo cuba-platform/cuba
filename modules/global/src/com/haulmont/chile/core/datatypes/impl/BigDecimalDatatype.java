@@ -33,15 +33,21 @@ public class BigDecimalDatatype extends NumberDatatype implements Datatype<BigDe
 
     public BigDecimalDatatype(Element element) {
         super(element);
+    }
+
+    @Override
+    protected NumberFormat createFormat() {
+        NumberFormat format = super.createFormat();
         if (format instanceof DecimalFormat) {
             ((DecimalFormat) format).setParseBigDecimal(true);
         }
+        return format;
     }
 
     @Nonnull
     @Override
     public String format(BigDecimal value) {
-        return value == null ? "" : format.format(value);
+        return value == null ? "" : createFormat().format(value);
     }
 
     @Nonnull
@@ -82,7 +88,7 @@ public class BigDecimalDatatype extends NumberDatatype implements Datatype<BigDe
             return null;
         }
 
-        return (BigDecimal) parse(value, format);
+        return (BigDecimal) parse(value, createFormat());
     }
 
     @Override

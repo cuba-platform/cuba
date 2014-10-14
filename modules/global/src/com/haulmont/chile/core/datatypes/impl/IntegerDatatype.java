@@ -37,7 +37,7 @@ public class IntegerDatatype extends NumberDatatype implements Datatype<Integer>
     @Nonnull
     @Override
     public String format(Integer value) {
-        return value == null ? "" : format.format(value);
+        return value == null ? "" : createFormat().format(value);
     }
 
     @Nonnull
@@ -75,7 +75,7 @@ public class IntegerDatatype extends NumberDatatype implements Datatype<Integer>
         if (StringUtils.isBlank(value))
             return null;
 
-        return parse(value, format).intValue();
+        return parse(value, createFormat()).intValue();
     }
 
     @Override

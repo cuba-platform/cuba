@@ -35,7 +35,7 @@ public class LongDatatype extends NumberDatatype implements Datatype<Long> {
     @Nonnull
     @Override
     public String format(Long value) {
-        return value == null ? "" : format.format(value);
+        return value == null ? "" : createFormat().format(value);
     }
 
     @Nonnull
@@ -76,7 +76,7 @@ public class LongDatatype extends NumberDatatype implements Datatype<Long> {
             return null;
         }
 
-        return parse(value, format).longValue();
+        return parse(value, createFormat()).longValue();
     }
 
     @Override

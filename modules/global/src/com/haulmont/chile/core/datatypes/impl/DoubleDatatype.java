@@ -35,7 +35,7 @@ public class DoubleDatatype extends NumberDatatype implements Datatype<Double> {
     @Nonnull
     @Override
     public String format(Double value) {
-        return value == null ? "" : format.format(value);
+        return value == null ? "" : createFormat().format(value);
     }
 
     @Nonnull
@@ -76,7 +76,7 @@ public class DoubleDatatype extends NumberDatatype implements Datatype<Double> {
             return null;
         }
 
-        return parse(value, format).doubleValue();
+        return parse(value, createFormat()).doubleValue();
     }
 
     @Override
