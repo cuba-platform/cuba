@@ -64,7 +64,7 @@ public class PersistenceTest extends CubaTestCase {
             server.setName("localhost");
             server.setRunning(true);
             em.persist(server);
-            assertFalse(PersistenceHelper.isNew(server));
+            assertTrue(PersistenceHelper.isNew(server));
             assertTrue(PersistenceHelper.isManaged(server));
             assertFalse(PersistenceHelper.isDetached(server));
 
