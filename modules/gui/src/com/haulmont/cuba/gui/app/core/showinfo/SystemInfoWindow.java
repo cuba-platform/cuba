@@ -9,6 +9,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.script.ScriptGenerationService;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
@@ -58,6 +59,12 @@ public class SystemInfoWindow extends AbstractWindow {
     @Inject
     protected Button update;
 
+    @Inject
+    protected BoxLayout buttonsHbox;
+
+    @Inject
+    protected Metadata metadata;
+
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
@@ -77,10 +84,10 @@ public class SystemInfoWindow extends AbstractWindow {
         for (Action action : tableActions)
             infoTable.removeAction(action);
 
-        if (!clientConfig.getSystemInfoScriptsEnabled()) {
-            insert.setVisible(false);
-            update.setVisible(false);
-            select.setVisible(false);
+        if (!clientConfig.getSystemInfoScriptsEnabled()
+                || item == null
+                || !metadata.getTools().isPersistent(item.getMetaClass())) {
+            buttonsHbox.setVisible(false);
         }
     }
 

@@ -29,7 +29,7 @@
             </columns>
             <rows datasource="paramsDs"/>
         </table>
-        <hbox spacing="true">
+        <hbox id ="buttonsHbox" spacing="true">
             <button id="insert" caption="msg://caption.generateInsert" invoke="generateInsert"/>
             <button id="update" caption="msg://caption.generateUpdate" invoke="generateUpdate"/>
             <button id="select" caption="msg://caption.generateSelect" invoke="generateSelect"/>
