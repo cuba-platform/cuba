@@ -6,10 +6,7 @@
 
 <views xmlns="http://schemas.haulmont.com/cuba/5.2/view.xsd">
 
-    <view class="com.haulmont.cuba.security.entity.User" name="app">
-        <property name="login"/>
-        <property name="name"/>
-    </view>
+    <view class="com.haulmont.cuba.security.entity.User" name="app" extends="_minimal"/>
 
     <view class="com.haulmont.cuba.security.entity.UserSubstitution" name="app">
         <property name="substitutedUser" view="app"/>
