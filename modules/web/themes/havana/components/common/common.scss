@@ -8,7 +8,7 @@
 @mixin havana-common {
   .v-ui {
     background: #f6f6f6;
-    font-family: $theme_fonts;
+    font-family: $cuba-havana-fonts;
     color: #000;
     line-height: 18px;
     height: 100%;
@@ -24,20 +24,20 @@
     button,
     label,
     textarea {
-      font-family: $theme_fonts;
+      font-family: $cuba-havana-fonts;
     }
 
     label,
     button {
       font-size: 12px;
-      color: $theme_fontColor;
+      color: $cuba-havana-font-color;
     }
 
     input,
     select,
     textarea {
       font-size: 11px;
-      color: $theme_fontColor;
+      color: $cuba-havana-font-color;
     }
   }
 
@@ -46,9 +46,9 @@
 
     display: inline-block;
     vertical-align: top;
-    font-family: $theme_fonts;
+    font-family: $cuba-havana-fonts;
     font-size: 12px;
-    color: $theme_fontColor;
+    color: $cuba-havana-font-color;
   }
 
   .v-panel,
@@ -61,7 +61,7 @@
   }
 
   .v-select-select:focus {
-    outline: 1px dotted $theme_fieldFocusedBorderColor;
+    outline: 1px dotted $cuba-field-focused-border-color;
   }
 
   // Disable ie10 clear button

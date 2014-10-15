@@ -5,16 +5,15 @@
 
 // Version: $Id$
 
-@mixin havana-menubar($primaryStyleName : v-menubar) {
+@mixin havana-menubar($primary-stylename : v-menubar) {
 
-  .#{$primaryStyleName} {
+  .#{$primary-stylename} {
     height: 23px;
     padding: 0 8px;
     margin-top: -2px;
     white-space: nowrap;
 
-    .#{$primaryStyleName}-menuitem {
-      height: 17px;
+    .#{$primary-stylename}-menuitem {
       line-height: 16px;
       padding: 3px 8px;
       display: inline-block;
@@ -25,11 +24,11 @@
       padding-right: 10px;
       background: transparent;
       height: 19px;
-      font-family: $theme_fonts;
+      font-family: $cuba-havana-fonts;
       font-size: 12px;
       text-shadow: black 1px 1px;
 
-      .#{$primaryStyleName}-menuitem-caption {
+      .#{$primary-stylename}-menuitem-caption {
         display: table-cell;
 
         .v-icon {
@@ -48,36 +47,36 @@
       }
     }
 
-    .#{$primaryStyleName}-menuitem-selected {
+    .#{$primary-stylename}-menuitem-selected {
       padding-left: 10px;
       padding-right: 10px;
       color: #000000;
       text-shadow: black 1px 1px;
       height: 19px;
-      background-color: $theme_appMenuHighlightColor;
+      background-color: $cuba-app-menu-highlight-color;
     }
 
-    .#{$primaryStyleName}-menuitem:hover {
+    .#{$primary-stylename}-menuitem:hover {
       padding-left: 10px;
       padding-right: 10px;
       color: #000000;
       text-shadow: black 1px 1px;
       height: 19px;
-      background-color: $theme_appMenuHighlightColor;
+      background-color: $cuba-app-menu-highlight-color;
     }
 
-    .#{$primaryStyleName}-submenu-indicator {
+    .#{$primary-stylename}-submenu-indicator {
       display: none;
     }
   }
 
   // focused menubar styles
-  .#{$primaryStyleName}-focus .#{$primaryStyleName}-menuitem {
+  .#{$primary-stylename}-focus .#{$primary-stylename}-menuitem {
   }
-  .#{$primaryStyleName}-focus .#{$primaryStyleName}-menuitem-selected {
+  .#{$primary-stylename}-focus .#{$primary-stylename}-menuitem-selected {
   }
 
-  .#{$primaryStyleName}-separator {
+  .#{$primary-stylename}-separator {
     overflow: hidden;
 
     span {
@@ -91,22 +90,20 @@
     }
   }
 
-  .#{$primaryStyleName}-submenu {
+  .#{$primary-stylename}-submenu {
     display: table;
     overflow: hidden;
     white-space: nowrap;
-    border: 0;
-    background: $theme_appSubmenuBackgroundColor;
+    background: $cuba-app-submenu-background-color;
     padding: 5px;
-    font-family: $theme_fonts;
+    font-family: $cuba-havana-fonts;
     font-size: 12px;
-    border: solid 2px $theme_appMenuHighlightColor;
+    border: solid 2px $cuba-app-menu-highlight-color;
 
-    .#{$primaryStyleName}-menuitem {
+    .#{$primary-stylename}-menuitem {
       line-height: 18px;
       padding: 1px 26px 1px 10px;
       display: table-row;
-      padding-right: 1.5em;
       position: relative;
       cursor: pointer;
       padding-left: 6px;
@@ -114,7 +111,7 @@
       background: transparent;
       text-shadow: black 1px 1px;
 
-      .#{$primaryStyleName}-menuitem-caption {
+      .#{$primary-stylename}-menuitem-caption {
         color: #fff;
         display: table-cell;
         padding-right: 4px;
@@ -127,7 +124,7 @@
         }
       }
 
-      .#{$primaryStyleName}-menuitem-shortcut {
+      .#{$primary-stylename}-menuitem-shortcut {
         display: table-cell;
         border-left: 3px solid transparent;
         border-right: 3px solid transparent;
@@ -138,32 +135,32 @@
 
     $menuSeparatorMargin: 3px;
 
-    .#{$primaryStyleName}-separator {
+    .#{$primary-stylename}-separator {
       display: table-row;
       height: 7px;
 
       span {
         display: table-cell;
         background: white;
-        border-top: $menuSeparatorMargin solid $theme_appSubmenuBackgroundColor;
-        border-bottom: $menuSeparatorMargin solid $theme_appSubmenuBackgroundColor;
+        border-top: $menuSeparatorMargin solid $cuba-app-submenu-background-color;
+        border-bottom: $menuSeparatorMargin solid $cuba-app-submenu-background-color;
       }
     }
 
-    .#{$primaryStyleName}-menuitem:hover,
-    .#{$primaryStyleName}-menuitem-selected {
-      background-color: $theme_appMenuHighlightColor;
+    .#{$primary-stylename}-menuitem:hover,
+    .#{$primary-stylename}-menuitem-selected {
+      background-color: $cuba-app-menu-highlight-color;
 
-      .#{$primaryStyleName}-menuitem-caption {
-        background-color: $theme_appMenuHighlightColor;
+      .#{$primary-stylename}-menuitem-caption {
+        background-color: $cuba-app-menu-highlight-color;
       }
     }
 
-    .#{$primaryStyleName}-menuitem-selected div {
+    .#{$primary-stylename}-menuitem-selected div {
       color: #fff;
     }
 
-    .#{$primaryStyleName}-submenu-indicator {
+    .#{$primary-stylename}-submenu-indicator {
       background: transparent;
       display: table-cell;
       min-width: 10px;
@@ -174,7 +171,7 @@
       height: auto;
     }
 
-    .#{$primaryStyleName}-submenu-indicator-icon {
+    .#{$primary-stylename}-submenu-indicator-icon {
 
       margin-top: 1px;
       display: inline-block;
@@ -192,22 +189,22 @@
       }
     }
 
-    .#{$primaryStyleName}-submenu-indicator + .#{$primaryStyleName}-menuitem-caption {
+    .#{$primary-stylename}-submenu-indicator + .#{$primary-stylename}-menuitem-caption {
       padding-right: 10px;
     }
 
-    .#{$primaryStyleName}-submenu-check-column {
+    .#{$primary-stylename}-submenu-check-column {
       padding-left: 6px;
 
-      .#{$primaryStyleName}-menuitem {
+      .#{$primary-stylename}-menuitem {
         padding-left: 6px;
-        .#{$primaryStyleName}-menuitem-caption {
+        .#{$primary-stylename}-menuitem-caption {
           padding-left: 18px;
         }
       }
     }
 
-    .#{$primaryStyleName}-submenu-check-column .#{$primaryStyleName}-menuitem-caption {
+    .#{$primary-stylename}-submenu-check-column .#{$primary-stylename}-menuitem-caption {
       padding-left: 18px;
     }
   }

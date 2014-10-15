@@ -5,9 +5,9 @@
 
 // Version: $Id$
 
-@mixin halo-button($primaryStyleName: v-button) {
+@mixin halo-button($primary-stylename: v-button) {
 
-  .#{$primaryStyleName}-link {
+  .#{$primary-stylename}-link {
     padding-left: 0;
     padding-right: 0;
 

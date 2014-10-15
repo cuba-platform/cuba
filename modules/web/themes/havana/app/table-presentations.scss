@@ -27,9 +27,9 @@
   .cuba-table-presentations-editor {
     z-index: 19000 !important;  // do not hide parts of popup menu
     background-color: #fff;
-    border: 1px solid $theme_fieldSelectionColor;
+    border: 1px solid $cuba-field-selection-color;
     padding: 5px 3px 5px 3px;
-    font-family: $theme_fonts;
+    font-family: $cuba-havana-fonts;
 
     .cuba-table-presentations-title {
       color: gray;
@@ -55,12 +55,12 @@
 
       .v-menubar-menuitem-caption {
         text-shadow: none;
-        color: $theme_fieldSelectionColor;
+        color: $cuba-field-selection-color;
       }
     }
 
     .cuba-table-presentations-list.v-menubar .v-menubar-menuitem:hover {
-      background-color: $theme_fieldSelectionColor;
+      background-color: $cuba-field-selection-color;
 
       .v-menubar-menuitem-caption {
         text-shadow: none;

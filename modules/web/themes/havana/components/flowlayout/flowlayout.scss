@@ -5,34 +5,34 @@
 
 // Version: $Id$
 
-@mixin havana-cuba-flowlayout($primaryStyleName : cuba-flowlayout) {
-  @include base-csslayout($primaryStyleName);
+@mixin havana-cuba-flowlayout($primary-stylename : cuba-flowlayout) {
+  @include base-csslayout($primary-stylename);
 
-  .#{$primaryStyleName} {
+  .#{$primary-stylename} {
     overflow-y: auto;
   }
 
-  .#{$primaryStyleName} > * {
+  .#{$primary-stylename} > * {
     float: left;
   }
 
-  .#{$primaryStyleName}-spacing > * {
+  .#{$primary-stylename}-spacing > * {
     margin-right: 5px;
     margin-bottom: 5px;
   }
 
   $marginWidth: 5px;
 
-  .#{$primaryStyleName}-margin-top {
+  .#{$primary-stylename}-margin-top {
     padding-top: $marginWidth;
   }
-  .#{$primaryStyleName}-margin-bottom {
+  .#{$primary-stylename}-margin-bottom {
     padding-bottom: $marginWidth;
   }
-  .#{$primaryStyleName}-margin-left {
+  .#{$primary-stylename}-margin-left {
     padding-left: $marginWidth;
   }
-  .#{$primaryStyleName}-margin-right {
+  .#{$primary-stylename}-margin-right {
     padding-right: $marginWidth;
   }
 }

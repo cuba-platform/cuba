@@ -5,15 +5,15 @@
 
 // Version: $Id$
 
-@mixin halo-twincolumn($primaryStyleName: v-select-twincol) {
-  .#{$primaryStyleName} select {
+@mixin halo-twincolumn($primary-stylename: v-select-twincol) {
+  .#{$primary-stylename} select {
     $padding-width: ceil($v-unit-size/6);
 
     @include valo-textfield-style($padding: $padding-width);
     height: auto;
   }
 
-  .#{$primaryStyleName} select:focus {
+  .#{$primary-stylename} select:focus {
     @include valo-textfield-focus-style;
   }
 }

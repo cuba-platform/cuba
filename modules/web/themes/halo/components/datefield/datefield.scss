@@ -5,14 +5,14 @@
 
 // Version: $Id$
 
-@mixin halo-datefield($primaryStyleName : cuba-datefield) {
-  @include valo-datefield($primaryStyleName);
+@mixin halo-datefield($primary-stylename : cuba-datefield) {
+  @include valo-datefield($primary-stylename);
 
-  .#{$primaryStyleName}-popup {
-    @include valo-datefield-calendarpanel-style(#{$primaryStyleName}-calendarpanel);
+  .#{$primary-stylename}-popup {
+    @include valo-datefield-calendarpanel-style(#{$primary-stylename}-calendarpanel);
   }
 
-  .#{$primaryStyleName} {
+  .#{$primary-stylename} {
     $border-width: first-number($v-textfield-border) or 0;
     $padding-width: ceil($v-unit-size/6) + ceil($v-textfield-border-radius/3);
 
@@ -28,13 +28,13 @@
     }
   }
 
-  .#{$primaryStyleName}-composition-error {
-    .#{$primaryStyleName} {
-      .#{$primaryStyleName}-textfield {
+  .#{$primary-stylename}-composition-error {
+    .#{$primary-stylename} {
+      .#{$primary-stylename}-textfield {
         @include valo-textfield-error-style;
       }
 
-      .#{$primaryStyleName}-button {
+      .#{$primary-stylename}-button {
         color: $v-error-indicator-color;
         border-color: $v-error-indicator-color;
       }

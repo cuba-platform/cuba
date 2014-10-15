@@ -5,8 +5,8 @@
 
 // Version: $Id$
 
-@mixin havana-caption($primaryStyleName: v-caption) {
-  .#{$primaryStyleName} {
+@mixin havana-caption($primary-stylename: v-caption) {
+  .#{$primary-stylename} {
     font-size: 12px;
 
     .v-required-field-indicator {
@@ -31,12 +31,12 @@
       cursor: pointer;
     }
 
-    .#{$primaryStyleName}text {
+    .#{$primary-stylename}text {
       padding-bottom: 2px;
     }
   }
 
-  .v-slot > .#{$primaryStyleName} {
+  .v-slot > .#{$primary-stylename} {
     line-height: 25px;
   }
 }

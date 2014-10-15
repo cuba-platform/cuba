@@ -5,16 +5,16 @@
 
 // Version: $Id$
 
-@mixin havana-tree($primaryStyleName: v-tree) {
-  .#{$primaryStyleName} {
+@mixin havana-tree($primary-stylename: v-tree) {
+  .#{$primary-stylename} {
     text-align: left;
     background: #fff;
-    border: 1px solid $theme_fieldBorderColor;
+    border: 1px solid $cuba-field-border-color;
     overflow: auto;
     outline: none;
     padding: 0;
 
-    .#{$primaryStyleName}-node-caption {
+    .#{$primary-stylename}-node-caption {
       margin-left: 16px;
       span {
         cursor: default;
@@ -24,7 +24,7 @@
         display: inline;
         white-space: nowrap;
         font-size: 12px;
-        color: $theme_treeCaptionColor;
+        color: $cuba-tree-caption-color;
       }
       .v-icon {
         display: inline;
@@ -32,47 +32,47 @@
       }
     }
 
-    .#{$primaryStyleName}-node {
+    .#{$primary-stylename}-node {
       background: transparent;
       background-repeat: no-repeat;
       background-image: url(images/item-collapsed.png);
       background-position: 0 2px;
     }
 
-    .#{$primaryStyleName}-node-expanded {
+    .#{$primary-stylename}-node-expanded {
       background-image: url(images/item-expanded.png);
     }
 
-    .#{$primaryStyleName}-node-children .#{$primaryStyleName}-node {
+    .#{$primary-stylename}-node-children .#{$primary-stylename}-node {
       background-image: url(images/item-collapsed.png);
     }
 
-    .#{$primaryStyleName}-node-children .#{$primaryStyleName}-node-expanded {
+    .#{$primary-stylename}-node-children .#{$primary-stylename}-node-expanded {
       background-image: url(images/item-expanded.png);
     }
 
-    .#{$primaryStyleName}-node.#{$primaryStyleName}-node-leaf {
+    .#{$primary-stylename}-node.#{$primary-stylename}-node-leaf {
       background-image: url(images/tree-line.png);
     }
 
-    .#{$primaryStyleName}-node.#{$primaryStyleName}-node-leaf.#{$primaryStyleName}-node-leaf-last {
+    .#{$primary-stylename}-node.#{$primary-stylename}-node-leaf.#{$primary-stylename}-node-leaf-last {
       background-image: url(images/tree-line-last.png);
     }
 
-    .#{$primaryStyleName}-node-selected span {
-      background: $theme_treeSelectionColor;
-      color: $theme_treeCaptionSelectedColor;
+    .#{$primary-stylename}-node-selected span {
+      background: $cuba-tree-selection-color;
+      color: $cuba-tree-caption-selected-color;
       padding: 0 2px;
       cursor: default;
     }
   }
 
-  .#{$primaryStyleName} > div [role = "tree"] {
+  .#{$primary-stylename} > div [role = "tree"] {
     padding: 5px;
   }
 
-  .#{$primaryStyleName}-focus,
-  .#{$primaryStyleName}:focus {
-    border-color: $theme_fieldFocusedBorderColor;
+  .#{$primary-stylename}-focus,
+  .#{$primary-stylename}:focus {
+    border-color: $cuba-field-focused-border-color;
   }
 }

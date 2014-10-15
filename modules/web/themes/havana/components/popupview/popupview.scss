@@ -5,8 +5,8 @@
 
 // Version: $Id$
 
-@mixin havana-popupview($primaryStyleName: v-popupview) {
-  .#{$primaryStyleName}-popup {
+@mixin havana-popupview($primary-stylename: v-popupview) {
+  .#{$primary-stylename}-popup {
     border: 1px solid #babfc0;
     border-bottom: 1px solid #dee2e3;
     background: #fff;
@@ -14,18 +14,18 @@
     padding: 3px;
   }
 
-  .#{$primaryStyleName} {
-    font-family: $theme_fonts;
+  .#{$primary-stylename} {
+    font-family: $cuba-havana-fonts;
     font-size: 12px;
     cursor: pointer;
   }
 
-  .#{$primaryStyleName}-popup-abbreviated .v-csslayout {
+  .#{$primary-stylename}-popup-abbreviated .v-csslayout {
     width: 400px;
     height: 300px;
   }
 
-  .#{$primaryStyleName}-abbreviated {
+  .#{$primary-stylename}-abbreviated {
     text-decoration: none;
     border-bottom: 1px dashed;
     padding-bottom: 1px;

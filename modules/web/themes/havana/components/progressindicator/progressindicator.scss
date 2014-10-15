@@ -5,34 +5,34 @@
 
 // Version: $Id$
 
-@mixin havana-progressindicator($primaryStyleName: v-progressbar) {
-  .#{$primaryStyleName} {
+@mixin havana-progressindicator($primary-stylename: v-progressbar) {
+  .#{$primary-stylename} {
     background: #dfe2e4 url(images/progress-bg.gif);
     width: 150px;
   }
 
-  .#{$primaryStyleName}-wrapper {
+  .#{$primary-stylename}-wrapper {
     border: 1px solid #b6bbbc;
     height: 9px;
   }
 
-  .#{$primaryStyleName}-disabled {
+  .#{$primary-stylename}-disabled {
     background: #dfe2e4 url(images/progress-disabled.gif);
     height: 9px;
     border: 1px solid #b6bbbc;
   }
 
-  .#{$primaryStyleName}-indicator {
+  .#{$primary-stylename}-indicator {
     background: #f7f9f9 url(images/progress-line.png);
     height: 9px;
   }
 
-  div.#{$primaryStyleName}-indeterminate,
-  div.#{$primaryStyleName}-indeterminate-disabled {
+  div.#{$primary-stylename}-indeterminate,
+  div.#{$primary-stylename}-indeterminate-disabled {
     background: #dfe2e4 url(images/progress-bg.gif);
     height: 9px;
 
-    .#{$primaryStyleName}-indicator {
+    .#{$primary-stylename}-indicator {
       background: #f7f9f9 url(images/progress-line.png);
       height: 9px;
     }

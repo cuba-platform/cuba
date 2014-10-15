@@ -5,31 +5,31 @@
 
 // Version: $Id$
 
-@mixin havana-richtextarea($primaryStyleName: v-richtextarea) {
+@mixin havana-richtextarea($primary-stylename: v-richtextarea) {
 
-  .#{$primaryStyleName} {
-    border: 1px solid $theme_fieldBorderColor;
+  .#{$primary-stylename} {
+    border: 1px solid $cuba-field-border-color;
   }
 
-  .#{$primaryStyleName}-readonly {
+  .#{$primary-stylename}-readonly {
     border: 0;
   }
 
-  .#{$primaryStyleName} .gwt-RichTextToolbar {
+  .#{$primary-stylename} .gwt-RichTextToolbar {
     background: #8398AF url(images/richtext-toolbar-bg.png) repeat-x 0 -42px;
     border-bottom: 1px solid #8398AF;
   }
 
-  .#{$primaryStyleName} .gwt-RichTextToolbar .gwt-ToggleButton,
-  .#{$primaryStyleName} .gwt-RichTextToolbar .gwt-PushButton {
+  .#{$primary-stylename} .gwt-RichTextToolbar .gwt-ToggleButton,
+  .#{$primary-stylename} .gwt-RichTextToolbar .gwt-PushButton {
     outline: 0;
     background: transparent url(images/richtext-toolbar-bg.png) repeat-x;
   }
 
-  .#{$primaryStyleName} .gwt-RichTextToolbar .gwt-ToggleButton-down,
-  .#{$primaryStyleName} .gwt-RichTextToolbar .gwt-PushButton-down,
-  .#{$primaryStyleName} .gwt-RichTextToolbar .gwt-ToggleButton-down-hovering,
-  .#{$primaryStyleName} .gwt-RichTextToolbar .gwt-PushButton-down-hovering {
+  .#{$primary-stylename} .gwt-RichTextToolbar .gwt-ToggleButton-down,
+  .#{$primary-stylename} .gwt-RichTextToolbar .gwt-PushButton-down,
+  .#{$primary-stylename} .gwt-RichTextToolbar .gwt-ToggleButton-down-hovering,
+  .#{$primary-stylename} .gwt-RichTextToolbar .gwt-PushButton-down-hovering {
     background-position: 0 -21px;
   }
 }

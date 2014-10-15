@@ -5,12 +5,12 @@
 
 // Version: $Id$
 
-@mixin halo-splitpanel($primaryStyleName: v-splitpanel) {
-  .#{$primaryStyleName}-horizontal > div > .#{$primaryStyleName}-hsplitter {
-    width: $theme_splitPanelSplitterWidth;
+@mixin halo-splitpanel($primary-stylename: v-splitpanel) {
+  .#{$primary-stylename}-horizontal > div > .#{$primary-stylename}-hsplitter {
+    width: $cuba-splitpanel-splitter-width;
   }
 
-  .#{$primaryStyleName}-horizontal > div > .#{$primaryStyleName}-vsplitter {
-    height: $theme_splitPanelSplitterWidth;
+  .#{$primary-stylename}-horizontal > div > .#{$primary-stylename}-vsplitter {
+    height: $cuba-splitpanel-splitter-width;
   }
 }

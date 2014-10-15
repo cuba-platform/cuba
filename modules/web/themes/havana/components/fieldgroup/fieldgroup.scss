@@ -5,8 +5,8 @@
 
 // Version: $Id$
 
-@mixin havana-cuba-fieldgroup($primaryStyleName: cuba-fieldgroup) {
-  @include havana-cuba-groupbox($primaryStyleName);
+@mixin havana-cuba-fieldgroup($primary-stylename: cuba-fieldgroup) {
+  @include havana-cuba-groupbox($primary-stylename);
 
   /*
    * Style variations:
@@ -14,92 +14,92 @@
    * - border / noborder (default)
    */
 
-  .#{$primaryStyleName}-expander {
+  .#{$primary-stylename}-expander {
     display: none;
   }
 
-  .#{$primaryStyleName}-content,
-  .#{$primaryStyleName}-nocaption > .#{$primaryStyleName}-content {
+  .#{$primary-stylename}-content,
+  .#{$primary-stylename}-nocaption > .#{$primary-stylename}-content {
     padding: 0;
     border-width: 0;
     background-color: transparent;
   }
 
-  .#{$primaryStyleName}-captionwrap > .#{$primaryStyleName}-caption-start-deco div,
-  .#{$primaryStyleName}-nocaption > .#{$primaryStyleName}-captionwrap > .#{$primaryStyleName}-caption-start-deco div,
-  .#{$primaryStyleName}-captionwrap > .#{$primaryStyleName}-caption-end-deco div,
-  .#{$primaryStyleName}-nocaption > .#{$primaryStyleName}-captionwrap > .#{$primaryStyleName}-caption-end-deco div {
+  .#{$primary-stylename}-captionwrap > .#{$primary-stylename}-caption-start-deco div,
+  .#{$primary-stylename}-nocaption > .#{$primary-stylename}-captionwrap > .#{$primary-stylename}-caption-start-deco div,
+  .#{$primary-stylename}-captionwrap > .#{$primary-stylename}-caption-end-deco div,
+  .#{$primary-stylename}-nocaption > .#{$primary-stylename}-captionwrap > .#{$primary-stylename}-caption-end-deco div {
     border-width: 0;
-    border-color: $theme_groupBoxNoCaptionBorderColor;
+    border-color: $cuba-groupbox-nocaption-border-color;
     height: 0;
   }
 
-  .#{$primaryStyleName}-captionwrap > .#{$primaryStyleName}-caption-start-deco,
-  .#{$primaryStyleName}-captionwrap > .#{$primaryStyleName}-caption-end-deco {
+  .#{$primary-stylename}-captionwrap > .#{$primary-stylename}-caption-start-deco,
+  .#{$primary-stylename}-captionwrap > .#{$primary-stylename}-caption-end-deco {
     display: none;
   }
 
-  .#{$primaryStyleName}-captionwrap > .#{$primaryStyleName}-caption {
+  .#{$primary-stylename}-captionwrap > .#{$primary-stylename}-caption {
     padding: 0;
   }
 
-  .#{$primaryStyleName}-border > .#{$primaryStyleName}-captionwrap > .#{$primaryStyleName}-caption {
+  .#{$primary-stylename}-border > .#{$primary-stylename}-captionwrap > .#{$primary-stylename}-caption {
     padding: 0 5px;
   }
 
-  .#{$primaryStyleName}-border > .#{$primaryStyleName}-captionwrap > .#{$primaryStyleName}-caption-start-deco,
-  .#{$primaryStyleName}-border > .#{$primaryStyleName}-captionwrap > .#{$primaryStyleName}-caption-end-deco {
+  .#{$primary-stylename}-border > .#{$primary-stylename}-captionwrap > .#{$primary-stylename}-caption-start-deco,
+  .#{$primary-stylename}-border > .#{$primary-stylename}-captionwrap > .#{$primary-stylename}-caption-end-deco {
     display: inline-block;
   }
 
-  .#{$primaryStyleName}-nocaption > .#{$primaryStyleName}-captionwrap {
+  .#{$primary-stylename}-nocaption > .#{$primary-stylename}-captionwrap {
     display: none;
   }
 
-  .#{$primaryStyleName}-border.#{$primaryStyleName}-nocaption > .#{$primaryStyleName}-captionwrap {
+  .#{$primary-stylename}-border.#{$primary-stylename}-nocaption > .#{$primary-stylename}-captionwrap {
     display: block;
   }
 
-  .#{$primaryStyleName}-border > .#{$primaryStyleName}-content {
-    border-left: 1px solid $theme_groupBoxNoCaptionBorderColor;
-    border-right: 1px solid $theme_groupBoxNoCaptionBorderColor;
-    border-bottom: 1px solid $theme_groupBoxNoCaptionBorderColor;
-    background-color: $theme_groupBoxNoCaptionBackgroundColor;
+  .#{$primary-stylename}-border > .#{$primary-stylename}-content {
+    border-left: 1px solid $cuba-groupbox-nocaption-border-color;
+    border-right: 1px solid $cuba-groupbox-nocaption-border-color;
+    border-bottom: 1px solid $cuba-groupbox-nocaption-border-color;
+    background-color: $cuba-groupbox-nocaption-background-color;
     margin: 0;
     padding: 0 10px;
     padding-bottom: 10px;
   }
 
-  .#{$primaryStyleName}-light.#{$primaryStyleName}-border > .#{$primaryStyleName}-content {
+  .#{$primary-stylename}-light.#{$primary-stylename}-border > .#{$primary-stylename}-content {
     border: 0;
   }
 
-  .#{$primaryStyleName}-border > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-caption-start-deco div,
-  .#{$primaryStyleName}-border > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-caption-end-deco div {
+  .#{$primary-stylename}-border > .#{$primary-stylename}-captionwrap .#{$primary-stylename}-caption-start-deco div,
+  .#{$primary-stylename}-border > .#{$primary-stylename}-captionwrap .#{$primary-stylename}-caption-end-deco div {
     height: 10px;
-    background-color: $theme_groupBoxNoCaptionBackgroundColor;
+    background-color: $cuba-groupbox-nocaption-background-color;
   }
 
-  .#{$primaryStyleName}-border > .#{$primaryStyleName}-captionwrap  .#{$primaryStyleName}-caption-start-deco div {
+  .#{$primary-stylename}-border > .#{$primary-stylename}-captionwrap  .#{$primary-stylename}-caption-start-deco div {
     border-left-width: 1px;
     border-top-width: 1px;
   }
 
-  .#{$primaryStyleName}-light.#{$primaryStyleName}-border > .#{$primaryStyleName}-captionwrap  .#{$primaryStyleName}-caption-start-deco div {
+  .#{$primary-stylename}-light.#{$primary-stylename}-border > .#{$primary-stylename}-captionwrap  .#{$primary-stylename}-caption-start-deco div {
     border-left: 0;
   }
 
-  .#{$primaryStyleName}-border > .#{$primaryStyleName}-captionwrap  .#{$primaryStyleName}-caption-end-deco div {
+  .#{$primary-stylename}-border > .#{$primary-stylename}-captionwrap  .#{$primary-stylename}-caption-end-deco div {
     border-right-width: 1px;
     border-top-width: 1px;
   }
 
-  .#{$primaryStyleName}-light.#{$primaryStyleName}-border > .#{$primaryStyleName}-captionwrap  .#{$primaryStyleName}-caption-end-deco div {
+  .#{$primary-stylename}-light.#{$primary-stylename}-border > .#{$primary-stylename}-captionwrap  .#{$primary-stylename}-caption-end-deco div {
     border-right: 0;
   }
 
-  .#{$primaryStyleName}-border.#{$primaryStyleName}-nocaption > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-caption-start-deco div,
-  .#{$primaryStyleName}-border.#{$primaryStyleName}-nocaption > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-caption-end-deco div {
+  .#{$primary-stylename}-border.#{$primary-stylename}-nocaption > .#{$primary-stylename}-captionwrap .#{$primary-stylename}-caption-start-deco div,
+  .#{$primary-stylename}-border.#{$primary-stylename}-nocaption > .#{$primary-stylename}-captionwrap .#{$primary-stylename}-caption-end-deco div {
     height: 12px;
     padding-top: 2px;
   }

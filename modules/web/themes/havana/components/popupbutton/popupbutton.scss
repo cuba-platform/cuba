@@ -5,10 +5,10 @@
 
 // Version: $Id$
 
-@mixin havana-popupbutton($primaryStyleName: v-popupbutton) {
-  .#{$primaryStyleName}-popup {
+@mixin havana-popupbutton($primary-stylename: v-popupbutton) {
+  .#{$primary-stylename}-popup {
     padding: 3px;
-    border: 1px solid $theme_fieldBorderColor;
+    border: 1px solid $cuba-field-border-color;
     border-radius: 0;
     -webkit-border-radius: 0;
     -moz-border-radius: 0;
@@ -32,7 +32,7 @@
     }
 
     .v-button:hover {
-      background: $theme_fieldSelectionColor;
+      background: $cuba-field-selection-color;
 
       .v-button-caption {
         color: #fff;
@@ -52,7 +52,7 @@
     }
   }
 
-  .v-button.#{$primaryStyleName} .v-popup-indicator {
+  .v-button.#{$primary-stylename} .v-popup-indicator {
     vertical-align: middle;
     height: 12px;
     width: 12px;

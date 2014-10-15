@@ -5,17 +5,17 @@
 
 // Version: $Id$
 
-@mixin havana-treetable($primaryStyleName : v-treetable) {
-  .#{$primaryStyleName} {
-    .#{$primaryStyleName}-node-open {
+@mixin havana-treetable($primary-stylename : v-treetable) {
+  .#{$primary-stylename} {
+    .#{$primary-stylename}-node-open {
       background-image: url(../tree/images/item-expanded.png);
     }
 
-    .#{$primaryStyleName}-node-closed {
+    .#{$primary-stylename}-node-closed {
       background-image: url(../tree/images/item-collapsed.png);
     }
 
-    .#{$primaryStyleName}-treespacer {
+    .#{$primary-stylename}-treespacer {
       top: 1px;
       height: 12px;
     }

@@ -5,20 +5,20 @@
 
 // Version: $Id$
 
-@mixin halo-cuba-searchselect($primaryStyleName: cuba-searchselect) {
-  @include valo-combobox($primaryStyleName);
+@mixin halo-cuba-searchselect($primary-stylename: cuba-searchselect) {
+  @include valo-combobox($primary-stylename);
 
-  .#{$primaryStyleName} {
+  .#{$primary-stylename} {
     padding-right: 0px;
 
-    .#{$primaryStyleName}-button {
+    .#{$primary-stylename}-button {
       background: none;
       display: none;
     }
   }
 
-  .#{$primaryStyleName}-edit-filter.#{$primaryStyleName}-focus,
-  .#{$primaryStyleName}-edit-filter.#{$primaryStyleName}-focus .#{$primaryStyleName}-input:focus {
-    background-color: $theme_searchSelectEditColor;
+  .#{$primary-stylename}-edit-filter.#{$primary-stylename}-focus,
+  .#{$primary-stylename}-edit-filter.#{$primary-stylename}-focus .#{$primary-stylename}-input:focus {
+    background-color: $cuba-searchselect-edit-color;
   }
 }

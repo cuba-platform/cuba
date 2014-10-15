@@ -5,8 +5,8 @@
 
 // Version: $Id$
 
-@mixin havana-cuba-widgetstree($primaryStyleName: cuba-widgetstree){
-  .#{$primaryStyleName} {
+@mixin havana-cuba-widgetstree($primary-stylename: cuba-widgetstree){
+  .#{$primary-stylename} {
     .v-tree-node .v-tree-node-content {
       margin-left: 16px;
     }

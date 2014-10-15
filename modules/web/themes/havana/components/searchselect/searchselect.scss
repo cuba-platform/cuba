@@ -5,26 +5,26 @@
 
 // Version: $Id$
 
-@mixin havana-cuba-searchselect($primaryStyleName: cuba-searchselect) {
+@mixin havana-cuba-searchselect($primary-stylename: cuba-searchselect) {
 
-  @include havana-filterselect($primaryStyleName);
+  @include havana-filterselect($primary-stylename);
 
-  .#{$primaryStyleName} {
+  .#{$primary-stylename} {
     padding-right: 0px;
 
-    .#{$primaryStyleName}-button {
+    .#{$primary-stylename}-button {
       background: none;
       display: none;
     }
   }
 
-  .#{$primaryStyleName}-edit-filter.#{$primaryStyleName}-focus,
-  .#{$primaryStyleName}-edit-filter.#{$primaryStyleName}-focus .#{$primaryStyleName}-input:focus {
-    background-color: $theme_searchSelectEditColor;
+  .#{$primary-stylename}-edit-filter.#{$primary-stylename}-focus,
+  .#{$primary-stylename}-edit-filter.#{$primary-stylename}-focus .#{$primary-stylename}-input:focus {
+    background-color: $cuba-searchselect-edit-color;
   }
 
-  .v-readonly.#{$primaryStyleName}-edit-filter.#{$primaryStyleName}-focus,
-  .v-readonly.#{$primaryStyleName}-edit-filter.#{$primaryStyleName}-focus .#{$primaryStyleName}-input:focus {
+  .v-readonly.#{$primary-stylename}-edit-filter.#{$primary-stylename}-focus,
+  .v-readonly.#{$primary-stylename}-edit-filter.#{$primary-stylename}-focus .#{$primary-stylename}-input:focus {
     background-color: transparent;
   }
 }

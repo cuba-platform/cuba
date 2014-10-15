@@ -5,9 +5,9 @@
 
 // Version: $Id$
 
-@mixin havana-sourcecodeeditor($primaryStyleName : AceEditorWidget) {
-  .#{$primaryStyleName} {
-    border-color: $theme_fieldBorderColor;
+@mixin havana-sourcecodeeditor($primary-stylename : AceEditorWidget) {
+  .#{$primary-stylename} {
+    border-color: $cuba-field-border-color;
 
     .ace_cursor {
       visibility: hidden;
@@ -15,18 +15,18 @@
     }
   }
 
-  .#{$primaryStyleName} .ace_focus {
+  .#{$primary-stylename} .ace_focus {
     .ace_cursor {
       visibility: visible;
     }
   }
 
-  .#{$primaryStyleName}-focus {
-    border-color: $theme_fieldFocusedBorderColor;
+  .#{$primary-stylename}-focus {
+    border-color: $cuba-field-focused-border-color;
   }
 
-  .#{$primaryStyleName},
-  .#{$primaryStyleName}:focus {
+  .#{$primary-stylename},
+  .#{$primary-stylename}:focus {
     outline: none;
   }
 }

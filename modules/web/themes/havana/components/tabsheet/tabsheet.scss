@@ -5,22 +5,22 @@
 
 // Version: $Id$
 
-@mixin havana-tabsheet-third($primaryStyleName) {
+@mixin havana-tabsheet-third($primary-stylename) {
 
-  .#{$primaryStyleName} {
+  .#{$primary-stylename} {
 
-    .#{$primaryStyleName}-deco {
+    .#{$primary-stylename}-deco {
       background: transparent;
     }
 
     // inner tabsheet
     // Third level
-    .#{$primaryStyleName}-tabs {
+    .#{$primary-stylename}-tabs {
       background: transparent url(images/inner-tabsheet-bg.png) repeat-x bottom;
 
-      .#{$primaryStyleName}-tabitemcell {
-        .#{$primaryStyleName}-tabitem {
-          border-left: 1px solid $theme_tabsheetThirdBorderColor;
+      .#{$primary-stylename}-tabitemcell {
+        .#{$primary-stylename}-tabitem {
+          border-left: 1px solid $cuba-tabsheet-third-border-color;
           height: 14px;
           line-height: 14px;
           margin-bottom: 9px;
@@ -31,12 +31,12 @@
             height: 20px;
             padding: 0 6px 5px 4px;
             .v-captiontext {
-              color: $theme_tabsheetThirdCaptionColor;
+              color: $cuba-tabsheet-third-caption-color;
             }
           }
         }
 
-        .#{$primaryStyleName}-tabitem.#{$primaryStyleName}-tabitem-selected {
+        .#{$primary-stylename}-tabitem.#{$primary-stylename}-tabitem-selected {
           height: 25px;
           line-height: 14px;
           margin-bottom: 0;
@@ -45,53 +45,53 @@
         }
       }
 
-      .#{$primaryStyleName}-tabitemcell:first-child .#{$primaryStyleName}-tabitem {
+      .#{$primary-stylename}-tabitemcell:first-child .#{$primary-stylename}-tabitem {
         border-left: 1px transparent;
         padding-left: 0;
       }
 
-      .#{$primaryStyleName}-tabitemcell:first-child .#{$primaryStyleName}-tabitem.#{$primaryStyleName}-tabitem-selected {
-        border-left: 1px solid $theme_tabsheetThirdBorderColor;
+      .#{$primary-stylename}-tabitemcell:first-child .#{$primary-stylename}-tabitem.#{$primary-stylename}-tabitem-selected {
+        border-left: 1px solid $cuba-tabsheet-third-border-color;
         padding-left: 6px;
       }
 
       // after selected tab
       // hide separator
-      .#{$primaryStyleName}-tabitemcell-selected + .#{$primaryStyleName}-tabitemcell .#{$primaryStyleName}-tabitem {
+      .#{$primary-stylename}-tabitemcell-selected + .#{$primary-stylename}-tabitemcell .#{$primary-stylename}-tabitem {
         border-left: 1px transparent;
         padding-left: 0;
       }
 
-      .#{$primaryStyleName}-tabitem.#{$primaryStyleName}-tabitem-selected-first,
-      .#{$primaryStyleName}-tabitem.#{$primaryStyleName}-tabitem-selected {
-        background: $theme_tabsheetThirdBackgroundColor;
-        border-color: $theme_tabsheetThirdBorderColor;
+      .#{$primary-stylename}-tabitem.#{$primary-stylename}-tabitem-selected-first,
+      .#{$primary-stylename}-tabitem.#{$primary-stylename}-tabitem-selected {
+        background: $cuba-tabsheet-third-background-color;
+        border-color: $cuba-tabsheet-third-border-color;
       }
     }
 
-    .#{$primaryStyleName}-content {
-      background: $theme_tabsheetThirdBackgroundColor;
-      border: 1px solid $theme_tabsheetThirdBorderColor;
+    .#{$primary-stylename}-content {
+      background: $cuba-tabsheet-third-background-color;
+      border: 1px solid $cuba-tabsheet-third-border-color;
       border-top-style: none;
     }
   }
 }
 
-@mixin havana-tabsheet-second($primaryStyleName) {
+@mixin havana-tabsheet-second($primary-stylename) {
 
-  .#{$primaryStyleName} {
+  .#{$primary-stylename} {
     // inner tabsheet
     // Second level
 
-    .#{$primaryStyleName}-spacertd div {
+    .#{$primary-stylename}-spacertd div {
       border-bottom: 0;
     }
 
-    .#{$primaryStyleName}-tabs {
+    .#{$primary-stylename}-tabs {
       background: transparent url(images/middle-tabsheet-bg.png) repeat-x bottom;
 
-      .#{$primaryStyleName}-tabitem {
-        border-left: 1px solid $theme_tabsheetSecondBorderColor;
+      .#{$primary-stylename}-tabitem {
+        border-left: 1px solid $cuba-tabsheet-second-border-color;
         height: 14px;
         line-height: 14px;
         margin-bottom: 9px;
@@ -103,93 +103,93 @@
           padding: 0 6px 5px 4px;
 
           .v-captiontext {
-            color: $theme_tabsheetSecondCaptionColor;
+            color: $cuba-tabsheet-second-caption-color;
           }
         }
       }
 
-      .#{$primaryStyleName}-tabitem.#{$primaryStyleName}-tabitem-selected {
+      .#{$primary-stylename}-tabitem.#{$primary-stylename}-tabitem-selected {
         height: 25px;
         line-height: 14px;
         margin-bottom: 0;
         padding-left: 6px;
         padding-top: 3px;
-        border: 1px solid $theme_tabsheetSecondBorderColor;
+        border: 1px solid $cuba-tabsheet-second-border-color;
         border-bottom: 0;
-        background: $theme_tabsheetSecondBackgroundColor;
+        background: $cuba-tabsheet-second-background-color;
       }
 
-      .#{$primaryStyleName}-tabitem-selected-first {
+      .#{$primary-stylename}-tabitem-selected-first {
         border-bottom: 0;
-        background: $theme_tabsheetSecondBackgroundColor;
-        border-color: $theme_tabsheetSecondBorderColor;
+        background: $cuba-tabsheet-second-background-color;
+        border-color: $cuba-tabsheet-second-border-color;
       }
 
-      .#{$primaryStyleName}-tabitemcell:first-child .#{$primaryStyleName}-tabitem {
+      .#{$primary-stylename}-tabitemcell:first-child .#{$primary-stylename}-tabitem {
         border-left: 1px transparent;
         padding-left: 0;
       }
 
-      .#{$primaryStyleName}-tabitemcell:first-child .#{$primaryStyleName}-tabitem.#{$primaryStyleName}-tabitem-selected {
-        border-left: 1px solid $theme_tabsheetSecondBorderColor;
+      .#{$primary-stylename}-tabitemcell:first-child .#{$primary-stylename}-tabitem.#{$primary-stylename}-tabitem-selected {
+        border-left: 1px solid $cuba-tabsheet-second-border-color;
         padding-left: 6px;
       }
 
-      .#{$primaryStyleName}-tabitem.#{$primaryStyleName}-tabitemcell-selected,
-      .#{$primaryStyleName}-tabitem.#{$primaryStyleName}-tabitemcell-selected-first {
+      .#{$primary-stylename}-tabitem.#{$primary-stylename}-tabitemcell-selected,
+      .#{$primary-stylename}-tabitem.#{$primary-stylename}-tabitemcell-selected-first {
         border: 0;
         padding-left: 0;
       }
 
       // after selected tab
       // hide separator
-      .#{$primaryStyleName}-tabitemcell-selected + .#{$primaryStyleName}-tabitemcell .#{$primaryStyleName}-tabitem {
+      .#{$primary-stylename}-tabitemcell-selected + .#{$primary-stylename}-tabitemcell .#{$primary-stylename}-tabitem {
         border-left: 1px transparent;
         padding-left: 0;
       }
     }
 
-    .#{$primaryStyleName}-content {
-      border: 1px solid $theme_tabsheetSecondBorderColor;
+    .#{$primary-stylename}-content {
+      border: 1px solid $cuba-tabsheet-second-border-color;
       border-top-style: none;
-      background: $theme_tabsheetSecondBackgroundColor;
+      background: $cuba-tabsheet-second-background-color;
 
-      @include havana-tabsheet-third($primaryStyleName);
+      @include havana-tabsheet-third($primary-stylename);
     }
   }
 }
 
-@mixin havana-tabsheet($primaryStyleName: v-tabsheet) {
-  .#{$primaryStyleName} {
+@mixin havana-tabsheet($primary-stylename: v-tabsheet) {
+  .#{$primary-stylename} {
 
-    .#{$primaryStyleName}-spacertd {
+    .#{$primary-stylename}-spacertd {
       width: 100%;
       div {
         height: 28px;
         border-top: 0;
         background: transparent;
         border-left: 0;
-        border-bottom: 1px solid $theme_tabsheetBorderColor;
+        border-bottom: 1px solid $cuba-tabsheet-border-color;
       }
     }
 
-    .#{$primaryStyleName}-hidetabs .#{$primaryStyleName}-tabcontainer {
+    .#{$primary-stylename}-hidetabs .#{$primary-stylename}-tabcontainer {
       display: none;
     }
 
-    .#{$primaryStyleName}-hidetabs .v-tabsheet-content {
-      border-top: $theme_tabsheetHideTabsColor solid 1px;
+    .#{$primary-stylename}-hidetabs .v-tabsheet-content {
+      border-top: $cuba-tabsheet-hidetabs-color solid 1px;
     }
 
-    .#{$primaryStyleName}-scroller {
+    .#{$primary-stylename}-scroller {
       white-space: nowrap;
       text-align: right;
       height: 29px;
       margin-top: -29px;
     }
 
-    .#{$primaryStyleName}-scrollerPrev,
-    .#{$primaryStyleName}-scrollerNext {
+    .#{$primary-stylename}-scrollerPrev,
+    .#{$primary-stylename}-scrollerNext {
       border: none;
       width: 16px;
       height: 16px;
@@ -199,8 +199,8 @@
       background-repeat: no-repeat;
     }
 
-    .#{$primaryStyleName}-scrollerPrev-disabled,
-    .#{$primaryStyleName}-scrollerNext-disabled {
+    .#{$primary-stylename}-scrollerPrev-disabled,
+    .#{$primary-stylename}-scrollerNext-disabled {
       border: none;
       width: 16px;
       height: 16px;
@@ -210,21 +210,21 @@
       background: transparent none;
     }
 
-    .#{$primaryStyleName}-scrollerNext,
-    .#{$primaryStyleName}-scrollerNext:hover {
+    .#{$primary-stylename}-scrollerNext,
+    .#{$primary-stylename}-scrollerNext:hover {
       background-image: url(sprites/next-tab.png); /** sprite-ref: components; */
     }
 
-    .#{$primaryStyleName}-scrollerPrev,
-    .#{$primaryStyleName}-scrollerPrev:hover {
+    .#{$primary-stylename}-scrollerPrev,
+    .#{$primary-stylename}-scrollerPrev:hover {
       background-image: url(sprites/prev-tab.png); /** sprite-ref: components; */
     }
 
-    .#{$primaryStyleName}-tabcontainer {
+    .#{$primary-stylename}-tabcontainer {
       height: 33px;
     }
 
-    .#{$primaryStyleName}-tabs {
+    .#{$primary-stylename}-tabs {
       empty-cells: hide;
       border-collapse: collapse;
       margin: 0;
@@ -249,7 +249,7 @@
         vertical-align: bottom;
       }
 
-      .#{$primaryStyleName}-tabitem {
+      .#{$primary-stylename}-tabitem {
         border: 0;
         height: 26px;
         padding-top: 3px;
@@ -263,35 +263,35 @@
         }
       }
 
-      .#{$primaryStyleName}-tabitemcell {
+      .#{$primary-stylename}-tabitemcell {
         padding-left: 4px;
         border-bottom: 0;
         margin: 10px;
       }
 
-      .#{$primaryStyleName}-tabitem .v-caption .v-captiontext,
-      .#{$primaryStyleName}-tabitem.#{$primaryStyleName}-tabitem-selected .v-caption .v-captiontext {
-        font-family: $theme_fonts;
+      .#{$primary-stylename}-tabitem .v-caption .v-captiontext,
+      .#{$primary-stylename}-tabitem.#{$primary-stylename}-tabitem-selected .v-caption .v-captiontext {
+        font-family: $cuba-havana-fonts;
         font-size: 12px;
         font-weight: normal;
         float: left;
       }
 
-      .#{$primaryStyleName}-tabitem .v-caption .v-captiontext {
+      .#{$primary-stylename}-tabitem .v-caption .v-captiontext {
         border: 1px solid transparent;
-        color: $theme_tabsheetCaptionInactiveColor;
+        color: $cuba-tabsheet-caption-inactive-color;
       }
 
-      .#{$primaryStyleName}-tabitem.#{$primaryStyleName}-tabitem-selected .v-caption .v-captiontext {
-        color: $theme_tabsheetCaptionActiveColor;
+      .#{$primary-stylename}-tabitem.#{$primary-stylename}-tabitem-selected .v-caption .v-captiontext {
+        color: $cuba-tabsheet-caption-active-color;
       }
 
-      .#{$primaryStyleName}-tabitem .v-disabled {
-        color: $theme_tabsheetCaptionInactiveColor;
+      .#{$primary-stylename}-tabitem .v-disabled {
+        color: $cuba-tabsheet-caption-inactive-color;
       }
 
-      .#{$primaryStyleName}-tabitem {
-        .#{$primaryStyleName}-caption-close {
+      .#{$primary-stylename}-tabitem {
+        .#{$primary-stylename}-caption-close {
           cursor: pointer;
           width: 12px;
           height: 12px;
@@ -306,12 +306,12 @@
           margin: 2px -4px 0 0;
         }
 
-        .#{$primaryStyleName}-caption-close:hover {
+        .#{$primary-stylename}-caption-close:hover {
           background-image: url(sprites/tab-remove-hover.png);  /** sprite-ref: components; */
         }
       }
 
-      .#{$primaryStyleName}-tabitem.#{$primaryStyleName}-tabitem-selected {
+      .#{$primary-stylename}-tabitem.#{$primary-stylename}-tabitem-selected {
         .v-caption {
           background: none;
           margin: 0 -1px 0 0;
@@ -319,20 +319,20 @@
           overflow: visible;
         }
 
-        .#{$primaryStyleName}-caption-close {
+        .#{$primary-stylename}-caption-close {
           background-image: url(sprites/tab-remove-active.png); /** sprite-ref: components; */
         }
 
-        .#{$primaryStyleName}-caption-close:hover {
+        .#{$primary-stylename}-caption-close:hover {
           background-image: url(sprites/tab-remove-hover.png);  /** sprite-ref: components; */
         }
       }
 
-      .#{$primaryStyleName}-tabitem.#{$primaryStyleName}-tabitem-selected-first,
-      .#{$primaryStyleName}-tabitem.#{$primaryStyleName}-tabitem-selected {
-        border-top: 1px solid $theme_tabsheetBorderColor;
-        border-left: 1px solid $theme_tabsheetBorderColor;
-        border-right: 1px solid $theme_tabsheetBorderColor;
+      .#{$primary-stylename}-tabitem.#{$primary-stylename}-tabitem-selected-first,
+      .#{$primary-stylename}-tabitem.#{$primary-stylename}-tabitem-selected {
+        border-top: 1px solid $cuba-tabsheet-border-color;
+        border-left: 1px solid $cuba-tabsheet-border-color;
+        border-right: 1px solid $cuba-tabsheet-border-color;
         background: url(images/main-tabitem-bg.png) repeat-x;
         border-bottom: 0;
         height: 28px;
@@ -341,13 +341,13 @@
       }
     }
 
-    .#{$primaryStyleName}-deco {
+    .#{$primary-stylename}-deco {
       height: 1px;
       background: #fff;
       margin-left: 0;
     }
 
-    .#{$primaryStyleName}-loading .#{$primaryStyleName}-tabitem.#{$primaryStyleName}-tabitem-selected .v-captiontext {
+    .#{$primary-stylename}-loading .#{$primary-stylename}-tabitem.#{$primary-stylename}-tabitem-selected .v-captiontext {
       background: transparent;
       margin-left: -5px;
       padding-left: 5px;
@@ -357,29 +357,29 @@
       padding-top: 2px;
     }
 
-    .#{$primaryStyleName}-content {
+    .#{$primary-stylename}-content {
       background: #fff url(images/main-tabpanel-bg.png) repeat-x;
       border: none;
       position: relative;
 
-      @include havana-tabsheet-second($primaryStyleName);
+      @include havana-tabsheet-second($primary-stylename);
     }
   }
 
-  .#{$primaryStyleName}-focus > .#{$primaryStyleName}-tabcontainer {
-    .#{$primaryStyleName}-tabitem.#{$primaryStyleName}-tabitem-selected .v-caption .v-captiontext {
+  .#{$primary-stylename}-focus > .#{$primary-stylename}-tabcontainer {
+    .#{$primary-stylename}-tabitem.#{$primary-stylename}-tabitem-selected .v-caption .v-captiontext {
       border: 1px dashed #a5c4e0;
     }
   }
 
   // hide focus while tab updating content
-  .#{$primaryStyleName}-focus.#{$primaryStyleName}-loading > .#{$primaryStyleName}-tabcontainer {
-    .#{$primaryStyleName}-tabitem.#{$primaryStyleName}-tabitem-selected .v-caption .v-captiontext {
+  .#{$primary-stylename}-focus.#{$primary-stylename}-loading > .#{$primary-stylename}-tabcontainer {
+    .#{$primary-stylename}-tabitem.#{$primary-stylename}-tabitem-selected .v-caption .v-captiontext {
       border: 1px solid transparent;
     }
   }
 
   .v-window-contents {
-    @include havana-tabsheet-second($primaryStyleName);
+    @include havana-tabsheet-second($primary-stylename);
   }
 }

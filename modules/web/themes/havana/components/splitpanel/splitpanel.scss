@@ -5,13 +5,13 @@
 
 // Version: $Id$
 
-@mixin havana-splitpanel($primaryStyleName: v-splitpanel) {
-  .#{$primaryStyleName}-horizontal, .#{$primaryStyleName}-vertical {
+@mixin havana-splitpanel($primary-stylename: v-splitpanel) {
+  .#{$primary-stylename}-horizontal, .#{$primary-stylename}-vertical {
     overflow: hidden;
   }
 
-  .#{$primaryStyleName}-horizontal {
-    .#{$primaryStyleName}-hsplitter {
+  .#{$primary-stylename}-horizontal {
+    .#{$primary-stylename}-hsplitter {
       width: 4px;
 
       div {
@@ -20,20 +20,20 @@
         position: absolute;
         top: 0;
         bottom: 0;
-        background: $theme_splitPanelSplitterColor url(images/ruler-vertical.png) center no-repeat;
+        background: $cuba-splitpanel-splitter-color url(images/ruler-vertical.png) center no-repeat;
         cursor: e-resize;
         margin: 0 0;
       }
     }
   }
 
-  .#{$primaryStyleName}-vertical {
-    .#{$primaryStyleName}-vsplitter {
+  .#{$primary-stylename}-vertical {
+    .#{$primary-stylename}-vsplitter {
       height: 10px;
 
       div {
         height: 6px;
-        background: $theme_splitPanelSplitterColor url(images/ruler-horizontal.png) center no-repeat;
+        background: $cuba-splitpanel-splitter-color url(images/ruler-horizontal.png) center no-repeat;
         border: 0;
         cursor: n-resize;
         margin: 0;
@@ -58,17 +58,17 @@
     background-image: url(sprites/dock-button-right.png); /** sprite-ref: components; */
   }
 
-  .cuba-splitpanel-dockable-right > div > .#{$primaryStyleName}-hsplitter > div,
-  .cuba-splitpanel-dockable-left > div > .#{$primaryStyleName}-hsplitter > div {
+  .cuba-splitpanel-dockable-right > div > .#{$primary-stylename}-hsplitter > div,
+  .cuba-splitpanel-dockable-left > div > .#{$primary-stylename}-hsplitter > div {
     background: transparent none;
   }
 
-  .cuba-splitpanel-dockable-left > div > .#{$primaryStyleName}-hsplitter {
+  .cuba-splitpanel-dockable-left > div > .#{$primary-stylename}-hsplitter {
     width: 5px;
     background: url(images/dockable-split-left.png) center repeat-y;
   }
 
-  .cuba-splitpanel-dockable-right > div > .#{$primaryStyleName}-hsplitter {
+  .cuba-splitpanel-dockable-right > div > .#{$primary-stylename}-hsplitter {
     width: 5px;
     background: url(images/dockable-split-right.png) center repeat-y;
   }

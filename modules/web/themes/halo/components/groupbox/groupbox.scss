@@ -5,7 +5,7 @@
 
 // Version: $Id$
 
-@mixin halo-cuba-groupbox($primaryStyleName : cuba-groupbox) {
-  @include valo-panel($primaryStyleName);
-  @include halo-panel($primaryStyleName);
+@mixin halo-cuba-groupbox($primary-stylename : cuba-groupbox) {
+  @include valo-panel($primary-stylename);
+  @include halo-panel($primary-stylename);
 }

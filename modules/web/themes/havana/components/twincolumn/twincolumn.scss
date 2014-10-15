@@ -5,14 +5,14 @@
 
 // Version: $Id$
 
-@mixin havana-twincolumn($primaryStyleName: v-select-twincol){
+@mixin havana-twincolumn($primary-stylename: v-select-twincol){
 
-  .#{$primaryStyleName} {
+  .#{$primary-stylename} {
     white-space: nowrap;
     overflow: hidden;
   }
 
-  .#{$primaryStyleName} select {
+  .#{$primary-stylename} select {
     border: 1px solid #a5c4e0;
     background: #fff none;
     float: left;
@@ -20,25 +20,25 @@
     overflow-y: auto;
   }
 
-  .#{$primaryStyleName} select:focus {
+  .#{$primary-stylename} select:focus {
     outline-style: none;
     border-color: #4d7ab2;
   }
 
-  .#{$primaryStyleName} select option {
+  .#{$primary-stylename} select option {
     padding: 1px 0 1px 2px;
     border-bottom: 1px solid #fff;
     line-height: 18px;
     cursor: default;
   }
 
-  .#{$primaryStyleName}-buttons {
+  .#{$primary-stylename}-buttons {
     float: left;
     padding: 2px;
     text-align: center;
   }
 
-  .#{$primaryStyleName}-buttons .v-button {
+  .#{$primary-stylename}-buttons .v-button {
     margin-bottom: 5px;
     width: 30px;
   }

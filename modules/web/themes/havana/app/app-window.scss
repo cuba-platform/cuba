@@ -32,12 +32,12 @@
   }
 
   .v-button.cuba-buttons-white-border:focus {
-    border-color: $theme_appMenuHighlightColor;
+    border-color: $cuba-app-menu-highlight-color;
   }
 
   .v-button.cuba-buttons-white-border:hover {
     background: none;
-    border-color: $theme_appMenuHighlightColor;
+    border-color: $cuba-app-menu-highlight-color;
     .v-button-caption {
       text-shadow: black 1px 1px;
     }
@@ -60,7 +60,7 @@
       color: #fff;
       font-size: 12px;
       font-weight: normal;
-      font-family: $theme_fonts;
+      font-family: $cuba-havana-fonts;
       text-shadow: black 1px 1px;
     }
 
@@ -68,13 +68,13 @@
       color: #fff;
       font-size: 14px;
       font-weight: bold;
-      font-family: $theme_fonts;
+      font-family: $cuba-havana-fonts;
     }
   }
 
   .cuba-app-menubar {
     border-bottom: 1px solid #fff;
-    background: $theme_appHeaderBackgroundColor;
+    background: $cuba-app-header-background-color;
     padding-bottom: 0;
     padding-top: 0;
 
@@ -82,7 +82,7 @@
       color: #fff;
       font-size: 12px;
       font-weight: normal;
-      font-family: $theme_fonts;
+      font-family: $cuba-havana-fonts;
       text-shadow: black 1px 1px;
     }
 
@@ -97,7 +97,7 @@
 
   .cuba-app-work-area,
   .cuba-app-work-area-single {
-    background: $theme_appWorkAreaColor;
+    background: $cuba-app-work-area-color;
   }
 
   .cuba-app-work-area-single-window {
@@ -112,7 +112,7 @@
 
   .cuba-fts-button.v-button.v-button-link {
     display: inline-block;
-    border: 1px solid $theme_fieldBorderColor;
+    border: 1px solid $cuba-field-border-color;
     background: #fff;
     border-left: 0;
 

@@ -3,39 +3,39 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-@mixin halo-cuba-fieldgrouplayout($primaryStyleName: cuba-fieldgrouplayout) {
-  @include valo-gridlayout-global($primaryStyleName);
-  @include valo-gridlayout($primaryStyleName);
+@mixin halo-cuba-fieldgrouplayout($primary-stylename: cuba-fieldgrouplayout) {
+  @include valo-gridlayout-global($primary-stylename);
+  @include valo-gridlayout($primary-stylename);
 
-  .#{$primaryStyleName}-spacing-on {
+  .#{$primary-stylename}-spacing-on {
     padding-top: $v-layout-spacing-vertical/2;
   }
 
-  .#{$primaryStyleName}-slot.inline > .v-caption {
+  .#{$primary-stylename}-slot.inline > .v-caption {
     margin-right: $v-layout-spacing-horizontal/2;
     vertical-align: middle;
     line-height: $v-line-height;
     overflow: hidden;
   }
 
-  .#{$primaryStyleName}-slot > .v-checkbox {
+  .#{$primary-stylename}-slot > .v-checkbox {
     vertical-align: middle;
   }
 
-  .#{$primaryStyleName}-slot.inline > .v-caption.caption-indicators {
+  .#{$primary-stylename}-slot.inline > .v-caption.caption-indicators {
     margin-right: 0;
   }
 
-  .#{$primaryStyleName}-slot.inline > .v-caption .v-captiontext {
+  .#{$primary-stylename}-slot.inline > .v-caption .v-captiontext {
     padding-bottom: 0px;
   }
 
   // set line-height for all captions exclude captions for CheckBox and Label
-  .#{$primaryStyleName}-slot.cuba-full-height-widget .v-caption {
+  .#{$primary-stylename}-slot.cuba-full-height-widget .v-caption {
     height: $v-unit-size;
   }
 
-  .#{$primaryStyleName}-slot.cuba-full-height-widget .v-caption .v-captiontext {
+  .#{$primary-stylename}-slot.cuba-full-height-widget .v-caption .v-captiontext {
     line-height: $v-unit-size;
   }
 }

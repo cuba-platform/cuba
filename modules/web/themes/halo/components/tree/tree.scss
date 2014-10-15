@@ -5,20 +5,20 @@
 
 // Version: $Id$
 
-@mixin halo-tree($primaryStyleName: v-tree) {
-  .v-scrollable > .#{$primaryStyleName} {
+@mixin halo-tree($primary-stylename: v-tree) {
+  .v-scrollable > .#{$primary-stylename} {
     overflow: auto;
   }
 
-  .#{$primaryStyleName}-node,
-  .#{$primaryStyleName}-node-focused {
+  .#{$primary-stylename}-node,
+  .#{$primary-stylename}-node-focused {
     // This a v-tree-node-caption element
     &:after {
-      box-sizing: border-box;
+      @include box-defaults;
     }
 
     .v-ie8 & {
-      box-sizing: border-box;
+      @include box-defaults;
     }
   }
 }

@@ -29,7 +29,7 @@
 
     .v-tree:focus,
     .v-tree-focus {
-      border-color: $theme_fieldFocusedBorderColor;
+      border-color: $cuba-field-focused-border-color;
     }
   }
 
@@ -56,12 +56,12 @@
 
   .v-menubar-menuitem.v-menubar-menuitem-folders-pane-icon-active,
   .v-menubar-menuitem.v-menubar-menuitem-folders-pane-icon-active:hover {
-    border: 2px solid $theme_fieldFocusedBorderColor;
+    border: 2px solid $cuba-field-focused-border-color;
   }
 
   .v-label.cuba-folders-pane-caption {
     font-size: 14px;
-    color: $theme_foldersPaneCaptionColor;
+    color: $cuba-folderspane-caption-color;
     background: url(images/folders-pane-header-bg.png) no-repeat 5px bottom;
     padding-top: 5px;
     padding-left: 5px;

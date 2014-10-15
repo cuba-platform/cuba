@@ -5,8 +5,8 @@
 
 // Version: $Id$
 
-@mixin havana-cuba-pickerfield($primaryStyleName: cuba-pickerfield) {
-  .#{$primaryStyleName} {
+@mixin havana-cuba-pickerfield($primary-stylename: cuba-pickerfield) {
+  .#{$primary-stylename} {
     .v-textfield {
       height: 25px;
       padding-top: 0;
@@ -23,7 +23,7 @@
       padding: 0;
       display: block !important;
       text-align: center !important;
-      border: 1px solid $theme_fieldBorderColor;
+      border: 1px solid $cuba-field-border-color;
       background: #fff;
       border-left: 0;
       height: 25px;
@@ -48,7 +48,7 @@
     }
 
     .v-disabled.v-button:focus {
-      border: 1px solid $theme_fieldBorderColor;
+      border: 1px solid $cuba-field-border-color;
       border-left: 0;
     }
 
@@ -63,21 +63,21 @@
     .v-readonly.v-textfield.v-textfield-focus,
     .v-textfield-readonly.v-textfield-focus,
     .v-textfield-focus {
-      border-color: $theme_fieldFocusedBorderColor;
+      border-color: $cuba-field-focused-border-color;
     }
 
     .v-readonly.v-textfield,
     .v-textfield-readonly {
-      border: 1px solid $theme_fieldBorderColor;
+      border: 1px solid $cuba-field-border-color;
       overflow: hidden;
     }
   }
 
-  .#{$primaryStyleName}.v-readonly {
+  .#{$primary-stylename}.v-readonly {
     background-color: transparent;
 
     .v-button {
-      border: 1px solid $theme_fieldReadonlyBorderColor;
+      border: 1px solid $cuba-field-readonly-border-color;
       border-left: 0;
     }
 
@@ -85,7 +85,7 @@
     .v-readonly.v-textfield.v-textfield-focus,
     .v-textfield-readonly.v-textfield-focus,
     .v-textfield-focus {
-      border: 1px solid $theme_fieldReadonlyBorderColor;
+      border: 1px solid $cuba-field-readonly-border-color;
       overflow: hidden;
     }
   }

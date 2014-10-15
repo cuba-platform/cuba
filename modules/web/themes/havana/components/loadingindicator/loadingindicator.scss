@@ -5,10 +5,10 @@
 
 // Version: $Id$
 
-@mixin havana-loadingindicator($primaryStyleName: v-loading-indicator) {
-  .#{$primaryStyleName},
-  .#{$primaryStyleName}-delay,
-  .#{$primaryStyleName}-wait {
+@mixin havana-loadingindicator($primary-stylename: v-loading-indicator) {
+  .#{$primary-stylename},
+  .#{$primary-stylename}-delay,
+  .#{$primary-stylename}-wait {
     position: absolute;
     top: 6px;
     right: 5px;

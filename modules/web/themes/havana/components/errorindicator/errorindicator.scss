@@ -5,8 +5,8 @@
 
 // Version: $Id$
 
-@mixin havana-errorindicator($primaryStyleName: v-errorindicator) {
-  .#{$primaryStyleName} {
+@mixin havana-errorindicator($primary-stylename: v-errorindicator) {
+  .#{$primary-stylename} {
     width: 10px;
     height: 16px;
     float: left;

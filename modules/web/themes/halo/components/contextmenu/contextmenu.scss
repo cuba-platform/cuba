@@ -5,8 +5,8 @@
 
 // Version: $Id$
 
-@mixin halo-cuba-contextmenu($primaryStyleName: cuba-context-menu) {
-  .#{$primaryStyleName}-container {
+@mixin halo-cuba-contextmenu($primary-stylename: cuba-context-menu) {
+  .#{$primary-stylename}-container {
     @include valo-selection-overlay-style;
 
     .v-button {

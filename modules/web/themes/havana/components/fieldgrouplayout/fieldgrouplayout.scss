@@ -5,39 +5,39 @@
 
 // Version: $Id$
 
-@mixin havana-cuba-fieldgrouplayout($primaryStyleName: cuba-fieldgrouplayout) {
-  @include base-gridlayout($primaryStyleName);
+@mixin havana-cuba-fieldgrouplayout($primary-stylename: cuba-fieldgrouplayout) {
+  @include base-gridlayout($primary-stylename);
 
-  .#{$primaryStyleName}-spacing-on {
+  .#{$primary-stylename}-spacing-on {
     padding-left: 8px;
     padding-top: 4px;
   }
 
-  .#{$primaryStyleName}-slot.inline > .v-caption {
+  .#{$primary-stylename}-slot.inline > .v-caption {
     margin-right: 5px;
     vertical-align: top;
     line-height: 18px;
     overflow: hidden;
   }
 
-  .#{$primaryStyleName}-slot > .v-checkbox {
+  .#{$primary-stylename}-slot > .v-checkbox {
     vertical-align: middle;
   }
 
-  .#{$primaryStyleName}-slot.inline > .v-caption.caption-indicators {
+  .#{$primary-stylename}-slot.inline > .v-caption.caption-indicators {
     margin-right: 0;
   }
 
-  .#{$primaryStyleName}-slot.inline > .v-caption .v-captiontext {
+  .#{$primary-stylename}-slot.inline > .v-caption .v-captiontext {
     padding-bottom: 0px;
   }
 
   // set line-height 25px for all captions exclude captions for CheckBox and Label
-  .#{$primaryStyleName}-slot.cuba-full-height-widget .v-caption {
+  .#{$primary-stylename}-slot.cuba-full-height-widget .v-caption {
     height: 25px;
   }
 
-  .#{$primaryStyleName}-slot.cuba-full-height-widget .v-caption .v-captiontext {
+  .#{$primary-stylename}-slot.cuba-full-height-widget .v-caption .v-captiontext {
     line-height: 25px;
   }
 }

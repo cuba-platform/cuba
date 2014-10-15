@@ -5,9 +5,9 @@
 
 // Version: $Id$
 
-@mixin halo-menubar($primaryStyleName : v-menubar) {
-  .#{$primaryStyleName}:focus,
-  .#{$primaryStyleName}:focus:after {
+@mixin halo-menubar($primary-stylename : v-menubar) {
+  .#{$primary-stylename}:focus,
+  .#{$primary-stylename}:focus:after {
     box-shadow: none;
     border: valo-border();
   }

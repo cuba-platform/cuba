@@ -5,35 +5,35 @@
 
 // Version: $Id$
 
-@mixin havana-window($primaryStyleName: v-window) {
+@mixin havana-window($primary-stylename: v-window) {
 
-  .#{$primaryStyleName} {
+  .#{$primary-stylename} {
     color: #000;
     line-height: 18px;
     background: transparent;
 
-    .#{$primaryStyleName}-wrap {
-      font-family: $theme_fonts;
+    .#{$primary-stylename}-wrap {
+      font-family: $cuba-havana-fonts;
       color: #fff;
 
-      .#{$primaryStyleName}-outerheader {
+      .#{$primary-stylename}-outerheader {
         margin-left: 0;
         padding: 0 70px 0 5px;
-        background: $theme_windowHeaderColor no-repeat left top;
+        background: $cuba-window-header-color no-repeat left top;
         cursor: move;
         height: auto;
 
-        .#{$primaryStyleName}-header {
+        .#{$primary-stylename}-header {
           font-size: 13px;
           padding: 6px 5px 5px 7px;
           font-weight: bold;
           letter-spacing: 0;
-          background: $theme_windowHeaderColor no-repeat right top;
+          background: $cuba-window-header-color no-repeat right top;
           color: #ffffff;
           white-space: nowrap;
           text-overflow: ellipsis;
           overflow: hidden;
-          font-family: $theme_fonts;
+          font-family: $cuba-havana-fonts;
 
           margin-right: -45px; // min width for window title
 
@@ -43,9 +43,9 @@
         }
       }
 
-      .#{$primaryStyleName}-closebox,
-      .#{$primaryStyleName}-maximizebox,
-      .#{$primaryStyleName}-restorebox {
+      .#{$primary-stylename}-closebox,
+      .#{$primary-stylename}-maximizebox,
+      .#{$primary-stylename}-restorebox {
         position: absolute;
         top: 10px;
         width: 9px;
@@ -56,40 +56,40 @@
         overflow: hidden;
       }
 
-      .#{$primaryStyleName}-closebox {
+      .#{$primary-stylename}-closebox {
         right: 7px;
         background-image: url(sprites/close.png);  /** sprite-ref: components; */
       }
 
-      .#{$primaryStyleName}-closebox:hover {
+      .#{$primary-stylename}-closebox:hover {
         background-image: url(sprites/close-active.png); /** sprite-ref: components; */
       }
 
-      .#{$primaryStyleName}-maximizebox,
-      .#{$primaryStyleName}-restorebox {
+      .#{$primary-stylename}-maximizebox,
+      .#{$primary-stylename}-restorebox {
         right: 20px;
         background-image: url(sprites/maximize.png);  /** sprite-ref: components; */
       }
 
-      .#{$primaryStyleName}-maximizebox:hover,
-      .#{$primaryStyleName}-restorebox:hover {
+      .#{$primary-stylename}-maximizebox:hover,
+      .#{$primary-stylename}-restorebox:hover {
         background-image: url(sprites/maximize-active.png); /** sprite-ref: components; */
       }
 
-      .#{$primaryStyleName}-contents {
+      .#{$primary-stylename}-contents {
         background: #fff;
         color: #1E3146;
         padding: 8px;
         font-size: 12px;
-        font-family: $theme_fonts;
-        border: 1px solid $theme_windowBorderColor;
+        font-family: $cuba-havana-fonts;
+        border: 1px solid $cuba-window-border-color;
       }
 
-      .#{$primaryStyleName}-footer {
+      .#{$primary-stylename}-footer {
         height: 10px;
         background: transparent;
 
-        .#{$primaryStyleName}-resizebox {
+        .#{$primary-stylename}-resizebox {
           position: absolute; /* Needed to position the element over ScrollPanel, which is also relatively positioned */
           right: 1px;
           bottom: 1px;
@@ -101,13 +101,13 @@
           overflow: hidden;
         }
 
-        .#{$primaryStyleName}-resizebox-disabled {
+        .#{$primary-stylename}-resizebox-disabled {
           cursor: default;
           background: transparent;
         }
       }
 
-      .#{$primaryStyleName}-footer-noresize {
+      .#{$primary-stylename}-footer-noresize {
         height: 8px;
       }
     }

@@ -6,21 +6,21 @@
 // Version: $Id$
 
 
-@mixin halo-window($primaryStyleName: v-window) {
-  .#{$primaryStyleName}-contents {
+@mixin halo-window($primary-stylename: v-window) {
+  .#{$primary-stylename}-contents {
     padding-left: round($v-unit-size/2);
     padding-right: round($v-unit-size/2);
   }
 
-  .#{$primaryStyleName}-footer {
+  .#{$primary-stylename}-footer {
     padding-bottom: round($v-unit-size/2);
   }
 
-  .#{$primaryStyleName}-outerheader:after {
+  .#{$primary-stylename}-outerheader:after {
     display: none;
   }
 
-  .#{$primaryStyleName}-outerheader {
+  .#{$primary-stylename}-outerheader {
     border-bottom: valo-border();
   }
 }

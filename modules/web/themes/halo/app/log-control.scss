@@ -8,7 +8,7 @@
 @mixin cuba-log-control {
 
   .cuba-log-panel {
-    border: $theme_fieldFocusedBorderColor 1px solid;
+    border: $cuba-field-focused-border-color 1px solid;
   }
 
   .v-label.cuba-log-content {

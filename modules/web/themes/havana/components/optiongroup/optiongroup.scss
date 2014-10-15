@@ -5,19 +5,19 @@
 
 // Version: $Id$
 
-@mixin havana-optiongroup($primaryStyleName: v-select-optiongroup) {
-  .#{$primaryStyleName} {
+@mixin havana-optiongroup($primary-stylename: v-select-optiongroup) {
+  .#{$primary-stylename} {
     .v-select-option {
       outline: none;
       line-height: 16px;
 
       input:focus {
-        outline: 1px dashed $theme_fieldFocusedBorderColor;
+        outline: 1px dashed $cuba-field-focused-border-color;
       }
     }
   }
 
-  .#{$primaryStyleName}-horizontal {
+  .#{$primary-stylename}-horizontal {
     white-space: nowrap;
 
     .v-select-option {

@@ -5,16 +5,16 @@
 
 // Version: $Id$
 
-@mixin halo-table($primaryStyleName: v-table) {
-  .#{$primaryStyleName}-cell-content.boolean-cell-true .#{$primaryStyleName}-cell-wrapper,
-  .#{$primaryStyleName}-cell-content.boolean-cell-false .#{$primaryStyleName}-cell-wrapper {
+@mixin halo-table($primary-stylename: v-table) {
+  .#{$primary-stylename}-cell-content.boolean-cell-true .#{$primary-stylename}-cell-wrapper,
+  .#{$primary-stylename}-cell-content.boolean-cell-false .#{$primary-stylename}-cell-wrapper {
     color: transparent;
     height: round($v-unit-size/2);
     line-height: round($v-unit-size/2);
     width: round($v-unit-size/2);
   }
 
-  .#{$primaryStyleName}-cell-content.boolean-cell-true .#{$primaryStyleName}-cell-wrapper {
+  .#{$primary-stylename}-cell-content.boolean-cell-true .#{$primary-stylename}-cell-wrapper {
     &:before {
       color: $v-font-color;
       font-family: FontAwesome;
@@ -22,7 +22,7 @@
     }
   }
 
-  .#{$primaryStyleName}-cell-content.boolean-cell-false .#{$primaryStyleName}-cell-wrapper {
+  .#{$primary-stylename}-cell-content.boolean-cell-false .#{$primary-stylename}-cell-wrapper {
     &:before {
       color: $v-font-color;
       font-family: FontAwesome;
@@ -30,17 +30,17 @@
     }
   }
 
-  .#{$primaryStyleName}-column-selector {
+  .#{$primary-stylename}-column-selector {
     top: round($v-unit-size/2) - round($v-unit-size/4);
     right: round($v-unit-size/2) - round($v-unit-size/4);
   }
 
-  .v-scrollable > .#{$primaryStyleName} .#{$primaryStyleName}-column-selector {
+  .v-scrollable > .#{$primary-stylename} .#{$primary-stylename}-column-selector {
     top: round($v-unit-size/2) - round($v-unit-size/4);
     right: round($v-unit-size/2) - round($v-unit-size/4);
   }
 
-  .v-scrollable > .#{$primaryStyleName} {
+  .v-scrollable > .#{$primary-stylename} {
     overflow: auto;
   }
 }

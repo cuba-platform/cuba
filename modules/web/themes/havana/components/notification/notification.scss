@@ -5,9 +5,9 @@
 
 // Version: $Id$
 
-@mixin havana-notification($primaryStyleName: v-Notification) {
-  .#{$primaryStyleName} {
-    font-family: $theme_fonts;
+@mixin havana-notification($primary-stylename: v-Notification) {
+  .#{$primary-stylename} {
+    font-family: $cuba-havana-fonts;
     background-color: #818e92;
     color: #ffffff;
     padding: 9px 12px;
@@ -28,7 +28,7 @@
     }
   }
 
-  .#{$primaryStyleName}.warning {
+  .#{$primary-stylename}.warning {
     background: #fff1e4;
     color: #dd3400;
     border: 2px solid #ffaa90;
@@ -38,7 +38,7 @@
     opacity: 1;
   }
 
-  .#{$primaryStyleName}.error {
+  .#{$primary-stylename}.error {
     background: #f23d00 url(images/close-error.png) no-repeat right 5px;
     padding-right: 30px;
     border: 3px solid #c30000;
@@ -47,7 +47,7 @@
     border-radius: 6px;
   }
 
-  .#{$primaryStyleName}.tray {
+  .#{$primary-stylename}.tray {
     background: #575e60;
     padding: 0.5em;
     margin: 0 5px 5px 0;
@@ -76,7 +76,7 @@
     }
   }
 
-  .#{$primaryStyleName}.system {
+  .#{$primary-stylename}.system {
     background-color: #ff0a0a;
     opacity: 0.7;
     filter: alpha(opacity=70);

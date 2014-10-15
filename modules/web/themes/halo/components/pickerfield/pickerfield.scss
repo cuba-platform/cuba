@@ -5,8 +5,8 @@
 
 // Version: $Id$
 
-@mixin halo-cuba-pickerfield($primaryStyleName: cuba-pickerfield) {
-  .#{$primaryStyleName} {
+@mixin halo-cuba-pickerfield($primary-stylename: cuba-pickerfield) {
+  .#{$primary-stylename} {
     .v-textfield.v-textfield-readonly {
       @if $v-textfield-background-color {
         background: $v-textfield-background-color;
@@ -79,7 +79,7 @@
     }
   }
 
-  .#{$primaryStyleName}-error {
+  .#{$primary-stylename}-error {
     .v-textfield.v-textfield-readonly {
       @include valo-textfield-error-style;
     }
@@ -102,7 +102,7 @@
     }
   }
 
-  .#{$primaryStyleName}.v-readonly {
+  .#{$primary-stylename}.v-readonly {
     .v-textfield.v-textfield-readonly {
       @include valo-textfield-readonly-style;
     }

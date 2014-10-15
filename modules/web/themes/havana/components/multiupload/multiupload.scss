@@ -5,14 +5,14 @@
 
 // Version: $Id$
 
-@mixin havana-cuba-multiupload($primaryStyleName : cuba-multiupload) {
-  .#{$primaryStyleName} {
+@mixin havana-cuba-multiupload($primary-stylename : cuba-multiupload) {
+  .#{$primary-stylename} {
     @include box-defaults;
 
     z-index: auto;
   }
 
-  .#{$primaryStyleName}-disabled {
+  .#{$primary-stylename}-disabled {
     @include box-defaults;
 
     z-index: auto;
@@ -20,7 +20,7 @@
     background-color: gray;
   }
 
-  .#{$primaryStyleName}-progress {
+  .#{$primary-stylename}-progress {
     position: fixed;
     padding: 10px;
     left: 50%;

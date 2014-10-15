@@ -5,8 +5,8 @@
 
 // Version: $Id$
 
-@mixin halo-optiongroup($primaryStyleName: v-select-optiongroup) {
-  .#{$primaryStyleName}-horizontal {
+@mixin halo-optiongroup($primary-stylename: v-select-optiongroup) {
+  .#{$primary-stylename}-horizontal {
     white-space: nowrap;
 
     .v-select-option:last-child {

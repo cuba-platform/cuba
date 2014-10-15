@@ -5,10 +5,10 @@
 
 // Version: $Id$
 
-@mixin havana-textfield($primaryStyleName: v-textfield) {
-  .#{$primaryStyleName} {
+@mixin havana-textfield($primary-stylename: v-textfield) {
+  .#{$primary-stylename} {
     padding: 2px;
-    border: 1px solid $theme_fieldBorderColor;
+    border: 1px solid $cuba-field-border-color;
     margin: 0;
     font-size: 12px;
     height: 25px;
@@ -16,13 +16,13 @@
     background: #ffffff;
   }
 
-  .#{$primaryStyleName}:focus {
-    border-color: $theme_fieldFocusedBorderColor;
+  .#{$primary-stylename}:focus {
+    border-color: $cuba-field-focused-border-color;
     outline: 0;
   }
 
-  .#{$primaryStyleName}.v-readonly {
+  .#{$primary-stylename}.v-readonly {
     background: transparent;
-    border: $theme_fieldReadonlyBorderColor 1px solid;
+    border: $cuba-field-readonly-border-color 1px solid;
   }
 }

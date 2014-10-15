@@ -5,12 +5,12 @@
 
 // Version: $Id$
 
-@mixin halo-cuba-tokenlist($primaryStyleName: cuba-tokenlist) {
-  .#{$primaryStyleName} .v-csslayout {
+@mixin halo-cuba-tokenlist($primary-stylename: cuba-tokenlist) {
+  .#{$primary-stylename} .v-csslayout {
     clear: both;
   }
 
-  .#{$primaryStyleName} .cuba-tokenlist-label.v-widget {
+  .#{$primary-stylename} .cuba-tokenlist-label.v-widget {
     clear: both;
     margin: 0 $v-layout-margin-right $v-layout-margin-bottom 0;
     height: $v-unit-size;
@@ -19,7 +19,7 @@
     padding-left: $v-layout-margin-left;
   }
 
-  .#{$primaryStyleName} .cuba-tokenlist-label-close {
+  .#{$primary-stylename} .cuba-tokenlist-label-close {
     height: $v-unit-size;
     width: $v-unit-size;
     cursor: pointer;
@@ -33,12 +33,12 @@
     }
   }
 
-  .#{$primaryStyleName} .cuba-tokenlist-label-content {
+  .#{$primary-stylename} .cuba-tokenlist-label-content {
     white-space: nowrap;
     outline: none;
   }
 
-  .#{$primaryStyleName} .cuba-tokenlist-label-content .content {
+  .#{$primary-stylename} .cuba-tokenlist-label-content .content {
     white-space: nowrap;
     cursor: default;
     overflow: hidden;
@@ -47,22 +47,22 @@
     vertical-align: top;
   }
 
-  .#{$primaryStyleName}.inline .cuba-tokenlist-label.v-widget {
+  .#{$primary-stylename}.inline .cuba-tokenlist-label.v-widget {
     clear: none;
     margin-right: $v-layout-margin-right;
     float: left;
   }
 
-  .#{$primaryStyleName} .cuba-tokenlist-label.noedit {
+  .#{$primary-stylename} .cuba-tokenlist-label.noedit {
     background-image: none;
     padding-right: $v-layout-margin-right;
   }
 
-  .#{$primaryStyleName} .cuba-tokenlist-label-content.noedit .content {
+  .#{$primary-stylename} .cuba-tokenlist-label-content.noedit .content {
     margin-right: 0;
   }
 
-  .#{$primaryStyleName} .cuba-tokenlist-label.open .content {
+  .#{$primary-stylename} .cuba-tokenlist-label.open .content {
     cursor: pointer;
   }
 }

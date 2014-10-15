@@ -5,8 +5,8 @@
 
 // Version: $Id$
 
-@mixin halo-sourcecodeeditor($primaryStyleName : AceEditorWidget) {
-  .#{$primaryStyleName} {
+@mixin halo-sourcecodeeditor($primary-stylename : AceEditorWidget) {
+  .#{$primary-stylename} {
     $padding-width: ceil($v-unit-size/6);
 
     @include valo-textfield-style($padding: $padding-width);
@@ -17,18 +17,18 @@
     }
   }
 
-  .#{$primaryStyleName} .ace_focus {
+  .#{$primary-stylename} .ace_focus {
     .ace_cursor {
       visibility: visible;
     }
   }
 
-  .#{$primaryStyleName}-focus {
+  .#{$primary-stylename}-focus {
     @include valo-textfield-focus-style;
   }
 
-  .#{$primaryStyleName},
-  .#{$primaryStyleName}:focus {
+  .#{$primary-stylename},
+  .#{$primary-stylename}:focus {
     outline: none;
   }
 }

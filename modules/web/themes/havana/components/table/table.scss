@@ -5,31 +5,31 @@
 
 // Version: $Id$
 
-@mixin havana-table($primaryStyleName: v-table) {
-  .#{$primaryStyleName} {
+@mixin havana-table($primary-stylename: v-table) {
+  .#{$primary-stylename} {
     text-align: left;
 
-    .#{$primaryStyleName}-arow {
+    .#{$primary-stylename}-arow {
       @include box-defaults;
 
-      border-top: 1px solid $theme_fieldBorderColor;
-      border-left: 1px solid $theme_fieldBorderColor;
-      border-right: 1px solid $theme_fieldBorderColor;
+      border-top: 1px solid $cuba-field-border-color;
+      border-left: 1px solid $cuba-field-border-color;
+      border-right: 1px solid $cuba-field-border-color;
     }
 
-    .#{$primaryStyleName}-arow-row {
+    .#{$primary-stylename}-arow-row {
       @include box-defaults;
 
       height: 24px;
       background: #ccc;
-      border-right: 1px solid $theme_fieldBorderColor;
+      border-right: 1px solid $cuba-field-border-color;
     }
 
-    .#{$primaryStyleName}-arow-row > .#{$primaryStyleName}-cell-content {
+    .#{$primary-stylename}-arow-row > .#{$primary-stylename}-cell-content {
       border-bottom: 0;
     }
 
-    .#{$primaryStyleName}-cell-content.boolean-cell-true .#{$primaryStyleName}-cell-wrapper {
+    .#{$primary-stylename}-cell-content.boolean-cell-true .#{$primary-stylename}-cell-wrapper {
       color: transparent;
       font-size: 0px;
       height: 13px;
@@ -37,7 +37,7 @@
       background-image: url(sprites/checkbox-checked.png); /** sprite-ref: components; */
     }
 
-    .#{$primaryStyleName}-cell-content.boolean-cell-false .#{$primaryStyleName}-cell-wrapper {
+    .#{$primary-stylename}-cell-content.boolean-cell-false .#{$primary-stylename}-cell-wrapper {
       color: transparent;
       font-size: 0px;
       height: 13px;
@@ -45,19 +45,19 @@
       background-image: url(sprites/checkbox-unchecked.png); /** sprite-ref: components; */
     }
 
-    .#{$primaryStyleName}-header-wrap {
+    .#{$primary-stylename}-header-wrap {
       height: 23px;
-      background: $theme_tableHeaderBackgroundColor;
-      border: 1px solid $theme_fieldBorderColor;
+      background: $cuba-table-header-background-color;
+      border: 1px solid $cuba-field-border-color;
       border-bottom: none;
       overflow: hidden;
       position: relative;
 
-      .#{$primaryStyleName}-header {
+      .#{$primary-stylename}-header {
         height: 23px;
 
-        .#{$primaryStyleName}-caption-container {
-          color: $theme_tableTextColor;
+        .#{$primary-stylename}-caption-container {
+          color: $cuba-table-text-color;
           height: 23px;
           float: left;
           overflow: hidden;
@@ -67,10 +67,10 @@
           font-size: 11px;
         }
 
-        .#{$primaryStyleName}-header-cell:hover,
-        .#{$primaryStyleName}-header-cell-asc:hover,
-        .#{$primaryStyleName}-header-cell-desc:hover {
-          background: $theme_tableHeaderHoverBackgroundColor;
+        .#{$primary-stylename}-header-cell:hover,
+        .#{$primary-stylename}-header-cell-asc:hover,
+        .#{$primary-stylename}-header-cell-desc:hover {
+          background: $cuba-table-header-hover-background-color;
         }
 
         table {
@@ -81,54 +81,54 @@
         }
       }
 
-      .#{$primaryStyleName}-resizer {
+      .#{$primary-stylename}-resizer {
         @include box-defaults;
 
         display: block;
         height: 23px;
         float: right;
         background: transparent;
-        border-right: 1px solid $theme_fieldBorderColor;
+        border-right: 1px solid $cuba-field-border-color;
         width: 3px;
         cursor: col-resize;
       }
 
-      .#{$primaryStyleName}-header > div {
+      .#{$primary-stylename}-header > div {
         height: 23px;
       }
     }
 
-    .#{$primaryStyleName}-body-wrapper {
-      border: 1px solid $theme_fieldBorderColor;
+    .#{$primary-stylename}-body-wrapper {
+      border: 1px solid $cuba-field-border-color;
     }
 
-    .#{$primaryStyleName}-body {
+    .#{$primary-stylename}-body {
       background: #fff;
     }
 
-    .#{$primaryStyleName}-cell-content {
-      border-right-color: $theme_tableCellSeparatorColor;
+    .#{$primary-stylename}-cell-content {
+      border-right-color: $cuba-table-cell-separator-color;
       font-size: 11px;
       line-height: 15px;
-      color: $theme_tableTextColor;
-      border-bottom: 1px solid $theme_tableCellSeparatorColor;
+      color: $cuba-table-text-color;
+      border-bottom: 1px solid $cuba-table-cell-separator-color;
 
       .v-button-caption,
       .v-button-link .v-button-caption {
         font-size: 11px;
-        color: $theme_buttonCaptionColor;
+        color: $cuba-button-caption-color;
       }
 
       .v-label {
         font-size: 11px;
       }
 
-      .#{$primaryStyleName}-cell-wrapper {
+      .#{$primary-stylename}-cell-wrapper {
         font-size: 11px;
       }
     }
 
-    .#{$primaryStyleName}-cell-wrapper.widget-container {
+    .#{$primary-stylename}-cell-wrapper.widget-container {
       padding-top: 2px;
       padding-bottom: 2px;
 
@@ -138,58 +138,58 @@
       }
     }
 
-    .#{$primaryStyleName}-row,
-    .#{$primaryStyleName}-row-odd {
-      background-color: $theme_tableRowBackgroundColor;
+    .#{$primary-stylename}-row,
+    .#{$primary-stylename}-row-odd {
+      background-color: $cuba-table-row-background-color;
       height: 24px;
       cursor: default;
     }
 
-    .#{$primaryStyleName}-row-odd {
-      background-color: $theme_tableRowOddBackgroundColor;
+    .#{$primary-stylename}-row-odd {
+      background-color: $cuba-table-row-odd-background-color;
     }
 
-    .#{$primaryStyleName}-row:hover,
-    .#{$primaryStyleName}-row-odd:hover {
-      background-color: $theme_tableRowHoverBackgroundColor;
+    .#{$primary-stylename}-row:hover,
+    .#{$primary-stylename}-row-odd:hover {
+      background-color: $cuba-table-row-hover-background-color;
       .on-hover-visible-layout {
         visibility: visible;
       }
     }
 
-    .#{$primaryStyleName}-caption-row {
+    .#{$primary-stylename}-caption-row {
       background-color: #c6cbcd;
       cursor: default;
     }
 
-    .#{$primaryStyleName}-caption-row-content {
+    .#{$primary-stylename}-caption-row-content {
       white-space: nowrap;
       overflow: hidden;
       line-height: 15px;
     }
 
-    .#{$primaryStyleName}-row.v-selected,
-    .#{$primaryStyleName}-row-odd.v-selected,
-    .#{$primaryStyleName}-caption-row.v-selected {
-      background-color: $theme_tableRowSelectionBackgroundColor;
+    .#{$primary-stylename}-row.v-selected,
+    .#{$primary-stylename}-row-odd.v-selected,
+    .#{$primary-stylename}-caption-row.v-selected {
+      background-color: $cuba-table-row-selection-background-color;
 
-      .#{$primaryStyleName}-cell-content {
-        color: $theme_tableTextColor;
+      .#{$primary-stylename}-cell-content {
+        color: $cuba-table-text-color;
       }
     }
 
-    .#{$primaryStyleName}-focus .#{$primaryStyleName}-cell-content {
+    .#{$primary-stylename}-focus .#{$primary-stylename}-cell-content {
       border-top: 0;
-      border-bottom: 1px solid $theme_tableCellSeparatorColor;
+      border-bottom: 1px solid $cuba-table-cell-separator-color;
     }
 
-    .#{$primaryStyleName}-focus .#{$primaryStyleName}-cell-wrapper {
+    .#{$primary-stylename}-focus .#{$primary-stylename}-cell-wrapper {
       margin-top: 0;
       margin-bottom: 0;
     }
 
-    .#{$primaryStyleName}-header-cell-asc .#{$primaryStyleName}-sort-indicator,
-    .#{$primaryStyleName}-header-cell-desc .#{$primaryStyleName}-sort-indicator {
+    .#{$primary-stylename}-header-cell-asc .#{$primary-stylename}-sort-indicator,
+    .#{$primary-stylename}-header-cell-desc .#{$primary-stylename}-sort-indicator {
       width: 10px;
       height: 10px;
       background: transparent;
@@ -198,15 +198,15 @@
       margin-top: 4px;
     }
 
-    .#{$primaryStyleName}-header-cell-asc .#{$primaryStyleName}-sort-indicator {
+    .#{$primary-stylename}-header-cell-asc .#{$primary-stylename}-sort-indicator {
       background-image: url(sprites/sort-asc.png); /** sprite-ref: components; */
     }
 
-    .#{$primaryStyleName}-header-cell-desc .#{$primaryStyleName}-sort-indicator {
+    .#{$primary-stylename}-header-cell-desc .#{$primary-stylename}-sort-indicator {
       background-image: url(sprites/sort-desc.png); /** sprite-ref: components; */
     }
 
-    .#{$primaryStyleName}-column-selector {
+    .#{$primary-stylename}-column-selector {
       width: 16px;
       height: 16px;
       margin-top: -20px;
@@ -216,7 +216,7 @@
       background-image: url(sprites/column-selector.png); /** sprite-ref: components; */
     }
 
-    .#{$primaryStyleName}-scrollposition {
+    .#{$primary-stylename}-scrollposition {
       width: 160px;
       height: 39px;
       border: 0;
@@ -228,7 +228,7 @@
       background-image: url(sprites/scroll-position-bg.png); /** sprite-ref: components-large; */
     }
 
-    .#{$primaryStyleName}-scrollposition span {
+    .#{$primary-stylename}-scrollposition span {
       display: block;
       margin-top: 8px;
       text-align: center;
@@ -237,9 +237,9 @@
     }
   }
 
-  .#{$primaryStyleName}-column-selector-popup.v-contextmenu {
+  .#{$primary-stylename}-column-selector-popup.v-contextmenu {
     .gwt-MenuItem {
-      font-family: $theme_fonts;
+      font-family: $cuba-havana-fonts;
 
       div {
         padding: 2px 8px 2px 18px;
@@ -252,17 +252,17 @@
 
     .gwt-MenuItem-selected {
       div {
-        background: $theme_fieldSelectionColor;
+        background: $cuba-field-selection-color;
       }
 
       .v-on div {
-        background: $theme_fieldSelectionColor url(images/check-hover.png) no-repeat 5px 50%;
+        background: $cuba-field-selection-color url(images/check-hover.png) no-repeat 5px 50%;
         color: #fff;
       }
     }
   }
 
-  .#{$primaryStyleName}-header-drag {
+  .#{$primary-stylename}-header-drag {
     position: absolute;
     background: #e7edf3;
     border: 1px solid #b6bbbc;
@@ -274,12 +274,12 @@
     line-height: normal;
   }
 
-  .#{$primaryStyleName} > div:focus {
+  .#{$primary-stylename} > div:focus {
     outline: none;
   }
 
-  .#{$primaryStyleName} > div:focus,
-  .#{$primaryStyleName}.#{$primaryStyleName}-body-focus .#{$primaryStyleName}-body.#{$primaryStyleName}-body-wrapper {
-    border-color: $theme_fieldFocusedBorderColor;
+  .#{$primary-stylename} > div:focus,
+  .#{$primary-stylename}.#{$primary-stylename}-body-focus .#{$primary-stylename}-body.#{$primary-stylename}-body-wrapper {
+    border-color: $cuba-field-focused-border-color;
   }
 }

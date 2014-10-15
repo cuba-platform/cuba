@@ -5,9 +5,9 @@
 
 // Version: $Id$
 
-@mixin havana-cuba-grouptable($primaryStyleName : cuba-grouptable) {
-  .#{$primaryStyleName} {
-    .#{$primaryStyleName}-group-cell-expander {
+@mixin havana-cuba-grouptable($primary-stylename : cuba-grouptable) {
+  .#{$primary-stylename} {
+    .#{$primary-stylename}-group-cell-expander {
       width: 12px;
       height: 12px;
       margin-right: 2px;
@@ -20,11 +20,11 @@
       cursor: pointer;
     }
 
-    .v-expanded .#{$primaryStyleName}-group-cell-expander {
+    .v-expanded .#{$primary-stylename}-group-cell-expander {
       background-image:  url(../tree/images/item-expanded.png);
     }
 
-    .#{$primaryStyleName}-float {
+    .#{$primary-stylename}-float {
       display: inline-block;
       vertical-align: middle;
     }

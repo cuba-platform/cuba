@@ -5,9 +5,9 @@
 
 // Version: $Id$
 
-@mixin halo-cuba-grouptable($primaryStyleName : cuba-grouptable) {
-  .#{$primaryStyleName} {
-    .#{$primaryStyleName}-group-cell-expander {
+@mixin halo-cuba-grouptable($primary-stylename : cuba-grouptable) {
+  .#{$primary-stylename} {
+    .#{$primary-stylename}-group-cell-expander {
       @include box-defaults;
 
       vertical-align: middle;
@@ -21,7 +21,7 @@
       }
     }
 
-    .v-expanded .#{$primaryStyleName}-group-cell-expander {
+    .v-expanded .#{$primary-stylename}-group-cell-expander {
       &:before {
         color: $v-font-color;
         font-family: FontAwesome;
@@ -29,7 +29,7 @@
       }
     }
 
-    .#{$primaryStyleName}-float {
+    .#{$primary-stylename}-float {
       display: inline-block;
       vertical-align: middle;
     }

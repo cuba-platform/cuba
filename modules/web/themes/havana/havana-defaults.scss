@@ -6,76 +6,76 @@
 // Global theme constants
 // Version: $Id$
 
-$theme_fonts: Verdana, tahoma, arial, geneva, helvetica, sans-serif, "Trebuchet MS";
-$theme_fontColor: #1e3146;
+$cuba-havana-fonts: Verdana, tahoma, arial, geneva, helvetica, sans-serif, "Trebuchet MS";
+$cuba-havana-font-color: #1e3146;
 
-$theme_appHeaderBackgroundColor: #315379;
-$theme_appMenuHighlightColor: #506d8d;
-$theme_appSubmenuBackgroundColor: #315379;
-$theme_appWorkAreaColor: #8398AF;
+$cuba-app-header-background-color: #315379;
+$cuba-app-menu-highlight-color: #506d8d;
+$cuba-app-submenu-background-color: #315379;
+$cuba-app-work-area-color: #8398AF;
 
-$theme_loginFormBackgroundColor: #f4f6f8;
-$theme_loginFormBorderColor: #cde0ec;
+$cuba-loginform-background-color: #f4f6f8;
+$cuba-loginform-border-color: #cde0ec;
 
-$theme_windowHeaderColor: #2b4666;
-$theme_windowBorderColor: #8aa9d1;
+$cuba-window-header-color: #2b4666;
+$cuba-window-border-color: #8aa9d1;
 
-$theme_foldersPaneCaptionColor: #2B4766;
+$cuba-folderspane-caption-color: #2B4766;
 
-$theme_buttonBorderColor: #9bb3d3;
-$theme_buttonFocucedBorderColor: #4d7ab2;
-$theme_buttonCaptionColor: #1e3146;
+$cuba-button-border-color: #9bb3d3;
+$cuba-button-focuced-border-color: #4d7ab2;
+$cuba-button-caption-color: #1e3146;
 
-$theme_fieldBorderColor: #a5c4e0;
-$theme_fieldFocusedBorderColor: #4d7ab2;
-$theme_fieldReadonlyBorderColor: #c3c3c3;
-$theme_fieldPopupBorderColor: #8aa9d1;
-$theme_fieldSelectionColor: #4d7ab2;
+$cuba-field-border-color: #a5c4e0;
+$cuba-field-focused-border-color: #4d7ab2;
+$cuba-field-readonly-border-color: #c3c3c3;
+$cuba-field-popup-border-color: #8aa9d1;
+$cuba-field-selection-color: #4d7ab2;
 
-$theme_dateFieldTodayColor: #4d7ab2;
-$theme_dateFieldSelectionColor: #4d7ab2;
-$theme_dateFieldSelectionBorderColor: #214db2;
+$cuba-datefield-today-color: #4d7ab2;
+$cuba-datefield-selection-color: #4d7ab2;
+$cuba-datefield-selection-border-color: #214db2;
 
-$theme_fieldGroupBorderedBackgroundColor: #fbfdfd;
+$cuba-fieldgroup-bordered-background-color: #fbfdfd;
 
-$theme_breadcrumbsColor: #2b4666;
-$theme_linkColor: #0066ff;
+$cuba-breadcrumbs-color: #2b4666;
+$cuba-link-color: #0066ff;
 
-$theme_tabsheetHideTabsColor: #b5babb;
+$cuba-tabsheet-hidetabs-color: #b5babb;
 
-$theme_groupBoxBorderColor: #babfc0;
-$theme_groupBoxNoCaptionBorderColor: #a5c4e0;
-$theme_groupBoxNoCaptionBackgroundColor: #fbfdfd;
+$cuba-groupbox-border-color: #babfc0;
+$cuba-groupbox-nocaption-border-color: #a5c4e0;
+$cuba-groupbox-nocaption-background-color: #fbfdfd;
 
-$theme_tabsheetBorderColor: #647e9b;
-$theme_tabsheetCaptionActiveColor: #1e3146;
-$theme_tabsheetCaptionInactiveColor: #fff;
+$cuba-tabsheet-border-color: #647e9b;
+$cuba-tabsheet-caption-active-color: #1e3146;
+$cuba-tabsheet-caption-inactive-color: #fff;
 
-$theme_tabsheetSecondBorderColor: #b4d0e4;
-$theme_tabsheetSecondCaptionColor: #1e3146;
-$theme_tabsheetSecondBackgroundColor: #f5f7f9;
+$cuba-tabsheet-second-border-color: #b4d0e4;
+$cuba-tabsheet-second-caption-color: #1e3146;
+$cuba-tabsheet-second-background-color: #f5f7f9;
 
-$theme_tabsheetThirdBorderColor: #a4c5df;
-$theme_tabsheetThirdCaptionColor: #2b4666;
-$theme_tabsheetThirdBackgroundColor: #ebf0f4;
+$cuba-tabsheet-third-border-color: #a4c5df;
+$cuba-tabsheet-third-caption-color: #2b4666;
+$cuba-tabsheet-third-background-color: #ebf0f4;
 
-$theme_splitPanelSplitterColor: #eef3f9;
+$cuba-splitpanel-splitter-color: #eef3f9;
 
-$theme_tableTextColor: #1e3146;
-$theme_tableHeaderBackgroundColor: #e6eaef;
-$theme_tableHeaderHoverBackgroundColor: #f2f5f7;
-$theme_tableRowBackgroundColor: #fff;
-$theme_tableRowOddBackgroundColor: #f6f8fa;
-$theme_tableRowSelectionBackgroundColor: #c3e1ff;
-$theme_tableRowHoverBackgroundColor: #f5f4b9;
-$theme_tableCellSeparatorColor: #edf3f9;
-$theme_tableAggregationRowColor: #8398af;
+$cuba-table-text-color: #1e3146;
+$cuba-table-header-background-color: #e6eaef;
+$cuba-table-header-hover-background-color: #f2f5f7;
+$cuba-table-row-background-color: #fff;
+$cuba-table-row-odd-background-color: #f6f8fa;
+$cuba-table-row-selection-background-color: #c3e1ff;
+$cuba-table-row-hover-background-color: #f5f4b9;
+$cuba-table-cell-separator-color: #edf3f9;
+$cuba-table-aggregation-row-color: #8398af;
 
-$theme_treeSelectionColor: #5daee8;
-$theme_treeCaptionColor: #1e3146;
-$theme_treeCaptionSelectedColor: #000;
+$cuba-tree-selection-color: #5daee8;
+$cuba-tree-caption-color: #1e3146;
+$cuba-tree-caption-selected-color: #000;
 
-$theme_contextmenuFontColor: #222;
-$theme_contextmenuBackgroundColor: #f8f8f9;
+$cuba-contextmenu-font-color: #222;
+$cuba-contextmenu-background-color: #f8f8f9;
 
-$theme_searchSelectEditColor: #ffbac2;
+$cuba-searchselect-edit-color: #ffbac2;

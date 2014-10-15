@@ -5,20 +5,20 @@
 
 // Version: $Id$
 
-@mixin havana-cuba-maskedfield($primaryStyleName: cuba-maskedfield) {
-  @include havana-textfield($primaryStyleName);
+@mixin havana-cuba-maskedfield($primary-stylename: cuba-maskedfield) {
+  @include havana-textfield($primary-stylename);
 
   .v-ui,
   .v-window {
-    input.#{$primaryStyleName}-empty {
+    input.#{$primary-stylename}-empty {
       color: #ccc;
     }
 
-    input.#{$primaryStyleName}-empty:focus {
+    input.#{$primary-stylename}-empty:focus {
       color: inherit;
     }
 
-    input.#{$primaryStyleName}-empty.v-readonly:focus {
+    input.#{$primary-stylename}-empty.v-readonly:focus {
       color: #ccc;
     }
   }

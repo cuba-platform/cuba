@@ -5,8 +5,8 @@
 
 // Version: $Id$
 
-@mixin havana-tooltip($primaryStyleName: v-tooltip) {
-  .#{$primaryStyleName} {
+@mixin havana-tooltip($primary-stylename: v-tooltip) {
+  .#{$primary-stylename} {
     background-color: #fffcdd;
     border: 1px solid #b8b295;
     border-top-color: #d5d2c1;
@@ -20,7 +20,7 @@
     max-height: 80%;
     max-width: 80%;
 
-    .#{$primaryStyleName}-text {
+    .#{$primary-stylename}-text {
       padding: 2px 4px;
       border: none;
       border-top: 1px solid #fffef5;

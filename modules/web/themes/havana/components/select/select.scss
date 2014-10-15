@@ -5,12 +5,12 @@
 
 // Version: $Id$
 
-@mixin havana-filterselect($primaryStyleName: v-filterselect) {
-  $comboBoxBorder: 1px solid $theme_fieldBorderColor;
-  $comboBoxBorderFocused: 1px solid $theme_fieldFocusedBorderColor;
-  $comboBoxBorderReadonly: 1px solid $theme_fieldReadonlyBorderColor;
+@mixin havana-filterselect($primary-stylename: v-filterselect) {
+  $comboBoxBorder: 1px solid $cuba-field-border-color;
+  $comboBoxBorderFocused: 1px solid $cuba-field-focused-border-color;
+  $comboBoxBorderReadonly: 1px solid $cuba-field-readonly-border-color;
 
-  .#{$primaryStyleName} {
+  .#{$primary-stylename} {
     @include box-defaults;
 
     line-height: 0;
@@ -27,7 +27,7 @@
       float: left;
     }
 
-    .#{$primaryStyleName}-input {
+    .#{$primary-stylename}-input {
       @include box-defaults;
 
       background-color: transparent;
@@ -42,7 +42,7 @@
       font-size: 8pt;
     }
 
-    .#{$primaryStyleName}-button {
+    .#{$primary-stylename}-button {
       @include box-defaults;
 
       cursor: pointer;
@@ -61,43 +61,43 @@
     }
   }
 
-  .#{$primaryStyleName}-focus {
+  .#{$primary-stylename}-focus {
     background: #fff;
     border-left: $comboBoxBorderFocused;
 
-    .#{$primaryStyleName}-button {
+    .#{$primary-stylename}-button {
       border: $comboBoxBorderFocused;
       border-left: 0;
 
       background-image: url(sprites/filter-button-focus-bg.png);  /** sprite-ref: components; */
     }
 
-    .#{$primaryStyleName}-input:focus {
+    .#{$primary-stylename}-input:focus {
       border: $comboBoxBorderFocused;
       border-left: 0;
     }
   }
 
-  .#{$primaryStyleName}.v-readonly {
+  .#{$primary-stylename}.v-readonly {
     padding-right: 0;
     border-left: $comboBoxBorderReadonly;
 
-    .#{$primaryStyleName}-button {
+    .#{$primary-stylename}-button {
       border: $comboBoxBorderReadonly;
       border-left: 0;
 
       background-image: url(sprites/filter-button-readonly-bg.png); /** sprite-ref: components; */
     }
 
-    .#{$primaryStyleName}-input-readonly {
+    .#{$primary-stylename}-input-readonly {
       border: $comboBoxBorderReadonly;
       border-left: 0;
     }
   }
 
-  .#{$primaryStyleName}-suggestpopup {
-    border: 1px solid $theme_fieldPopupBorderColor;
-    font-family: $theme_fonts;
+  .#{$primary-stylename}-suggestpopup {
+    border: 1px solid $cuba-field-popup-border-color;
+    font-family: $cuba-havana-fonts;
     color: #000;
     font-size: 12px;
     line-height: 18px;
@@ -121,15 +121,15 @@
     }
 
     .gwt-MenuItem-selected {
-      background: $theme_fieldSelectionColor;
+      background: $cuba-field-selection-color;
       color: #fff;
     }
   }
 
-  .#{$primaryStyleName}-nextpage,
-  .#{$primaryStyleName}-nextpage-off,
-  .#{$primaryStyleName}-prevpage-off,
-  .#{$primaryStyleName}-prevpage {
+  .#{$primary-stylename}-nextpage,
+  .#{$primary-stylename}-nextpage-off,
+  .#{$primary-stylename}-prevpage-off,
+  .#{$primary-stylename}-prevpage {
     height: 12px;
     width: 100%;
     background: transparent no-repeat 50% 0;
@@ -138,15 +138,15 @@
     overflow: hidden;
   }
 
-  .#{$primaryStyleName}-nextpage-off span,
-  .#{$primaryStyleName}-prevpage-off span {
+  .#{$primary-stylename}-nextpage-off span,
+  .#{$primary-stylename}-prevpage-off span {
     cursor: default;
   }
 
-  .#{$primaryStyleName}-nextpage span,
-  .#{$primaryStyleName}-nextpage-off span,
-  .#{$primaryStyleName}-prevpage-off span,
-  .#{$primaryStyleName}-prevpage span {
+  .#{$primary-stylename}-nextpage span,
+  .#{$primary-stylename}-nextpage-off span,
+  .#{$primary-stylename}-prevpage-off span,
+  .#{$primary-stylename}-prevpage span {
     background-repeat: no-repeat;
     display: block;
     height: 12px;
@@ -160,7 +160,7 @@
     margin-left: -28px;
   }
 
-  .#{$primaryStyleName}-status {
+  .#{$primary-stylename}-status {
     font-size: 11px;
     line-height: 11px;
     width: 100%;
@@ -171,19 +171,19 @@
     border-top: 1px solid #b6bbbc;
   }
 
-  .#{$primaryStyleName}-nextpage span {
+  .#{$primary-stylename}-nextpage span {
     background-image: url(sprites/popup-down.png);  /** sprite-ref: components-large; */
   }
 
-  .#{$primaryStyleName}-prevpage span {
+  .#{$primary-stylename}-prevpage span {
     background-image: url(sprites/popup-up.png);    /** sprite-ref: components-large; */
   }
 
-  .#{$primaryStyleName}-nextpage-off span {
+  .#{$primary-stylename}-nextpage-off span {
     background-image: url(sprites/popup-down-disabled.png); /** sprite-ref: components-large; */
   }
 
-  .#{$primaryStyleName}-prevpage-off span {
+  .#{$primary-stylename}-prevpage-off span {
     background-image: url(sprites/popup-up-disabled.png);  /** sprite-ref: components-large; */
   }
 }

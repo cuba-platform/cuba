@@ -5,9 +5,9 @@
 
 // Version: $Id$
 
-@mixin havana-cuba-resizabletextarea($primaryStyleName: cuba-resizabletextarea) {
+@mixin havana-cuba-resizabletextarea($primary-stylename: cuba-resizabletextarea) {
 
-  .#{$primaryStyleName}-resize-corner {
+  .#{$primary-stylename}-resize-corner {
     z-index: 1001;
     position: absolute;
     bottom: 1px;

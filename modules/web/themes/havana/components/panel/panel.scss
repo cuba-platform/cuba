@@ -5,17 +5,17 @@
 
 // Version: $Id$
 
-@mixin havana-panel($primaryStyleName : v-panel) {
-  .#{$primaryStyleName} {
-    .#{$primaryStyleName}-content {
+@mixin havana-panel($primary-stylename : v-panel) {
+  .#{$primary-stylename} {
+    .#{$primary-stylename}-content {
       border: 0;
     }
 
-    .#{$primaryStyleName}-deco {
+    .#{$primary-stylename}-deco {
       display: none;
     }
 
-    .#{$primaryStyleName}-captionwrap {
+    .#{$primary-stylename}-captionwrap {
       display: none;
     }
   }

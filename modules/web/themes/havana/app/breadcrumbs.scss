@@ -14,9 +14,9 @@
 
   .cuba-breadcrumbs {
     .v-label {
-      font-family: $theme_fonts;
+      font-family: $cuba-havana-fonts;
       font-size: 10px;
-      color: $theme_breadcrumbsColor;
+      color: $cuba-breadcrumbs-color;
       font-weight: normal;
       height: $breadCrumbsHeight;
       border: 0;
@@ -35,7 +35,7 @@
         margin-top: 0;
 
         .v-button-caption {
-          color: $theme_breadcrumbsColor;
+          color: $cuba-breadcrumbs-color;
           font-size: 10px;
           display: block;
         }

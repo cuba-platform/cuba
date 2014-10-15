@@ -5,30 +5,30 @@
 
 // Version: $Id$
 
-@mixin havana-cuba-groupbox($primaryStyleName : cuba-groupbox) {
-    @include base-panel($primaryStyleName);
+@mixin havana-cuba-groupbox($primary-stylename : cuba-groupbox) {
+    @include base-panel($primary-stylename);
 
-  .#{$primaryStyleName}-content {
+  .#{$primary-stylename}-content {
     outline: none;
-    border-left: 1px solid $theme_groupBoxBorderColor;
-    border-right: 1px solid $theme_groupBoxBorderColor;
-    border-bottom: 1px solid $theme_groupBoxBorderColor;
+    border-left: 1px solid $cuba-groupbox-border-color;
+    border-right: 1px solid $cuba-groupbox-border-color;
+    border-bottom: 1px solid $cuba-groupbox-border-color;
     padding: 0 5px;
     padding-bottom: 5px;
   }
 
-  .#{$primaryStyleName}.collapsed > .#{$primaryStyleName}-content,
-  .#{$primaryStyleName}-light > .#{$primaryStyleName}-content,
-  .#{$primaryStyleName}-nocaption.#{$primaryStyleName}-light > .#{$primaryStyleName}-content {
+  .#{$primary-stylename}.collapsed > .#{$primary-stylename}-content,
+  .#{$primary-stylename}-light > .#{$primary-stylename}-content,
+  .#{$primary-stylename}-nocaption.#{$primary-stylename}-light > .#{$primary-stylename}-content {
     border: 0;
   }
 
-  .#{$primaryStyleName}-captionwrap {
+  .#{$primary-stylename}-captionwrap {
     display: block;
     font-size: 0;
   }
 
-  .#{$primaryStyleName}-caption-start-deco {
+  .#{$primary-stylename}-caption-start-deco {
     display: inline-block;
     height: 20px;
     padding-top: 10px;
@@ -36,22 +36,22 @@
     div {
       width: 10px;
       height: 10px;
-      border-left: 1px solid $theme_groupBoxBorderColor;
-      border-top: 1px solid $theme_groupBoxBorderColor;
+      border-left: 1px solid $cuba-groupbox-border-color;
+      border-top: 1px solid $cuba-groupbox-border-color;
     }
   }
 
-  .#{$primaryStyleName}.collapsed > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-caption-start-deco div,
-  .#{$primaryStyleName}-light > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-caption-start-deco div {
+  .#{$primary-stylename}.collapsed > .#{$primary-stylename}-captionwrap .#{$primary-stylename}-caption-start-deco div,
+  .#{$primary-stylename}-light > .#{$primary-stylename}-captionwrap .#{$primary-stylename}-caption-start-deco div {
     border-left: 0;
   }
 
-  .#{$primaryStyleName}.collapsed > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-caption-end-deco div,
-  .#{$primaryStyleName}-light > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-caption-end-deco div {
+  .#{$primary-stylename}.collapsed > .#{$primary-stylename}-captionwrap .#{$primary-stylename}-caption-end-deco div,
+  .#{$primary-stylename}-light > .#{$primary-stylename}-captionwrap .#{$primary-stylename}-caption-end-deco div {
     border-right: 0;
   }
 
-  .#{$primaryStyleName}-caption {
+  .#{$primary-stylename}-caption {
     display: inline-block;
     height: 20px;
     vertical-align: top;
@@ -60,7 +60,7 @@
     font-size: 12px;
   }
 
-  .#{$primaryStyleName}-caption-end-deco {
+  .#{$primary-stylename}-caption-end-deco {
     display: inline-block;
     height: 20px;
     border: 0;
@@ -69,12 +69,12 @@
     div {
       width: 100%;
       height: 10px;
-      border-right: 1px solid $theme_groupBoxBorderColor;
-      border-top: 1px solid $theme_groupBoxBorderColor;
+      border-right: 1px solid $cuba-groupbox-border-color;
+      border-top: 1px solid $cuba-groupbox-border-color;
     }
   }
 
-  .#{$primaryStyleName}-expander {
+  .#{$primary-stylename}-expander {
     width: 9px;
     height: 9px;
     cursor: pointer;
@@ -87,73 +87,73 @@
     background-image: url(sprites/expand.png); /** sprite-ref: components; */
   }
 
-  .#{$primaryStyleName}-caption-text {
+  .#{$primary-stylename}-caption-text {
     cursor: pointer;
   }
 
-  .#{$primaryStyleName}-nocollapsable > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-expander {
+  .#{$primary-stylename}-nocollapsable > .#{$primary-stylename}-captionwrap .#{$primary-stylename}-expander {
     display: none;
   }
 
-  .#{$primaryStyleName}-nocollapsable > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-caption-text {
+  .#{$primary-stylename}-nocollapsable > .#{$primary-stylename}-captionwrap .#{$primary-stylename}-caption-text {
     cursor: default;
   }
 
-  .#{$primaryStyleName}-expander.expanded {
+  .#{$primary-stylename}-expander.expanded {
     background-image: url(sprites/collapse.png); /** sprite-ref: components; */
   }
 
-  .#{$primaryStyleName}-deco {
+  .#{$primary-stylename}-deco {
     line-height: 0;
     height: 0;
     width: 0;
     display: none;
   }
 
-  .#{$primaryStyleName}-nocaption > .#{$primaryStyleName}-content {
-    border-left: 1px solid $theme_groupBoxNoCaptionBorderColor;
-    border-right: 1px solid $theme_groupBoxNoCaptionBorderColor;
-    border-bottom: 1px solid $theme_groupBoxNoCaptionBorderColor;
-    background-color: $theme_groupBoxNoCaptionBackgroundColor;
+  .#{$primary-stylename}-nocaption > .#{$primary-stylename}-content {
+    border-left: 1px solid $cuba-groupbox-nocaption-border-color;
+    border-right: 1px solid $cuba-groupbox-nocaption-border-color;
+    border-bottom: 1px solid $cuba-groupbox-nocaption-border-color;
+    background-color: $cuba-groupbox-nocaption-background-color;
   }
 
-  .#{$primaryStyleName}-nocaption.#{$primaryStyleName}-light > .#{$primaryStyleName}-content {
+  .#{$primary-stylename}-nocaption.#{$primary-stylename}-light > .#{$primary-stylename}-content {
     background-color: transparent;
   }
 
-  .#{$primaryStyleName}-nocaption > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-caption-start-deco div,
-  .#{$primaryStyleName}-nocaption > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-caption-end-deco div {
-    border-color: $theme_groupBoxNoCaptionBorderColor;
-    background-color: $theme_groupBoxNoCaptionBackgroundColor;
+  .#{$primary-stylename}-nocaption > .#{$primary-stylename}-captionwrap .#{$primary-stylename}-caption-start-deco div,
+  .#{$primary-stylename}-nocaption > .#{$primary-stylename}-captionwrap .#{$primary-stylename}-caption-end-deco div {
+    border-color: $cuba-groupbox-nocaption-border-color;
+    background-color: $cuba-groupbox-nocaption-background-color;
     height: 5px;
   }
 
-  .#{$primaryStyleName}-nocaption.#{$primaryStyleName}-light > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-caption-start-deco div,
-  .#{$primaryStyleName}-nocaption.#{$primaryStyleName}-light > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-caption-end-deco div {
-    border-color: $theme_groupBoxBorderColor;
+  .#{$primary-stylename}-nocaption.#{$primary-stylename}-light > .#{$primary-stylename}-captionwrap .#{$primary-stylename}-caption-start-deco div,
+  .#{$primary-stylename}-nocaption.#{$primary-stylename}-light > .#{$primary-stylename}-captionwrap .#{$primary-stylename}-caption-end-deco div {
+    border-color: $cuba-groupbox-border-color;
     background-color: transparent;
   }
 
-  .#{$primaryStyleName}-nocaption > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-caption-start-deco ,
-  .#{$primaryStyleName}-nocaption > .#{$primaryStyleName}-captionwrap .#{$primaryStyleName}-caption-end-deco {
+  .#{$primary-stylename}-nocaption > .#{$primary-stylename}-captionwrap .#{$primary-stylename}-caption-start-deco ,
+  .#{$primary-stylename}-nocaption > .#{$primary-stylename}-captionwrap .#{$primary-stylename}-caption-end-deco {
     height: 7px;
     padding-top: 2px;
   }
 
-  .#{$primaryStyleName}-nocaption > .#{$primaryStyleName}-expander {
+  .#{$primary-stylename}-nocaption > .#{$primary-stylename}-expander {
     display: none;
   }
 
-  .#{$primaryStyleName}-nocaption > .#{$primaryStyleName}-captionwrap > .#{$primaryStyleName}-nocaption {
+  .#{$primary-stylename}-nocaption > .#{$primary-stylename}-captionwrap > .#{$primary-stylename}-nocaption {
     display: none;
   }
 
-  .#{$primaryStyleName}-caption,
-  .#{$primaryStyleName}-captionwrap,
-  .#{$primaryStyleName}-caption-end-deco,
-  .#{$primaryStyleName}-caption-end-deco > div,
-  .#{$primaryStyleName}-caption-start-deco,
-  .#{$primaryStyleName}-caption-start-deco > div {
+  .#{$primary-stylename}-caption,
+  .#{$primary-stylename}-captionwrap,
+  .#{$primary-stylename}-caption-end-deco,
+  .#{$primary-stylename}-caption-end-deco > div,
+  .#{$primary-stylename}-caption-start-deco,
+  .#{$primary-stylename}-caption-start-deco > div {
     @include box-defaults;
   }
 }

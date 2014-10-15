@@ -5,28 +5,28 @@
 
 // Version: $Id$
 
-@mixin halo-panel($primaryStyleName : v-panel) {
-  .#{$primaryStyleName} {
+@mixin halo-panel($primary-stylename : v-panel) {
+  .#{$primary-stylename} {
     border: 0;
     box-shadow: none;
     background: transparent;
   }
 
-  .#{$primaryStyleName} {
-    .#{$primaryStyleName}-content {
+  .#{$primary-stylename} {
+    .#{$primary-stylename}-content {
       border: 0;
     }
 
-    .#{$primaryStyleName}-deco {
+    .#{$primary-stylename}-deco {
       display: none;
     }
 
-    .#{$primaryStyleName}-captionwrap {
+    .#{$primary-stylename}-captionwrap {
       display: none;
     }
   }
 
-  .v-scrollable > .#{$primaryStyleName} {
+  .v-scrollable > .#{$primary-stylename} {
     overflow: auto;
   }
 }

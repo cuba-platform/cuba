@@ -5,9 +5,9 @@
 
 // Version: $Id$
 
-@mixin halo-popupbutton($primaryStyleName: v-popupbutton) {
+@mixin halo-popupbutton($primary-stylename: v-popupbutton) {
 
-  .#{$primaryStyleName} {
+  .#{$primary-stylename} {
     .v-popup-indicator {
       padding-left: round($v-unit-size/4);
       background: none;
@@ -19,7 +19,7 @@
     }
   }
 
-  .#{$primaryStyleName}-popup {
+  .#{$primary-stylename}-popup {
     @include valo-selection-overlay-style;
 
     .v-button {
