@@ -399,18 +399,16 @@ configure(webModule) {
 
     task buildScssThemes(type: CubaWebScssThemeCreation) {
         themes = ['halo', 'havana']
-        requiresResourcesFrom = ['base', 'valo']
-        compress = false
-        sprites = false
-        cleanup = false
+//        compress = true
+//        sprites = true
+//        cleanup = true
     }
 
     task buildHalo(type: CubaWebScssThemeCreation) {
         themes = ['halo']
-        requiresResourcesFrom = ['base', 'valo']
-        compress = false
-        sprites = false
-        cleanup = false
+//        compress = true
+//        sprites = true
+//        cleanup = true
     }
 
     task deployHalo(type: Copy, dependsOn: buildHalo) {
