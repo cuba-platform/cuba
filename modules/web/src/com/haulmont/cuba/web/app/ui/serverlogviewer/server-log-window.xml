@@ -3,8 +3,7 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<window
-        xmlns="http://schemas.haulmont.com/cuba/5.2/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/5.2/window.xsd"
         class="com.haulmont.cuba.web.app.ui.serverlogviewer.ServerLogWindow"
         messagesPack="com.haulmont.cuba.web.app.ui.serverlogviewer"
         caption="msg://serverLog.caption"
@@ -51,7 +50,7 @@
                     <lookupField id="logFileNameField" width="${logFieldWidth}"/>
                     <button id="downloadButton" caption="msg://actions.Download" invoke="downloadLog"/>
                     <button id="showTailButton" caption="msg://actions.ShowTail" invoke="showLogTail"/>
-                    <checkBox id="autoRefreshCheck" caption="msg://actions.autoRefresh"/>
+                    <checkBox id="autoRefreshCheck" caption="msg://actions.autoRefresh" align="MIDDLE_LEFT"/>
                 </hbox>
             </tab>
             <tab id="optionsTab" caption="msg://tab.options" margin="true">

@@ -1,0 +1,68 @@
+/*
+ * Copyright (c) 2008-2014 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+ */
+
+// Version: $Id$
+
+@mixin halo-label($primary-stylename: v-label) {
+  .#{$primary-stylename} {
+    line-height: $v-unit-size;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .#{$primary-stylename}-empty {
+    border: 0;
+  }
+
+  h1, .#{$primary-stylename}-h1 {
+    margin: 0;
+  }
+
+  h2, .#{$primary-stylename}-h2 {
+    margin: 0;
+  }
+
+  h3, .#{$primary-stylename}-h3 {
+    margin: 0;
+  }
+
+  h4, .#{$primary-stylename}-h4 {
+    margin: 0;
+  }
+
+  .v-csslayout {
+    > h1,
+    > h2,
+    > h3,
+    > h4
+    > .#{$primary-stylename}-h1,
+    > .#{$primary-stylename}-h2,
+    > .#{$primary-stylename}-h3,
+    > .#{$primary-stylename}-h4 {
+      &:first-child {
+        margin: 0;
+      }
+    }
+  }
+
+  .v-verticallayout > .v-slot:first-child,
+  .v-verticallayout > div > .v-slot:first-child {
+    h1, .#{$primary-stylename}-h1,
+    h2, .#{$primary-stylename}-h2,
+    h3, .#{$primary-stylename}-h3,
+    h4, .#{$primary-stylename}-h4 {
+      margin: 0;
+    }
+  }
+
+  .#{$primary-stylename}.h2-red {
+    color: red;
+    border: 0;
+  }
+
+  .#{$primary-stylename}-semi-bold-label {
+    font-weight: 600;
+  }
+}

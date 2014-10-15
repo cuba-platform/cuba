@@ -12,18 +12,16 @@
     background: transparent;
   }
 
-  .#{$primary-stylename} {
-    .#{$primary-stylename}-content {
-      border: 0;
-    }
+  .#{$primary-stylename}-content {
+    border: 0;
+  }
 
-    .#{$primary-stylename}-deco {
-      display: none;
-    }
+  .#{$primary-stylename}-deco {
+    display: none;
+  }
 
-    .#{$primary-stylename}-captionwrap {
-      display: none;
-    }
+  .#{$primary-stylename}-captionwrap {
+    display: none;
   }
 
   .v-scrollable > .#{$primary-stylename} {

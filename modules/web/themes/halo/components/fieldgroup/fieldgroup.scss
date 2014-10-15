@@ -8,4 +8,97 @@
 @mixin halo-cuba-fieldgroup($primary-stylename: cuba-fieldgroup) {
   @include halo-cuba-groupbox($primary-stylename);
 
+  /*
+   * Style variations:
+   * - caption (default) / nocaption
+   * - border / noborder (default)
+   */
+
+  .#{$primary-stylename}-expander {
+    display: none;
+  }
+
+  .#{$primary-stylename}-content,
+  .#{$primary-stylename}-nocaption > .#{$primary-stylename}-content {
+    padding: 0;
+    border-width: 0;
+    background-color: transparent;
+  }
+
+  .#{$primary-stylename}-captionwrap > .#{$primary-stylename}-caption-start-deco div,
+  .#{$primary-stylename}-nocaption > .#{$primary-stylename}-captionwrap > .#{$primary-stylename}-caption-start-deco div,
+  .#{$primary-stylename}-captionwrap > .#{$primary-stylename}-caption-end-deco div,
+  .#{$primary-stylename}-nocaption > .#{$primary-stylename}-captionwrap > .#{$primary-stylename}-caption-end-deco div {
+    border-width: 0;
+    height: 0;
+  }
+
+  .#{$primary-stylename}-captionwrap > .#{$primary-stylename}-caption-start-deco,
+  .#{$primary-stylename}-captionwrap > .#{$primary-stylename}-caption-end-deco {
+    display: none;
+  }
+
+  .#{$primary-stylename}-captionwrap > .#{$primary-stylename}-caption {
+    padding: 0;
+  }
+
+  .#{$primary-stylename}-border > .#{$primary-stylename}-captionwrap > .#{$primary-stylename}-caption {
+    padding: 0 5px;
+  }
+
+  .#{$primary-stylename}-border > .#{$primary-stylename}-captionwrap > .#{$primary-stylename}-caption-start-deco,
+  .#{$primary-stylename}-border > .#{$primary-stylename}-captionwrap > .#{$primary-stylename}-caption-end-deco {
+    display: inline-block;
+  }
+
+  .#{$primary-stylename}-nocaption > .#{$primary-stylename}-captionwrap {
+    display: none;
+  }
+
+  .#{$primary-stylename}-border.#{$primary-stylename}-nocaption > .#{$primary-stylename}-captionwrap {
+    display: block;
+  }
+
+  .#{$primary-stylename}-border > .#{$primary-stylename}-content {
+    border-left: valo-border();
+    border-right: valo-border();
+    border-bottom: valo-border();
+    border-bottom-left-radius: $v-border-radius;
+    border-bottom-right-radius: $v-border-radius;
+    margin: 0;
+    padding: 0 $v-layout-margin-right $v-layout-margin-bottom $v-layout-margin-left;
+  }
+
+  .#{$primary-stylename}-light.#{$primary-stylename}-border > .#{$primary-stylename}-content {
+    border: 0;
+  }
+
+  .#{$primary-stylename}-border > .#{$primary-stylename}-captionwrap .#{$primary-stylename}-caption-start-deco div,
+  .#{$primary-stylename}-border > .#{$primary-stylename}-captionwrap .#{$primary-stylename}-caption-end-deco div {
+    height: round($v-unit-size/3);
+  }
+
+  .#{$primary-stylename}-border > .#{$primary-stylename}-captionwrap  .#{$primary-stylename}-caption-start-deco div {
+    border-left-width: 1px;
+    border-top-width: 1px;
+  }
+
+  .#{$primary-stylename}-light.#{$primary-stylename}-border > .#{$primary-stylename}-captionwrap  .#{$primary-stylename}-caption-start-deco div {
+    border-left: 0;
+  }
+
+  .#{$primary-stylename}-border > .#{$primary-stylename}-captionwrap  .#{$primary-stylename}-caption-end-deco div {
+    border-right-width: 1px;
+    border-top-width: 1px;
+  }
+
+  .#{$primary-stylename}-light.#{$primary-stylename}-border > .#{$primary-stylename}-captionwrap  .#{$primary-stylename}-caption-end-deco div {
+    border-right: 0;
+  }
+
+  .#{$primary-stylename}-border.#{$primary-stylename}-nocaption > .#{$primary-stylename}-captionwrap .#{$primary-stylename}-caption-start-deco div,
+  .#{$primary-stylename}-border.#{$primary-stylename}-nocaption > .#{$primary-stylename}-captionwrap .#{$primary-stylename}-caption-end-deco div {
+    height: round($v-unit-size/3) + round($v-unit-size/6);
+    padding-top: round($v-unit-size/6);
+  }
 }

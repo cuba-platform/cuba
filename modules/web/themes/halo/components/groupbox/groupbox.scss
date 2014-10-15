@@ -8,4 +8,166 @@
 @mixin halo-cuba-groupbox($primary-stylename : cuba-groupbox) {
   @include valo-panel($primary-stylename);
   @include halo-panel($primary-stylename);
+
+  .#{$primary-stylename}-content {
+    outline: none;
+    border-left: valo-border();
+    border-right: valo-border();
+    border-bottom: valo-border();
+    border-bottom-left-radius: $v-border-radius;
+    border-bottom-right-radius: $v-border-radius;
+    padding: 0 $v-layout-margin-right $v-layout-margin-bottom $v-layout-margin-left;
+  }
+
+  .#{$primary-stylename}.collapsed > .#{$primary-stylename}-content,
+  .#{$primary-stylename}-light > .#{$primary-stylename}-content,
+  .#{$primary-stylename}-nocaption.#{$primary-stylename}-light > .#{$primary-stylename}-content {
+    border: 0;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+
+  .#{$primary-stylename}.collapsed,
+  .#{$primary-stylename}-light,
+  .#{$primary-stylename}-nocaption.#{$primary-stylename}-light {
+    .#{$primary-stylename}-caption-start-deco div {
+      border-top-left-radius: 0;
+    }
+
+    .#{$primary-stylename}-caption-end-deco div {
+      border-top-right-radius: 0;
+    }
+  }
+
+  .#{$primary-stylename}-captionwrap {
+    display: block;
+    font-size: 0;
+  }
+
+  .#{$primary-stylename}-caption-start-deco {
+    display: inline-block;
+    height: $v-unit-size;
+    padding-top: round($v-unit-size/3);
+
+    div {
+      width: round(2*$v-unit-size/3);
+      height: round(2*$v-unit-size/3);
+      border-left: valo-border();
+      border-top: valo-border();
+      border-top-left-radius: $v-border-radius;
+    }
+  }
+
+  .#{$primary-stylename}.collapsed > .#{$primary-stylename}-captionwrap .#{$primary-stylename}-caption-start-deco div,
+  .#{$primary-stylename}-light > .#{$primary-stylename}-captionwrap .#{$primary-stylename}-caption-start-deco div {
+    border-left: 0;
+  }
+
+  .#{$primary-stylename}.collapsed > .#{$primary-stylename}-captionwrap .#{$primary-stylename}-caption-end-deco div,
+  .#{$primary-stylename}-light > .#{$primary-stylename}-captionwrap .#{$primary-stylename}-caption-end-deco div {
+    border-right: 0;
+  }
+
+  .#{$primary-stylename}-caption {
+    display: inline-block;
+    height: round(2*$v-unit-size/3);
+    vertical-align: top;
+    padding: 0 round($v-unit-size/6);
+    font-weight: normal;
+    line-height: round(2*$v-unit-size/3);
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+  }
+
+  .#{$primary-stylename}-caption-end-deco {
+    display: inline-block;
+    height: $v-unit-size;
+    border: 0;
+    padding-top: round($v-unit-size/3);
+
+    div {
+      width: 100%;
+      height: round(2*$v-unit-size/3);
+      border-right: valo-border();
+      border-top: valo-border();
+      border-top-right-radius: $v-border-radius;
+    }
+  }
+
+  .#{$primary-stylename}-expander {
+    width: round($v-unit-size/3);
+    height: round($v-unit-size/3);
+    cursor: pointer;
+    display: inline-block;
+    margin-right: round($v-unit-size/6);
+
+    &:before {
+      font-family: FontAwesome;
+      content: "\f196";
+    }
+  }
+
+  .#{$primary-stylename}-caption-text {
+    cursor: pointer;
+  }
+
+  .#{$primary-stylename}-nocollapsable > .#{$primary-stylename}-captionwrap .#{$primary-stylename}-expander {
+    display: none;
+  }
+
+  .#{$primary-stylename}-nocollapsable > .#{$primary-stylename}-captionwrap .#{$primary-stylename}-caption-text {
+    cursor: default;
+  }
+
+  .#{$primary-stylename}-expander.expanded {
+    &:before {
+      content: "\f147";
+    }
+  }
+
+  .#{$primary-stylename}-deco {
+    line-height: 0;
+    height: 0;
+    width: 0;
+    display: none;
+  }
+
+  .#{$primary-stylename}-nocaption > .#{$primary-stylename}-content {
+    border-left: valo-border();
+    border-right: valo-border();
+    border-bottom: valo-border();
+  }
+
+  .#{$primary-stylename}-nocaption > .#{$primary-stylename}-captionwrap .#{$primary-stylename}-caption-start-deco div,
+  .#{$primary-stylename}-nocaption > .#{$primary-stylename}-captionwrap .#{$primary-stylename}-caption-end-deco div {
+    height: round($v-unit-size/3) + round($v-unit-size/6);
+  }
+
+  .#{$primary-stylename}-nocaption.#{$primary-stylename}-light > .#{$primary-stylename}-content {
+    background-color: transparent;
+  }
+
+  .#{$primary-stylename}-nocaption > .#{$primary-stylename}-captionwrap .#{$primary-stylename}-caption-start-deco ,
+  .#{$primary-stylename}-nocaption > .#{$primary-stylename}-captionwrap .#{$primary-stylename}-caption-end-deco {
+    height: round($v-unit-size/3) + round($v-unit-size/6);
+    padding-top: round($v-unit-size/6);
+  }
+
+  .#{$primary-stylename}-nocaption > .#{$primary-stylename}-expander {
+    display: none;
+  }
+
+  .#{$primary-stylename}-nocaption > .#{$primary-stylename}-captionwrap > .#{$primary-stylename}-nocaption {
+    display: none;
+  }
+
+  .#{$primary-stylename}-caption,
+  .#{$primary-stylename}-captionwrap,
+  .#{$primary-stylename}-caption-end-deco,
+  .#{$primary-stylename}-caption-end-deco > div,
+  .#{$primary-stylename}-caption-start-deco,
+  .#{$primary-stylename}-caption-start-deco > div {
+    @include box-defaults;
+  }
 }

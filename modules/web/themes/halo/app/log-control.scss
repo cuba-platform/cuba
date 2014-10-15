@@ -7,11 +7,8 @@
 
 @mixin cuba-log-control {
 
-  .cuba-log-panel {
-    border: $cuba-field-focused-border-color 1px solid;
-  }
-
   .v-label.cuba-log-content {
+    line-height: $v-font-size;
     font-family: monospace;
   }
 
