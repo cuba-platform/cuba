@@ -59,7 +59,7 @@
     @include valo-selection-overlay-style;
 
     z-index: 19000 !important;  // do not hide parts of popup menu
-    padding: $v-layout-margin-top $v-layout-margin-right $v-layout-margin-bottom $v-layout-margin-left;
+    padding: 0 round($v-unit-size/3) round($v-unit-size/3);
   }
 
   .cuba-table-presentations-title {

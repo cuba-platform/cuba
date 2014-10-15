@@ -66,7 +66,7 @@
     border-bottom-left-radius: $v-border-radius;
     border-bottom-right-radius: $v-border-radius;
     margin: 0;
-    padding: 0 $v-layout-margin-right $v-layout-margin-bottom $v-layout-margin-left;
+    padding: 0 round(2*$v-unit-size/3) round(2*$v-unit-size/3) round(2*$v-unit-size/3);
   }
 
   .#{$primary-stylename}-light.#{$primary-stylename}-border > .#{$primary-stylename}-content {
@@ -75,7 +75,7 @@
 
   .#{$primary-stylename}-border > .#{$primary-stylename}-captionwrap .#{$primary-stylename}-caption-start-deco div,
   .#{$primary-stylename}-border > .#{$primary-stylename}-captionwrap .#{$primary-stylename}-caption-end-deco div {
-    height: round($v-unit-size/3);
+    height: round(2*$v-unit-size/3);
   }
 
   .#{$primary-stylename}-border > .#{$primary-stylename}-captionwrap  .#{$primary-stylename}-caption-start-deco div {

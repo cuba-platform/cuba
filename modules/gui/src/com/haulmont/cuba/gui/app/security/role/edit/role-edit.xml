@@ -46,7 +46,7 @@
                         </row>
                         <row>
                             <label value="msg://defaultRole"/>
-                            <checkBox id="defaultRole" datasource="roleDs" property="defaultRole"/>
+                            <checkBox id="defaultRole" datasource="roleDs" property="defaultRole" align="MIDDLE_LEFT"/>
                         </row>
                     </rows>
                 </grid>

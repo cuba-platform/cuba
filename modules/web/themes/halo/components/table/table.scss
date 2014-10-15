@@ -12,11 +12,13 @@
     height: round($v-unit-size/2);
     line-height: round($v-unit-size/2);
     width: round($v-unit-size/2);
+    font-size: 0;
   }
 
   .#{$primary-stylename}-cell-content.boolean-cell-true .#{$primary-stylename}-cell-wrapper {
     &:before {
       color: $v-font-color;
+      font-size: $v-font-size;
       font-family: FontAwesome;
       content: "\f046";
     }
@@ -25,6 +27,7 @@
   .#{$primary-stylename}-cell-content.boolean-cell-false .#{$primary-stylename}-cell-wrapper {
     &:before {
       color: $v-font-color;
+      font-size: $v-font-size;
       font-family: FontAwesome;
       content: "\f096";
     }

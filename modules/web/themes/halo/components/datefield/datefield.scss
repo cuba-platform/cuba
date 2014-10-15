@@ -18,6 +18,7 @@
 
     [class*="textfield"] {
       padding-left: $padding-width;
+      padding-right: $v-unit-size * 1.2;
     }
 
     [class*="button"] {
