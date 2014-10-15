@@ -679,6 +679,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
         menuBar = new CubaMenuBar();
         menuBar.setWidth("100%");
         menuBar.setMoreMenuItem(null); // force usage more item menu
+        menuBar.setStyleName("cuba-main-menu");
 
         if (ui.isTestMode()) {
             menuBar.setCubaId("appMenu");

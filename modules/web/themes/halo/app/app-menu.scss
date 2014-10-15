@@ -1,0 +1,69 @@
+/*
+ * Copyright (c) 2008-2014 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+ */
+
+// Version: $Id$
+
+@mixin cuba-menubar {
+  .v-menubar-submenu {
+    display: table;
+    overflow: hidden;
+    white-space: nowrap;
+
+    .v-menubar-menuitem {
+      display: table-row;
+      position: relative;
+
+      .v-menubar-menuitem-caption {
+        border-top-left-radius: $v-border-radius;
+        border-bottom-left-radius: $v-border-radius;
+        display: table-cell;
+        padding-left: round(2*$v-unit-size/3);
+      }
+
+      .v-menubar-menuitem-shortcut {
+        display: table-cell;
+        padding-left: round($v-unit-size/3);
+        padding-right: round(2*$v-unit-size/3);
+        border-top-right-radius: $v-border-radius;
+        border-bottom-right-radius: $v-border-radius;
+      }
+
+      &:active:before {
+        content: none;
+      }
+
+      &:active {
+        @include valo-button-active-style;
+      }
+    }
+
+    .v-menubar-separator {
+      font-size: 0;
+      display: table-row;
+
+      span {
+        box-sizing: content-box;
+        -webkit-box-sizing: content-box;
+        -moz-box-sizing: content-box;
+        -ms-box-sizing: content-box;
+
+        display: table-cell;
+        height: 1px;
+        border-top: floor(round($v-unit-size/6)/2) solid $v-overlay-background-color;
+        border-bottom: floor(round($v-unit-size/6)/2) solid $v-overlay-background-color;
+        background-color: valo-border-color($color: $v-overlay-background-color, $strength: 0.5);
+      }
+    }
+
+    .v-menubar-submenu-indicator {
+      display: table-cell;
+      text-align: right;
+      padding-left: round($v-unit-size/3);
+      padding-right: round(2*$v-unit-size/3);
+      border-top-right-radius: $v-border-radius;
+      border-bottom-right-radius: $v-border-radius;
+    }
+  }
+}

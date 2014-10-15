@@ -22,3 +22,44 @@
   -o-box-sizing: border-box;
   -moz-box-sizing: border-box;
 }
+
+@function valo-border-color($border: $v-border, $color: $v-background-color, $context: null, $strength: 1) {
+  @if type-of($border) != list {
+    @return $border;
+  }
+
+  @if $context {
+    @if color-luminance($color) > color-luminance($context) {
+      $color: $context;
+    }
+  }
+
+  $ret: null;
+  @each $part in $border {
+    @if $part == v-tint or $part == v-shade or $part == v-tone {
+      $part: $part 1;
+    }
+    @if type-of($part) == list {
+      $adjust-type: first-string($part);
+      $adjust-amount: first-number($part);
+
+      $tint: blend-screen(rgba(#fff, $v-bevel-depth/100%*$adjust-amount*$strength), $color);
+      $shade: blend-linearburn(rgba(#000, $v-bevel-depth/100%*$adjust-amount*$strength), $color);
+
+      @if $adjust-type == v-tone {
+        @if is-dark-color($color) {
+          $color: $tint;
+        } @else {
+          $color: $shade;
+        }
+      } @else if $adjust-type == v-tint {
+        $color: $tint;
+      } @else if $adjust-type == v-shade {
+        $color: $shade;
+      }
+
+      $ret: $color;
+    }
+  }
+  @return $ret;
+}

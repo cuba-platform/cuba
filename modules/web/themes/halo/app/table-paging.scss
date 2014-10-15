@@ -1,0 +1,21 @@
+/*
+ * Copyright (c) 2008-2014 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+ */
+
+// Version: $Id$
+
+@mixin cuba-table-paging {
+  .v-button.cuba-paging-change-page {
+    height: round($v-unit-size/1.5);
+    padding: 0 round($v-unit-size/6);
+  }
+
+  .cuba-paging-status {
+    line-height: round($v-unit-size/1.5);
+  }
+
+  .cuba-paging-count {
+    height: round($v-unit-size/1.5);
+  }
+}

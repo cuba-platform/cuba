@@ -45,6 +45,8 @@
 @import "app/report-wizard";
 @import "app/breadcrumbs";
 @import "app/table-presentations";
+@import "app/table-paging";
+@import "app/app-menu";
 
 @mixin halo {
   @include valo;
@@ -83,4 +85,6 @@
   @include cuba-report-wizard;
   @include cuba-breadcrumbs;
   @include cuba-table-presentations;
+  @include cuba-table-paging;
+  @include cuba-menubar;
 }
