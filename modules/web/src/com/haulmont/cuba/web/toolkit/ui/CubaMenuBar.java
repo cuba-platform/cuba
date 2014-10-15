@@ -87,10 +87,16 @@ public class CubaMenuBar extends com.vaadin.ui.MenuBar {
             }
         }
         if (testIds != null && testIds.containsKey(item)) {
-            target.addAttribute("tid", testIds.get(item));
+            String testIdValue = testIds.get(item);
+            if (testIdValue != null) {
+                target.addAttribute("tid", testIdValue);
+            }
         }
         if (cubaIds != null && cubaIds.containsKey(item)) {
-            target.addAttribute("cid", cubaIds.get(item));
+            String idValue = cubaIds.get(item);
+            if (idValue != null) {
+                target.addAttribute("cid", idValue);
+            }
         }
     }
 }
