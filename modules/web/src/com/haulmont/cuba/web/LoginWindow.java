@@ -166,6 +166,7 @@ public class LoginWindow extends UIView implements Action.Handler {
                 // check theme support
                 List<String> supportedThemes = webConfig.getAvailableAppThemes();
                 if (supportedThemes.contains(userAppTheme)) {
+                    app.applyTheme(userAppTheme);
                     ui.setTheme(userAppTheme);
                 }
             }
