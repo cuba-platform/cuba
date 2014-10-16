@@ -66,13 +66,14 @@ public class DefaultExceptionHandler implements ExceptionHandler {
             rootCause = exception;
         }
         ExceptionDialog dialog = new ExceptionDialog(rootCause);
-        for (Window window : AppUI.getCurrent().getWindows()) {
+        AppUI ui = app.getAppUI();
+        for (Window window : ui.getWindows()) {
             if (window.isModal()) {
                 dialog.setModal(true);
                 break;
             }
         }
-        app.getAppUI().addWindow(dialog);
+        ui.addWindow(dialog);
         dialog.focus();
     }
 

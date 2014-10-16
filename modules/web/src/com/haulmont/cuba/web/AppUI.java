@@ -39,7 +39,7 @@ public class AppUI extends UI implements ErrorHandler {
 
     private final static Log log = LogFactory.getLog(AppUI.class);
 
-    protected App app;
+    protected final App app;
 
     protected boolean applicationInitRequired = false;
 
@@ -51,21 +51,23 @@ public class AppUI extends UI implements ErrorHandler {
         log.trace("Creating UI " + this);
         if (!App.isBound()) {
             app = createApplication();
-            VaadinSession.getCurrent().setAttribute(App.class, app);
 
-            // set root error handler
-            VaadinSession.getCurrent().setErrorHandler(new ErrorHandler() {
+            VaadinSession vSession = VaadinSession.getCurrent();
+            vSession.setAttribute(App.class, app);
+
+            // set root error handler for all session
+            vSession.setErrorHandler(new ErrorHandler() {
                 @Override
                 public void error(com.vaadin.server.ErrorEvent event) {
                     try {
-                        App.getInstance().getExceptionHandlers().handle(event);
-                        App.getInstance().getAppLog().log(event);
+                        app.getExceptionHandlers().handle(event);
+                        app.getAppLog().log(event);
                     } catch (Throwable e) {
                         //noinspection ThrowableResultOfMethodCallIgnored
                         log.error("Error handling exception\nOriginal exception:\n"
-                                + ExceptionUtils.getStackTrace(event.getThrowable())
-                                + "\nException in handlers:\n"
-                                + ExceptionUtils.getStackTrace(e)
+                                        + ExceptionUtils.getStackTrace(event.getThrowable())
+                                        + "\nException in handlers:\n"
+                                        + ExceptionUtils.getStackTrace(e)
                         );
                     }
                 }
@@ -149,10 +151,10 @@ public class AppUI extends UI implements ErrorHandler {
 
             applicationInitRequired = false;
         }
-        // open login or main window
-        app.initView(this);
         // init error handlers
         setErrorHandler(this);
+        // open login or main window
+        app.initView(this);
 
         processExternalLink(request);
     }
@@ -229,11 +231,11 @@ public class AppUI extends UI implements ErrorHandler {
                 log.warn("Unable to process the external link: lastRequestParams not found in session");
                 return;
             }
-            LinkHandler linkHandler = AppBeans.getPrototype(LinkHandler.NAME, App.getInstance(), action, params);
-            if (App.getInstance().connection.isConnected()) {
+            LinkHandler linkHandler = AppBeans.getPrototype(LinkHandler.NAME, app, action, params);
+            if (app.connection.isConnected()) {
                 linkHandler.handle();
             } else {
-                App.getInstance().linkHandler = linkHandler;
+                app.linkHandler = linkHandler;
             }
         }
     }

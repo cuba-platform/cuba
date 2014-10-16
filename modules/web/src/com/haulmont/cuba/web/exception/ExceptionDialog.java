@@ -13,7 +13,6 @@ import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
-import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -174,6 +173,7 @@ public class ExceptionDialog extends Window {
             RemoteException re = (RemoteException) rootCause;
             if (!re.getCauses().isEmpty()) {
                 RemoteException.Cause cause = re.getCauses().get(re.getCauses().size() - 1);
+                //noinspection ThrowableResultOfMethodCallIgnored
                 if (cause.getThrowable() != null)
                     rootCause = cause.getThrowable();
                 else {
