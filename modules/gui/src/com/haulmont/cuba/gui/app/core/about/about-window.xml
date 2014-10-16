@@ -3,16 +3,13 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<window
-        xmlns="http://schemas.haulmont.com/cuba/5.2/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/5.2/window.xsd"
         class="com.haulmont.cuba.gui.app.core.about.AboutWindow"
         caption="msg://caption">
 
-    <dsContext/>
-
     <layout>
         <tabSheet width="100%" height="100%">
-            <tab id="infoTab" caption="msg://info" margin="true" spacing="true" expand="license">
+            <tab id="infoTab" caption="msg://info" margin="true" spacing="true">
                 <iframe id="license" screen="licenseFrame" width="100%" height="100%"/>
             </tab>
             <tab id="creditsTab" caption="msg://credits" margin="true">

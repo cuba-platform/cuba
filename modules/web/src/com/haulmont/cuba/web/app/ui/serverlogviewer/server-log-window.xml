@@ -25,7 +25,6 @@
     <assign name="logLevelFieldWidth" value="theme://cuba.web.server-log-window.logLevelField.width"/>
 
     <layout expand="logFieldBox" spacing="true">
-
         <grid spacing="true">
             <columns>
                 <column/>
@@ -33,11 +32,11 @@
             </columns>
             <rows>
                 <row>
-                    <label value="msg://jmx.localJmxNode"/>
+                    <label value="msg://jmx.localJmxNode" align="MIDDLE_LEFT"/>
                     <label id="localJmxField" stylename="h2" width="${jmxFieldWidth}"/>
                 </row>
                 <row>
-                    <label value="msg://jmx.targetJmxNode"/>
+                    <label value="msg://jmx.targetJmxNode" align="MIDDLE_LEFT"/>
                     <lookupPickerField id="jmxConnectionField" optionsDatasource="jmxInstancesDs" width="${jmxFieldWidth}"/>
                 </row>
             </rows>
@@ -59,9 +58,9 @@
                         <columns count="5"/>
                         <rows>
                             <row>
-                                <label value="msg://logger.name"/>
+                                <label value="msg://logger.name" align="MIDDLE_LEFT"/>
                                 <lookupField id="loggerNameField" width="${logFieldWidth}"/>
-                                <label value="msg://logger.level"/>
+                                <label value="msg://logger.level" align="MIDDLE_LEFT"/>
                                 <lookupField id="loggerLevelField" width="${logLevelFieldWidth}"/>
                                 <hbox spacing="true">
                                     <button caption="msg://actions.Get" invoke="getLoggerLevel"/>
@@ -70,9 +69,9 @@
                                 </hbox>
                             </row>
                             <row>
-                                <label value="msg://appender.name"/>
+                                <label value="msg://appender.name" align="MIDDLE_LEFT"/>
                                 <lookupField id="appenderNameField" width="${logFieldWidth}"/>
-                                <label value="msg://appender.level"/>
+                                <label value="msg://appender.level" align="MIDDLE_LEFT"/>
                                 <lookupField id="appenderLevelField" width="${logLevelFieldWidth}"/>
                                 <hbox spacing="true">
                                     <button caption="msg://actions.Get" invoke="getAppenderLevel"/>

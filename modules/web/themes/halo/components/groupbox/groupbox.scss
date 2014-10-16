@@ -16,7 +16,7 @@
     border-bottom: valo-border();
     border-bottom-left-radius: $v-border-radius;
     border-bottom-right-radius: $v-border-radius;
-    padding: 0 round(2*$v-unit-size/3) round(2*$v-unit-size/3) round(2*$v-unit-size/3);
+    padding: 0 round($v-unit-size/3) round($v-unit-size/3) round($v-unit-size/3);
   }
 
   .#{$primary-stylename}.collapsed > .#{$primary-stylename}-content,
@@ -142,7 +142,7 @@
 
   .#{$primary-stylename}-nocaption > .#{$primary-stylename}-captionwrap .#{$primary-stylename}-caption-start-deco div,
   .#{$primary-stylename}-nocaption > .#{$primary-stylename}-captionwrap .#{$primary-stylename}-caption-end-deco div {
-    height: round($v-unit-size/3) + round($v-unit-size/6);
+    height: round($v-unit-size/3);
   }
 
   .#{$primary-stylename}-nocaption.#{$primary-stylename}-light > .#{$primary-stylename}-content {

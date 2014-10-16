@@ -3,8 +3,7 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<window
-        xmlns="http://schemas.haulmont.com/cuba/5.2/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/5.2/window.xsd"
         datasource="roleDs"
         caption="msg://caption"
         class="com.haulmont.cuba.gui.app.security.role.edit.RoleEditor"
@@ -16,46 +15,39 @@
         <datasource id="roleDs" class="com.haulmont.cuba.security.entity.Role" view="_local"/>
     </dsContext>
 
-    <assign name="width" value="200"/>
+    <assign name="width" value="theme://cuba.gui.role-edit.name.width"/>
 
     <layout expand="permissionsTabsheet" spacing="true">
         <groupBox id="roleGroupBox">
             <hbox id="rolePropertiesHBox" spacing="true">
                 <grid id="roleNameGrid" spacing="true">
-                    <columns count="3"/>
+                    <columns count="6"/>
                     <rows>
                         <row>
-                            <label value="msg://name"/>
+                            <label value="msg://name" align="MIDDLE_LEFT"/>
                             <textField id="name" datasource="roleDs" property="name" width="${width}" required="true"
                                        requiredMessage="msg://nameMsg"/>
-                        </row>
-                        <row>
-                            <label value="msg://locName"/>
-                            <textField id="locName" datasource="roleDs" property="locName" width="${width}"/>
-                        </row>
-                    </rows>
-                </grid>
 
-                <grid id="roleTypeGrid" spacing="true">
-                    <columns count="3"/>
-                    <rows>
-                        <row>
-                            <label value="msg://roleType"/>
+                            <label value="msg://roleType" align="MIDDLE_LEFT"/>
                             <lookupField id="typeLookup" datasource="roleDs" property="type"
                                          required="true" width="theme://cuba.gui.role-edit.typeLookup.width"/>
+
+                            <label value="msg://description" align="MIDDLE_LEFT"/>
+                            <textArea id="description" datasource="roleDs" property="description"
+                                      rowspan="2"
+                                      height="100%" width="theme://cuba.gui.role-edit.description.width"/>
                         </row>
                         <row>
-                            <label value="msg://defaultRole"/>
+                            <label value="msg://locName" align="MIDDLE_LEFT"/>
+                            <textField id="locName" datasource="roleDs" property="locName" width="${width}"/>
+
+                            <label value="msg://defaultRole" align="MIDDLE_LEFT"/>
                             <checkBox id="defaultRole" datasource="roleDs" property="defaultRole" align="MIDDLE_LEFT"/>
+
+                            <label value=""/>  <!-- spaceholder for desktop -->
                         </row>
                     </rows>
                 </grid>
-
-                <hbox id="descrBox" spacing="true" height="100%">
-                    <label value="msg://description"/>
-                    <textArea id="description" datasource="roleDs" property="description"
-                              height="100%" width="theme://cuba.gui.role-edit.description.width"/>
-                </hbox>
             </hbox>
         </groupBox>
 
