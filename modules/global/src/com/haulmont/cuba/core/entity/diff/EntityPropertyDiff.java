@@ -45,7 +45,7 @@ public abstract class EntityPropertyDiff extends AbstractNotPersistentEntity imp
         this.viewProperty = viewProperty;
         MessageTools messageTools = AppBeans.get(MessageTools.NAME);
         this.propertyCaption = messageTools.getPropertyCaption(metaProperty);
-        this.metaClassName = metaProperty.getDomain().getFullName();
+        this.metaClassName = metaProperty.getDomain().getName();
     }
 
     public ViewProperty getViewProperty() {

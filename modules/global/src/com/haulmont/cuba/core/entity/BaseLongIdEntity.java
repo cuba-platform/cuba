@@ -4,29 +4,38 @@
  */
 package com.haulmont.cuba.core.entity;
 
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.impl.AbstractInstance;
-import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.UuidProvider;
+import org.apache.openjpa.persistence.Persistent;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
 import java.util.UUID;
-import java.util.Date;
 
-public abstract class BaseLongIdEntity extends AbstractInstance implements BaseEntity<Long>
-{
+/**
+ * Base class for persistent entities with Long identifier.
+ *
+ * @author krivopustov
+ * @version $Id$
+ */
+@MappedSuperclass
+public abstract class BaseLongIdEntity extends BaseGenericIdEntity<Long> {
+
+    private static final long serialVersionUID = 1748237513475338490L;
+
     @Id
     @Column(name = "ID")
-    private Long id;
+    protected Long id;
 
-    private UUID uuid;
+    @Column(name = "UUID")
+    @Persistent
+    protected UUID uuid;
 
-    @Column(name = "CREATE_TS")
-    private Date createTs;
+    protected BaseLongIdEntity() {
+        uuid = UuidProvider.createUuid();
+    }
 
-    @Column(name = "CREATED_BY")
-    private String createdBy;
-
+    @Override
     public Long getId() {
         return id;
     }
@@ -35,49 +44,12 @@ public abstract class BaseLongIdEntity extends AbstractInstance implements BaseE
         this.id = id;
     }
 
+    @Override
     public UUID getUuid() {
         return uuid;
     }
 
-    @Override
-    public MetaClass getMetaClass() {
-        return MetadataProvider.getSession().getClass(getClass());
-    }
-
     public void setUuid(UUID uuid) {
         this.uuid = uuid;
-    }
-
-    public Date getCreateTs() {
-        return createTs;
-    }
-
-    public void setCreateTs(Date createTs) {
-        this.createTs = createTs;
-    }
-
-    public String getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        BaseLongIdEntity that = (BaseLongIdEntity) o;
-
-        return !(id != null ? !id.equals(that.id) : that.id != null) && uuid.equals(that.uuid);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + uuid.hashCode();
-        return result;
     }
 }

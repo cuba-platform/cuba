@@ -288,7 +288,7 @@ public class FoldersServiceBean implements FoldersService {
     protected Folder resetAttributes(Folder folder) {
         User user = userSessionSource.getUserSession().getUser();
         folder.setCreatedBy(user.getLoginLowerCase());
-        folder.setUuid(UUID.randomUUID());
+        folder.setId(UUID.randomUUID());
         folder.setCreateTs(new Date());
         folder.setUpdatedBy(null);
         folder.setUpdateTs(null);

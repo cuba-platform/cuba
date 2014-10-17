@@ -8,7 +8,11 @@
     <persistence-unit name="cuba" transaction-type="RESOURCE_LOCAL">
         <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
 
+        <class>com.haulmont.cuba.core.entity.BaseGenericIdEntity</class>
         <class>com.haulmont.cuba.core.entity.BaseUuidEntity</class>
+        <class>com.haulmont.cuba.core.entity.BaseLongIdEntity</class>
+        <class>com.haulmont.cuba.core.entity.BaseIntegerIdEntity</class>
+        <class>com.haulmont.cuba.core.entity.BaseStringIdEntity</class>
         <class>com.haulmont.cuba.core.entity.StandardEntity</class>
         <class>com.haulmont.cuba.core.entity.Server</class>
         <class>com.haulmont.cuba.core.entity.Config</class>

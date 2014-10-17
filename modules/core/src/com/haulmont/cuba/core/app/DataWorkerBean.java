@@ -406,10 +406,12 @@ public class DataWorkerBean implements DataWorker {
                 && context.getId() == null)
             throw new IllegalArgumentException("Query string or ID needed");
 
-        DataServiceQueryBuilder queryBuilder = new DataServiceQueryBuilder(
+        DataServiceQueryBuilder queryBuilder = AppBeans.get(DataServiceQueryBuilder.NAME);
+        queryBuilder.init(
                 contextQuery == null ? null : contextQuery.getQueryString(),
                 contextQuery == null ? null : contextQuery.getParameters(),
-                context.getId(), context.getMetaClass(), context.isUseSecurityConstraints(), security);
+                context.getId(), context.getMetaClass(), context.isUseSecurityConstraints()
+        );
 
         if (!context.getPrevQueries().isEmpty()) {
             log.debug("Restrict query by previous results");

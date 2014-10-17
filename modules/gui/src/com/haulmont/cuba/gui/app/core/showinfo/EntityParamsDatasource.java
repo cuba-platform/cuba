@@ -52,7 +52,7 @@ public class EntityParamsDatasource extends CollectionDatasourceImpl<KeyValueEnt
         Class<?> javaClass = effectiveMetaClass.getJavaClass();
         includeParam("table.showInfoAction.entityName", instanceMetaClass.getName());
 
-        if (!StringUtils.equals(effectiveMetaClass.getFullName(), instanceMetaClass.getFullName())) {
+        if (!StringUtils.equals(effectiveMetaClass.getName(), instanceMetaClass.getName())) {
             includeParam("table.showInfoAction.entityEffectiveName", effectiveMetaClass.getName());
         }
         includeParam("table.showInfoAction.entityClass", javaClass.getName());

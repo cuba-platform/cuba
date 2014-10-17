@@ -8,12 +8,16 @@ package com.haulmont.cuba.core.sys;
 import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.annotations.NamePattern;
+import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.loader.MetadataLoader;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaModel;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Session;
 import com.haulmont.chile.core.model.impl.*;
+import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
+import com.haulmont.cuba.core.entity.BaseIntegerIdEntity;
+import com.haulmont.cuba.core.entity.BaseLongIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.annotation.*;
 import com.haulmont.cuba.core.global.*;
@@ -60,6 +64,9 @@ public class MetadataImpl implements Metadata {
     @Inject
     protected MetadataBuildSupport metadataBuildSupport;
 
+    @Inject
+    protected NumberIdSource numberIdSource;
+
     private static final Pattern JAVA_CLASS_PATTERN = Pattern.compile("([a-zA-Z_$][a-zA-Z\\d_$]*\\.)*[a-zA-Z_$][a-zA-Z\\d_$]*");
 
     @Override
@@ -101,10 +108,23 @@ public class MetadataImpl implements Metadata {
         Class<T> extClass = extendedEntities.getEffectiveClass(entityClass);
         try {
             T obj = extClass.newInstance();
+            assignIdentifier((Entity) obj);
             invokePostConstructMethods((Entity) obj);
             return obj;
         } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    protected void assignIdentifier(Entity entity) {
+        if (!(entity instanceof BaseGenericIdEntity))
+            return;
+        MetaClass metaClass = getClassNN(entity.getClass());
+        if (entity instanceof BaseLongIdEntity) {
+            ((BaseGenericIdEntity<Long>) entity).setId(numberIdSource.createLongId(metaClass.getName()));
+        } else if (entity instanceof BaseIntegerIdEntity) {
+            ((BaseGenericIdEntity<Integer>) entity).setId(numberIdSource.createIntegerId(metaClass.getName()));
         }
     }
 

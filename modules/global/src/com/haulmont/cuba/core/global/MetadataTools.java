@@ -115,6 +115,34 @@ public class MetadataTools {
     }
 
     /**
+     * @return name of a primary key attribute
+     * @throws java.lang.IllegalStateException if the entity has no primary key
+     */
+    public String getPrimaryKeyName(MetaClass metaClass) {
+        String pkProperty = (String) metaClass.getAnnotations().get("primaryKey");
+        if (pkProperty != null) {
+            return pkProperty;
+        } else {
+            MetaClass ancestor = metaClass.getAncestor();
+            while (ancestor != null) {
+                pkProperty = (String) ancestor.getAnnotations().get("primaryKey");
+                if (pkProperty != null)
+                    return pkProperty;
+                ancestor = ancestor.getAncestor();
+            }
+        }
+        throw new IllegalStateException("Cannot determine primary key attribute for " + metaClass);
+    }
+
+    /**
+     * @return MetaProperty representing a primary key attribute
+     * @throws java.lang.IllegalStateException if the entity has no primary key
+     */
+    public MetaProperty getPrimaryKeyProperty(MetaClass metaClass) {
+        return metaClass.getPropertyNN(getPrimaryKeyName(metaClass));
+    }
+
+    /**
      * Determine whether an object denoted by the given property is merged into persistence context together with the
      * owning object. This is true if the property is ManyToMany, or if it is OneToMany with certain CasacdeType defined.
      */
@@ -142,24 +170,7 @@ public class MetadataTools {
      */
     public boolean isSystem(MetaProperty metaProperty) {
         Objects.requireNonNull(metaProperty, "metaProperty is null");
-        String name = metaProperty.getName();
-        for (String property : BaseEntity.PROPERTIES) {
-            if (name.equals(property))
-                return true;
-        }
-        for (String property : Updatable.PROPERTIES) {
-            if (name.equals(property))
-                return true;
-        }
-        for (String property : SoftDelete.PROPERTIES) {
-            if (name.equals(property))
-                return true;
-        }
-        for (String property : Versioned.PROPERTIES) {
-            if (name.equals(property))
-                return true;
-        }
-        return false;
+        return Boolean.TRUE.equals(metaProperty.getAnnotations().get("system"));
     }
 
     /**

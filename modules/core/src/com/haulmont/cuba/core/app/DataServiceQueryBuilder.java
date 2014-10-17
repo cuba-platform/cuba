@@ -7,6 +7,8 @@ package com.haulmont.cuba.core.app;
 
 import com.haulmont.bali.util.StringHelper;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.PersistenceSecurity;
 import com.haulmont.cuba.core.Query;
@@ -15,7 +17,10 @@ import com.haulmont.cuba.core.global.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.context.annotation.Scope;
 
+import javax.annotation.ManagedBean;
+import javax.inject.Inject;
 import java.util.*;
 
 /**
@@ -24,7 +29,11 @@ import java.util.*;
  * @author krivopustov
  * @version $Id$
  */
+@ManagedBean(DataServiceQueryBuilder.NAME)
+@Scope("prototype")
 public class DataServiceQueryBuilder {
+
+    public static final String NAME = "cuba_DataServiceQueryBuilder";
 
     private Log log = LogFactory.getLog(getClass());
 
@@ -32,20 +41,27 @@ public class DataServiceQueryBuilder {
     private Map<String, Object> queryParams;
     private String entityName;
     private boolean useSecurityConstraints;
+
+    @Inject
+    protected Metadata metadata;
+
+    @Inject
     private PersistenceSecurity security;
 
-    public DataServiceQueryBuilder(String queryString, Map<String, Object> queryParams, Object id, String entityName,
-                                   boolean useSecurityConstraints, PersistenceSecurity security)
+    public void init(String queryString, Map<String, Object> queryParams,
+                     Object id, String entityName,
+                     boolean useSecurityConstraints)
     {
         this.entityName = entityName;
         this.useSecurityConstraints = useSecurityConstraints;
-        this.security = security;
         if (!StringUtils.isBlank(queryString)) {
             this.queryString = queryString;
             this.queryParams = queryParams;
         } else {
-            this.queryString = "select e from " + entityName + " e where e.id = :entityId";
-            this.queryParams = new HashMap<String, Object>();
+            MetaClass metaClass = metadata.getClassNN(entityName);
+            String pkName = metadata.getTools().getPrimaryKeyName(metaClass);
+            this.queryString = "select e from " + entityName + " e where e." + pkName + " = :entityId";
+            this.queryParams = new HashMap<>();
             this.queryParams.put("entityId", id);
         }
     }

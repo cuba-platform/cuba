@@ -7,12 +7,10 @@ package com.haulmont.cuba.core.sys;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.cuba.core.entity.BaseEntity;
-import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.entity.SoftDelete;
-import com.haulmont.cuba.core.entity.Updatable;
+import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import org.apache.commons.lang.ClassUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.LogFactory;
 import org.apache.openjpa.persistence.FetchPlan;
 
@@ -20,10 +18,8 @@ import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.lang.reflect.Field;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.lang.reflect.Method;
+import java.util.*;
 
 /**
  * Applies {@link View} to OpenJPA's fetch plans.
@@ -83,9 +79,14 @@ public class FetchPlanManager {
 
         // Always add SoftDelete properties to support EntityManager contract
         if (SoftDelete.class.isAssignableFrom(entityClass)) {
-            for (String property : SoftDelete.PROPERTIES) {
+            for (String property : getInterfaceProperties(SoftDelete.class)) {
                 fetchPlanFields.add(createFetchPlanField(entityClass, property));
             }
+        }
+
+        // Always add uuid property if the entity has primary key not of type UUID
+        if (!BaseUuidEntity.class.isAssignableFrom(entityClass)) {
+            fetchPlanFields.add(createFetchPlanField(entityClass, "uuid"));
         }
 
         for (ViewProperty property : view.getProperties()) {
@@ -130,15 +131,25 @@ public class FetchPlanManager {
     private void includeSystemProperties(View view, Set<FetchPlanField> fetchPlanFields) {
         Class<? extends Entity> entityClass = view.getEntityClass();
         if (BaseEntity.class.isAssignableFrom(entityClass)) {
-            for (String property : BaseEntity.PROPERTIES) {
+            for (String property : getInterfaceProperties(BaseEntity.class)) {
                 fetchPlanFields.add(createFetchPlanField(entityClass, property));
             }
         }
         if (Updatable.class.isAssignableFrom(entityClass)) {
-            for (String property : Updatable.PROPERTIES) {
+            for (String property : getInterfaceProperties(Updatable.class)) {
                 fetchPlanFields.add(createFetchPlanField(entityClass, property));
             }
         }
+    }
+
+    private List<String> getInterfaceProperties(Class<?> intf) {
+        List<String> result = new ArrayList<>();
+        for (Method method : intf.getDeclaredMethods()) {
+            if (method.getName().startsWith("get") && method.getParameterTypes().length == 0) {
+                result.add(StringUtils.uncapitalize(method.getName().substring(3)));
+            }
+        }
+        return result;
     }
 
     private FetchPlanField createFetchPlanField(Class<? extends Entity> entityClass, String property) {

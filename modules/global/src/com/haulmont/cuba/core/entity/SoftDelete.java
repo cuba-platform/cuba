@@ -14,8 +14,6 @@ import java.util.Date;
  */
 public interface SoftDelete {
 
-    String[] PROPERTIES = {"deleteTs", "deletedBy"};
-
     Boolean isDeleted();
 
     Date getDeleteTs();

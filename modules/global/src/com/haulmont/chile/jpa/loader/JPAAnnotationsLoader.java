@@ -207,6 +207,11 @@ public class JPAAnnotationsLoader extends ChileAnnotationsLoader {
         if (isPersistent(field))
             metaProperty.getAnnotations().put("persistent", true);
 
+        if (isPrimaryKey(field)) {
+            metaProperty.getAnnotations().put("primaryKey", true);
+            metaProperty.getDomain().getAnnotations().put("primaryKey", metaProperty.getName());
+        }
+
         if (isEmbedded(field))
             metaProperty.getAnnotations().put("embedded", true);
 
@@ -220,6 +225,10 @@ public class JPAAnnotationsLoader extends ChileAnnotationsLoader {
         if (temporal != null) {
             metaProperty.getAnnotations().put("temporal", temporal.value());
         }
+    }
+
+    protected boolean isPrimaryKey(Field field) {
+        return field.isAnnotationPresent(Id.class);
     }
 
     protected boolean isEmbedded(Field field) {

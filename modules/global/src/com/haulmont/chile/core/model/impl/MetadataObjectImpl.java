@@ -8,9 +8,10 @@ package com.haulmont.chile.core.model.impl;
 import com.haulmont.chile.core.model.MetadataObject;
 
 import java.io.Serializable;
-import java.util.*;
-
-import org.apache.commons.collections.CollectionUtils;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
 
 /**
  * @author abramov
@@ -28,8 +29,6 @@ public abstract class MetadataObjectImpl<T extends MetadataObject> implements Me
 
     protected String name;
 
-    private transient UUID uuid = UUID.randomUUID();
-
     private transient Map<String, Object> annotations = new HashMap<>();
 
     @Override
@@ -38,7 +37,7 @@ public abstract class MetadataObjectImpl<T extends MetadataObject> implements Me
             if (ancestors.size() == 0) {
                 return null;
             } else if (ancestors.size() == 1) {
-                ancestor = (T) CollectionUtils.get(ancestors, 0);
+                ancestor = ancestors.iterator().next();
                 return ancestor;
             } else {
                 throw new IllegalStateException(
@@ -65,16 +64,6 @@ public abstract class MetadataObjectImpl<T extends MetadataObject> implements Me
     }
 
     @Override
-    public String getFullName() {
-        return name;
-    }
-
-    @Override
-    public UUID getUUID() {
-        return uuid;
-    }
-
-    @Override
     public Map<String, Object> getAnnotations() {
         return annotations;
     }
@@ -83,12 +72,9 @@ public abstract class MetadataObjectImpl<T extends MetadataObject> implements Me
         this.name = name;
     }
 
-    public void setUuid(UUID uuid) {
-        this.uuid = uuid;
-    }
-
     public void addAncestor(T ancestorClass) {
         ancestors.add(ancestorClass);
+        //noinspection unchecked
         ((MetadataObjectImpl) ancestorClass).descendants.add(this);
     }
 }

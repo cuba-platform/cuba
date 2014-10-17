@@ -159,7 +159,7 @@ public class EditorWindowDelegate extends WindowDelegate {
         ((DatasourceImplementation) ds).setModified(false);
 
         Security security = AppBeans.get(Security.NAME);
-        if (security.isEntityOpPermitted(ds.getMetaClass(), EntityOp.UPDATE)) {
+        if (!PersistenceHelper.isNew(item) && security.isEntityOpPermitted(ds.getMetaClass(), EntityOp.UPDATE)) {
             readOnly = false;
             LockInfo lockInfo = lockService.lock(getMetaClassForLocking(ds).getName(), item.getId().toString());
             if (lockInfo == null) {

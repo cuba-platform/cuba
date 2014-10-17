@@ -14,8 +14,6 @@ import java.util.Date;
  */
 public interface Updatable {
 
-    String[] PROPERTIES = {"updateTs", "updatedBy"};
-
     Date getUpdateTs();
 
     void setUpdateTs(Date updateTs);

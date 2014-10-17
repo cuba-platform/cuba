@@ -16,6 +16,7 @@ import org.apache.openjpa.kernel.StateManagerImpl;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.util.ObjectId;
+import org.apache.openjpa.util.OpenJPAId;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
@@ -108,8 +109,8 @@ public class PersistenceTools {
      * @throws IllegalStateException if the entity is not in Managed state
      * @throws IllegalArgumentException if the specified property is not a reference
      */
-    @Nullable
-    public UUID getReferenceId(Object entity, String property) {
+    @Nullable @SuppressWarnings("unchecked")
+    public <T> T getReferenceId(Object entity, String property) {
         OpenJPAStateManager stateManager = (OpenJPAStateManager) ((PersistenceCapable) entity).pcGetStateManager();
         if (!(stateManager instanceof StateManagerImpl))
             throw new IllegalStateException("Entity must be in managed state");
@@ -117,7 +118,7 @@ public class PersistenceTools {
         ClassMetaData metaData = stateManager.getMetaData();
         int index = metaData.getField(property).getIndex();
 
-        UUID id;
+        T id;
         BitSet loaded = stateManager.getLoaded();
         if (loaded.get(index)) {
             Object reference = ((Instance) entity).getValue(property);
@@ -125,15 +126,15 @@ public class PersistenceTools {
                 return null;
             if (!(reference instanceof Instance))
                 throw new IllegalArgumentException("Property " + property + " is not a reference");
-            id = ((Instance) reference).getUuid();
+            id = (T) ((Entity) reference).getId();
         } else {
             Object implData = stateManager.getIntermediate(index);
             if (implData == null)
                 return null;
-            if (!(implData instanceof ObjectId))
+            if (!(implData instanceof OpenJPAId))
                 throw new IllegalArgumentException("Property " + property + " is not a reference");
-            ObjectId objectId = (ObjectId) implData;
-            id = (UUID) objectId.getId();
+            OpenJPAId idImpl = (OpenJPAId) implData;
+            id = (T) idImpl.getIdObject();
         }
         return id;
     }

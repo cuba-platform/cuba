@@ -6,7 +6,10 @@
 package com.haulmont.cuba.core.app.queryresults;
 
 import com.haulmont.bali.db.QueryRunner;
-import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.app.DataServiceQueryBuilder;
 import com.haulmont.cuba.core.global.*;
@@ -36,9 +39,6 @@ public class QueryResultsManager implements QueryResultsManagerAPI {
 
     @Inject
     private Persistence persistence;
-
-    @Inject
-    private PersistenceSecurity security;
 
     @Inject
     private UserSessionSource userSessionSource;
@@ -86,8 +86,9 @@ public class QueryResultsManager implements QueryResultsManagerAPI {
             transformer.removeOrderBy();
             String queryString = transformer.getResult();
 
-            DataServiceQueryBuilder queryBuilder = new DataServiceQueryBuilder(queryString, contextQuery.getParameters(),
-                    null, entityName, loadContext.isUseSecurityConstraints(), security);
+            DataServiceQueryBuilder queryBuilder = AppBeans.get(DataServiceQueryBuilder.NAME);
+            queryBuilder.init(queryString, contextQuery.getParameters(),
+                    null, entityName, loadContext.isUseSecurityConstraints());
             if (prevQueries.size() > 1) {
                 queryBuilder.restrictByPreviousResults(userSessionSource.getUserSession().getId(), loadContext.getQueryKey());
             }

@@ -5,9 +5,8 @@
 
 package com.haulmont.chile.core.model;
 
-import java.util.Map;
-import java.util.UUID;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Ancestor of main metadata objects: {@link com.haulmont.chile.core.model.MetaClass} and {@link com.haulmont.chile.core.model.MetaProperty}
@@ -36,16 +35,6 @@ public interface MetadataObject<T extends MetadataObject> {
      * MetadataObject unique name
      */
     String getName();
-
-    /**
-     * Not used
-     */
-    String getFullName();
-
-    /**
-     * Unique ID
-     */
-    UUID getUUID();
 
     /**
      * MetadataObject annotations. Annotations here are simply name-value pairs, not correlated with Java annotations.

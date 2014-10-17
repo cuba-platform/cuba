@@ -150,7 +150,7 @@ public class RelatedAction extends AbstractAction {
                 parentIds.add((UUID) e.getId());
             }
 
-            String parentMetaClass = metaClass.getFullName();
+            String parentMetaClass = metaClass.getName();
 
             return relatedEntitiesService.getRelatedIds(parentIds, parentMetaClass, metaProperty.getName());
         }

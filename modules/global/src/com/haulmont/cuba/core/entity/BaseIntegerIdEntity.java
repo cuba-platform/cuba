@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Copyright (c) 2008-2014 Haulmont. All rights reserved.
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 package com.haulmont.cuba.core.entity;
@@ -13,37 +13,43 @@ import javax.persistence.MappedSuperclass;
 import java.util.UUID;
 
 /**
- * Base class for persistent entities with UUID identifier.<br>
- * Inherit from it if you need an entity without optimistic locking, update and soft deletion info.
+ * Base class for persistent entities with Integer identifier.
  *
  * @author krivopustov
  * @version $Id$
  */
 @MappedSuperclass
-public abstract class BaseUuidEntity extends BaseGenericIdEntity<UUID> {
+public abstract class BaseIntegerIdEntity extends BaseGenericIdEntity<Integer> {
 
-    private static final long serialVersionUID = -2217624132287086972L;
+    private static final long serialVersionUID = 1748237513475338490L;
 
     @Id
     @Column(name = "ID")
-    @Persistent
-    protected UUID id;
+    protected Integer id;
 
-    public BaseUuidEntity() {
-        id = UuidProvider.createUuid();
+    @Column(name = "UUID")
+    @Persistent
+    protected UUID uuid;
+
+    protected BaseIntegerIdEntity() {
+        uuid = UuidProvider.createUuid();
     }
 
     @Override
-    public UUID getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
     @Override
     public UUID getUuid() {
-        return id;
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 }

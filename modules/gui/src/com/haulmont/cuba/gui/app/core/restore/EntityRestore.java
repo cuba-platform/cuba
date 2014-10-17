@@ -274,7 +274,7 @@ public class EntityRestore extends AbstractWindow {
     }
 
     protected String getPropertyCaption(MetaClass meta, MetaProperty metaProperty) {
-        return messageTools.getPropertyCaption(meta, metaProperty.getFullName());
+        return messageTools.getPropertyCaption(meta, metaProperty.getName());
     }
 
     protected Map<String, Object> getEntitiesLookupFieldOptions() {

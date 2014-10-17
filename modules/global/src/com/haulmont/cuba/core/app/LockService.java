@@ -6,6 +6,7 @@ package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.global.LockInfo;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -26,6 +27,7 @@ public interface LockService {
      * <li>{@link com.haulmont.cuba.core.global.LockNotSupported} instance in case of locking is not configured for this object,
      * <li>{@link LockInfo} instance in case of this object is already locked by someone
      */
+    @Nullable
     LockInfo lock(String name, String id);
 
     /**
@@ -43,6 +45,7 @@ public interface LockService {
      * <li>{@link com.haulmont.cuba.core.global.LockNotSupported} instance in case of locking is not configured for this object,
      * <li>{@link LockInfo} instance in case of this object is locked by someone
      */
+    @Nullable
     LockInfo getLockInfo(String name, String id);
 
     /**
