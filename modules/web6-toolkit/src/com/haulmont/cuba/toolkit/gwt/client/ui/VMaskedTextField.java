@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.toolkit.gwt.client.ui;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.*;
 import com.vaadin.terminal.gwt.client.*;
@@ -40,6 +41,8 @@ public class VMaskedTextField extends VTextField {
     private Map<Character, Mask> maskMap = new HashMap<Character, Mask>();
 
     private boolean maskedMode = false;
+
+    protected boolean focused = false;
 
     private void debug(String msg) {
         if (isDebug)
@@ -114,6 +117,39 @@ public class VMaskedTextField extends VTextField {
         maskMap.put('*', new WildcardMask());
         maskMap.put('H', new HexMask());
         maskMap.put('~', new SignMask());
+    }
+
+    @Override
+    public void onFocus(FocusEvent event) {
+        super.onFocus(event);
+
+        if (!this.focused) {
+            this.focused = true;
+
+            if (!isReadOnly() && isEnabled()) {
+                if (mask != null && nullRepresentation != null && nullRepresentation.equals(super.getText())) {
+                    addStyleName("cuba-focus-move");
+
+                    Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+                        @Override
+                        public void execute() {
+                            if (!isReadOnly() && isEnabled() && focused) {
+                                setSelectionRange(0, 0);
+                            }
+
+                            removeStyleName("cuba-focus-move");
+                        }
+                    });
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onBlur(BlurEvent event) {
+        super.onBlur(event);
+
+        this.focused = false;
     }
 
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {

@@ -15,4 +15,16 @@
   .#{$primary-stylename}.v-readonly {
     @include valo-textfield-readonly-style;
   }
+
+  .#{$primary-stylename}-error {
+    @include valo-textfield-error-style;
+  }
+
+  .cuba-focus-move::selection {
+    background: transparent;
+  }
+
+  .cuba-focus-move::-moz-selection {
+    background: transparent;
+  }
 }

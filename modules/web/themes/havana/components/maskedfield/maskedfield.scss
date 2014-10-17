@@ -22,4 +22,12 @@
       color: #ccc;
     }
   }
+
+  .cuba-focus-move::selection {
+    background: transparent;
+  }
+
+  .cuba-focus-move::-moz-selection {
+    background: transparent;
+  }
 }
