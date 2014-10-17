@@ -290,8 +290,11 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
             layout.addComponent(titleLayout);
         }
 
-        if (webConfig.getUseLightHeader())
+        if (webConfig.getUseLightHeader()) {
             layout.addStyleName("cuba-app-light-header");
+        } else {
+            layout.addStyleName("cuba-app-full-header");
+        }
 
         menuBarLayout = createMenuBarLayout();
 
@@ -732,9 +735,9 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
 
         addUserIndicator(titleLayout);
 
-        addLogoutButton(titleLayout);
-
         addNewWindowButton(titleLayout);
+
+        addLogoutButton(titleLayout);
 
         return titleLayout;
     }
@@ -1020,8 +1023,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
             showInfo = new com.vaadin.event.Action(messages.getMainMessage("actions.showInfo"));
             analyzeLayout = new com.vaadin.event.Action(messages.getMainMessage("actions.analyzeLayout"));
 
-            // add halo style
-            addStyleName("padded-tabbar");
+            addStyleName("cuba-main-tabsheet");
         }
 
         @Override

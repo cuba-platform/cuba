@@ -13,4 +13,8 @@
   .#{$primary-stylename}-horizontal > div > .#{$primary-stylename}-vsplitter {
     height: $cuba-splitpanel-splitter-width;
   }
+
+  .#{$primary-stylename}-horizontal > div > .#{$primary-stylename}-second-container {
+    margin-left: $cuba-splitpanel-splitter-width;
+  }
 }

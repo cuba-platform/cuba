@@ -55,7 +55,7 @@
     right: 2 * round($v-unit-size/2);
   }
 
-  .cuba-table-presentations-editor  {
+  .cuba-table-presentations-editor {
     @include valo-selection-overlay-style;
 
     z-index: 19000 !important;  // do not hide parts of popup menu
@@ -65,6 +65,7 @@
   .cuba-table-presentations-title {
     border-bottom: valo-border();
     border-bottom-style: dotted;
+    line-height: $v-unit-size;
   }
 
   .cuba-table-presentations-list.v-menubar {

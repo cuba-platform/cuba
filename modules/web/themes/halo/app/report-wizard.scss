@@ -7,9 +7,9 @@
 // Version: $Id$
 
 @mixin cuba-report-wizard {
-
   .report-wizard-top-separator {
-    border-top: #A5C4E0 1px solid;
+    border-top: valo-border();
+    line-height: 0;
   }
 
   .v-textfield-hidden-field{

@@ -14,6 +14,26 @@
   .cuba-tooltip-button {
     display: none;
   }
+
+  .v-widget {
+    font-size: $v-font-size;
+  }
+
+  .v-panel,
+  .v-scrollable,
+  .v-gridlayout,
+  .v-verticallayout,
+  .v-horizontallayout,
+  .cuba-fieldgrouplayout {
+    font-size: 0;
+  }
+
+  .v-table,
+  .v-table-body,
+  .v-button,
+  .v-label {
+    font-size: $v-font-size;
+  }
 }
 
 @mixin box-defaults {

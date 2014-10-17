@@ -13,21 +13,25 @@
 
   .#{$primary-stylename}-empty {
     border: 0;
+    font-size: 0;
   }
 
-  h1, .#{$primary-stylename}-h1 {
+  .#{$primary-stylename}.#{$primary-stylename}-h1 {
+    font-size: $v-font-size--h1;
     margin: 0;
   }
 
-  h2, .#{$primary-stylename}-h2 {
+  .#{$primary-stylename}.#{$primary-stylename}-h2 {
     margin: 0;
+    font-size: $v-font-size--h2;
   }
 
-  h3, .#{$primary-stylename}-h3 {
+  .#{$primary-stylename}.#{$primary-stylename}-h3 {
     margin: 0;
+    font-size: $v-font-size--h3;
   }
 
-  h4, .#{$primary-stylename}-h4 {
+  .#{$primary-stylename}.#{$primary-stylename}-h4 {
     margin: 0;
   }
 

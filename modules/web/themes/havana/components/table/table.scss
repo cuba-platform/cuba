@@ -31,7 +31,7 @@
 
     .#{$primary-stylename}-cell-content.boolean-cell-true .#{$primary-stylename}-cell-wrapper {
       color: transparent;
-      font-size: 0px;
+      font-size: 0;
       height: 13px;
       background: no-repeat left center;
       background-image: url(sprites/checkbox-checked.png); /** sprite-ref: components; */
@@ -39,7 +39,7 @@
 
     .#{$primary-stylename}-cell-content.boolean-cell-false .#{$primary-stylename}-cell-wrapper {
       color: transparent;
-      font-size: 0px;
+      font-size: 0;
       height: 13px;
       background: no-repeat left center;
       background-image: url(sprites/checkbox-unchecked.png); /** sprite-ref: components; */

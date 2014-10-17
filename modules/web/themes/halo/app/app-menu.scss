@@ -6,6 +6,31 @@
 // Version: $Id$
 
 @mixin cuba-menubar {
+  .cuba-main-menu.v-menubar {
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+
+    &:focus {
+      border: 0;
+    }
+
+    &:focus:after {
+      border: 0;
+      box-shadow: none;
+    }
+  }
+
+  $border-width: first-number($v-border);
+  $br: max(0, $v-border-radius - $border-width);
+  .cuba-main-menu.v-menubar > .v-menubar-menuitem {
+    border-right: 0;
+
+    @if $v-border-radius > 0 {
+      border-radius: $br;
+    }
+  }
+
   .v-menubar-submenu {
     display: table;
     overflow: hidden;

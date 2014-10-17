@@ -1,0 +1,39 @@
+/*
+ * Copyright (c) 2008-2014 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+ */
+
+// Version: $Id$
+
+@mixin cuba-folders-pane {
+  .cuba-folders-pane {
+    background: $cuba-folderspane-background-color;
+
+    .v-tree {
+      border-color: transparent;
+      overflow: auto;
+
+      .v-tree-node-cuba-clickable-folder .v-tree-node-caption span {
+        cursor: pointer;
+      }
+
+      .v-tree-node-cuba-clickable-folder .v-tree-node-caption span:hover {
+        text-decoration: underline;
+        background: transparent none;
+      }
+
+      .v-tree-node-cuba-nonclickable-folder .v-tree-node-caption span:hover {
+        background: transparent none;
+      }
+    }
+
+    .v-tree:focus,
+    .v-tree-focus {
+      border-color: $v-focus-color;
+    }
+  }
+
+  .cuba-folders-pane-caption {
+    line-height: $v-unit-size;
+  }
+}
