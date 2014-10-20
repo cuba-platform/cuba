@@ -435,6 +435,7 @@ public class FoldersPane extends VerticalLayout {
     }
 
     protected List<AppFolder> getReloadedFolders() {
+        @SuppressWarnings("unchecked")
         List<AppFolder> folders = new ArrayList(appFoldersTree.getItemIds());
         FoldersService service = AppBeans.get(FoldersService.NAME);
         folders = service.reloadAppFolders(folders);
@@ -448,6 +449,7 @@ public class FoldersPane extends VerticalLayout {
     }
 
     protected void updateFolders(List<AppFolder> reloadedFolders) {
+        @SuppressWarnings("unchecked")
         List<AppFolder> folders = new ArrayList(appFoldersTree.getItemIds());
         for (AppFolder folder : reloadedFolders) {
             int index = reloadedFolders.indexOf(folder);
@@ -469,6 +471,7 @@ public class FoldersPane extends VerticalLayout {
             return null;
 
         appFoldersTree = new CubaTree();
+        appFoldersTree.setSelectable(false);
         appFoldersTree.setItemStyleGenerator(new FolderTreeStyleProvider());
         appFoldersTree.addExpandListener(new Tree.ExpandListener() {
             @Override
@@ -506,6 +509,7 @@ public class FoldersPane extends VerticalLayout {
 
     protected Component createSearchFoldersPane() {
         searchFoldersTree = new CubaTree();
+        searchFoldersTree.setSelectable(false);
         searchFoldersTree.setItemStyleGenerator(new FolderTreeStyleProvider());
 
         List<SearchFolder> searchFolders = foldersService.loadSearchFolders();
@@ -617,9 +621,10 @@ public class FoldersPane extends VerticalLayout {
     }
 
     public Collection<SearchFolder> getSearchFolders() {
-        if (searchFoldersTree == null)
+        if (searchFoldersTree == null) {
             return Collections.emptyList();
-        else {
+        } else {
+            @SuppressWarnings("unchecked")
             List result = new ArrayList(searchFoldersTree.getItemIds());
             result.remove(searchFoldersRoot);
             return result;

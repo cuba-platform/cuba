@@ -27,13 +27,28 @@
       }
     }
 
-    .v-tree:focus,
-    .v-tree-focus {
-      border-color: $v-focus-color;
+    .v-tree-node-focused:after {
+      border: 0;
     }
   }
 
   .cuba-folders-pane-caption {
     line-height: $v-unit-size;
+    font-size: $v-font-size--h3;
+  }
+
+  .cuba-main-menu.v-menubar > .v-menubar-menuitem.v-menubar-menuitem-folders-pane-icon,
+  .cuba-main-menu.v-menubar > .v-menubar-menuitem.v-menubar-menuitem-folders-pane-icon-active {
+    &:before {
+      color: $v-font-color;
+      font-size: $v-font-size;
+      font-family: FontAwesome;
+      content: "\f0c9";
+    }
+  }
+
+  .cuba-main-menu.v-menubar > .v-menubar-menuitem.v-menubar-menuitem-folders-pane-icon-active,
+  .cuba-main-menu.v-menubar > .v-menubar-menuitem.v-menubar-menuitem-folders-pane-icon-active:hover {
+    @include valo-button-active-style();
   }
 }
