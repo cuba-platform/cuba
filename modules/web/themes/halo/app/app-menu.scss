@@ -45,6 +45,10 @@
         border-bottom-left-radius: $v-border-radius;
         display: table-cell;
         padding-left: round(2*$v-unit-size/3);
+
+        .v-ie11 & {
+          border-right: 1px solid transparent;
+        }
       }
 
       .v-menubar-menuitem-shortcut {
@@ -53,6 +57,10 @@
         padding-right: round(2*$v-unit-size/3);
         border-top-right-radius: $v-border-radius;
         border-bottom-right-radius: $v-border-radius;
+
+        .v-ie11 & {
+          border-left: 1px solid transparent;
+        }
       }
 
       &:active:before {
@@ -61,6 +69,21 @@
 
       &:active {
         @include valo-button-active-style;
+      }
+    }
+
+    .v-menubar-menuitem-selected {
+      .v-ie11 & {
+        background: $v-focus-color;
+
+        .v-menubar-menuitem-caption {
+          border-right: 1px solid $v-focus-color;
+        }
+
+        .v-menubar-submenu-indicator,
+        .v-menubar-menuitem-shortcut {
+          border-left: 1px solid $v-focus-color;
+        }
       }
     }
 
@@ -89,6 +112,10 @@
       padding-right: round(2*$v-unit-size/3);
       border-top-right-radius: $v-border-radius;
       border-bottom-right-radius: $v-border-radius;
+
+      .v-ie11 & {
+        border-left: 1px solid transparent;
+      }
     }
   }
 }
