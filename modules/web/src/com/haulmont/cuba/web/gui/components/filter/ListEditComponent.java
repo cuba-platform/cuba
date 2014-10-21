@@ -13,6 +13,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.PickerField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -426,6 +427,10 @@ public class ListEditComponent extends CustomField {
                 picker.setMetaClass(metaClass);
                 PickerField.LookupAction action = picker.addLookupAction();
                 action.setLookupScreenOpenType(WindowManager.OpenType.DIALOG);
+                action.setLookupScreenDialogParams(new DialogParams()
+                        .setHeight(theme.getInt("cuba.web.WebWindowManager.forciblyDialog.height"))
+                        .setWidth(theme.getInt("cuba.web.WebWindowManager.forciblyDialog.width"))
+                        .setResizable(true));
                 picker.addClearAction();
 
                 picker.addListener(

@@ -11,6 +11,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowManagerProvider;
 import com.haulmont.cuba.gui.config.WindowConfig;
@@ -134,6 +135,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
 
         protected String lookupScreen;
         protected WindowManager.OpenType lookupScreenOpenType = WindowManager.OpenType.THIS_TAB;
+        protected DialogParams lookupScreenDialogParams = null;
         protected Map<String, Object> lookupScreenParams;
 
         protected WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
@@ -172,6 +174,14 @@ public interface PickerField extends Field, Component.ActionsHolder {
             this.lookupScreenOpenType = lookupScreenOpenType;
         }
 
+        public DialogParams getLookupScreenDialogParams() {
+            return lookupScreenDialogParams;
+        }
+
+        public void setLookupScreenDialogParams(DialogParams lookupScreenDialogParams) {
+            this.lookupScreenDialogParams = lookupScreenDialogParams;
+        }
+
         @Nullable
         public Map<String, Object> getLookupScreenParams() {
             return lookupScreenParams;
@@ -207,6 +217,14 @@ public interface PickerField extends Field, Component.ActionsHolder {
                     wm = AppBeans.get(WindowManagerProvider.class).get();
                 } else {
                     wm = window.getWindowManager();
+                }
+
+                if (lookupScreenOpenType == WindowManager.OpenType.DIALOG && lookupScreenDialogParams != null) {
+                    wm.getDialogParams()
+                            .setWidth(lookupScreenDialogParams.getWidth())
+                            .setHeight(lookupScreenDialogParams.getHeight())
+                            .setResizable(lookupScreenDialogParams.getResizable())
+                            .setCloseable(lookupScreenDialogParams.getCloseable());
                 }
 
                 Window lookupWindow = wm.openLookup(
@@ -290,6 +308,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
 
         protected String editScreen;
         protected WindowManager.OpenType editScreenOpenType = WindowManager.OpenType.THIS_TAB;
+        protected DialogParams editScreenDialogParams = null;
         protected Map<String, Object> editScreenParams;
 
         protected WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
@@ -328,6 +347,14 @@ public interface PickerField extends Field, Component.ActionsHolder {
             this.editScreenOpenType = editScreenOpenType;
         }
 
+        public DialogParams getEditScreenDialogParams() {
+            return editScreenDialogParams;
+        }
+
+        public void setEditScreenDialogParams(DialogParams editScreenDialogParams) {
+            this.editScreenDialogParams = editScreenDialogParams;
+        }
+
         @Nullable
         public Map<String, Object> getEditScreenParams() {
             return editScreenParams;
@@ -356,6 +383,14 @@ public interface PickerField extends Field, Component.ActionsHolder {
                 wm = AppBeans.get(WindowManagerProvider.class).get();
             } else {
                 wm = window.getWindowManager();
+            }
+
+            if (editScreenOpenType == WindowManager.OpenType.DIALOG && editScreenDialogParams != null) {
+                wm.getDialogParams()
+                        .setWidth(editScreenDialogParams.getWidth())
+                        .setHeight(editScreenDialogParams.getHeight())
+                        .setResizable(editScreenDialogParams.getResizable())
+                        .setCloseable(editScreenDialogParams.getCloseable());
             }
 
             if (entity instanceof SoftDelete && ((SoftDelete) entity).isDeleted()) {
