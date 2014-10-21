@@ -46,4 +46,11 @@
   .v-scrollable > .#{$primary-stylename} {
     overflow: auto;
   }
+
+  .#{$primary-stylename}-cell-wrapper {
+    > .v-widget {
+      margin-left: 0;
+      margin-right: 0;
+    }
+  }
 }
