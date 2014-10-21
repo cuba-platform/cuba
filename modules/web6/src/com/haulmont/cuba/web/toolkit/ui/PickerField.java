@@ -137,6 +137,8 @@ public class PickerField extends CustomField {
         field.setReadOnly(false);
         field.setValue(newValue);
         field.setReadOnly(fieldReadOnly);
+
+        fireValueChange(false);
     }
 
     @Override

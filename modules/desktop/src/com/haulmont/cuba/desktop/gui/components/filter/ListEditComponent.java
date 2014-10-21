@@ -19,6 +19,7 @@ import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
 import com.haulmont.cuba.desktop.sys.DialogWindow;
 import com.haulmont.cuba.desktop.sys.vcl.Picker;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.components.PickerField;
@@ -198,16 +199,20 @@ public class ListEditComponent extends Picker {
                 picker.setMetaClass(metaClass);
                 PickerField.LookupAction action = picker.addLookupAction();
                 action.setLookupScreenOpenType(WindowManager.OpenType.DIALOG);
+                action.setLookupScreenDialogParams(new DialogParams()
+                        .setHeight(500)
+                        .setWidth(800)
+                        .setResizable(true));
                 picker.addClearAction();
 
                 picker.addListener(
                         new ValueListener() {
                             public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                                if (value != null) {
+                                if (value != null && !containsValue((Instance) value)) {
                                     String str = addEntityInstance((Instance) value);
                                     addItemLayout(value, str);
-                                    picker.setValue(null);
                                 }
+                                picker.setValue(null);
                             }
                         }
                 );
@@ -328,6 +333,10 @@ public class ListEditComponent extends Picker {
                     }
                 }
             });
+        }
+
+        private boolean containsValue(Instance value) {
+            return this.values.containsValue(value.getInstanceName());
         }
 
         private void addItemLayout(final Object value, String str) {

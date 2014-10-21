@@ -12,6 +12,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.DateField;
@@ -414,6 +415,7 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
             this.messages = AppBeans.get(Messages.NAME);
             setCaption(messages.getMessage(MESSAGES_PACK, "ListEditWindow.caption"));
             setWidth(200, Sizeable.UNITS_PIXELS);
+            setHeight(250, Select.UNITS_PIXELS);
             setModal(true);
 
             this.values = new HashMap<>(values);
@@ -426,7 +428,13 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
             for (Map.Entry<Object, String> entry : values.entrySet()) {
                 addItemLayout(entry.getKey(), entry.getValue());
             }
-            contentLayout.addComponent(listLayout);
+
+            Panel editAreaPanel = new Panel();
+            editAreaPanel.setSizeFull();
+            editAreaPanel.setContent(listLayout);
+            contentLayout.addComponent(editAreaPanel);
+            contentLayout.setExpandRatio(editAreaPanel, 1.0f);
+            contentLayout.setHeight("100%");
 
             final Field field;
 
@@ -463,6 +471,10 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
                 picker.setMetaClass(metaClass);
                 PickerField.LookupAction action = picker.addLookupAction();
                 action.setLookupScreenOpenType(WindowManager.OpenType.DIALOG);
+                action.setLookupScreenDialogParams(new DialogParams()
+                        .setHeight(500)
+                        .setWidth(800)
+                        .setResizable(true));
                 picker.addClearAction();
 
                 picker.addListener(
