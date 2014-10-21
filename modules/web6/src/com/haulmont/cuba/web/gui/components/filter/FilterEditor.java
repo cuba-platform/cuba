@@ -361,12 +361,15 @@ public class FilterEditor extends AbstractFilterEditor {
 
         table.setColumnWidth(ConditionsContainer.HIDDEN_PROP_ID, 30);
         table.setColumnHeader(ConditionsContainer.HIDDEN_PROP_ID, hiddenCol);
+        table.setColumnAlignment(ConditionsContainer.HIDDEN_PROP_ID, Table.ALIGN_CENTER);
 
         table.setColumnWidth(ConditionsContainer.REQUIRED_PROP_ID, 30);
         table.setColumnHeader(ConditionsContainer.REQUIRED_PROP_ID, requiredCol);
+        table.setColumnAlignment(ConditionsContainer.REQUIRED_PROP_ID, Table.ALIGN_CENTER);
 
         table.setColumnWidth(ConditionsContainer.CONTROL_PROP_ID, 30);
         table.setColumnHeader(ConditionsContainer.CONTROL_PROP_ID, cntrCol);
+        table.setColumnAlignment(ConditionsContainer.CONTROL_PROP_ID, Table.ALIGN_CENTER);
 
         table.expandAll();
 

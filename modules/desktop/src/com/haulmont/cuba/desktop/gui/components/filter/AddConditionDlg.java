@@ -8,7 +8,10 @@ package com.haulmont.cuba.desktop.gui.components.filter;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.CategorizedEntity;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.desktop.TopLevelFrame;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
@@ -30,9 +33,7 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-import java.awt.event.ActionEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +58,7 @@ public class AddConditionDlg extends JDialog {
                            JComponent parent) {
 
         super(DesktopComponentsHelper.getTopLevelFrame(parent));
+
         this.selectionHandler = selectionHandler;
         this.topLevelFrame = DesktopComponentsHelper.getTopLevelFrame(parent);
 
@@ -123,6 +125,24 @@ public class AddConditionDlg extends JDialog {
                             && ((ModelItem) pathComponent).getDescriptor() != null);
                 } else {
                     okBtn.setEnabled(false);
+                }
+            }
+        });
+
+        tree.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    int rowForLocation = tree.getRowForLocation(e.getX(), e.getY());
+                    TreePath pathForLocation = tree.getPathForRow(rowForLocation);
+                    if (pathForLocation != null) {
+                        tree.getSelectionModel().clearSelection();
+                        tree.getSelectionModel().addSelectionPath(pathForLocation);
+
+                        if (okBtn.isEnabled()) {
+                            okBtn.doClick();
+                        }
+                    }
                 }
             }
         });

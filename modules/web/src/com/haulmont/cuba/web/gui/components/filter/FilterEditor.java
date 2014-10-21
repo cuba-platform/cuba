@@ -396,23 +396,26 @@ public class FilterEditor extends AbstractFilterEditor {
         String requiredCol = getMessage("FilterEditor.column.required");
         String cntrCol = getMessage("FilterEditor.column.control");
 
-        table.setColumnWidth(ConditionsContainer.NAME_PROP_ID, 220);
         table.setColumnHeader(ConditionsContainer.NAME_PROP_ID, nameCol);
+        table.setColumnExpandRatio(ConditionsContainer.NAME_PROP_ID, 3);
 
-        table.setColumnWidth(ConditionsContainer.OP_PROP_ID, 100);
         table.setColumnHeader(ConditionsContainer.OP_PROP_ID, opCol);
+        table.setColumnExpandRatio(ConditionsContainer.OP_PROP_ID, 2);
 
-        table.setColumnWidth(ConditionsContainer.PARAM_PROP_ID, 160);
         table.setColumnHeader(ConditionsContainer.PARAM_PROP_ID, paramCol);
+        table.setColumnExpandRatio(ConditionsContainer.PARAM_PROP_ID, 2);
 
         table.setColumnWidth(ConditionsContainer.HIDDEN_PROP_ID, 30);
         table.setColumnHeader(ConditionsContainer.HIDDEN_PROP_ID, hiddenCol);
+        table.setColumnAlignment(ConditionsContainer.HIDDEN_PROP_ID, Table.Align.CENTER);
 
         table.setColumnWidth(ConditionsContainer.REQUIRED_PROP_ID, 30);
         table.setColumnHeader(ConditionsContainer.REQUIRED_PROP_ID, requiredCol);
+        table.setColumnAlignment(ConditionsContainer.REQUIRED_PROP_ID, Table.Align.CENTER);
 
         table.setColumnWidth(ConditionsContainer.CONTROL_PROP_ID, 30);
         table.setColumnHeader(ConditionsContainer.CONTROL_PROP_ID, cntrCol);
+        table.setColumnAlignment(ConditionsContainer.CONTROL_PROP_ID, Table.Align.CENTER);
 
         table.expandAll();
 

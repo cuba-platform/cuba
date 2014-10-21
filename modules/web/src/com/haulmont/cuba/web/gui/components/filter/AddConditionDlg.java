@@ -29,6 +29,7 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.event.Action;
+import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
@@ -45,7 +46,7 @@ public class AddConditionDlg extends Window {
 
     protected static List<?> MODEL_PROPERTY_IDS = Collections.singletonList("caption");
 
-    protected Tree tree;
+    protected CubaTree tree;
     protected Button okBtn;
 
     protected SelectionHandler selectionHandler;
@@ -128,22 +129,24 @@ public class AddConditionDlg extends Window {
 
         initShortcuts();
 
-        // TODO styles generator doesn't work correctly - style applies to all nested items
-//        tree.setItemStyleGenerator(new Tree.ItemStyleGenerator() {
-//            @Override
-//            public String getStyle(Object itemId) {
-//                if (itemId instanceof ModelItem && ((ModelItem) itemId).getDescriptor() == null)
-//                    return "filter-new-cond-dlg";
-//                else
-//                    return null;
-//            }
-//        });
-
         tree.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 ModelItem modelItem = (ModelItem) tree.getValue();
                 okBtn.setEnabled(modelItem != null && modelItem.getDescriptor() != null);
+            }
+        });
+
+        tree.setDoubleClickMode(true);
+        tree.addItemClickListener(new ItemClickEvent.ItemClickListener() {
+            @Override
+            public void itemClick(ItemClickEvent event) {
+                if (event.isDoubleClick()) {
+                    tree.setValue(event.getItemId());
+                    if (okBtn.isEnabled()) {
+                        okBtn.click();
+                    }
+                }
             }
         });
 
