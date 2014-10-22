@@ -563,6 +563,13 @@ public class DesktopWindowManager extends WindowManager {
             if (!dialogParams.getCloseable())
                 dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
         }
+
+        boolean modal = true;
+        if (!hasModalWindow() && dialogParams.getModal() != null) {
+            modal = dialogParams.getModal();
+        }
+        dialog.setModal(modal);
+
         dialogParams.reset();
 
         dialog.setMinimumSize(dim);

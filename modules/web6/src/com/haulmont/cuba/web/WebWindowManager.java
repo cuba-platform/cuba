@@ -743,10 +743,15 @@ public class WebWindowManager extends WindowManager {
             }
 
             win.setResizable(BooleanUtils.isTrue(dialogParams.getResizable()));
-
-            dialogParams.reset();
         }
-        win.setModal(true);
+
+        boolean modal = true;
+        if (!hasModalWindow() && dialogParams.getModal() != null) {
+            modal = dialogParams.getModal();
+        }
+        win.setModal(modal);
+
+        dialogParams.reset();
 
         appWindow.addWindow(win);
         win.center();
@@ -1062,16 +1067,23 @@ public class WebWindowManager extends WindowManager {
         layout.setComponentAlignment(buttonsContainer, com.vaadin.ui.Alignment.BOTTOM_RIGHT);
 
         float width;
-        if (getDialogParams().getWidth() != null) {
-            width = getDialogParams().getWidth().floatValue();
+        DialogParams dialogParams = getDialogParams();
+        if (dialogParams.getWidth() != null) {
+            width = dialogParams.getWidth().floatValue();
         } else {
             width = 400;
         }
-        getDialogParams().reset();
 
         window.setWidth(width, Sizeable.UNITS_PIXELS);
         window.setResizable(false);
-        window.setModal(true);
+
+        boolean modal = true;
+        if (!hasModalWindow() && dialogParams.getModal() != null) {
+            modal = dialogParams.getModal();
+        }
+        window.setModal(modal);
+
+        dialogParams.reset();
 
         appWindow.addWindow(window);
         window.center();

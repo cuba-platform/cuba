@@ -23,6 +23,7 @@ public class DialogParams {
     private Integer height;
     private Boolean resizable;
     private Boolean closeable;
+    private Boolean modal;
 
     public DialogParams() {
     }
@@ -63,11 +64,20 @@ public class DialogParams {
         return this;
     }
 
+    public Boolean getModal() {
+        return modal;
+    }
+
+    public void setModal(Boolean modal) {
+        this.modal = modal;
+    }
+
     public DialogParams reset() {
         this.height = null;
         this.width = null;
         this.resizable = null;
         this.closeable = null;
+        this.modal = null;
         return this;
     }
 }

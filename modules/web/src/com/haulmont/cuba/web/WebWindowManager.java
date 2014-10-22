@@ -750,10 +750,15 @@ public class WebWindowManager extends WindowManager {
             }
 
             win.setResizable(BooleanUtils.isTrue(dialogParams.getResizable()));
-
-            dialogParams.reset();
         }
-        win.setModal(true);
+
+        boolean modal = true;
+        if (!hasModalWindow() && dialogParams.getModal() != null) {
+            modal = dialogParams.getModal();
+        }
+        win.setModal(modal);
+
+        dialogParams.reset();
 
         ui.addWindow(win);
         win.center();
@@ -1078,16 +1083,23 @@ public class WebWindowManager extends WindowManager {
         layout.setComponentAlignment(buttonsContainer, com.vaadin.ui.Alignment.BOTTOM_RIGHT);
 
         float width;
-        if (getDialogParams().getWidth() != null) {
-            width = getDialogParams().getWidth().floatValue();
+        DialogParams dialogParams = getDialogParams();
+        if (dialogParams.getWidth() != null) {
+            width = dialogParams.getWidth().floatValue();
         } else {
             width = app.getThemeConstants().getInt("cuba.web.WebWindowManager.messageDialog.width");
         }
-        getDialogParams().reset();
 
         window.setWidth(width, Sizeable.Unit.PIXELS);
         window.setResizable(false);
-        window.setModal(true);
+
+        boolean modal = true;
+        if (!hasModalWindow() && dialogParams.getModal() != null) {
+            modal = dialogParams.getModal();
+        }
+        window.setModal(modal);
+
+        dialogParams.reset();
 
         ui.addWindow(window);
         window.center();
