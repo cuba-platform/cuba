@@ -185,7 +185,14 @@ public class PersistenceManager implements PersistenceManagerMBean {
                 tx.commit();
 
                 StrBuilder sb = new StrBuilder();
-                sb.appendWithSeparators(resultList, "\n");
+                for (Object element : resultList) {
+                    if (element instanceof Object[]) {
+                        sb.appendWithSeparators((Object[]) element, " | ");
+                    } else {
+                        sb.append(element);
+                    }
+                    sb.append("\n");
+                }
                 return sb.toString();
             } finally {
                 tx.end();
