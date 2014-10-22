@@ -28,6 +28,15 @@ public class DialogParams {
     public DialogParams() {
     }
 
+    public DialogParams copyFrom(DialogParams dialogParams) {
+        setHeight(dialogParams.getHeight());
+        setModal(dialogParams.getModal());
+        setWidth(dialogParams.getWidth());
+        setCloseable(dialogParams.getCloseable());
+        setResizable(dialogParams.getResizable());
+        return this;
+    }
+
     public Integer getHeight() {
         return height;
     }

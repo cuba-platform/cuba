@@ -220,11 +220,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
                 }
 
                 if (lookupScreenOpenType == WindowManager.OpenType.DIALOG && lookupScreenDialogParams != null) {
-                    wm.getDialogParams()
-                            .setWidth(lookupScreenDialogParams.getWidth())
-                            .setHeight(lookupScreenDialogParams.getHeight())
-                            .setResizable(lookupScreenDialogParams.getResizable())
-                            .setCloseable(lookupScreenDialogParams.getCloseable());
+                    wm.getDialogParams().copyFrom(lookupScreenDialogParams);
                 }
 
                 Window lookupWindow = wm.openLookup(
@@ -386,11 +382,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
             }
 
             if (editScreenOpenType == WindowManager.OpenType.DIALOG && editScreenDialogParams != null) {
-                wm.getDialogParams()
-                        .setWidth(editScreenDialogParams.getWidth())
-                        .setHeight(editScreenDialogParams.getHeight())
-                        .setResizable(editScreenDialogParams.getResizable())
-                        .setCloseable(editScreenDialogParams.getCloseable());
+                wm.getDialogParams().copyFrom(editScreenDialogParams);
             }
 
             if (entity instanceof SoftDelete && ((SoftDelete) entity).isDeleted()) {
