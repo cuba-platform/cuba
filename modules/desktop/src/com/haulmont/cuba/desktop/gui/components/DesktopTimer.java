@@ -67,9 +67,12 @@ public class DesktopTimer extends DesktopAbstractComponent<JLabel> implements co
             timer = new Timer(delay, new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
+                    Timer timerBefore = timer;
+
                     onTimerAction();
 
-                    if (!timer.isRepeats()) {
+                    // if user didn't stop or restart timer
+                    if (timerBefore == timer && !timerBefore.isRepeats()) {
                         stop();
                     }
                 }
@@ -90,11 +93,12 @@ public class DesktopTimer extends DesktopAbstractComponent<JLabel> implements co
 
             timer.stop();
             timer = null;
+
+            started = false;
+
             for (TimerListener listener : timerListeners) {
                 listener.onStopTimer(this);
             }
-
-            started = false;
         }
     }
 
