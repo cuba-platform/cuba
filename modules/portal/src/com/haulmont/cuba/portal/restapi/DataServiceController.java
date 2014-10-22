@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.app.DomainDescriptionService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AbstractViewRepository;
+import com.haulmont.cuba.portal.config.RestConfig;
 import com.haulmont.cuba.security.entity.EntityOp;
 import freemarker.template.TemplateException;
 import org.apache.commons.logging.Log;
@@ -109,8 +110,7 @@ public class DataServiceController {
                 convertor.write(response, result);
             }
         } catch (Throwable e) {
-            log.error("Error processing request: " + request.getRequestURI() + "?" + request.getQueryString(), e);
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
+            sendError(request, response, e);
         } finally {
             authentication.end();
         }
@@ -186,8 +186,7 @@ public class DataServiceController {
             Object result = convertor.process(entities, metaClass, request.getRequestURI(), loadCtx.getView());
             convertor.write(response, result);
         } catch (Throwable e) {
-            log.error("Error processing request: " + request.getRequestURI() + "?" + request.getQueryString(), e);
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
+            sendError(request, response, e);
         } finally {
             authentication.end();
         }
@@ -236,8 +235,7 @@ public class DataServiceController {
             Object converted = convertor.process(result, request.getRequestURI());
             convertor.write(response, converted);
         } catch (Throwable e) {
-            log.error("Error processing request: " + request.getRequestURI() + "?" + request.getQueryString(), e);
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
+            sendError(request, response, e);
         } finally {
             authentication.end();
         }
@@ -259,8 +257,7 @@ public class DataServiceController {
             ViewRepository viewRepository = metadata.getViewRepository();
             ((AbstractViewRepository) viewRepository).deployViews(new StringReader(requestContent));
         } catch (Throwable e) {
-            log.error("Error processing request: " + request.getRequestURI() + "?" + request.getQueryString(), e);
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
+            sendError(request, response, e);
         } finally {
             authentication.end();
         }
@@ -286,11 +283,23 @@ public class DataServiceController {
             response.getWriter().write(domainDescription);
 
         } catch (Throwable e) {
-            log.error("Error processing request: " + request.getRequestURI() + "?" + request.getQueryString(), e);
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
+            sendError(request, response, e);
         } finally {
             authentication.end();
         }
+    }
+
+    private void sendError(HttpServletRequest request, HttpServletResponse response, Throwable e) throws IOException {
+        log.error("Error processing request: " + request.getRequestURI() + "?" + request.getQueryString(), e);
+
+        Configuration configuration = AppBeans.get(Configuration.class);
+        boolean isProductionMode = configuration.getConfig(RestConfig.class).getProductionMode();
+
+        String msg = e.toString();
+        if (isProductionMode) {
+            msg = "Internal server error";
+        }
+        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, msg);
     }
 
     private Object parseQueryParameter(String paramKey, String paramValue, Map<String, String[]> queryParams) {
