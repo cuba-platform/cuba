@@ -40,6 +40,7 @@ public abstract class BaseLongIdEntity extends BaseGenericIdEntity<Long> {
         return id;
     }
 
+    @Override
     public void setId(Long id) {
         this.id = id;
     }

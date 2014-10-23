@@ -38,6 +38,7 @@ public abstract class BaseUuidEntity extends BaseGenericIdEntity<UUID> {
         return id;
     }
 
+    @Override
     public void setId(UUID id) {
         this.id = id;
     }

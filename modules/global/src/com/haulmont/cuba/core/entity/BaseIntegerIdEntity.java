@@ -40,6 +40,7 @@ public abstract class BaseIntegerIdEntity extends BaseGenericIdEntity<Integer> {
         return id;
     }
 
+    @Override
     public void setId(Integer id) {
         this.id = id;
     }
