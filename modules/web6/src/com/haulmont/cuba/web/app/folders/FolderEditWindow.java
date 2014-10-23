@@ -64,6 +64,7 @@ public class FolderEditWindow extends Window {
         layout.setSpacing(true);
 
         setContent(layout);
+        setModal(true);
         center();
 
         nameField = new TextField();
