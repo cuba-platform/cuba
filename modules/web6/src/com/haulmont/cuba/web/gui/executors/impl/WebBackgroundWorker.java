@@ -395,7 +395,10 @@ public class WebBackgroundWorker implements BackgroundWorker {
                             listener.onDone(result);
                         }
                     } catch (Exception ex) {
-                        runnableTask.handleException(ex);
+                        boolean handled = runnableTask.handleException(taskException);
+                        if (!handled) {
+                            log.error("Unhandled exception in background task", taskException);
+                        }
                     }
                 } else
                     runnableTask.handleException(taskException);

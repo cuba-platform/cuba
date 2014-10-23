@@ -139,7 +139,10 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
                             listener.onDone(result);
                         }
                     } else {
-                        runnableTask.handleException(taskException);
+                        boolean handled = runnableTask.handleException(taskException);
+                        if (!handled) {
+                            log.error("Unhandled exception in background task", taskException);
+                        }
                     }
                 } finally {
                     if (finalizer != null) {
