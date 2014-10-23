@@ -295,9 +295,11 @@ public class DataServiceController {
         Configuration configuration = AppBeans.get(Configuration.class);
         boolean isProductionMode = configuration.getConfig(RestConfig.class).getProductionMode();
 
-        String msg = e.toString();
+        String msg;
         if (isProductionMode) {
             msg = "Internal server error";
+        } else {
+            msg = e.toString();
         }
         response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, msg);
     }

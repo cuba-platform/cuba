@@ -9,7 +9,7 @@ import com.haulmont.cuba.core.config.Config;
 import com.haulmont.cuba.core.config.Property;
 import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
-import com.haulmont.cuba.core.config.defaults.Default;
+import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
 
 /**
  * @author zlatoverov
@@ -19,6 +19,6 @@ import com.haulmont.cuba.core.config.defaults.Default;
 public interface RestConfig extends Config {
 
     @Property("cuba.rest.productionMode")
-    @Default("false")
+    @DefaultBoolean(false)
     boolean getProductionMode();
 }
