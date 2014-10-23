@@ -61,7 +61,7 @@ public class AppFolderEditWindow extends FolderEditWindow {
 
             visibilityScriptField = new TextArea();
             visibilityScriptField.setRows(10);
-            visibilityScriptField.setColumns(40);
+            visibilityScriptField.setWidth(100, Unit.PERCENTAGE);
             visibilityScriptField.setCaption(getMessage("folders.visibilityScript"));
             String vScript = StringUtils.trimToEmpty(((AppFolder) folder).getVisibilityScript());
             visibilityScriptField.setValue(vScript);
@@ -71,7 +71,7 @@ public class AppFolderEditWindow extends FolderEditWindow {
             String qScript = StringUtils.trimToEmpty(((AppFolder) folder).getQuantityScript());
             quantityScriptField.setValue(qScript);
             quantityScriptField.setRows(10);
-            quantityScriptField.setColumns(40);
+            quantityScriptField.setWidth(100, Unit.PERCENTAGE);
             quantityScriptField.setCaption(getMessage("folders.quantityScript"));
             layout.addComponent(quantityScriptField, 4);
 
