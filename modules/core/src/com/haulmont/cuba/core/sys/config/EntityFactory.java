@@ -12,6 +12,7 @@ import com.haulmont.cuba.core.config.type.TypeFactory;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.EntityLoadInfo;
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.lang.StringUtils;
 
@@ -44,10 +45,16 @@ public class EntityFactory extends TypeFactory {
         Transaction tx = Boolean.valueOf(property) ? persistence.getTransaction() : persistence.createTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
-            if (info.getViewName() != null)
-                em.setView(metadata.getViewRepository().getView(info.getMetaClass(), info.getViewName()));
+            View view = null;
+            if (info.getViewName() != null) {
+                view = metadata.getViewRepository().getView(info.getMetaClass(), info.getViewName());
+                em.setView(view);
+            }
 
             entity = em.find(info.getMetaClass().getJavaClass(), info.getId());
+            if (view != null) {
+                em.fetch(entity, view);
+            }
             tx.commit();
         } finally {
             tx.end();
