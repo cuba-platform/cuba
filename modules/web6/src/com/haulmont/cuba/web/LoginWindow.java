@@ -407,7 +407,7 @@ public class LoginWindow extends Window implements Action.Handler {
         CubaAuthProvider authProvider = AppBeans.get(CubaAuthProvider.NAME);
         try {
             authProvider.authenticate(login, passwordValue, locale);
-        } catch (LoginException e) {
+        } catch (Exception e) {
             log.debug("Login to AD failed: " + e.toString());
             return false;
         }
