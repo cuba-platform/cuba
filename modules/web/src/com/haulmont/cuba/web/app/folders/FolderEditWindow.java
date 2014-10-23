@@ -80,6 +80,7 @@ public class FolderEditWindow extends Window {
         nameField.setCaption(getMessage("folders.folderEditWindow.nameField"));
         nameField.setWidth(theme.get("cuba.web.FolderEditWindow.field.width"));
         nameField.setValue(folder.getName());
+        nameField.focus();
         layout.addComponent(nameField);
 
         tabNameField = new TextField();
