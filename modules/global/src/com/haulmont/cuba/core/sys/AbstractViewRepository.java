@@ -424,8 +424,16 @@ public class AbstractViewRepository implements ViewRepository {
         final MetaClass metaClass = metadata.getClassNN(view.getEntityClass());
         final String viewName = view.getName();
 
+        Set<String> propertyNames = new HashSet<>();
+
         for (Element propElem : (List<Element>) viewElem.elements("property")) {
             String propertyName = propElem.attributeValue("name");
+
+            if (propertyNames.contains(propertyName)) {
+                throw new DevelopmentException(String.format("View %s/%s definition error: view declared property %s twice",
+                        metaClass.getName(), viewName, propertyName));
+            }
+            propertyNames.add(propertyName);
 
             MetaProperty metaProperty = metaClass.getProperty(propertyName);
             if (metaProperty == null) {
