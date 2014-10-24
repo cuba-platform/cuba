@@ -11,7 +11,6 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.sys.persistence.PostgresUUID;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -150,7 +149,7 @@ public class SqlScriptGenerator {
                 valueStr = dateFormat.format((Date) value);
             } else if (value instanceof String
                     || value instanceof UUID
-                    || value instanceof PostgresUUID
+                    || value.getClass().getCanonicalName().toLowerCase().contains("uuid")
                     || value instanceof Character) {
                 valueStr = format("'%s'", value);
             } else {
