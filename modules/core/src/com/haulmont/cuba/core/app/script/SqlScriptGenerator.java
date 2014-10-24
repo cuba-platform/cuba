@@ -149,7 +149,7 @@ public class SqlScriptGenerator {
                 valueStr = dateFormat.format((Date) value);
             } else if (value instanceof String
                     || value instanceof UUID
-                    || value.getClass().getCanonicalName().toLowerCase().contains("uuid")
+                    || value.getClass().getName().toLowerCase().contains("uuid")
                     || value instanceof Character) {
                 valueStr = format("'%s'", value);
             } else {
