@@ -7,18 +7,20 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Field;
-import com.haulmont.cuba.gui.components.MaskedField;
+import com.haulmont.cuba.gui.components.ResizableTextArea;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 /**
- * @author devyatkin
+ * @author subbotin
  * @version $Id$
  */
-public class MaskedFieldLoader extends AbstractTextFieldLoader {
-    public MaskedFieldLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
+public class ResizableTextAreaLoader extends TextAreaLoader {
+
+    public ResizableTextAreaLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
         super(context, config, factory);
     }
 
@@ -26,14 +28,13 @@ public class MaskedFieldLoader extends AbstractTextFieldLoader {
     protected void initComponent(Element element, Field field, Component parent) {
         super.initComponent(element, field, parent);
 
-        if (field instanceof MaskedField) {
-            MaskedField component = (MaskedField) field;
-            String mask = element.attributeValue("mask");
-            if (!StringUtils.isEmpty(mask)) {
-                component.setMask(loadResourceString(mask));
+        if (field instanceof ResizableTextArea) {
+            ResizableTextArea textArea = (ResizableTextArea) field;
+            String resizable = element.attributeValue("resizable");
+
+            if (StringUtils.isNotEmpty(resizable)) {
+                textArea.setResizable(BooleanUtils.toBoolean(resizable));
             }
-            String valueModeStr = element.attributeValue("valueMode", MaskedField.ValueMode.CLEAR.getId());
-            component.setValueMode(MaskedField.ValueMode.fromId(valueModeStr));
         }
     }
 }

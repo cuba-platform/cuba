@@ -8,6 +8,7 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.TimeField;
 import com.haulmont.cuba.gui.xml.layout.*;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 /**
@@ -21,18 +22,15 @@ public class TimeFieldLoader extends AbstractFieldLoader {
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        TimeField timeField = (TimeField) super.loadComponent(factory, element, parent);
+    protected void initComponent(Element element, Field field, Component parent) {
+        super.initComponent(element, field, parent);
 
-        String s = element.attributeValue("showSeconds");
-        if (s == null) {
-            return timeField;
-        } else if (Boolean.valueOf(s)) {
-            timeField.setShowSeconds(true);
-        } else
-            timeField.setShowSeconds(false);
+        TimeField component = (TimeField) field;
 
-        return timeField;
+        String showSeconds = element.attributeValue("showSeconds");
+        if (StringUtils.isNotEmpty(showSeconds)) {
+            component.setShowSeconds(Boolean.valueOf(showSeconds));
+        }
     }
 
     @Override

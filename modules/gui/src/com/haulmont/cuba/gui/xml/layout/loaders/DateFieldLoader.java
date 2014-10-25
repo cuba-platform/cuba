@@ -8,6 +8,7 @@ import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.DateDatatype;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.DateField;
+import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.StringUtils;
@@ -25,8 +26,10 @@ public class DateFieldLoader extends AbstractFieldLoader {
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        final DateField component = (DateField) super.loadComponent(factory, element, parent);
+    protected void initComponent(Element element, Field field, Component parent) {
+        super.initComponent(element, field, parent);
+
+        DateField component = (DateField) field;
 
         TemporalType tt = null;
         if (component.getMetaProperty() != null) {
@@ -68,7 +71,5 @@ public class DateFieldLoader extends AbstractFieldLoader {
             }
             component.setDateFormat(formatStr);
         }
-
-        return component;
     }
 }

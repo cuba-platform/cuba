@@ -6,10 +6,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.CaptionMode;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.LookupField;
-import com.haulmont.cuba.gui.components.TokenList;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
@@ -21,7 +18,6 @@ import org.dom4j.Element;
  * @author gorodnov
  * @version $Id$
  */
-@SuppressWarnings("serial")
 public class TokenListLoader extends AbstractFieldLoader {
 
     public TokenListLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
@@ -29,8 +25,8 @@ public class TokenListLoader extends AbstractFieldLoader {
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        final TokenList component = factory.createComponent("tokenList");
+    protected void initComponent(Element element, Field field, Component parent) {
+        TokenList component = (TokenList) field;
 
         assignXmlDescriptor(component, element);
         loadId(component, element);
@@ -127,8 +123,6 @@ public class TokenListLoader extends AbstractFieldLoader {
         }
 
         assignFrame(component);
-
-        return component;
     }
 
     protected void loadDatasource(TokenList component, Element element) {

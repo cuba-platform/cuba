@@ -34,6 +34,12 @@ public class AbstractFieldLoader extends AbstractDatasourceComponentLoader {
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         final Field component = factory.createComponent(element.getName());
 
+        initComponent(element, component, parent);
+
+        return component;
+    }
+
+    protected void initComponent(Element element, Field component, Component parent) {
         assignXmlDescriptor(component, element);
         loadId(component, element);
         loadDatasource(component, element);
@@ -55,8 +61,6 @@ public class AbstractFieldLoader extends AbstractDatasourceComponentLoader {
         loadAlign(component, element);
 
         assignFrame(component);
-
-        return component;
     }
 
     protected void loadRequired(Field component, Element element) {

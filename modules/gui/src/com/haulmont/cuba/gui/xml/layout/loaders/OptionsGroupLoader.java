@@ -5,10 +5,7 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.GuiDevelopmentException;
-import com.haulmont.cuba.gui.components.CaptionMode;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.DatasourceComponent;
-import com.haulmont.cuba.gui.components.OptionsGroup;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -27,13 +24,14 @@ public class OptionsGroupLoader extends AbstractFieldLoader {
         super(context, config, factory);
     }
 
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        final OptionsGroup component = (OptionsGroup) super.loadComponent(factory, element, parent);
+    @Override
+    protected void initComponent(Element element, Field field, Component parent) {
+        super.initComponent(element, field, parent);
+
+        OptionsGroup component = (OptionsGroup) field;
 
         loadOrientation(component, element);
         loadCaptionProperty(component, element);
-
-        return component;
     }
 
     protected void loadCaptionProperty(OptionsGroup component, Element element) {

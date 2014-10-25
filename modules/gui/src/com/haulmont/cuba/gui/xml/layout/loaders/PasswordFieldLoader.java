@@ -5,6 +5,7 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.PasswordField;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
@@ -21,11 +22,9 @@ public class PasswordFieldLoader extends AbstractTextFieldLoader {
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        PasswordField component = (PasswordField) super.loadComponent(factory, element, parent);
+    protected void initComponent(Element element, Field field, Component parent) {
+        super.initComponent(element, field, parent);
 
-        loadMaxLength(element, component);
-
-        return component;
+        loadMaxLength(element, (PasswordField)field);
     }
 }

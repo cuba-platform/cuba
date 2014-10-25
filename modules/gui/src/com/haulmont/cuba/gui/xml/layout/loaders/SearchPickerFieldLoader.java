@@ -8,10 +8,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.PickerField;
-import com.haulmont.cuba.gui.components.SearchPickerField;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.StringUtils;
@@ -28,10 +25,12 @@ public class SearchPickerFieldLoader extends SearchFieldLoader {
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        SearchPickerField component = (SearchPickerField) super.loadComponent(factory, element, parent);
+    protected void initComponent(Element element, Field field, Component parent) {
+        super.initComponent(element, field, parent);
 
-        final String metaClass = element.attributeValue("metaClass");
+        SearchPickerField component = (SearchPickerField) field;
+
+        String metaClass = element.attributeValue("metaClass");
         if (!StringUtils.isEmpty(metaClass)) {
             Metadata metadata = AppBeans.get(Metadata.NAME);
             component.setMetaClass(metadata.getSession().getClass(metaClass));
@@ -47,8 +46,6 @@ public class SearchPickerFieldLoader extends SearchFieldLoader {
         if (StringUtils.isNotEmpty(minSearchStringLength)) {
             component.setMinSearchStringLength(Integer.parseInt(minSearchStringLength));
         }
-
-        return component;
     }
 
     @Override

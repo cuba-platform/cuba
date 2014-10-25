@@ -6,6 +6,7 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.ProgressBar;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
@@ -23,8 +24,9 @@ public class ProgressBarLoader extends AbstractFieldLoader {
         super(context, config, factory);
     }
 
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        ProgressBar component = factory.createComponent(element.getName());
+    @Override
+    protected void initComponent(Element element, Field field, Component parent) {
+        ProgressBar component = (ProgressBar) field;
 
         assignXmlDescriptor(component, element);
         loadId(component, element);
@@ -35,9 +37,6 @@ public class ProgressBarLoader extends AbstractFieldLoader {
 
         loadStyleName(component, element);
 
-        /*loadCaption(component, element);
-        loadDescription(component, element);*/
-
         loadHeight(component, element);
         loadWidth(component, element);
         loadAlign(component, element);
@@ -45,8 +44,6 @@ public class ProgressBarLoader extends AbstractFieldLoader {
         loadIndeterminate(component, element);
 
         assignFrame(component);
-
-        return component;
     }
 
     private void loadIndeterminate(ProgressBar component, Element element) {

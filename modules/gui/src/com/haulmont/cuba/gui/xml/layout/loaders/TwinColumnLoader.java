@@ -22,8 +22,10 @@ public class TwinColumnLoader extends AbstractFieldLoader {
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        TwinColumn component = (TwinColumn) super.loadComponent(factory, element, parent);
+    protected void initComponent(Element element, Field field, Component parent) {
+        super.initComponent(element, field, parent);
+
+        TwinColumn component = (TwinColumn) field;
 
         String captionProperty = element.attributeValue("captionProperty");
         if (!StringUtils.isEmpty(captionProperty)) {
@@ -45,8 +47,6 @@ public class TwinColumnLoader extends AbstractFieldLoader {
         if (!StringUtils.isEmpty(addBtnEnabled)) {
             component.setAddAllBtnEnabled(Boolean.valueOf(addBtnEnabled));
         }
-
-        return component;
     }
 
     @Override

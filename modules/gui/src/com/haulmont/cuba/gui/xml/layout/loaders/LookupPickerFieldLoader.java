@@ -9,10 +9,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.LookupPickerField;
-import com.haulmont.cuba.gui.components.PickerField;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.StringUtils;
@@ -29,8 +26,10 @@ public class LookupPickerFieldLoader extends LookupFieldLoader {
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        LookupPickerField component = (LookupPickerField) super.loadComponent(factory, element, parent);
+    protected void initComponent(Element element, Field field, Component parent) {
+        super.initComponent(element, field, parent);
+
+        LookupPickerField component = (LookupPickerField) field;
 
         final String metaClass = element.attributeValue("metaClass");
         if (!StringUtils.isEmpty(metaClass)) {
@@ -43,8 +42,6 @@ public class LookupPickerFieldLoader extends LookupFieldLoader {
             component.addLookupAction();
             component.addOpenAction();
         }
-
-        return component;
     }
 
     @Override

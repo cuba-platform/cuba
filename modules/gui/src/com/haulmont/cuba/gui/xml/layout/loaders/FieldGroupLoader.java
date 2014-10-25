@@ -14,8 +14,7 @@ import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.FieldGroup;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
+import com.haulmont.cuba.gui.xml.layout.*;
 import com.haulmont.cuba.security.entity.EntityOp;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -38,9 +37,8 @@ public class FieldGroupLoader extends AbstractFieldLoader {
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-
-        final FieldGroup component = factory.createComponent("fieldGroup");
+    protected void initComponent(Element element, Field baseComponent, Component parent) {
+        final FieldGroup component = (FieldGroup) baseComponent;
 
         assignXmlDescriptor(component, element);
         loadId(component, element);
@@ -143,8 +141,6 @@ public class FieldGroupLoader extends AbstractFieldLoader {
                 }
             }
         });
-
-        return component;
     }
 
     protected void loadFieldCaptionWidth(FieldGroup component, Element element) {

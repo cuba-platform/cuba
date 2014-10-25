@@ -28,8 +28,10 @@ public class LookupFieldLoader extends AbstractFieldLoader {
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        final LookupField component = (LookupField) super.loadComponent(factory, element, parent);
+    protected void initComponent(Element element, Field field, Component parent) {
+        super.initComponent(element, field, parent);
+
+        LookupField component = (LookupField) field;
 
         String captionProperty = element.attributeValue("captionProperty");
         if (!StringUtils.isEmpty(captionProperty)) {
@@ -45,8 +47,6 @@ public class LookupFieldLoader extends AbstractFieldLoader {
 
         loadFilterMode(component, element);
         loadNewOptionHandler(component, element);
-
-        return component;
     }
 
     protected void loadNewOptionHandler(final LookupField component, Element element) {
@@ -62,7 +62,8 @@ public class LookupFieldLoader extends AbstractFieldLoader {
                 public void execute(Context context, final IFrame window) {
                     final Method newOptionHandler;
                     try {
-                        newOptionHandler = window.getClass().getMethod(newOptionHandlerMethod, LookupField.class, String.class);
+                        Class<? extends IFrame> windowClass = window.getClass();
+                        newOptionHandler = windowClass.getMethod(newOptionHandlerMethod, LookupField.class, String.class);
                     } catch (NoSuchMethodException e) {
                         Map<String, Object> params = new HashMap<>(2);
                         params.put("LookupField Id", component.getId());

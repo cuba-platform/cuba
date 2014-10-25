@@ -7,6 +7,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.SearchField;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
@@ -24,8 +25,10 @@ public class SearchFieldLoader extends LookupFieldLoader {
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        SearchField component = (SearchField) super.loadComponent(factory, element, parent);
+    protected void initComponent(Element element, Field field, Component parent) {
+        super.initComponent(element, field, parent);
+
+        SearchField component = (SearchField) field;
 
         String minSearchStringLength = element.attributeValue("minSearchStringLength");
         if (StringUtils.isNotEmpty(minSearchStringLength)) {
@@ -38,11 +41,10 @@ public class SearchFieldLoader extends LookupFieldLoader {
             try {
                 mode = SearchField.Mode.valueOf(StringUtils.upperCase(modeString));
             } catch (IllegalArgumentException e) {
-                throw new GuiDevelopmentException("Unable to parse mode for search", context.getFullFrameId(), "mode", modeString);
+                throw new GuiDevelopmentException("Unable to parse mode for search",
+                        context.getFullFrameId(), "mode", modeString);
             }
             component.setMode(mode);
         }
-
-        return component;
     }
 }

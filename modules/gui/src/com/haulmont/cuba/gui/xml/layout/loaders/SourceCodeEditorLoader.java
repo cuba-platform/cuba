@@ -6,6 +6,7 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.SourceCodeEditor;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
@@ -22,12 +23,10 @@ public class SourceCodeEditorLoader extends AbstractFieldLoader {
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        SourceCodeEditor component = (SourceCodeEditor) super.loadComponent(factory, element, parent);
+    protected void initComponent(Element element, Field field, Component parent) {
+        super.initComponent(element, field, parent);
 
-        loadMode(component, element);
-
-        return component;
+        loadMode((SourceCodeEditor) field, element);
     }
 
     protected void loadMode(SourceCodeEditor component, Element element) {

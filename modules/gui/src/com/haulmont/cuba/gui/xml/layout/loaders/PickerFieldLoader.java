@@ -8,10 +8,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.CaptionMode;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.PickerField;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.StringUtils;
@@ -28,10 +25,10 @@ public class PickerFieldLoader extends AbstractFieldLoader {
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        final PickerField component = (PickerField) super.loadComponent(factory, element, parent);
+    protected void initComponent(Element element, Field field, Component parent) {
+        super.initComponent(element, field, parent);
 
-        assignFrame(component);
+        PickerField component = (PickerField) field;
 
         String captionProperty = element.attributeValue("captionProperty");
         if (!StringUtils.isEmpty(captionProperty)) {
@@ -51,7 +48,7 @@ public class PickerFieldLoader extends AbstractFieldLoader {
             component.addClearAction();
         }
 
-        // The code below remains for backward compatibility only!
+        // CAUTION The code below remains for backward compatibility only!
 
         final String lookupScreen = element.attributeValue("lookupScreen");
         if (!StringUtils.isEmpty(lookupScreen)) {
@@ -87,8 +84,6 @@ public class PickerFieldLoader extends AbstractFieldLoader {
             if (action != null)
                 action.setIcon(loadResourceString(caption));
         }
-
-        return component;
     }
 
     @Override

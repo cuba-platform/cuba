@@ -5,6 +5,7 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.TextArea;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
@@ -22,8 +23,10 @@ public class TextAreaLoader extends AbstractTextFieldLoader {
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        final TextArea component = (TextArea) super.loadComponent(factory, element, parent);
+    protected void initComponent(Element element, Field field, Component parent) {
+        super.initComponent(element, field, parent);
+
+        TextArea component = (TextArea) field;
 
         loadMaxLength(element, component);
         loadTrimming(element, component);
@@ -37,7 +40,5 @@ public class TextAreaLoader extends AbstractTextFieldLoader {
         if (StringUtils.isNotEmpty(rows)) {
             component.setRows(Integer.parseInt(rows));
         }
-
-        return component;
     }
 }
