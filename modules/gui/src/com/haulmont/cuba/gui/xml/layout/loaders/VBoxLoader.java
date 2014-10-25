@@ -23,8 +23,14 @@ public class VBoxLoader extends ContainerLoader implements ComponentLoader {
 
     @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        final BoxLayout component = factory.createComponent("vbox");
+        BoxLayout component = factory.createComponent(BoxLayout.VBOX);
 
+        initComponent(component, element, parent);
+
+        return component;
+    }
+
+    protected void initComponent(BoxLayout component, Element element, Component parent) {
         assignXmlDescriptor(component, element);
         loadId(component, element);
         loadEnable(component, element);
@@ -43,7 +49,5 @@ public class VBoxLoader extends ContainerLoader implements ComponentLoader {
         loadWidth(component, element);
 
         assignFrame(component);
-
-        return component;
     }
 }

@@ -30,8 +30,14 @@ public class TreeLoader extends ComponentLoader {
 
     @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        Tree component = factory.createComponent("tree");
+        Tree component = factory.createComponent(element.getName());
 
+        initComponent(component, element, parent);
+
+        return component;
+    }
+
+    protected void initComponent(Tree component, Element element, Component parent) {
         assignXmlDescriptor(component, element);
         loadId(component, element);
         loadVisible(component, element);
@@ -65,8 +71,6 @@ public class TreeLoader extends ComponentLoader {
                 component.setCaptionMode(CaptionMode.PROPERTY);
             }
         }
-
-        return component;
     }
 
     @Override

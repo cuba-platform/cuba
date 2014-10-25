@@ -28,8 +28,8 @@ public class GroupTableLoader extends TableLoader {
     }
 
     @Override
-    protected void initComponent(Element element, Table table, Component parent) {
-        super.initComponent(element, table, parent);
+    protected void initComponent(Table table, Element element, Component parent) {
+        super.initComponent(table, element, parent);
 
         GroupTable component = (GroupTable) table;
 

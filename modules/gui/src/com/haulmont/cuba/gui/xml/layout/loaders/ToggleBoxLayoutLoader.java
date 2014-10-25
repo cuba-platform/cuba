@@ -27,6 +27,12 @@ public class ToggleBoxLayoutLoader extends ContainerLoader
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         final ToggleBoxLayout component = factory.createComponent(ToggleBoxLayout.NAME);
 
+        initComponent(component, element, parent);
+
+        return component;
+    }
+
+    protected void initComponent(ToggleBoxLayout component, Element element, Component parent) {
         assignXmlDescriptor(component, element);
         loadId(component, element);
         loadVisible(component, element);
@@ -39,7 +45,7 @@ public class ToggleBoxLayoutLoader extends ContainerLoader
 
         if (onElement == null)
             throw new GuiDevelopmentException("Can't find 'on' element", context.getFullFrameId(),
-                    Collections.<String,Object>singletonMap("ToggleBox ID",element.attributeValue("id")));
+                    Collections.<String,Object>singletonMap("ToggleBox ID", element.attributeValue("id")));
 
         Element offElement = element.element("off");
         if (offElement == null)
@@ -53,7 +59,5 @@ public class ToggleBoxLayoutLoader extends ContainerLoader
         loadWidth(component, element);
 
         assignFrame(component);
-
-        return component;
     }
 }

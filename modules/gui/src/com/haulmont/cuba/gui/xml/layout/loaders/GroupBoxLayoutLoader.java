@@ -24,9 +24,14 @@ public class GroupBoxLayoutLoader extends ContainerLoader implements com.haulmon
 
     @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
+        GroupBoxLayout component = factory.createComponent(element.getName());
 
-        final GroupBoxLayout component = factory.createComponent("groupBox");
+        initComponent(component, element, parent);
 
+        return component;
+    }
+
+    protected void initComponent(GroupBoxLayout component, Element element, Component parent) {
         assignXmlDescriptor(component, element);
         loadId(component, element);
 
@@ -74,8 +79,6 @@ public class GroupBoxLayoutLoader extends ContainerLoader implements com.haulmon
         loadSpacing(component, element);
 
         assignFrame(component);
-
-        return component;
     }
 
     protected void loadOrientation(GroupBoxLayout component, Element element) {

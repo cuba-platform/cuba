@@ -25,8 +25,14 @@ public class HtmlBoxLayoutLoader extends ContainerLoader implements ComponentLoa
 
     @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        final HtmlBoxLayout component = factory.createComponent(HtmlBoxLayout.NAME);
+        HtmlBoxLayout component = factory.createComponent(HtmlBoxLayout.NAME);
 
+        initComponent(component, element, parent);
+
+        return component;
+    }
+
+    protected void initComponent(HtmlBoxLayout component, Element element, Component parent) {
         assignXmlDescriptor(component, element);
         loadId(component, element);
         loadVisible(component, element);
@@ -43,8 +49,6 @@ public class HtmlBoxLayoutLoader extends ContainerLoader implements ComponentLoa
         loadWidth(component, element);
 
         assignFrame(component);
-
-        return component;
     }
 
     protected void loadTemplate(HtmlBoxLayout htmlBox, Element element) {

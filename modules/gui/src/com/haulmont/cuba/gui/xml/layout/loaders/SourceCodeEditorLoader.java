@@ -23,8 +23,8 @@ public class SourceCodeEditorLoader extends AbstractFieldLoader {
     }
 
     @Override
-    protected void initComponent(Element element, Field field, Component parent) {
-        super.initComponent(element, field, parent);
+    protected void initComponent(Field field, Element element, Component parent) {
+        super.initComponent(field, element, parent);
 
         loadMode((SourceCodeEditor) field, element);
     }

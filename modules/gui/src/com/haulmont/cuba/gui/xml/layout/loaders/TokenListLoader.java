@@ -25,7 +25,7 @@ public class TokenListLoader extends AbstractFieldLoader {
     }
 
     @Override
-    protected void initComponent(Element element, Field field, Component parent) {
+    protected void initComponent(Field field, Element element, Component parent) {
         TokenList component = (TokenList) field;
 
         assignXmlDescriptor(component, element);

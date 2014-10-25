@@ -30,8 +30,14 @@ public class BulkEditorLoader extends ComponentLoader {
 
     @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        final BulkEditor component = factory.createComponent(element.getName());
+        BulkEditor component = factory.createComponent(element.getName());
 
+        initComponent(component, element, parent);
+
+        return component;
+    }
+
+    protected void initComponent(final BulkEditor component, Element element, Component parent) {
         assignXmlDescriptor(component, element);
         loadId(component, element);
 
@@ -85,8 +91,6 @@ public class BulkEditorLoader extends ComponentLoader {
         });
 
         loadValidators(component, element);
-
-        return component;
     }
 
     private void loadValidators(BulkEditor component, Element element) {

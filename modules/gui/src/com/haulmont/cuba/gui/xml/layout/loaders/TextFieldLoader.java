@@ -29,8 +29,8 @@ public class TextFieldLoader extends AbstractTextFieldLoader {
     }
 
     @Override
-    protected void initComponent(Element element, Field field, Component parent) {
-        super.initComponent(element, field, parent);
+    protected void initComponent(Field field, Element element, Component parent) {
+        super.initComponent(field, element, parent);
 
         if (element.attribute("rows") != null || element.attribute("cols") != null) {
             log.warn("For textField element specified rows or cols attribute, use textArea for this purpose");

@@ -27,8 +27,14 @@ public class SplitPanelLoader extends ContainerLoader{
 
     @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        final SplitPanel component = factory.createComponent(SplitPanel.NAME);
+        SplitPanel component = factory.createComponent(SplitPanel.NAME);
 
+        initComponent(component, factory, element, parent);
+
+        return component;
+    }
+
+    protected void initComponent(SplitPanel component, ComponentsFactory factory, Element element, Component parent) {
         assignXmlDescriptor(component, element);
         loadId(component, element);
 
@@ -61,7 +67,5 @@ public class SplitPanelLoader extends ContainerLoader{
         loadWidth(component, element, "-1px");
 
         assignFrame(component);
-
-        return component;
     }
 }

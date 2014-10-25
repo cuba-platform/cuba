@@ -32,8 +32,14 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
 
     @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        GridLayout component = factory.createComponent("grid");
+        GridLayout component = factory.createComponent(element.getName());
 
+        initComponent(component, element, parent);
+
+        return component;
+    }
+
+    protected void initComponent(GridLayout component, Element element, Component parent) {
         loadId(component, element);
         loadEnable(component, element);
         loadVisible(component, element);
@@ -127,8 +133,6 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
         loadAlign(component, element);
 
         assignFrame(component);
-
-        return component;
     }
 
     protected void loadSubComponents(GridLayout component, Element element, int row) {

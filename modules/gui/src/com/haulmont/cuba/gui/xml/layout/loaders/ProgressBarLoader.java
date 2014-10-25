@@ -25,7 +25,7 @@ public class ProgressBarLoader extends AbstractFieldLoader {
     }
 
     @Override
-    protected void initComponent(Element element, Field field, Component parent) {
+    protected void initComponent(Field field, Element element, Component parent) {
         ProgressBar component = (ProgressBar) field;
 
         assignXmlDescriptor(component, element);

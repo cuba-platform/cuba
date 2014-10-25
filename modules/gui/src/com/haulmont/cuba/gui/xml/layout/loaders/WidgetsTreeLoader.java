@@ -5,6 +5,7 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Tree;
 import com.haulmont.cuba.gui.components.WidgetsTree;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -23,8 +24,10 @@ public class WidgetsTreeLoader extends TreeLoader {
     }
 
     @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        WidgetsTree component = factory.createComponent("widgetsTree");
+    protected void initComponent(Tree tree, Element element, Component parent) {
+        super.initComponent(tree, element, parent);
+
+        WidgetsTree component = (WidgetsTree) tree;
 
         assignXmlDescriptor(component, element);
         loadId(component, element);
@@ -35,15 +38,13 @@ public class WidgetsTreeLoader extends TreeLoader {
 
         loadStyleName(component, element);
 
-        Element itemsElem = element.element("items");
-        String datasource = itemsElem.attributeValue("datasource");
+        Element itemsElement = element.element("items");
+        String datasource = itemsElement.attributeValue("datasource");
         if (!StringUtils.isBlank(datasource)) {
             HierarchicalDatasource ds = context.getDsContext().get(datasource);
             component.setDatasource(ds);
         }
 
         assignFrame(component);
-
-        return component;
     }
 }

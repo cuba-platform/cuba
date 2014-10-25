@@ -27,8 +27,14 @@ public class TabSheetLoader extends ContainerLoader {
 
     @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        final TabSheet component = factory.createComponent(TabSheet.NAME);
+        TabSheet component = factory.createComponent(TabSheet.NAME);
 
+        initComponent(component, factory, element, parent);
+
+        return component;
+    }
+
+    protected void initComponent(TabSheet component, ComponentsFactory factory, Element element, Component parent) {
         assignXmlDescriptor(component, element);
         loadId(component, element);
         loadVisible(component, element);
@@ -89,7 +95,5 @@ public class TabSheetLoader extends ContainerLoader {
         }
 
         assignFrame(component);
-
-        return component;
     }
 }

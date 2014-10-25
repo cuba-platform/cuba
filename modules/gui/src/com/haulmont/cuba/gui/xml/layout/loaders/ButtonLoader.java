@@ -24,6 +24,12 @@ public class ButtonLoader extends com.haulmont.cuba.gui.xml.layout.loaders.Compo
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         final Button component = factory.createComponent(element.getName());
 
+        initComponent(component, element, parent);
+
+        return component;
+    }
+
+    protected void initComponent(Button component, Element element, Component parent) {
         assignXmlDescriptor(component, element);
         loadId(component, element);
 
@@ -43,8 +49,6 @@ public class ButtonLoader extends com.haulmont.cuba.gui.xml.layout.loaders.Compo
         assignFrame(component);
 
         loadInvoke(component, enabled, visible, element);
-
-        return component;
     }
 
     protected void loadInvoke(Button component, boolean enabled, boolean visible, Element element) {

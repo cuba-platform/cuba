@@ -24,6 +24,12 @@ public class LinkLoader extends AbstractDatasourceComponentLoader {
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         final Link component = factory.createComponent("link");
 
+        initComponent(component, element, parent);
+
+        return component;
+    }
+
+    protected void initComponent(Link component, Element element, Component parent) {
         assignXmlDescriptor(component, element);
         loadId(component, element);
 
@@ -51,7 +57,5 @@ public class LinkLoader extends AbstractDatasourceComponentLoader {
         loadHeight(component, element, Component.AUTO_SIZE);
 
         assignFrame(component);
-
-        return component;
     }
 }

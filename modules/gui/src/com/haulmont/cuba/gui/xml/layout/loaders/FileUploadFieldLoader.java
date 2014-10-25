@@ -21,22 +21,26 @@ public class FileUploadFieldLoader extends ComponentLoader {
     @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         Component component = factory.createComponent(element.getName());
-        
-        loadId(component, element);
-        loadEnable(component, element);
-        loadVisible(component, element);
-     
-        loadStyleName(component, element);
-        loadAlign(component, element);
 
-        loadHeight(component, element);
-        loadWidth(component, element);
-        
-        loadCaption((Component.HasCaption) component, element);
-        loadDescription((Component.HasCaption) component, element);
-
-        assignFrame((Component.BelongToFrame)component);
+        initComponent(element, component, parent);
 
         return component;
+    }
+
+    protected void initComponent(Element element, Component component, Component parent) {
+        loadId(parent, element);
+        loadEnable(parent, element);
+        loadVisible(parent, element);
+
+        loadStyleName(parent, element);
+        loadAlign(parent, element);
+
+        loadHeight(parent, element);
+        loadWidth(parent, element);
+
+        loadCaption((Component.HasCaption) parent, element);
+        loadDescription((Component.HasCaption) parent, element);
+
+        assignFrame((Component.BelongToFrame) parent);
     }
 }

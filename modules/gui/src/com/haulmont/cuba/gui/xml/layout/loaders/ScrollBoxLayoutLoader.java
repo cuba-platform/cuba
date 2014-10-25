@@ -30,6 +30,12 @@ public class ScrollBoxLayoutLoader extends ContainerLoader implements com.haulmo
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         final ScrollBoxLayout component = factory.createComponent(ScrollBoxLayout.NAME);
 
+        initComponent(component, element, parent);
+
+        return component;
+    }
+
+    protected void initComponent(ScrollBoxLayout component, Element element, Component parent) {
         assignXmlDescriptor(component, element);
         loadId(component, element);
         loadVisible(component, element);
@@ -62,8 +68,6 @@ public class ScrollBoxLayoutLoader extends ContainerLoader implements com.haulmo
         loadWidth(component, element);
 
         assignFrame(component);
-
-        return component;
     }
 
     protected void loadOrientation(ScrollBoxLayout component, Element element) {

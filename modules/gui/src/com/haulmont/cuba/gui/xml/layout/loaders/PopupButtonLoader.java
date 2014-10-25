@@ -30,6 +30,12 @@ public class PopupButtonLoader extends ComponentLoader {
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         PopupButton component = factory.createComponent(element.getName());
 
+        initComponent(component, element, parent);
+
+        return component;
+    }
+
+    protected void initComponent(PopupButton component, Element element, Component parent) {
         assignXmlDescriptor(component, element);
         loadId(component, element);
         loadVisible(component, element);
@@ -52,7 +58,5 @@ public class PopupButtonLoader extends ComponentLoader {
         if (!StringUtils.isEmpty(menuWidth)) {
             component.setMenuWidth(menuWidth);
         }
-
-        return component;
     }
 }

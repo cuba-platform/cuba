@@ -37,7 +37,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
     }
 
     @Override
-    protected void initComponent(Element element, Field baseComponent, Component parent) {
+    protected void initComponent(Field baseComponent, Element element, Component parent) {
         final FieldGroup component = (FieldGroup) baseComponent;
 
         assignXmlDescriptor(component, element);

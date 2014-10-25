@@ -26,8 +26,14 @@ public class ButtonsPanelLoader extends ContainerLoader {
 
     @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        final ButtonsPanel component = factory.createComponent("buttonsPanel");
+        final ButtonsPanel component = factory.createComponent(element.getName());
 
+        initComponent(component, element, factory);
+
+        return component;
+    }
+
+    protected void initComponent(ButtonsPanel component, Element element, ComponentsFactory factory) {
         assignXmlDescriptor(component, element);
         loadId(component, element);
         loadVisible(component, element);
@@ -60,8 +66,6 @@ public class ButtonsPanelLoader extends ContainerLoader {
         }
 
         assignFrame(component);
-
-        return component;
     }
 
     protected void applyButtonsProvider(ComponentsFactory factory, ButtonsPanel panel, ButtonsPanel.Provider buttonsProvider)

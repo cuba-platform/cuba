@@ -31,6 +31,12 @@ public class RelatedEntitiesLoader extends ComponentLoader {
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         final RelatedEntities component = factory.createComponent(RelatedEntities.NAME);
 
+        initComponent(component, element, parent);
+
+        return component;
+    }
+
+    protected void initComponent(final RelatedEntities component, Element element, Component parent) {
         loadId(component, element);
         loadCaption(component, element);
         loadWidth(component, element);
@@ -96,7 +102,5 @@ public class RelatedEntitiesLoader extends ComponentLoader {
                 }
             }
         });
-
-        return component;
     }
 }

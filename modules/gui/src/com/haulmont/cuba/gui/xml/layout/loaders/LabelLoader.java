@@ -24,12 +24,12 @@ public class LabelLoader extends AbstractDatasourceComponentLoader {
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         Label component = factory.createComponent(element.getName());
 
-        initComponent(element, component, parent);
+        initComponent(component, element, parent);
 
         return component;
     }
 
-    protected void initComponent(Element element, Label component, Component parent) {
+    protected void initComponent(Label component, Element element, Component parent) {
         assignXmlDescriptor(component, element);
         loadId(component, element);
         loadDatasource(component, element);

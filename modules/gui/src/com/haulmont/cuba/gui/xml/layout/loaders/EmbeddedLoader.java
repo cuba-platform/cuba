@@ -30,8 +30,14 @@ public class EmbeddedLoader extends ComponentLoader {
 
     @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        Embedded component = factory.createComponent("embedded");
+        Embedded component = factory.createComponent(element.getName());
 
+        initComponent(component, element, parent);
+
+        return component;
+    }
+
+    protected void initComponent(Embedded component, Element element, Component parent) {
         String srcAttr = element.attributeValue("src");
         if (srcAttr != null) {
             if (srcAttr.startsWith(URL_PREFIX + "://")) {
@@ -61,7 +67,5 @@ public class EmbeddedLoader extends ComponentLoader {
         loadAlign(component, element);
 
         assignFrame(component);
-
-        return component;
     }
 }

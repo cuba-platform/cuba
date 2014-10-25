@@ -24,6 +24,12 @@ public class FlowBoxLayoutLoader extends ContainerLoader {
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
         final FlowBoxLayout component = factory.createComponent(FlowBoxLayout.NAME);
 
+        initComponent(component, element, parent);
+
+        return component;
+    }
+
+    protected void initComponent(FlowBoxLayout component, Element element, Component parent) {
         assignXmlDescriptor(component, element);
         loadId(component, element);
         loadEnable(component, element);
@@ -40,7 +46,5 @@ public class FlowBoxLayoutLoader extends ContainerLoader {
         loadWidth(component, element);
 
         assignFrame(component);
-
-        return component;
     }
 }
