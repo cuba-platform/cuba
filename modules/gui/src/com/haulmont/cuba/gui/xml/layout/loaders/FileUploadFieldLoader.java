@@ -28,19 +28,19 @@ public class FileUploadFieldLoader extends ComponentLoader {
     }
 
     protected void initComponent(Element element, Component component, Component parent) {
-        loadId(parent, element);
-        loadEnable(parent, element);
-        loadVisible(parent, element);
+        loadId(component, element);
+        loadEnable(component, element);
+        loadVisible(component, element);
 
-        loadStyleName(parent, element);
-        loadAlign(parent, element);
+        loadStyleName(component, element);
+        loadAlign(component, element);
 
-        loadHeight(parent, element);
-        loadWidth(parent, element);
+        loadHeight(component, element);
+        loadWidth(component, element);
 
-        loadCaption((Component.HasCaption) parent, element);
-        loadDescription((Component.HasCaption) parent, element);
+        loadCaption((Component.HasCaption) component, element);
+        loadDescription((Component.HasCaption) component, element);
 
-        assignFrame((Component.BelongToFrame) parent);
+        assignFrame((Component.BelongToFrame) component);
     }
 }

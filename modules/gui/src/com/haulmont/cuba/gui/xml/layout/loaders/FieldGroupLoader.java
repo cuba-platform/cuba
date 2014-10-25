@@ -37,9 +37,15 @@ public class FieldGroupLoader extends AbstractFieldLoader {
     }
 
     @Override
-    protected void initComponent(Field baseComponent, Element element, Component parent) {
-        final FieldGroup component = (FieldGroup) baseComponent;
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
+        final FieldGroup component = factory.createComponent(element.getName());
 
+        initComponent(component, element, parent);
+
+        return component;
+    }
+
+    protected void initComponent(final FieldGroup component, Element element, Component parent) {
         assignXmlDescriptor(component, element);
         loadId(component, element);
 

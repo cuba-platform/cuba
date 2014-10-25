@@ -25,8 +25,6 @@ public class WidgetsTreeLoader extends TreeLoader {
 
     @Override
     protected void initComponent(Tree tree, Element element, Component parent) {
-        super.initComponent(tree, element, parent);
-
         WidgetsTree component = (WidgetsTree) tree;
 
         assignXmlDescriptor(component, element);
