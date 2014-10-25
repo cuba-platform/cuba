@@ -63,7 +63,7 @@ public class LayoutLoaderConfig {
 
         config.register(TextField.NAME, TextFieldLoader.class);
         config.register(MaskedField.NAME, MaskedFieldLoader.class);
-        config.register(TextArea.NAME, ResizableTextFieldLoader.class);
+        config.register(TextArea.NAME, ResizableTextAreaLoader.class);
         config.register(SourceCodeEditor.NAME, SourceCodeEditorLoader.class);
         config.register(PasswordField.NAME, PasswordFieldLoader.class);
         config.register(RichTextArea.NAME, RichTextAreaLoader.class);
@@ -78,9 +78,11 @@ public class LayoutLoaderConfig {
         config.register(FileUploadField.NAME, FileUploadFieldLoader.class);
         config.register(FileMultiUploadField.NAME, FileUploadFieldLoader.class);
         config.register("multiupload", FileUploadFieldLoader.class); // for backward compatibility
+
         config.register(Table.NAME, TableLoader.class);
-        config.register(TreeTable.NAME, TreeTableLoader.class);
+        config.register(TreeTable.NAME, TableLoader.class);
         config.register(GroupTable.NAME, GroupTableLoader.class);
+
         config.register(IFrame.NAME, IFrameLoader.class);
         config.register(RuntimePropertiesFrame.NAME, RuntimePropertiesFrameLoader.class);
         config.register(SplitPanel.NAME, SplitPanelLoader.class);

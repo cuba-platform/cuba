@@ -12,14 +12,9 @@ import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
  * @author abramov
  * @version $Id$
  */
-public class TableLoader extends AbstractTableLoader<Table> {
+public class TableLoader extends AbstractTableLoader {
 
     public TableLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
         super(context, config, factory);
-    }
-
-    @Override
-    protected Table createComponent(ComponentsFactory factory) {
-        return factory.createComponent("table");
     }
 }

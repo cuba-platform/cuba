@@ -21,27 +21,22 @@ import java.util.ArrayList;
  * @author gorodnov
  * @version $Id$
  */
-public class GroupTableLoader extends AbstractTableLoader<GroupTable> {
+public class GroupTableLoader extends TableLoader {
 
     public GroupTableLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
         super(context, config, factory);
     }
 
     @Override
-    protected GroupTable createComponent(ComponentsFactory factory) {
-        return factory.createComponent("groupTable");
-    }
+    protected void initComponent(Element element, Table table, Component parent) {
+        super.initComponent(element, table, parent);
 
-    @Override
-    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
-        GroupTable component = (GroupTable) super.loadComponent(factory, element, parent);
+        GroupTable component = (GroupTable) table;
 
         String fixedGroupingString = element.attributeValue("fixedGrouping");
         if (StringUtils.isNotEmpty(fixedGroupingString)) {
             component.setFixedGrouping(Boolean.valueOf(fixedGroupingString));
         }
-
-        return component;
     }
 
     @Override

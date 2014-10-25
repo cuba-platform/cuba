@@ -29,7 +29,7 @@ import java.util.List;
  * @author abramov
  * @version $Id$
  */
-public abstract class AbstractTableLoader<T extends Table> extends ComponentLoader {
+public abstract class AbstractTableLoader extends ComponentLoader {
 
     protected ComponentsFactory factory;
     protected LayoutLoaderConfig config;
@@ -42,9 +42,14 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
 
     @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
+        Table component = factory.createComponent(element.getName());
 
-        final T component = createComponent(factory);
+        initComponent(element, component, parent);
 
+        return component;
+    }
+
+    protected void initComponent(Element element, Table component, Component parent) {
         assignXmlDescriptor(component, element);
         loadId(component, element);
 
@@ -70,7 +75,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
 
         loadActions(component, element);
         loadContextMenuEnabled(component, element);
-        loadMultilineCells(component, element);
+        loadMultiLineCells(component, element);
 
         final Element columnsElement = element.element("columns");
         final Element rowsElement = element.element("rows");
@@ -122,11 +127,9 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
 
         final String multiselect = element.attributeValue("multiselect");
         component.setMultiSelect(BooleanUtils.toBoolean(multiselect));
-
-        return component;
     }
 
-    protected void loadMultilineCells(T table, Element element) {
+    protected void loadMultiLineCells(Table table, Element element) {
         final String allowMultiStringCells = element.attributeValue("allowMultiStringCells");
         if (StringUtils.isNotBlank(allowMultiStringCells)) {
             table.setAllowMultiStringCells(BooleanUtils.toBoolean(allowMultiStringCells));
@@ -138,7 +141,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         }
     }
 
-    protected void loadContextMenuEnabled(T table, Element element) {
+    protected void loadContextMenuEnabled(Table table, Element element) {
         final String allowPopupMenu = element.attributeValue("allowPopupMenu");
         if (StringUtils.isNotBlank(allowPopupMenu)) {
             table.setAllowPopupMenu(BooleanUtils.toBoolean(allowPopupMenu));
@@ -150,9 +153,9 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         }
     }
 
-    protected void loadRowsCount(T table, Element element) {
-        Element rowsCountEl = element.element("rowsCount");
-        if (rowsCountEl != null) {
+    protected void loadRowsCount(Table table, Element element) {
+        Element rowsCountElement = element.element("rowsCount");
+        if (rowsCountElement != null) {
             RowsCount rowsCount = factory.createComponent("rowsCount");
             rowsCount.setOwner(table);
             table.setRowsCount(rowsCount);
@@ -187,7 +190,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         if (panelElement != null) {
             Window window = ComponentsHelper.getWindowImplementation((Component.BelongToFrame) component);
 
-            ButtonsPanelLoader loader = (ButtonsPanelLoader) getLoader("buttonsPanel");
+            ButtonsPanelLoader loader = (ButtonsPanelLoader) getLoader(ButtonsPanel.NAME);
             ButtonsPanel panel = (ButtonsPanel) loader.loadComponent(factory, panelElement, null);
 
             component.setButtonsPanel(panel);
@@ -197,7 +200,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         }
     }
 
-    protected void loadRequired(T component, Table.Column column) {
+    protected void loadRequired(Table component, Table.Column column) {
         Element element = column.getXmlDescriptor();
         final String required = element.attributeValue("required");
         if (!StringUtils.isEmpty(required)) {
@@ -206,7 +209,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         }
     }
 
-    protected void loadValidators(T component, Table.Column column) {
+    protected void loadValidators(Table component, Table.Column column) {
         @SuppressWarnings("unchecked") final
         List<Element> validatorElements = column.getXmlDescriptor().elements("validator");
 
@@ -226,8 +229,6 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         }
     }
 
-    protected abstract T createComponent(ComponentsFactory factory);
-
     protected Table.Column loadColumn(Element element, Datasource ds) {
         final String id = element.attributeValue("id");
 
@@ -238,6 +239,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
 
         String editable = element.attributeValue("editable");
         if (editable == null) {
+            // todo artamonov remove in 5.3
             final Element e = element.element("editable");
             if (e != null) {
                 editable = e.getText();
@@ -250,6 +252,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
 
         String collapsed = element.attributeValue("collapsed");
         if (collapsed == null) {
+            // todo artamonov remove in 5.3
             final Element e = element.element("collapsed");
             if (e != null) {
                 collapsed = e.getText();
@@ -361,7 +364,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         }
     }
 
-    protected void loadValidators(T component, Element element) {
+    protected void loadValidators(Table component, Element element) {
         @SuppressWarnings("unchecked")
         final List<Element> validatorElements = element.elements("validator");
 
@@ -373,21 +376,21 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         }
     }
 
-    protected void loadSortable(T component, Element element) {
+    protected void loadSortable(Table component, Element element) {
         final String sortable = element.attributeValue("sortable");
         if (!StringUtils.isEmpty(sortable)) {
             component.setSortable(Boolean.valueOf(sortable));
         }
     }
 
-    protected void loadReorderingAllowed(T component, Element element) {
+    protected void loadReorderingAllowed(Table component, Element element) {
         final String reorderingAllowed = element.attributeValue("reorderingAllowed");
         if (!StringUtils.isEmpty(reorderingAllowed)) {
             component.setColumnReorderingAllowed(Boolean.valueOf(reorderingAllowed));
         }
     }
 
-    protected void loadColumnControlVisible(T component, Element element) {
+    protected void loadColumnControlVisible(Table component, Element element) {
         final String columnControlVisible = element.attributeValue("columnControlVisible");
         if (!StringUtils.isEmpty(columnControlVisible)) {
             component.setColumnControlVisible(Boolean.valueOf(columnControlVisible));
@@ -439,19 +442,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
 
                     loadStandardActionProperties(element, instance);
 
-                    if (instance instanceof Action.HasOpenType) {
-                        String openTypeString = element.attributeValue("openType");
-                        if (StringUtils.isNotEmpty(openTypeString)) {
-                            try {
-                                WindowManager.OpenType openType = WindowManager.OpenType.valueOf(openTypeString);
-
-                                ((Action.HasOpenType)instance).setOpenType(openType);
-                            } catch (IllegalArgumentException e) {
-                                throw new GuiDevelopmentException(
-                                        "Unknown open type: '" + openTypeString + "' for action: '" + id + "'", context.getFullFrameId());
-                            }
-                        }
-                    }
+                    loadActionOpenType(instance, element);
 
                     return instance;
                 }
@@ -459,6 +450,24 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         }
 
         return super.loadDeclarativeAction(actionsHolder, element);
+    }
+
+    protected void loadActionOpenType(Action action, Element element) {
+        if (action instanceof Action.HasOpenType) {
+            String openTypeString = element.attributeValue("openType");
+            if (StringUtils.isNotEmpty(openTypeString)) {
+                WindowManager.OpenType openType;
+                try {
+                    openType = WindowManager.OpenType.valueOf(openTypeString);
+                } catch (IllegalArgumentException e) {
+                    throw new GuiDevelopmentException(
+                            "Unknown open type: '" + openTypeString + "' for action: '" + action.getId() + "'",
+                            context.getFullFrameId());
+                }
+
+                ((Action.HasOpenType)action).setOpenType(openType);
+            }
+        }
     }
 
     protected void loadStandardActionProperties(Element element, Action instance) {
