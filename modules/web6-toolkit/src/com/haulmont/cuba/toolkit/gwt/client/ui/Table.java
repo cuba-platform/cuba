@@ -2126,6 +2126,11 @@ public abstract class Table
 
             @Override
             public void execute() {
+                // Indicates whether there is only one displayed column
+                boolean oneColumnLeft = (collapsedColumns.size() >= (columnOrder.length - 1));
+
+                enabled = collapsed || !oneColumnLeft;
+
                 if (enabled) {
                     com.google.gwt.dom.client.Element columnActionSpan =
                             Document.get().getElementById("tableColumnAction" + columnActionId);
@@ -2134,11 +2139,13 @@ public abstract class Table
                         collapsedColumns.remove(colKey);
 
                         columnActionSpan.setClassName("v-on");
+                        setCollapsed(false);
                     } else {
                         tHead.removeCell(colKey);
                         collapsedColumns.add(colKey);
 
                         columnActionSpan.setClassName("v-off");
+                        setCollapsed(true);
                     }
 
                     // update variable to server
@@ -2199,8 +2206,7 @@ public abstract class Table
                 a.setCaption(c.getCaption());
                 if (!c.isEnabled()) {
                     a.setCollapsed(true);
-                }
-                else if (oneColumnLeft){
+                } else if (oneColumnLeft){
                     //Disable ability to collapse if it's the last not collapsed column
                     a.setEnabled(false);
                 }
