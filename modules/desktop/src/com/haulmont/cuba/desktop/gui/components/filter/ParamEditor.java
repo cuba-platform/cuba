@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.desktop.gui.components.filter;
 
+import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
 import com.haulmont.cuba.gui.components.filter.AbstractCondition;
 import net.miginfocom.layout.CC;
@@ -89,6 +90,9 @@ public class ParamEditor extends JPanel implements AbstractCondition.Listener {
 
         field = editComponent.getComponent();
         updateBackground();
+        if (App.getInstance().isTestMode()) {
+            field.setName("field");
+        }
         add(field);
 
         if (fieldWidth != null && field != null) {

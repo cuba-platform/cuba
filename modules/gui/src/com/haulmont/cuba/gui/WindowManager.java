@@ -194,12 +194,6 @@ public abstract class WindowManager {
     }
 
     protected void initDebugIds(final IFrame frame) {
-        ComponentsHelper.walkComponents(frame, new ComponentVisitor() {
-            @Override
-            public void visit(Component component, String name) {
-                component.setDebugId(frame.getId() + "." + name);
-            }
-        });
     }
 
     private void checkPermission(WindowInfo windowInfo) {

@@ -16,6 +16,7 @@ import com.haulmont.cuba.desktop.sys.*;
 import com.haulmont.cuba.desktop.theme.DesktopTheme;
 import com.haulmont.cuba.desktop.theme.DesktopThemeLoader;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Window;
@@ -78,6 +79,9 @@ public class App implements ConnectionListener {
 
     protected boolean exiting;
 
+    private boolean testMode;
+    protected TestIdManager testIdManager = new TestIdManager();
+
     protected ApplicationSession applicationSession;
 
     static {
@@ -129,6 +133,7 @@ public class App implements ConnectionListener {
 
             initTheme();
             initLookAndFeelDefaults();
+            initTestMode();
             initUI();
             initExceptionHandling();
         } catch (Throwable t) {
@@ -224,6 +229,10 @@ public class App implements ConnectionListener {
             System.setProperty("log4j.configuration", getDefaultLog4jConfig());
         }
         log = LogFactory.getLog(App.class);
+    }
+
+    protected void initTestMode() {
+        this.testMode = configuration.getConfig(DesktopConfig.class).getTestMode();
     }
 
     protected void initTheme() throws Exception {
@@ -364,6 +373,10 @@ public class App implements ConnectionListener {
         );
         menu.add(item);
 
+        if (isTestMode()) {
+            menuBar.setName("startMenu");
+        }
+
         return pane;
     }
 
@@ -372,12 +385,22 @@ public class App implements ConnectionListener {
         pane.add(createTopPane(), BorderLayout.NORTH);
         pane.add(createCenterPane(), BorderLayout.CENTER);
         pane.add(createBottomPane(), BorderLayout.SOUTH);
+
+        if (isTestMode()) {
+            pane.setName("contentPane");
+        }
+
         return pane;
     }
 
     protected JComponent createTopPane() {
         JPanel toolBar = new JPanel(new BorderLayout());
         toolBar.add(createMenuBar(), BorderLayout.CENTER);
+
+        if (isTestMode()) {
+            toolBar.setName("toolBar");
+        }
+
         return toolBar;
     }
 
@@ -417,6 +440,10 @@ public class App implements ConnectionListener {
 
         MenuBuilder builder = new MenuBuilder(connection.getSession(), menuBar);
         builder.build();
+
+        if (isTestMode()) {
+            menuBar.setName("menuBar");
+        }
 
         return menuBar;
     }
@@ -482,6 +509,12 @@ public class App implements ConnectionListener {
 
         panel.add(userInfoLabel, BorderLayout.EAST);
 
+        if (isTestMode()) {
+            panel.setName("bottomPane");
+            userInfoLabel.setName("userInfoLabel");
+            connectionStateLab.setName("connectionStateLab");
+        }
+
         return panel;
     }
 
@@ -497,11 +530,17 @@ public class App implements ConnectionListener {
     protected JComponent createCenterPane() {
         JPanel pane = new JPanel(new BorderLayout());
         pane.add(createTabsPane(), BorderLayout.CENTER);
+        if (isTestMode()) {
+            pane.setName("centerPane");
+        }
         return pane;
     }
 
     protected JComponent createTabsPane() {
         tabsPane = new JTabbedPane();
+        if (isTestMode()) {
+            tabsPane.setName("tabsPane");
+        }
         return tabsPane;
     }
 
@@ -679,5 +718,13 @@ public class App implements ConnectionListener {
             return Locale.getDefault();
         else
             return getConnection().getSession().getLocale();
+    }
+
+    public boolean isTestMode() {
+        return testMode;
+    }
+
+    public TestIdManager getTestIdManager() {
+        return testIdManager;
     }
 }

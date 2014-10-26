@@ -70,6 +70,7 @@ public class DesktopPopupButton extends DesktopAbstractActionsHolderComponent<JB
             );
             menuItem.setEnabled(action.isEnabled());
             menuItem.setVisible(action.isVisible());
+            menuItem.setName(action.getId());
 
             initAction(action, menuItem);
 

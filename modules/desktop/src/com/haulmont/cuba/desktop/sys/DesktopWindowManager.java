@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.DesktopConfig;
 import com.haulmont.cuba.desktop.TopLevelFrame;
+import com.haulmont.cuba.desktop.gui.components.DesktopAbstractComponent;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.desktop.gui.components.DesktopWindow;
 import com.haulmont.cuba.gui.*;
@@ -1438,6 +1439,31 @@ public class DesktopWindowManager extends WindowManager {
                 }
             });
             handle.execute();
+        }
+    }
+
+    @Override
+    protected void initDebugIds(IFrame frame) {
+        if (App.getInstance().isTestMode()) {
+            ComponentsHelper.walkComponents(frame, new ComponentVisitor() {
+                @Override
+                public void visit(com.haulmont.cuba.gui.components.Component component, String name) {
+                    if (component.getDebugId() == null) {
+                        IFrame componentFrame = null;
+                        if (component instanceof com.haulmont.cuba.gui.components.Component.BelongToFrame) {
+                            componentFrame = ((com.haulmont.cuba.gui.components.Component.BelongToFrame) component).getFrame();
+                        }
+                        if (componentFrame == null) {
+                            log.warn("Frame for component " + component.getClass() + " is not assigned");
+                        } else {
+                            if (component instanceof DesktopAbstractComponent) {
+                                DesktopAbstractComponent desktopComponent = (DesktopAbstractComponent) component;
+                                desktopComponent.assignAutoDebugId();
+                            }
+                        }
+                    }
+                }
+            });
         }
     }
 }

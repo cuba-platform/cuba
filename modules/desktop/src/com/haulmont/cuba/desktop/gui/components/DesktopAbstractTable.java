@@ -1987,6 +1987,40 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         return false;
     }
 
+    @Override
+    public void setId(String id) {
+        super.setId(id);
+
+        if (id != null && App.getInstance().isTestMode()) {
+            getComposition().setName(id + "_composition");
+        }
+    }
+
+    @Override
+    public void assignAutoDebugId() {
+        super.assignAutoDebugId();
+
+        if (buttonsPanel != null) {
+            for (com.haulmont.cuba.gui.components.Component subComponent : buttonsPanel.getComponents()) {
+                if (subComponent instanceof DesktopAbstractComponent) {
+                    ((DesktopAbstractComponent) subComponent).assignAutoDebugId();
+                }
+            }
+        }
+    }
+
+    @Override
+    protected String getAlternativeDebugId() {
+        if (id != null) {
+            return id;
+        }
+        if (datasource != null && StringUtils.isNotEmpty(datasource.getId())) {
+            return "table_" + datasource.getId();
+        }
+
+        return getClass().getSimpleName();
+    }
+
     /**
      * Uses delegate renderer to create cell component.
      * Then applies desktop styles to cell component.

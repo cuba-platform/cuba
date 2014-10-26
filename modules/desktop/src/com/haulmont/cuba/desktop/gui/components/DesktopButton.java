@@ -104,6 +104,8 @@ public class DesktopButton extends DesktopAbstractComponent<JButton> implements 
                     }
                 }
         );
+
+        assignAutoDebugId();
     }
 
     @Override
@@ -139,5 +141,17 @@ public class DesktopButton extends DesktopAbstractComponent<JButton> implements 
             impl.setIcon(App.getInstance().getResources().getIcon(icon));
         else
             impl.setIcon(null);
+    }
+
+    @Override
+    protected String getAlternativeDebugId() {
+        if (StringUtils.isNotEmpty(id)) {
+            return id;
+        }
+        if (action != null && StringUtils.isNotEmpty(action.getId())) {
+            return action.getId();
+        }
+
+        return getClass().getSimpleName();
     }
 }

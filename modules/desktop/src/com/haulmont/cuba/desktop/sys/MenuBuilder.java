@@ -70,10 +70,12 @@ public class MenuBuilder {
                 public void menuCanceled(MenuEvent e) {
                 }
             });
+            jMenu.setName(item.getId());
             menuBar.add(jMenu);
             createSubMenu(jMenu, item);
         } else {
             JMenuItem jMenuItem = new JMenuItem(caption);
+            jMenuItem.setName(item.getId());
             //todo remove hardcoded border
             jMenuItem.setBorder(BorderFactory.createEmptyBorder(1, 4, 2, 4));
             assignShortcut(jMenuItem, item);

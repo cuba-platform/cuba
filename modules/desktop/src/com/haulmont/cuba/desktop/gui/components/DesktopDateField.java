@@ -15,6 +15,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
 import com.haulmont.cuba.desktop.sys.layout.MigBoxLayoutAdapter;
@@ -119,6 +120,16 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
         impl.add(datePicker, "growx, w 100%");
         if (resolution.ordinal() < Resolution.DAY.ordinal()) {
             impl.add(timeField.getImpl());
+        }
+    }
+
+    @Override
+    public void setId(String id) {
+        super.setId(id);
+
+        if (id != null && App.getInstance().isTestMode()) {
+            timeField.setId("timepart");
+            datePicker.setName("datepart");
         }
     }
 

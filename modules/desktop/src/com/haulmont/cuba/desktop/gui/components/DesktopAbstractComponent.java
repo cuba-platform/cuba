@@ -15,6 +15,7 @@ import com.haulmont.cuba.desktop.theme.DesktopTheme;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.IFrame;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
@@ -49,6 +50,7 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
     public static final String swingPropertyClass = "cubaClass";
 
     public boolean visible = true;
+    private String debugId;
 
     protected C getImpl() {
         return impl;
@@ -67,6 +69,8 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
     public void setFrame(IFrame frame) {
         this.frame = frame;
         frame.registerComponent(this);
+
+        assignAutoDebugId();
     }
 
     @Override
@@ -77,9 +81,39 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
     @Override
     public void setId(String id) {
         this.id = id;
-        if (this.getImpl() != null) {
+
+        C impl = getImpl();
+        if (impl != null) {
             impl.putClientProperty(getSwingPropertyId(), id);
+            impl.setName(id);
         }
+    }
+
+    public void assignAutoDebugId() {
+        if (frame == null || StringUtils.isEmpty(frame.getId()))
+            return;
+
+        App app = App.getInstance();
+        if (app.isTestMode()) {
+            C impl = getImpl();
+            // always change name, do not assign auto id for components
+            if (getId() == null && impl != null) {
+                String alternativeDebugId = getAlternativeDebugId();
+
+                impl.setName(alternativeDebugId);
+            }
+        }
+    }
+
+    /**
+     * @return id that is suitable for auto debug id
+     */
+    protected String getAlternativeDebugId() {
+        if (id != null) {
+            return id;
+        }
+
+        return getClass().getSimpleName();
     }
 
     protected void assignClassDebugProperty(JComponent c) {
@@ -88,11 +122,12 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
 
     @Override
     public String getDebugId() {
-        return null;
+        return debugId;
     }
 
     @Override
     public void setDebugId(String id) {
+        this.debugId = id;
     }
 
     @Override

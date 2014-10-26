@@ -195,6 +195,23 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         impl.add(paramsPanel);
 
         updateControls();
+
+        if (App.getInstance().isTestMode()) {
+            select.setId("filterSelect");
+
+            if (applyBtn != null) {
+                applyBtn.setName("applyBtn");
+            }
+
+            if (maxResultsPanel != null) {
+                maxResultsField.setName("maxResultsField");
+                maxResultsCb.setName("maxResultsCheckBox");
+            }
+
+            if (actionsButton != null) {
+                actionsButton.setId("actionsBtn");
+            }
+        }
     }
 
     @Override

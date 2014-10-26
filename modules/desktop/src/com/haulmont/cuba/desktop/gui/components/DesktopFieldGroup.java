@@ -10,6 +10,7 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Security;
+import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
 import com.haulmont.cuba.desktop.sys.layout.MigLayoutHelper;
@@ -182,6 +183,8 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         } else if (datasource != null) {
             LogFactory.getLog(getClass()).warn("Field group does not have fields");
         }
+
+        assignAutoDebugId();
 
         createFields();
     }
@@ -691,6 +694,28 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
             impl.validate();
             impl.repaint();
         }
+
+        if (App.getInstance().isTestMode()) {
+            jComponent.setName(fieldConfig.getId());
+        }
+    }
+
+    @Override
+    public void setId(String id) {
+        super.setId(id);
+
+        if (id != null && App.getInstance().isTestMode()) {
+            final List<FieldConfig> fieldConfs = getFields();
+            for (final FieldConfig fieldConf : fieldConfs) {
+                Component fieldComponent = getFieldComponent(fieldConf.getId());
+                if (fieldComponent != null) {
+                    JComponent jComponent = DesktopComponentsHelper.getComposition(fieldComponent);
+                    if (jComponent != null) {
+                        jComponent.setName(fieldConf.getId());
+                    }
+                }
+            }
+        }
     }
 
     protected String getDefaultCaption(FieldConfig fieldConfig, Datasource fieldDatasource) {
@@ -861,6 +886,18 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
             throw validationException;
         }
+    }
+
+    @Override
+    protected String getAlternativeDebugId() {
+        if (id != null) {
+            return id;
+        }
+        if (datasource != null && StringUtils.isNotEmpty(datasource.getId())) {
+            return "fieldGroup_" + datasource.getId();
+        }
+
+        return getClass().getSimpleName();
     }
 
     protected class FieldFactory extends AbstractFieldFactory {

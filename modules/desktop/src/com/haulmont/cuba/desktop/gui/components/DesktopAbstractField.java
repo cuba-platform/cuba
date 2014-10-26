@@ -5,11 +5,14 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.RequiredValueMissingException;
 import com.haulmont.cuba.gui.components.ValidationException;
+import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
+import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -145,5 +148,20 @@ public abstract class DesktopAbstractField<C extends JComponent>
     @Override
     public String getRequiredMessage() {
         return requiredMessage;
+    }
+
+    @Override
+    protected String getAlternativeDebugId() {
+        if (id != null) {
+            return id;
+        }
+        Datasource datasource = getDatasource();
+        MetaPropertyPath metaPropertyPath = getMetaPropertyPath();
+
+        if (datasource != null && StringUtils.isNotEmpty(datasource.getId()) && metaPropertyPath != null) {
+            return getClass().getSimpleName() + "_" + datasource.getId() + "_" + metaPropertyPath.toString();
+        }
+
+        return getClass().getSimpleName();
     }
 }

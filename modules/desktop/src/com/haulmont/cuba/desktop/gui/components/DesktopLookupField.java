@@ -491,6 +491,21 @@ public class DesktopLookupField
         return enabled;
     }
 
+    @Override
+    protected String getAlternativeDebugId() {
+        if (id != null) {
+            return id;
+        }
+        if (datasource != null && StringUtils.isNotEmpty(datasource.getId()) && metaPropertyPath != null) {
+            return getClass().getSimpleName() + "_" + datasource.getId() + "_" + metaPropertyPath.toString();
+        }
+        if (optionsDatasource != null &&  StringUtils.isNotEmpty(optionsDatasource.getId())) {
+            return getClass().getSimpleName() + "_" + optionsDatasource.getId();
+        }
+
+        return getClass().getSimpleName();
+    }
+
     protected class NullOption extends EntityWrapper {
         public NullOption() {
             super(new AbstractNotPersistentEntity() {

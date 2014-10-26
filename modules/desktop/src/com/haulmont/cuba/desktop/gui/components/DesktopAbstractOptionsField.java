@@ -66,6 +66,8 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
     @Override
     public void setOptionsDatasource(CollectionDatasource datasource) {
         this.optionsDatasource = datasource;
+
+        assignAutoDebugId();
     }
 
     @Override

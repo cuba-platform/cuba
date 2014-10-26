@@ -119,6 +119,14 @@ public class LoginDialog extends JDialog {
 
         getRootPane().setDefaultButton(loginBtn);
 
+        if (App.getInstance().isTestMode()) {
+            panel.setName("contentPane");
+            nameField.setName("nameField");
+            passwordField.setName("passwordField");
+            loginBtn.setName("loginBtn");
+            localeCombo.setName("localeCombo");
+        }
+
         return panel;
     }
 

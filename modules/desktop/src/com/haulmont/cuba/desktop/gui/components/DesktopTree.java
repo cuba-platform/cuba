@@ -245,6 +245,20 @@ public class DesktopTree extends DesktopAbstractActionsHolderComponent<JTree> im
         for (Action action : getActions()) {
             action.refreshState();
         }
+
+        assignAutoDebugId();
+    }
+
+    @Override
+    protected String getAlternativeDebugId() {
+        if (id != null) {
+            return id;
+        }
+        if (datasource != null && StringUtils.isNotEmpty(datasource.getId())) {
+            return getClass().getSimpleName()  + "_" + datasource.getId();
+        }
+
+        return getClass().getSimpleName();
     }
 
     @Override

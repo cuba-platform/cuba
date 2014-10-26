@@ -13,6 +13,7 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -105,6 +106,30 @@ public class DesktopOptionsGroup
             }
             optionsInitialized = true;
         }
+
+        assignAutoDebugId();
+    }
+
+    @Override
+    public void setDatasource(Datasource datasource, String property) {
+        super.setDatasource(datasource, property);
+
+        assignAutoDebugId();
+    }
+
+    @Override
+    protected String getAlternativeDebugId() {
+        if (id != null) {
+            return id;
+        }
+        if (datasource != null && StringUtils.isNotEmpty(datasource.getId()) && metaPropertyPath != null) {
+            return getClass().getSimpleName() + datasource.getId() + "_" + metaPropertyPath.toString();
+        }
+        if (optionsDatasource != null && StringUtils.isNotEmpty(optionsDatasource.getId())) {
+            return getClass().getSimpleName() + optionsDatasource.getId();
+        }
+
+        return getClass().getSimpleName();
     }
 
     @Override
