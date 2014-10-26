@@ -219,17 +219,17 @@ public class WebFieldGroup
     }
 
     @Override
-    public void addCustomField(final FieldConfig fieldConf, final CustomFieldGenerator fieldGenerator) {
-        if (!fieldConf.isCustom()) {
-            throw new IllegalStateException(String.format("Field '%s' must be defined as custom", fieldConf.getId()));
+    public void addCustomField(final FieldConfig fieldConfig, final CustomFieldGenerator fieldGenerator) {
+        if (!fieldConfig.isCustom()) {
+            throw new IllegalStateException(String.format("Field '%s' must be defined as custom", fieldConfig.getId()));
         }
 
-        component.addCustomField(fieldConf.getId(), new CubaFieldGroup.CustomFieldGenerator() {
+        component.addCustomField(fieldConfig.getId(), new CubaFieldGroup.CustomFieldGenerator() {
             @Override
             public com.vaadin.ui.Field generateField(Object propertyId, CubaFieldGroup component) {
                 Datasource fieldDatasource;
-                if (fieldConf.getDatasource() != null) {
-                    fieldDatasource = fieldConf.getDatasource();
+                if (fieldConfig.getDatasource() != null) {
+                    fieldDatasource = fieldConfig.getDatasource();
                 } else {
                     fieldDatasource = datasource;
                 }
@@ -243,7 +243,7 @@ public class WebFieldGroup
                 }
 
                 if (StringUtils.isEmpty(fieldComponent.getId())) {
-                    fieldComponent.setId(fieldConf.getId());
+                    fieldComponent.setId(fieldConfig.getId());
                 }
 
                 assignTypicalAttributes(fieldComponent);
@@ -251,48 +251,36 @@ public class WebFieldGroup
                 if (fieldComponent instanceof Field) {
                     Field cubaField = (Field) fieldComponent;
 
-                    String caption = fieldConf.getCaption();
-                    if (caption == null) {
-                        MetaPropertyPath propertyPath =
-                                fieldDatasource != null ? fieldDatasource.getMetaClass().getPropertyPath(id) : null;
-
-                        if (propertyPath != null) {
-                            caption = messageTools.getPropertyCaption(propertyPath.getMetaClass(), fieldConf.getId());
-                        }
-                    }
-
                     if (StringUtils.isEmpty(cubaField.getCaption())) {
                         // if custom field hasn't manually set caption
-                        cubaField.setCaption(caption);
+                        cubaField.setCaption(getDefaultCaption(fieldConfig, fieldDatasource));
                     }
 
-                    if (fieldConf.getDescription() != null && StringUtils.isEmpty(cubaField.getDescription())) {
+                    if (fieldConfig.getDescription() != null && StringUtils.isEmpty(cubaField.getDescription())) {
                         // custom field hasn't manually set description
-                        cubaField.setDescription(fieldConf.getDescription());
+                        cubaField.setDescription(fieldConfig.getDescription());
                     }
-                    if (fieldConf.isRequired()) {
-                        cubaField.setRequired(fieldConf.isRequired());
+                    if (fieldConfig.isRequired()) {
+                        cubaField.setRequired(fieldConfig.isRequired());
                     }
-                    if (fieldConf.getRequiredError() != null) {
-                        cubaField.setRequiredMessage(fieldConf.getRequiredError());
+                    if (fieldConfig.getRequiredError() != null) {
+                        cubaField.setRequiredMessage(fieldConfig.getRequiredError());
                     }
-                    if (!fieldConf.isEditable()) {
-                        cubaField.setEditable(fieldConf.isEditable());
+                    if (!fieldConfig.isEditable()) {
+                        cubaField.setEditable(fieldConfig.isEditable());
                     }
                 } else if (!(fieldComponent instanceof HasCaption)) {
-                    // if component does not support caption and we have explicit caption in XML
-                    if (fieldConf.getCaption() != null) {
-                        fieldImpl.setCaption(fieldConf.getCaption());
-                    }
+                    // if component does not support caption
+                    fieldImpl.setCaption(getDefaultCaption(fieldConfig, fieldDatasource));
 
-                    if (fieldConf.getDescription() != null && fieldImpl instanceof AbstractComponent) {
-                        ((AbstractComponent) fieldImpl).setDescription(fieldConf.getDescription());
+                    if (fieldConfig.getDescription() != null && fieldImpl instanceof AbstractComponent) {
+                        ((AbstractComponent) fieldImpl).setDescription(fieldConfig.getDescription());
                     }
                 }
 
                 // some components (e.g. LookupPickerField) have width from the creation, so I commented out this check
-                if (/*f.getWidth() == -1f &&*/ fieldConf.getWidth() != null) {
-                    fieldComponent.setWidth(fieldConf.getWidth());
+                if (/*f.getWidth() == -1f &&*/ fieldConfig.getWidth() != null) {
+                    fieldComponent.setWidth(fieldConfig.getWidth());
                 } else {
                     ThemeConstants theme = App.getInstance().getThemeConstants();
                     fieldComponent.setWidth(theme.get("cuba.web.WebFieldGroup.defaultFieldWidth"));
@@ -300,20 +288,34 @@ public class WebFieldGroup
 
                 applyPermissions(fieldComponent);
 
-                registerFieldComponent(fieldConf, fieldComponent);
+                registerFieldComponent(fieldConfig, fieldComponent);
                 if (AppUI.getCurrent().isTestMode()) {
                     String debugId = getDebugId();
                     if (debugId != null) {
                         TestIdManager testIdManager = AppUI.getCurrent().getTestIdManager();
-                        fieldImpl.setId(testIdManager.getTestId(debugId + "_" + fieldConf.getId()));
+                        fieldImpl.setId(testIdManager.getTestId(debugId + "_" + fieldConfig.getId()));
                     }
 
-                    fieldImpl.setCubaId(fieldConf.getId());
+                    fieldImpl.setCubaId(fieldConfig.getId());
                 }
 
                 return fieldImpl;
             }
         });
+    }
+
+    protected String getDefaultCaption(FieldConfig fieldConfig, Datasource fieldDatasource) {
+        String caption = fieldConfig.getCaption();
+        if (caption == null) {
+            String propertyId = fieldConfig.getId();
+            MetaPropertyPath propertyPath =
+                    fieldDatasource != null ? fieldDatasource.getMetaClass().getPropertyPath(propertyId) : null;
+
+            if (propertyPath != null) {
+                caption = messageTools.getPropertyCaption(propertyPath.getMetaClass(), propertyId);
+            }
+        }
+        return caption;
     }
 
     protected com.vaadin.ui.Field getFieldImplementation(Component c) {
@@ -851,7 +853,7 @@ public class WebFieldGroup
 
         @Override
         protected CollectionDatasource getOptionsDatasource(Datasource datasource, String property) {
-            final FieldConfig field = fields.get(property);
+            FieldConfig field = fields.get(property);
 
             Datasource ds = datasource;
 
@@ -861,22 +863,22 @@ public class WebFieldGroup
                 if (ds == null) {
                     throw new IllegalStateException("FieldGroup datasource is null");
                 }
-                dsContext = ds.getDsContext();
-            } else {
-                dsContext = ds.getDsContext();
             }
+
+            dsContext = ds.getDsContext();
+
             Element descriptor = field.getXmlDescriptor();
             String optDsName = descriptor == null ? null : descriptor.attributeValue("optionsDatasource");
 
-            if (!StringUtils.isBlank(optDsName)) {
+            if (StringUtils.isNotBlank(optDsName)) {
                 CollectionDatasource optDs = dsContext.get(optDsName);
                 if (optDs == null) {
                     throw new IllegalStateException("Options datasource not found: " + optDsName);
                 }
                 return optDs;
-            } else {
-                return null;
             }
+
+            return null;
         }
     }
 

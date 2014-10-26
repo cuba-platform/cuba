@@ -62,6 +62,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     protected CollapsiblePanel collapsiblePanel;
 
     protected Security security = AppBeans.get(Security.NAME);
+    protected MessageTools messageTools = AppBeans.get(MessageTools.NAME);
 
     protected Map<Integer, Integer> columnFieldCaptionWidth = null;
     protected int fieldCaptionWidth = -1;
@@ -566,13 +567,13 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         }
     }
 
-    protected void createFieldComponent(FieldConfig fieldConf) {
-        int col = fieldsColumn.get(fieldConf);
-        int row = columnFields.get(col).indexOf(fieldConf);
+    protected void createFieldComponent(FieldConfig fieldConfig) {
+        int col = fieldsColumn.get(fieldConfig);
+        int row = columnFields.get(col).indexOf(fieldConfig);
 
         Datasource ds;
-        if (fieldConf.getDatasource() != null) {
-            ds = fieldConf.getDatasource();
+        if (fieldConfig.getDatasource() != null) {
+            ds = fieldConfig.getDatasource();
         } else {
             ds = datasource;
         }
@@ -580,16 +581,16 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         boolean repaintRequired = false;
 
         // Remove all part of old component from target cell
-        Component oldComponent = fieldComponents.get(fieldConf);
+        Component oldComponent = fieldComponents.get(fieldConfig);
         if (oldComponent != null) {
             impl.remove(DesktopComponentsHelper.getComposition(oldComponent));
             repaintRequired = true;
         }
-        JLabel oldLabel = fieldLabels.get(fieldConf);
+        JLabel oldLabel = fieldLabels.get(fieldConfig);
         if (oldLabel != null) {
             impl.remove(oldLabel);
         }
-        ToolTipButton oldTooltip = fieldTooltips.get(fieldConf);
+        ToolTipButton oldTooltip = fieldTooltips.get(fieldConfig);
         if (oldTooltip != null) {
             impl.remove(oldTooltip);
         }
@@ -597,30 +598,23 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         String caption = null;
         String description = null;
 
-        CustomFieldGenerator generator = generators.get(fieldConf);
+        CustomFieldGenerator generator = generators.get(fieldConfig);
         if (generator == null) {
-            generator = createDefaultGenerator(fieldConf);
+            generator = createDefaultGenerator(fieldConfig);
         }
 
-        Component fieldComponent = generator.generateField(ds, fieldConf.getId());
+        Component fieldComponent = generator.generateField(ds, fieldConfig.getId());
 
         if (fieldComponent instanceof Field) { // do not create caption for buttons etc.
             Field cubaField = (Field) fieldComponent;
 
-            caption = fieldConf.getCaption();
-            if (caption == null) {
-                MetaPropertyPath propertyPath = ds != null ? ds.getMetaClass().getPropertyPath(fieldConf.getId()) : null;
-                if (propertyPath != null) {
-                    MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-                    caption = messageTools.getPropertyCaption(propertyPath.getMetaClass(), fieldConf.getId());
-                }
-            }
+            caption = getDefaultCaption(fieldConfig, ds);
 
             if (StringUtils.isNotEmpty(cubaField.getCaption())) {
                 caption = cubaField.getCaption();     // custom field has manually set caption
             }
 
-            description = fieldConf.getDescription();
+            description = fieldConfig.getDescription();
             if (StringUtils.isNotEmpty(cubaField.getDescription())) {
                 description = cubaField.getDescription();  // custom field has manually set description
             } else if (StringUtils.isNotEmpty(description)) {
@@ -628,27 +622,27 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
             }
 
             if (!cubaField.isRequired()) {
-                cubaField.setRequired(fieldConf.isRequired());
+                cubaField.setRequired(fieldConfig.isRequired());
             }
-            if (fieldConf.getRequiredError() != null) {
-                cubaField.setRequiredMessage(fieldConf.getRequiredError());
+            if (fieldConfig.getRequiredError() != null) {
+                cubaField.setRequiredMessage(fieldConfig.getRequiredError());
             }
 
             if (cubaField.isEditable()) {
-                cubaField.setEditable(fieldConf.isEditable());
+                cubaField.setEditable(fieldConfig.isEditable());
             }
         } else if (!(fieldComponent instanceof HasCaption)) {
-            // if component does not support caption and we have explicit caption in XML
-            caption = fieldConf.getCaption();
+            // if component does not support caption
+            caption = getDefaultCaption(fieldConfig, ds);
         }
 
         if (fieldComponent instanceof HasFormatter) {
-            ((HasFormatter) fieldComponent).setFormatter(fieldConf.getFormatter());
+            ((HasFormatter) fieldComponent).setFormatter(fieldConfig.getFormatter());
         }
 
         // some components (e.g. LookupPickerField) have width from the creation, so I commented out this check
-        if (/*f.getWidth() == -1f &&*/ fieldConf.getWidth() != null) {
-            fieldComponent.setWidth(fieldConf.getWidth());
+        if (/*f.getWidth() == -1f &&*/ fieldConfig.getWidth() != null) {
+            fieldComponent.setWidth(fieldConfig.getWidth());
         } else {
             fieldComponent.setWidth(DEFAULT_FIELD_WIDTH);
         }
@@ -671,18 +665,18 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         MigLayoutHelper.applyAlignment(labelCc, Alignment.TOP_LEFT);
 
         impl.add(label, labelCc.cell(col * 3, row, 1, 1));
-        fieldLabels.put(fieldConf, label);
+        fieldLabels.put(fieldConfig, label);
 
         if (description != null && !(fieldComponent instanceof CheckBox)) {
-            fieldConf.setDescription(description);
+            fieldConfig.setDescription(description);
             ToolTipButton tooltipBtn = new ToolTipButton();
             tooltipBtn.setVisible(fieldComponent.isVisible());
             tooltipBtn.setToolTipText(description);
             DesktopToolTipManager.getInstance().registerTooltip(tooltipBtn);
             impl.add(tooltipBtn, new CC().cell(col * 3 + 2, row, 1, 1).alignY("top"));
-            fieldTooltips.put(fieldConf, tooltipBtn);
+            fieldTooltips.put(fieldConfig, tooltipBtn);
         }
-        fieldComponents.put(fieldConf, fieldComponent);
+        fieldComponents.put(fieldConfig, fieldComponent);
         assignTypicalAttributes(fieldComponent);
         JComponent jComponent = DesktopComponentsHelper.getComposition(fieldComponent);
         CC cell = new CC().cell(col * 3 + 1, row, 1, 1);
@@ -691,13 +685,27 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         MigLayoutHelper.applyHeight(cell, (int) fieldComponent.getHeight(), fieldComponent.getHeightUnits(), false);
         MigLayoutHelper.applyAlignment(cell, fieldComponent.getAlignment());
 
-        jComponent.putClientProperty(getSwingPropertyId(), fieldConf.getId());
+        jComponent.putClientProperty(getSwingPropertyId(), fieldConfig.getId());
         impl.add(jComponent, cell);
 
         if (repaintRequired) {
             impl.validate();
             impl.repaint();
         }
+    }
+
+    protected String getDefaultCaption(FieldConfig fieldConfig, Datasource fieldDatasource) {
+        String caption = fieldConfig.getCaption();
+        if (caption == null) {
+            String propertyId = fieldConfig.getId();
+            MetaPropertyPath propertyPath =
+                    fieldDatasource != null ? fieldDatasource.getMetaClass().getPropertyPath(propertyId) : null;
+
+            if (propertyPath != null) {
+                caption = messageTools.getPropertyCaption(propertyPath.getMetaClass(), propertyId);
+            }
+        }
+        return caption;
     }
 
     protected void applyPermissions(Component c) {
@@ -862,27 +870,29 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         protected CollectionDatasource getOptionsDatasource(Datasource datasource, String property) {
             final FieldConfig field = fields.get(property);
 
+            Datasource ds = datasource;
+
             DsContext dsContext;
-            if (datasource == null) {
-                if (field.getDatasource() == null) {
+            if (ds == null) {
+                ds = field.getDatasource();
+                if (ds == null) {
                     throw new IllegalStateException("FieldGroup datasource is null");
                 }
-                dsContext = field.getDatasource().getDsContext();
-            } else {
-                dsContext = datasource.getDsContext();
             }
+            dsContext = ds.getDsContext();
+
             Element descriptor = field.getXmlDescriptor();
             String optDsName = descriptor == null ? null : descriptor.attributeValue("optionsDatasource");
 
-            if (!StringUtils.isBlank(optDsName)) {
+            if (StringUtils.isNotBlank(optDsName)) {
                 CollectionDatasource optDs = dsContext.get(optDsName);
                 if (optDs == null) {
                     throw new IllegalStateException("Options datasource not found: " + optDsName);
                 }
                 return optDs;
-            } else {
-                return null;
             }
+
+            return null;
         }
     }
 }

@@ -242,13 +242,9 @@ public class WebFieldGroup
                     Field cubaField = (Field) fieldComponent;
 
                     String caption = fieldConfig.getCaption();
-                    if (caption == null) {
-                        MetaPropertyPath propertyPath =
-                                fieldDatasource != null ? fieldDatasource.getMetaClass().getPropertyPath(id) : null;
-
-                        if (propertyPath != null) {
-                            caption = messageTools.getPropertyCaption(propertyPath.getMetaClass(), fieldConfig.getId());
-                        }
+                    if (StringUtils.isEmpty(cubaField.getCaption())) {
+                        // if custom field hasn't manually set caption
+                        cubaField.setCaption(getDefaultCaption(fieldConfig, fieldDatasource));
                     }
 
                     if (StringUtils.isEmpty(cubaField.getCaption())) {
@@ -269,13 +265,11 @@ public class WebFieldGroup
                     if (!fieldConfig.isEditable()) {
                         cubaField.setEditable(fieldConfig.isEditable());
                     }
-                } else if (!(fieldComponent instanceof HasCaption)) {
-                    // if component does not support caption and we have explicit caption in XML
-                    if (fieldConfig.getCaption() != null) {
-                        fieldImpl.setCaption(fieldConfig.getCaption());
-                    }
+                }  else if (!(fieldComponent instanceof HasCaption)) {
+                    // if component does not support caption
+                    fieldImpl.setCaption(getDefaultCaption(fieldConfig, fieldDatasource));
 
-                    if (fieldConfig.getDescription() != null) {
+                    if (fieldConfig.getDescription() != null && fieldImpl instanceof AbstractComponent) {
                         fieldImpl.setDescription(fieldConfig.getDescription());
                     }
                 }
@@ -298,6 +292,20 @@ public class WebFieldGroup
                 return fieldImpl;
             }
         });
+    }
+
+    protected String getDefaultCaption(FieldConfig fieldConfig, Datasource fieldDatasource) {
+        String caption = fieldConfig.getCaption();
+        if (caption == null) {
+            String propertyId = fieldConfig.getId();
+            MetaPropertyPath propertyPath =
+                    fieldDatasource != null ? fieldDatasource.getMetaClass().getPropertyPath(propertyId) : null;
+
+            if (propertyPath != null) {
+                caption = messageTools.getPropertyCaption(propertyPath.getMetaClass(), propertyId);
+            }
+        }
+        return caption;
     }
 
     protected com.vaadin.ui.Field getFieldImplementation(Component c) {
@@ -814,7 +822,7 @@ public class WebFieldGroup
 
         @Override
         protected CollectionDatasource getOptionsDatasource(Datasource datasource, String property) {
-            final FieldConfig field = fields.get(property);
+            FieldConfig field = fields.get(property);
 
             Datasource ds = datasource;
 
@@ -824,22 +832,22 @@ public class WebFieldGroup
                 if (ds == null) {
                     throw new IllegalStateException("FieldGroup datasource is null");
                 }
-                dsContext = ds.getDsContext();
-            } else {
-                dsContext = ds.getDsContext();
             }
+
+            dsContext = ds.getDsContext();
+
             Element descriptor = field.getXmlDescriptor();
             String optDsName = descriptor == null ? null : descriptor.attributeValue("optionsDatasource");
 
-            if (!StringUtils.isBlank(optDsName)) {
+            if (StringUtils.isNotBlank(optDsName)) {
                 CollectionDatasource optDs = dsContext.get(optDsName);
                 if (optDs == null) {
                     throw new IllegalStateException("Options datasource not found: " + optDsName);
                 }
                 return optDs;
-            } else {
-                return null;
             }
+
+            return null;
         }
     }
 
