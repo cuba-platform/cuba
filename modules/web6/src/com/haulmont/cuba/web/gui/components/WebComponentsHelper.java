@@ -6,6 +6,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Formatter;
+import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
@@ -310,5 +311,22 @@ public class WebComponentsHelper {
         int closeCode = closeCombination.getKey().getCode();
 
         button.setClickShortcut(closeCode, closeModifiers);
+    }
+
+    public static String convertColumnAlignment(com.haulmont.cuba.gui.components.Table.ColumnAlignment columnAlignment) {
+        if (columnAlignment == null) {
+            return null;
+        }
+
+        switch (columnAlignment) {
+            case LEFT:
+                return com.vaadin.ui.Table.ALIGN_LEFT;
+            case CENTER:
+                return com.vaadin.ui.Table.ALIGN_CENTER;
+            case RIGHT:
+                return com.vaadin.ui.Table.ALIGN_RIGHT;
+            default:
+                throw new UnsupportedOperationException();
+        }
     }
 }

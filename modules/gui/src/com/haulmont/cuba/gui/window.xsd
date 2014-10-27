@@ -854,6 +854,7 @@
         <xs:attribute name="collapsed" type="xs:boolean"/>
         <xs:attribute name="maxTextLength" type="xs:integer"/>
         <xs:attribute name="calculatable" type="xs:boolean"/>
+        <xs:attribute name="align" type="columnAlignment"/>
 
         <!-- Additional attributes, use only for editable table -->
         <xs:attributeGroup ref="hasOptions"/>
@@ -1648,4 +1649,12 @@
             </xs:choice>
         </xs:sequence>
     </xs:complexType>
+
+    <xs:simpleType name="columnAlignment">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="LEFT"/>
+            <xs:enumeration value="RIGHT"/>
+            <xs:enumeration value="CENTER"/>
+        </xs:restriction>
+    </xs:simpleType>
 </xs:schema>

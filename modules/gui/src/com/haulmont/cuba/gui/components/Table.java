@@ -23,6 +23,12 @@ public interface Table
             ListComponent, Component.Editable, Component.HasSettings,
             Component.HasButtonsPanel, Component.HasPresentations {
 
+    public enum ColumnAlignment {
+        LEFT,
+        CENTER,
+        RIGHT
+    }
+
     String NAME = "table";
 
     List<Column> getColumns();
@@ -57,6 +63,9 @@ public interface Table
      */
     void setColumnWidth(String columnId, int width);
     void setColumnWidth(Table.Column column, int width);
+
+    void setColumnAlignment(String columnId, ColumnAlignment columnAlignment);
+    void setColumnAlignment(Column column, ColumnAlignment columnAlignment);
 
     void setItemClickAction(Action action);
     Action getItemClickAction();
@@ -319,6 +328,7 @@ public interface Table
         protected AggregationInfo aggregation;
         protected boolean calculatable;
         protected Integer maxTextLength;
+        protected ColumnAlignment alignment;
 
         protected Class type;
         protected Element element;
@@ -388,6 +398,17 @@ public interface Table
         @Override
         public void setFormatter(Formatter formatter) {
             this.formatter = formatter;
+        }
+
+        public ColumnAlignment getAlignment() {
+            return alignment;
+        }
+
+        public void setAlignment(ColumnAlignment alignment) {
+            this.alignment = alignment;
+            if (alignment != null && owner != null) {
+                owner.setColumnAlignment(this, alignment);
+            }
         }
 
         public Integer getWidth() {

@@ -19,6 +19,7 @@ import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.Table;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
@@ -190,6 +191,23 @@ public class WebComponentsHelper {
                 return AggregationContainer.Type.SUM;
             default:
                 throw new IllegalArgumentException("Unknown function: " + function);
+        }
+    }
+
+    public static Table.Align convertColumnAlignment(com.haulmont.cuba.gui.components.Table.ColumnAlignment columnAlignment) {
+        if (columnAlignment == null) {
+            return null;
+        }
+
+        switch (columnAlignment) {
+            case LEFT:
+                return Table.Align.LEFT;
+            case CENTER:
+                return Table.Align.CENTER;
+            case RIGHT:
+                return Table.Align.RIGHT;
+            default:
+                throw new UnsupportedOperationException();
         }
     }
 

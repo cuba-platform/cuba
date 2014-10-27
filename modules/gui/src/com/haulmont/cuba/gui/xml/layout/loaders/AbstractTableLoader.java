@@ -297,6 +297,10 @@ public abstract class AbstractTableLoader extends ComponentLoader {
                         context.getCurrentIFrameId(), "width", element.attributeValue("width"));
             }
         }
+        String align = loadThemeString(element.attributeValue("align"));
+        if (StringUtils.isNotBlank(align)) {
+            column.setAlignment(Table.ColumnAlignment.valueOf(align));
+        }
 
         column.setFormatter(loadFormatter(element));
 

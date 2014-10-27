@@ -142,6 +142,10 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         if (column.getWidth() != null) {
             component.setColumnWidth(column.getId(), column.getWidth());
         }
+        if (column.getAlignment() != null) {
+            component.setColumnAlignment(column.getId(),
+                    WebComponentsHelper.convertColumnAlignment(column.getAlignment()));
+        }
         column.setOwner(this);
     }
 
@@ -1287,6 +1291,26 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             column.setCollapsed(collapsed);
         }
         component.setColumnCollapsed(column.getId(), collapsed);
+    }
+
+    @Override
+    public void setColumnAlignment(Column column, ColumnAlignment columnAlignment) {
+        checkNotNullArgument(column, "column must be non null");
+
+        if (column.getAlignment() != columnAlignment) {
+            column.setAlignment(columnAlignment);
+        }
+        component.setColumnAlignment(column.getId(), WebComponentsHelper.convertColumnAlignment(columnAlignment));
+    }
+
+    @Override
+    public void setColumnAlignment(String columnId, ColumnAlignment columnAlignment) {
+        Column column = getColumn(columnId);
+        if (column == null) {
+            throw new IllegalStateException(String.format("Column with id '%s' not found", columnId));
+        }
+
+        setColumnAlignment(column, columnAlignment);
     }
 
     @Override

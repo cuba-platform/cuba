@@ -53,10 +53,7 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
+import javax.swing.table.*;
 import java.awt.*;
 import java.awt.Component;
 import java.awt.event.*;
@@ -1418,6 +1415,25 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         if (tableColumn instanceof TableColumnExt) {
             ((TableColumnExt) tableColumn).setVisible(!collapsed);
         }
+    }
+
+    @Override
+    public void setColumnAlignment(Column column, ColumnAlignment columnAlignment) {
+        checkNotNullArgument(column, "column must be non null");
+
+        if (column.getAlignment() != columnAlignment) {
+            column.setAlignment(columnAlignment);
+        }
+    }
+
+    @Override
+    public void setColumnAlignment(String columnId, ColumnAlignment columnAlignment) {
+        Column column = getColumn(columnId);
+        if (column == null) {
+            throw new IllegalStateException(String.format("Column with id '%s' not found", columnId));
+        }
+
+        setColumnAlignment(column, columnAlignment);
     }
 
     @Override
