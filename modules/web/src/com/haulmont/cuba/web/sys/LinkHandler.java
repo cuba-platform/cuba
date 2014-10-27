@@ -28,6 +28,7 @@ import com.haulmont.cuba.web.exception.AccessDeniedHandler;
 import com.haulmont.cuba.web.exception.EntityAccessExceptionHandler;
 import com.haulmont.cuba.web.exception.NoSuchScreenHandler;
 import com.vaadin.server.Page;
+import com.vaadin.ui.JavaScript;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -118,10 +119,12 @@ public class LinkHandler {
                 log.warn("No user session");
                 return;
             }
+
             if (!(userId == null || userSession.getCurrentOrSubstitutedUser().getId().equals(userId))) {
                 substituteUserAndOpenWindow(windowInfo, userId);
-            } else
-                openWindow(windowInfo);
+            } else {
+                openWindow(windowInfo, requestParams);
+            }
         } catch (AccessDeniedException e) {
             new AccessDeniedHandler().handle(e, app);
         } catch (NoSuchScreenException e) {
@@ -136,7 +139,9 @@ public class LinkHandler {
     protected void substituteUserAndOpenWindow(final WindowInfo windowInfo, UUID userId) {
         UserSession userSession = app.getConnection().getSession();
         final User substitutedUser = loadUser(userId, userSession.getUser());
-        if (substitutedUser != null)
+        if (substitutedUser != null) {
+            final Map<String, String> currentRequestParams = new HashMap<>(requestParams);
+
             app.getWindowManager().showOptionDialog(
                     messages.getMessage(getClass(), "toSubstitutedUser.title"),
                     getDialogMessage(substitutedUser),
@@ -146,13 +151,15 @@ public class LinkHandler {
                                 @Override
                                 public void doAfterChangeUser() {
                                     super.doAfterChangeUser();
-                                    openWindow(windowInfo);
+                                    openWindow(windowInfo, currentRequestParams);
                                 }
 
                                 @Override
                                 public void doRevert() {
                                     super.doRevert();
-                                    Page.getCurrent().getJavaScript().execute("window.close();");
+
+                                    JavaScript js = Page.getCurrent().getJavaScript();
+                                    js.execute("window.close();");
                                 }
 
                                 @Override
@@ -165,7 +172,8 @@ public class LinkHandler {
                                 public void actionPerform(Component component) {
                                     super.actionPerform(component);
 
-                                    Page.getCurrent().getJavaScript().execute("window.close();");
+                                    JavaScript js = Page.getCurrent().getJavaScript();
+                                    js.execute("window.close();");
                                 }
 
                                 @Override
@@ -174,7 +182,7 @@ public class LinkHandler {
                                 }
                             }
                     });
-        else {
+        } else {
             User user = loadUser(userId);
             app.getWindowManager().showOptionDialog(
                     messages.getMessage(getClass(), "warning.title"),
@@ -184,7 +192,8 @@ public class LinkHandler {
                             new DialogAction(DialogAction.Type.OK) {
                                 @Override
                                 public void actionPerform(Component component) {
-                                    Page.getCurrent().getJavaScript().execute("window.close();");
+                                    JavaScript js = Page.getCurrent().getJavaScript();
+                                    js.execute("window.close();");
                                 }
                             }
                     });
@@ -246,7 +255,7 @@ public class LinkHandler {
         );
     }
 
-    protected void openWindow(WindowInfo windowInfo) {
+    protected void openWindow(WindowInfo windowInfo, Map<String, String> requestParams) {
         String itemStr = requestParams.get("item");
         String openTypeParam = requestParams.get("openType");
         WindowManager.OpenType openType = WindowManager.OpenType.NEW_TAB;
