@@ -93,11 +93,6 @@ public class GenericDataSupplier implements DataSupplier {
     }
 
     @Override
-    public DbDialect getDbDialect() {
-        return dataService.getDbDialect();
-    }
-
-    @Override
     public Set<Entity> commit(CommitContext context) {
         return dataService.commit(context);
     }

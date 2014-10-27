@@ -57,7 +57,7 @@ public class PersistenceConfigProcessor {
         Map<String, String> classes = new LinkedHashMap<String, String>();
         Map<String, String> properties = new HashMap<String, String>();
 
-        properties.putAll(DbmsType.getCurrent().getJpaParameters());
+        properties.putAll(DbmsSpecificFactory.getDbmsFeatures().getJpaParameters());
 
         for (String fileName : sourceFileNames) {
             Document doc = getDocument(fileName);

@@ -26,7 +26,7 @@ public class AppContextLoader extends AbstractWebAppContextLoader {
 
     @Override
     protected void beforeInitAppContext() {
-        log.info("DbmsType is set to " + DbmsType.getCurrent());
+        log.info("DbmsType is set to " + DbmsType.getType() + DbmsType.getVersion());
 
         // Init persistence.xml
         String configProperty = AppContext.getProperty(PERSISTENCE_CONFIG);

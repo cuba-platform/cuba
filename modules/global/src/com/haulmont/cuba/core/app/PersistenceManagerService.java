@@ -21,4 +21,10 @@ public interface PersistenceManagerService {
     int getFetchUI(String entityName);
 
     int getMaxFetchUI(String entityName);
+
+    String getDbmsType();
+
+    String getDbmsVersion();
+
+    String getUniqueConstraintViolationPattern();
 }

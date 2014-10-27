@@ -4,6 +4,8 @@
  */
 package com.haulmont.cuba.core.app;
 
+import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
+import com.haulmont.cuba.core.sys.persistence.DbmsType;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -36,5 +38,20 @@ public class PersistenceManagerServiceBean implements PersistenceManagerService 
     @Override
     public int getMaxFetchUI(String entityName) {
         return pm.getMaxFetchUI(entityName);
+    }
+
+    @Override
+    public String getDbmsType() {
+        return DbmsType.getType();
+    }
+
+    @Override
+    public String getDbmsVersion() {
+        return DbmsType.getVersion();
+    }
+
+    @Override
+    public String getUniqueConstraintViolationPattern() {
+        return DbmsSpecificFactory.getDbmsFeatures().getUniqueConstraintViolationPattern();
     }
 }

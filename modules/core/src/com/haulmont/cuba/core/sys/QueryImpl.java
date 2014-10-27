@@ -11,7 +11,7 @@ import com.haulmont.cuba.core.TypedQuery;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.sys.persistence.DbmsType;
+import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
@@ -197,8 +197,8 @@ public class QueryImpl<T> implements TypedQuery<T> {
 
     @Override
     public Query setParameter(int position, Object value, boolean implicitConversions) {
-        if (isNative && value instanceof UUID && DbmsType.getCurrent() == DbmsType.POSTGRES) {
-            Class c = ReflectionHelper.getClass("com.haulmont.cuba.core.sys.persistence.PostgresUUID");
+        if (isNative && (value instanceof UUID) && (DbmsSpecificFactory.getDbmsFeatures().getUuidTypeClassName() != null)) {
+            Class c = ReflectionHelper.getClass(DbmsSpecificFactory.getDbmsFeatures().getUuidTypeClassName());
             try {
                 value = ReflectionHelper.newInstance(c, value);
             } catch (NoSuchMethodException e) {

@@ -6,12 +6,14 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.*;
-import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.sys.persistence.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.sys.persistence.DbTypeConverter;
+import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
+import com.haulmont.cuba.core.sys.persistence.EntityLifecycleListener;
+import com.haulmont.cuba.core.sys.persistence.EntityTransactionListener;
 import com.haulmont.cuba.security.global.UserSession;
-import org.apache.openjpa.conf.OpenJPAConfiguration;
-import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
-import org.apache.openjpa.jdbc.sql.*;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
@@ -34,10 +36,6 @@ import java.lang.reflect.Proxy;
  */
 @ManagedBean(Persistence.NAME)
 public class PersistenceImpl implements Persistence {
-
-    private DbDialect dbDialect;
-
-    private DbTypeConverter dbTypeConverter;
 
     private volatile boolean softDeletion = true;
 
@@ -80,50 +78,8 @@ public class PersistenceImpl implements Persistence {
     }
 
     @Override
-    public DbDialect getDbDialect() {
-        if (dbDialect == null) {
-            OpenJPAConfiguration configuration = ((OpenJPAEntityManagerFactorySPI) jpaEmf).getConfiguration();
-            if (configuration instanceof JDBCConfiguration) {
-                DBDictionary dictionary = ((JDBCConfiguration) configuration).getDBDictionaryInstance();
-                if (dictionary instanceof HSQLDictionary) {
-                    dbDialect = new HsqlDbDialect();
-                } else if (dictionary instanceof PostgresDictionary) {
-                    dbDialect = new PostgresDbDialect();
-                } else if (dictionary instanceof SQLServerDictionary) {
-                    dbDialect = new MssqlDbDialect();
-                } else if (dictionary instanceof OracleDictionary) {
-                    dbDialect = new OracleDbDialect();
-                } else {
-                    throw new UnsupportedOperationException("Unsupported DBDictionary class: " + dictionary.getClass());
-                }
-            } else {
-                throw new UnsupportedOperationException("Unsupported OpenJPAConfiguration class: " + configuration.getClass());
-            }
-        }
-        return dbDialect;
-    }
-
-    @Override
     public DbTypeConverter getDbTypeConverter() {
-        if (dbTypeConverter == null) {
-            switch (DbmsType.getCurrent()) {
-                case HSQL:
-                    dbTypeConverter = new HSQLTypeConverter();
-                    break;
-                case POSTGRES:
-                    dbTypeConverter = new PostgresTypeConverter();
-                    break;
-                case MSSQL:
-                    dbTypeConverter = new MssqlTypeConverter();
-                    break;
-                case ORACLE:
-                    dbTypeConverter = new OracleTypeConverter();
-                    break;
-                default:
-                    throw new UnsupportedOperationException("Unsupported DBMS type: " + DbmsType.getCurrent());
-            }
-        }
-        return dbTypeConverter;
+        return DbmsSpecificFactory.getDbTypeConverter();
     }
 
     @Override

@@ -8,12 +8,13 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
-import com.haulmont.cuba.core.global.DbDialect;
-import com.haulmont.cuba.core.global.SequenceSupport;
+import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
+import com.haulmont.cuba.core.sys.persistence.SequenceSupport;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
 
 import javax.annotation.ManagedBean;
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -35,11 +36,17 @@ public class UniqueNumbers implements UniqueNumbersAPI {
 
     private Set<String> existingSequences = Collections.synchronizedSet(new HashSet<String>());
 
+    private SequenceSupport sequenceSupport;
+
+    @PostConstruct
+    public void init() {
+        sequenceSupport = DbmsSpecificFactory.getSequenceSupport();
+    }
+
     @Override
     public long getNextNumber(String domain) {
         String seqName = getSequenceName(domain);
-        SequenceSupport support = getSequenceSqlProvider();
-        String sqlScript = support.getNextValueSql(seqName);
+        String sqlScript = sequenceSupport.getNextValueSql(seqName);
 
         return getResult(seqName, sqlScript);
     }
@@ -47,8 +54,7 @@ public class UniqueNumbers implements UniqueNumbersAPI {
     @Override
     public long getCurrentNumber(String domain) {
         String seqName = getSequenceName(domain);
-        SequenceSupport support = getSequenceSqlProvider();
-        String sqlScript = support.getCurrentValueSql(seqName);
+        String sqlScript = sequenceSupport.getCurrentValueSql(seqName);
 
         return getResult(seqName, sqlScript);
     }
@@ -56,8 +62,7 @@ public class UniqueNumbers implements UniqueNumbersAPI {
     @Override
     public void setCurrentNumber(String domain, long value) {
         String seqName = getSequenceName(domain);
-        SequenceSupport support = getSequenceSqlProvider();
-        String sqlScript = support.modifySequenceSql(seqName, value);
+        String sqlScript = sequenceSupport.modifySequenceSql(seqName, value);
 
         Transaction tx = persistence.getTransaction();
         try {
@@ -72,8 +77,7 @@ public class UniqueNumbers implements UniqueNumbersAPI {
     @Override
     public void deleteDbSequence(String domain) {
         String seqName = getSequenceName(domain);
-        SequenceSupport support = getSequenceSqlProvider();
-        String sqlScript = support.deleteSequenceSql(seqName);
+        String sqlScript = sequenceSupport.deleteSequenceSql(seqName);
 
         Transaction tx = persistence.getTransaction();
         try {
@@ -135,11 +139,10 @@ public class UniqueNumbers implements UniqueNumbersAPI {
         try {
             EntityManager em = persistence.getEntityManager();
 
-            SequenceSupport support = getSequenceSqlProvider();
-            Query query = em.createNativeQuery(support.sequenceExistsSql(seqName));
+            Query query = em.createNativeQuery(sequenceSupport.sequenceExistsSql(seqName));
             List list = query.getResultList();
             if (list.isEmpty()) {
-                query = em.createNativeQuery(support.createSequenceSql(seqName, 1, 1));
+                query = em.createNativeQuery(sequenceSupport.createSequenceSql(seqName, 1, 1));
                 query.executeUpdate();
             }
             existingSequences.add(seqName);
@@ -155,13 +158,5 @@ public class UniqueNumbers implements UniqueNumbersAPI {
             throw new IllegalArgumentException("Sequence name can not be blank");
 
         return "seq_un_" + domain;
-    }
-
-    private SequenceSupport getSequenceSqlProvider() {
-        DbDialect dialect = persistence.getDbDialect();
-        if (dialect instanceof SequenceSupport)
-            return (SequenceSupport) dialect;
-        else
-            throw new UnsupportedOperationException("DB sequences not supported");
     }
 }

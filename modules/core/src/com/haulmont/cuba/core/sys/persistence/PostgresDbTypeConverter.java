@@ -5,6 +5,8 @@
 
 package com.haulmont.cuba.core.sys.persistence;
 
+import com.haulmont.cuba.core.global.UuidProvider;
+
 import java.sql.*;
 import java.util.Date;
 import java.util.UUID;
@@ -13,7 +15,8 @@ import java.util.UUID;
  * @author artamonov
  * @version $Id$
  */
-public class HSQLTypeConverter implements DbTypeConverter {
+public class PostgresDbTypeConverter implements DbTypeConverter {
+
     @Override
     public Object getJavaObject(ResultSet resultSet, int columnIndex) throws SQLException {
         Object value;
@@ -23,17 +26,35 @@ public class HSQLTypeConverter implements DbTypeConverter {
         if ((columnIndex > metaData.getColumnCount()) || (columnIndex <= 0))
             throw new IndexOutOfBoundsException("Column index out of bound");
 
-        value = resultSet.getObject(columnIndex);
+        int sqlType = metaData.getColumnType(columnIndex);
+        String typeName = metaData.getColumnTypeName(columnIndex);
+
+        switch (sqlType) {
+            case Types.OTHER:
+                if (resultSet.getObject(columnIndex) instanceof UUID) {
+                    value = resultSet.getObject(columnIndex);
+                } else if ("uuid".equals(typeName)) {
+                    String stringValue = resultSet.getString(columnIndex);
+                    value = stringValue != null ? UuidProvider.fromString(stringValue) : null;
+                } else {
+                    value = resultSet.getObject(columnIndex);
+                }
+                break;
+
+            default:
+                value = resultSet.getObject(columnIndex);
+                break;
+        }
 
         return value;
     }
 
     @Override
-    public Object getSqlObject(Object value) {
+    public Object getSqlObject(Object value) throws SQLException {
         if (value instanceof Date)
             return new Timestamp(((Date) value).getTime());
         if (value instanceof UUID)
-            return value.toString();
+            return new PostgresUUID((UUID) value);
         return value;
     }
 
@@ -41,8 +62,6 @@ public class HSQLTypeConverter implements DbTypeConverter {
     public int getSqlType(Class<?> javaClass) {
         if (javaClass == Date.class)
             return Types.TIMESTAMP;
-        else if (javaClass == UUID.class)
-            return Types.VARCHAR;
         return Types.OTHER;
     }
 }

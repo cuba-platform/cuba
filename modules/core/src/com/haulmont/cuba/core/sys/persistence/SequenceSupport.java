@@ -9,11 +9,13 @@
  * 
  * $Id$
  */
-package com.haulmont.cuba.core.global;
+package com.haulmont.cuba.core.sys.persistence;
 
 /**
- * Interface implemented by {@link com.haulmont.cuba.core.global.DbDialect} implementation
- *  if the underlaying database supports sequences 
+ * Interface defining methods for managing database sequences.
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 public interface SequenceSupport {
 

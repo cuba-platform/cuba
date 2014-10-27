@@ -84,6 +84,21 @@ public class PersistenceManagerClient implements PersistenceManagerService {
         return cacheEntry.maxFetchUI;
     }
 
+    @Override
+    public String getDbmsType() {
+        return service.getDbmsType();
+    }
+
+    @Override
+    public String getDbmsVersion() {
+        return service.getDbmsVersion();
+    }
+
+    @Override
+    public String getUniqueConstraintViolationPattern() {
+        return service.getUniqueConstraintViolationPattern();
+    }
+
     public void clearCache() {
         cache.clear();
     }

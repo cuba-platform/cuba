@@ -5,20 +5,19 @@
 
 package com.haulmont.cuba.core.sys.utils;
 
-import com.haulmont.cuba.core.global.MssqlDbDialect;
-import com.haulmont.cuba.core.global.OracleDbDialect;
-import com.haulmont.cuba.core.global.PostgresDbDialect;
 import com.haulmont.cuba.core.sys.DBNotInitializedException;
 import com.haulmont.cuba.core.sys.DbUpdaterEngine;
 import org.apache.commons.cli.*;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.xml.DOMConfigurator;
 
-import javax.annotation.Nullable;
 import javax.sql.DataSource;
-import java.io.*;
+import java.io.File;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -35,7 +34,7 @@ import java.util.logging.Logger;
  */
 public class DbUpdaterUtil extends DbUpdaterEngine {
 
-    private static Log log = LogFactory.getLog(DbUpdaterEngine.class);
+    private static final Log log = LogFactory.getLog(DbUpdaterUtil.class);
 
     private boolean executeGroovy = true;
 
@@ -52,7 +51,7 @@ public class DbUpdaterUtil extends DbUpdaterEngine {
 
         Option dbConnectionOption = OptionBuilder.withArgName("connectionString")
                 .hasArgs()
-                .withDescription("JDBC Database Url")
+                .withDescription("JDBC Database URL")
                 .isRequired()
                 .create("dbUrl");
 
@@ -79,11 +78,16 @@ public class DbUpdaterUtil extends DbUpdaterEngine {
                 .isRequired()
                 .create("scriptsDir");
 
-        Option dbDialectOption = OptionBuilder.withArgName("dbDialect")
+        Option dbTypeOption = OptionBuilder.withArgName("dbType")
                 .hasArgs()
-                .withDescription("Database dialect: postgres|mssql|oracle")
+                .withDescription("DBMS type: postgres|mssql|oracle|etc")
                 .isRequired()
-                .create("dialect");
+                .create("dbType");
+
+        Option dbVersionOption = OptionBuilder.withArgName("dbVersion")
+                .hasArgs()
+                .withDescription("DBMS version: 2012|etc")
+                .create("dbVersion");
 
         Option dbExecuteGroovyOption = OptionBuilder.withArgName("executeGroovy").
                 hasArgs().
@@ -107,7 +111,8 @@ public class DbUpdaterUtil extends DbUpdaterEngine {
         cliOptions.addOption(dbUserOption);
         cliOptions.addOption(dbPasswordOption);
         cliOptions.addOption(dbDirOption);
-        cliOptions.addOption(dbDialectOption);
+        cliOptions.addOption(dbTypeOption);
+        cliOptions.addOption(dbVersionOption);
         cliOptions.addOption(dbExecuteGroovyOption);
         cliOptions.addOption(showUpdatesOption);
         cliOptions.addOption(applyUpdatesOption);
@@ -117,10 +122,8 @@ public class DbUpdaterUtil extends DbUpdaterEngine {
         HelpFormatter formatter = new HelpFormatter();
         CommandLine cmd;
         try {
-            // parse the command line arguments
             cmd = parser.parse(cliOptions, args);
         } catch (ParseException exp) {
-            // oops, something went wrong
             formatter.printHelp("dbupdate", cliOptions);
             return;
         }
@@ -138,26 +141,12 @@ public class DbUpdaterUtil extends DbUpdaterEngine {
                 return;
             }
 
-            String dbDialectParam = cmd.getOptionValue(dbDialectOption.getOpt());
-
-            switch (dbDialectParam) {
-                case "postgres":
-                    this.dbDialect = new PostgresDbDialect();
-                    break;
-                case "mssql":
-                    this.dbDialect = new MssqlDbDialect();
-                    break;
-                case "oracle":
-                    this.dbDialect = new OracleDbDialect();
-                    break;
-                default:
-                    log.fatal("Unable to determine db dialect");
-                    return;
-            }
+            dbmsType = cmd.getOptionValue(dbTypeOption.getOpt());
+            dbmsVersion = StringUtils.trimToEmpty(cmd.getOptionValue(dbVersionOption.getOpt()));
 
             String dbDriver;
             if (!cmd.hasOption(dbDriverClassOption.getOpt())) {
-                switch (dbDialectParam) {
+                switch (dbmsType) {
                     case "postgres":
                         dbDriver = "org.postgresql.Driver";
                         break;
@@ -168,7 +157,7 @@ public class DbUpdaterUtil extends DbUpdaterEngine {
                         dbDriver = "oracle.jdbc.OracleDriver";
                         break;
                     default:
-                        log.fatal("Unable to determine driver class name by db dialect");
+                        log.fatal("Unable to determine driver class name by DBMS type. Please provide driverClassName option");
                         return;
                 }
             } else {

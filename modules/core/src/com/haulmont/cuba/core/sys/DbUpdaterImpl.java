@@ -7,10 +7,11 @@ package com.haulmont.cuba.core.sys;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.DbDialect;
 import com.haulmont.cuba.core.global.Scripting;
+import com.haulmont.cuba.core.sys.persistence.DbmsType;
 import groovy.lang.Binding;
 import groovy.lang.Closure;
+import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.ManagedBean;
@@ -38,21 +39,21 @@ public class DbUpdaterImpl extends DbUpdaterEngine {
 
     protected Map<Closure, File> postUpdateScripts = new HashMap<>();
 
+    private static final Log log = LogFactory.getLog(DbUpdaterImpl.class);
+
     @Inject
     public void setConfigProvider(Configuration configuration) {
         String dbDirName = configuration.getConfig(ServerConfig.class).getDbDir();
         if (dbDirName != null)
             this.dbDir = new File(dbDirName);
+
+        dbmsType = DbmsType.getType();
+        dbmsVersion = DbmsType.getVersion();
     }
 
     @Override
     public DataSource getDataSource() {
         return persistence.getDataSource();
-    }
-
-    @Override
-    public DbDialect getDbDialect() {
-        return persistence.getDbDialect();
     }
 
     @Override

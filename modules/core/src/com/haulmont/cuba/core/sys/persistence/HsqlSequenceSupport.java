@@ -1,16 +1,15 @@
 /*
- * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Copyright (c) 2008-2014 Haulmont. All rights reserved.
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
-package com.haulmont.cuba.core.global;
+
+package com.haulmont.cuba.core.sys.persistence;
 
 /**
- * HSQLDB dialect.
- *
  * @author krivopustov
  * @version $Id$
  */
-public class HsqlDbDialect extends DbDialect implements SequenceSupport {
+public class HsqlSequenceSupport implements SequenceSupport {
 
     @Override
     public String sequenceExistsSql(String sequenceName) {
@@ -43,25 +42,5 @@ public class HsqlDbDialect extends DbDialect implements SequenceSupport {
     public String getCurrentValueSql(String sequenceName) {
         return "select START_WITH from INFORMATION_SCHEMA.SYSTEM_SEQUENCES where SEQUENCE_NAME = '"
                 + sequenceName.toUpperCase() + "'";
-    }
-
-    @Override
-    public String getDbmsType() {
-        return DBMS_HSQL;
-    }
-
-    @Override
-    public String getIdColumn() {
-        return "ID";
-    }
-
-    @Override
-    public String getDeleteTsColumn() {
-        return "DELETE_TS";
-    }
-
-    @Override
-    public String getUniqueConstraintViolationPattern() {
-        return "Violation of unique index (.+): duplicate value\\(s\\) for column\\(s\\) (.+) in statement";
     }
 }

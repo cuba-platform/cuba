@@ -5,7 +5,7 @@
 
 package com.haulmont.cuba.core.global;
 
-import com.haulmont.cuba.core.app.DataService;
+import com.haulmont.cuba.core.app.PersistenceManagerService;
 import com.haulmont.cuba.core.config.type.TypeFactory;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -24,8 +24,8 @@ public class UniqueConstraintViolationPatternFactory extends TypeFactory {
     public Object build(String value) {
         Messages messages = AppBeans.get(Messages.NAME);
         Log log = LogFactory.getLog(getClass());
-        DataService dataService = AppBeans.get(DataService.NAME);
-        String defaultConstraintViolationPattern = dataService.getDbDialect().getUniqueConstraintViolationPattern();
+        PersistenceManagerService pmService = AppBeans.get(PersistenceManagerService.NAME);
+        String defaultConstraintViolationPattern = pmService.getUniqueConstraintViolationPattern();
         Pattern constraintViolationPattern;
 
         if (StringUtils.isBlank(value)) {

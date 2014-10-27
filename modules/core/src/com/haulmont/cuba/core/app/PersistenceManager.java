@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.entity.EntityStatistics;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
 import com.haulmont.cuba.core.sys.persistence.DbmsType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -93,7 +94,7 @@ public class PersistenceManager implements PersistenceManagerAPI {
                 conn = datasource.getConnection();
                 DatabaseMetaData metaData = conn.getMetaData();
 
-                String schema = DbmsType.getCurrent() == DbmsType.ORACLE ? metaData.getUserName() : null;
+                String schema = "oracle".equals(DbmsType.getType()) ? metaData.getUserName() : null;
                 log.trace("[initSoftDeleteTables] schema=" + schema);
 
                 ResultSet tables = metaData.getTables(null, schema, null, new String[]{"TABLE"});
@@ -102,7 +103,7 @@ public class PersistenceManager implements PersistenceManagerAPI {
                     log.trace("[initSoftDeleteTables] found table " + table);
 
                     if (table != null) {
-                        String deleteTsColumn = persistence.getDbDialect().getDeleteTsColumn();
+                        String deleteTsColumn = DbmsSpecificFactory.getDbmsFeatures().getDeleteTsColumn();
                         ResultSet columns = metaData.getColumns(null, schema, table, deleteTsColumn);
                         if (columns.next()) {
                             log.trace("[initSoftDeleteTables] table " + table + " has column " + deleteTsColumn);

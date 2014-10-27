@@ -5,7 +5,7 @@
 
 package com.haulmont.cuba.core.sys;
 
-import com.haulmont.cuba.core.sys.persistence.DbmsType;
+import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -55,10 +55,11 @@ public class CubaOpenJpaDialect extends OpenJpaDialect {
             log.trace("Applying query timeout " + timeoutMs + "ms");
             entityManager.setProperty("javax.persistence.query.timeout", timeoutMs);
 
-            if (DbmsType.getCurrent() == DbmsType.POSTGRES) {
+            String s = DbmsSpecificFactory.getDbmsFeatures().getTransactionTimeoutStatement();
+            if (s != null) {
                 Connection connection = (Connection) ((OpenJPAEntityManager) entityManager).getConnection();
                 try (Statement statement = connection.createStatement()) {
-                    statement.execute("set local statement_timeout to " + timeoutMs);
+                    statement.execute(String.format(s, timeoutMs));
                 }
             }
         }

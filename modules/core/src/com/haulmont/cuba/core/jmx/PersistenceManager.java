@@ -17,6 +17,7 @@ import com.haulmont.cuba.core.global.QueryParser;
 import com.haulmont.cuba.core.global.QueryTransformerFactory;
 import com.haulmont.cuba.core.sys.DBNotInitializedException;
 import com.haulmont.cuba.core.sys.DbUpdater;
+import com.haulmont.cuba.core.sys.persistence.DbmsType;
 import com.haulmont.cuba.security.app.Authenticated;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -65,6 +66,16 @@ public class PersistenceManager implements PersistenceManagerMBean {
     public void setConfiguration(Configuration configuration) {
         persistenceConfig = configuration.getConfig(PersistenceConfig.class);
         serverConfig = configuration.getConfig(ServerConfig.class);
+    }
+
+    @Override
+    public String getDbmsType() {
+        return DbmsType.getType();
+    }
+
+    @Override
+    public String getDbmsVersion() {
+        return DbmsType.getVersion();
     }
 
     @Override

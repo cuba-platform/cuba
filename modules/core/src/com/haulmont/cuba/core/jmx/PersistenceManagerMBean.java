@@ -18,6 +18,9 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 @ManagedResource(description = "Manages entity statistics and updates database")
 public interface PersistenceManagerMBean {
 
+    String getDbmsType();
+    String getDbmsVersion();
+
     int getDefaultLookupScreenThreshold();
     void setDefaultLookupScreenThreshold(int value);
 

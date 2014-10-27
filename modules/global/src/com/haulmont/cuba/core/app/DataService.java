@@ -6,7 +6,6 @@ package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.CommitContext;
-import com.haulmont.cuba.core.global.DbDialect;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.NotDetachedCommitContext;
 
@@ -25,12 +24,6 @@ import java.util.Set;
 public interface DataService {
 
     String NAME = "cuba_DataService";
-
-    /**
-     * Get current database dialect
-     * @return  DbDialect instance
-     */
-    DbDialect getDbDialect();
 
     /**
      * Commit a collection of new or detached entity instances to the database.

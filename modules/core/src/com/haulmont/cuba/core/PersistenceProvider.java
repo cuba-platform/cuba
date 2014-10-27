@@ -6,7 +6,6 @@ package com.haulmont.cuba.core;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.DbDialect;
 import com.haulmont.cuba.core.sys.EntityManagerContext;
 
 import javax.annotation.Nonnull;
@@ -25,15 +24,6 @@ public abstract class PersistenceProvider {
 
     private static Persistence getPersistence() {
         return AppBeans.get(Persistence.NAME, Persistence.class);
-    }
-
-    /**
-     * The DB dialect instance.
-     *
-     * @return dialect
-     */
-    public static DbDialect getDbDialect() {
-        return getPersistence().getDbDialect();
     }
 
     /**

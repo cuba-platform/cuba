@@ -7,7 +7,10 @@ package com.haulmont.cuba.gui.data.impl;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.CommitContext;
+import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.core.global.NotDetachedCommitContext;
+import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.data.DataSupplier;
 
 import javax.annotation.Nonnull;
@@ -26,11 +29,6 @@ public class TestDataSupplier implements DataSupplier {
     int commitCount;
 
     CommitValidator commitValidator;
-
-    @Override
-    public DbDialect getDbDialect() {
-        return null;
-    }
 
     @Override
     public Set<Entity> commit(CommitContext context) {

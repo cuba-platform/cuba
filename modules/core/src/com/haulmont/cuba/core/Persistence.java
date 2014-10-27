@@ -5,7 +5,6 @@
 
 package com.haulmont.cuba.core;
 
-import com.haulmont.cuba.core.global.DbDialect;
 import com.haulmont.cuba.core.sys.EntityManagerContext;
 import com.haulmont.cuba.core.sys.persistence.DbTypeConverter;
 
@@ -27,13 +26,6 @@ public interface Persistence {
      * @return  PersistenceTools instance
      */
     <T extends PersistenceTools> T getTools();
-
-    /**
-     * The DB dialect instance.
-     *
-     * @return dialect
-     */
-    DbDialect getDbDialect();
 
     /**
      * Returns DbTypeConverter for the current DBMS.

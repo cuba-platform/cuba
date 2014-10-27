@@ -27,7 +27,7 @@ public final class DBDictionaryUtils {
         Persistence persistence = AppBeans.get(Persistence.NAME);
         PersistenceManagerAPI persistenceManager = AppBeans.get(PersistenceManagerAPI.NAME);
 
-        String deleteTsCol = persistence.getDbDialect().getDeleteTsColumn();
+        String deleteTsCol = DbmsSpecificFactory.getDbmsFeatures().getDeleteTsColumn();
 
         ForeignKey fk = join.getForeignKey();
         if (fk == null)
@@ -103,8 +103,8 @@ public final class DBDictionaryUtils {
         Persistence persistence = AppBeans.get(Persistence.NAME);
         PersistenceManagerAPI persistenceManager = AppBeans.get(PersistenceManagerAPI.NAME);
 
-        final String deleteTsCol = persistence.getDbDialect().getDeleteTsColumn();
-        final String idCol = persistence.getDbDialect().getIdColumn();
+        final String deleteTsCol = DbmsSpecificFactory.getDbmsFeatures().getDeleteTsColumn();
+        final String idCol = DbmsSpecificFactory.getDbmsFeatures().getIdColumn();
 
         Joins joins = sel.getJoins();
         if (sel.getJoinSyntax() == JoinSyntaxes.SYNTAX_SQL92

@@ -8,9 +8,7 @@ package com.haulmont.cuba.core.sys;
 import com.haulmont.bali.db.DbUtils;
 import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.bali.db.ResultSetHandler;
-import com.haulmont.cuba.core.global.DbDialect;
-import com.haulmont.cuba.core.global.MssqlDbDialect;
-import com.haulmont.cuba.core.sys.persistence.DbmsType;
+import com.haulmont.cuba.core.sys.persistence.DbmsSpecificFactory;
 import groovy.lang.Binding;
 import groovy.lang.Closure;
 import groovy.util.GroovyScriptEngine;
@@ -46,12 +44,13 @@ public class DbUpdaterEngine implements DbUpdater {
 
     private static final String GROOVY_EXTENSION = "groovy";
 
-    protected static final Log log = LogFactory.getLog(DbUpdaterEngine.class);
+    private static final Log log = LogFactory.getLog(DbUpdaterEngine.class);
 
     protected DataSource dataSource;
-    protected File dbDir;
 
-    protected DbDialect dbDialect;
+    protected File dbDir;
+    protected String dbmsType;
+    protected String dbmsVersion;
 
     protected boolean changelogTableExists = false;
 
@@ -80,16 +79,13 @@ public class DbUpdaterEngine implements DbUpdater {
         return dataSource;
     }
 
-    public DbDialect getDbDialect() {
-        return dbDialect;
-    }
-
     protected void createChangelogTable() {
+        String timeStampType = DbmsSpecificFactory.getDbmsFeatures().getTimeStampType();
         QueryRunner runner = new QueryRunner(getDataSource());
         try {
             runner.update("create table SYS_DB_CHANGELOG(" +
                     "SCRIPT_NAME varchar(300) not null primary key, " +
-                    "CREATE_TS " + (getDbDialect() instanceof MssqlDbDialect ? "datetime" : "timestamp") + " default current_timestamp, " +
+                    "CREATE_TS " + timeStampType + " default current_timestamp, " +
                     "IS_INIT integer default 0)");
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -135,6 +131,7 @@ public class DbUpdaterEngine implements DbUpdater {
         return scripts;
     }
 
+    @SuppressWarnings("unchecked")
     protected List<File> getUpdateScripts() {
         List<File> databaseScripts = new ArrayList<>();
         List<File> additionalScripts = new ArrayList<>();
@@ -145,9 +142,30 @@ public class DbUpdaterEngine implements DbUpdater {
             for (String moduleDirName : moduleDirs) {
                 File moduleDir = new File(dbDir, moduleDirName);
                 File initDir = new File(moduleDir, "update");
-                File scriptDir = new File(initDir, getDbDialect().getDbmsType());
+                File scriptDir = new File(initDir, dbmsType);
                 if (scriptDir.exists()) {
-                    Collection list = FileUtils.listFiles(scriptDir, null, true);
+                    List<File> list = new ArrayList(FileUtils.listFiles(scriptDir, null, true));
+
+                    if (!StringUtils.isEmpty(dbmsVersion)) {
+                        File optScriptDir = new File(initDir, dbmsType + "-" + dbmsVersion);
+                        if (optScriptDir.exists()) {
+                            Map<String, File> files = new HashMap<>();
+                            for (File file : list) {
+                                files.put(scriptDir.toURI().relativize(file.toURI()).getPath(), file);
+                            }
+
+                            Collection<File> optList = FileUtils.listFiles(optScriptDir, null, true);
+                            Map<String, File> optFiles = new HashMap<>();
+                            for (File optFile : optList) {
+                                optFiles.put(optScriptDir.toURI().relativize(optFile.toURI()).getPath(), optFile);
+                            }
+
+                            files.putAll(optFiles);
+                            list.clear();
+                            list.addAll(files.values());
+                        }
+                    }
+
                     URI scriptDirUri = scriptDir.toURI();
 
                     List<File> updateFiles = getScriptsByExtension(list, scriptDirUri, extensionHandlers.keySet());
@@ -415,16 +433,46 @@ public class DbUpdaterEngine implements DbUpdater {
             for (String moduleDirName : moduleDirs) {
                 File moduleDir = new File(dbDir, moduleDirName);
                 File initDir = new File(moduleDir, "init");
-                File scriptDir = new File(initDir, DbmsType.getCurrent().getId());
+                File scriptDir = new File(initDir, dbmsType);
                 if (scriptDir.exists()) {
-                    File[] scriptFiles = scriptDir.listFiles(new FilenameFilter() {
+                    FilenameFilter filenameFilter = new FilenameFilter() {
                         @Override
                         public boolean accept(File dir, String name) {
                             return name.endsWith("create-db.sql");
                         }
+                    };
+                    File[] scriptFiles = scriptDir.listFiles(filenameFilter);
+
+                    List<File> list = new ArrayList<>(Arrays.asList(scriptFiles));
+
+                    if (!StringUtils.isEmpty(dbmsVersion)) {
+                        File optScriptDir = new File(initDir, dbmsType + "-" + dbmsVersion);
+                        if (optScriptDir.exists()) {
+                            File[] optFiles = optScriptDir.listFiles(filenameFilter);
+
+                            Map<String, File> filesMap = new HashMap<>();
+                            for (File file : scriptFiles) {
+                                filesMap.put(scriptDir.toURI().relativize(file.toURI()).getPath(), file);
+                            }
+
+                            Map<String, File> optFilesMap = new HashMap<>();
+                            for (File optFile : optFiles) {
+                                optFilesMap.put(optScriptDir.toURI().relativize(optFile.toURI()).getPath(), optFile);
+                            }
+
+                            filesMap.putAll(optFilesMap);
+                            list.clear();
+                            list.addAll(filesMap.values());
+                        }
+                    }
+
+                    Collections.sort(list, new Comparator<File>() {
+                        @Override
+                        public int compare(File f1, File f2) {
+                            return f1.getName().compareTo(f2.getName());
+                        }
                     });
-                    Arrays.sort(scriptFiles);
-                    files.addAll(Arrays.asList(scriptFiles));
+                    files.addAll(list);
                 }
             }
         }
