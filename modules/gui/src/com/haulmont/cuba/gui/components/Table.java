@@ -64,8 +64,8 @@ public interface Table
     void setColumnWidth(String columnId, int width);
     void setColumnWidth(Table.Column column, int width);
 
-    void setColumnAlignment(String columnId, ColumnAlignment columnAlignment);
-    void setColumnAlignment(Column column, ColumnAlignment columnAlignment);
+    void setColumnAlignment(String columnId, ColumnAlignment alignment);
+    void setColumnAlignment(Column column, ColumnAlignment alignment);
 
     void setItemClickAction(Action action);
     Action getItemClickAction();

@@ -194,12 +194,12 @@ public class WebComponentsHelper {
         }
     }
 
-    public static Table.Align convertColumnAlignment(com.haulmont.cuba.gui.components.Table.ColumnAlignment columnAlignment) {
-        if (columnAlignment == null) {
+    public static Table.Align convertColumnAlignment(com.haulmont.cuba.gui.components.Table.ColumnAlignment alignment) {
+        if (alignment == null) {
             return null;
         }
 
-        switch (columnAlignment) {
+        switch (alignment) {
             case LEFT:
                 return Table.Align.LEFT;
             case CENTER:

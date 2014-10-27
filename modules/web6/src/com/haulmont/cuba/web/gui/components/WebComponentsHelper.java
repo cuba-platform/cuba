@@ -313,12 +313,12 @@ public class WebComponentsHelper {
         button.setClickShortcut(closeCode, closeModifiers);
     }
 
-    public static String convertColumnAlignment(com.haulmont.cuba.gui.components.Table.ColumnAlignment columnAlignment) {
-        if (columnAlignment == null) {
+    public static String convertColumnAlignment(com.haulmont.cuba.gui.components.Table.ColumnAlignment alignment) {
+        if (alignment == null) {
             return null;
         }
 
-        switch (columnAlignment) {
+        switch (alignment) {
             case LEFT:
                 return com.vaadin.ui.Table.ALIGN_LEFT;
             case CENTER:

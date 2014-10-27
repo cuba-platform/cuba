@@ -1418,22 +1418,22 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     }
 
     @Override
-    public void setColumnAlignment(Column column, ColumnAlignment columnAlignment) {
+    public void setColumnAlignment(Column column, ColumnAlignment alignment) {
         checkNotNullArgument(column, "column must be non null");
 
-        if (column.getAlignment() != columnAlignment) {
-            column.setAlignment(columnAlignment);
+        if (column.getAlignment() != alignment) {
+            column.setAlignment(alignment);
         }
     }
 
     @Override
-    public void setColumnAlignment(String columnId, ColumnAlignment columnAlignment) {
+    public void setColumnAlignment(String columnId, ColumnAlignment alignment) {
         Column column = getColumn(columnId);
         if (column == null) {
             throw new IllegalStateException(String.format("Column with id '%s' not found", columnId));
         }
 
-        setColumnAlignment(column, columnAlignment);
+        setColumnAlignment(column, alignment);
     }
 
     @Override
