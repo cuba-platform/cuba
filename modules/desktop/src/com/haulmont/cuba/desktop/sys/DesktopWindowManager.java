@@ -565,23 +565,24 @@ public class DesktopWindowManager extends WindowManager {
                 dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
         }
 
-        boolean modal = true;
-        if (!hasModalWindow() && dialogParams.getModal() != null) {
-            modal = dialogParams.getModal();
-        }
-        dialog.setModal(modal);
-
         dialogParams.reset();
 
         dialog.setMinimumSize(dim);
         dialog.pack();
         dialog.setLocationRelativeTo(frame);
 
-        DialogWindow lastDialogWindow = getLastDialogWindow();
-        if (lastDialogWindow == null)
-            frame.deactivate(null);
-        else
-            lastDialogWindow.disableWindow(null);
+        boolean modal = true;
+        if (!hasModalWindow() && dialogParams.getModal() != null) {
+            modal = dialogParams.getModal();
+        }
+
+        if (modal) {
+            DialogWindow lastDialogWindow = getLastDialogWindow();
+            if (lastDialogWindow == null)
+                frame.deactivate(null);
+            else
+                lastDialogWindow.disableWindow(null);
+        }
 
         dialog.setVisible(true);
 
