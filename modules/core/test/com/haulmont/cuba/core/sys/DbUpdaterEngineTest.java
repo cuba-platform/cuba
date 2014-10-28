@@ -93,6 +93,10 @@ public class DbUpdaterEngineTest extends CubaTestCase {
 
         dir = new File(dbmsDir, "50-app/update/mssql/14");
         dir.mkdirs();
+        file = new File(dir, "app-update-0.sql");
+        file.createNewFile();
+        mssqlUpdateFiles.add(file);
+        mssql2012UpdateFiles.add(file);
         file = new File(dir, "app-update-1.sql");
         file.createNewFile();
         mssqlUpdateFiles.add(file);

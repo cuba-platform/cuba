@@ -14,8 +14,6 @@ import groovy.lang.Closure;
 import groovy.util.GroovyScriptEngine;
 import groovy.util.ResourceException;
 import groovy.util.ScriptException;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -28,7 +26,7 @@ import javax.sql.DataSource;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.net.URI;
+import java.nio.file.Path;
 import java.sql.*;
 import java.util.*;
 
@@ -92,49 +90,11 @@ public class DbUpdaterEngine implements DbUpdater {
         }
     }
 
-    protected List<File> getScriptsByExtension(Collection files, final URI scriptDirUri,
-                                               final Collection<String> extensions) {
-        if (extensions == null)
-            return Collections.emptyList();
-
-        Collection scriptsCollection = CollectionUtils.select(files, new Predicate() {
-            @Override
-            public boolean evaluate(Object object) {
-                File file = (File) object;
-                for (String ext : extensions) {
-                    if (ext.equals(FilenameUtils.getExtension(file.getName())))
-                        return true;
-                }
-                return false;
-            }
-        });
-        // noinspection unchecked
-        List<File> scripts = new ArrayList<File>(scriptsCollection);
-        Collections.sort(scripts, new Comparator<File>() {
-            @Override
-            public int compare(File f1, File f2) {
-                File f1Parent = f1.getAbsoluteFile().getParentFile();
-                File f2Parent = f2.getAbsoluteFile().getParentFile();
-                if (f1Parent.equals(f2Parent)) {
-                    String f1Name = FilenameUtils.getBaseName(f1.getName());
-                    String f2Name = FilenameUtils.getBaseName(f2.getName());
-
-                    return f1Name.compareTo(f2Name);
-                }
-
-                URI f1Uri = scriptDirUri.relativize(f1.toURI());
-                URI f2Uri = scriptDirUri.relativize(f2.toURI());
-
-                return f1Uri.getPath().compareTo(f2Uri.getPath());
-            }
-        });
-        return scripts;
-    }
-
-    @SuppressWarnings("unchecked")
     protected List<File> getUpdateScripts() {
         List<File> databaseScripts = new ArrayList<>();
         List<File> additionalScripts = new ArrayList<>();
+
+        String[] extensions = extensionHandlers.keySet().toArray(new String[extensionHandlers.size()]);
 
         if (dbDir.exists()) {
             String[] moduleDirs = dbDir.list();
@@ -144,33 +104,56 @@ public class DbUpdaterEngine implements DbUpdater {
                 File initDir = new File(moduleDir, "update");
                 File scriptDir = new File(initDir, dbmsType);
                 if (scriptDir.exists()) {
-                    List<File> list = new ArrayList(FileUtils.listFiles(scriptDir, null, true));
+                    //noinspection unchecked
+                    List<File> list = new ArrayList(FileUtils.listFiles(scriptDir, extensions, true));
+                    final Map<File, File> file2dir = new HashMap<>();
+                    for (File file : list) {
+                        file2dir.put(file, scriptDir);
+                    }
 
                     if (!StringUtils.isEmpty(dbmsVersion)) {
                         File optScriptDir = new File(initDir, dbmsType + "-" + dbmsVersion);
                         if (optScriptDir.exists()) {
-                            Map<String, File> files = new HashMap<>();
+                            Map<String, File> filesMap = new HashMap<>();
                             for (File file : list) {
-                                files.put(scriptDir.toURI().relativize(file.toURI()).getPath(), file);
+                                filesMap.put(scriptDir.toPath().relativize(file.toPath()).toString(), file);
                             }
 
-                            Collection<File> optList = FileUtils.listFiles(optScriptDir, null, true);
-                            Map<String, File> optFiles = new HashMap<>();
+                            //noinspection unchecked
+                            Collection<File> optList = FileUtils.listFiles(optScriptDir, extensions, true);
                             for (File optFile : optList) {
-                                optFiles.put(optScriptDir.toURI().relativize(optFile.toURI()).getPath(), optFile);
+                                file2dir.put(optFile, optScriptDir);
+                            }
+                            Map<String, File> optFilesMap = new HashMap<>();
+                            for (File optFile : optList) {
+                                optFilesMap.put(optScriptDir.toPath().relativize(optFile.toPath()).toString(), optFile);
                             }
 
-                            files.putAll(optFiles);
+                            filesMap.putAll(optFilesMap);
                             list.clear();
-                            list.addAll(files.values());
+                            list.addAll(filesMap.values());
                         }
                     }
 
-                    URI scriptDirUri = scriptDir.toURI();
+                    Collections.sort(list, new Comparator<File>() {
+                        @Override
+                        public int compare(File f1, File f2) {
+                            File f1Parent = f1.getAbsoluteFile().getParentFile();
+                            File f2Parent = f2.getAbsoluteFile().getParentFile();
+                            if (f1Parent.equals(f2Parent)) {
+                                String f1Name = FilenameUtils.getBaseName(f1.getName());
+                                String f2Name = FilenameUtils.getBaseName(f2.getName());
+                                return f1Name.compareTo(f2Name);
+                            }
+                            File dir1 = file2dir.get(f1);
+                            File dir2 = file2dir.get(f2);
+                            Path p1 = dir1.toPath().relativize(f1.toPath());
+                            Path p2 = dir2.toPath().relativize(f2.toPath());
+                            return p1.compareTo(p2);
+                        }
+                    });
 
-                    List<File> updateFiles = getScriptsByExtension(list, scriptDirUri, extensionHandlers.keySet());
-
-                    databaseScripts.addAll(updateFiles);
+                    databaseScripts.addAll(list);
                 }
             }
         }
@@ -452,12 +435,12 @@ public class DbUpdaterEngine implements DbUpdater {
 
                             Map<String, File> filesMap = new HashMap<>();
                             for (File file : scriptFiles) {
-                                filesMap.put(scriptDir.toURI().relativize(file.toURI()).getPath(), file);
+                                filesMap.put(scriptDir.toPath().relativize(file.toPath()).toString(), file);
                             }
 
                             Map<String, File> optFilesMap = new HashMap<>();
                             for (File optFile : optFiles) {
-                                optFilesMap.put(optScriptDir.toURI().relativize(optFile.toURI()).getPath(), optFile);
+                                optFilesMap.put(optScriptDir.toPath().relativize(optFile.toPath()).toString(), optFile);
                             }
 
                             filesMap.putAll(optFilesMap);
