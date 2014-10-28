@@ -332,7 +332,8 @@ public class EntityInspectorEditor extends AbstractWindow {
     private Entity loadSingleItem(MetaClass meta, Object id, View view) {
         LoadContext ctx = new LoadContext(meta);
         ctx.setView(view);
-        String query = String.format("select e from %s e where e.id = :id", meta.getName());
+        String primaryKeyName = metadata.getTools().getPrimaryKeyName(meta);
+        String query = String.format("select e from %s e where e.%s = :id", meta.getName(), primaryKeyName);
         LoadContext.Query q = ctx.setQueryString(query);
         q.setParameter("id", id);
         return dataSupplier.load(ctx);
@@ -350,6 +351,8 @@ public class EntityInspectorEditor extends AbstractWindow {
 
         contentPane.add(fieldGroup);
         fieldGroup.setFrame(frame);
+        MetadataTools tools = metadata.getTools();
+        MetaProperty primaryKeyProperty = tools.getPrimaryKeyProperty(metaClass);
         for (MetaProperty metaProperty : metaClass.getProperties()) {
             boolean isRequired = isRequired(metaProperty);
             boolean isReadonly = metaProperty.isReadOnly();
@@ -357,14 +360,16 @@ public class EntityInspectorEditor extends AbstractWindow {
                 case DATATYPE:
                 case ENUM:
                     //skip system properties
-                    if (metadata.getTools().isSystem(metaProperty) && !showSystemFields) {
+                    boolean idInclude = primaryKeyProperty.equals(metaProperty) && String.class.equals(metaProperty.getJavaType());
+                    if (tools.isSystem(metaProperty) && !showSystemFields && !idInclude) {
                         continue;
                     }
                     if (metaProperty.getType() != MetaProperty.Type.ENUM
                             && (isByteArray(metaProperty) || isUuid(metaProperty)))  {
                         continue;
                     }
-                    addField(metaClass, metaProperty, item, fieldGroup, isRequired, false, isReadonly, customFields);
+                    addField(metaClass, metaProperty, item, fieldGroup, isRequired, false,
+                            (isReadonly || (idInclude && !isNew)), customFields);
                     break;
                 case COMPOSITION:
                 case ASSOCIATION:
