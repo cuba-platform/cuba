@@ -188,7 +188,7 @@ public class EntityLog implements EntityLogAPI {
             item.setUser(user);
             item.setType(EntityLogItem.Type.CREATE);
             item.setEntity(entityName);
-            item.setEntityId((UUID) entity.getId());
+            item.setEntityId(entity.getUuid());
 
             Properties properties = new Properties();
             for (String attr : attributes) {
@@ -239,7 +239,7 @@ public class EntityLog implements EntityLogAPI {
                 item.setUser(user);
                 item.setType(EntityLogItem.Type.MODIFY);
                 item.setEntity(entityName);
-                item.setEntityId((UUID) entity.getId());
+                item.setEntityId(entity.getUuid());
                 item.setChanges(getChanges(properties));
                 em.persist(item);
             }
@@ -300,7 +300,7 @@ public class EntityLog implements EntityLogAPI {
             item.setUser(user);
             item.setType(EntityLogItem.Type.DELETE);
             item.setEntity(entityName);
-            item.setEntityId((UUID) entity.getId());
+            item.setEntityId(entity.getUuid());
 
             Properties properties = new Properties();
             for (String attr : attributes) {
