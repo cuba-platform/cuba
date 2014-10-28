@@ -17,6 +17,8 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
 import java.lang.reflect.Constructor;
@@ -33,6 +35,8 @@ public abstract class AbstractTableLoader extends ComponentLoader {
 
     protected ComponentsFactory factory;
     protected LayoutLoaderConfig config;
+
+    private Log log = LogFactory.getLog(getClass());
 
     public AbstractTableLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
         super(context);
@@ -85,7 +89,14 @@ public abstract class AbstractTableLoader extends ComponentLoader {
                     "Table ID", element.attributeValue("id"));
         }
 
-        final String rowHeaderMode = rowsElement.attributeValue("headerMode");
+        String rowHeaderMode = rowsElement.attributeValue("rowHeaderMode");
+        if (StringUtils.isBlank(rowHeaderMode)) {
+            rowHeaderMode = rowsElement.attributeValue("headerMode");
+            if (StringUtils.isNotBlank(rowHeaderMode)) {
+                log.warn("Attribute headerMode is deprecated. Use rowHeaderMode.");
+            }
+        }
+
         if (!StringUtils.isEmpty(rowHeaderMode)) {
             component.setRowHeaderMode(Table.RowHeaderMode.valueOf(rowHeaderMode));
         }
