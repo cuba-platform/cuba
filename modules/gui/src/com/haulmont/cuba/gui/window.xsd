@@ -115,7 +115,7 @@
         </xs:restriction>
     </xs:simpleType>
 
-    <xs:simpleType name="rowHeaderModeType">
+    <xs:simpleType name="rowHeaderMode">
         <xs:restriction base="xs:string">
             <xs:enumeration value="NONE"/>
             <xs:enumeration value="ICON"/>
@@ -362,7 +362,7 @@
 
     <xs:complexType name="tableRowsType">
         <xs:attribute name="datasource" type="xs:string" use="required"/>
-        <xs:attribute name="rowHeaderMode" type="rowHeaderModeType"/>
+        <xs:attribute name="rowHeaderMode" type="rowHeaderMode"/>
     </xs:complexType>
 
     <xs:complexType name="tableColumnsList">
