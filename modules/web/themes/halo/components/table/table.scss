@@ -59,4 +59,12 @@
       margin-right: 0;
     }
   }
+
+  .#{$primary-stylename} [class*="-row"].v-selected {
+    $font-color: valo-font-color($v-selection-color, 0.9);
+    .v-button-link,
+    .v-link {
+      color: $font-color;
+    }
+  }
 }
