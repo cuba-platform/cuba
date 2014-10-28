@@ -10,9 +10,7 @@ import com.haulmont.chile.core.datatypes.impl.UUIDDatatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.core.entity.CategorizedEntity;
-import com.haulmont.cuba.core.entity.Category;
-import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowParam;
@@ -30,6 +28,7 @@ import org.apache.openjpa.persistence.jdbc.EmbeddedMapping;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.persistence.Column;
 import javax.persistence.ManyToOne;
@@ -353,6 +352,7 @@ public class EntityInspectorEditor extends AbstractWindow {
         fieldGroup.setFrame(frame);
         MetadataTools tools = metadata.getTools();
         MetaProperty primaryKeyProperty = tools.getPrimaryKeyProperty(metaClass);
+        Class baseIdType = getBaseIdType(metaClass);
         for (MetaProperty metaProperty : metaClass.getProperties()) {
             boolean isRequired = isRequired(metaProperty);
             boolean isReadonly = metaProperty.isReadOnly();
@@ -360,16 +360,19 @@ public class EntityInspectorEditor extends AbstractWindow {
                 case DATATYPE:
                 case ENUM:
                     //skip system properties
-                    boolean idInclude = primaryKeyProperty.equals(metaProperty) && String.class.equals(metaProperty.getJavaType());
-                    if (tools.isSystem(metaProperty) && !showSystemFields && !idInclude) {
+                    boolean includeId = primaryKeyProperty.equals(metaProperty) && !BaseUuidEntity.class.equals(baseIdType);
+                    if (tools.isSystem(metaProperty) && !showSystemFields && !includeId) {
                         continue;
                     }
                     if (metaProperty.getType() != MetaProperty.Type.ENUM
-                            && (isByteArray(metaProperty) || isUuid(metaProperty)))  {
+                            && (isByteArray(metaProperty) || isUuid(metaProperty))) {
                         continue;
                     }
-                    addField(metaClass, metaProperty, item, fieldGroup, isRequired, false,
-                            (isReadonly || (idInclude && !isNew)), customFields);
+
+                    if ((includeId && (!BaseStringIdEntity.class.equals(baseIdType) || !isNew))) {
+                        isReadonly = true;
+                    }
+                    addField(metaClass, metaProperty, item, fieldGroup, isRequired, false, isReadonly, customFields);
                     break;
                 case COMPOSITION:
                 case ASSOCIATION:
@@ -391,6 +394,25 @@ public class EntityInspectorEditor extends AbstractWindow {
         fieldGroup.setDatasource(datasource);
         createCustomFields(fieldGroup, customFields);
         fieldGroup.setBorderVisible(true);
+    }
+
+    @Nullable
+    private Class getBaseIdType(MetaClass metaClass) {
+        Class curClass = metaClass.getJavaClass();
+        while (curClass != null) {
+            if (curClass.equals(BaseUuidEntity.class)) {
+                return BaseUuidEntity.class;
+            } else if (curClass.equals(BaseStringIdEntity.class)) {
+                return BaseStringIdEntity.class;
+            } else if (curClass.equals(BaseIntegerIdEntity.class)) {
+                return BaseIntegerIdEntity.class;
+            } else if (curClass.equals(BaseLongIdEntity.class)) {
+                return BaseLongIdEntity.class;
+            } else {
+                curClass = curClass.getSuperclass();
+            }
+        }
+        return null;
     }
 
     /**
