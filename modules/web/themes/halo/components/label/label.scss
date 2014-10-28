@@ -7,6 +7,10 @@
 
 @mixin halo-label($primary-stylename: v-label) {
   .#{$primary-stylename} {
+    font-size: $v-font-size;
+  }
+
+  .#{$primary-stylename} {
     word-wrap: break-word;
     overflow-wrap: break-word;
   }

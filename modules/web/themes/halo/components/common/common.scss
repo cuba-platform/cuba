@@ -28,10 +28,8 @@
     font-size: 0;
   }
 
-  .v-table,
-  .v-table-body,
-  .v-button,
-  .v-label {
+  // calendar uses font size in em
+  .v-calendar {
     font-size: $v-font-size;
   }
 }

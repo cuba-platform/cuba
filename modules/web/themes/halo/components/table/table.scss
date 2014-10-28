@@ -6,6 +6,12 @@
 // Version: $Id$
 
 @mixin halo-table($primary-stylename: v-table) {
+
+  .#{$primary-stylename},
+  .#{$primary-stylename}-body {
+    font-size: $v-font-size;
+  }
+
   .#{$primary-stylename}-cell-content.boolean-cell-true .#{$primary-stylename}-cell-wrapper,
   .#{$primary-stylename}-cell-content.boolean-cell-false .#{$primary-stylename}-cell-wrapper {
     color: transparent;

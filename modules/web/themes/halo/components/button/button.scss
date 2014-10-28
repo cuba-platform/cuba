@@ -7,6 +7,10 @@
 
 @mixin halo-button($primary-stylename: v-button) {
 
+  .#{$primary-stylename} {
+    font-size: $v-font-size;
+  }
+
   .#{$primary-stylename}-link {
     padding-left: 0;
     padding-right: 0;
