@@ -234,7 +234,7 @@ public class TransactionTest extends CubaTestCase {
     }
 
     public void testSuspendRollback() {
-        Transaction tx = persistence.getTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
             Server server = new Server();

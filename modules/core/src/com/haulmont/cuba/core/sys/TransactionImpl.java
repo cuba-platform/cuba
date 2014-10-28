@@ -89,7 +89,7 @@ public class TransactionImpl implements Transaction {
         if (committed)
             return;
 
-        if (TransactionSynchronizationManager.isSynchronizationActive())
+        if (!ts.isCompleted())
             tm.rollback(ts);
     }
 }
