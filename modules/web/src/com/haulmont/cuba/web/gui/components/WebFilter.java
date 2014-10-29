@@ -48,13 +48,11 @@ import com.haulmont.cuba.web.app.folders.AppFolderEditWindow;
 import com.haulmont.cuba.web.app.folders.FolderEditWindow;
 import com.haulmont.cuba.web.app.folders.FoldersPane;
 import com.haulmont.cuba.web.gui.components.filter.*;
-import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.ui.*;
 import com.haulmont.cuba.web.toolkit.ui.converters.SimpleStringToIntegerConverter;
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
 import com.vaadin.data.validator.IntegerRangeValidator;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
@@ -202,7 +200,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         if (globalConfig.getAllowQueryFromSelected()) {
             pinAppliedFilterBtn = WebComponentsHelper.createButton();
             pinAppliedFilterBtn.setCaption("");
-            pinAppliedFilterBtn.setIcon(new ThemeResource("icons/pin.png"));
+            pinAppliedFilterBtn.setIcon(WebComponentsHelper.getIcon("icons/pin.png"));
             pinAppliedFilterBtn.setDescription(messages.getMessage(MESSAGES_PACK, "pinAppliedFilterBtn.description"));
             pinAppliedFilterBtn.setEnabled(false);
             pinAppliedFilterBtn.addClickListener(new Button.ClickListener() {
@@ -289,7 +287,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         Button button = new CubaButton();
         button.setStyleName(BaseTheme.BUTTON_LINK);
         button.addStyleName("remove-applied-filter");
-        button.setIcon(new VersionedThemeResource("icons/item-remove.png"));
+        button.setIcon(WebComponentsHelper.getIcon("icons/item-remove.png"));
         button.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {

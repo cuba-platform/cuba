@@ -22,7 +22,6 @@ import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.sys.WindowBreadCrumbs;
-import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.ui.CubaTabSheet;
 import com.haulmont.cuba.web.toolkit.ui.CubaWindow;
 import com.vaadin.event.ShortcutAction;
@@ -1065,7 +1064,7 @@ public class WebWindowManager extends WindowManager {
         Button button = WebComponentsHelper.createButton();
 
         button.setCaption(action.getCaption());
-        button.setIcon(new VersionedThemeResource(action.getIcon()));
+        button.setIcon(WebComponentsHelper.getIcon(action.getIcon()));
         button.addStyleName(WebButton.ICON_STYLE);
         button.addClickListener(new Button.ClickListener() {
             @Override
@@ -1177,7 +1176,7 @@ public class WebWindowManager extends WindowManager {
             }
 
             if (StringUtils.isNotEmpty(action.getIcon())) {
-                button.setIcon(new VersionedThemeResource(action.getIcon()));
+                button.setIcon(WebComponentsHelper.getIcon(action.getIcon()));
                 button.addStyleName(WebButton.ICON_STYLE);
             }
 

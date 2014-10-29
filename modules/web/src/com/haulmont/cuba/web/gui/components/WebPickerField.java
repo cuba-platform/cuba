@@ -20,7 +20,6 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
-import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.ui.CubaPickerField;
 import com.haulmont.cuba.web.toolkit.ui.converters.StringToEntityConverter;
 import com.vaadin.data.Property;
@@ -361,7 +360,7 @@ public class WebPickerField
         @Override
         public void setIcon(String icon) {
             if (StringUtils.isNotBlank(icon)) {
-                component.setIcon(new VersionedThemeResource(icon));
+                component.setIcon(WebComponentsHelper.getIcon(icon));
             } else {
                 component.setIcon(null);
             }

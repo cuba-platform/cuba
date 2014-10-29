@@ -7,14 +7,14 @@
 
 @mixin cuba-login-window {
   .cuba-login-bottom {
-    background: $cuba-loginform-background-color;
+    background: $v-panel-background-color;
     border: valo-border();
     border-radius: $v-border-radius;
     padding: $v-layout-margin-top $v-layout-margin-right $v-layout-margin-bottom $v-layout-margin-left;
   }
 
   .cuba-login-main-layout {
-    background-color: #fff;
+    background-color: $v-app-background-color;
   }
 
   .cuba-login-title {

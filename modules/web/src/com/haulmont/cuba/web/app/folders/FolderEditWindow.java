@@ -8,7 +8,10 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.FoldersService;
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.Folder;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.presentations.Presentations;
@@ -18,7 +21,7 @@ import com.haulmont.cuba.security.entity.SearchFolder;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.components.WebButton;
-import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.haulmont.cuba.web.toolkit.ui.CubaCheckBox;
 import com.vaadin.shared.ui.MarginInfo;
@@ -143,14 +146,14 @@ public class FolderEditWindow extends Window {
         layout.addComponent(buttonsLayout);
 
         okBtn = new CubaButton(getMessage("actions.Ok"));
-        okBtn.setIcon(new VersionedThemeResource("icons/ok.png"));
+        okBtn.setIcon(WebComponentsHelper.getIcon("icons/ok.png"));
         okBtn.addStyleName(WebButton.ICON_STYLE);
 
         initButtonOkListener();
         buttonsLayout.addComponent(okBtn);
 
         Button cancelBtn = new CubaButton(getMessage("actions.Cancel"));
-        cancelBtn.setIcon(new VersionedThemeResource("icons/cancel.png"));
+        cancelBtn.setIcon(WebComponentsHelper.getIcon("icons/cancel.png"));
         cancelBtn.addStyleName(WebButton.ICON_STYLE);
         cancelBtn.addClickListener(new Button.ClickListener() {
             @Override

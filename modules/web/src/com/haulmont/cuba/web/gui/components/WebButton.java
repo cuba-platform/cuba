@@ -9,7 +9,6 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.web.WebConfig;
-import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.vaadin.ui.NativeButton;
 import org.apache.commons.lang.StringUtils;
@@ -154,7 +153,7 @@ public class WebButton extends WebAbstractComponent<com.vaadin.ui.Button> implem
     public void setIcon(String icon) {
         this.icon = icon;
         if (!StringUtils.isEmpty(icon)) {
-            component.setIcon(new VersionedThemeResource(icon));
+            component.setIcon(WebComponentsHelper.getIcon(icon));
             component.addStyleName(ICON_STYLE);
         } else {
             component.setIcon(null);

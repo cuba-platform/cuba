@@ -256,4 +256,8 @@ public interface WebConfig extends Config {
     @Property("cuba.web.rememberMeEnabled")
     @DefaultBoolean(true)
     boolean getRememberMeEnabled();
+
+    @Property("cuba.web.useFontIcons")
+    @DefaultBoolean(true)
+    boolean getUseFontIcons();
 }

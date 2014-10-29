@@ -4,8 +4,13 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Formatter;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
+import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.ui.CubaHorizontalActionsLayout;
@@ -13,6 +18,7 @@ import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
 import com.vaadin.event.Action;
 import com.vaadin.server.ClassResource;
 import com.vaadin.server.FileResource;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
 import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.shared.ui.datefield.Resolution;
@@ -21,8 +27,11 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Table;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.LogFactory;
 
+import javax.annotation.Nullable;
 import java.io.File;
+import java.lang.reflect.Field;
 import java.util.*;
 
 /**
@@ -40,8 +49,21 @@ public class WebComponentsHelper {
             return new ClassResource(resURL.substring("jar:".length()));
         } else if (resURL.startsWith("theme:")) {
             return new VersionedThemeResource(resURL.substring("theme:".length()));
+        } else if (resURL.startsWith("font-icon:")) {
+            String fontIcon = resURL.substring("font-icon:".length());
+
+            if (StringUtils.isNotEmpty(fontIcon)) {
+                try {
+                    Field fontIconField = FontAwesome.class.getDeclaredField(fontIcon);
+                    return (Resource) fontIconField.get(null);
+                } catch (NoSuchFieldException | IllegalAccessException e) {
+                    LogFactory.getLog(WebComponentsHelper.class).warn("Unable to use font icon " + fontIcon);
+                }
+            }
+
+            return null;
         } else {
-            throw new UnsupportedOperationException();
+            return new VersionedThemeResource(resURL);
         }
     }
 
@@ -373,5 +395,37 @@ public class WebComponentsHelper {
         int closeCode = closeCombination.getKey().getCode();
 
         button.setClickShortcut(closeCode, closeModifiers);
+    }
+
+    @Nullable
+    public static Resource getIcon(String iconName) {
+        if (StringUtils.isEmpty(iconName)) {
+            return null;
+        }
+
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        WebConfig webConfig = configuration.getConfig(WebConfig.class);
+
+        if (webConfig.getUseFontIcons()) {
+            String fontIcon;
+
+            if (StringUtils.startsWith(iconName, "font-icon:")) {
+                fontIcon = StringUtils.substring(iconName, "font-icon:".length());
+            } else {
+                ThemeConstants themeConstants = App.getInstance().getThemeConstants();
+                String iconKey = "cuba.web." + StringUtils.replace(iconName, "/", ".");
+                fontIcon = themeConstants.get(iconKey);
+            }
+
+            if (StringUtils.isNotEmpty(fontIcon)) {
+                try {
+                    Field fontIconField = FontAwesome.class.getDeclaredField(fontIcon);
+                    return (Resource) fontIconField.get(null);
+                } catch (NoSuchFieldException | IllegalAccessException e) {
+                    LogFactory.getLog(WebComponentsHelper.class).warn("Unable to use font icon " + fontIcon);
+                }
+            }
+        }
+        return new VersionedThemeResource(iconName);
     }
 }

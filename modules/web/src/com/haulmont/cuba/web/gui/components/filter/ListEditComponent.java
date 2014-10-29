@@ -21,10 +21,7 @@ import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.gui.components.WebButton;
-import com.haulmont.cuba.web.gui.components.WebDateField;
-import com.haulmont.cuba.web.gui.components.WebLookupField;
-import com.haulmont.cuba.web.gui.components.WebPickerField;
+import com.haulmont.cuba.web.gui.components.*;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.vaadin.data.Property;
@@ -148,11 +145,11 @@ public class ListEditComponent extends CustomField {
 
     private void updateIcons() {
         if (isReadOnly()) {
-            setPickerButtonIcon(new VersionedThemeResource("components/pickerfield/images/lookup-btn-readonly.png"));
-            setClearButtonIcon(new VersionedThemeResource("components/pickerfield/images/clear-btn-readonly.png"));
+            setPickerButtonIcon(WebComponentsHelper.getIcon("components/pickerfield/images/lookup-btn-readonly.png"));
+            setClearButtonIcon(WebComponentsHelper.getIcon("components/pickerfield/images/clear-btn-readonly.png"));
         } else {
-            setPickerButtonIcon(new VersionedThemeResource("components/pickerfield/images/lookup-btn.png"));
-            setClearButtonIcon(new VersionedThemeResource("components/pickerfield/images/clear-btn.png"));
+            setPickerButtonIcon(WebComponentsHelper.getIcon("components/pickerfield/images/lookup-btn.png"));
+            setClearButtonIcon(WebComponentsHelper.getIcon("components/pickerfield/images/clear-btn.png"));
         }
     }
 
@@ -537,7 +534,7 @@ public class ListEditComponent extends CustomField {
             bottomLayout.setSpacing(true);
 
             Button okBtn = new CubaButton(messages.getMessage(AppConfig.getMessagesPack(), "actions.Ok"));
-            okBtn.setIcon(new VersionedThemeResource("icons/ok.png"));
+            okBtn.setIcon(WebComponentsHelper.getIcon("icons/ok.png"));
             okBtn.setStyleName(WebButton.ICON_STYLE);
             okBtn.addClickListener(
                     new Button.ClickListener() {
@@ -550,7 +547,7 @@ public class ListEditComponent extends CustomField {
             bottomLayout.addComponent(okBtn);
 
             Button cancelBtn = new CubaButton(messages.getMessage(AppConfig.getMessagesPack(), "actions.Cancel"));
-            cancelBtn.setIcon(new VersionedThemeResource("icons/cancel.png"));
+            cancelBtn.setIcon(WebComponentsHelper.getIcon("icons/cancel.png"));
             cancelBtn.setStyleName(WebButton.ICON_STYLE);
             cancelBtn.addClickListener(
                     new Button.ClickListener() {
@@ -606,7 +603,7 @@ public class ListEditComponent extends CustomField {
 
             Button delItemBtn = new CubaButton();
             delItemBtn.setStyleName(BaseTheme.BUTTON_LINK);
-            delItemBtn.setIcon(new VersionedThemeResource("icons/item-remove.png"));
+            delItemBtn.setIcon(WebComponentsHelper.getIcon("icons/item-remove.png"));
             delItemBtn.addStyleName("filter-param-list-edit-del");
             delItemBtn.addClickListener(
                     new Button.ClickListener() {

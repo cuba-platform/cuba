@@ -7,7 +7,7 @@
 
 @mixin cuba-folders-pane {
   .cuba-folders-pane {
-    background: $cuba-folderspane-background-color;
+    background: $v-panel-background-color;
 
     .v-tree {
       border-color: transparent;

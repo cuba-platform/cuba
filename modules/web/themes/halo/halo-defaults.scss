@@ -7,6 +7,7 @@
 
 $v-line-height: 1.35;
 $v-font-size: 14px;
+$v-font-weight: 400;
 $v-unit-size: 30px;
 
 $v-font-size--h1: 24px;
@@ -27,11 +28,3 @@ $v-table-cell-padding-horizontal: 7px;
 
 $v-focus-style: inset 0px 0px 5px 1px rgba($v-focus-color, 0.5);
 $v-error-focus-style: inset 0px 0px 5px 1px rgba($v-error-indicator-color, 0.5);
-
-// CUBA specific variables
-
-$cuba-loginform-background-color: #fbfdff;
-$cuba-splitpanel-splitter-width: 3px;
-$cuba-searchselect-edit-color: #b6d2fa;
-$cuba-folderspane-background-color: white;
-$cuba-app-work-area-single-color: white;

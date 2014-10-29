@@ -30,6 +30,7 @@ import com.haulmont.cuba.web.actions.ChangeSubstUserAction;
 import com.haulmont.cuba.web.actions.DoNotChangeSubstUserAction;
 import com.haulmont.cuba.web.app.UserSettingsTools;
 import com.haulmont.cuba.web.app.folders.FoldersPane;
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.sys.MenuBuilder;
 import com.haulmont.cuba.web.sys.WindowBreadCrumbs;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
@@ -635,7 +636,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
             Button searchBtn = new CubaButton();
             searchBtn.setStyleName(BaseTheme.BUTTON_LINK);
             searchBtn.addStyleName("cuba-fts-button");
-            searchBtn.setIcon(new VersionedThemeResource("app/images/fts-button.png"));
+            searchBtn.setIcon(WebComponentsHelper.getIcon("app/images/fts-button.png"));
             searchBtn.addClickListener(
                     new Button.ClickListener() {
                         @Override
@@ -850,10 +851,11 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
         logoutBtn.setDescription(messages.getMessage(getMessagesPack(), "logoutBtnDescription"));
         logoutBtn.setStyleName("cuba-buttons-white-border");
 
-        if (webConfig.getUseLightHeader())
+        if (webConfig.getUseLightHeader()) {
             logoutBtn.addStyleName("nocaption");
+        }
 
-        logoutBtn.setIcon(new VersionedThemeResource("app/images/exit.png"));
+        logoutBtn.setIcon(WebComponentsHelper.getIcon("app/images/exit.png"));
 
         if (ui.isTestMode()) {
             logoutBtn.setCubaId("logoutBtn");
@@ -898,7 +900,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
             newWindowBtn.setId(ui.getTestIdManager().reserveId("newAppWindowBtn"));
         }
 
-        newWindowBtn.setIcon(new VersionedThemeResource("app/images/new-window.png"));
+        newWindowBtn.setIcon(WebComponentsHelper.getIcon("app/images/new-window.png"));
         return newWindowBtn;
     }
 

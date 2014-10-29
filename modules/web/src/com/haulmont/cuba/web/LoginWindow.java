@@ -17,6 +17,7 @@ import com.haulmont.cuba.web.auth.ActiveDirectoryConnection;
 import com.haulmont.cuba.web.auth.ActiveDirectoryHelper;
 import com.haulmont.cuba.web.auth.CubaAuthProvider;
 import com.haulmont.cuba.web.auth.DomainAliasesResolver;
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.haulmont.cuba.web.toolkit.ui.CubaCheckBox;
@@ -275,7 +276,7 @@ public class LoginWindow extends UIView implements Action.Handler {
         okButton.setCaption(messages.getMainMessage("loginWindow.okButton", resolvedLocale));
         okButton.addClickListener(new SubmitListener());
         okButton.setStyleName(getStyle("submit"));
-        okButton.setIcon(new VersionedThemeResource("app/images/login-button.png"));
+        okButton.setIcon(WebComponentsHelper.getIcon("app/images/login-button.png"));
 
         loginFormLayout.addComponent(okButton);
         loginFormLayout.setComponentAlignment(okButton, Alignment.MIDDLE_CENTER);

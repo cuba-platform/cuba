@@ -49,7 +49,7 @@ public class CubaMultiUploadWidget extends FormPanel {
     protected Integer buttonHeight = 25;
 
     protected Integer buttonTextTop = 1;
-    protected Integer buttonTextLeft = 22;
+    protected Integer buttonTextLeft = 0;
 
     /** Default styles in {@link CubaMultiUploadState#buttonStyles} */
     protected String buttonStyles = "";

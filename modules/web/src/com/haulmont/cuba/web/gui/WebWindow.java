@@ -26,7 +26,6 @@ import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebFrameActionsHolder;
-import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.ui.CubaTimer;
 import com.haulmont.cuba.web.toolkit.ui.CubaTree;
 import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
@@ -1189,7 +1188,7 @@ public class WebWindow implements Window, Component.Wrapper,
             selectAction = new SelectAction(this);
             selectButton = WebComponentsHelper.createButton();
             selectButton.setCaption(messages.getMessage(messagesPackage, "actions.Select"));
-            selectButton.setIcon(new VersionedThemeResource("icons/ok.png"));
+            selectButton.setIcon(WebComponentsHelper.getIcon("icons/ok.png"));
             selectButton.addClickListener(selectAction);
             selectButton.setStyleName("cuba-window-action-button");
             if (isTestMode) {
@@ -1205,7 +1204,7 @@ public class WebWindow implements Window, Component.Wrapper,
                 }
             });
             cancelButton.setStyleName("cuba-window-action-button");
-            cancelButton.setIcon(new VersionedThemeResource("icons/cancel.png"));
+            cancelButton.setIcon(WebComponentsHelper.getIcon("icons/cancel.png"));
             if (isTestMode) {
                 cancelButton.setCubaId("cancelButton");
             }

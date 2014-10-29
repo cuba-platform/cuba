@@ -9,7 +9,7 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.AppWindow;
-import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
@@ -70,7 +70,7 @@ public class WindowBreadCrumbs extends HorizontalLayout {
                     window.close(Window.CLOSE_ACTION_ID);
                 }
             });
-            closeBtn.setIcon(new VersionedThemeResource("icons/close.png"));
+            closeBtn.setIcon(WebComponentsHelper.getIcon("icons/close.png"));
             closeBtn.setStyleName("cuba-closetab-button");
         }
 

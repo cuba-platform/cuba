@@ -1,0 +1,38 @@
+/*
+ * Copyright (c) 2008-2014 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+ */
+
+// Version: $Id$
+
+@mixin havana-cuba-multiupload($primary-stylename : cuba-multiupload) {
+  .#{$primary-stylename} {
+    @include box-defaults;
+
+    z-index: auto;
+    outline: 0;
+
+    overflow: hidden;
+  }
+
+  .#{$primary-stylename}-disabled {
+    @include box-defaults;
+
+    z-index: auto;
+  }
+
+  .#{$primary-stylename}-progress {
+    position: fixed;
+    padding: 10px;
+    left: 50%;
+    top: 50%;
+    height: 50px;
+    width: 250px;
+    margin-left: -125px;
+    margin-top: -25px;
+    background-color: $v-panel-background-color;
+    border: valo-border();
+    overflow: visible;
+    z-index: 15000;
+  }
+}

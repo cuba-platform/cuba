@@ -30,6 +30,7 @@
 @import "components/pickerfield/pickerfield";
 @import "components/contextmenu/contextmenu";
 @import "components/maskedfield/maskedfield";
+@import "components/multiupload/multiupload";
 @import "components/optiongroup/optiongroup";
 @import "components/widgetstree/widgetstree";
 @import "components/popupbutton/popupbutton";
@@ -79,6 +80,7 @@
   @include halo-cuba-contextmenu;
   @include halo-cuba-widgetstree;
   @include halo-cuba-searchselect;
+  @include havana-cuba-multiupload;
   @include halo-cuba-fieldgrouplayout;
 
   @include cuba-log-control;

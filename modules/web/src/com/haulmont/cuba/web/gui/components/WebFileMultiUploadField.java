@@ -58,6 +58,12 @@ public class WebFileMultiUploadField extends WebAbstractComponent<CubaMultiUploa
         uploader.setWidth(width);
         uploader.setHeight(height);
 
+        int buttonTextLeft = theme.getInt("cuba.web.WebFileMultiUploadField.buttonText.left");
+        int buttonTextTop = theme.getInt("cuba.web.WebFileMultiUploadField.buttonText.top");
+
+        uploader.setButtonTextLeft(buttonTextLeft);
+        uploader.setButtonTextTop(buttonTextTop);
+
         uploader.setButtonWidth(Integer.parseInt(width.replace("px", "")));
         uploader.setButtonHeight(Integer.parseInt(width.replace("px", "")));
 

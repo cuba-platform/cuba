@@ -60,6 +60,15 @@
     }
   }
 
+  .#{$primary-stylename} {
+    .v-button-link,
+    .v-link {
+      -webkit-transition: none;
+      -moz-transition: none;
+      transition: none;
+    }
+  }
+
   .#{$primary-stylename} [class*="-row"].v-selected {
     $font-color: valo-font-color($v-selection-color, 0.9);
     .v-button-link,

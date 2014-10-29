@@ -5,6 +5,8 @@
 
 // Version: $Id$
 
+$cuba-searchselect-edit-color: scale-color(lighten($v-focus-color, 35%), $saturation: -15%) !default;
+
 @mixin halo-cuba-searchselect($primary-stylename: cuba-searchselect) {
   @include valo-combobox($primary-stylename);
 

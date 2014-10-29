@@ -10,7 +10,6 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.gui.components.PopupButton;
 import com.haulmont.cuba.web.AppUI;
-import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.StringUtils;
@@ -70,7 +69,7 @@ public class WebPopupButton extends WebAbstractComponent<org.vaadin.hene.popupbu
     public void setIcon(String icon) {
         this.icon = icon;
         if (!StringUtils.isEmpty(icon)) {
-            component.setIcon(new VersionedThemeResource(icon));
+            component.setIcon(WebComponentsHelper.getIcon(icon));
             component.addStyleName(WebButton.ICON_STYLE);
         } else {
             component.setIcon(null);

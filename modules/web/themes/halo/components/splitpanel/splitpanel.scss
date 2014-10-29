@@ -5,6 +5,8 @@
 
 // Version: $Id$
 
+$cuba-splitpanel-splitter-width: 3px !default;
+
 @mixin halo-splitpanel($primary-stylename: v-splitpanel) {
   .#{$primary-stylename}-horizontal > div > .#{$primary-stylename}-hsplitter {
     width: $cuba-splitpanel-splitter-width;

@@ -56,26 +56,22 @@
     }
 
     .v-slot:last-child .v-textfield {
-      border-right: valo-border();
-
       &:focus {
         border-right-color: $v-focus-color;
       }
 
-      border-top-right-radius: $v-border-radius;
-      border-bottom-right-radius: $v-border-radius;
+      border-top-right-radius: $v-textfield-border-radius;
+      border-bottom-right-radius: $v-textfield-border-radius;
     }
 
     .v-slot:last-child .cuba-searchselect,
     .v-slot:last-child .v-filterselect {
-      border-right: valo-border();
-
       &:focus {
         border-right-color: $v-focus-color;
       }
 
-      border-top-right-radius: $v-border-radius;
-      border-bottom-right-radius: $v-border-radius;
+      border-top-right-radius: $v-textfield-border-radius;
+      border-bottom-right-radius: $v-textfield-border-radius;
     }
   }
 
