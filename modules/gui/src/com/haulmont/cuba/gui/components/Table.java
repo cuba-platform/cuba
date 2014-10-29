@@ -67,9 +67,32 @@ public interface Table
     void setColumnAlignment(String columnId, ColumnAlignment alignment);
     void setColumnAlignment(Column column, ColumnAlignment alignment);
 
+    /**
+     * Assign action to be executed on double click inside a table row.
+     * <p>If such action is not set, the table responds to double click by trying to find and execute the following
+     * actions:
+     * <ul>
+     *     <li>action, assigned to Enter key press by setting its {@code shortcut} property</li>
+     *     <li>action named "edit"</li>
+     *     <li>action named "view"</li>
+     * </ul>
+     * If one of these actions is found and it is enabled, it is executed.
+     */
     void setItemClickAction(Action action);
     Action getItemClickAction();
 
+    /**
+     * Assign acion to be executed on Enter key press.
+     * <p>If such action is not set, the table responds to pressing Enter by trying to find and execute the following
+     * actions:
+     * <ul>
+     *     <li>action, assigned by {@link #setItemClickAction(Action)}</li>
+     *     <li>action, assigned to Enter key press by setting its {@code shortcut} property</li>
+     *     <li>action named "edit"</li>
+     *     <li>action named "view"</li>
+     * </ul>
+     * If one of these actions is found and it is enabled, it is executed.
+     */
     void setEnterPressAction(Action action);
     Action getEnterPressAction();
 
