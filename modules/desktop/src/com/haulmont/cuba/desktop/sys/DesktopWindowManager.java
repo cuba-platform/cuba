@@ -27,7 +27,10 @@ import com.haulmont.cuba.gui.dev.LayoutAnalyzer;
 import com.haulmont.cuba.gui.dev.LayoutTip;
 import com.haulmont.cuba.gui.executors.*;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
+import net.miginfocom.layout.LC;
+import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -1090,33 +1093,22 @@ public class DesktopWindowManager extends WindowManager {
 
     @Override
     public void showMessageDialog(final String title, final String message, IFrame.MessageType messageType) {
-        final int swingMessageType = DesktopComponentsHelper.convertMessageType(messageType);
-        final String msg = IFrame.MessageType.isHTML(messageType) ?
-                "<html>" + Strings.nullToEmpty(ComponentsHelper.preprocessHtmlMessage(message)) : message;
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                //noinspection MagicConstant
-                JOptionPane.showMessageDialog(frame, msg, title, swingMessageType);
-            }
+        showOptionDialog(title, message, messageType, false, new Action[]{
+                new DialogAction(DialogAction.Type.OK)
         });
     }
 
-    @Override
-    public void showOptionDialog(String title, String message, IFrame.MessageType messageType, final Action[] actions) {
-        final JDialog dialog = new JDialog(frame, title, false);
-
-        Object[] options = new Object[actions.length];
-        for (int i = 0; i < actions.length; i++) {
-            final Action action = actions[i];
-            JButton btn = new JButton(action.getCaption());
-
+    private JPanel createButtonsPanel(Action[] actions, final JDialog dialog) {
+        JPanel buttonsPanel = new JPanel();
+        for (final Action action : actions) {
+            JButton button = new JButton(action.getCaption());
             String icon = action.getIcon();
 
-            if (icon != null)
-                btn.setIcon(App.getInstance().getResources().getIcon(icon));
+            if (icon != null) {
+                button.setIcon(App.getInstance().getResources().getIcon(icon));
+            }
 
-            btn.addActionListener(new ActionListener() {
+            button.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     action.actionPerform(null);
@@ -1125,60 +1117,23 @@ public class DesktopWindowManager extends WindowManager {
                 }
             });
 
-            btn.setPreferredSize(new Dimension(btn.getPreferredSize().width, DesktopComponentsHelper.BUTTON_HEIGHT));
-            btn.setMaximumSize(new Dimension(Integer.MAX_VALUE, DesktopComponentsHelper.BUTTON_HEIGHT));
-            options[i] = btn;
+            button.setPreferredSize(new Dimension(button.getPreferredSize().width, DesktopComponentsHelper.BUTTON_HEIGHT));
+            button.setMaximumSize(new Dimension(Integer.MAX_VALUE, DesktopComponentsHelper.BUTTON_HEIGHT));
+
+            buttonsPanel.add(button);
         }
+        return buttonsPanel;
+    }
 
-        int optionType;
-
-        if (options.length == 1)
-            optionType = JOptionPane.DEFAULT_OPTION;
-        else if (options.length == 2)
-            optionType = JOptionPane.YES_NO_OPTION;
-        else if (options.length == 3)
-            optionType = JOptionPane.YES_NO_CANCEL_OPTION;
-        else
-            throw new UnsupportedOperationException("Not more than 3 actions supported");
-
-        final String msg = IFrame.MessageType.isHTML(messageType) ?
-                "<html>" + Strings.nullToEmpty(ComponentsHelper.preprocessHtmlMessage(message)) : message;
-
-        final JOptionPane optionPane = new JOptionPane(
-                msg,
-                DesktopComponentsHelper.convertMessageType(messageType),
-                optionType,
-                null,
-                options,
-                null
-        );
-
-        dialog.setContentPane(optionPane);
-        dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-        optionPane.addPropertyChangeListener(
-                new PropertyChangeListener() {
-                    @Override
-                    public void propertyChange(PropertyChangeEvent e) {
-                        String prop = e.getPropertyName();
-                        if (dialog.isVisible()
-                                && (e.getSource() == optionPane)
-                                && (prop.equals(JOptionPane.VALUE_PROPERTY))
-                                && Integer.valueOf(-1).equals(e.getNewValue())) {
-
-                            dialog.setVisible(false);
-                            cleanupAfterModalDialogClosed(null);
-                        }
-                    }
-                });
-
+    private void initShortcut(final JDialog dialog, JPanel panel, final Action[] actions) {
         Configuration configuration = AppBeans.get(Configuration.NAME);
         ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
 
         KeyCombination okCombination = KeyCombination.create(clientConfig.getCommitShortcut());
         KeyStroke okKeyStroke = DesktopComponentsHelper.convertKeyCombination(okCombination);
 
-        InputMap inputMap = optionPane.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-        ActionMap actionMap = optionPane.getActionMap();
+        InputMap inputMap = panel.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        ActionMap actionMap = panel.getActionMap();
 
         inputMap.put(okKeyStroke, "okAction");
         actionMap.put("okAction", new javax.swing.AbstractAction() {
@@ -1201,11 +1156,101 @@ public class DesktopWindowManager extends WindowManager {
                 }
             }
         });
+    }
+
+    private void showOptionDialog(final String title, final String message, IFrame.MessageType messageType,
+                                  boolean alwaysModal, final Action[] actions) {
+        final JDialog dialog = new JDialog(frame, title, false);
+        dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+
+        int width = 500;
+        DialogParams dialogParams = getDialogParams();
+        if (dialogParams.getWidth() != null) {
+            width = dialogParams.getWidth();
+        }
+
+        LC lc = new LC();
+        lc.insets("10");
+
+        MigLayout layout = new MigLayout(lc);
+        final JPanel panel = new JPanel(layout);
+        Icon icon = convertMessageType(messageType);
+        if (icon != null) {
+            JLabel iconLabel = new JLabel(icon);
+            panel.add(iconLabel, "aligny top");
+        }
+
+        String msg = message;
+        if (!IFrame.MessageType.isHTML(messageType)) {
+            msg = StringEscapeUtils.escapeHtml(msg);
+            msg = ComponentsHelper.preprocessHtmlMessage("<html>" + msg + "</html>");
+        } else {
+            msg = "<html>" + msg + "</html>";
+        }
+        JLabel msgLabel = new JLabel(msg);
+
+        panel.add(msgLabel, "width 100%, wrap, growy 0");
+
+        if (icon != null) {
+            panel.add(new JLabel(" "));
+        }
+        panel.add(createButtonsPanel(actions, dialog), "alignx right");
+
+        dialog.setLayout(new MigLayout(new LC().insets("0").width(width + "px")));
+        dialog.add(panel, "width 100%, growy 0");
+
+        initShortcut(dialog, panel, actions);
 
         dialog.pack();
-        dialog.setLocationRelativeTo(frame);
-        frame.deactivate(null);
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                panel.revalidate();
+                panel.repaint();
+
+                java.awt.Container container = panel.getTopLevelAncestor();
+                if (container instanceof JDialog) {
+                    JDialog dialog = (JDialog) container;
+                    dialog.pack();
+                }
+            }
+        });
         dialog.setVisible(true);
+        dialog.setLocationRelativeTo(frame);
+
+        boolean modal = true;
+        if (!alwaysModal) {
+            if (!hasModalWindow() && dialogParams.getModal() != null) {
+                modal = dialogParams.getModal();
+            }
+        }
+
+        if (modal) {
+            DialogWindow lastDialogWindow = getLastDialogWindow();
+            if (lastDialogWindow == null) {
+                frame.deactivate(null);
+            } else {
+                lastDialogWindow.disableWindow(null);
+            }
+        }
+    }
+
+    private Icon convertMessageType(IFrame.MessageType messageType) {
+        switch (messageType) {
+            case CONFIRMATION:
+            case CONFIRMATION_HTML:
+                return UIManager.getIcon("OptionPane.informationIcon");
+            case WARNING:
+            case WARNING_HTML:
+                return UIManager.getIcon("OptionPane.warningIcon");
+            default:
+                return null;
+        }
+    }
+
+    @Override
+    public void showOptionDialog(String title, String message, IFrame.MessageType messageType, final Action[] actions) {
+        showOptionDialog(title, message, messageType, true, actions);
     }
 
     @Override
