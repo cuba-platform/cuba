@@ -27,6 +27,7 @@ import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.VaadinService;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.server.WrappedSession;
+import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -68,7 +69,7 @@ public class LoginWindow extends UIView implements Action.Handler {
 
     protected TextField loginField;
     protected PasswordField passwordField;
-    protected AbstractSelect localesSelect;
+    protected ComboBox localesSelect;
 
     protected Locale resolvedLocale;
     protected Map<String, Locale> locales;
@@ -111,7 +112,9 @@ public class LoginWindow extends UIView implements Action.Handler {
 
         loginField = new TextField();
         passwordField = new PasswordField();
-        localesSelect = new NativeSelect();
+        localesSelect = new ComboBox();
+        localesSelect.setTextInputAllowed(false);
+
         // make fields immediate to resync fast in case of login is already performed from another UI (i.e. browser tab)
         loginField.setImmediate(true);
         passwordField.setImmediate(true);

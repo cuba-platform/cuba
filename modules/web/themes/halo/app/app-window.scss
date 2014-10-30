@@ -15,7 +15,7 @@
   }
 
   .v-tabsheet.cuba-main-tabsheet > .v-tabsheet-tabcontainer .v-tabsheet-caption-close {
-    top: round($v-unit-size/2 - $v-font-size/2);
+    top: round($v-unit-size/2 - $v-font-size/2) - first-number($v-border);
   }
 
   .v-tabsheet.cuba-main-tabsheet > .v-tabsheet-content {
