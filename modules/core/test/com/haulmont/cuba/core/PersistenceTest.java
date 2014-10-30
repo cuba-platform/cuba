@@ -47,7 +47,26 @@ public class PersistenceTest extends CubaTestCase {
         super.tearDown();
     }
 
-    public void test() {
+    public void testPersistenceHelper() {
+        try {
+            PersistenceHelper.isNew(null);
+            fail("isNew() should not accept null");
+        } catch (Exception e) {
+           //
+        }
+        try {
+            PersistenceHelper.isManaged(null);
+            fail("isManaged() should not accept null");
+        } catch (Exception e) {
+            //
+        }
+        try {
+            PersistenceHelper.isDetached(null);
+            fail("isDetached() should not accept null");
+        } catch (Exception e) {
+            //
+        }
+
         UUID id;
         Server server;
         Transaction tx = persistence.createTransaction();

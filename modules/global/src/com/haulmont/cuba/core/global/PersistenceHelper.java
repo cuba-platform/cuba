@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.core.global;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import org.apache.commons.lang.BooleanUtils;
@@ -29,8 +30,10 @@ public class PersistenceHelper {
      * @return <li>true if the instance is new or if it is not a persistent entity, or if it is actually in Managed state
      *              but newly-persisted in this transaction
      *         <li>false if it is not new Managed or Detached
+     * @throws IllegalArgumentException if entity instance is null
      */
     public static boolean isNew(Object entity) {
+        Preconditions.checkNotNullArgument(entity, "entity is null");
         if (entity instanceof BaseEntity && ((BaseEntity) entity).isDetached()) {
             return false;
         }
@@ -46,8 +49,10 @@ public class PersistenceHelper {
      * @param entity entity instance
      * @return <li>true if the instance is managed,
      *         <li>false if it is New (and not yet persisted) or Detached, or if it is not a persistent entity
+     * @throws IllegalArgumentException if entity instance is null
      */
     public static boolean isManaged(Object entity) {
+        Preconditions.checkNotNullArgument(entity, "entity is null");
         if (entity instanceof PersistenceCapable) {
             return ((PersistenceCapable) entity).pcGetStateManager() != null
                     && !((PersistenceCapable) entity).pcGetStateManager().isDetached();
@@ -61,8 +66,10 @@ public class PersistenceHelper {
      * @param entity entity instance
      * @return <li>true if the instance is detached,
      *         <li>false if it is New or Managed, or if it is not a persistent entity
+     * @throws IllegalArgumentException if entity instance is null
      */
     public static boolean isDetached(Object entity) {
+        Preconditions.checkNotNullArgument(entity, "entity is null");
         if (entity instanceof BaseEntity && ((BaseEntity) entity).isDetached()) {
             return true;
         }
