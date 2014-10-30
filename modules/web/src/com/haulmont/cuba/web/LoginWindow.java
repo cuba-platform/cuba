@@ -128,6 +128,9 @@ public class LoginWindow extends UIView implements Action.Handler {
         setSizeFull();
         setBaseStyle("cuba-login");
 
+        // load theme from cookies if it is changed by user in settings dialog
+        applyUserTheme();
+
         initUI();
 
         if (ui.isTestMode()) {
@@ -153,9 +156,6 @@ public class LoginWindow extends UIView implements Action.Handler {
         }
 
         addActionHandler(this);
-
-        // load theme from cookies if it is changed by user in settings dialog
-        applyUserTheme();
     }
 
     protected void applyUserTheme() {

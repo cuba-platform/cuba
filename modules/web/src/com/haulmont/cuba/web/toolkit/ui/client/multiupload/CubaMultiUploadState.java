@@ -27,23 +27,19 @@ public class CubaMultiUploadState extends AbstractComponentState {
 
     public String buttonStyles =
             ".swfupload {" +
-                    "color: #1e3146;" +
-                    "font-size: 12px; " +
-                    "margin-left: 17px; " +
-                    "text-align: center; " +
-                    "vertical-align: middle; " +
-                    "font-family: Verdana,tahoma,arial,geneva,helvetica,sans-serif,\"Trebuchet MS\";" +
+                "color: #1e3146;" +
+                "font-size: 12px; " +
+                "margin-left: 17px; " +
+                "font-family: Verdana,tahoma,arial,geneva,helvetica,sans-serif,\"Trebuchet MS\";" +
             "}";
 
     public String buttonDisabledStyles =
             ".swfupload {" +
-                    "color: #c0c5cb;" +
-                    "font-size: 12px; " +
-                    "margin-left: 17px; " +
-                    "text-align: center; " +
-                    "vertical-align: middle; " +
-                    "font-family: Verdana,tahoma,arial,geneva,helvetica,sans-serif,\"Trebuchet MS\";" +
-                    "}";
+                "color: #c0c5cb;" +
+                "font-size: 12px; " +
+                "margin-left: 17px; " +
+                "font-family: Verdana,tahoma,arial,geneva,helvetica,sans-serif,\"Trebuchet MS\";" +
+            "}";
 
     public boolean buttonEnabled = true;
 

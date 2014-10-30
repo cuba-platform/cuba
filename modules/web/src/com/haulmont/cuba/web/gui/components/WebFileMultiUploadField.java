@@ -14,6 +14,7 @@ import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.ui.CubaMultiUpload;
@@ -65,13 +66,22 @@ public class WebFileMultiUploadField extends WebAbstractComponent<CubaMultiUploa
         uploader.setButtonTextTop(buttonTextTop);
 
         uploader.setButtonWidth(Integer.parseInt(width.replace("px", "")));
-        uploader.setButtonHeight(Integer.parseInt(width.replace("px", "")));
+        uploader.setButtonHeight(Integer.parseInt(height.replace("px", "")));
 
         uploader.setCaption(messages.getMessage(AppConfig.getMessagesPack(), "multiupload.submit"));
         final Configuration configuration = AppBeans.get(Configuration.NAME);
         uploader.setFileSizeLimitMB(configuration.getConfig(ClientConfig.class).getMaxUploadSizeMb());
 
-        uploader.setButtonImage(new VersionedThemeResource("components/multiupload/images/multiupload-button.png"));
+        WebConfig webConfig = configuration.getConfig(WebConfig.class);
+        if (!webConfig.getUseFontIcons()) {
+            uploader.setButtonImage(new VersionedThemeResource("components/multiupload/images/multiupload-button.png"));
+        } else {
+            uploader.setButtonImage(new VersionedThemeResource("components/multiupload/images/multiupload-button-font-icon.png"));
+        }
+
+        uploader.setButtonStyles(theme.get("cuba.web.WebFileMultiUploadField.button.style"));
+        uploader.setButtonDisabledStyles(theme.get("cuba.web.WebFileMultiUploadField.button.disabled.style"));
+
         uploader.setBootstrapFailureHandler(new CubaMultiUpload.BootstrapFailureHandler() {
             @Override
             public void loadWebResourcesFailed() {
