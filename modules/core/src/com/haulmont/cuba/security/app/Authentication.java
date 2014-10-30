@@ -52,7 +52,7 @@ public class Authentication {
     @Inject
     protected UserSessionManager userSessionManager;
 
-    protected ThreadLocal<Boolean> needCleanup = new ThreadLocal<>();
+    protected ThreadLocal<Integer> cleanupCounter = new ThreadLocal<>();
 
     protected Map<String, UUID> sessions = new ConcurrentHashMap<>();
 
@@ -67,12 +67,21 @@ public class Authentication {
      * @param login user login. If null, a value of <code>cuba.jmxUserLogin</code> app property is used.
      */
     public void begin(String login) {
-        // first check if a current thread session exists, that is we got here from authenticated code
+        if (cleanupCounter.get() == null) {
+            cleanupCounter.set(0);
+        }
+
+        // check if a current thread session exists, that is we got here from authenticated code
         SecurityContext securityContext = AppContext.getSecurityContext();
         if (securityContext != null && userSessionManager.findSession(securityContext.getSessionId()) != null) {
             log.trace("Already authenticated, do nothing");
+            cleanupCounter.set(cleanupCounter.get() + 1);
+            if (log.isTraceEnabled()) {
+                log.trace("New cleanup counter value: " + cleanupCounter.get());
+            }
             return;
         }
+
         // no current thread session or it is expired - need to authenticate
         if (StringUtils.isBlank(login))
             login = getSystemLogin();
@@ -104,7 +113,6 @@ public class Authentication {
         }
 
         AppContext.setSecurityContext(new SecurityContext(session));
-        needCleanup.set(true);
     }
 
     /**
@@ -123,11 +131,19 @@ public class Authentication {
      * Must be called in "finally" section of a try/finally block.
      */
     public void end() {
-        if (Boolean.TRUE.equals(needCleanup.get())) {
+        if (cleanupCounter.get() == null || cleanupCounter.get() < 0) {
+            log.warn("Cleanup counter is null or invalid");
+        } else if (cleanupCounter.get() == 0) {
             log.trace("Cleanup SecurityContext");
             AppContext.setSecurityContext(null);
+            cleanupCounter.remove();
+        } else {
+            log.trace("Do not own authentication, cleanup not required");
+            cleanupCounter.set(cleanupCounter.get() - 1);
+            if (log.isTraceEnabled()) {
+                log.trace("New cleanup counter value: " + cleanupCounter.get());
+            }
         }
-        needCleanup.remove();
     }
 
     protected String getSystemLogin() {
