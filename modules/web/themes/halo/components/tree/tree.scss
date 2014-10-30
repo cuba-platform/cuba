@@ -6,6 +6,8 @@
 // Version: $Id$
 
 @mixin halo-tree($primary-stylename: v-tree) {
+
+  .#{$primary-stylename},
   .v-scrollable > .#{$primary-stylename} {
     overflow: auto;
   }
