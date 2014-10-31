@@ -245,12 +245,18 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
 
         if (datasource instanceof CollectionDatasource.Lazy || datasource instanceof HierarchicalDatasource) {
             setUseMaxResults(false);
-
-        } else {
-            int maxResults = persistenceManager.getFetchUI(datasource.getMetaClass().getName());
-            maxResultsField.setValue(maxResults);
-            datasource.setMaxResults(maxResults);
+        } else if (useMaxResults) {
+            initMaxResults();
         }
+    }
+
+    protected void initMaxResults() {
+        int maxResults = datasource.getMaxResults();
+        if (maxResults == 0 || maxResults == persistenceManager.getMaxFetchUI(datasource.getMetaClass().getName()))
+            maxResults = persistenceManager.getFetchUI(datasource.getMetaClass().getName());
+        maxResultsField.setValue(maxResults);
+
+        datasource.setMaxResults(maxResults);
     }
 
     protected void switchToEdit() {
@@ -1009,6 +1015,9 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         this.useMaxResults = useMaxResults;
         maxResultsPanel.setVisible(useMaxResults
                 && userSessionSource.getUserSession().isSpecificPermitted("cuba.gui.filter.maxResults"));
+
+        if (datasource != null)
+            initMaxResults();
     }
 
     @Override

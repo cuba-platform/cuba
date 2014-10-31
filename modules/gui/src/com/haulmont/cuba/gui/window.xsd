@@ -336,6 +336,7 @@
 
     <xs:attributeGroup name="isCollectionDatasource">
         <xs:attributeGroup ref="isDatasource"/>
+        <xs:attribute name="maxResults" type="xs:int"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="isNestedDatasource">

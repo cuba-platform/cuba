@@ -30,7 +30,8 @@ public interface Filter
     void loadFiltersAndApplyDefault();
 
     /**
-     * Notice: Always is false for HierarchicalDatasource
+     * Whether to show field for rows count restriction.
+     * <p>Automatically set to false for {@code HierarchicalDatasource}.
      */
     void setUseMaxResults(boolean useMaxResults);
     boolean getUseMaxResults();

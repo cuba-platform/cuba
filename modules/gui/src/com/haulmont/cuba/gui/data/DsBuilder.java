@@ -62,6 +62,8 @@ public class DsBuilder {
 
     private CollectionDatasource.RefreshMode refreshMode;
 
+    private int maxResults;
+
     private boolean allowCommit = true;
 
     public DsBuilder() {
@@ -201,6 +203,15 @@ public class DsBuilder {
         return this;
     }
 
+    public int getMaxResults() {
+        return maxResults;
+    }
+
+    public DsBuilder setMaxResults(int maxResults) {
+        this.maxResults = maxResults;
+        return this;
+    }
+
     public Class<? extends Datasource> getDsClass() {
         return dsClass;
     }
@@ -221,6 +232,7 @@ public class DsBuilder {
         allowCommit = true;
         fetchMode = null;
         refreshMode = null;
+        maxResults = 0;
         dsClass = null;
         return this;
     }
@@ -280,7 +292,10 @@ public class DsBuilder {
                     datasource = (CollectionDatasource) dsClass.newInstance();
                 }
                 datasource.setup(dsContext, dataSupplier, id, metaClass, view);
-                datasource.setMaxResults(persistenceManager.getMaxFetchUI(metaClass.getName()));
+                if (maxResults > 0)
+                    datasource.setMaxResults(maxResults);
+                else
+                    datasource.setMaxResults(persistenceManager.getMaxFetchUI(metaClass.getName()));
                 if (datasource instanceof AbstractCollectionDatasource)
                     ((AbstractCollectionDatasource) datasource).setRefreshMode(refreshMode);
             } else {
@@ -327,7 +342,10 @@ public class DsBuilder {
                     datasource = (HierarchicalDatasource) dsClass.newInstance();
                 }
                 datasource.setup(dsContext, dataSupplier, id, metaClass, view);
-                datasource.setMaxResults(persistenceManager.getMaxFetchUI(metaClass.getName()));
+                if (maxResults > 0)
+                    datasource.setMaxResults(maxResults);
+                else
+                    datasource.setMaxResults(persistenceManager.getMaxFetchUI(metaClass.getName()));
                 if (datasource instanceof AbstractCollectionDatasource)
                     ((AbstractCollectionDatasource) datasource).setRefreshMode(refreshMode);
             } else {
@@ -358,7 +376,10 @@ public class DsBuilder {
                     datasource = (GroupDatasource) dsClass.newInstance();
                 }
                 datasource.setup(dsContext, dataSupplier, id, metaClass, view);
-                datasource.setMaxResults(persistenceManager.getMaxFetchUI(metaClass.getName()));
+                if (maxResults > 0)
+                    datasource.setMaxResults(maxResults);
+                else
+                    datasource.setMaxResults(persistenceManager.getMaxFetchUI(metaClass.getName()));
                 if (datasource instanceof AbstractCollectionDatasource)
                     ((AbstractCollectionDatasource) datasource).setRefreshMode(refreshMode);
             } else {

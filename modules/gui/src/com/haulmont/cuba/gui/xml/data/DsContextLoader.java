@@ -334,6 +334,10 @@ public class DsContextLoader {
                 .setDsClass(getDatasourceClass(element))
                 .buildCollectionDatasource();
 
+        String maxResults = element.attributeValue("maxResults");
+        if (!StringUtils.isEmpty(maxResults))
+            datasource.setMaxResults(Integer.parseInt(maxResults));
+
         if (datasource instanceof CollectionDatasource.Suspendable)
             ((CollectionDatasource.Suspendable) datasource).setSuspended(true);
 
@@ -373,7 +377,13 @@ public class DsContextLoader {
                 .setSoftDeletion(softDeletion)
                 .setFetchMode(getFetchMode(element))
                 .setRefreshMode(getRefreshMode(element))
+                .setMaxResults(getMaxResults(element))
                 .setAllowCommit(getAllowCommit(element));
+    }
+
+    private int getMaxResults(Element element) {
+        String maxResults = element.attributeValue("maxResults");
+        return StringUtils.isEmpty(maxResults) ? 0 : Integer.parseInt(maxResults);
     }
 
     private CollectionDatasource.RefreshMode getRefreshMode(Element element) {

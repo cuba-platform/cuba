@@ -483,7 +483,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         applyDatasourceFilter();
 
         if (useMaxResults) {
-            int maxResults = 0;
+            int maxResults;
             if (BooleanUtils.isTrue(maxResultsCb.getValue())) {
                 String maxResultsFieldValue = maxResultsField.getValue();
                 if (StringUtils.isNotBlank(maxResultsFieldValue)) {
@@ -495,6 +495,8 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
                     }
                 } else
                     maxResults = persistenceManager.getMaxFetchUI(datasource.getMetaClass().getName());
+            } else {
+                maxResults = persistenceManager.getMaxFetchUI(datasource.getMetaClass().getName());
             }
             datasource.setMaxResults(maxResults);
         }
@@ -895,6 +897,9 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
 
         Security security = AppBeans.get(Security.NAME);
         maxResultsLayout.setVisible(useMaxResults && security.isSpecificPermitted("cuba.gui.filter.maxResults"));
+
+        if (datasource != null)
+            initMaxResults();
     }
 
     @Override
@@ -1224,12 +1229,18 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
 
         if (datasource instanceof CollectionDatasource.Lazy || datasource instanceof HierarchicalDatasource) {
             setUseMaxResults(false);
-        } else {
-            int maxResults = persistenceManager.getFetchUI(datasource.getMetaClass().getName());
-            maxResultsField.setValue(String.valueOf(maxResults));
-
-            datasource.setMaxResults(maxResults);
+        } else if (useMaxResults) {
+            initMaxResults();
         }
+    }
+
+    protected void initMaxResults() {
+        int maxResults = datasource.getMaxResults();
+        if (maxResults == 0 || maxResults == persistenceManager.getMaxFetchUI(datasource.getMetaClass().getName()))
+            maxResults = persistenceManager.getFetchUI(datasource.getMetaClass().getName());
+        maxResultsField.setValue(String.valueOf(maxResults));
+
+        datasource.setMaxResults(maxResults);
     }
 
     protected void switchToUse() {
