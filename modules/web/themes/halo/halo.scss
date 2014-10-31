@@ -34,6 +34,7 @@
 @import "components/optiongroup/optiongroup";
 @import "components/widgetstree/widgetstree";
 @import "components/popupbutton/popupbutton";
+@import "components/notification/notification";
 @import "components/searchselect/searchselect";
 @import "components/orderedlayout/orderedlayout";
 @import "components/fieldgrouplayout/fieldgrouplayout";
@@ -42,7 +43,6 @@
 // Application specific
 @import "app/log-control";
 @import "app/login-window";
-@import "app/generic-filter";
 @import "app/report-wizard";
 @import "app/breadcrumbs";
 @import "app/table-presentations";
@@ -68,6 +68,7 @@
   @include halo-twincolumn;
   @include halo-optiongroup;
   @include halo-popupbutton;
+  @include halo-notification;
   @include halo-orderedlayout;
   @include halo-sourcecodeeditor;
 
@@ -85,7 +86,6 @@
 
   @include cuba-log-control;
   @include cuba-login-window;
-  @include cuba-generic-filter;
   @include cuba-report-wizard;
   @include cuba-breadcrumbs;
   @include cuba-table-presentations;
