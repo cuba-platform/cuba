@@ -128,9 +128,9 @@ public class ThemeConstantsRepository {
 
     public String parseThemeName(String fileName) {
         String name = FilenameUtils.getBaseName(fileName);
-        if (name.contains("-")) {
-            int dashIndex = name.lastIndexOf('-');
-            return name.substring(dashIndex + 1);
+        if (name.endsWith("-theme")) {
+            int dashIndex = name.lastIndexOf("-theme");
+            return name.substring(0, dashIndex);
         } else {
             return name;
         }
