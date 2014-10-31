@@ -374,12 +374,30 @@ public class DesktopWindowManager extends WindowManager {
     }
 
     private JComponent showNewWindow(Window window, String caption) {
-        getDialogParams().reset();
-
-        window.setWidth("100%");
         window.setHeight("100%");
+        window.setWidth("100%");
 
         TopLevelFrame windowFrame = createTopLevelFrame(caption);
+
+        DialogParams dialogParams = getDialogParams();
+        Dimension dimension = new Dimension();
+
+        if (dialogParams.getWidth() != null) {
+            dimension.width = dialogParams.getWidth();
+        } else {
+            dimension.width = 800;
+        }
+
+        if (dialogParams.getHeight() != null) {
+            dimension.height = dialogParams.getHeight();
+        } else {
+            dimension.height = 500;
+        }
+
+        windowFrame.setResizable(BooleanUtils.isTrue(dialogParams.getResizable()));
+        windowFrame.setMinimumSize(dimension);
+        windowFrame.pack();
+        getDialogParams().reset();
 
         WindowBreadCrumbs breadCrumbs = createBreadCrumbs();
         breadCrumbs.addWindow(window);
