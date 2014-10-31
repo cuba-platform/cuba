@@ -382,19 +382,21 @@ public class DesktopWindowManager extends WindowManager {
         DialogParams dialogParams = getDialogParams();
         Dimension dimension = new Dimension();
 
+        dimension.width = 800;
         if (dialogParams.getWidth() != null) {
             dimension.width = dialogParams.getWidth();
-        } else {
-            dimension.width = 800;
         }
 
+        dimension.height = 500;
         if (dialogParams.getHeight() != null) {
             dimension.height = dialogParams.getHeight();
-        } else {
-            dimension.height = 500;
         }
 
-        windowFrame.setResizable(BooleanUtils.isTrue(dialogParams.getResizable()));
+        boolean resizable = true;
+        if (dialogParams.getResizable() != null) {
+            resizable = dialogParams.getResizable();
+        }
+        windowFrame.setResizable(resizable);
         windowFrame.setMinimumSize(dimension);
         windowFrame.pack();
         getDialogParams().reset();
