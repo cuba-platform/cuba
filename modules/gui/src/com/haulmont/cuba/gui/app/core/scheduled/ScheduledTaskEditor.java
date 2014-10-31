@@ -292,6 +292,6 @@ public class ScheduledTaskEditor extends AbstractEditor<ScheduledTask> {
     public void getCronHelp() {
         getDialogParams().setModal(false);
         getDialogParams().setWidth(500);
-        showMessageDialog("Cron" + " - CONFIRMATION_HTML", getMessage("cronDescription"), MessageType.CONFIRMATION_HTML);
+        showMessageDialog("Cron", getMessage("cronDescription"), MessageType.CONFIRMATION_HTML);
     }
 }
