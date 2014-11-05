@@ -163,5 +163,9 @@ public interface GlobalConfig extends Config {
     @Property("cuba.groovyEvaluationPoolMaxIdle")
     @DefaultInt(8)
     int getGroovyEvaluationPoolMaxIdle();
+
+    @Property("cuba.numberIdCacheSize")
+    @DefaultInt(100)
+    int getNumberIdCacheSize();
 }
 

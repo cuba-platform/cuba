@@ -5,8 +5,9 @@
 
 package com.haulmont.cuba.client.sys;
 
-import com.haulmont.cuba.core.app.UniqueNumbersService;
+import com.haulmont.cuba.core.app.NumberIdService;
 import com.haulmont.cuba.core.global.NumberIdSource;
+import com.haulmont.cuba.core.sys.NumberIdCache;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -19,24 +20,23 @@ import javax.inject.Inject;
 public class NumberIdSourceClientImpl implements NumberIdSource {
 
     @Inject
-    protected UniqueNumbersService uniqueNumbers;
+    protected NumberIdService service;
+
+    @Inject
+    protected NumberIdCache cache;
 
     @Override
     public Long createLongId(String entityName) {
-        return uniqueNumbers.getNextNumber(getDomain(entityName));
+        return cache.createLongId(entityName, service);
     }
 
     @Override
     public Integer createIntegerId(String entityName) {
-        long nextLong = uniqueNumbers.getNextNumber(getDomain(entityName));
+        long nextLong = createLongId(entityName);
         int nextInt = (int) nextLong;
         if (nextInt != nextLong)
             throw new IllegalStateException("Error creating a new Integer ID for entity " + entityName
                     + ": sequence overflow");
         return nextInt;
-    }
-
-    protected String getDomain(String entityName) {
-        return entityName.replace("$", "_");
     }
 }
