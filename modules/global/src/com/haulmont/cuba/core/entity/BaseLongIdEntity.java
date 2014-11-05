@@ -27,7 +27,7 @@ public abstract class BaseLongIdEntity extends BaseGenericIdEntity<Long> {
     @Column(name = "ID")
     protected Long id;
 
-    @Column(name = "UUID")
+    @Column(name = "UUID", nullable = false)
     @Persistent
     protected UUID uuid;
 

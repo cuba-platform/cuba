@@ -27,7 +27,7 @@ public abstract class BaseIntegerIdEntity extends BaseGenericIdEntity<Integer> {
     @Column(name = "ID")
     protected Integer id;
 
-    @Column(name = "UUID")
+    @Column(name = "UUID", nullable = false)
     @Persistent
     protected UUID uuid;
 

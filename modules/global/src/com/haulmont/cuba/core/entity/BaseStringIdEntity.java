@@ -23,7 +23,7 @@ public abstract class BaseStringIdEntity extends BaseGenericIdEntity<String> {
 
     private static final long serialVersionUID = -1887225952123433245L;
 
-    @Column(name = "UUID")
+    @Column(name = "UUID", nullable = false)
     @Persistent
     protected UUID uuid;
 
@@ -42,5 +42,4 @@ public abstract class BaseStringIdEntity extends BaseGenericIdEntity<String> {
 
     @Override
     public abstract String getId();
-
 }
