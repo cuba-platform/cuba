@@ -34,11 +34,14 @@ public class EntityFactory extends TypeFactory {
 
     @Override
     public Object build(String string) {
-        if (StringUtils.isBlank(string))
+        if (StringUtils.isBlank(string)) {
             return null;
+        }
+
         EntityLoadInfo info = EntityLoadInfo.parse(string);
-        if (info == null)
+        if (info == null) {
             throw new IllegalArgumentException("Invalid entity info: " + string);
+        }
 
         Entity entity;
         String property = AppContext.getProperty("cuba.useCurrentTxForConfigEntityLoad");
@@ -48,13 +51,19 @@ public class EntityFactory extends TypeFactory {
             View view = null;
             if (info.getViewName() != null) {
                 view = metadata.getViewRepository().getView(info.getMetaClass(), info.getViewName());
-                em.setView(view);
             }
 
-            entity = em.find(info.getMetaClass().getJavaClass(), info.getId());
+            Class javaClass = info.getMetaClass().getJavaClass();
             if (view != null) {
-                em.fetch(entity, view);
+                entity = em.find(javaClass, info.getId(), view);
+
+                if (entity != null) {
+                    em.fetch(entity, view);
+                }
+            } else {
+                entity = em.find(javaClass, info.getId());
             }
+
             tx.commit();
         } finally {
             tx.end();
