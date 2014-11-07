@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.core.app;
 
+import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.Deserializer;
@@ -13,11 +14,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jgroups.*;
 import org.jgroups.conf.XmlConfigurator;
+import org.jgroups.jmx.JmxConfigurator;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.management.MBeanServer;
 import java.io.*;
+import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
@@ -48,6 +52,9 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
 
     @Inject
     protected ServerConfig serverConfig;
+
+    @Inject
+    protected GlobalConfig globalConfig;
 
     protected static final String STATE_MAGIC = "CUBA_STATE";
 
@@ -117,8 +124,9 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
             channel = new JChannel(XmlConfigurator.getInstance(stream));
             channel.setOpt(Channel.LOCAL, false); // do not receive a copy of our own messages
             channel.setReceiver(new ClusterReceiver());
-            channel.connect("cubaCluster");
+            channel.connect(getClusterName());
             channel.getState(null, 5000);
+            registerJmxBeans();
         } catch (Exception e) {
             channel = null;
             throw new RuntimeException(e);
@@ -127,12 +135,39 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
         }
     }
 
+    protected void registerJmxBeans() {
+        try {
+            MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
+            JmxConfigurator.registerChannel(channel, mBeanServer, getMBeanDomain(), getClusterName(), true);
+        } catch (Exception e) {
+            log.error("Failed to register channel in jmx", e);
+        }
+    }
+
+    protected void unregisterJmxBeans() {
+        try {
+            MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
+            JmxConfigurator.unregisterChannel(channel, mBeanServer, getMBeanDomain(), getClusterName());
+        } catch (Exception e) {
+            log.error("Failed to unregister channel in jmx", e);
+        }
+    }
+
+    protected String getClusterName() {
+        return "cubaCluster";
+    }
+
+    protected String getMBeanDomain() {
+        return globalConfig.getWebContextName() + ".jgroups";
+    }
+
     @Override
     public void stop() {
         if (channel == null)
             return;
 
         log.info("Stopping cluster");
+        unregisterJmxBeans();
         try {
             channel.close();
         } catch (Exception e) {
