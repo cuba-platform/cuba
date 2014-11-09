@@ -51,6 +51,8 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
         component.setNullRepresentation("");
         component.setInvalidAllowed(false);
         component.setInvalidCommitted(true);
+
+        // todo artamonov remove unnecessary validator #PL-4506
         component.addValidator(
                 new com.vaadin.data.Validator() {
                     @Override
