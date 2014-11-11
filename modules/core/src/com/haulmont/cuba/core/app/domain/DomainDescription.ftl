@@ -76,16 +76,16 @@
         <col width="15%">
         <col width="20%">
         <col width="15%">
-        <col width="30%">
+        <col width="20%">
         <col width="5%">
-        <col width="15%">
+        <col width="25%">
         <tr>
             <th>Property</th>
             <th>Column</th>
             <th>Type</th>
             <th>Description</th>
             <th>Cardinality</th>
-            <th>Misc</th>
+            <th>Annotations</th>
         </tr>
     <#list entity.properties as property>
         <#if property.persistent>
@@ -97,7 +97,7 @@
                         <td><i>${property.cardinality}</i></td>
                         <td>
                             <#list property.annotations as ann>
-                                ${ann};&nbsp;
+                                ${ann}<#if ann_has_next>;&nbsp;</#if>
                             </#list>
                         </td>
             </tr>
