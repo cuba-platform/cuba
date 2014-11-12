@@ -1,0 +1,3 @@
+﻿<textField id="textField1" trim="true" caption="msg://name"/>
+<!--Создаем кнопку,при нажатии на которую на экран будет выводиться значение текстового поля-->
+<button id="button1" caption="msg://buttonsName" invoke="getVal"/>

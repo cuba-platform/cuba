@@ -1,0 +1,5 @@
+<theme xmlns="http://schemas.haulmont.com/cuba/5.0/desktop-theme.xsd">
+    <style name="label-underlined" component="com.haulmont.cuba.desktop.gui.components.DesktopLabel">
+        <custom class="com.sample.sales.desktop.gui.decorators.UnderlinedLabelDecorator"/>
+    </style>
+</theme>

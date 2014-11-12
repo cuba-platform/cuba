@@ -1,0 +1,21 @@
+@Inject
+private ProgressBar progressBar;
+
+private int count;
+
+@Override
+public void init(Map<String, Object> params) {
+    progressBar.setIndeterminate(false);
+    Timer timer = getTimer("countTimer");
+    timer.addTimerListener(new Timer.TimerListener() {
+        @Override
+        public void onTimer(Timer timer) {
+            progressBar.setValue(((float)100/timer.getDelay())*(count++));
+        }
+
+        @Override
+        public void onStopTimer(Timer timer) {
+        }
+    });
+	timer.start();
+}

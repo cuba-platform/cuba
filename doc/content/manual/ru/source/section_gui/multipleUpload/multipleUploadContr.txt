@@ -1,0 +1,50 @@
+﻿public class UploadSample extends AbstractWindow {
+
+    @Inject
+    private TextField textFieldInfo;
+
+    @Inject
+    private FileMultiUploadField uploadTemplateAttachment;
+
+    @Inject
+    private FileUploading fileUploading;//класс,реализующий управление файлами в хранилище
+
+    private FileDescriptor fd;
+
+    @Override
+    public void init(Map<String, Object> params) {
+        super.init(params);
+
+        uploadTemplateAttachment.addListener(new FileMultiUploadField.UploadListener() {
+            @Override
+            public void queueUploadComplete() {
+                //код обработки успешной загрузки
+                textFieldInfo.setValue("");
+                String val = "";
+                //загрузка мапы идентификаторов файлов и названий имен файлов
+                Map<UUID, String> uploadMap = uploadTemplateAttachment.getUploadsMap();
+                for (UUID fileId : uploadMap.keySet()) {
+                    //создание дескриптора файла
+                    FileDescriptor fd = fileUploading.getFileDescriptor(fileId, uploadMap.get(fileId));
+                    //запись файла в хранилище файлов
+                    try {
+                        fileUploading.putFileIntoStorage(fileId, fd);
+                        val = val + fd.getName() + "\n";
+                    } catch (FileStorageException e) {
+                        new RuntimeException(e);
+                    }
+                }
+                if (StringUtils.isNotEmpty(val)) {
+                    textFieldInfo.setValue(val);
+                }
+                showNotification("Files were successfully uploaded", IFrame.NotificationType.HUMANIZED);
+                uploadTemplateAttachment.getUploadsMap().clear();
+            }
+
+            @Override
+            public void errorNotify(String fileName, String message, int errorCode) {
+                showNotification("Upload was unsuccessfully", IFrame.NotificationType.ERROR);
+            }
+        });
+    }
+}

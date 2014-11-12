@@ -1,0 +1,18 @@
+﻿public class CheckBoxSample extends AbstractWindow {
+   @Inject
+   private CheckBox checkBox1;
+   
+   @Override
+   public void init(Map<String, Object> params) {
+      checkBox1.addListener(new ValueListener<Object>() {
+         @Override
+         public void valueChanged(Object source, String property, Object prevValue, Object value) {
+            if (checkBox1.getValue().equals(true)) {
+               showNotification(getMessage("notificationMessage1"), NotificationType.HUMANIZED);
+            } else {
+               showNotification(getMessage("notificationMessage2"), NotificationType.HUMANIZED);
+            }
+         }
+      });
+   }
+}

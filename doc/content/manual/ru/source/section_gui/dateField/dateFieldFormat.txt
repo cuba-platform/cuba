@@ -1,0 +1,1 @@
+﻿<dateField id="dateField1" dateFormat="MM/yy" caption="msg://name1"/>

@@ -1,0 +1,756 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" []>
+<!-- This document was created with Syntext Serna Free. --><chapter id="chapter_deployment" lang="ru">
+  <title>Развертывание приложений</title>
+  <para>В данной главе рассматриваются различные аспекты развертывания и эксплуатации CUBA-приложений.</para>
+  <para>На диаграмме ниже приведена возможная структура развернутого приложения. </para>
+  <mediaobject>
+    <imageobject>
+      <imagedata align="center" fileref="img/DeploymentStructure.png"/>
+    </imageobject>
+  </mediaobject>
+  <para>В приведенном варианте приложение обеспечивает отсутствие единой точки отказа, балансировку нагрузки и подключение различных типов клиентов. В простейшем случае, однако, серверная часть приложения может быть установлена на одном компьютере, содержащем, в том числе, и базу данных. Различные варианты развертывания в зависимости от нагрузки и требований к отказоустойчивости подробно рассмотрены в  <xref linkend="scaling"/>. </para>
+  <section>
+    <title>Каталоги приложения</title>
+    <para>В данном разделе описываются каталоги файловой системы, используемые различными <link linkend="app_tiers">блоками приложения</link> во время выполнения.</para>
+    <section id="conf_dir">
+      <title>Конфигурационный каталог</title>
+      <para>Каталог конфигурации предназначен для размещения ресурсов, дополняющих и переопределяющих свойства приложения, пользовательский интерфейс  и бизнес-логику после развертывания приложения. Переопределение обеспечивается механизмом загрузки интерфейса инфраструктуры <code>
+          <link linkend="resources">Resources</link>
+        </code>, который сначала выполняет поиск в конфигурационном каталоге, а потом в CLASSPATH, так что одноименные ресурсы в конфигурационном каталоге имеют приоритет над расположенными в JAR-файлах и каталогах классов.</para>
+      <para>Конфигурационный каталог может содержать следующие типы ресурсов:<itemizedlist>
+          <listitem>
+            <para>Файл <filename>
+                <link linkend="app_properties_files">local.app.properties</link>
+              </filename>, определяющий параметры развертывания блоков приложения, работающих под управлением веб-сервера.</para>
+          </listitem>
+          <listitem>
+            <para>Конфигурационные файлы <filename>
+                <link linkend="metadata.xml">metadata.xml</link>
+              </filename>, <filename>
+                <link linkend="persistence.xml">persistence.xml</link>
+              </filename>, <filename>
+                <link linkend="views.xml">views.xml</link>
+              </filename>,  <filename>
+                <link linkend="remoting-spring.xml">remoting-spring.xml</link>
+              </filename>.</para>
+          </listitem>
+          <listitem>
+            <para><link linkend="screen_xml">XML-дескрипторы</link> экранов UI.</para>
+          </listitem>
+          <listitem>
+            <para><link linkend="screen_controller">Контроллеры</link> экранов UI в виде исходных текстов Java или Groovy.</para>
+          </listitem>
+          <listitem>
+            <para>Скрипты или классы Groovy, а также исходные тексты классов Java, используемые приложением через интерфейс <code>
+                <link linkend="scripting">Scripting</link>
+              </code>.</para>
+          </listitem>
+        </itemizedlist></para>
+      <para>Расположение конфигурационного каталога определяется свойством приложения <property>
+          <link linkend="cuba.confDir">cuba.confDir</link>
+        </property>. Для блоков <structname>Middleware</structname>, <structname>Web Client</structname> и <structname>Web Portal</structname>  в варианте <link linkend="fast_deployment">быстрого развертывания</link> в <application>Tomcat</application> это подкаталог с именем веб-приложения в каталоге <filename>tomcat/conf</filename>, например <filename>tomcat/conf/app-core</filename> для <structname>Middleware</structname>.</para>
+    </section>
+    <section id="work_dir">
+      <title>Рабочий каталог</title>
+      <para>Рабочий каталог используется приложением для хранения файлов данных и конфигурации.</para>
+      <para>Например, подкаталог <filename>filestorage</filename> рабочего каталога по умолчанию используется <link linkend="file_storage">хранилищем загруженных файлов</link>. Кроме того, блок <structname>Middleware</structname> на старте сохраняет в рабочем каталоге сгенерированные файлы <filename>
+          <link linkend="persistence.xml">persistence.xml</link>
+        </filename> и <filename>orm.xml</filename>.</para>
+      <para>Расположение рабочего каталога определяется свойством приложения <property>
+          <link linkend="cuba.dataDir">cuba.dataDir</link>
+        </property>. Для блоков <structname>Middleware</structname>, <structname>Web Client</structname> и <structname>Web Portal</structname>  в варианте <link linkend="fast_deployment">быстрого развертывания</link> в <application>Tomcat</application> это подкаталог с именем веб-приложения в каталоге <filename>tomcat/work</filename>.</para>
+    </section>
+    <section id="log_dir">
+      <title>Каталог журналов</title>
+      <para>В каталоге журналов создаются лог-файлы приложения.</para>
+      <para>Состав и настройка файлов журналов определяются конфигурацией фреймворка <application>Apache log4j</application>. Расположение файла конфигурации определяется системным свойством <literal>
+          <link linkend="log4j.configuration">log4j.configuration</link>
+        </literal>.</para>
+      <para>Данный каталог может быть также использован для сохранения произвольной информации о выполнении приложения. Путь к каталогу журналов определяется свойством приложения <property>
+          <link linkend="cuba.logDir">cuba.logDir</link>
+        </property>. Для блоков <structname>Middleware</structname>, <structname>Web Client</structname> и <structname>Web Portal</structname>  в варианте <link linkend="fast_deployment">быстрого развертывания</link> в <application>Tomcat</application> это каталог <filename>tomcat/logs</filename>.</para>
+      <para>См. также <xref linkend="logging"/>.</para>
+    </section>
+    <section id="temp_dir">
+      <title>Временный каталог</title>
+      <para>Данный каталог может быть использован для создания произвольных временных файлов во время  выполнения приложения. Путь к временному каталогу определяется свойством приложения <property>
+          <link linkend="cuba.tempDir">cuba.tempDir</link>
+        </property>. Для блоков <structname>Middleware</structname>, <structname>Web Client</structname> и <structname>Web Portal</structname>  в  варианте <link linkend="fast_deployment">быстрого развертывания</link> в <application>Tomcat</application> это подкаталог с именем веб-приложения в каталоге <filename>tomcat/temp</filename>.</para>
+    </section>
+    <section id="db_dir">
+      <title>Каталог скриптов базы данных</title>
+      <para>В данном каталоге развернутого блока <structname>Middleware</structname> хранится набор SQL скриптов создания и обновления БД.</para>
+      <para>Структура каталога скриптов повторяет описанную в <xref linkend="db_scripts"/>, но имеет один дополнительный верхний уровень, разделяющий скрипты используемых <link linkend="base_projects">базовых проектов</link> и самого приложения. Нумерация каталогов верхнего уровня определяется во время сборки проекта.</para>
+      <para>Расположение  каталога скриптов БД определяется свойством приложения <property>
+          <link linkend="cuba.dbDir">cuba.dbDir</link>
+        </property>. В варианте <link linkend="fast_deployment">быстрого развертывания</link> в <application>Tomcat</application> это подкаталог <filename>WEB-INF/db</filename>  каталога веб-приложения среднего слоя: <filename>tomcat/webapps/app-core/WEB-INF/db</filename>.</para>
+    </section>
+  </section>
+  <section id="deployment_variants">
+    <title>Варианты развертывания</title>
+    <para>В данном разделе рассматриваются различные варианты развертывания CUBA-приложений.</para>
+    <section id="fast_deployment">
+      <title>Быстрое развертывание в Tomcat</title>
+      <para>Быстрое развертывание используется по умолчанию при разработке приложения, так как обеспечивает минимальное время сборки, установки и старта приложения. Данный вариант  удобен также и для эксплуатации приложения.</para>
+      <para>Быстрое развертывание производится с помощью задачи  <link linkend="build.gradle_deploy">deploy</link>, объявленной для модулей core и web в файле <filename>build.gradle</filename>. Перед первым выполнением <code>deploy</code> необходимо установить и проинициализировать локальный сервер Tomcat с помощью задачи <link linkend="build.gradle_setupTomcat">setupTomcat</link>. </para>
+      <para>В результате быстрого развертывания в каталоге, задаваемом свойством <code>ext.tomcatDir</code> скрипта <filename>build.gradle</filename> создается следующая структура  (перечислены только важные каталоги и файлы, описанные ниже):<programlisting>bin/
+    setenv.bat, setenv.sh
+    startup.bat, startup.sh
+    debug.bat, debug.sh
+    shutdown.bat, shutdown.sh
+
+conf/
+    catalina.properties
+    server.xml
+    log4j.xml
+    logging.properties
+    Catalina/
+        localhost/
+    app/
+    app-core/
+
+lib/
+    hsqldb-2.2.9.jar
+
+logs/
+    app.log
+
+shared/
+    lib/
+
+temp/
+    app/
+    app-core/
+
+webapps/
+    app/
+    app-core/
+
+work/
+    app/
+    app-core/</programlisting></para>
+      <itemizedlist>
+        <listitem>
+          <para><filename>bin</filename> - каталог, содержащий средства   запуска и остановки  сервера Tomcat:</para>
+          <itemizedlist>
+            <listitem>
+              <para><filename>setenv.bat</filename>, <filename>setenv.sh</filename> - скрипты установки переменных окружения. Эти скрипты следует использовать для установки параметров памяти JVM, указания файла конфигурации <link linkend="logging_setup_tomcat">логгирования</link>, настройки <link linkend="jmx_remote_access">доступа по JMX</link>, параметров <link linkend="debug_setup">подключения отладчика</link>.</para>
+            </listitem>
+            <listitem>
+              <para><filename>startup.bat</filename>, <filename>startup.sh</filename> - скрипты запуска Tomcat. Сервер стартует в отдельном консольном окне в <application>Windows</application> и в фоне в <application>*nix</application>.</para>
+              <para>Для запуска сервера в текущем консольном окне вместо <filename>startup.*</filename> используйте команды</para>
+              <para><prompt>&gt; catalina.bat run</prompt></para>
+              <para><prompt>$ ./catalina.sh run</prompt></para>
+            </listitem>
+            <listitem>
+              <para><code>debug.bat</code>, <code>debug.sh</code> - скрипты, аналогичные <code>startup.*</code>, однако запускающие Tomcat с возможностью подключения отладчика. Именно эти скрипты запускаются при выполнении задачи <link linkend="build.gradle_start">start</link> скрипта сборки.</para>
+            </listitem>
+            <listitem>
+              <para><filename>shutdown.bat</filename>, <filename>shutdown.sh</filename> - скрипты остановки Tomcat.</para>
+            </listitem>
+          </itemizedlist>
+        </listitem>
+        <listitem>
+          <para><filename>conf</filename> - каталог, содержащий файлы конфигурации Tomcat и развернутых в нем приложений.</para>
+          <itemizedlist>
+            <listitem>
+              <para><filename>catalina.properties</filename> - свойства Tomcat. Для загрузки общих библиотек из каталога <filename>shared/lib</filename> (см. ниже) данный файл должен содержать строку:<programlisting>shared.loader=${catalina.home}/shared/lib/*.jar</programlisting></para>
+            </listitem>
+            <listitem>
+              <para><filename>server.xml</filename> - описатель конфигурации Tomcat. В этом файле можно изменить порты сервера.</para>
+            </listitem>
+            <listitem>
+              <para><filename>log4j.xml</filename> - описатель конфигурации <link linkend="logging_setup_tomcat">логгирования</link> приложений.</para>
+            </listitem>
+            <listitem>
+              <para><filename>logging.properties</filename> - описатель конфигурации логгирования самого сервера Tomcat.</para>
+            </listitem>
+            <listitem>
+              <para><filename>Catalina/localhost</filename> - в этом каталоге можно разместить дескрипторы развертывания приложений <link linkend="context.xml">context.xml</link>. Дескрипторы, расположенные в данном каталоге имеют приоритет над дескрипторами в каталогах <filename>META-INF</filename> самих приложений, что часто бывает удобно при эксплуатации системы. Например, в таком дескрипторе на уровне сервера можно указать параметры подключения к базе данных, отличные от указанных в самом приложении.</para>
+              <para>Дескриптор развертывания на уровне сервера должен иметь имя приложения и расширение <filename>.xml</filename>. То есть для создания такого дескриптора, например, для приложения <code>app-core</code>, необходимо скопировать содержимое файла <filename>webapps/app-core/META-INF/context.xml</filename> в файл <filename>conf/Catalina/localhost/app-core.xml</filename>.</para>
+            </listitem>
+            <listitem>
+              <para><filename>app</filename> - <link linkend="conf_dir">конфигурационный каталог</link> приложения веб-клиента <filename>app</filename>.</para>
+            </listitem>
+            <listitem>
+              <para><filename>app-core</filename> - <link linkend="conf_dir">конфигурационный каталог</link> приложения среднего слоя <filename>app-core</filename>.</para>
+            </listitem>
+          </itemizedlist>
+        </listitem>
+        <listitem>
+          <para><filename>lib</filename> - каталог библиотек, загружаемых в <firstterm>common classloader</firstterm> сервера. Эти библиотеки доступны как самому серверу, так и всем развернутым в нем веб-приложениям. В частности, в данном каталоге должны располагаться JDBC-драйверы используемых баз данных (<filename>hsqldb-XYZ.jar</filename>, <filename>postgresql-XYZ.jar</filename> и т.д.)</para>
+        </listitem>
+        <listitem>
+          <para><code>logs</code> - каталог <link linkend="logging">логов</link> приложений и сервера. Основной лог-файл приложений - <filename>app.log</filename>.</para>
+        </listitem>
+        <listitem>
+          <para><filename>shared/lib</filename> - каталог библиотек, доступных всем развернутым приложениям. Классы этих библиотек загружаются в специальный <firstterm>shared classloader</firstterm> сервера. Использование shared classloader задается в файле <filename>conf/catalina.properties</filename> как описано выше.</para>
+          <para>Задачи <link linkend="build.gradle_deploy">deploy</link> файла сборки копируют в этот каталог все библиотеки, не перечисленные в параметре <code>jarNames</code>, то есть не специфичные для данного приложения.</para>
+        </listitem>
+        <listitem>
+          <para><filename>temp/app</filename>, <filename>temp/app-core</filename> -  <link linkend="temp_dir">временные каталоги</link> приложений веб-клиента и среднего слоя.</para>
+        </listitem>
+        <listitem>
+          <para><filename>webapps</filename> - каталог веб-приложений. Каждое приложение располагается в собственном подкаталоге в формате <firstterm>exploded WAR</firstterm>.</para>
+          <para>Задачи <link linkend="build.gradle_deploy">deploy</link> файла сборки создают подкаталоги приложений с именами, указанными в параметрах <code>appName</code>, и кроме прочего копируют в их подкаталоги <filename>WEB-INF/lib</filename> библиотеки, перечисленные в параметре <code>jarNames</code>.</para>
+        </listitem>
+        <listitem>
+          <para><filename>work/app</filename>, <filename>work/app-core</filename> - <link linkend="work_dir">рабочие каталоги</link> приложений веб-клиента и среднего слоя.</para>
+        </listitem>
+      </itemizedlist>
+    </section>
+    <section id="war_deployment">
+      <title>Развертывание в WAR</title>
+      <para>Стандартное для JavaEE развертывание приложений в WAR-файлы осуществляется с помощью задач сборки <link linkend="build.gradle_buildWar">buildWar</link> и <link linkend="build.gradle_createWarDistr">createWarDistr</link>. Рассмотрим пример сборки WAR-файлов и их развертывания на сервере <application>Glassfish 4</application>.</para>
+      <orderedlist>
+        <listitem>
+          <para>Добавляем в <link linkend="build.gradle">build.gradle</link> задачи сборки WAR для модулей <structname>core</structname> и <structname>web</structname>:<programlisting>configure(coreModule) {
+    ...
+    task buildWar(dependsOn: assemble, type: CubaWarBuilding) {
+        appName = &apos;app-core&apos;
+        appHome = &apos;${app.home}&apos;
+    }
+}
+
+configure(webModule) {
+    ...
+    task buildWar(dependsOn: assemble, type: CubaWarBuilding) {
+        appName = &apos;app&apos;
+        appHome = &apos;${app.home}&apos;
+    }
+}</programlisting></para>
+        </listitem>
+        <listitem>
+          <para>Добавляем в <filename>build.gradle</filename> задачу сборки дистрибутива:<programlisting>task createWarDistr(dependsOn: [coreModule.buildWar, webModule.buildWar], type: CubaWarDistribution) {
+    appHome = &apos;${app.home}&apos;
+}</programlisting></para>
+        </listitem>
+        <listitem>
+          <para>Запускаем сборку:</para>
+          <para><prompt>gradlew createWarDistr</prompt></para>
+          <para>В результате в подкаталоге <filename>build/war</filename> проекта создаются домашний каталог с именем <filename>${app.home}</filename> и файлы <filename>app-core.war</filename> и <filename>app.war</filename>. Имя домашнего каталога здесь роли не играет, так как реальное имя будет задаваться для сервера с помощью системной переменной Java.</para>
+        </listitem>
+        <listitem>
+          <para>Копируем содержимое <filename>build/war/${app.home}</filename> на сервер, например в каталог <filename>/home/user/app_home</filename>.</para>
+        </listitem>
+        <listitem>
+          <para>Устанавливаем сервер <application>Glassfish 4</application>, например в каталог <filename>/home/user/glassfish4</filename>.</para>
+        </listitem>
+        <listitem>
+          <para>Копируем JDBC-драйвер используемой базы данных в каталог <filename>/home/user/glassfish4/glassfish/domains/domain1/lib</filename>. Файл драйвера можно взять из каталога <filename>lib</filename> Studio, либо из каталога <filename>build/tomcat/lib</filename> проекта (если перед этим выполнялось <link linkend="fast_deployment">быстрое развертывание</link> в Tomcat).</para>
+        </listitem>
+        <listitem>
+          <para>Запускаем сервер:</para>
+          <para><prompt>$ cd /home/user/glassfish4/bin</prompt></para>
+          <para><prompt>$ ./asadmin start-domain</prompt></para>
+        </listitem>
+        <listitem>
+          <para>Переходим по адресу <code>http://localhost:4848</code> и в консоли управления сервером:</para>
+          <orderedlist>
+            <listitem>
+              <para>Создаем <guilabel>JDBC Connection Pool</guilabel> для подключения к нашей базе данных, например:<itemizedlist>
+                  <listitem>
+                    <para>Pool Name: AppDB </para>
+                  </listitem>
+                  <listitem>
+                    <para>Resource Type: javax.sql.DataSource</para>
+                  </listitem>
+                  <listitem>
+                    <para>Database Driver Vendor: Postgresql</para>
+                  </listitem>
+                  <listitem>
+                    <para>Datasource Classname: org.postgresql.ds.PGSimpleDataSource </para>
+                  </listitem>
+                  <listitem>
+                    <para>User: cuba</para>
+                  </listitem>
+                  <listitem>
+                    <para>DatabaseName: app_db</para>
+                  </listitem>
+                  <listitem>
+                    <para>Password: cuba</para>
+                  </listitem>
+                </itemizedlist></para>
+            </listitem>
+            <listitem>
+              <para>Создаем <guilabel>JDBC Resource</guilabel>:<itemizedlist>
+                  <listitem>
+                    <para>JNDI Name: jdbc/CubaDS</para>
+                  </listitem>
+                  <listitem>
+                    <para>Pool Name: AppDB</para>
+                  </listitem>
+                </itemizedlist></para>
+            </listitem>
+            <listitem>
+              <para>В экране <guilabel> server (Admin Server)</guilabel> -&gt; <guilabel>Properties</guilabel> -&gt; <guilabel>System Properties</guilabel> задаем следующие системные переменные Java:<itemizedlist>
+                  <listitem>
+                    <para><code>app.home = /home/user/app_home</code> - домашний каталог приложения.</para>
+                  </listitem>
+                  <listitem>
+                    <para><code>log4j.configuration = file:///home/user/app_home/log4j.xml</code> - файл конфигурации <link linkend="logging">логгирования</link> приложения.</para>
+                  </listitem>
+                </itemizedlist></para>
+            </listitem>
+          </orderedlist>
+        </listitem>
+        <listitem>
+          <para>Перезапускаем сервер:</para>
+          <para><prompt>$ ./asadmin stop-domain</prompt></para>
+          <para><prompt>$ ./asadmin start-domain</prompt></para>
+        </listitem>
+        <listitem>
+          <para>Снова открываем консоль сервера по адресу <code>http://localhost:4848</code> и в экране <guilabel>Applications</guilabel> выполняем развертывание файлов <filename>app-core.war</filename> и <filename>app.war</filename>, находящихся в каталоге дистрибутива, созданного на шаге 3.</para>
+        </listitem>
+        <listitem>
+          <para>Приложение запущено:<itemizedlist>
+              <listitem>
+                <para>Веб-интерфейс доступен по адресу <code>http://localhost:8080/app</code></para>
+              </listitem>
+              <listitem>
+                <para>Лог-файлы создаются в каталоге <filename>/home/user/app_home/logs</filename></para>
+              </listitem>
+            </itemizedlist></para>
+        </listitem>
+      </orderedlist>
+    </section>
+  </section>
+  <section id="scaling">
+    <title>Масштабирование приложения</title>
+    <para>В данном разделе рассмотрены способы масштабирования CUBA-приложения, состоящего из блоков Middleware и Web Client, при возрастании нагрузки  и ужесточении требований к отказоустойчивости.</para>
+    <para><informaltable frame="all">
+        <tgroup cols="2">
+          <colspec colname="c1"/>
+          <colspec colname="c2"/>
+          <tbody>
+            <row>
+              <entry align="left" valign="top">
+                <para role=""><emphasis role="bold">Этап 1. Оба блока развернуты на одном сервере приложения.</emphasis> </para>
+                <para>Это простейший вариант, реализуемый стандартной процедурой <link linkend="fast_deployment">быстрого развертывания</link>.</para>
+                <para>В данном случае обеспечивается максимальная производительность передачи данных между блоками Web Client и Middleware,  так как при включенном свойстве приложения <link linkend="cuba.useLocalServiceInvocation">cuba.useLocalServiceInvocation</link> сервисы Middleware вызываются в обход сетевого стека.</para>
+              </entry>
+              <entry>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata align="center" fileref="img/scaling_1.png"/>
+                  </imageobject>
+                </mediaobject>
+              </entry>
+            </row>
+            <row>
+              <entry align="left" valign="top">
+                <para><emphasis role="bold">Этап 2. Блоки Middleware и Web Client развернуты на отдельных серверах приложения.</emphasis></para>
+                <para>Данный вариант позволяет распределить нагрузку между двумя серверами приложения и более оптимально использовать ресурсы серверов. Кроме того, в этом случае нагрузка от веб-пользователей меньше сказывается на выполнении других процессов. Под другими процессами здесь понимается обслуживание средним слоем других типов клиентов (например Desktop), выполнение <link linkend="scheduled_tasks">задач по расписанию</link> и, возможно, интеграционные задачи. </para>
+                <para>Требования к ресурсам серверов:<itemizedlist>
+                    <listitem>
+                      <para>Tomcat 1 (Web Client):<itemizedlist>
+                          <listitem>
+                            <para>Объем памяти - пропорционально количеству одновременно подключенных пользователей.</para>
+                          </listitem>
+                          <listitem>
+                            <para>Мощность CPU - зависит от интенсивности работы пользователей.</para>
+                          </listitem>
+                        </itemizedlist></para>
+                    </listitem>
+                    <listitem>
+                      <para>Tomcat 2 (Middleware):<itemizedlist>
+                          <listitem>
+                            <para>Объем памяти - фиксированный и относительно небольшой.</para>
+                          </listitem>
+                          <listitem>
+                            <para>Мощность CPU - зависит от интенсивности работы пользователей и других процессов.   </para>
+                          </listitem>
+                        </itemizedlist></para>
+                    </listitem>
+                  </itemizedlist></para>
+                <para>В этом и более сложных вариантах развертывания в блоке Web Client свойство приложения <link linkend="cuba.useLocalServiceInvocation">cuba.useLocalServiceInvocation</link> должно быть установлено в <code>false</code>, а свойство <link linkend="cuba.connectionUrlList">cuba.connectionUrlList</link> должно содержать URL блока Middleware.</para>
+              </entry>
+              <entry>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata align="center" fileref="img/scaling_2.png"/>
+                  </imageobject>
+                </mediaobject>
+              </entry>
+            </row>
+            <row>
+              <entry align="left" valign="top">
+                <para><emphasis role="bold">Этап 3. Кластер серверов Web Client работает с одним сервером Middleware.</emphasis></para>
+                <para>Данный вариант применяется, когда вследствие большого количества одновременно подключенных пользователей требования к памяти для блока Web Client превышают возможности одной JVM. В этом случае запускается кластер (два или более) серверов Web Client, и подключение пользователей производится через Load Balancer. Все серверы Web Client работают с одним сервером Middleware.</para>
+                <para>Дублирование серверов Web Client автоматически обеспечивает отказоустойчивость на этом уровне. Однако, так как репликация HTTP-сессий не поддерживается, при незапланированном отключении одного из серверов Web Client все пользователи, подключенные к нему, вынуждены будут выполнить новый логин в приложение.</para>
+                <para>Настройка данного варианта развертывания описана в <xref linkend="cluster_webclient"/>.</para>
+              </entry>
+              <entry>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata align="center" fileref="img/scaling_3.png"/>
+                  </imageobject>
+                </mediaobject>
+              </entry>
+            </row>
+            <row>
+              <entry align="left" valign="top">
+                <para><emphasis role="bold">Этап 4. Кластер серверов Web Client работает с кластером серверов Middleware.</emphasis></para>
+                <para>Это максимальный вариант развертывания, обеспечивающий отказоустойчивость и балансировку нагрузки для Middleware и Web Client. </para>
+                <para>Подключение пользователей к серверам Web Client производится через Load Balancer. Серверы WebClient работают с кластером серверов Middleware. Для этого им не требуется дополнительный Load Balancer - достаточно определить список URL серверов Middleware в свойстве <link linkend="cuba.connectionUrlList">cuba.connectionUrlList</link>.</para>
+                <para>В кластере серверов Middleware организуется взаимодействие для обмена информацией о пользовательских сессиях, блокировках и пр. При этом обеспечивается полная отказоустойчивость блока Middleware - при отключении одного из серверов выполнение запросов от клиентских блоков продолжается на доступном сервере прозрачно для пользователей.</para>
+                <para>Настройка данного варианта развертывания описана в <xref linkend="cluster_mw"/>.</para>
+              </entry>
+              <entry>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata align="center" fileref="img/scaling_4.png"/>
+                  </imageobject>
+                </mediaobject>
+              </entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </informaltable></para>
+    <section id="cluster_webclient">
+      <title>Настройка кластера Web Client</title>
+      <para>В данном разделе рассматривается следующая конфигурация развертывания:<mediaobject>
+          <imageobject>
+            <imagedata align="center" fileref="img/cluster_webclient.png"/>
+          </imageobject>
+        </mediaobject></para>
+      <para>Здесь на серверах <code>host1</code> и <code>host2</code> блок установлены инстансы Tomcat с веб-приложением <code>app</code>, реализующим блок Web Client. Пользователи обращаются к балансировщику нагрузки по адресу <code>http://host0/app</code>, который перенаправляет запрос этим серверам. На сервере <code>host3</code> установлен  Tomcat с веб-приложением <code>app-core</code>, реализующим блок Middleware.</para>
+      <section id="cluster_webclient_lb">
+        <title>Установка и настройка Load Balancer</title>
+        <para>Рассмотрим процесс установки балансировщика нагрузки на базе <application>Apache HTTP Server</application> для операционной системы <application>Ubuntu 14.04</application>.</para>
+        <orderedlist>
+          <listitem>
+            <para>Выполните установку <application>Apache HTTP Server</application> и его модуля <application>mod_jk</application>:</para>
+            <para><prompt>$ sudo apt-get install apache2 libapache2-mod-jk</prompt></para>
+          </listitem>
+          <listitem>
+            <para>Замените содержимое файла <filename>/etc/libapache2-mod-jk/workers.properties</filename> на следующее:<programlisting>workers.tomcat_home=
+workers.java_home=
+ps=/
+
+worker.list=tomcat1,tomcat2,loadbalancer,jkstatus
+
+worker.tomcat1.port=8009
+worker.tomcat1.host=host1
+worker.tomcat1.type=ajp13
+worker.tomcat1.connection_pool_timeout=600
+worker.tomcat1.lbfactor=1
+
+worker.tomcat2.port=8009
+worker.tomcat2.host=host2
+worker.tomcat2.type=ajp13
+worker.tomcat2.connection_pool_timeout=600
+worker.tomcat2.lbfactor=1
+
+worker.loadbalancer.type=lb
+worker.loadbalancer.balance_workers=tomcat1,tomcat2
+
+worker.jkstatus.type=status</programlisting></para>
+          </listitem>
+          <listitem>
+            <para>Добавьте в файл <code>/etc/apache2/sites-available/000-default.conf</code> следующее:<programlisting>&lt;VirtualHost *:80&gt;
+...
+    &lt;Location /jkmanager&gt;
+        JkMount jkstatus
+        Order deny,allow
+        Allow from all
+    &lt;/Location&gt;
+
+    JkMount /jkmanager/* jkstatus
+    JkMount /app loadbalancer
+    JkMount /app/* loadbalancer
+
+&lt;/VirtualHost&gt;</programlisting> </para>
+          </listitem>
+          <listitem>
+            <para>Перезапустите сервис Apache HTTP:</para>
+            <para><prompt>$ sudo service apache2 restart</prompt></para>
+          </listitem>
+        </orderedlist>
+      </section>
+      <section id="cluster_webclient_tomcat">
+        <title>Настройка серверов Web Client</title>
+        <para>На серверах Tomcat 1 и Tomcat 2 необходимо произвести следующие настройки:<orderedlist>
+            <listitem>
+              <para>В файлах <code>tomcat/conf/server.xml</code> добавить параметр <code>jvmRoute</code>, эквивалентный имени worker, заданному в настройках балансировщика нагрузки - <code>tomcat1</code> и <code>tomcat2</code>:<programlisting>&lt;Server port=&quot;8005&quot; shutdown=&quot;SHUTDOWN&quot;&gt;
+  ...
+  &lt;Service name=&quot;Catalina&quot;&gt;
+    ...
+    &lt;Engine name=&quot;Catalina&quot; defaultHost=&quot;localhost&quot; jvmRoute=&quot;tomcat1&quot;&gt;
+      ...
+    &lt;/Engine&gt;
+  &lt;/Service&gt;
+&lt;/Server&gt;</programlisting></para>
+            </listitem>
+            <listitem>
+              <para>Задать следующие свойства приложения в файлах <filename>tomcat/conf/app/local.app.properties</filename>:<programlisting>cuba.useLocalServiceInvocation = false
+cuba.connectionUrlList = http://host3:8080/app-core
+
+cuba.webHostName = host1
+cuba.webPort = 8080
+cuba.webContextName = app</programlisting></para>
+              <para>Параметры <link linkend="cuba.webHostName">cuba.webHostName</link>, <link linkend="cuba.webPort">cuba.webPort</link>, <link linkend="cuba.webContextName">cuba.webContextName</link> не обязательны для работы кластера WebClient, но позволяют проще идентифицировать сервера в других механизмах платформы, например в <link linkend="jmx_console">консоли JMX</link>. Кроме того, в экране <guilabel>User Sessions</guilabel> в атрибуте <guilabel>Client Info</guilabel> отображается сформированный из этих параметров идентификатор блока Web Client, на котором работает данный пользователь.</para>
+            </listitem>
+          </orderedlist></para>
+      </section>
+    </section>
+    <section id="cluster_mw">
+      <title>Настройка кластера Middleware</title>
+      <para>В данном разделе рассматривается следующая конфигурация развертывания:<mediaobject>
+          <imageobject>
+            <imagedata align="center" fileref="img/cluster_mw.png"/>
+          </imageobject>
+        </mediaobject></para>
+      <para>Здесь на серверах <code>host1</code> и <code>host2</code> блок установлены инстансы Tomcat с веб-приложением <code>app</code>, реализующим блок Web Client. Настройка кластера  этих серверов рассмотрена в <link linkend="cluster_webclient">предыдущем разделе</link>. На серверах <code>host3</code> и <code>host4</code> установлены инстансы Tomcat с веб-приложением <code>app-core</code>, реализующим блок Middleware. Между ними настроено взаимодействие для обмена информацией о пользовательских сессиях и  блокировках, сброса кэшей и др.</para>
+      <section id="cluster_mw_client">
+        <title>Настройка обращения к кластеру Middleware</title>
+        <para>Для того, чтобы клиентские блоки могли работать с несколькими серверами Middleware, достаточно указать список URL этих серверов в свойстве приложения <link linkend="cuba.connectionUrlList">cuba.connectionUrlList</link>. Для Web Client это можно сделать в файле <filename>tomcat/conf/app/local.app.properties</filename>:<programlisting>cuba.useLocalServiceInvocation = false
+cuba.connectionUrlList = http://host3:8080/app-core,http://host4:8080/app-core
+
+cuba.webHostName = host1
+cuba.webPort = 8080
+cuba.webContextName = app</programlisting></para>
+        <para>Порядок серверов в  списке <code>cuba.connectionUrlList</code> определяет приоритет, в котором клиент будет пытаться направлять запросы. Например в данном случае клиент сначала попытается вызвать <code>host1</code>, если он недоступен - то <code>host2</code>. Если запрос к <code>host2</code> завершился успешно, данный клиент ставит <code>host2</code> первым в своем списке и продолжает работать с ним. После перезапуска клиента список восстанавливается в первоначальное значение. Для обеспечения равномерного распределения клиентов между серверами используется свойство <link linkend="cuba.randomServerPriority">cuba.randomServerPriority</link>.</para>
+      </section>
+      <section id="cluster_mw_server">
+        <title>Настройка взаимодействия серверов Middleware</title>
+        <para>Сервера Middleware могут поддерживать общие списки <link linkend="userSession">пользовательских сессий</link> и других объектов, а также координировать сброс кэшей. Для этого достаточно на каждом их них включить свойство приложения <link linkend="cuba.cluster.enabled">cuba.cluster.enabled</link>. Пример файла <filename>tomcat/conf/app-core/local.app.properties</filename>:<programlisting>cuba.cluster.enabled = true
+
+cuba.webHostName = host3
+cuba.webPort = 8080
+cuba.webContextName = app-core</programlisting></para>
+        <para>Для серверов Middleware обязательно нужно указать правильные значения свойств  <link linkend="cuba.webHostName">cuba.webHostName</link>, <link linkend="cuba.webPort">cuba.webPort</link> и <link linkend="cuba.webContextName">cuba.webContextName</link> для формирования уникального <link linkend="serverId">Server Id</link>.</para>
+        <para>Механизм взаимодействия основан на библиотеке <ulink url="http://www.jgroups.org">JGroups</ulink>. Для тонкой настройки взаимодействия служит файл <filename>jgroups.xml</filename>, расположенный в корне архива <filename>cuba-core-&lt;version&gt;.jar</filename>. Его можно скопировать в  каталог <filename>tomcat/conf/app-core</filename> и настроить нужным образом.</para>
+        <para>Программный интерфейс для взаимодействия в кластере Middleware обеспечивает бин <code>ClusterManagerAPI</code>. Его можно использовать в приложении - см. JavaDocs и примеры использования в коде платформы.</para>
+      </section>
+    </section>
+    <section id="serverId">
+      <title>Server Id</title>
+      <para><firstterm>Server Id</firstterm> служит для надежной идентификации серверов в кластере <structname>Middleware</structname>. Идентификатор имеет вид <literal>host:port/context</literal>, например:<programlisting>tezis.haulmont.com:80/app-core</programlisting><programlisting>192.168.44.55:8080/app-core</programlisting></para>
+      <para>Идентификатор формируется на основе  параметров конфигурации <link linkend="cuba.webHostName">
+          <property>cuba.webHostName</property>
+        </link>, <link linkend="cuba.webPort">
+          <property>cuba.webPort</property>
+        </link>, <link linkend="cuba.webContextName">
+          <property>cuba.webContextName</property>
+        </link>, поэтому крайне важно корректно указать эти параметры для блока <structname>Middleware</structname>, работающего в кластере. </para>
+      <para>Server Id может быть получен  c помощью бина <code>ServerInfoAPI</code> или через JMX-интерфейс <code>
+          <link linkend="serverInfoMBean">ServerInfoMBean</link>
+        </code>.</para>
+    </section>
+  </section>
+  <section id="jmx_tools">
+    <title>Использование инструментов JMX</title>
+    <para>В данном разделе рассмотрены различные аспекты использования инструментов <application>Java Management Extensions</application>  в CUBA-приложениях.</para>
+    <section id="jmx_console">
+      <title>Встроенная JMX консоль</title>
+      <para>Модуль <structname>Web Client</structname> базового проекта <structname>cuba</structname> платформы содержит средство просмотра и редактирования JMX объектов. Точкой входа в этот инструмент является экран <filename>com/haulmont/cuba/web/app/ui/jmxcontrol/browse/display-mbeans.xml</filename>, зарегистрированный под идентификатором <code>jmxConsole</code> и в стандартном меню доступный через пункт <guimenu>Администрирование</guimenu> -&gt; <guimenuitem>Консоль JMX</guimenuitem>.</para>
+      <para>Без дополнительной настройки консоль отображает все JMX объекты, зарегистрированные в JVM, на которой работает блок <structname>Web Client</structname>, к которому в данный момент подключен пользователь. Соответственно, в простейшем случае развертывания всех блоков приложения в одном экземпляре веб-контейнера консоль имеет доступ к JMX бинам всех уровней, а также к JMX объектам самой JVM и веб-контейнера. </para>
+      <para>Имена бинов приложения имеют префикс, соответствующий имени веб-приложения, их содержащего. Например, бин <code>app-core.cuba:type=CachingFacade</code> загружен веб-приложением <structname>app-core</structname>, реализующим блок <structname>Middleware</structname>, а бин <code>app.cuba:type=CachingFacade</code> загружен веб-приложением <structname>app</structname>, реализующим блок <structname>Web Client</structname>.</para>
+      <para>Консоль JMX может также работать с JMX объектами произвольной удаленной JVM. Это актуально в случае развертывания блоков приложения на нескольких экземплярах веб-контейнера, например, отдельно <structname>Web Client</structname> и <structname>Middleware</structname>. </para>
+      <para>Для подключения к удаленной JVM необходимо в поле <guilabel>Соединение JMX</guilabel>  консоли выбрать созданное ранее соединение, либо вызвать экран создания нового соединения:</para>
+      <figure>
+        <title>Редактирование JMX соединения</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center" fileref="img/jmx-connection-edit.png"/>
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>Для соединения указывается JMX хост и порт, логин и пароль. Имеется также поле <guilabel>Имя узла</guilabel>, которое заполняется автоматически, если по указанному адресу обнаружен какой-либо блок CUBA-приложения. В этом случае значением этого поля становится комбинация свойств <property>
+          <link linkend="cuba.webHostName">cuba.webHostName</link>
+        </property> и <property>
+          <link linkend="cuba.webPort">cuba.webPort</link>
+        </property> данного блока, что позволяет идентифицировать содержащий его сервер. Если подключение произведено к постороннему JMX интерфейсу, то поле <guilabel>Имя узла</guilabel> будет иметь значение  &quot;Unknown JMX interface&quot;. Значение данного поля можно произвольно изменять. </para>
+      <para>Для подключения удаленной JVM она должна быть соответствующим образом настроена - см. ниже.</para>
+    </section>
+    <section id="jmx_remote_access">
+      <title>Настройка удаленного доступа к JMX</title>
+      <para>В данном разделе рассматривается настройка запуска сервера <application>Tomcat</application>, необходимая  для удаленного подключения к нему инструментов JMX.</para>
+      <section>
+        <title>Tomcat JMX под Windows</title>
+        <itemizedlist>
+          <listitem>
+            <para>Отредактировать файл <filename>bin/setenv.bat</filename> следующим образом:<programlisting>set CATALINA_OPTS=%CATALINA_OPTS% ^
+-Dcom.sun.management.jmxremote ^
+-Djava.rmi.server.hostname=192.168.10.10 ^
+-Dcom.sun.management.jmxremote.ssl=false ^
+-Dcom.sun.management.jmxremote.port=7777 ^
+-Dcom.sun.management.jmxremote.authenticate=true ^
+-Dcom.sun.management.jmxremote.password.file=../conf/jmxremote.password ^
+-Dcom.sun.management.jmxremote.access.file=../conf/jmxremote.access</programlisting></para>
+            <para>Здесь в параметре <code>java.rmi.server.hostname</code> необходимо указать реальный IP адрес или DNS имя компьютера, на котором запущен сервер, в параметре <code>com.sun.management.jmxremote.port</code> - порт для подключения инструментов JMX.</para>
+          </listitem>
+          <listitem>
+            <para>Отредактировать файл <filename>conf/jmxremote.access</filename>. Он должен содержать имена пользователей, которые будут подключаться к JMX, и их уровень доступа. Например:<programlisting>admin readwrite</programlisting></para>
+          </listitem>
+          <listitem>
+            <para>Отредактировать файл <filename>conf/jmxremote.password</filename>. Он должен содержать пароли пользователей JMX, например:<programlisting>admin admin</programlisting></para>
+          </listitem>
+          <listitem>
+            <para>Файл паролей должен иметь разрешение на чтение только для пользователя, от имени которого работает сервер <application>Tomcat</application>. Настроить права можно следующим образом:<itemizedlist>
+                <listitem>
+                  <para>Открыть командную строку и перейти в каталог <filename>conf</filename>.</para>
+                </listitem>
+                <listitem>
+                  <para>Выполнить команду:</para>
+                  <para><prompt>cacls jmxremote.password /P &quot;domain_name\user_name&quot;:R</prompt>
+
+</para>
+                  <para>где <code>domain_name\user_name</code> - домен и имя пользователя.</para>
+                </listitem>
+                <listitem>
+                  <para>После выполнения данной команды  файл в <application>Проводнике</application> будет отмечен изображением замка.</para>
+                </listitem>
+              </itemizedlist></para>
+          </listitem>
+          <listitem>
+            <para>Если <application>Tomcat</application> установлен как служба Windows, то для службы должен быть задан вход в систему с учетной записью, имеющей права на файл <filename>jmxremote.password</filename>. Кроме того, следует иметь в виду, что в этом случае файл <filename>bin/setenv.bat</filename> не используется, и соответствующие параметры запуска JVM должны быть заданы в приложении, настраивающем службу.</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+      <section>
+        <title>Tomcat JMX под Linux</title>
+        <para><itemizedlist>
+            <listitem>
+              <para>Отредактировать файл <filename>bin/setenv.sh</filename> следующим образом:<programlisting>CATALINA_OPTS=&quot;$CATALINA_OPTS -Dcom.sun.management.jmxremote \
+-Djava.rmi.server.hostname=192.168.10.10 \
+-Dcom.sun.management.jmxremote.port=7777 \
+-Dcom.sun.management.jmxremote.ssl=false \
+-Dcom.sun.management.jmxremote.authenticate=true&quot;
+
+CATALINA_OPTS=&quot;$CATALINA_OPTS -Dcom.sun.management.jmxremote.password.file=../conf/jmxremote.password -Dcom.sun.management.jmxremote.access.file=../conf/jmxremote.access&quot;</programlisting></para>
+              <para>Здесь в параметре <code>java.rmi.server.hostname</code> необходимо указать реальный IP адрес или DNS имя компьютера, на котором запущен сервер, в параметре <code>com.sun.management.jmxremote.port</code> - порт для подключения инструментов JMX.</para>
+            </listitem>
+            <listitem>
+              <para>Отредактировать файл <filename>conf/jmxremote.access</filename>. Он должен содержать имена пользователей, которые будут подключаться к JMX, и их уровень доступа. Например:<programlisting>admin readwrite</programlisting></para>
+            </listitem>
+            <listitem>
+              <para>Отредактировать файл <filename>conf/jmxremote.password</filename>. Он должен содержать пароли пользователей JMX, например:<programlisting>admin admin</programlisting></para>
+            </listitem>
+            <listitem>
+              <para>Файл паролей должен иметь разрешение на чтение только для пользователя, от имени которого работает сервер <application>Tomcat</application>. Настроить права для текущего пользователя можно следующим образом:<itemizedlist>
+                  <listitem>
+                    <para>Открыть командную строку и перейти в каталог <filename>conf</filename>.</para>
+                  </listitem>
+                  <listitem>
+                    <para>Выполнить команду:</para>
+                    <para><prompt>chmod go-rwx jmxremote.password</prompt>
+
+</para>
+                  </listitem>
+                </itemizedlist></para>
+            </listitem>
+          </itemizedlist></para>
+      </section>
+    </section>
+  </section>
+  <section id="db_update_in_prod">
+    <title>Создание и обновление БД при эксплуатации приложения</title>
+    <para>В данном разделе рассматриваются способы создания и обновления базы данных на этапе развертывания и эксплуатации приложения. Для знакомства с устройством и правилами создания скриптов БД см. <xref linkend="db_scripts"/> и <xref linkend="db_update_in_dev"/>.</para>
+    <section>
+      <title>Использование механизма выполнения скриптов БД сервером</title>
+      <para><link linkend="db_update_server">Механизм выполнения скриптов БД сервером</link> можно использовать как для первичной инициализации базы данных, так и для ее последующего обновления в процессе развития приложения и изменения схемы данных.</para>
+      <para>Чтобы инициализировать  новую базу данных, нужно выполнить следующее:<itemizedlist>
+          <listitem>
+            <para>включить свойство приложения <property>
+                <link linkend="cuba.automaticDatabaseUpdate">cuba.automaticDatabaseUpdate</link>
+              </property>, добавив следующую строку в файл <filename>
+                <link linkend="app_properties_files">local.app.properties</link>
+              </filename>:<programlisting>cuba.automaticDatabaseUpdate = true</programlisting></para>
+          </listitem>
+          <listitem>
+            <para>создать пустую базу данных, соответствующую URL, заданному в описании источника данных в <filename>
+                <link linkend="context.xml">context.xml</link>
+              </filename></para>
+          </listitem>
+          <listitem>
+            <para>запустить сервер приложения, содержащий блок <structname>Middleware</structname>. На старте приложения  БД будет проинициализирована и сразу же готова к работе.</para>
+          </listitem>
+        </itemizedlist></para>
+      <para>В дальнейшем при каждом старте сервера приложения механизм выполнения скриптов будет сравнивать набор скриптов, находящийся в <link linkend="db_dir">каталоге скриптов базы данных</link>, со списком выполненных скриптов, зарегистрированным в БД. При появлении в каталоге новых скриптов они будут выполнены и также зарегистрированы. Таким образом, достаточно в каждую новую версию приложения включать скрипты обновления, и при рестарте сервера приложения база данных будет приводиться в актуальное состояние.</para>
+      <para>При эксплуатации механизма выполнения скриптов на старте сервера следует иметь в виду следующее:<itemizedlist>
+          <listitem>
+            <para>При любой ошибке выполнения скрипта блок <structname>Middleware</structname> прерывает инициализацию и становится неработоспособным. Клиентские блоки выдают   сообщения о невозможности подключения к <structname>Middleware</structname>. </para>
+            <para>Для выяснения причин сбоя необходимо открыть файл лога <filename>app.log</filename> в <link linkend="log_dir">каталоге журналов</link> сервера и найти сообщения о выполнении SQL от логгера <code>com.haulmont.cuba.core.sys.DbUpdaterEngine</code>, и, возможно, последующие сообщения об ошибках. </para>
+          </listitem>
+          <listitem>
+            <para>Скрипты обновления, а также отделенные символом &quot;^&quot; команды DDL и SQL внутри скриптов выполняются в отдельных транзакциях. Поэтому при возникновении ошибки при обновлении существует большая вероятность того, что часть скриптов, или даже отдельных команд последнего скрипта, выполнилась и зафиксирована в БД. </para>
+            <para>В связи с этим рекомендуется непосредственно перед запуском сервера с новой версией приложения делать резервное сохранение  БД. Тогда после устранения причины ошибки достаточно восстановить БД и запустить автоматический процесс вновь.</para>
+            <para>Если бэкап БД остутствует, то после устранения причины ошибки необходимо выяснить, какая часть вызвавшего ошибку скрипта выполнилась и закоммичена. Если скрипт не выполнился целиком, то можно сразу снова запускать автоматический процесс. Если же часть команд до ошибочной была отделена символом &quot;^&quot;, выполнялась в отдельной транзакции и была закоммичена, то необходимо выполнить оставшуюся часть команд, а затем зарегистрировать данный скрипт в <database>SYS_DB_CHANGELOG</database>  вручную. После этого можно стартовать сервер, механизм автоматического обновления продолжит работу со следующего невыполненного скрипта.</para>
+          </listitem>
+        </itemizedlist></para>
+    </section>
+    <section>
+      <title>Инициализация и обновление БД из командной строки</title>
+      <para>Скрипты создания и обновления БД могут быть запущены из командной строки с помощью класса <code>com.haulmont.cuba.core.sys.utils.DbUpdaterUtil</code>, входящего в состав блока <structname>Middleware</structname> платформы. При запуске должны быть переданы следующие аргументы:<itemizedlist>
+          <listitem>
+            <para><literal>dialect</literal> - тип СУБД, возможные значения: postgres, mssql, oracle.</para>
+          </listitem>
+          <listitem>
+            <para><literal>dbUser</literal> - имя пользователя БД.</para>
+          </listitem>
+          <listitem>
+            <para><literal>dbPassword</literal> - пароль пользователя БД.</para>
+          </listitem>
+          <listitem>
+            <para><literal>dbUrl</literal> - URL для подключения к БД. Для выполнения первичной инициализации указанная база данных должна быть пустой, никакой предварительной очистки ее не производится.</para>
+          </listitem>
+          <listitem>
+            <para><literal>scriptsDir</literal> - абсолютный путь к каталогу, содержащему скрипты в стандартной структуре. Как правило, используется <link linkend="db_dir">каталог скриптов базы данных</link>, поставляемый с приложением.</para>
+          </listitem>
+          <listitem>
+            <para>одна из возможных команд:<itemizedlist>
+                <listitem>
+                  <para><literal>create</literal> - выполнить инициализацию базы данных.</para>
+                </listitem>
+                <listitem>
+                  <para><literal>check</literal> - отобразить список  невыполненных скриптов обновления.</para>
+                </listitem>
+                <listitem>
+                  <para><literal>update</literal> - выполнить обновление базы данных.</para>
+                </listitem>
+              </itemizedlist></para>
+          </listitem>
+        </itemizedlist></para>
+      <para>Пример скрипта для Linux, запускающего <code>DbUpdaterUtil</code>:<programlisting language="bash">#!/bin/sh
+
+DB_URL=&quot;jdbc:postgresql://localhost/mydb&quot;
+
+APP_CORE_DIR=&quot;./../webapps/app-core&quot;
+WEBLIB=&quot;$APP_CORE_DIR/WEB-INF/lib&quot;
+SCRIPTS=&quot;$APP_CORE_DIR/WEB-INF/db&quot;
+TOMCAT=&quot;./../lib&quot;
+SHARED=&quot;./../shared/lib&quot;
+
+CLASSPATH=&quot;&quot;
+for jar in `ls &quot;$TOMCAT/&quot;`
+do
+  CLASSPATH=&quot;$TOMCAT/$jar:$CLASSPATH&quot;
+done
+
+for jar in `ls &quot;$WEBLIB/&quot;`
+do
+  CLASSPATH=&quot;$WEBLIB/$jar:$CLASSPATH&quot;
+done
+
+for jar in `ls &quot;$SHARED/&quot;`
+do
+  CLASSPATH=&quot;$SHARED/$jar:$CLASSPATH&quot;
+done
+
+java -cp $CLASSPATH com.haulmont.cuba.core.sys.utils.DbUpdaterUtil \
+ -dialect postgres -dbUrl $DB_URL \
+ -dbUser $1 -dbPassword $2 \
+ -scriptsDir $SCRIPTS \
+ -$3</programlisting></para>
+      <para>Данный скрипт рассчитан на работу с БД с именем <literal>mydb</literal>, расположенной на локальном сервере PostgreSQL. Скрипт должен быть расположен в каталоге <filename>bin</filename> сервера Tomcat, и запускаться с параметрами <literal>{имя пользователя}</literal>, <literal>{пароль}</literal>, <literal>{команда}</literal>, например:</para>
+      <para><prompt>./dbupdate.sh cuba cuba123 update</prompt></para>
+      <para>Ход выполнения скриптов отображается в консоли. При возникновении ошибок обновления следует поступать так же, как описано в предыдущем разделе для механизма автоматического обновления. </para>
+      <warning>
+        <para>При обновлении БД из командной строки имеющиеся Groovy-скрипты запускаются, но реально отрабатывает только их основная часть. По причине отсутствия контекста сервера PostUpdate-часть игнорируется с выдачей в консоль соответствующего сообщения.</para>
+      </warning>
+    </section>
+  </section>
+</chapter>

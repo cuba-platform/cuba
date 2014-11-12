@@ -716,6 +716,7 @@ task restart(dependsOn: ['stop', ':cuba-core:deploy', ':cuba-web:deploy'], descr
 ext.docSrcDir = file('doc/content')
 ext.docToolsDir = file('doc/tools')
 ext.docCssDir = new File(docToolsDir, 'css')
+ext.docJsDir = new File(docToolsDir, 'js')
 ext.docDstDir = new File("$buildDir/doc")
 ext.docTmpDir = new File("$buildDir/tmp/doc")
 
@@ -723,6 +724,13 @@ task transformManual(type: TransformDocbook) {
     sourceDir = new File(docSrcDir, 'manual/ru')
     sourceFile = new File(sourceDir, 'manual.xml')
     destFile = new File(docTmpDir, 'manual/ru/manual.xml')
+    classpath = configurations.buildDoc
+}
+
+task transformManualEn(type: TransformDocbook) {
+    sourceDir = new File(docSrcDir, 'manual/en')
+    sourceFile = new File(sourceDir, 'manual.xml')
+    destFile = new File(docTmpDir, 'manual/en/manual.xml')
     classpath = configurations.buildDoc
 }
 
@@ -752,7 +760,8 @@ def commonXslParameters = [
         'chunk.section.depth': '5',
         'section.autolabel': '1',
         'chapter.autolabel': '1',
-        'appendix.autolabel': 'A'
+        'appendix.autolabel': 'A',
+        'admon.textlabel': 0
     ]
 
 task buildManualWebHelp(type: DocBook2WebHelp, dependsOn: transformManual) {
@@ -761,23 +770,36 @@ task buildManualWebHelp(type: DocBook2WebHelp, dependsOn: transformManual) {
     destDir = new File(docDstDir, "manual/ru/webhelp")
     templateDir = new File(docToolsDir, "webhelp/template")
     searchDir = new File(docToolsDir, "webhelp/search")
+    stylesheetName = 'webhelp.xsl'
     brand = "CUBA"
     language = "ru"
     xslParameters = commonXslParameters
 }
 
-task buildManualHtml(type: Docbook2Xhtml, dependsOn: transformManual) {
-    source transformManual.destFile
-    destDir = new File(docDstDir, 'manual/ru/html')
-    stylesheetName = 'html.xsl'
-    resources = fileTree(new File(docSrcDir, 'manual/ru')) {
-        include 'img/*.png'
-        include 'img/*.jpg'
-    }
-    resources += fileTree(docCssDir) {
-        include '*.css'
-    }
+task buildManualWebHelpEn(type: DocBook2WebHelp, dependsOn: transformManualEn) {
+    sourceFile = transformManualEn.destFile
+    imagesDir = new File(transformManualEn.sourceDir, "img")
+    destDir = new File(docDstDir, "manual/en/webhelp")
+    templateDir = new File(docToolsDir, "webhelp/template")
+    searchDir = new File(docToolsDir, "webhelp/search")
+    stylesheetName = 'webhelp.xsl'
+    brand = "CUBA"
+    language = "en"
+    xslParameters = commonXslParameters
 }
+
+//task buildManualHtml(type: Docbook2Xhtml, dependsOn: transformManual) {
+//    source transformManual.destFile
+//    destDir = new File(docDstDir, 'manual/ru/html')
+//    stylesheetName = 'html.xsl'
+//    resources = fileTree(new File(docSrcDir, 'manual/ru')) {
+//        include 'img/*.png'
+//        include 'img/*.jpg'
+//    }
+//    resources += fileTree(docCssDir) {
+//        include '*.css'
+//    }
+//}
 
 task buildManualSingleHtml(type: Docbook2Xhtml, dependsOn: transformManual) {
     source transformManual.destFile
@@ -789,11 +811,32 @@ task buildManualSingleHtml(type: Docbook2Xhtml, dependsOn: transformManual) {
     }
     resources += fileTree(docCssDir) {
         include '*.css'
+        include '*.gif'
+    }
+    resources += fileTree(docJsDir) {
+        include '*.js'
+    }
+}
+
+task buildManualSingleHtmlEn(type: Docbook2Xhtml, dependsOn: transformManualEn) {
+    source transformManualEn.destFile
+    destFile = new File(docDstDir, 'manual/en/html-single/manual.html')
+    stylesheetName = 'html-single.xsl'
+    resources = fileTree(new File(docSrcDir, 'manual/en')) {
+        include 'img/**/*.png'
+        include 'img/**/*.jpg'
+    }
+    resources += fileTree(docCssDir) {
+        include '*.css'
+        include '*.gif'
+    }
+    resources += fileTree(docJsDir) {
+        include '*.js'
     }
 }
 
 task buildDoc(type: Zip, description: 'Build documentation',
-        dependsOn: [buildManualSingleHtml, buildManualWebHelp]) {
+        dependsOn: [buildManualSingleHtml, buildManualSingleHtmlEn, buildManualWebHelp, buildManualWebHelpEn]) {
     from 'build/doc'
     destinationDir = file('build/distributions')
     baseName = 'cuba-doc'

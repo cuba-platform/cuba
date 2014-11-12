@@ -1,0 +1,19 @@
+﻿<dsContext>
+   <groupDatasource id="ordersDs"
+                    class="com.sample.sales.entity.Order"
+                   view="orderWithCustomer1">
+       <query>
+           select o from sales$Order o order by o.date
+       </query>
+   </groupDatasource>
+</dsContext>
+<!--...-->
+<groupTable id="ordersTable"
+            editable="false" width="100%" >
+    <columns>
+        <column id="date"/>
+        <column id="customer"/>
+        <column id="amount"/>
+    </columns>
+    <rows datasource="ordersDs"/>
+</groupTable>

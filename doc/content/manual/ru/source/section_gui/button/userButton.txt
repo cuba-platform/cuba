@@ -1,0 +1,1 @@
+﻿<button id="userButton" caption="msg://someAction" stylename="test"/>

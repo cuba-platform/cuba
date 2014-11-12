@@ -1,0 +1,12 @@
+<table id="users" aggregatable="true">
+   <columns>
+      <column id="login" caption="msg://login"/>
+      <column id="name" caption="msg://name">
+         <aggregation type="COUNT">
+            <formatter class="com.haulmont.sample.MyFormatter"/>
+         </aggregation>
+      </column>
+      <column id="email" caption="msg://email"/>
+   </columns>
+   <rows datasource="users"/>
+</table>

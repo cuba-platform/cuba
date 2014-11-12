@@ -1,0 +1,14 @@
+﻿<dsContext>
+    <datasource id="orderDs"
+                class="com.sample.sales.entity.Order"
+                view="orderWithCustomer">
+    </datasource>
+</dsContext>
+<fieldGroup id="orderFieldGroup"
+            datasource="orderDs">
+    <column width="250px">
+        <field id="date"/>
+        <field id="customer"/>
+        <field id="amount"/>
+    </column>
+</fieldGroup>

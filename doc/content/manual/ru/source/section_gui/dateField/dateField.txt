@@ -1,0 +1,5 @@
+﻿<datasource id="orderDs"
+            class="com.sample.sales.entity.Order"
+            view="_local">
+</datasource>
+<dateField id="dateField1" caption="msg://name1" datasource="orderDs" property="date"/>

@@ -1,0 +1,14 @@
+@Inject Table rolesTable;
+...
+rolesTable.addAction(new AddRoleAction());
+...
+private class AddRoleAction extends AbstractAction {
+
+    public AddRoleAction() {
+        super("add");
+    }
+
+    public void actionPerform(Component component) {
+    ...
+    }
+}

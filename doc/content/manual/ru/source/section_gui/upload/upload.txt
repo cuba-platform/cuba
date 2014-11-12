@@ -1,0 +1,3 @@
+﻿<label value="Загруженный файл" stylename="h2"/>
+<label id="fileName"/>
+<upload id="uploadField"/>

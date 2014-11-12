@@ -1,0 +1,8 @@
+﻿<groupBox collapsable="false" caption="Order" expand="true" height="100%">
+    <vbox margin="true" spacing="true">
+        <dateField id="dateField1" datasource="orderDs" property="date" caption="Date"/>
+        <lookupField id="lookupField1" datasource="orderDs" optionsDatasource="customersDs" 
+                     property="customer" caption="Customer"/>
+        <textField id="textField1" datasource="orderDs" property="amount" caption="Amount"/>
+    </vbox>
+</groupBox>

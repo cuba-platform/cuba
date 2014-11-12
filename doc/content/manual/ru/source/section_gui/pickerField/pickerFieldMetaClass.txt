@@ -1,0 +1,1 @@
+﻿<pickerField id="pickerField1" metaClass="sales$Customer"/>

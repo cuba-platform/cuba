@@ -1,0 +1,1 @@
+﻿<button id="button1" invoke="someMethod" caption="msg://button1"/>

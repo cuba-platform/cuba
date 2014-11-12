@@ -1,0 +1,110 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" []>
+<!-- This document was created with Syntext Serna Free. --><chapter id="chapter_setup" lang="ru">
+  <title>Установка и настройка инструментария</title>
+  <para>Минимально необходимым набором  программного обеспечения является:</para>
+  <itemizedlist>
+    <listitem>
+      <para><application>Java SE 7+ SDK</application>. Рекомендуется использовать <application>Oracle Java HotSpot VM</application>. </para>
+      <para>В переменной окружения <literal>JAVA_HOME</literal> необходимо установить путь к корневому каталогу JDK, например <filename>C:\Program Files\Java\jdk1.8.0_05</filename>. Для Windows это можно сделать, открыв <guimenu>Компьютер</guimenu> -&gt; <guimenu>Свойства системы</guimenu> -&gt; <guimenu>Дополнительные параметры системы</guimenu> -&gt; <guimenu>Дополнительно</guimenu> -&gt; <guimenu>Переменные среды</guimenu>, и задав значение переменной в списке <guilabel>Системные переменные</guilabel>.</para>
+    </listitem>
+    <listitem>
+      <para>Cреда разработки на Java: <application>IntelliJ IDEA Community Edition 12+</application>   или <application>Eclipse 4.3+</application>. Рекомендуется использовать <application>IntelliJ IDEA</application>.</para>
+    </listitem>
+  </itemizedlist>
+  <para>В простейшем случае в качестве сервера баз данных приложений используется встроенный  <application>HyperSQL</application> (<ulink url="http://hsqldb.org">http://hsqldb.org</ulink>), что вполне подходит для исследования возможностей платформы и прототипирования приложений. Для создания реальных приложений рекомендуется установить и использовать в проекте какую-либо из полноценных СУБД, <link linkend="dbms_types">поддерживаемых платформой</link>, например <application>PostgreSQL</application>.</para>
+  <para>Веб-интерфейс приложений, создаваемых на основе платформы, поддерживает все популярные современные браузеры, в том числе <application>Google Chrome</application>, <application>Mozilla Firefox</application>, <application>Safari</application>,  <application>Opera 15+</application>, <application>Internet Explorer 8+</application>. Веб-интерфейс Studio на данный момент работоспособен во всех перечисленных браузерах, кроме <application>Internet Explorer</application>.</para>
+  <section id="cubaStudio_install">
+    <title>Установка CUBA Studio</title>
+    <para>Убедитесь в  наличии на компьютере Java 7+ SE SDK, выполнив в консоли команду</para>
+    <para><prompt>java -version</prompt></para>
+    <para>В ответ должно быть выведено сообщение с номером версии Java, например <code>1.8.0_05</code>.</para>
+    <para>Проверьте установку переменной окружения <code>JAVA_HOME</code>. Для Windows это можно сделать командой </para>
+    <para><prompt>echo %JAVA_HOME%</prompt></para>
+    <para>В ответ должен быть выведен путь к корневому каталогу JDK, например <filename>C:\Program Files\Java\jdk1.8.0_05</filename>. Если это не так, обратитесь к предыдущему разделу за инструкцией по установке переменной окружения.</para>
+    <para>Для установки Studio выполните следующий шаги:</para>
+    <orderedlist>
+      <listitem>
+        <para>Загрузите архив <filename>studio-&lt;version&gt;.zip</filename> со страницы <ulink url="https://www.cuba-platform.com/download">https://www.cuba-platform.com/download</ulink>.</para>
+      </listitem>
+      <listitem>
+        <para>Распакуйте архив в локальный каталог, например, <filename>c:/work/studio</filename></para>
+      </listitem>
+      <listitem>
+        <para>Откройте командную строку, перейдите в подкаталог <filename>bin</filename> и запустите</para>
+        <para><prompt>studio</prompt></para>
+      </listitem>
+      <listitem>
+        <para>В окне <guilabel>CUBA Studio Server</guilabel> введите следующие параметры:</para>
+        <itemizedlist>
+          <listitem>
+            <para><guilabel>Workspace</guilabel> − каталог, в котором будут создаваться проекты, например, <filename>c:/work</filename></para>
+          </listitem>
+          <listitem>
+            <para><guilabel>Gradle home</guilabel> − оставьте поле пустым, в этом случае при первом запуске будет автоматически загружен нужный дистрибутив <application>Gradle</application>.</para>
+            <para>Если по какой-либо причине Вы хотите использовать уже установленный на компьютере Gradle, введите в поле путь к соответствующему каталогу. Для работы системы сборки проектов требуется Gradle версии <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="var/gradleVersion.txt" encoding="UTF-8" parse="text"/>.</para>
+          </listitem>
+          <listitem>
+            <para><guilabel>Server port</guilabel> −  порт, на котором будет запущен сервер CUBA Studio (по умолчанию 8111)</para>
+          </listitem>
+          <listitem>
+            <para><guilabel>IDE port</guilabel> −  порт, на котором  принимает подключения плагин  IDE (по умолчанию 48561)</para>
+          </listitem>
+          <listitem>
+            <para><guilabel>Repository</guilabel> − URL и параметры аутентификации <link linkend="artifact_repository">репозитория</link> бинарных артефактов. </para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+      <listitem>
+        <para>Запустите сервер Studio, нажав кнопку <guibutton>Start</guibutton>. </para>
+        <para>Сначала сервер выполнит загрузку, запуск  и подключение к демону Gradle. При первом запуске это может занять продолжительное время, при последующих - не более нескольких секунд. </para>
+        <para>Затем запустится веб-сервер, и в поле <guilabel>URL</guilabel> отобразится адрес, по которому доступен интерфейс Studio. Нажав <guibutton>-&gt;</guibutton>, можно открыть веб-браузер, нажав <guibutton>Copy</guibutton>, − скопировать адрес в буфер обмена.</para>
+      </listitem>
+      <listitem>
+        <para>Запустите веб-браузер  и перейдите по указанному адресу. </para>
+      </listitem>
+      <listitem>
+        <para>В веб-интерфейсе Studio нажмите кнопку <guibutton>Open project</guibutton>. В открывшемся окне <guilabel>Select project</guilabel> нажмите <guibutton>New</guibutton> для создания нового проекта, или <guibutton>Import</guibutton> для добавления имеющегося проекта в список Studio.</para>
+      </listitem>
+      <listitem>
+        <para>Сразу после открытия проекта Studio загружает исходный код базовых проектов платформы, на которых основан проект, и сохраняет его в подкаталоге <filename>.haulmont/studio/cache</filename> домашнего каталога пользователя. Перед сборкой приложения рекомендуется дождаться окончания загрузки и убедиться в том, что индикатор фоновых задач в левом нижнем углу экрана Studio погас. Если загрузка базовых проектов платформы по какой-либо причине была прервана, например, из-за неустойчивого соединения или остановки сервера Studio, то рекомендуется вручную удалить содержимое  каталога <filename>~/.haulmont/studio/cache</filename> и перезапустить сервер Studio.</para>
+      </listitem>
+    </orderedlist>
+  </section>
+  <section id="ide_integration">
+    <title>Интеграция CUBA Studio с IDE</title>
+    <para>Для интеграции с <application>IntelliJ IDEA</application> или <application>Eclipse</application> выполните следующие шаги:</para>
+    <orderedlist>
+      <listitem>
+        <para>Откройте или <link linkend="qs_studio_setup">создайте новый</link> проект в Studio</para>
+      </listitem>
+      <listitem>
+        <para>Перейдите в секцию <guilabel>Project properties</guilabel> и нажмите кнопку <guibutton>Edit</guibutton>. Выберите нужную <guilabel>Java IDE</guilabel> флажками <guibutton> IntelliJ IDEA</guibutton> или <guibutton>Eclipse</guibutton>.</para>
+      </listitem>
+      <listitem>
+        <para>В главном меню Studio выберите пункт меню <guimenu>Build</guimenu> −&gt; <guimenu>Create or update &lt;IDE&gt; project files</guimenu>. В каталоге проекта будут созданы соответствующие файлы</para>
+      </listitem>
+      <listitem>
+        <para>Для интеграции с IntelliJ IDEA 12:<orderedlist>
+            <listitem>
+              <para>Запустите IntelliJ IDEA 12 и установите плагин <application>CUBA Framework Integration</application>, доступный в репозитории плагинов: <guimenu>File</guimenu> -&gt; <guimenu>Settings</guimenu> -&gt; <guimenu>IDE Settings</guimenu> -&gt; <guimenu>Plugins</guimenu> -&gt; <guimenuitem>Browse Repositories</guimenuitem></para>
+            </listitem>
+            <listitem>
+              <para>В IntelliJ IDEA в меню <guimenu>Settings</guimenu> в группе <guilabel>Project Settings</guilabel> найдите пункт <guilabel>CUBA</guilabel>. На панели <guilabel>Studio integration</guilabel> установите флажок <guilabel>Enabled</guilabel> и нажмите на кнопку <guibutton>OK</guibutton></para>
+            </listitem>
+          </orderedlist></para>
+      </listitem>
+      <listitem>
+        <para>Для интеграции с Eclipse 4.3:<orderedlist>
+            <listitem>
+              <para>Запустите Eclipse, откройте <guimenu>Help</guimenu> -&gt; <guimenu>Install New Software</guimenu>, добавьте репозиторий <literal>http://files.cuba-platform.com/eclipse-update-site</literal> и установите плагин <application>CUBA Plugin</application></para>
+            </listitem>
+            <listitem>
+              <para>В Eclipse в меню <guimenu>Window</guimenu> -&gt; <guimenu>Preferences</guimenu> в секции <guilabel>CUBA</guilabel> установите флажок <guilabel>Studio Integration Enabled</guilabel> и нажмите на кнопку <guibutton>OK</guibutton></para>
+            </listitem>
+          </orderedlist></para>
+      </listitem>
+    </orderedlist>
+    <para>Обратите внимание, что в  панели статуса Studio загорелась надпись <guilabel>IDE: on port 48561</guilabel>. Теперь при нажатии кнопок <guilabel>IDE</guilabel> в Studio соответствующие файлы исходных кодов будут открываться редактором IDE.</para>
+  </section>
+</chapter>

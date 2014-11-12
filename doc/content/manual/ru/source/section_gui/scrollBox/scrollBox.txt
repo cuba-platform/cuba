@@ -1,0 +1,7 @@
+﻿<groupBox caption="Order" width="300" height="170">
+    <scrollBox width="100%" height="100%" spacing="true" margin="true" orientation="vertical">
+        <dateField id="dateField1" datasource="orderDs" property="date" caption="Date"/>
+        <lookupField id="lookupField1" datasource="orderDs" optionsDatasource="customersDs" property="customer" caption="Customer"/>
+        <textField id="textField1" datasource="orderDs" property="amount" caption="Amount"/>
+     </scrollBox>
+</groupBox>

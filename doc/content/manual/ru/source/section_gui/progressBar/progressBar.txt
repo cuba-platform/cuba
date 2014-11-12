@@ -1,0 +1,6 @@
+﻿<timers>
+    <timer id="countTimer" delay="500" repeating="true"/>
+</timers>
+<layout>
+    <progressBar id="progressBar" width="100%" indeterminate="false" editable="true"/>
+</layout>

@@ -1,0 +1,15 @@
+﻿<dsContext>
+    <datasource id="orderDs"
+                class="com.sample.sales.entity.Order"
+                view="orderWithCustomer1">
+    </datasource>
+    <collectionDatasource id="productsDs" 
+                          class="com.sample.sales.entity.Product" 
+                          view="_local">
+      <query>
+         select p from sales$Product p order by p.name
+      </query>
+   </collectionDatasource>
+</dsContext>
+<twinColumn id="twinColumn1" datasource="orderDs" property="products"
+            rows="4" columns="10" optionsDatasource="productsDs"/>

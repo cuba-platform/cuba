@@ -1,0 +1,15 @@
+﻿<datasource id="orderDs"
+            class="com.sample.sales.entity.Order"
+            view="orderWithCustomer">
+    <collectionDatasource id="productsssDs" property="products"/>
+</datasource>
+<collectionDatasource id="productsDs"
+                      class="com.sample.sales.entity.Product"
+                      view="_local" >
+    <query>select p from sales$Product p order by p.name</query>
+</collectionDatasource>
+<tokenList datasource="productsssDs" id="tokenList" position="TOP" inline="false" width="300"
+           height="150px" simple="false" editable="true" description="Test">
+    <lookup optionsDatasource="productsDs"  lookup="false"/>
+    <button caption="msg://Добавить"/>
+</tokenList>

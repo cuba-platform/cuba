@@ -1,0 +1,3 @@
+﻿<filter id="carsFilter" datasource="carsDs" applyTo="carsTable" useMaxResults="true">
+   <properties include=".*" exclude="category|model"/>
+</filter>

@@ -1,0 +1,16 @@
+﻿<grid spacing="true" margin="true" width="100%">
+    <columns>
+        <column flex="3"/>
+        <column/>
+        <column flex="1"/>
+        <column flex="0"/>
+    </columns>
+    <rows>
+        <row>
+            <label value="Name"/>
+            <textField id="name" datasource="customerDs" property="name"/>
+            <label value="Email"/>
+            <textField id="email" datasource="customerDs"  property="email"/>
+        </row>
+    </rows>
+</grid>

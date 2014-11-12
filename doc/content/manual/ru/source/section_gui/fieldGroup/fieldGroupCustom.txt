@@ -1,0 +1,8 @@
+﻿orderFieldGroup.addCustomField("password", new FieldGroup.CustomFieldGenerator() {
+    @Override
+    public Component generateField(Datasource datasource, String propertyId) {
+        final TextField textField = componentsFactory.createComponent(TextField.NAME);
+        textField.setSecret(true);
+        return textField;
+    }
+});

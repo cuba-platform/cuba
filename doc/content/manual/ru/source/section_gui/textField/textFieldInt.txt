@@ -1,0 +1,1 @@
+﻿<textField id="textField1" datatype="int" caption="msg://name"/>

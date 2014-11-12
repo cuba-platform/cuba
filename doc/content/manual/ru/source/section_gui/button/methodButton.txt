@@ -1,0 +1,4 @@
+﻿public void someMethod() {
+   //some actions, for example:
+   button1.setEnabled(false);
+}

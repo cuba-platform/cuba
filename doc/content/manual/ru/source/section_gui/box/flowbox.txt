@@ -1,0 +1,5 @@
+﻿<flowBox spacing="true" margin="true">
+    <dateField id="dateField1" datasource="orderDs" property="date"/>
+    <lookupField id="lookupField1" datasource="orderDs" optionsDatasource="customersDs" property="customer"/>
+    <textField id="textField1" datasource="orderDs" property="amount"/>
+</flowBox>

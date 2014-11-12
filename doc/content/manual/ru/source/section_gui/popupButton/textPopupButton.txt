@@ -1,0 +1,6 @@
+﻿<popupButton id="popupButton" caption="msg://popupButton" description="Press me">
+   <actions>
+      <action id="popupAction1" caption="msg://action1" invoke="someAction1"/>
+      <action id="popupAction2" caption="msg://action2" invoke="someAction2"/>
+   </actions>
+</popupButton>

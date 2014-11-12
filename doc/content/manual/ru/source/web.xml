@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+		  http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+           version="2.5">
+
+    <!-- Application properties config files -->
+    <context-param>
+        <param-name>appPropertiesConfig</param-name>
+        <param-value>
+            classpath:cuba-app.properties
+            classpath:shop-app.properties
+            file:${catalina.home}/conf/app-core/local.app.properties
+        </param-value>
+    </context-param>
+
+    <listener>
+        <listener-class>com.haulmont.cuba.core.sys.AppContextLoader</listener-class>
+    </listener>
+
+    <servlet>
+        <servlet-name>remoting</servlet-name>
+        <servlet-class>com.haulmont.cuba.core.sys.remoting.RemotingServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>remoting</servlet-name>
+        <url-pattern>/remoting/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>restapi</servlet-name>
+        <servlet-class>com.haulmont.cuba.core.sys.restapi.RestApiServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>restapi</servlet-name>
+        <url-pattern>/api/*</url-pattern>
+    </servlet-mapping>
+</web-app>

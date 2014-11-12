@@ -1,0 +1,9 @@
+﻿<searchPickerField id="searchField" optionsDatasource="coloursDs"
+                   datasource="carDs" property="colour"
+                   minSearchStringLength="2" filterMode="STARTS_WITH">
+   <actions>
+      <action id="clear"/>
+      <action id="lookup"/>
+      <action id="open"/>
+   </actions>
+</searchPickerField>
