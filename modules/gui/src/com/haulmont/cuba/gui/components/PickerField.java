@@ -135,7 +135,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
 
         protected String lookupScreen;
         protected WindowManager.OpenType lookupScreenOpenType = WindowManager.OpenType.THIS_TAB;
-        protected DialogParams lookupScreenDialogParams = null;
+        protected DialogParams lookupScreenDialogParams;
         protected Map<String, Object> lookupScreenParams;
 
         protected WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
@@ -174,10 +174,15 @@ public interface PickerField extends Field, Component.ActionsHolder {
             this.lookupScreenOpenType = lookupScreenOpenType;
         }
 
+        @Nullable
         public DialogParams getLookupScreenDialogParams() {
             return lookupScreenDialogParams;
         }
 
+        /**
+         * Set lookup screen geometry when opening it in {@link WindowManager.OpenType#DIALOG} mode.
+         * Doesn't affect other modes.
+         */
         public void setLookupScreenDialogParams(DialogParams lookupScreenDialogParams) {
             this.lookupScreenDialogParams = lookupScreenDialogParams;
         }
@@ -304,7 +309,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
 
         protected String editScreen;
         protected WindowManager.OpenType editScreenOpenType = WindowManager.OpenType.THIS_TAB;
-        protected DialogParams editScreenDialogParams = null;
+        protected DialogParams editScreenDialogParams;
         protected Map<String, Object> editScreenParams;
 
         protected WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
@@ -343,10 +348,15 @@ public interface PickerField extends Field, Component.ActionsHolder {
             this.editScreenOpenType = editScreenOpenType;
         }
 
+        @Nullable
         public DialogParams getEditScreenDialogParams() {
             return editScreenDialogParams;
         }
 
+        /**
+         * Set edit screen geometry when opening it in {@link WindowManager.OpenType#DIALOG} mode.
+         * Doesn't affect other modes.
+         */
         public void setEditScreenDialogParams(DialogParams editScreenDialogParams) {
             this.editScreenDialogParams = editScreenDialogParams;
         }
