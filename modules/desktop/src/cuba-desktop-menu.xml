@@ -4,7 +4,7 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<menu-config xmlns="http://schemas.haulmont.com/cuba/5.2/menu.xsd">
+<menu-config xmlns="http://schemas.haulmont.com/cuba/5.3/menu.xsd">
 
     <menu id="administration">
         <item id="sec$User.browse"/>

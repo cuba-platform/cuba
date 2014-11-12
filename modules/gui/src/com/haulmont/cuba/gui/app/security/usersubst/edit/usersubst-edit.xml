@@ -3,7 +3,7 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<window xmlns="http://schemas.haulmont.com/cuba/5.2/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/5.3/window.xsd"
         class="com.haulmont.cuba.gui.app.security.usersubst.edit.UserSubstitutionEditor"
         messagesPack="com.haulmont.cuba.gui.app.security.usersubst"
         caption="msg://userSubstitution.caption"

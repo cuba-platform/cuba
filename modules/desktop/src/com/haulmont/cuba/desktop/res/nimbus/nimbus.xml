@@ -2,7 +2,7 @@
   ~ Copyright (c) 2008-2013 Haulmont. All rights reserved.
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
-<theme xmlns="http://schemas.haulmont.com/cuba/5.2/desktop-theme.xsd">
+<theme xmlns="http://schemas.haulmont.com/cuba/5.3/desktop-theme.xsd">
 
     <lookAndFeel>javax.swing.plaf.nimbus.NimbusLookAndFeel</lookAndFeel>
     <class>com.haulmont.cuba.desktop.theme.impl.NimbusTheme</class>

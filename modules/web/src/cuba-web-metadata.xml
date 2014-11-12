@@ -4,7 +4,7 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<metadata xmlns="http://schemas.haulmont.com/cuba/5.2/metadata.xsd">
+<metadata xmlns="http://schemas.haulmont.com/cuba/5.3/metadata.xsd">
 
     <metadata-model root-package="com.haulmont.cuba">
         <class>com.haulmont.cuba.web.jmx.entity.ManagedBeanAttribute</class>
