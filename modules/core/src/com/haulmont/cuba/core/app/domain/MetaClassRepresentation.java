@@ -97,7 +97,7 @@ public class MetaClassRepresentation {
             this.property = property;
         }
 
-        public String getTableName() {
+        public String getColumnName() {
             Column column = property.getAnnotatedElement().getAnnotation(Column.class);
             if (column != null)
                 return column.name();
@@ -177,15 +177,19 @@ public class MetaClassRepresentation {
         }
 
         public Collection<String> getAnnotations() {
-            Collection<String> result = new ArrayList<>();
+            List<String> result = new ArrayList<>();
             Map<String, Object> map = property.getAnnotations();
             for (Map.Entry<String, Object> entry : map.entrySet()) {
                 String annotationName = entry.getKey();
-                if (("length".equals(annotationName) && !String.class.equals(property.getJavaType())) || "persistent".equals(annotationName))
+                if (("length".equals(annotationName) && !String.class.equals(property.getJavaType())))
                     continue;
 
-                result.add(annotationName + ": " + entry.getValue());
+                if (Boolean.TRUE.equals(entry.getValue()))
+                    result.add(annotationName);
+                else
+                    result.add(annotationName + ": " + entry.getValue());
             }
+            Collections.sort(result);
             return result;
         }
 

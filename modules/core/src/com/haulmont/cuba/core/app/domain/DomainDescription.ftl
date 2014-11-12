@@ -88,20 +88,18 @@
             <th>Annotations</th>
         </tr>
     <#list entity.properties as property>
-        <#if property.persistent>
             <tr>
-                        <td class="propertyName">${property.name}</td>
-                        <td>${property.tableName}</td>
-                        <td>${property.enum!property.javaType}</td>
-                        <td>${property.description}</td>
-                        <td><i>${property.cardinality}</i></td>
-                        <td>
-                            <#list property.annotations as ann>
-                                ${ann}<#if ann_has_next>;&nbsp;</#if>
-                            </#list>
-                        </td>
+                    <td class="propertyName">${property.name}</td>
+                    <td><#if property.persistent>${property.columnName}</#if></td>
+                    <td>${property.enum!property.javaType}</td>
+                    <td>${property.description}</td>
+                    <td><i>${property.cardinality}</i></td>
+                    <td>
+                        <#list property.annotations as ann>
+                            ${ann}<#if ann_has_next>;&nbsp;</#if>
+                        </#list>
+                    </td>
             </tr>
-        </#if>
     </#list>
     </table>
 
