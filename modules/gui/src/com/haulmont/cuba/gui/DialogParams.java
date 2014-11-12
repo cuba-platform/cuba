@@ -77,8 +77,9 @@ public class DialogParams {
         return modal;
     }
 
-    public void setModal(Boolean modal) {
+    public DialogParams setModal(Boolean modal) {
         this.modal = modal;
+        return this;
     }
 
     public DialogParams reset() {
