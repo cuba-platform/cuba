@@ -1,6 +1,0 @@
-<lookupPickerField id="lookupPicker">
-    <actions>
-        <action id="lookup"/>
-        <action id="open"/>
-    </actions>
-</lookupPickerField>

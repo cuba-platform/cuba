@@ -1,1 +1,0 @@
-﻿<pickerField id="pickerField1" datasource="orderDs" property="customer"/>

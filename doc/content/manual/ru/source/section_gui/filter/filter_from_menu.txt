@@ -1,4 +1,0 @@
-﻿<item id="filterSample">
-   <param name="carsFilter" value="myVinFilter"/>
-   <param name="component$carsFilter.vin72990" value="3"/>
-</item>

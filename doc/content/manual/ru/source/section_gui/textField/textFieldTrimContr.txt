@@ -1,3 +1,0 @@
-﻿public void getVal(){
-    showNotification(String.valueOf(textFieldTrim.getValue()), NotificationType.HUMANIZED);
-}

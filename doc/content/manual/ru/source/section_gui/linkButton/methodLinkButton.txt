@@ -1,3 +1,0 @@
-﻿public void someMethod(){
-    showNotification(getMessage("saveRez"), NotificationType.HUMANIZED);
-}

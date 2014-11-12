@@ -1,5 +1,0 @@
-﻿<actions>
-   <action id="someAction" caption="msg://someAction"/>
-</actions>
-/*...*/
-<button action="someAction"/>

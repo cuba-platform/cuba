@@ -1,1 +1,0 @@
-﻿<checkBox id="checkBox1" caption="msg://chCaption"/>

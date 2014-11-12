@@ -1,2 +1,0 @@
-<button action="action1"/>
-<button action="coloursTable.testSorting"/>

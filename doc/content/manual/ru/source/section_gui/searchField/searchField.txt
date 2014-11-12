@@ -1,2 +1,0 @@
-﻿<searchField id="searchField" optionsDatasource="coloursDs"
-             minSearchStringLength="1" width="200" caption="msg://searchFieldCon"/>

@@ -1,3 +1,0 @@
-﻿<filter id="carsFilter" datasource="carsDs" applyTo="carsTable" useMaxResults="true">
-   <property name="colour.name" caption="msg://customCaption"/>
-</filter>

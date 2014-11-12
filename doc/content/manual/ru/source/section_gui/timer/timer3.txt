@@ -1,3 +1,0 @@
-public void someMethod1(Timer timer){
-    showNotification("Please fill in", NotificationType.HUMANIZED);
-}

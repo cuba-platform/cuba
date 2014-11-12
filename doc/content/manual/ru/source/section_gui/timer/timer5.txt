@@ -1,2 +1,0 @@
-Timer t = getTimer("countTimer");
-t.stopTimer();

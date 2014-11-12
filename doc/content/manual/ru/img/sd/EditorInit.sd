@@ -1,9 +1,0 @@
-f:framework
-/controller:AbstractEditor
-/frame:WebWindow.Editor
-
-f:controller.new
-f:controller.init(params)
-f:controller.setItem(entity)
-controller:controller.initItem(entity)
-controller:controller.postInit()

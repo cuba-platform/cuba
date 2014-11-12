@@ -1,4 +1,0 @@
-﻿.v-button.test {
-   background: #74c6fc;
-   font-weight: bold;
-}

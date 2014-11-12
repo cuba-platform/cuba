@@ -1,7 +1,0 @@
-﻿<collectionDatasource id="customersDss" class="com.sample.sales.entity.Customer" view="_local">
-    <query>
-        <![CDATA[
-            select c from sales$Customer c where c.name like :(?i)custom$searchString
-          ]]>
-    </query>
-</collectionDatasource>

@@ -1,5 +1,0 @@
-﻿<dsContext>
-    <datasource id="customerDs" class="com.sample.sales.entity.Customer" view="_local"/>
-</dsContext>
-<!--...-->
-<optionsGroup id="optionsGroup1" datasource="customerDs" property="type"/>

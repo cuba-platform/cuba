@@ -1,1 +1,0 @@
-showMessageDialog("Warning", "Some text", MessageType.WARNING);
