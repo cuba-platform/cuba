@@ -29,7 +29,7 @@ import static com.haulmont.cuba.web.auth.ActiveDirectoryConnection.ACTIVE_DIRECT
  */
 public class SettingsWindow extends AbstractWindow {
 
-    protected boolean changeThemeEnabled = false;
+    protected boolean changeThemeEnabled = true;
     protected String msgTabbed;
     protected String msgSingle;
 
