@@ -422,26 +422,29 @@ public class ListEditComponent extends CustomField {
                 final WebPickerField picker = new WebPickerField();
                 picker.setWidth(pickerWidth);
                 picker.setMetaClass(metaClass);
-                PickerField.LookupAction action = picker.addLookupAction();
+
+                PickerField.LookupAction action = new PickerField.LookupAction(picker) {
+                    @Override
+                    public void afterSelect(Collection items) {
+                        if (!items.isEmpty()) {
+                            for (Object value : items) {
+                                if (!containsValue((Instance) value)) {
+                                    String str = addEntityInstance((Instance) value);
+                                    addItemLayout(value, str);
+                                }
+                            }
+                        }
+                        picker.setValue(null);
+                    }
+                };
+                picker.addAction(action);
+
                 action.setLookupScreenOpenType(WindowManager.OpenType.DIALOG);
                 action.setLookupScreenDialogParams(new DialogParams()
                         .setHeight(theme.getInt("cuba.web.WebWindowManager.forciblyDialog.height"))
                         .setWidth(theme.getInt("cuba.web.WebWindowManager.forciblyDialog.width"))
                         .setResizable(true));
                 picker.addClearAction();
-
-                picker.addListener(
-                        new ValueListener() {
-                            @Override
-                            public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                                if (value != null && !containsValue((Instance) value)) {
-                                    String str = addEntityInstance((Instance) value);
-                                    addItemLayout(value, str);
-                                }
-                                picker.setValue(null);
-                            }
-                        }
-                );
 
                 field = picker.getComponent();
 

@@ -197,7 +197,23 @@ public class ListEditComponent extends Picker {
                 final DesktopPickerField picker = new DesktopPickerField();
                 picker.setWidth(COMPONENT_WIDTH);
                 picker.setMetaClass(metaClass);
-                PickerField.LookupAction action = picker.addLookupAction();
+
+                PickerField.LookupAction action = new PickerField.LookupAction(picker) {
+                    @Override
+                    public void afterSelect(Collection items) {
+                        if (!items.isEmpty()) {
+                            for (Object value : items) {
+                                if (!containsValue((Instance) value)) {
+                                    String str = addEntityInstance((Instance) value);
+                                    addItemLayout(value, str);
+                                }
+                            }
+                        }
+                        picker.setValue(null);
+                    }
+                };
+                picker.addAction(action);
+
                 action.setLookupScreenOpenType(WindowManager.OpenType.DIALOG);
                 action.setLookupScreenDialogParams(new DialogParams()
                         .setHeight(500)
