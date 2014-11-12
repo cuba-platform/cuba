@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.core.app;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
@@ -91,7 +92,7 @@ public class ConfigStorage implements ConfigStorageAPI {
                 if (!cacheLoaded) {
                     cache.clear();
                     for (Config config : list) {
-                        cache.put(config.getName(), config.getValue());
+                        cache.put(config.getName(), config.getValue() == null ? null : config.getValue().trim());
                     }
                     cacheLoaded = true;
                 }
@@ -101,6 +102,7 @@ public class ConfigStorage implements ConfigStorageAPI {
 
     @Override
     public void setDbProperty(String name, String value) {
+        Preconditions.checkNotNullArgument(name, "name is null");
         Transaction tx = persistence.createTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
@@ -108,8 +110,8 @@ public class ConfigStorage implements ConfigStorageAPI {
             if (value != null) {
                 if (instance == null) {
                     instance = new Config();
-                    instance.setName(name);
-                    instance.setValue(value);
+                    instance.setName(name.trim());
+                    instance.setValue(value.trim());
                     em.persist(instance);
                 } else {
                     instance.setValue(value);

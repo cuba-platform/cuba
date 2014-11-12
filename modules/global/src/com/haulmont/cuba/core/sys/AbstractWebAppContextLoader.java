@@ -126,7 +126,7 @@ public abstract class AbstractWebAppContextLoader extends AbstractAppContextLoad
         });
         for (Object key : properties.keySet()) {
             String value = substitutor.replace(properties.getProperty((String) key));
-            AppContext.setProperty((String) key, value);
+            AppContext.setProperty((String) key, value.trim());
         }
     }
 

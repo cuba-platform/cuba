@@ -122,7 +122,7 @@ public class DesktopAppContextLoader extends AbstractAppContextLoader {
         });
         for (Object key : properties.keySet()) {
             String value = substitutor.replace(properties.getProperty((String) key));
-            AppContext.setProperty((String) key, value);
+            AppContext.setProperty((String) key, value.trim());
         }
 
         List<String> list = new ArrayList<String>();
