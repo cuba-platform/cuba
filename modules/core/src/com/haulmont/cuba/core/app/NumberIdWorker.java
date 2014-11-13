@@ -60,7 +60,7 @@ public class NumberIdWorker implements NumberIdSequence {
         if (StringUtils.isBlank(entityName))
             throw new IllegalArgumentException("entityName is blank");
 
-        return entityName.replace("$", "_") + "_id";
+        return "seq_id_" + entityName.replace("$", "_");
     }
 
     protected long getResult(String seqName, String sqlScript, long startValue, long increment) {
