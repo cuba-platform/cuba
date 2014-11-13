@@ -323,7 +323,7 @@ cuba.useLocalServiceInvocation = false</programlisting></para>
           <listitem id="build.gradle_createDb">
             <para><code>createDb</code> - задача типа <code>CubaDbCreation</code>, создающая базу данных приложения путем выполнения соответствующих <link linkend="db_scripts">скриптов</link>. Объявляется в модуле <structname>core</structname>. Параметры:<itemizedlist>
                 <listitem>
-                  <para><code>dbms</code> - тип СУБД, задается строкой <code>hsql</code>, <code>postgres</code>, <code>mssql</code> или <code>oracle</code>.</para>
+                  <para><code>dbms</code> - тип СУБД, см. <xref linkend="dbms_types"/>.</para>
                 </listitem>
                 <listitem>
                   <para><code>dbName</code> - имя базы данных. </para>

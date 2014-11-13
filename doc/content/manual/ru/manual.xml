@@ -896,8 +896,18 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
       <varlistentry id="cuba.dbmsType">
         <term>cuba.dbmsType</term>
         <listitem>
-          <para>Задает тип используемой базы данных. Возможные значения соответствуют строковым константам, объявленным в интерфейсе <code>DbDialect</code>: <literal>hsql</literal>, <literal>postgres</literal>, <literal>mssql</literal>, <literal>oracle</literal>.</para>
+          <para>Задает тип используемой базы данных. Совместно с <link linkend="cuba.dbmsVersion">cuba.dbmsVersion</link> влияет на выбор имплементаций интерфейсов интеграции с СУБД и на поиск скриптов создания и обновления БД.</para>
+          <para>Подробнее см. <xref linkend="dbms_types"/></para>
           <para>Значение по умолчанию: <literal>hsql</literal></para>
+          <para>Используется в блоке <structname>Middleware</structname>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.dbmsVersion">
+        <term>cuba.dbmsVersion</term>
+        <listitem>
+          <para>Необязательное свойство, задающее версию используемой базы данных. Совместно с <link linkend="cuba.dbmsType">cuba.dbmsType</link> влияет на выбор имплементаций интерфейсов интеграции с СУБД и на поиск скриптов создания и обновления БД.</para>
+          <para>Подробнее см. <xref linkend="dbms_types"/></para>
+          <para>Значение по умолчанию: <literal>отсутствует</literal></para>
           <para>Используется в блоке <structname>Middleware</structname>.</para>
         </listitem>
       </varlistentry>
@@ -1250,6 +1260,15 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
           <para>Пример:<programlisting>cuba.remotingSpringContextConfig=cuba-remoting-spring.xml remoting-spring.xml</programlisting></para>
         </listitem>
       </varlistentry>
+      <varlistentry id="cuba.rest.productionMode">
+        <term>cuba.rest.productionMode</term>
+        <listitem>
+          <para>Включает режим экспуатации <link linkend="rest_api">REST API</link>, при котором текст исключительных ситуаций не возвращается клиенту.  </para>
+          <para>Интерфейс:  <code>RestConfig</code></para>
+          <para>Используется в блоке <structname>Web Portal</structname>.</para>
+          <para>Значение по умолчанию: <literal>false</literal></para>
+        </listitem>
+      </varlistentry>
       <varlistentry id="cuba.restApiUrl">
         <term>cuba.restApiUrl</term>
         <listitem>
@@ -1345,7 +1364,7 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
           <para>Регулярное выражение, по которому определяется, что данное  исключение произошло по причине нарушения ограничения уникальности в базе данных. Имя индекса, поддерживающего ограничение, должно возвращаться первой или второй группой выражения. Например:<programlisting>ERROR: duplicate key value violates unique constraint &quot;(.+)&quot;</programlisting></para>
           <para>Имя индекса можно использовать для выдачи пользователю локализованного сообщения о том, для какой сущности нарушено ограничение. Для этого в <link linkend="main_message_pack">главном пакете сообщений</link> необходимо задать ключи, соответствующие именам индексов. Например:<programlisting>IDX_SEC_USER_UNIQ_LOGIN = A user with the same login already exists</programlisting></para>
           <para>Данное свойство позволяет настроить реакцию на исключения уникальности в зависимости от используемой версии и локали сервера базы данных.</para>
-          <para>Значение по умолчанию: возвращается методом <code>DbDialect.getUniqueConstraintViolationPattern()</code> для соответствующей СУБД.</para>
+          <para>Значение по умолчанию: возвращается методом <code>PersistenceManagerService.getUniqueConstraintViolationPattern()</code> для соответствующей СУБД.</para>
           <para>Используется во всех клиентских блоках приложения.</para>
         </listitem>
       </varlistentry>

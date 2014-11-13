@@ -2811,32 +2811,59 @@ protected void doHandle(App app, String className, String message, @Nullable Thr
       </section>
     </section>
   </section>
-  <section id="dbms_types">
+  <section id="dbms">
     <title>Компоненты работы с базой данных</title>
     <para>В данном разделе приведена информация о возможных типах СУБД приложений на платформе CUBA. Кроме того, описан механизм на основе скриптов, с помощью которого можно создать новую базу данных, и в дальнейшем поддерживать ее в актуальном состоянии на протяжении всего цикла разработки и эксплуатации приложения. </para>
     <para>Компоненты работы с базой данных принадлежат <link linkend="app_tiers">блоку</link> <structname>Middleware</structname>, другие блоки приложения не имеют прямого доступа к БД. </para>
-    <para>Платформа поддерживает следующие СУБД:<itemizedlist>
-        <listitem>
-          <para><application>HSQLDB</application></para>
-        </listitem>
-        <listitem>
-          <para><application>PostgreSQL 8.4+</application></para>
-        </listitem>
-        <listitem>
-          <para><application>Microsoft SQL Server 2005+</application></para>
-        </listitem>
-        <listitem>
-          <para><application>Oracle Database 11g</application></para>
-        </listitem>
-      </itemizedlist></para>
-    <para>Тип используемой СУБД определяется свойством приложения <property>
-        <link linkend="cuba.dbmsType">cuba.dbmsType</link>
-      </property> и настройкой источника данных <code>javax.sql.DataSource</code>, через который производится обращение к базе данных. Экземпляр источника данных извлекается из JNDI по имени, заданному в свойстве приложения <property>
-        <link linkend="cuba.dataSourceJndiName">cuba.dataSourceJndiName</link>
-      </property>. Конфигурационный файл для <application>Tomcat</application>, определяющий источник данных, описан в <xref linkend="context.xml"/></para>
     <para>Дополнительная практическая  информация по работе с базой данных приведена в <xref linkend="db_dev"/> и <xref linkend="db_update_in_prod"/>.</para>
-    <section id="dbms_data_types">
-      <title>Соответствие типов данных</title>
+    <section id="dbms_types">
+      <title>Типы СУБД</title>
+      <para>Тип используемой СУБД определяется свойствами приложения <property>
+          <link linkend="cuba.dbmsType">cuba.dbmsType</link>
+        </property> и (опционально) <link linkend="cuba.dbmsVersion">cuba.dbmsVersion</link>, а также настройкой источника данных <code>javax.sql.DataSource</code>, через который производится обращение к базе данных. Экземпляр источника данных извлекается из JNDI по имени, заданному в свойстве приложения <property>
+          <link linkend="cuba.dataSourceJndiName">cuba.dataSourceJndiName</link>
+        </property>. Конфигурационный файл для <application>Tomcat</application>, определяющий источник данных, описан в <xref linkend="context.xml"/></para>
+      <para>Платформа &quot;из коробки&quot; поддерживает следующие СУБД:<informaltable frame="all">
+          <tgroup cols="3">
+            <colspec colname="c1"/>
+            <colspec colname="c2"/>
+            <colspec colname="c3"/>
+            <thead>
+              <row>
+                <entry/>
+                <entry>cuba.dbmsType</entry>
+                <entry>cuba.dbmsVersion</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry>HSQLDB</entry>
+                <entry>hsql</entry>
+                <entry/>
+              </row>
+              <row>
+                <entry>PostgreSQL 8.4+</entry>
+                <entry>postgres</entry>
+                <entry/>
+              </row>
+              <row>
+                <entry>Microsoft SQL Server 2005, 2008</entry>
+                <entry>mssql</entry>
+                <entry/>
+              </row>
+              <row>
+                <entry>Microsoft SQL Server 2012+</entry>
+                <entry>mssql</entry>
+                <entry>2012</entry>
+              </row>
+              <row>
+                <entry>Oracle Database 11g</entry>
+                <entry>oracle</entry>
+                <entry/>
+              </row>
+            </tbody>
+          </tgroup>
+        </informaltable></para>
       <para>Таблица ниже описывает рекомендованное соответствие типов данных между атрибутами сущностей в Java и колонками таблиц различных СУБД. Эти типы автоматически выбираются Studio при генерации скриптов создания и обновления БД, и для них гарантируется работоспособность всех механизмов платформы. </para>
       <informaltable frame="all">
         <tgroup cols="5">
@@ -2948,6 +2975,59 @@ protected void doHandle(App app, String className, String message, @Nullable Thr
         </code> для разных типов СУБД некоторые типы данных в Java коде будут отличаться от приведенных. В первую очередь это касается атрибутов типа <code>UUID</code> - только драйвер PostgreSQL возвращает значения соответствующих колонок в этом типе, для других серверов это будет <code>String</code>. Для обеспечения независимости кода от используемой СУБД рекомендуется конвертировать типы параметров и результатов запросов с помощью интерфейса <code>
           <link linkend="dbTypeConverter">DbTypeConverter</link>
         </code>.</para>
+      <section id="arbitrary_dbms">
+        <title>Поддержка произвольных СУБД</title>
+        <para>На уровне прикладного проекта можно реализовать работу с любой СУБД, поддерживаемой фреймворком <link linkend="orm">ORM</link> (OpenJPA). Для этого достаточно выполнить следующее:<itemizedlist>
+            <listitem>
+              <para>Указать тип СУБД в виде произвольного кода в свойстве <link linkend="cuba.dbmsType">cuba.dbmsType</link>. Код должен отличаться от используемых в платформе кодов <code>hsql</code>, <code>postgres</code>, <code>mssql</code>, <code>oracle</code>.</para>
+            </listitem>
+            <listitem>
+              <para>Реализовать интерфейсы <code>DbmsFeatures</code>, <code>SequenceSupport</code>, <code>DbTypeConverter</code> классами с именами соответственно  <code>TypeDbmsFeatures</code>, <code>TypeSequenceSupport</code>, <code>TypeDbTypeConverter</code>, где <code>Type</code> - код типа СУБД. Пакет класса имплементации должен быть таким же, как у интерфейса.</para>
+            </listitem>
+            <listitem>
+              <para>Если проект включает базовый проект <structname>Workflow</structname>, необходимо переопределить бин <code>CubaJbpmSpringHelper</code> и его метод <code>getHibernateDialectName()</code> для выбора диалекта Hibernate, используемого в jBPM.</para>
+            </listitem>
+            <listitem>
+              <para>Создать скрипты инициализации и обновления БД в каталогах с кодом СУБД. Скрипты инициализации должны включать создание всех объектов БД, необходимых для сущностей платформы (их можно скопировать из имеющихся в каталоге <code>10-cuba</code> и др. скриптов и исправить для данной СУБД).</para>
+            </listitem>
+            <listitem>
+              <para>Для создания и обновления БД задачами Gradle в build.gradle необходимо для этих задач указать дополнительные параметры:<programlisting language="java">task createDb(dependsOn: assemble, type: CubaDbCreation) {
+    dbms = &apos;my&apos;                                            // DBMS code
+    driver = &apos;net.my.jdbc.Driver&apos;                          // JDBC driver class
+    dbUrl = &apos;jdbc:my:myserver://192.168.47.45/mydb&apos;        // Database URL
+    masterUrl = &apos;jdbc:my:myserver://192.168.47.45/master&apos;  // URL of a master DB to connect to for creating the application DB
+    dropDbSql = &apos;drop database mydb;&apos;                      // Drop database statement
+    createDbSql = &apos;create database mydb;&apos;                  // Create database statement
+    timeStampType = &apos;datetime&apos;                             // Date and time datatype - needed for SYS_DB_CHANGELOG table creation
+    dbUser = &apos;sa&apos;
+    dbPassword = &apos;saPass1&apos;
+}
+
+task updateDb(dependsOn: assemble, type: CubaDbUpdate) {
+    dbms = &apos;my&apos;                                            // DBMS code
+    driver = &apos;net.my.jdbc.Driver&apos;                          // JDBC driver class
+    dbUrl = &apos;jdbc:my:myserver://192.168.47.45/mydb&apos;        // Database URL
+    dbUser = &apos;sa&apos;
+    dbPassword = &apos;saPass1&apos;
+}</programlisting></para>
+            </listitem>
+          </itemizedlist></para>
+      </section>
+      <section id="dbms_version">
+        <title>Версия СУБД</title>
+        <para>В дополнение к свойству приложения <link linkend="cuba.dbmsType">cuba.dbmsType</link> существует опциональное свойство <link linkend="cuba.dbmsVersion">cuba.dbmsVersion</link>. Оно влияет на выбор имплементаций интерфейсов <code>DbmsFeatures</code>, <code>SequenceSupport</code>, <code>DbTypeConverter</code>, и на поиск скриптов создания и обновления БД.</para>
+        <para>Имя класса имплементации интеграционного интерфейса формируется следующим образом: <code>TypeVersionName</code>. Здесь <code>Type</code> - значение <code>cuba.dbmsType</code> с заглавной буквы, <code>Version</code> - значение <code>cuba.dbmsVersion</code>, <code>Name</code> - имя интерфейса. Пакет класса должен быть таким же, как у интерфейса. Если класс с таким именем отсутствует, предпринимается попытка найти класс с именем без версии: <code>TypeName</code>. Если и такого класса нет, выдается исключение.</para>
+        <para>Например, в платформе определен класс <code>com.haulmont.cuba.core.sys.persistence.Mssql2012SequenceSupport</code>, который вступит в силу, если в проекте указаны следующие свойства:<programlisting>cuba.dbmsType = mssql
+cuba.dbmsVersion = 2012</programlisting></para>
+        <para>При поиске <link linkend="db_scripts">скриптов создания и обновления БД</link> каталог с именем <code>type-version</code> имеет приоритет над каталогом с именем <code>type</code>. Это значит, что скрипты каталога <code>type-version</code> заменяют одноименные скрипты каталога <code>type</code>. В каталоге <code>type-version</code> могут быть и скрипты с собственными именами, они будут также добавлены в общий набор скриптов для выполнения. Сортировка скриптов производится по пути начиная с каталога, вложенного в <code>type</code> или <code>type-version</code>, то есть без учета того, в каком каталоге (с версией или без) находится скрипт.</para>
+        <para>Например, следующим образом можно определить скрипты создания БД для Microsoft SQL Server для версий ниже и выше 2012:<programlisting>modules/core/db/init/
+     mssql/
+         10.create-db.sql
+         20.create-db.sql
+         30.create-db.sql
+     mssql-2012/
+         10.create-db.sql </programlisting></para>
+      </section>
     </section>
     <section id="db_scripts">
       <title>Скрипты создания и обновления БД</title>
@@ -3293,14 +3373,6 @@ public String foo(String value) {
           </listitem>
           <listitem>
             <para><code>setSoftDeletion()</code> - устанавливает или отключает режим мягкого удаления. Влияет на аналогичный признак всех создаваемых экземпляров <code>EntityManager</code>. По умолчанию мягкое удаление включено.</para>
-          </listitem>
-          <listitem>
-            <para><code>getDbDialect()</code> - возвращает диалект используемой в данный момент базы данных. Интерфейс <code>DbDialect</code> определяет тип БД и некоторые специфические для данной БД параметры.</para>
-            <para>В прикладном коде данный метод можно использовать для определения типа используемой БД, например:<programlisting language="java">@Inject
-protected Persistence persistence;
-...
-if (persistence.getDbDialect() instanceof PostgresDbDialect)
-...</programlisting></para>
           </listitem>
           <listitem>
             <para><code>getDbTypeConverter()</code> - возвращает экземпляр <code>
@@ -8694,6 +8766,9 @@ customersTable.setIconProvider(new Table.IconProvider() {
                   <listitem id="gui_attr_table_column_width">
                     <para><sgmltag>width</sgmltag> − необязательный атрибут, отвечает за изначальную ширину колонки.</para>
                   </listitem>
+                  <listitem>
+                    <para><code>align</code> - необязательный атрибут, устанавливает выравнивание текста в ячейках данной колонки. Возможные значения: <code>LEFT</code>, <code>RIGHT</code>, <code>CENTER</code>. По умолчанию <code>LEFT</code>.</para>
+                  </listitem>
                   <listitem id="gui_attr_table_column_editable">
                     <para><sgmltag>editable</sgmltag> − необязательный атрибут, разрешает/запрещает редактирование данной колонки в редактируемой таблице. Чтобы колонка была редактируемой, атрибут <code>editable</code> всей таблицы (см. ниже) также должен быть установлен в <code>true</code>.</para>
                   </listitem>
@@ -12057,6 +12132,9 @@ carCreateAction.setInitialValues(values);</programlisting></para>
                       <para><code>setLookupScreenOpenType()</code> - позволяет задать режим открытия экрана выбора сущности. По умолчанию экран открывается в режиме <code>THIS_TAB</code>. </para>
                     </listitem>
                     <listitem>
+                      <para><code>setLookupScreenDialogParams</code>() - позволяет задать свойства дилогового окна при  открытия экрана выбора сущности в режиме <code>DIALOG</code> (см. предыдущий метод). На другие режимы влияния не оказывает. </para>
+                    </listitem>
+                    <listitem>
                       <para><code>setLookupScreen()</code> - позволяет задать идентификатор экрана выбора сущности. По умолчанию используется экран <code>{имя_сущности}.lookup</code>, например <code>sales$Customer.lookup</code>. Если такого экрана не существует, то делается попытка открыть экран <code>{имя_сущности}.browse</code>, например <code>sales$Customer.browse</code>.</para>
                     </listitem>
                     <listitem>
@@ -12078,6 +12156,9 @@ carCreateAction.setInitialValues(values);</programlisting></para>
                 <para>В классе <code>OpenAction</code> определены следующие специфические методы:<itemizedlist>
                     <listitem>
                       <para><code>setEditScreenOpenType()</code> - позволяет задать режим открытия экрана редактирования сущности. По умолчанию экран открывается в режиме <code>THIS_TAB</code>. </para>
+                    </listitem>
+                    <listitem>
+                      <para><code>setEditScreenDialogParams()</code> - позволяет задать свойства дилогового окна при  открытия экрана редактирования в режиме <code>DIALOG</code> (см. предыдущий метод). На другие режимы влияния не оказывает. </para>
                     </listitem>
                     <listitem>
                       <para><code>setEditScreen()</code> - позволяет задать идентификатор экрана редактирования сущности. По умолчанию используется экран <code>{имя_сущности}.edit</code>, например <code>sales$Customer.edit</code>. </para>
@@ -14152,7 +14233,7 @@ private long getNextValue() {
 }</programlisting></para>
       <para>Для получения значений последовательностей в клиентских блоках используется метод <code>getNextNumber()</code><link linkend="services"> сервиса</link> <code>UniqueNumbersService</code>.</para>
       <para>Для управления последовательностями можно использовать <link linkend="jmx_beans">JMX-бин</link> <code>app-core.cuba:type=UniqueNumbers</code> с методами, дублирующими методы <code>UniqueNumbersAPI</code>.</para>
-      <para>Реализация механизма генерации последовательностей зависит от типа используемой СУБД. Для <application>HSQL</application>, <application>PostgreSQL</application> и <application>Oracle</application> каждой  последовательности <code>UniqueNumbersAPI</code> соответствует последовательность (sequence) <code>sec_un_{domain}</code> в базе данных. Для <application>Microsoft SQL Server</application> каждой последовательности соответствует таблица <code>sec_un_{domain}</code> с автоинкрементным полем. В связи с этим управлять параметрами последовательности можно также напрямую в БД.</para>
+      <para>Реализация механизма генерации последовательностей зависит от типа используемой СУБД. Для <application>HSQL</application>, <application>PostgreSQL, <application>Microsoft SQL Server 2012+</application></application> и <application>Oracle</application> каждой  последовательности <code>UniqueNumbersAPI</code> соответствует последовательность (sequence) <code>sec_un_{domain}</code> в базе данных. Для <application>Microsoft SQL Server</application> версии ниже 2012 каждой последовательности соответствует таблица <code>sec_un_{domain}</code> с автоинкрементным полем. В связи с этим управлять параметрами последовательности можно также напрямую в БД.</para>
     </section>
     <section id="queryRunner">
       <title>Выполнение SQL с помощью QueryRunner</title>

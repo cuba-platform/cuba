@@ -4,6 +4,26 @@
   <title>История изменений</title>
   <variablelist>
     <varlistentry>
+      <term>&lt;set when finished&gt;</term>
+      <listitem>
+        <itemizedlist>
+          <listitem>
+            <para>Изменения при переходе от платформы версии 5.2 к 5.3:<itemizedlist>
+                <listitem>
+                  <para>В связи доработкой интеграции с СУБД изменен <xref linkend="dbms_types"/> и добавлено свойство приложения <link linkend="cuba.dbmsVersion">cuba.dbmsVersion</link>.</para>
+                </listitem>
+                <listitem>
+                  <para>Добавлен атрибут <code>align</code> колонки компонента <link linkend="gui_Table">Table</link>.</para>
+                </listitem>
+                <listitem>
+                  <para>Добавлено свойство приложения <link linkend="cuba.rest.productionMode">cuba.rest.productionMode</link>.</para>
+                </listitem>
+              </itemizedlist></para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
       <term>29.10.2014</term>
       <listitem>
         <itemizedlist>
