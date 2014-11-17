@@ -8,6 +8,7 @@ package com.haulmont.cuba.portal.restapi;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.global.*;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 
@@ -61,18 +62,8 @@ public class CommitRequest {
     }
 
     public InstanceRef parseInstanceRefAndRegister(String fullId) throws InstantiationException, IllegalAccessException {
-        boolean isNew = false;
-        boolean autogenerateId = false;
-        if (fullId.startsWith("NEW-")) {
-            isNew = true;
-            fullId = fullId.substring("NEW-".length());
-            if (!fullId.contains("-"))
-                autogenerateId = true;
-        }
-
         EntityLoadInfo loadInfo;
-
-        if (!autogenerateId) {
+        if (!fullId.startsWith("NEW-")) {
             InstanceRef existingRef = instanceRefs.get(fullId);
             if (existingRef != null) {
                 return existingRef;
@@ -83,15 +74,19 @@ public class CommitRequest {
                 throw new RuntimeException("Cannot parse id: " + fullId);
             }
         } else {
-            String generatedId = generateId(fullId);
-            fullId = fullId + "-" + generatedId;
+            int idDashIndex = StringUtils.ordinalIndexOf(fullId, "-", 2);
+            if (idDashIndex == -1) {
+                String entityName = fullId.substring("NEW-".length());
+                String generatedId = generateId(entityName);
+                fullId = fullId + "-" + generatedId;
+            }
             loadInfo = EntityLoadInfo.parse(fullId);
             if (loadInfo == null) {
                 throw new RuntimeException("Cannot parse id: " + fullId);
             }
         }
 
-        if (isNew)
+        if (loadInfo.isNewEntity())
             newInstanceIds.add(fullId);
 
         InstanceRef result = new InstanceRef(loadInfo);

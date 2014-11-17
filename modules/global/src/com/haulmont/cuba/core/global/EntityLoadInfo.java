@@ -46,10 +46,10 @@ public class EntityLoadInfo {
     private boolean stringKey;
 
     protected EntityLoadInfo(Object id, MetaClass metaClass, String viewName, boolean stringKey) {
-        this(id, metaClass, viewName, false, stringKey);
+        this(id, metaClass, viewName, stringKey, false);
     }
 
-    protected EntityLoadInfo(Object id, MetaClass metaClass, String viewName, boolean newEntity, boolean stringKey) {
+    protected EntityLoadInfo(Object id, MetaClass metaClass, String viewName, boolean stringKey, boolean newEntity) {
         this.id = id;
         this.metaClass = metaClass;
         this.viewName = viewName;
@@ -107,8 +107,10 @@ public class EntityLoadInfo {
      * @return      info instance or null if the string can not be parsed. Any exception is silently swallowed.
      */
     public static @Nullable EntityLoadInfo parse(String str) {
+        boolean isNew = false;
         if (str.startsWith(NEW_PREFIX)) {
-            return parseNew(str);
+            str = str.substring("NEW-".length());
+            isNew = true;
         }
 
         int idDashPos = str.indexOf('-');
@@ -190,24 +192,7 @@ public class EntityLoadInfo {
             }
         }
 
-        return new EntityLoadInfo(id, metaClass, viewName, stringKey);
-    }
-
-    private static EntityLoadInfo parseNew(String str) {
-        int dashCount = StringUtils.countMatches(str, "-");
-        if (dashCount != 1 && !str.startsWith(NEW_PREFIX)) {
-            return null;
-        }
-
-        int dashPos = str.indexOf('-');
-        String entityName = str.substring(dashPos + 1);
-        Metadata metadata = AppBeans.get(Metadata.NAME);
-        MetaClass metaClass = metadata.getSession().getClass(entityName);
-        if (metaClass == null) {
-            return null;
-        }
-
-        return new EntityLoadInfo(null, metaClass, null, true);
+        return new EntityLoadInfo(id, metaClass, viewName, stringKey, isNew);
     }
 
     @Override

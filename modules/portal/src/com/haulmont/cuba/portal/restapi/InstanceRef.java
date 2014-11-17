@@ -29,11 +29,14 @@ public class InstanceRef {
         this.loadInfo = loadInfo;
         MetaClass childMetaClass = this.loadInfo.getMetaClass();
         instance = childMetaClass.createInstance();
-        for (MetaProperty metaProperty : childMetaClass.getProperties()) {
-            if (!metaProperty.getRange().isClass()) {
-                try {
-                    instance.setValue(metaProperty.getName(), null);
-                } catch (Exception e) {}
+        if (!loadInfo.isNewEntity()) {
+            for (MetaProperty metaProperty : childMetaClass.getProperties()) {
+                if (!metaProperty.getRange().isClass()) {
+                    try {
+                        instance.setValue(metaProperty.getName(), null);
+                    } catch (Exception e) {
+                    }
+                }
             }
         }
         instance.setId(this.loadInfo.getId());
