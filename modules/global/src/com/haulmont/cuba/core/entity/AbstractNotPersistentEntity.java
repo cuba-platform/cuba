@@ -26,15 +26,15 @@ public abstract class AbstractNotPersistentEntity extends AbstractInstance imple
 
     private static final long serialVersionUID = -2846020822531467401L;
 
-    protected UUID uuid;
+    protected UUID id;
 
     protected AbstractNotPersistentEntity() {
-        uuid = UuidProvider.createUuid();
+        id = UuidProvider.createUuid();
     }
 
     @Override
     public UUID getUuid() {
-        return uuid;
+        return id;
     }
 
     @Override
@@ -46,11 +46,11 @@ public abstract class AbstractNotPersistentEntity extends AbstractInstance imple
     @MetaProperty
     @Override
     public UUID getId() {
-        return uuid;
+        return id;
     }
 
     public void setId(UUID id) {
-        this.uuid = id;
+        this.id = id;
     }
 
     @Override
@@ -62,25 +62,5 @@ public abstract class AbstractNotPersistentEntity extends AbstractInstance imple
                 propertyChanged(property, oldValue, obj);
             }
         }
-    }
-
-    @Override
-    public String toString() {
-        return getClass().getName() + "-" + uuid;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        AbstractNotPersistentEntity that = (AbstractNotPersistentEntity) o;
-
-        return !(getId() != null ? !getId().equals(that.getId()) : that.getId() != null);
-    }
-
-    @Override
-    public int hashCode() {
-        return getId() != null ? getId().hashCode() : 0;
     }
 }

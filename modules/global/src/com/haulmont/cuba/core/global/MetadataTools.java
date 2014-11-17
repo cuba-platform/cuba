@@ -115,9 +115,9 @@ public class MetadataTools {
     }
 
     /**
-     * @return name of a primary key attribute
-     * @throws java.lang.IllegalStateException if the entity has no primary key
+     * @return name of a primary key attribute, or null if the entity has no primary key (e.g. embeddable)
      */
+    @Nullable
     public String getPrimaryKeyName(MetaClass metaClass) {
         String pkProperty = (String) metaClass.getAnnotations().get("primaryKey");
         if (pkProperty != null) {
@@ -131,15 +131,16 @@ public class MetadataTools {
                 ancestor = ancestor.getAncestor();
             }
         }
-        throw new IllegalStateException("Cannot determine primary key attribute for " + metaClass);
+        return null;
     }
 
     /**
-     * @return MetaProperty representing a primary key attribute
-     * @throws java.lang.IllegalStateException if the entity has no primary key
+     * @return MetaProperty representing a primary key attribute, or null if the entity has no primary key (e.g. embeddable)
      */
+    @Nullable
     public MetaProperty getPrimaryKeyProperty(MetaClass metaClass) {
-        return metaClass.getPropertyNN(getPrimaryKeyName(metaClass));
+        String primaryKeyName = getPrimaryKeyName(metaClass);
+        return primaryKeyName == null ? null : metaClass.getPropertyNN(primaryKeyName);
     }
 
     /**

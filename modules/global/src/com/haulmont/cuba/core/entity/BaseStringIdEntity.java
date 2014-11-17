@@ -14,6 +14,14 @@ import java.util.UUID;
 
 /**
  * Base class for persistent entities with String identifier.
+ * <p>
+ * Does not define an identifier field. Inheritors must define a field of type String and add
+ * {@link javax.persistence.Id} annotation to it, e.g.
+ * <pre>
+ *  &#64;Id
+ *  &#64;Column(name = "CODE")
+ *  protected String code;
+ * </pre>
  *
  * @author krivopustov
  * @version $Id$

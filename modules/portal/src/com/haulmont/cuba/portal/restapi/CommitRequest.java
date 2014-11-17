@@ -5,9 +5,9 @@
 
 package com.haulmont.cuba.portal.restapi;
 
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.EntityLoadInfo;
-import com.haulmont.cuba.core.global.UuidSource;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.global.*;
 
 import java.util.*;
 
@@ -60,37 +60,67 @@ public class CommitRequest {
         this.commitIds = commitIds;
     }
 
-    public InstanceRef parseInstanceRefAndRegister(String id) throws InstantiationException, IllegalAccessException {
+    public InstanceRef parseInstanceRefAndRegister(String fullId) throws InstantiationException, IllegalAccessException {
         boolean isNew = false;
-        if (id.startsWith("NEW-")) {
-            id = id.substring("NEW-".length());
+        boolean autogenerateId = false;
+        if (fullId.startsWith("NEW-")) {
             isNew = true;
+            fullId = fullId.substring("NEW-".length());
+            if (!fullId.contains("-"))
+                autogenerateId = true;
         }
 
-        InstanceRef existingRef = instanceRefs.get(id);
-        if (existingRef != null) {
-            return existingRef;
-        }
+        EntityLoadInfo loadInfo;
 
-        EntityLoadInfo loadInfo = EntityLoadInfo.parse(id);
-        if (loadInfo == null) {
-            if (isNew) {
-                UuidSource uuidSource = AppBeans.get(UuidSource.NAME);
-                UUID uuid = uuidSource.createUuid();
-                id = id + "-" + uuid;
-                loadInfo = EntityLoadInfo.parse(id);
-                if (loadInfo == null) {
-                    throw new RuntimeException("Cannot parse id: " + id);
-                }
-            } else
-                throw new RuntimeException("Cannot parse id: " + id);
+        if (!autogenerateId) {
+            InstanceRef existingRef = instanceRefs.get(fullId);
+            if (existingRef != null) {
+                return existingRef;
+            }
+
+            loadInfo = EntityLoadInfo.parse(fullId);
+            if (loadInfo == null) {
+                throw new RuntimeException("Cannot parse id: " + fullId);
+            }
+        } else {
+            String generatedId = generateId(fullId);
+            fullId = fullId + "-" + generatedId;
+            loadInfo = EntityLoadInfo.parse(fullId);
+            if (loadInfo == null) {
+                throw new RuntimeException("Cannot parse id: " + fullId);
+            }
         }
 
         if (isNew)
-            newInstanceIds.add(id);
+            newInstanceIds.add(fullId);
 
         InstanceRef result = new InstanceRef(loadInfo);
-        instanceRefs.put(id, result);
+        instanceRefs.put(fullId, result);
         return result;
+    }
+
+    private String generateId(String entityName) {
+        Metadata metadata = AppBeans.get(Metadata.NAME);
+        MetaClass metaClass = metadata.getSession().getClass(entityName);
+
+        MetaProperty primaryKeyProp = metadata.getTools().getPrimaryKeyProperty(metaClass);
+        if (primaryKeyProp == null)
+            throw new UnsupportedOperationException("Cannot generate ID for " + entityName);
+
+        if (primaryKeyProp.getJavaType().equals(UUID.class)) {
+            UuidSource uuidSource = AppBeans.get(UuidSource.NAME);
+            UUID uuid = uuidSource.createUuid();
+            return uuid.toString();
+        } else if (primaryKeyProp.getJavaType().equals(Long.class)) {
+            NumberIdSource numberIdSource = AppBeans.get(NumberIdSource.NAME);
+            Long longId = numberIdSource.createLongId(entityName);
+            return longId.toString();
+        } else if (primaryKeyProp.getJavaType().equals(Integer.class)) {
+            NumberIdSource numberIdSource = AppBeans.get(NumberIdSource.NAME);
+            Integer intId = numberIdSource.createIntegerId(entityName);
+            return intId.toString();
+        } else {
+            throw new UnsupportedOperationException("Cannot generate ID for " + entityName);
+        }
     }
 }

@@ -156,15 +156,15 @@ public class JSONConvertor implements Convertor {
         }
     }
 
-    protected List<BaseUuidEntity> parseIntoList(CommitRequest commitRequest, JSONArray nodeList)
+    protected List<Entity> parseIntoList(CommitRequest commitRequest, JSONArray nodeList)
             throws JSONException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, IntrospectionException, ParseException {
-        List<BaseUuidEntity> result = new ArrayList<>(nodeList.length());
+        List<Entity> result = new ArrayList<>(nodeList.length());
 
         for (int j = 0; j < nodeList.length(); j++) {
             JSONObject jsonObject = nodeList.getJSONObject(j);
             InstanceRef ref = commitRequest.parseInstanceRefAndRegister(jsonObject.getString("id"));
             MetaClass metaClass = ref.getMetaClass();
-            BaseUuidEntity instance = ref.getInstance();
+            Entity instance = ref.getInstance();
             asJavaTree(commitRequest, instance, metaClass, jsonObject);
             result.add(instance);
         }
@@ -177,6 +177,11 @@ public class JSONConvertor implements Convertor {
         while (iter.hasNext()) {
             String key = (String) iter.next();
 
+            if ("id".equals(key)) {
+                // id was parsed already
+                continue;
+            }
+
             //version is readonly property
             if ("version".equals(key))
                 continue;
@@ -188,11 +193,6 @@ public class JSONConvertor implements Convertor {
 
             if (json.get(key) == null) {
                 setField(bean, key, new Object[]{null});
-                continue;
-            }
-
-            if ("id".equals(key)) {
-                // id was parsed already
                 continue;
             }
 
@@ -313,8 +313,10 @@ public class JSONConvertor implements Convertor {
                 continue;
 
             Object value = entity.getValue(property.getName());
-            if (property.getAnnotatedElement().isAnnotationPresent(Id.class)) {
-                //skipping: we encoded it before
+
+            if (property.equals(metadataTools.getPrimaryKeyProperty(metaClass))
+                    && !property.getJavaType().equals(String.class)) {
+                // skipping id for non-String-key entities
                 continue;
             }
 

@@ -60,6 +60,8 @@ public class DataServiceQueryBuilder {
         } else {
             MetaClass metaClass = metadata.getClassNN(entityName);
             String pkName = metadata.getTools().getPrimaryKeyName(metaClass);
+            if (pkName == null)
+                throw new IllegalStateException("Entity " + entityName + " has no primary key");
             this.queryString = "select e from " + entityName + " e where e." + pkName + " = :entityId";
             this.queryParams = new HashMap<>();
             this.queryParams.put("entityId", id);

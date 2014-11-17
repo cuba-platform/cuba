@@ -19,7 +19,7 @@ import java.util.UUID;
 public interface Instance {
 
     /**
-     * @return unique identifier of this instance
+     * @return globally unique identifier of this instance
      */
     UUID getUuid();
 

@@ -482,7 +482,9 @@ public class XMLConvertor implements Convertor {
             switch (property.getType()) {
                 case DATATYPE:
                     String nodeType;
-                    if (property.getAnnotatedElement().isAnnotationPresent(Id.class)) {
+                    if (property.equals(metadataTools.getPrimaryKeyProperty(metaClass))
+                            && !property.getJavaType().equals(String.class)) {
+                        // skipping id for non-String-key entities
                         continue;
                     } else if (property.getAnnotatedElement().isAnnotationPresent(Version.class)) {
                         nodeType = "version";

@@ -5,30 +5,25 @@
 package com.haulmont.cuba.core.global;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
-import org.apache.commons.lang.StringUtils;
 
-import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.UUID;
 
 /**
  * Class that encapsulates an information needed to load an entity instance.
- * <p/> This information has the following string representation:
- * <code>metaclassName-id{-viewName}</code>, e.g.:
- * <pre>
- * sec$User-60885987-1b61-4247-94c7-dff348347f93
- * sec$Role-0c018061-b26f-4de2-a5be-dff348347f93-role.browse
- * </pre>
- * Use {@link #parse(String)} and {@link #toString()} methods to convert from/to a string.
+ * <p>
+ * The same as {@link EntityLoadInfo} but always creates an entity of original class if an extended MetaClass is
+ * provided.
  *
  * @author krivopustov
  * @version $Id$
  */
 public class OriginalEntityLoadInfo extends EntityLoadInfo {
 
-    private OriginalEntityLoadInfo(UUID id, MetaClass metaClass) {
-        super(id, metaClass, null);
+    private OriginalEntityLoadInfo(UUID id, MetaClass metaClass, boolean isStringKey) {
+        super(id, metaClass, null, isStringKey);
     }
 
     /**
@@ -46,6 +41,10 @@ public class OriginalEntityLoadInfo extends EntityLoadInfo {
         if (originalMetaClass != null) {
             metaClass = originalMetaClass;
         }
-        return new OriginalEntityLoadInfo((UUID) entity.getId(), metaClass);
+
+        MetaProperty primaryKeyProperty = metadata.getTools().getPrimaryKeyProperty(metaClass);
+        boolean stringKey = primaryKeyProperty != null && primaryKeyProperty.getJavaType().equals(String.class);
+
+        return new OriginalEntityLoadInfo((UUID) entity.getId(), metaClass, stringKey);
     }
 }

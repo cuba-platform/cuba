@@ -332,6 +332,8 @@ public class EntityInspectorEditor extends AbstractWindow {
         LoadContext ctx = new LoadContext(meta);
         ctx.setView(view);
         String primaryKeyName = metadata.getTools().getPrimaryKeyName(meta);
+        if (primaryKeyName == null)
+            throw new IllegalStateException("Entity " + meta.getName() + " has no primary key");
         String query = String.format("select e from %s e where e.%s = :id", meta.getName(), primaryKeyName);
         LoadContext.Query q = ctx.setQueryString(query);
         q.setParameter("id", id);
@@ -360,7 +362,7 @@ public class EntityInspectorEditor extends AbstractWindow {
                 case DATATYPE:
                 case ENUM:
                     //skip system properties
-                    boolean includeId = primaryKeyProperty.equals(metaProperty) && !BaseUuidEntity.class.equals(baseIdType);
+                    boolean includeId = metaProperty.equals(primaryKeyProperty) && !BaseUuidEntity.class.equals(baseIdType);
                     if (tools.isSystem(metaProperty) && !showSystemFields && !includeId) {
                         continue;
                     }

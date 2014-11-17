@@ -84,36 +84,6 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
         this.createdBy = createdBy;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        BaseGenericIdEntity that = (BaseGenericIdEntity) o;
-
-        if (getId() != null && that.getId() != null) {
-            return getId().equals(that.getId());
-        }
-        return !(getUuid() != null ? !getUuid().equals(that.getUuid()) : that.getUuid() != null);
-    }
-
-    @Override
-    public int hashCode() {
-        if (getId() != null) {
-            return getId().hashCode();
-        }
-        return getUuid() != null ? getUuid().hashCode() : 0;
-    }
-
-    @Override
-    public String toString() {
-        return getClass().getName() + "-" + getUuid();
-    }
-
     /**
      * Called from enhanced setters before property is changed.
      *
@@ -121,6 +91,7 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
      * @param fieldIndex corresponding OpenJPA field index
      * @param value      new value
      */
+    @SuppressWarnings("UnusedDeclaration")
     protected void propertyChanging(String name, int fieldIndex, Object value) {
         if (!allowSetNotLoadedAttributes
                 && fieldIndex > -1

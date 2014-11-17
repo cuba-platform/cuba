@@ -16,14 +16,16 @@ import javax.persistence.Transient;
 import java.util.UUID;
 
 /**
+ * Base class for persistent embeddable entities.
+ *
  * @author artamonov
  * @version $Id$
  */
 @MappedSuperclass
 public abstract class EmbeddableEntity extends AbstractInstance implements Entity<UUID> {
+
     private static final long serialVersionUID = 266201862280559076L;
 
-    @Id
     @Transient
     private UUID id;
 
@@ -45,10 +47,5 @@ public abstract class EmbeddableEntity extends AbstractInstance implements Entit
     @Override
     public UUID getUuid() {
         return id;
-    }
-
-    @Override
-    public String toString() {
-        return getClass().getName() + "-" + id;
     }
 }

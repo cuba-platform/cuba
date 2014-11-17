@@ -11,6 +11,7 @@ import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.app.DomainDescriptionService;
+import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AbstractViewRepository;
@@ -89,10 +90,10 @@ public class DataServiceController {
             }
 
             response.addHeader("Access-Control-Allow-Origin", "*");
-            UUID idObject = loadInfo.getId();
+            Object objectId = loadInfo.getId();
 
             LoadContext loadCtx = new LoadContext(metaClass);
-            loadCtx.setId(idObject);
+            loadCtx.setId(objectId);
             loadCtx.setUseSecurityConstraints(true);
             if (loadInfo.getViewName() != null) {
                 loadCtx.setView(loadInfo.getViewName());
@@ -212,6 +213,9 @@ public class DataServiceController {
             CommitRequest commitRequest = convertor.parseCommitRequest(requestContent);
             Collection commitInstances = commitRequest.getCommitInstances();
             Collection newInstanceIds = commitRequest.getNewInstanceIds();
+
+            assignUuidToNewInstances(commitInstances, newInstanceIds);
+
             //send error if the user don't have permissions to commit at least one of the entities
             if (!commitPermitted(commitInstances, newInstanceIds)) {
                 response.sendError(HttpServletResponse.SC_FORBIDDEN);
@@ -238,6 +242,18 @@ public class DataServiceController {
             sendError(request, response, e);
         } finally {
             authentication.end();
+        }
+    }
+
+    private void assignUuidToNewInstances(Collection commitInstances, Collection newInstanceIds) {
+        for (Object id : newInstanceIds) {
+            for (Object instance : commitInstances) {
+                Entity entity = (Entity) instance;
+                String entityFullId = EntityLoadInfo.create(entity).toString();
+                if (entityFullId.equals(id) && entity.getUuid() == null) {
+                    entity.setValue("uuid", UuidProvider.createUuid());
+                }
+            }
         }
     }
 

@@ -7,7 +7,9 @@ package com.haulmont.cuba.portal.restapi;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.EntityLoadInfo;
 
 import java.util.UUID;
@@ -18,7 +20,7 @@ import java.util.UUID;
  */
 public class InstanceRef {
     private EntityLoadInfo loadInfo;
-    private BaseUuidEntity instance;
+    private BaseGenericIdEntity<Object> instance;
 
     public InstanceRef(EntityLoadInfo loadInfo) throws InstantiationException, IllegalAccessException {
         if (loadInfo == null)
@@ -37,7 +39,7 @@ public class InstanceRef {
         instance.setId(this.loadInfo.getId());
     }
 
-    public UUID getId() {
+    public Object getId() {
         return loadInfo.getId();
     }
 
@@ -45,7 +47,7 @@ public class InstanceRef {
         return loadInfo.getMetaClass();
     }
 
-    public BaseUuidEntity getInstance() {
+    public Entity getInstance() {
         return instance;
     }
 
