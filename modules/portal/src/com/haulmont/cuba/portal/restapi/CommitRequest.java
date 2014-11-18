@@ -64,15 +64,17 @@ public class CommitRequest {
     public InstanceRef parseInstanceRefAndRegister(String fullId) throws InstantiationException, IllegalAccessException {
         EntityLoadInfo loadInfo;
         if (!fullId.startsWith("NEW-")) {
-            InstanceRef existingRef = instanceRefs.get(fullId);
-            if (existingRef != null) {
-                return existingRef;
-            }
 
             loadInfo = EntityLoadInfo.parse(fullId);
             if (loadInfo == null) {
                 throw new RuntimeException("Cannot parse id: " + fullId);
             }
+
+            InstanceRef existingRef = instanceRefs.get(loadInfo.getMetaClass().getName() + "-" + loadInfo.getId().toString());
+            if (existingRef != null) {
+                return existingRef;
+            }
+
         } else {
             int idDashIndex = StringUtils.ordinalIndexOf(fullId, "-", 2);
             if (idDashIndex == -1) {
@@ -87,10 +89,10 @@ public class CommitRequest {
         }
 
         if (loadInfo.isNewEntity())
-            newInstanceIds.add(fullId);
+            newInstanceIds.add(loadInfo.getMetaClass().getName() + "-" + loadInfo.getId().toString());
 
         InstanceRef result = new InstanceRef(loadInfo);
-        instanceRefs.put(fullId, result);
+        instanceRefs.put(loadInfo.getMetaClass().getName() + "-" + loadInfo.getId().toString(), result);
         return result;
     }
 
