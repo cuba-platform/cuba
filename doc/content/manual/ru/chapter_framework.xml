@@ -3795,6 +3795,15 @@ List&lt;Customer&gt; list = query.getResultList();</programlisting></para>
           </varlistentry>
           <varlistentry>
             <term>
+              <code>BeforeAttachEntityListener</code>
+            </term>
+            <listitem>
+              <para>Метод <code>onBeforeAttach()</code> вызывается  перед введением объекта в персистентный контекст при выполнении операции <code>EntityManager.merge()</code>.</para>
+              <para>Данный слушатель можно использовать, например, для заполнения персистентных атрибутов сущности перед сохранением ее в базе данных.</para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>
               <code>BeforeInsertEntityListener</code>
             </term>
             <listitem>
@@ -13407,10 +13416,10 @@ locale: en</programlisting>
                     <para>Массив <code>commitInstances</code> содержит создаваемые или изменяемые сущности. </para>
                     <itemizedlist>
                       <listitem>
-                        <para>При создании  сущности в качестве значения поля <code>id</code> указывается значение  <code>NEW-&lt;entityName&gt;</code> или <code>NEW-&lt;entityName&gt;-&lt;uuid&gt;</code>.</para>
+                        <para>При создании  сущности в качестве значения поля <code>id</code> указывается значение  <code>NEW-&lt;entityName&gt;</code> или <code>NEW-&lt;entityName&gt;-&lt;entityId&gt;</code>.</para>
                       </listitem>
                       <listitem>
-                        <para>При изменении сущности в качестве значения поля <code>id</code> указывается значение <code>&lt;entityName&gt;-&lt;uuid&gt;</code>.</para>
+                        <para>При изменении сущности в качестве значения поля <code>id</code> указывается значение <code>&lt;entityName&gt;-&lt;entityId&gt;</code>.</para>
                       </listitem>
                       <listitem>
                         <para>Далее в списке элементов через запятую указываются названия атрибутов создаваемой или изменяемой сущности и их значения.</para>
