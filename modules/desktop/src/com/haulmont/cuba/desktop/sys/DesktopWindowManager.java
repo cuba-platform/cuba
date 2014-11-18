@@ -1180,8 +1180,22 @@ public class DesktopWindowManager extends WindowManager {
 
     private void showOptionDialog(final String title, final String message, IFrame.MessageType messageType,
                                   boolean alwaysModal, final Action[] actions) {
-        final JDialog dialog = new JDialog(frame, title, false);
-        dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+        final DialogWindow dialog = new DialogWindow(frame, title);
+        dialog.setModal(false);
+
+        if (!alwaysModal && actions.length == 1) {
+            final Action action = actions[0];
+            dialog.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent e) {
+                    action.actionPerform(null);
+                    dialog.setVisible(false);
+                    cleanupAfterModalDialogClosed(null);
+                }
+            });
+        } else {
+            dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+        }
 
         int width = 500;
         DialogParams dialogParams = getDialogParams();
@@ -1217,6 +1231,7 @@ public class DesktopWindowManager extends WindowManager {
         panel.add(createButtonsPanel(actions, dialog), "alignx right");
 
         dialog.setLayout(new MigLayout(new LC().insets("0").width(width + "px")));
+        dialog.setFixedWidth(width);
         dialog.add(panel, "width 100%, growy 0");
 
         initShortcut(dialog, panel, actions);
