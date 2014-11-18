@@ -205,7 +205,7 @@
             <para>сущность</para>
           </listitem>
         </itemizedlist></para>
-      <para>Базовые классы сущностей (см. ниже) переопределяют <code>equals()</code> и <code>hashCode()</code> таким образом, что экземпляры сущностей сравниваются по их идентификаторам. То есть экземпляры считаются равными, если равны их идентификаторы. Идентификатор имеет тип <code>UUID</code> и присваивается сразу после создания экземпляра в памяти, поэтому новые экземпляры также можно сравнивать и помещать в коллекции.</para>
+      <para>Базовые классы сущностей (см. ниже) переопределяют <code>equals()</code> и <code>hashCode()</code> таким образом, что экземпляры сущностей сравниваются по их глобальным уникальным идентификаторам (UUID). То есть экземпляры считаются равными, если равны их идентификаторы. Глобальный уникальный идентификатор присваивается сразу после создания экземпляра в памяти, поэтому новые экземпляры также можно сравнивать и помещать в коллекции.</para>
       <section id="base_entity_classes">
         <title>Базовые классы сущностей</title>
         <para>Рассмотрим базовые классы и интерфейсы сущностей более подробно.</para>
@@ -221,24 +221,27 @@
           <listitem>
             <para><code>Instance</code> – декларирует базовые методы работы с объектами предметной области: <itemizedlist>
                 <listitem>
-                  <para>получение ссылки на мета-класс объекта</para>
+                  <para>Получение глобального уникального идентификатора (UUID) сущности.</para>
                 </listitem>
                 <listitem>
-                  <para>генерация имени экземпляра</para>
+                  <para>Получение ссылки на мета-класс объекта.</para>
                 </listitem>
                 <listitem>
-                  <para>чтение/установка значений атрибутов по имени</para>
+                  <para>Генерация имени экземпляра.</para>
                 </listitem>
                 <listitem>
-                  <para>добавление слушателей, получающих уведомления об изменениях атрибутов</para>
+                  <para>Чтение/установка значений атрибутов по имени.</para>
+                </listitem>
+                <listitem>
+                  <para>Добавление слушателей, получающих уведомления об изменениях атрибутов.</para>
                 </listitem>
               </itemizedlist></para>
           </listitem>
           <listitem>
-            <para><code>Entity</code> – дополняет <code>Instance</code> понятием идентификатора сущности, причем <code>Entity</code> не определяет тип идентификатора, оставляя эту возможность наследникам</para>
+            <para><code>Entity</code> – дополняет <code>Instance</code> понятием идентификатора сущности (который не обязательно равен UUID), причем <code>Entity</code> не определяет тип идентификатора, оставляя эту возможность наследникам.</para>
           </listitem>
           <listitem>
-            <para><code>AbstractInstance</code> – реализует логику работы со слушателями изменения атрибутов</para>
+            <para><code>AbstractInstance</code> – реализует логику работы со слушателями изменения атрибутов.</para>
             <warning>
               <para><code>AbstractInstance</code> хранит слушателей в коллекции <code>WeakReference</code>, т.е. при отсутствии внешних ссылок на добавленного слушателя, он будет немедленно уничтожен сборщиком мусора. Как правило, слушателями изменения атрибутов являются <link linkend="gui_vcl">визуальные компоненты</link> и <link linkend="datasources">источники данных</link> UI, на которые всегда имеются ссылки из других объектов, поэтому проблема исчезновения слушателей не возникает. Однако если слушатель создается прикладным кодом и на него никто не ссылается естественным образом, необходимо кроме добавления в <code>Instance</code> сохранить  его в некотором поле объекта.</para>
             </warning>
@@ -247,10 +250,22 @@
             <para><code>AbstractNotPersistentEntity</code> – базовый класс неперсистентных сущностей с идентификаторами типа <code>UUID</code>.</para>
           </listitem>
           <listitem>
-            <para><code>BaseEntity</code> – декларирует присущие всем персистентным сущностям методы работы с информацией о том, кто и когда создал экземпляр сущности в базе данных </para>
+            <para><code>BaseEntity</code> – базовый интерфейс всех персистентных сущностей, декларирует методы получения информации о том, кто и когда создал экземпляр сущности в базе данных.</para>
           </listitem>
           <listitem>
-            <para><code>BaseUuidEntity</code> - реализует <code>BaseEntity</code> с типом идентификатора <code>UUID</code> и поддержкой <glossterm linkend="jpa">JPA</glossterm></para>
+            <para><code>BaseGenericIdEntity</code> - реализует <code>BaseEntity</code> и добавляет аннотации для поддержки <glossterm linkend="jpa">JPA</glossterm>,  не специфицируя при этом тип идентификатора (то есть первичного ключа) сущности.</para>
+          </listitem>
+          <listitem>
+            <para><code>BaseUuidEntity</code> - расширяет <code>BaseGenericIdEntity</code>, задавая атрибут-идентификатор с именем <code>id</code>  типа <code>UUID</code>.</para>
+          </listitem>
+          <listitem>
+            <para><code>BaseLongIdEntity</code> - расширяет <code>BaseGenericIdEntity</code>, задавая атрибут-идентификатор с именем <code>id</code>  типа <code>Long</code>.</para>
+          </listitem>
+          <listitem>
+            <para><code>BaseIntegerIdEntity</code> - расширяет <code>BaseGenericIdEntity</code>, задавая атрибут-идентификатор с именем <code>id</code>  типа <code>Integer</code>.</para>
+          </listitem>
+          <listitem>
+            <para><code>BaseStringIdEntity</code> - расширяет <code>BaseGenericIdEntity</code>, задавая только  тип идентификатора - <code>String</code>. В конкретном классе сущности, унаследованной от <code>BaseStringIdEntity</code>, необходимо задать атрибут-идентификатор типа <code>String</code> и добавить ему JPA-аннотацию <code>@Id</code>.</para>
           </listitem>
           <listitem>
             <para><code>Versioned</code> – интерфейс сущностей, поддерживающих <glossterm linkend="optimistic_locking">оптимистичную блокировку</glossterm></para>
@@ -262,24 +277,27 @@
             <para><code>SoftDelete</code> – интерфейс сущностей, поддерживающих <link linkend="soft_deletion">мягкое удаление</link></para>
           </listitem>
           <listitem>
-            <para><code>StandardEntity</code> – наиболее часто используемый базовый класс персистентных сущностей, реализующий вышеперечисленные интерфейсы</para>
+            <para><code>StandardEntity</code> – наиболее часто используемый базовый класс персистентных сущностей, имеющий идентификатор типа <code>UUID</code> и реализующий интерфейсы <code>Versioned</code>, <code>Updatable</code>, <code>SoftDelete</code>.</para>
           </listitem>
         </itemizedlist>
         <para>При создании классов сущностей рекомендуется выбирать базовый класс по следующим правилам:<itemizedlist>
             <listitem>
-              <para>если сущность не хранится в БД, наследуйте ее от <code>AbstractNotPersistentEntity</code></para>
+              <para>Если сущность не хранится в БД, наследуйте ее от <code>AbstractNotPersistentEntity</code>.</para>
             </listitem>
             <listitem>
-              <para>если сущность встраиваемая - наследуйте ее от <code>EmbeddableEntity</code></para>
+              <para>Если сущность встраиваемая - наследуйте ее от <code>EmbeddableEntity</code>.</para>
             </listitem>
             <listitem>
-              <para>если сущность только создается в БД, никогда не изменяется, и мягкое удаление не требуется - наследуйте ее от <code>BaseUuidEntity</code></para>
+              <para>Если сущность только создается в БД, никогда не изменяется, и мягкое удаление не требуется - наследуйте ее от <code>BaseUuidEntity</code>.</para>
             </listitem>
             <listitem>
-              <para>если сущность ведет себя стандартным образом: изменяется в БД, требует оптимистичной блокировки и мягкого удаления   − наследуйте ее от <code>StandardEntity</code></para>
+              <para>Если сущность ведет себя стандартным образом: изменяется в БД, требует оптимистичной блокировки и мягкого удаления   − наследуйте ее от <code>StandardEntity</code>.</para>
             </listitem>
             <listitem>
-              <para>в противном случае наследуйте сущность от <code>BaseUuidEntity</code> и реализуйте в классе тот набор интерфейсов <code>Versioned</code>, <code>Updatable</code>, <code>SoftDelete</code>, который требуется</para>
+              <para>В противном случае наследуйте сущность от <code>BaseUuidEntity</code> и реализуйте в классе тот набор интерфейсов <code>Versioned</code>, <code>Updatable</code>, <code>SoftDelete</code>, который требуется.</para>
+            </listitem>
+            <listitem>
+              <para>Иногда для некоторых сущностей желательно использовать целочисленные или строковые первичные ключи. В этом случае вместо <code>BaseUuidEntity</code> унаследуйте класс сущности от <code>BaseLongIdEntity</code>, <code>BaseIntegerIdEntity</code>, или <code>BaseStringIdEntity</code>.</para>
             </listitem>
           </itemizedlist></para>
       </section>
@@ -536,6 +554,16 @@
                       <para><code>nullable</code> - (необязательный параметр, по умолчанию <code>true</code>) - может ли атрибут содержать  <code>null</code>. При указании <code>nullable = false</code> <glossterm linkend="jpa">JPA</glossterm> контролирует наличие значения поля при сохранении, кроме того, визуальные компоненты, работающие с данным атрибутом, могут сигнализировать пользователю о необходимости ввода значения.</para>
                     </listitem>
                   </itemizedlist></para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>
+                <code>
+                  <ulink url="http://docs.oracle.com/javaee/5/api/javax/persistence/Id.html">@javax.persistence.Id</ulink>
+                </code>
+              </term>
+              <listitem>
+                <para>Указывает, что  данный атрибут является первичным ключом сущности. Обычно эта аннотация присутствует на поле базового класса, такого как <link linkend="entity_base_classes">BaseUuidEntity</link>. Использовать эту аннотацию в конкретном классе сущности необходимо только при наследовании от базового класса <code>BaseStringIdEntity</code> (то есть при создании сущности со строковым первичным ключом).</para>
               </listitem>
             </varlistentry>
             <varlistentry id="manyToOne">
@@ -2150,6 +2178,7 @@ Date date = timeSource.currentTimestamp();</programlisting><programlisting langu
       <section>
         <title>UuidSource</title>
         <para>Обеспечивает получение значений <code>UUID</code>, в том числе для идентификаторов сущностей. Применение <code>UUID.randomUUID()</code> в прикладном коде не рекомендуется.</para>
+        <para>Для вызова из статического контекста можно использовать класс <code>UuidProvider</code>, который имеет также дополнительный метод <code>fromString()</code>, работающий быстрее, чем стандартный метод <code>UUID.fromString()</code>.</para>
       </section>
     </section>
     <section id="appContext">
