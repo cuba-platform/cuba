@@ -13,6 +13,7 @@ import com.haulmont.cuba.core.listener.*;
 public enum EntityListenerType {
 
     BEFORE_DETACH(BeforeDetachEntityListener.class),
+    BEFORE_ATTACH(BeforeAttachEntityListener.class),
     BEFORE_INSERT(BeforeInsertEntityListener.class),
     AFTER_INSERT(AfterInsertEntityListener.class),
     BEFORE_UPDATE(BeforeUpdateEntityListener.class),

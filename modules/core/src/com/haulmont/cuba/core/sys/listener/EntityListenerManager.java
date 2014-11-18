@@ -128,6 +128,10 @@ public class EntityListenerManager {
                     logExecution(type, entity);
                     ((BeforeDetachEntityListener) listener).onBeforeDetach(entity, persistence.getEntityManager());
                     break;
+                case BEFORE_ATTACH:
+                    logExecution(type, entity);
+                    ((BeforeAttachEntityListener) listener).onBeforeAttach(entity);
+                    break;
                 case BEFORE_INSERT:
                     logExecution(type, entity);
                     ((BeforeInsertEntityListener) listener).onBeforeInsert(entity);

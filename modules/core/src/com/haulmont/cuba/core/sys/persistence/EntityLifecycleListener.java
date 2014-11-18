@@ -57,6 +57,15 @@ public class EntityLifecycleListener extends AbstractLifecycleListener {
     }
 
     @Override
+    public void beforeAttach(LifecycleEvent event) {
+        if (!(event.getSource() instanceof BaseEntity))
+            return;
+
+        BaseEntity entity = (BaseEntity) event.getSource();
+        manager.fireListener(entity, EntityListenerType.BEFORE_ATTACH);
+    }
+
+    @Override
     public void afterAttach(LifecycleEvent event) {
         if (!(event.getSource() instanceof BaseEntity))
             return;
