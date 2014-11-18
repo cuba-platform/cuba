@@ -354,15 +354,15 @@ public class EntityInspectorEditor extends AbstractWindow {
         fieldGroup.setFrame(frame);
         MetadataTools tools = metadata.getTools();
         MetaProperty primaryKeyProperty = tools.getPrimaryKeyProperty(metaClass);
-        Class baseIdType = getBaseIdType(metaClass);
         for (MetaProperty metaProperty : metaClass.getProperties()) {
             boolean isRequired = isRequired(metaProperty);
             boolean isReadonly = metaProperty.isReadOnly();
             switch (metaProperty.getType()) {
                 case DATATYPE:
                 case ENUM:
+                    boolean includeId = primaryKeyProperty.equals(metaProperty)
+                            && String.class.equals(metaProperty.getJavaType());
                     //skip system properties
-                    boolean includeId = metaProperty.equals(primaryKeyProperty) && !BaseUuidEntity.class.equals(baseIdType);
                     if (tools.isSystem(metaProperty) && !showSystemFields && !includeId) {
                         continue;
                     }
@@ -371,7 +371,7 @@ public class EntityInspectorEditor extends AbstractWindow {
                         continue;
                     }
 
-                    if ((includeId && (!BaseStringIdEntity.class.equals(baseIdType) || !isNew))) {
+                    if (includeId && !isNew) {
                         isReadonly = true;
                     }
                     addField(metaClass, metaProperty, item, fieldGroup, isRequired, false, isReadonly, customFields);
@@ -397,26 +397,6 @@ public class EntityInspectorEditor extends AbstractWindow {
         createCustomFields(fieldGroup, customFields);
         fieldGroup.setBorderVisible(true);
     }
-
-    @Nullable
-    private Class getBaseIdType(MetaClass metaClass) {
-        Class curClass = metaClass.getJavaClass();
-        while (curClass != null) {
-            if (curClass.equals(BaseUuidEntity.class)) {
-                return BaseUuidEntity.class;
-            } else if (curClass.equals(BaseStringIdEntity.class)) {
-                return BaseStringIdEntity.class;
-            } else if (curClass.equals(BaseIntegerIdEntity.class)) {
-                return BaseIntegerIdEntity.class;
-            } else if (curClass.equals(BaseLongIdEntity.class)) {
-                return BaseLongIdEntity.class;
-            } else {
-                curClass = curClass.getSuperclass();
-            }
-        }
-        return null;
-    }
-
     /**
      * Creates field group for the embedded property
      *
