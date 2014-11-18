@@ -51,7 +51,7 @@ public class MbeanInspectWindow extends AbstractEditor {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        CubaTable vaadinAttrTable = (CubaTable) WebComponentsHelper.unwrap(attributesTable);
+        CubaTable vaadinAttrTable = WebComponentsHelper.unwrap(attributesTable);
         vaadinAttrTable.setTextSelectionEnabled(true);
 
         attributesTable.setItemClickAction(editAttributeAction);
@@ -63,6 +63,11 @@ public class MbeanInspectWindow extends AbstractEditor {
                 }
             }
         });
+
+        Action windowCommit = getAction("windowCommit");
+        if (windowCommit != null) {
+            removeAction(windowCommit);
+        }
     }
 
     public void editAttribute() {
