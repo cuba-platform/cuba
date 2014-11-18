@@ -5,12 +5,16 @@
 
 package com.haulmont.cuba.portal.restapi;
 
+import com.google.common.base.Strings;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.EntityLoadInfo;
+import com.haulmont.cuba.core.global.LoadContext;
 
 import java.util.UUID;
 
@@ -27,14 +31,25 @@ public class InstanceRef {
             throw new NullPointerException("No load info passed");
 
         this.loadInfo = loadInfo;
-        MetaClass childMetaClass = this.loadInfo.getMetaClass();
-        instance = childMetaClass.createInstance();
-        if (!loadInfo.isNewEntity()) {
-            for (MetaProperty metaProperty : childMetaClass.getProperties()) {
-                if (!metaProperty.getRange().isClass()) {
-                    try {
-                        instance.setValue(metaProperty.getName(), null);
-                    } catch (Exception e) {
+        MetaClass childMetaClass = loadInfo.getMetaClass();
+        if (!Strings.isNullOrEmpty(loadInfo.getViewName()) && !loadInfo.isNewEntity()) {
+            DataService dataService = AppBeans.get(DataService.class);
+            LoadContext ctx = new LoadContext(loadInfo.getMetaClass())
+                    .setId(loadInfo.getId())
+                    .setView(loadInfo.getViewName());
+            instance = dataService.load(ctx);
+            if (instance == null) {
+                throw new RuntimeException("Entity with loadInfo " + loadInfo + " not found");
+            }
+        } else {
+            instance = childMetaClass.createInstance();
+            if (!loadInfo.isNewEntity()) {
+                for (MetaProperty metaProperty : childMetaClass.getProperties()) {
+                    if (!metaProperty.getRange().isClass()) {
+                        try {
+                            instance.setValue(metaProperty.getName(), null);
+                        } catch (Exception ignored) {
+                        }
                     }
                 }
             }
