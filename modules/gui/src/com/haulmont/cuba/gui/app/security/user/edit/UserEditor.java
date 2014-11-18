@@ -88,6 +88,7 @@ public class UserEditor extends AbstractEditor<User> {
 
     public interface Companion {
         void initPasswordField(PasswordField passwordField);
+        void refreshUserSubstitutions();
     }
 
     @Override
@@ -114,6 +115,15 @@ public class UserEditor extends AbstractEditor<User> {
                             }
                             if (entity.equals(userSession.getSubstitutedUser())) {
                                 userSession.setSubstitutedUser((User) entity);
+                            }
+                        }
+
+                        if (userSession.getUser().equals(getItem())) {
+                            for (Entity entity : result) {
+                                if (entity instanceof UserSubstitution) {
+                                    companion.refreshUserSubstitutions();
+                                    break;
+                                }
                             }
                         }
                     }

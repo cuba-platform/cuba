@@ -130,6 +130,10 @@ public class AppWindow extends FocusHandlerWindow implements UserSubstitutionLis
 
     protected AbstractSelect substUserSelect;
 
+    protected Label userNameLabel;
+
+    protected Component userIndicatorComponent;
+
     protected JavaScriptHost scriptHost;
 
     protected final App app;
@@ -543,7 +547,7 @@ public class AppWindow extends FocusHandlerWindow implements UserSubstitutionLis
         createSearchLayout(layout);
 
         if (webConfig.getUseLightHeader()){
-            addUserIndicator(layout);
+            initUserIndicator(layout);
 
             addNewWindowButton(layout);
 
@@ -683,7 +687,7 @@ public class AppWindow extends FocusHandlerWindow implements UserSubstitutionLis
 
         addUserLabel(titleLayout);
 
-        addUserIndicator(titleLayout);
+        initUserIndicator(titleLayout);
 
         addLogoutButton(titleLayout);
 
@@ -724,7 +728,11 @@ public class AppWindow extends FocusHandlerWindow implements UserSubstitutionLis
         return new Embedded(null, new VersionedThemeResource(logoImagePath));
     }
 
-    protected void addUserIndicator(HorizontalLayout parentLayout) {
+    /**
+     * Creates user indicator or replaces the current one with a proper new indicator
+     * @param parentLayout
+     */
+    protected void initUserIndicator(HorizontalLayout parentLayout) {
         UserSession session = App.getInstance().getConnection().getSession();
         if (session == null)
             throw new RuntimeException("No user session found");
@@ -732,11 +740,15 @@ public class AppWindow extends FocusHandlerWindow implements UserSubstitutionLis
         List<UserSubstitution> substitutions = getUserSubstitutions(session);
 
         if (substitutions.isEmpty()) {
-            Label userNameLabel = new Label(getSubstitutedUserCaption(session.getUser()));
+            userNameLabel = new Label(getSubstitutedUserCaption(session.getUser()));
             userNameLabel.setStyleName("select-label");
             userNameLabel.setSizeUndefined();
-            parentLayout.addComponent(userNameLabel);
+            if (userIndicatorComponent == null)
+                parentLayout.addComponent(userNameLabel);
+            else
+                parentLayout.replaceComponent(userIndicatorComponent, userNameLabel);
             parentLayout.setComponentAlignment(userNameLabel, Alignment.MIDDLE_RIGHT);
+            userIndicatorComponent = userNameLabel;
         } else {
             if (webConfig.getUseLightHeader()) {
                 substUserSelect = new ComboBox();
@@ -759,12 +771,24 @@ public class AppWindow extends FocusHandlerWindow implements UserSubstitutionLis
             substUserSelect.select(session.getSubstitutedUser() == null ? session.getUser() : session.getSubstitutedUser());
             substUserSelect.addListener(new SubstitutedUserChangeListener(substUserSelect));
 
-            parentLayout.addComponent(substUserSelect);
+            if (userIndicatorComponent == null)
+                parentLayout.addComponent(substUserSelect);
+            else
+                parentLayout.replaceComponent(userIndicatorComponent, substUserSelect);
             parentLayout.setComponentAlignment(substUserSelect, Alignment.MIDDLE_RIGHT);
+            userIndicatorComponent = substUserSelect;
 
             if (app.isTestMode()) {
                 substUserSelect.setCubaId("substitutedUserSelect");
             }
+        }
+    }
+
+    public void refreshUserSubstitutions() {
+        HorizontalLayout parentLayout;
+        if (userIndicatorComponent != null) {
+            parentLayout = (HorizontalLayout) userIndicatorComponent.getParent();
+            initUserIndicator(parentLayout);
         }
     }
 

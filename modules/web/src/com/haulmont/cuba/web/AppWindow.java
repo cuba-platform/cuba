@@ -147,6 +147,10 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
 
     protected AbstractSelect substUserSelect;
 
+    protected Label userNameLabel;
+
+    protected Component userIndicatorComponent;
+
     protected ShortcutListener closeShortcut;
 
     protected ShortcutListener nextTabShortcut;
@@ -596,7 +600,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
         createSearchLayout(layout);
 
         if (webConfig.getUseLightHeader()){
-            addUserIndicator(layout);
+            initUserIndicator(layout);
 
             addNewWindowButton(layout);
 
@@ -734,7 +738,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
 
         addUserLabel(titleLayout);
 
-        addUserIndicator(titleLayout);
+        initUserIndicator(titleLayout);
 
         addNewWindowButton(titleLayout);
 
@@ -775,7 +779,11 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
         return new Image(null, new VersionedThemeResource(logoImagePath));
     }
 
-    protected void addUserIndicator(HorizontalLayout parentLayout) {
+    /**
+     * Creates user indicator or replaces the current one with a proper new indicator
+     * @param parentLayout
+     */
+    protected void initUserIndicator(HorizontalLayout parentLayout) {
         UserSession session = connection.getSession();
         if (session == null)
             throw new RuntimeException("No user session found");
@@ -783,11 +791,15 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
         List<UserSubstitution> substitutions = getUserSubstitutions(session);
 
         if (substitutions.isEmpty()) {
-            Label userNameLabel = new Label(getSubstitutedUserCaption(session.getUser()));
+            userNameLabel = new Label(getSubstitutedUserCaption(session.getUser()));
             userNameLabel.setStyleName("cuba-user-select-label");
             userNameLabel.setSizeUndefined();
-            parentLayout.addComponent(userNameLabel);
+            if (userIndicatorComponent == null)
+                parentLayout.addComponent(userNameLabel);
+            else
+                parentLayout.replaceComponent(userIndicatorComponent, userNameLabel);
             parentLayout.setComponentAlignment(userNameLabel, Alignment.MIDDLE_RIGHT);
+            userIndicatorComponent = userNameLabel;
         } else {
             if (webConfig.getUseLightHeader()) {
                 substUserSelect = new ComboBox();
@@ -817,8 +829,20 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
             substUserSelect.select(session.getSubstitutedUser() == null ? session.getUser() : session.getSubstitutedUser());
             substUserSelect.addValueChangeListener(new SubstitutedUserChangeListener(substUserSelect));
 
-            parentLayout.addComponent(substUserSelect);
+            if (userIndicatorComponent == null)
+                parentLayout.addComponent(substUserSelect);
+            else
+                parentLayout.replaceComponent(userIndicatorComponent, substUserSelect);
             parentLayout.setComponentAlignment(substUserSelect, Alignment.MIDDLE_RIGHT);
+            userIndicatorComponent = substUserSelect;
+        }
+    }
+
+    public void refreshUserSubstitutions() {
+        HorizontalLayout parentLayout;
+        if (userIndicatorComponent != null) {
+            parentLayout = (HorizontalLayout) userIndicatorComponent.getParent();
+            initUserIndicator(parentLayout);
         }
     }
 
