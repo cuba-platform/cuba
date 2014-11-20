@@ -6,7 +6,6 @@ package com.haulmont.cuba.core.sys;
 
 import com.google.common.collect.Iterables;
 import com.haulmont.bali.util.ReflectionHelper;
-import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.TypedQuery;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.Entity;
@@ -39,7 +38,7 @@ public class QueryImpl<T> implements TypedQuery<T> {
     private OpenJPAQuery query;
     private boolean isNative;
     private String queryString;
-    private Class resultClass;
+    private Class<? extends Entity> resultClass;
     private FetchPlanManager fetchPlanMgr;
 
     private Collection<QueryMacroHandler> macroHandlers;
@@ -51,6 +50,7 @@ public class QueryImpl<T> implements TypedQuery<T> {
         this.emDelegate = entityManager.getDelegate();
         this.isNative = isNative;
         this.macroHandlers = AppBeans.getAll(QueryMacroHandler.class).values();
+        //noinspection unchecked
         this.resultClass = resultClass;
         this.fetchPlanMgr = fetchPlanMgr;
     }
@@ -76,6 +76,7 @@ public class QueryImpl<T> implements TypedQuery<T> {
                 query.setFlushMode(FlushModeType.COMMIT);
             }
         }
+        //noinspection unchecked
         return query;
     }
 
@@ -160,24 +161,24 @@ public class QueryImpl<T> implements TypedQuery<T> {
     }
 
     @Override
-    public Query setMaxResults(int maxResult) {
+    public TypedQuery<T> setMaxResults(int maxResult) {
         getQuery().setMaxResults(maxResult);
         return this;
     }
 
     @Override
-    public Query setFirstResult(int startPosition) {
+    public TypedQuery<T> setFirstResult(int startPosition) {
         getQuery().setFirstResult(startPosition);
         return this;
     }
 
     @Override
-    public Query setParameter(String name, Object value) {
+    public TypedQuery<T> setParameter(String name, Object value) {
         return setParameter(name, value, true);
     }
 
     @Override
-    public Query setParameter(String name, Object value, boolean implicitConversions) {
+    public TypedQuery<T> setParameter(String name, Object value, boolean implicitConversions) {
         if (implicitConversions && value instanceof Entity)
             value = ((BaseEntity) value).getId();
         getQuery().setParameter(name, value);
@@ -185,18 +186,18 @@ public class QueryImpl<T> implements TypedQuery<T> {
     }
 
     @Override
-    public Query setParameter(String name, Date value, TemporalType temporalType) {
+    public TypedQuery<T> setParameter(String name, Date value, TemporalType temporalType) {
         getQuery().setParameter(name, value, temporalType);
         return this;
     }
 
     @Override
-    public Query setParameter(int position, Object value) {
+    public TypedQuery<T> setParameter(int position, Object value) {
         return setParameter(position, value, true);
     }
 
     @Override
-    public Query setParameter(int position, Object value, boolean implicitConversions) {
+    public TypedQuery<T> setParameter(int position, Object value, boolean implicitConversions) {
         if (isNative && (value instanceof UUID) && (DbmsSpecificFactory.getDbmsFeatures().getUuidTypeClassName() != null)) {
             Class c = ReflectionHelper.getClass(DbmsSpecificFactory.getDbmsFeatures().getUuidTypeClassName());
             try {
@@ -212,25 +213,25 @@ public class QueryImpl<T> implements TypedQuery<T> {
     }
 
     @Override
-    public Query setParameter(int position, Date value, TemporalType temporalType) {
+    public TypedQuery<T> setParameter(int position, Date value, TemporalType temporalType) {
         getQuery().setParameter(position, value, temporalType);
         return this;
     }
 
     @Override
-    public Query setLockMode(LockModeType lockMode) {
+    public TypedQuery<T> setLockMode(LockModeType lockMode) {
         getQuery().setLockMode(lockMode);
         return this;
     }
 
     @Override
-    public Query setView(View view) {
+    public TypedQuery<T> setView(View view) {
         fetchPlanMgr.setView(getQuery().getFetchPlan(), view);
         return this;
     }
 
     @Override
-    public Query setViewName(String viewName) {
+    public TypedQuery<T> setViewName(String viewName) {
         if (resultClass == null)
             throw new IllegalStateException("resultClass is null");
 
@@ -239,19 +240,19 @@ public class QueryImpl<T> implements TypedQuery<T> {
     }
 
     @Override
-    public Query setView(Class<? extends Entity> entityClass, String viewName) {
+    public TypedQuery<T> setView(Class<? extends Entity> entityClass, String viewName) {
         setView(metadata.getViewRepository().getView(entityClass, viewName));
         return this;
     }
 
     @Override
-    public Query addView(View view) {
+    public TypedQuery<T> addView(View view) {
         fetchPlanMgr.addView(getQuery().getFetchPlan(), view);
         return this;
     }
 
     @Override
-    public Query addViewName(String viewName) {
+    public TypedQuery<T> addViewName(String viewName) {
         if (resultClass == null)
             throw new IllegalStateException("resultClass is null");
 
@@ -260,7 +261,7 @@ public class QueryImpl<T> implements TypedQuery<T> {
     }
 
     @Override
-    public Query addView(Class<? extends Entity> entityClass, String viewName) {
+    public TypedQuery<T> addView(Class<? extends Entity> entityClass, String viewName) {
         addView(metadata.getViewRepository().getView(entityClass, viewName));
         return this;
     }

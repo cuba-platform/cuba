@@ -72,7 +72,6 @@ public interface Query {
 
     /**
      * Set the maximum number of results to retrieve.
-     * @param maxResult
      * @return the same query instance
      * @throws IllegalArgumentException if argument is negative
      */

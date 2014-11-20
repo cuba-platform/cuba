@@ -5,7 +5,13 @@
 
 package com.haulmont.cuba.core;
 
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.View;
+
 import javax.annotation.Nullable;
+import javax.persistence.LockModeType;
+import javax.persistence.TemporalType;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -16,25 +22,54 @@ import java.util.List;
  */
 public interface TypedQuery<T> extends Query {
 
-    /**
-     * Execute a SELECT query and return the query results as a List.
-     *
-     * @return a list of the results
-     * @throws IllegalStateException if called for a Java Persistence query language UPDATE or DELETE statement
-     */
+    @Override
     List<T> getResultList();
 
-    /**
-     * Execute a SELECT query that returns a single result.
-     *
-     * @return the result
-     * @throws javax.persistence.NoResultException
-     *                               if there is no result
-     * @throws javax.persistence.NonUniqueResultException
-     *                               if more than one result
-     * @throws IllegalStateException if called for a Java Persistence query language UPDATE or DELETE statement
-     */
+    @Override
     T getSingleResult();
+
+    @Override
+    @Nullable
+    T getFirstResult();
+
+    @Override
+    TypedQuery<T> setMaxResults(int maxResult);
+
+    @Override
+    TypedQuery<T> setFirstResult(int startPosition);
+
+    @Override
+    TypedQuery<T> setParameter(String name, Object value);
+
+    @Override
+    TypedQuery<T> setParameter(String name, Object value, boolean implicitConversions);
+
+    @Override
+    TypedQuery<T> setParameter(String name, Date value, TemporalType temporalType);
+
+    @Override
+    TypedQuery<T> setParameter(int position, Object value);
+
+    @Override
+    TypedQuery<T> setParameter(int position, Object value, boolean implicitConversions);
+
+    @Override
+    TypedQuery<T> setParameter(int position, Date value, TemporalType temporalType);
+
+    @Override
+    TypedQuery<T> setLockMode(LockModeType lockMode);
+
+    @Override
+    TypedQuery<T> setView(@Nullable View view);
+
+    @Override
+    TypedQuery<T> setView(Class<? extends Entity> entityClass, String viewName);
+
+    @Override
+    TypedQuery<T> addView(View view);
+
+    @Override
+    TypedQuery<T> addView(Class<? extends Entity> entityClass, String viewName);
 
     /**
      * Set View for this Query instance.
@@ -43,7 +78,7 @@ public interface TypedQuery<T> extends Query {
      * @param viewName      view name - must not be null
      * @return the same query instance
      */
-    Query setViewName(String viewName);
+    TypedQuery<T> setViewName(String viewName);
 
     /**
      * Adds View for this Query instance.
@@ -52,15 +87,5 @@ public interface TypedQuery<T> extends Query {
      * @param viewName      view name - must not be null
      * @return the same query instance
      */
-    Query addViewName(String viewName);
-    /**
-     * Execute a SELECT query.<br/>
-     * Returns null if there is no result. <br/>
-     * Returns first result if more than one result.
-     *
-     * @return the result
-     * @throws IllegalStateException if called for a Java Persistence query language UPDATE or DELETE statement
-     */
-    @Nullable
-    T getFirstResult();
+    TypedQuery<T> addViewName(String viewName);
 }
