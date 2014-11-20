@@ -91,7 +91,7 @@ public class DeletePolicyProcessor {
             switch (deletePolicy) {
                 case DENY:
                     if (referenceExists(property))
-                        throw new DeletePolicyException(metaClass.getName());
+                        throw new DeletePolicyException(this.metaClass.getName(), metaClass.getName());
                     break;
                 case CASCADE:
                     cascade(property);
@@ -112,11 +112,11 @@ public class DeletePolicyProcessor {
                 case DENY:
                     if (property.getRange().getCardinality().isMany()) {
                         if (!isCollectionEmpty(property))
-                            throw new DeletePolicyException(metaClass.getName());
+                            throw new DeletePolicyException(this.metaClass.getName(), metaClass.getName());
                     } else {
                         Object value = entity.getValue(property.getName());
                         if (value != null)
-                            throw new DeletePolicyException(metaClass.getName());
+                            throw new DeletePolicyException(this.metaClass.getName(), metaClass.getName());
                     }
                     break;
                 case CASCADE:
