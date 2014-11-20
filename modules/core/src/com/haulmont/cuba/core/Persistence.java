@@ -47,16 +47,21 @@ public interface Persistence {
      * Creates a new transaction.<br>
      * If there is an active transaction, it will be suspended.
      *
-     * @return new transaction
+     * @return object to control the new transaction
      */
     Transaction createTransaction();
 
     /**
-     * Creates a new transaction if there is no one at the moment.<br>
-     * If a transaction exists, does nothing: subsequent invocations
-     * of commit() and end() do not affect the transaction.
+     * Creates a new transaction if there is no one at the moment.
+     * <p>If a transaction exists, joins the current transaction. In this case:
+     * <ul>
+     *     <li>Subsequent invocation of {@link Transaction#commit()} does not affect current transaction.</li>
+     *     <li>If {@link Transaction#end()} is called without previous {@link Transaction#commit()}, current
+     *     transaction is marked as rollback-only, so any attempt to commit the surrounding {@link Transaction} will
+     *     throw an exception.</li>
+     * </ul>
      *
-     * @return new or existing transaction
+     * @return object to control the transaction
      */
     Transaction getTransaction();
 
