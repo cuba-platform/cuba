@@ -3,7 +3,7 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-package com.haulmont.cuba.core.app.script;
+package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.entity.Entity;
 
@@ -11,8 +11,9 @@ import com.haulmont.cuba.core.entity.Entity;
  * @author degtyarjov
  * @version $Id$
  */
-public interface ScriptGenerationService {
-    String NAME = "cuba_ScriptGenerationService";
+public interface EntityScriptGenerationService {
+
+    String NAME = "cuba_EntityScriptGenerationService";
 
     /**
      * Generates an SQL-insert query for the entity

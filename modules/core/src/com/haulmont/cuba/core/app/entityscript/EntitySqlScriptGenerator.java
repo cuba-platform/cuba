@@ -3,7 +3,7 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-package com.haulmont.cuba.core.app.script;
+package com.haulmont.cuba.core.app.entityscript;
 
 import com.google.common.base.Preconditions;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
@@ -32,10 +32,12 @@ import static java.lang.String.valueOf;
  * @author degtyarjov
  * @version $Id$
  */
-@ManagedBean(SqlScriptGenerator.NAME)
+@ManagedBean(EntitySqlScriptGenerator.NAME)
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class SqlScriptGenerator {
-    public static final String NAME = "cuba_SqlScriptGenerator";
+public class EntitySqlScriptGenerator {
+
+    public static final String NAME = "cuba_EntitySqlScriptGenerator";
+
     public static final String ID = "id";
 
     protected SimpleDateFormat dateFormat = new SimpleDateFormat("''yyyy-MM-dd HH:mm:ss''");
@@ -53,7 +55,7 @@ public class SqlScriptGenerator {
     @Inject
     protected Persistence persistence;
 
-    public SqlScriptGenerator(Class<? extends Entity> clazz) {
+    public EntitySqlScriptGenerator(Class<? extends Entity> clazz) {
         this.clazz = clazz;
     }
 

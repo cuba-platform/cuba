@@ -77,7 +77,7 @@
                 <entry key="cuba_ObjectsCacheManagerService" value="com.haulmont.cuba.core.app.cache.ObjectsCacheManagerService"/>
                 <entry key="cuba_DomainDescriptionService" value="com.haulmont.cuba.core.app.DomainDescriptionService"/>
                 <entry key="cuba_RelatedEntitiesService" value="com.haulmont.cuba.core.app.RelatedEntitiesService"/>
-                <entry key="cuba_ScriptGenerationService" value="com.haulmont.cuba.core.app.script.ScriptGenerationService"/>
+                <entry key="cuba_EntityScriptGenerationService" value="com.haulmont.cuba.core.app.EntityScriptGenerationService"/>
                 <entry key="cuba_NumberIdService" value="com.haulmont.cuba.core.app.NumberIdService"/>
             </map>
         </property>

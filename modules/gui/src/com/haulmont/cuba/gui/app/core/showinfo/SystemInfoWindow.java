@@ -7,7 +7,7 @@ package com.haulmont.cuba.gui.app.core.showinfo;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.core.app.script.ScriptGenerationService;
+import com.haulmont.cuba.core.app.EntityScriptGenerationService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.WindowParam;
@@ -42,7 +42,7 @@ public class SystemInfoWindow extends AbstractWindow {
     protected TextArea scriptArea;
 
     @Inject
-    protected ScriptGenerationService scriptGenerationService;
+    protected EntityScriptGenerationService scriptGenerationService;
 
     @Inject
     protected ClientConfig clientConfig;
