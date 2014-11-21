@@ -78,7 +78,7 @@ public class DesktopButton extends DesktopAbstractComponent<JButton> implements 
         }
 
         impl.setEnabled(action.isEnabled());
-        impl.setVisible(action.isVisible());
+        setVisible(action.isVisible());
 
         if (action.getIcon() != null) {
             setIcon(action.getIcon());
