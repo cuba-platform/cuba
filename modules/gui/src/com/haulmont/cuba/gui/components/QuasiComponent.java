@@ -14,6 +14,7 @@ import java.util.Collection;
  * @author krivopustov
  * @version $Id$
  */
+@Deprecated
 public interface QuasiComponent extends Component {
 
     /**

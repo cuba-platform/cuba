@@ -10,6 +10,7 @@ import java.util.Collection;
  * @author krivopustov
  * @version $Id$
  */
+@Deprecated
 public interface AccessControl extends QuasiComponent {
     String NAME = "accessControl";
 
