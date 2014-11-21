@@ -3,7 +3,7 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-package com.haulmont.cuba.core.app.entityscript;
+package com.haulmont.cuba.core.app.entitysql;
 
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
@@ -11,7 +11,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Transaction;
-import com.haulmont.cuba.core.app.EntityScriptGenerationService;
+import com.haulmont.cuba.core.app.EntitySqlGenerationService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.View;
@@ -28,8 +28,8 @@ import static com.haulmont.chile.core.model.Range.Cardinality.*;
  * @author degtyarjov
  * @version $Id$
  */
-@Service(EntityScriptGenerationService.NAME)
-public class EntityScriptGenerationServiceBean implements EntityScriptGenerationService {
+@Service(EntitySqlGenerationService.NAME)
+public class EntitySqlGenerationServiceBean implements EntitySqlGenerationService {
     @Inject
     protected Persistence persistence;
 
@@ -39,7 +39,7 @@ public class EntityScriptGenerationServiceBean implements EntityScriptGeneration
     @Override
     public String generateInsertScript(Entity entity) {
         Preconditions.checkNotNullArgument(entity);
-        EntitySqlScriptGenerator generator = AppBeans.getPrototype(EntitySqlScriptGenerator.NAME, entity.getClass());
+        EntitySqlGenerator generator = AppBeans.getPrototype(EntitySqlGenerator.NAME, entity.getClass());
         entity = reload(entity);
 
         return generator.generateInsertScript(entity);
@@ -48,7 +48,7 @@ public class EntityScriptGenerationServiceBean implements EntityScriptGeneration
     @Override
     public String generateUpdateScript(Entity entity) {
         Preconditions.checkNotNullArgument(entity);
-        EntitySqlScriptGenerator generator = AppBeans.getPrototype(EntitySqlScriptGenerator.NAME, entity.getClass());
+        EntitySqlGenerator generator = AppBeans.getPrototype(EntitySqlGenerator.NAME, entity.getClass());
         entity = reload(entity);
         return generator.generateUpdateScript(entity);
     }
@@ -56,7 +56,7 @@ public class EntityScriptGenerationServiceBean implements EntityScriptGeneration
     @Override
     public String generateSelectScript(Entity entity) {
         Preconditions.checkNotNullArgument(entity);
-        EntitySqlScriptGenerator generator = AppBeans.getPrototype(EntitySqlScriptGenerator.NAME, entity.getClass());
+        EntitySqlGenerator generator = AppBeans.getPrototype(EntitySqlGenerator.NAME, entity.getClass());
         return generator.generateSelectScript(entity);
     }
 

@@ -3,7 +3,7 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-package com.haulmont.cuba.core.app.entityscript;
+package com.haulmont.cuba.core.app.entitysql;
 
 import com.google.common.base.Preconditions;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
@@ -32,11 +32,11 @@ import static java.lang.String.valueOf;
  * @author degtyarjov
  * @version $Id$
  */
-@ManagedBean(EntitySqlScriptGenerator.NAME)
+@ManagedBean(EntitySqlGenerator.NAME)
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class EntitySqlScriptGenerator {
+public class EntitySqlGenerator {
 
-    public static final String NAME = "cuba_EntitySqlScriptGenerator";
+    public static final String NAME = "cuba_EntitySqlGenerator";
 
     public static final String ID = "id";
 
@@ -55,7 +55,7 @@ public class EntitySqlScriptGenerator {
     @Inject
     protected Persistence persistence;
 
-    public EntitySqlScriptGenerator(Class<? extends Entity> clazz) {
+    public EntitySqlGenerator(Class<? extends Entity> clazz) {
         this.clazz = clazz;
     }
 

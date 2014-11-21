@@ -7,7 +7,7 @@ package com.haulmont.cuba.gui.app.core.showinfo;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.core.app.EntityScriptGenerationService;
+import com.haulmont.cuba.core.app.EntitySqlGenerationService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.WindowParam;
@@ -42,7 +42,7 @@ public class SystemInfoWindow extends AbstractWindow {
     protected TextArea scriptArea;
 
     @Inject
-    protected EntityScriptGenerationService scriptGenerationService;
+    protected EntitySqlGenerationService sqlGenerationService;
 
     @Inject
     protected ClientConfig clientConfig;
@@ -93,21 +93,21 @@ public class SystemInfoWindow extends AbstractWindow {
 
     public void generateInsert() {
         scriptArea.setEditable(true);
-        scriptArea.setValue(scriptGenerationService.generateInsertScript(item));
+        scriptArea.setValue(sqlGenerationService.generateInsertScript(item));
         scriptArea.setVisible(true);
         scriptArea.setEditable(false);
     }
 
     public void generateUpdate() {
         scriptArea.setEditable(true);
-        scriptArea.setValue(scriptGenerationService.generateUpdateScript(item));
+        scriptArea.setValue(sqlGenerationService.generateUpdateScript(item));
         scriptArea.setVisible(true);
         scriptArea.setEditable(false);
     }
 
     public void generateSelect() {
         scriptArea.setEditable(true);
-        scriptArea.setValue(scriptGenerationService.generateSelectScript(item));
+        scriptArea.setValue(sqlGenerationService.generateSelectScript(item));
         scriptArea.setVisible(true);
         scriptArea.setEditable(false);
     }

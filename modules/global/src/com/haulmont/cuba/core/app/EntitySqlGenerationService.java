@@ -11,9 +11,9 @@ import com.haulmont.cuba.core.entity.Entity;
  * @author degtyarjov
  * @version $Id$
  */
-public interface EntityScriptGenerationService {
+public interface EntitySqlGenerationService {
 
-    String NAME = "cuba_EntityScriptGenerationService";
+    String NAME = "cuba_EntitySqlGenerationService";
 
     /**
      * Generates an SQL-insert query for the entity
