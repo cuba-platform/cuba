@@ -160,14 +160,12 @@ public class PersistenceManager implements PersistenceManagerMBean {
             List<String> list = dbUpdater.findUpdateDatabaseScripts();
             if (!list.isEmpty()) {
                 File dbDir = new File(serverConfig.getDbDir());
-                URI dbDirUri = dbDir.toURI();
 
                 String indent = "\t";
                 StrBuilder sb = new StrBuilder();
-                sb.append(dbDir.getPath().replace('\\', '/') + "\n");
+                sb.append(dbDir.getPath().replace('\\', '/') + "/" + "\n");
                 for (String path : list) {
-                    URI file = new File(path).toURI();
-                    sb.append(indent + dbDirUri.relativize(file).getPath() + "\n");
+                    sb.append(indent + path + "\n");
                 }
 
                 return sb.toString();
