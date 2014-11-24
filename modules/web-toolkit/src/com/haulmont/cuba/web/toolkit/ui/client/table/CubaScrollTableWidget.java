@@ -474,22 +474,25 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
                 super.onBrowserEvent(event);
 
                 if (event.getTypeInt() == Event.ONMOUSEDOWN) {
+                    final Element eventTarget = event.getEventTarget().cast();
+                    Widget widget = Util.findWidget(eventTarget, null);
+
+                    if (widget != this) {
+                        if (widget instanceof com.vaadin.client.Focusable || widget instanceof com.google.gwt.user.client.ui.Focusable) {
+                            lastFocusedWidget = widget;
+                        }
+                    }
+
                     handleFocusForWidget();
                 }
             }
 
             @Override
-            protected Element getEventTargetTdOrTr(Event event) {
-                final Element eventTarget = event.getEventTarget().cast();
+            protected Element getElementTdOrTr(Element eventTarget) {
                 Widget widget = Util.findWidget(eventTarget, null);
                 Widget targetWidget = widget;
 
                 if (widget != this) {
-                    if (event.getTypeInt() == Event.ONMOUSEDOWN) {
-                        if (widget instanceof com.vaadin.client.Focusable || widget instanceof com.google.gwt.user.client.ui.Focusable) {
-                            lastFocusedWidget = widget;
-                        }
-                    }
                     /*
                      * This is a workaround to make Labels, read only TextFields
                      * and Embedded in a Table clickable (see #2688). It is
