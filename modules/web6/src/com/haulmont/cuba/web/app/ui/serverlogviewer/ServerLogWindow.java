@@ -186,7 +186,7 @@ public class ServerLogWindow extends AbstractWindow {
         loggerNameField.addListener(new ValueListener<Object>() {
             @Override
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                List<String> currentLoggers = new ArrayList<>(jmxRemoteLoggingAPI.getLoggers(getSelectedConnection()));
+                List<String> currentLoggers = new ArrayList<>(jmxRemoteLoggingAPI.getLoggerNames(getSelectedConnection()));
 
                 Collections.sort(currentLoggers);
                 currentLoggers.add(0, getMessage("logger.new"));
@@ -408,22 +408,13 @@ public class ServerLogWindow extends AbstractWindow {
 
     public void openLoggerControlDialog() {
         Map<String, Object> params = new HashMap<>();
-        Map<String, Level> loggersMap = new HashMap<>();
-        List<String> currentLoggers = jmxRemoteLoggingAPI.getLoggers(getSelectedConnection());
-        for (String loggerName : currentLoggers) {
-            String levelString;
+        final Map<String, Level> loggersMap = new HashMap<>();
+        Map<String, String> loggersLevels = jmxRemoteLoggingAPI.getLoggersLevels(getSelectedConnection());
 
-            try {
-                levelString = jmxRemoteLoggingAPI.getLoggerLevel(getSelectedConnection(), loggerName);
-            } catch (LogControlException e) {
-                log.error(e);
-                showNotification(getMessage("exception.logControl"), NotificationType.ERROR);
-                return;
-            }
-
-            Level logLevel = LoggingHelper.getLevelFromString(levelString);
-            loggersMap.put(loggerName, logLevel);
+        for (Map.Entry<String, String> log : loggersLevels.entrySet()) {
+            loggersMap.put(log.getKey(), LoggingHelper.getLevelFromString(log.getValue()));
         }
+
         params.put("loggersMap", loggersMap);
 
         final ControlLoggerWindow controlLogger = openWindow("serverLogLoggerControlDialog", WindowManager.OpenType.DIALOG, params);
@@ -433,13 +424,21 @@ public class ServerLogWindow extends AbstractWindow {
                 if (COMMIT_ACTION_ID.equals(actionId)) {
                     Map<String, Level> levels = controlLogger.getLevels();
                     try {
-                        for (String loggerName : levels.keySet()) {
-                            String logLevel = jmxRemoteLoggingAPI.getLoggerLevel(getSelectedConnection(), loggerName);
-                            Level newLogLevel = levels.get(loggerName);
+                        Map<String, String> updates = new HashMap<>();
+                        for (Map.Entry<String, Level> levelEntry : levels.entrySet()) {
+                            String loggerName = levelEntry.getKey();
+                            Level newLogLevel = levelEntry.getValue();
+
+                            Level prevLevel = loggersMap.get(loggerName);
+                            String logLevel = prevLevel == null ? null : prevLevel.toString();
 
                             if (!StringUtils.equals(logLevel, newLogLevel.toString())) {
-                                jmxRemoteLoggingAPI.setLoggerLevel(getSelectedConnection(), loggerName, newLogLevel.toString());
+                                updates.put(loggerName, newLogLevel.toString());
                             }
+                        }
+
+                        if (!updates.isEmpty()) {
+                            jmxRemoteLoggingAPI.setLoggersLevels(getSelectedConnection(), updates);
                         }
                     } catch (LogControlException e) {
                         log.error(e);
@@ -462,7 +461,7 @@ public class ServerLogWindow extends AbstractWindow {
     }
 
     protected void refreshLoggers() {
-        List<String> loggers = new ArrayList<>(jmxRemoteLoggingAPI.getLoggers(getSelectedConnection()));
+        List<String> loggers = new ArrayList<>(jmxRemoteLoggingAPI.getLoggerNames(getSelectedConnection()));
 
         Collections.sort(loggers);
         loggers.add(0, getMessage("logger.new"));

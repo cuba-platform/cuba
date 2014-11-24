@@ -17,6 +17,7 @@ import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author artamonov
@@ -58,10 +59,17 @@ public class JmxRemoteLoggingBean implements JmxRemoteLoggingAPI {
     }
 
     @Override
-    public List<String> getLoggers(JmxInstance instance) {
+    public List<String> getLoggerNames(JmxInstance instance) {
         final MBeanServerConnection connection = JmxConnectionHelper.getConnection(instance);
         JmxLogControlMBean logControlMBean = getRemoteLogControl(connection);
-        return logControlMBean.getLoggers();
+        return logControlMBean.getLoggerNames();
+    }
+
+    @Override
+    public Map<String, String> getLoggersLevels(JmxInstance instance) {
+        final MBeanServerConnection connection = JmxConnectionHelper.getConnection(instance);
+        JmxLogControlMBean logControlMBean = getRemoteLogControl(connection);
+        return logControlMBean.getLoggersLevels();
     }
 
     @Override
@@ -78,6 +86,20 @@ public class JmxRemoteLoggingBean implements JmxRemoteLoggingAPI {
         logControlMBean.setLoggerLevel(loggerName, level);
 
         log.info(String.format("Level for logger '%s' set to '%s' on '%s'", loggerName, level, instance.getNodeName()));
+    }
+
+    @Override
+    public void setLoggersLevels(JmxInstance instance, Map<String, String> updates) throws LogControlException {
+        final MBeanServerConnection connection = JmxConnectionHelper.getConnection(instance);
+        JmxLogControlMBean logControlMBean = getRemoteLogControl(connection);
+
+        for (Map.Entry<String, String> logger : updates.entrySet()) {
+            String loggerName = logger.getKey();
+            String level = logger.getKey();
+            logControlMBean.setLoggerLevel(loggerName, level);
+
+            log.info(String.format("Level for logger '%s' set to '%s' on '%s'", loggerName, level, instance.getNodeName()));
+        }
     }
 
     @Override

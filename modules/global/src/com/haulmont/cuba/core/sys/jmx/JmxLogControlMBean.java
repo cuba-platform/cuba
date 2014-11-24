@@ -8,6 +8,7 @@ package com.haulmont.cuba.core.sys.jmx;
 import com.haulmont.cuba.core.sys.logging.LogControlException;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author artamonov
@@ -47,11 +48,16 @@ public interface JmxLogControlMBean {
     long getLogFileSize(String fileName) throws LogControlException;
 
     /**
-     * Get current loggers
+     * Get current loggers names
      *
      * @return current logger names
      */
-    List<String> getLoggers();
+    List<String> getLoggerNames();
+
+    /*
+     * @return current loggers names and levels
+     */
+    Map<String, String> getLoggersLevels();
 
     /**
      * Reads current level of the logger

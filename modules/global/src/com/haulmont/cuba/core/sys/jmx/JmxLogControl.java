@@ -25,9 +25,7 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author artamonov
@@ -76,12 +74,22 @@ public class JmxLogControl implements JmxLogControlMBean {
     }
 
     @Override
-    public List<String> getLoggers() {
+    public List<String> getLoggerNames() {
         final List<Logger> loggers = logControl.getLoggers();
         List<String> loggerNames = new LinkedList<>();
         for (Logger logger : loggers)
             loggerNames.add(logger.getName());
         return loggerNames;
+    }
+
+    @Override
+    public Map<String, String> getLoggersLevels() {
+        Map<String, String> result = new HashMap<>();
+        for (Logger log : logControl.getLoggers()) {
+            Level level = log.getLevel();
+            result.put(log.getName(), (level == null ? null : level.toString()));
+        }
+        return result;
     }
 
     @Override
