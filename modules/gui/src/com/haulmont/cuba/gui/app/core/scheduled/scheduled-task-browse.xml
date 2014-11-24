@@ -12,20 +12,28 @@
         >
 
     <dsContext>
-        <collectionDatasource id="tasksDs" class="com.haulmont.cuba.core.entity.ScheduledTask" view="_local">
+        <groupDatasource id="tasksDs" class="com.haulmont.cuba.core.entity.ScheduledTask" view="_local">
             <query>
                 select t from sys$ScheduledTask t order by t.beanName, t.methodName
             </query>
-        </collectionDatasource>
+        </groupDatasource>
     </dsContext>
 
     <layout expand="tasksTable" spacing="true">
-        <table id="tasksTable" width="100%">
+        <filter id="tasksFilter" datasource="tasksDs">
+            <properties include=".*"/>
+        </filter>
+
+        <groupTable id="tasksTable" width="100%" presentations="true">
+            <actions>
+                <action id="refresh"/>
+            </actions>
             <buttonsPanel>
                 <button action="tasksTable.create" icon="icons/create.png"/>
                 <button id="activateBtn"/>
                 <button action="tasksTable.edit" icon="icons/edit.png"/>
                 <button action="tasksTable.remove" icon="icons/remove.png"/>
+                <button action="tasksTable.refresh" icon="icons/refresh.png"/>
                 <button action="tasksTable.executions"/>
             </buttonsPanel>
             <rowsCount/>
@@ -50,6 +58,6 @@
                 <column id="description"/>
             </columns>
             <rows datasource="tasksDs"/>
-        </table>
+        </groupTable>
     </layout>
 </window>
