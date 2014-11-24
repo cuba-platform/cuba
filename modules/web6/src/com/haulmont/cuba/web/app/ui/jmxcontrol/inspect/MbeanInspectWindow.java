@@ -63,6 +63,11 @@ public class MbeanInspectWindow extends AbstractEditor {
                 }
             }
         });
+
+        Action windowCommit = getAction("windowCommit");
+        if (windowCommit != null) {
+            removeAction(windowCommit);
+        }
     }
 
     public void editAttribute() {
