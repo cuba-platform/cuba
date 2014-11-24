@@ -45,6 +45,7 @@
 @import "app/login-window";
 @import "app/report-wizard";
 @import "app/breadcrumbs";
+@import "app/generic-filter";
 @import "app/table-presentations";
 @import "app/table-paging";
 @import "app/app-menu";
@@ -88,6 +89,7 @@
   @include cuba-login-window;
   @include cuba-report-wizard;
   @include cuba-breadcrumbs;
+  @include cuba-generic-filter;
   @include cuba-table-presentations;
   @include cuba-table-paging;
   @include cuba-menubar;

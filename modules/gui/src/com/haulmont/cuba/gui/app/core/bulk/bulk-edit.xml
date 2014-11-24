@@ -8,7 +8,7 @@
         caption="msg://bulkEditor.caption">
     <layout expand="fieldsScrollBox" spacing="true">
         <groupBox>
-            <label id="infoLabel" value="msg://bulkEditor.description"/>
+            <label id="infoLabel" value="msg://bulkEditor.description" width="100%"/>
         </groupBox>
 
         <scrollBox id="fieldsScrollBox" width="100%" spacing="true" scrollBars="both">

@@ -21,8 +21,8 @@ import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.components.*;
-import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
@@ -77,7 +77,7 @@ public class ListEditComponent extends CustomField {
         field.setNullRepresentation("");
 
         pickerButton = new CubaButton();
-        pickerButton.addStyleName("pickButton");
+        pickerButton.addStyleName("cuba-filter-pick-button");
         pickerButton.addClickListener(
                 new Button.ClickListener() {
                     @Override
@@ -87,7 +87,7 @@ public class ListEditComponent extends CustomField {
                         } else {
                             listEditWindow.setValues(values);
                         }
-                        com.haulmont.cuba.web.App.getInstance().getAppUI().addWindow(listEditWindow);
+                        AppUI.getCurrent().addWindow(listEditWindow);
                     }
                 }
         );
@@ -318,13 +318,7 @@ public class ListEditComponent extends CustomField {
     }
 
     public void setPickerButtonIcon(Resource icon) {
-        if (icon != null) {
-            pickerButton.setIcon(icon);
-            pickerButton.addStyleName(BaseTheme.BUTTON_LINK);
-        } else {
-            pickerButton.setIcon(null);
-            pickerButton.removeStyleName(BaseTheme.BUTTON_LINK);
-        }
+        pickerButton.setIcon(icon);
     }
 
     public Resource getPickerButtonIcon() {
@@ -332,13 +326,7 @@ public class ListEditComponent extends CustomField {
     }
 
     public void setClearButtonIcon(Resource icon) {
-        if (icon != null) {
-            clearButton.setIcon(icon);
-            clearButton.addStyleName(BaseTheme.BUTTON_LINK);
-        } else {
-            clearButton.setIcon(null);
-            clearButton.removeStyleName(BaseTheme.BUTTON_LINK);
-        }
+        clearButton.setIcon(icon);
     }
 
     public Resource getClearButtonIcon() {
@@ -369,9 +357,9 @@ public class ListEditComponent extends CustomField {
             this.values = new HashMap<>(values);
 
             VerticalLayout contentLayout = new VerticalLayout();
+            contentLayout.setSpacing(true);
 
             listLayout = new VerticalLayout();
-            listLayout.setMargin(new MarginInfo(false, false, true, false));
             listLayout.setSpacing(true);
             listLayout.setHeight(-1, Unit.PIXELS);
             for (Map.Entry<Object, String> entry : values.entrySet()) {
@@ -533,7 +521,6 @@ public class ListEditComponent extends CustomField {
             }
 
             HorizontalLayout bottomLayout = new HorizontalLayout();
-            bottomLayout.setMargin(new MarginInfo(true, false, true, false));
             bottomLayout.setSpacing(true);
 
             Button okBtn = new CubaButton(messages.getMessage(AppConfig.getMessagesPack(), "actions.Ok"));
