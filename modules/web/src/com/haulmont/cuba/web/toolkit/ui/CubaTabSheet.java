@@ -128,11 +128,8 @@ public class CubaTabSheet extends com.vaadin.ui.TabSheet implements Action.Conta
     @Override
     public void setSelectedTab(Component c) {
         if (c != null && components.contains(c) && !c.equals(selected)) {
-            setSelected(c);
             openedComponents.push(c);
-            updateSelection();
-            fireSelectedTabChange();
-            markAsDirty();
+            super.setSelectedTab(c);
         }
     }
 
