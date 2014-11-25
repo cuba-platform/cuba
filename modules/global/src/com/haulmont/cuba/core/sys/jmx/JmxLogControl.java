@@ -119,6 +119,13 @@ public class JmxLogControl implements JmxLogControlMBean {
     }
 
     @Override
+    public void setLoggersLevels(Map<String, String> updates) throws LogControlException {
+        for (Map.Entry<String, String> logger : updates.entrySet()) {
+            setLoggerLevel(logger.getKey(), logger.getValue());
+        }
+    }
+
+    @Override
     public List<String> getAppenders() {
         final List<Appender> appenders = logControl.getAppenders();
         List<String> appenderNames = new LinkedList<>();

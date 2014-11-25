@@ -92,13 +92,11 @@ public class JmxRemoteLoggingBean implements JmxRemoteLoggingAPI {
     public void setLoggersLevels(JmxInstance instance, Map<String, String> updates) throws LogControlException {
         final MBeanServerConnection connection = JmxConnectionHelper.getConnection(instance);
         JmxLogControlMBean logControlMBean = getRemoteLogControl(connection);
+        logControlMBean.setLoggersLevels(updates);
 
         for (Map.Entry<String, String> logger : updates.entrySet()) {
-            String loggerName = logger.getKey();
-            String level = logger.getKey();
-            logControlMBean.setLoggerLevel(loggerName, level);
-
-            log.info(String.format("Level for logger '%s' set to '%s' on '%s'", loggerName, level, instance.getNodeName()));
+            log.info(String.format("Level for logger '%s' set to '%s' on '%s'",
+                    logger.getKey(), logger.getKey(), instance.getNodeName()));
         }
     }
 

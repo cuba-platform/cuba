@@ -75,6 +75,8 @@ public interface JmxLogControlMBean {
      */
     void setLoggerLevel(String loggerName, String level) throws LogControlException;
 
+    void setLoggersLevels(Map<String, String> updates) throws LogControlException;
+
     /**
      * Get current appenders
      *
