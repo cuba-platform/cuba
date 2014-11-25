@@ -114,4 +114,34 @@ public interface JmxRemoteLoggingAPI {
      * @param threshold    threshold level
      */
     void setAppenderThreshold(JmxInstance instance, String appenderName, String threshold) throws LogControlException;
+
+    /**
+     * @param instance jmx connection
+     * @return host info
+     */
+    LoggingHostInfo getHostInfo(JmxInstance instance);
+
+    public class LoggingHostInfo {
+        private List<String> loggerNames;
+        private List<String> appenders;
+        private List<String> logFileNames;
+
+        public LoggingHostInfo(List<String> loggerNames, List<String> appenders, List<String> logFileNames) {
+            this.loggerNames = loggerNames;
+            this.appenders = appenders;
+            this.logFileNames = logFileNames;
+        }
+
+        public List<String> getLoggerNames() {
+            return loggerNames;
+        }
+
+        public List<String> getAppenders() {
+            return appenders;
+        }
+
+        public List<String> getLogFileNames() {
+            return logFileNames;
+        }
+    }
 }

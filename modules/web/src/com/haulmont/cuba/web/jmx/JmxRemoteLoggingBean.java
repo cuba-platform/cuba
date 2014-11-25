@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import static com.haulmont.cuba.web.jmx.JmxConnectionHelper.withConnection;
+
 /**
  * @author artamonov
  * @version $Id$
@@ -30,69 +32,106 @@ public class JmxRemoteLoggingBean implements JmxRemoteLoggingAPI {
 
     @Override
     public List<String> getLogFileNames(JmxInstance instance) {
-        final MBeanServerConnection connection = JmxConnectionHelper.getConnection(instance);
-        JmxLogControlMBean logControlMBean = getRemoteLogControl(connection);
-        return logControlMBean.getLogFileNames();
+        return withConnection(instance, new JmxAction<List<String>>() {
+            @Override
+            public List<String> perform(JmxInstance jmx, MBeanServerConnection connection) throws Exception {
+                JmxLogControlMBean logControlMBean = getRemoteLogControl(connection);
+                return logControlMBean.getLogFileNames();
+            }
+        });
     }
 
     @Override
-    public String getTail(JmxInstance instance, String fileName) throws LogControlException {
-        final MBeanServerConnection connection = JmxConnectionHelper.getConnection(instance);
-        JmxLogControlMBean logControlMBean = getRemoteLogControl(connection);
-        return logControlMBean.getTail(fileName);
+    public String getTail(JmxInstance instance, final String fileName) throws LogControlException {
+        return withConnection(instance, new JmxAction<String>() {
+            @Override
+            public String perform(JmxInstance jmx, MBeanServerConnection connection) throws Exception {
+                JmxLogControlMBean logControlMBean = getRemoteLogControl(connection);
+                return logControlMBean.getTail(fileName);
+            }
+        });
     }
 
     @Override
-    public String getLogFileLink(JmxInstance instance, String fileName) throws LogControlException {
-        // get link from remote interface and add session id parameter
-        final MBeanServerConnection connection = JmxConnectionHelper.getConnection(instance);
-        JmxLogControlMBean logControlMBean = getRemoteLogControl(connection);
-        return logControlMBean.getLogFileLink(fileName);
+    public String getLogFileLink(JmxInstance instance, final String fileName) throws LogControlException {
+        return withConnection(instance, new JmxAction<String>() {
+            @Override
+            public String perform(JmxInstance jmx, MBeanServerConnection connection) throws Exception {
+                JmxLogControlMBean logControlMBean = getRemoteLogControl(connection);
+                return logControlMBean.getLogFileLink(fileName);
+            }
+        });
     }
 
     @Override
-    public long getLogFileSize(JmxInstance instance, String fileName) throws LogControlException {
-        // get link from remote interface and add session id parameter
-        final MBeanServerConnection connection = JmxConnectionHelper.getConnection(instance);
-        JmxLogControlMBean logControlMBean = getRemoteLogControl(connection);
-        return logControlMBean.getLogFileSize(fileName);
+    public long getLogFileSize(JmxInstance instance, final String fileName) throws LogControlException {
+        return withConnection(instance, new JmxAction<Long>() {
+            @Override
+            public Long perform(JmxInstance jmx, MBeanServerConnection connection) throws Exception {
+                JmxLogControlMBean logControlMBean = getRemoteLogControl(connection);
+                return logControlMBean.getLogFileSize(fileName);
+            }
+        });
     }
 
     @Override
     public List<String> getLoggerNames(JmxInstance instance) {
-        final MBeanServerConnection connection = JmxConnectionHelper.getConnection(instance);
-        JmxLogControlMBean logControlMBean = getRemoteLogControl(connection);
-        return logControlMBean.getLoggerNames();
+        return withConnection(instance, new JmxAction<List<String>>() {
+            @Override
+            public List<String> perform(JmxInstance jmx, MBeanServerConnection connection) throws Exception {
+                JmxLogControlMBean logControlMBean = getRemoteLogControl(connection);
+                return logControlMBean.getLoggerNames();
+            }
+        });
     }
 
     @Override
     public Map<String, String> getLoggersLevels(JmxInstance instance) {
-        final MBeanServerConnection connection = JmxConnectionHelper.getConnection(instance);
-        JmxLogControlMBean logControlMBean = getRemoteLogControl(connection);
-        return logControlMBean.getLoggersLevels();
+        return withConnection(instance, new JmxAction<Map<String, String>>() {
+            @Override
+            public Map<String, String> perform(JmxInstance jmx, MBeanServerConnection connection) throws Exception {
+                JmxLogControlMBean logControlMBean = getRemoteLogControl(connection);
+                return logControlMBean.getLoggersLevels();
+            }
+        });
     }
 
     @Override
-    public String getLoggerLevel(JmxInstance instance, String loggerName) throws LogControlException {
-        final MBeanServerConnection connection = JmxConnectionHelper.getConnection(instance);
-        JmxLogControlMBean logControlMBean = getRemoteLogControl(connection);
-        return logControlMBean.getLoggerLevel(loggerName);
+    public String getLoggerLevel(JmxInstance instance, final String loggerName) throws LogControlException {
+        return withConnection(instance, new JmxAction<String>() {
+            @Override
+            public String perform(JmxInstance jmx, MBeanServerConnection connection) throws Exception {
+                JmxLogControlMBean logControlMBean = getRemoteLogControl(connection);
+                return logControlMBean.getLoggerLevel(loggerName);
+            }
+        });
     }
 
     @Override
-    public void setLoggerLevel(JmxInstance instance, String loggerName, String level) throws LogControlException {
-        final MBeanServerConnection connection = JmxConnectionHelper.getConnection(instance);
-        JmxLogControlMBean logControlMBean = getRemoteLogControl(connection);
-        logControlMBean.setLoggerLevel(loggerName, level);
+    public void setLoggerLevel(JmxInstance instance, final String loggerName, final String level)
+            throws LogControlException {
+        withConnection(instance, new JmxAction<Void>() {
+            @Override
+            public Void perform(JmxInstance jmx, MBeanServerConnection connection) throws Exception {
+                JmxLogControlMBean logControlMBean = getRemoteLogControl(connection);
+                logControlMBean.setLoggerLevel(level, loggerName);
+                return null;
+            }
+        });
 
         log.info(String.format("Level for logger '%s' set to '%s' on '%s'", loggerName, level, instance.getNodeName()));
     }
 
     @Override
-    public void setLoggersLevels(JmxInstance instance, Map<String, String> updates) throws LogControlException {
-        final MBeanServerConnection connection = JmxConnectionHelper.getConnection(instance);
-        JmxLogControlMBean logControlMBean = getRemoteLogControl(connection);
-        logControlMBean.setLoggersLevels(updates);
+    public void setLoggersLevels(JmxInstance instance, final Map<String, String> updates) throws LogControlException {
+        withConnection(instance, new JmxAction<Void>() {
+            @Override
+            public Void perform(JmxInstance jmx, MBeanServerConnection connection) throws Exception {
+                JmxLogControlMBean logControlMBean = getRemoteLogControl(connection);
+                logControlMBean.setLoggersLevels(updates);
+                return null;
+            }
+        });
 
         for (Map.Entry<String, String> logger : updates.entrySet()) {
             log.info(String.format("Level for logger '%s' set to '%s' on '%s'",
@@ -102,25 +141,55 @@ public class JmxRemoteLoggingBean implements JmxRemoteLoggingAPI {
 
     @Override
     public List<String> getAppenders(JmxInstance instance) {
-        final MBeanServerConnection connection = JmxConnectionHelper.getConnection(instance);
-        JmxLogControlMBean logControlMBean = getRemoteLogControl(connection);
-        return logControlMBean.getAppenders();
+        return withConnection(instance, new JmxAction<List<String>>() {
+            @Override
+            public List<String> perform(JmxInstance jmx, MBeanServerConnection connection) throws Exception {
+                JmxLogControlMBean logControlMBean = getRemoteLogControl(connection);
+                logControlMBean.getAppenders();
+                return null;
+            }
+        });
     }
 
     @Override
-    public String getAppenderThreshold(JmxInstance instance, String appenderName) throws LogControlException {
-        final MBeanServerConnection connection = JmxConnectionHelper.getConnection(instance);
-        JmxLogControlMBean logControlMBean = getRemoteLogControl(connection);
-        return logControlMBean.getAppenderThreshold(appenderName);
+    public String getAppenderThreshold(JmxInstance instance, final String appenderName) throws LogControlException {
+        return withConnection(instance, new JmxAction<String>() {
+            @Override
+            public String perform(JmxInstance jmx, MBeanServerConnection connection) throws Exception {
+                JmxLogControlMBean logControlMBean = getRemoteLogControl(connection);
+                return logControlMBean.getAppenderThreshold(appenderName);
+            }
+        });
     }
 
     @Override
-    public void setAppenderThreshold(JmxInstance instance, String appenderName, String threshold) throws LogControlException {
-        final MBeanServerConnection connection = JmxConnectionHelper.getConnection(instance);
-        JmxLogControlMBean logControlMBean = getRemoteLogControl(connection);
-        logControlMBean.setAppenderThreshold(appenderName, threshold);
+    public void setAppenderThreshold(JmxInstance instance, final String appenderName, final String threshold)
+            throws LogControlException {
+        withConnection(instance, new JmxAction<Void>() {
+            @Override
+            public Void perform(JmxInstance jmx, MBeanServerConnection connection) throws Exception {
+                JmxLogControlMBean logControlMBean = getRemoteLogControl(connection);
+                logControlMBean.setAppenderThreshold(appenderName, threshold);
+                return null;
+            }
+        });
 
         log.info(String.format("Threshold for appender '%s' set to '%s' on '%s'", appenderName, threshold, instance.getNodeName()));
+    }
+
+    @Override
+    public LoggingHostInfo getHostInfo(JmxInstance instance) {
+        return withConnection(instance, new JmxAction<LoggingHostInfo>() {
+            @Override
+            public LoggingHostInfo perform(JmxInstance jmx, MBeanServerConnection connection) throws Exception {
+                JmxLogControlMBean logControlMBean = getRemoteLogControl(connection);
+                return new LoggingHostInfo(
+                        logControlMBean.getLoggerNames(),
+                        logControlMBean.getAppenders(),
+                        logControlMBean.getLogFileNames()
+                );
+            }
+        });
     }
 
     protected JmxLogControlMBean getRemoteLogControl(MBeanServerConnection connection) {

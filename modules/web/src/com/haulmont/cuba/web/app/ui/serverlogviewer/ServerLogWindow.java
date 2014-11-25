@@ -123,9 +123,7 @@ public class ServerLogWindow extends AbstractWindow {
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
                 JmxInstance jmxInstance = jmxConnectionField.getValue();
                 try {
-                    refreshLoggers();
-                    refreshAppenders();
-                    refreshLogFileNames();
+                    refreshHostInfo();
                 } catch (JmxControlException e) {
                     showNotification(getMessage("exception.unableToConnectToInterface"), NotificationType.WARNING);
                     if (jmxInstance != localJmxInstance) {
@@ -178,7 +176,7 @@ public class ServerLogWindow extends AbstractWindow {
             }
         });
 
-        com.vaadin.ui.Label vlogTailLabel = (com.vaadin.ui.Label) WebComponentsHelper.unwrap(logTailLabel);
+        com.vaadin.ui.Label vlogTailLabel = WebComponentsHelper.unwrap(logTailLabel);
 
         vlogTailLabel.setSizeUndefined();
         vlogTailLabel.setContentMode(ContentMode.HTML);
@@ -187,9 +185,7 @@ public class ServerLogWindow extends AbstractWindow {
         loggerLevelField.setOptionsList(LoggingHelper.getLevels());
         appenderLevelField.setOptionsList(LoggingHelper.getLevels());
 
-        refreshLoggers();
-        refreshAppenders();
-        refreshLogFileNames();
+        refreshHostInfo();
 
         loggerNameField.addListener(new ValueListener<Object>() {
             @Override
@@ -208,7 +204,7 @@ public class ServerLogWindow extends AbstractWindow {
         UserSession userSession = sessionSource.getUserSession();
         downloadButton.setEnabled(userSession.isSpecificPermitted("cuba.gui.administration.downloadlogs"));
 
-        ComboBox comboBox = (ComboBox) WebComponentsHelper.unwrap(logFileNameField);
+        ComboBox comboBox = WebComponentsHelper.unwrap(logFileNameField);
         comboBox.addShortcutListener(new ShortcutListener("", ShortcutAction.KeyCode.D,
                 new int[] {ShortcutAction.ModifierKey.CTRL, ShortcutAction.ModifierKey.SHIFT}) {
             @Override
@@ -228,6 +224,13 @@ public class ServerLogWindow extends AbstractWindow {
         showTailButton.setDescription("CTRL-SHIFT-S");
     }
 
+    private void refreshHostInfo() {
+        JmxRemoteLoggingAPI.LoggingHostInfo hostInfo = jmxRemoteLoggingAPI.getHostInfo(getSelectedConnection());
+        refreshLoggers(hostInfo);
+        refreshAppenders(hostInfo);
+        refreshLogFileNames(hostInfo);
+    }
+
     protected void openAddLoggerDialog() {
         final AdditionLoggerWindow additionLogger = openWindow("serverLogAddLoggerDialog", WindowManager.OpenType.DIALOG);
         additionLogger.addListener(new CloseListener() {
@@ -239,13 +242,14 @@ public class ServerLogWindow extends AbstractWindow {
 
                     try {
                         jmxRemoteLoggingAPI.setLoggerLevel(getSelectedConnection(), loggerName, level.toString());
-                    } catch (LogControlException e) {
+                    } catch (LogControlException | JmxControlException e) {
                         log.error(e);
                         showNotification(getMessage("exception.logControl"), NotificationType.ERROR);
                     }
 
                     showNotification(String.format(getMessage("logger.setMessage"), loggerName, level.toString()),
                             NotificationType.HUMANIZED);
+
                     refreshLoggers();
                 }
             }
@@ -265,7 +269,7 @@ public class ServerLogWindow extends AbstractWindow {
 
             try {
                 value = jmxRemoteLoggingAPI.getTail(getSelectedConnection(), logFileName);
-            } catch (LogControlException e) {
+            } catch (LogControlException | JmxControlException e) {
                 log.error(e);
                 if (!isTimedEvent)
                     showNotification(getMessage("exception.logControl"), NotificationType.ERROR);
@@ -310,7 +314,7 @@ public class ServerLogWindow extends AbstractWindow {
             showNotification(getMessage("log.notSelected"), NotificationType.HUMANIZED);
         }
 
-        Panel vlogContainer = (Panel) WebComponentsHelper.unwrap(logContainer);
+        Panel vlogContainer = WebComponentsHelper.unwrap(logContainer);
 
         int scrollPos = vlogContainer.getScrollTop() + 30000;
         vlogContainer.setScrollTop(scrollPos);
@@ -323,7 +327,7 @@ public class ServerLogWindow extends AbstractWindow {
 
             try {
                 level = jmxRemoteLoggingAPI.getLoggerLevel(getSelectedConnection(), loggerName);
-            } catch (LogControlException e) {
+            } catch (LogControlException | JmxControlException e) {
                 log.error(e);
                 showNotification(getMessage("exception.logControl"), NotificationType.ERROR);
                 return;
@@ -345,7 +349,7 @@ public class ServerLogWindow extends AbstractWindow {
 
                 try {
                     jmxRemoteLoggingAPI.setLoggerLevel(getSelectedConnection(), loggerName, level.toString());
-                } catch (LogControlException e) {
+                } catch (LogControlException | JmxControlException e) {
                     log.error(e);
                     showNotification(getMessage("exception.logControl"), NotificationType.ERROR);
                     return;
@@ -367,7 +371,7 @@ public class ServerLogWindow extends AbstractWindow {
 
             try {
                 threshold = jmxRemoteLoggingAPI.getAppenderThreshold(getSelectedConnection(), appenderName);
-            } catch (LogControlException e) {
+            } catch (LogControlException | JmxControlException e) {
                 log.error(e);
                 showNotification(getMessage("exception.logControl"), NotificationType.ERROR);
                 return;
@@ -389,7 +393,7 @@ public class ServerLogWindow extends AbstractWindow {
 
                 try {
                     jmxRemoteLoggingAPI.setAppenderThreshold(getSelectedConnection(), appenderName, threshold.toString());
-                } catch (LogControlException e) {
+                } catch (LogControlException | JmxControlException e) {
                     log.error(e);
                     showNotification(getMessage("exception.logControl"), NotificationType.ERROR);
                     return;
@@ -489,7 +493,7 @@ public class ServerLogWindow extends AbstractWindow {
                         if (!updates.isEmpty()) {
                             jmxRemoteLoggingAPI.setLoggersLevels(getSelectedConnection(), updates);
                         }
-                    } catch (LogControlException e) {
+                    } catch (LogControlException | JmxControlException e) {
                         log.error(e);
                         showNotification(getMessage("exception.logControl"), NotificationType.ERROR);
                     }
@@ -511,7 +515,11 @@ public class ServerLogWindow extends AbstractWindow {
     }
 
     protected void refreshLoggers() {
-        List<String> loggers = new ArrayList<>(jmxRemoteLoggingAPI.getLoggerNames(getSelectedConnection()));
+        refreshLoggers(jmxRemoteLoggingAPI.getHostInfo(getSelectedConnection()));
+    }
+
+    protected void refreshLoggers(JmxRemoteLoggingAPI.LoggingHostInfo hostInfo) {
+        List<String> loggers = new ArrayList<>(hostInfo.getLoggerNames());
 
         Collections.sort(loggers);
         loggers.add(0, getMessage("logger.new"));
@@ -521,8 +529,8 @@ public class ServerLogWindow extends AbstractWindow {
         loggerLevelField.setValue(null);
     }
 
-    protected void refreshAppenders() {
-        List<String> appenders = jmxRemoteLoggingAPI.getAppenders(getSelectedConnection());
+    protected void refreshAppenders(JmxRemoteLoggingAPI.LoggingHostInfo hostInfo) {
+        List<String> appenders = hostInfo.getAppenders();
 
         Collections.sort(appenders);
         appenderNameField.setOptionsList(appenders);
@@ -531,11 +539,11 @@ public class ServerLogWindow extends AbstractWindow {
         appenderLevelField.setValue(null);
     }
 
-    protected void refreshLogFileNames() {
+    protected void refreshLogFileNames(JmxRemoteLoggingAPI.LoggingHostInfo hostInfo) {
         // try to keep previously selected file name
         String selectedFileName = logFileNameField.getValue();
 
-        List<String> logFiles = jmxRemoteLoggingAPI.getLogFileNames(getSelectedConnection());
+        List<String> logFiles = hostInfo.getLogFileNames();
         logFileNameField.setValue(null);
         logFileNameField.setOptionsList(logFiles);
 

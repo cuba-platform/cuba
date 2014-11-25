@@ -37,7 +37,7 @@ public class ManagedBeanAttributeDatasource extends CollectionDatasourceImpl<Man
 
         if (mbean != null) {
             try {
-                mbean = jmxControlAPI.loadAttributes(mbean);
+                jmxControlAPI.loadAttributes(mbean);
             } catch (JmxControlException e) {
                 log.error(e);
             }

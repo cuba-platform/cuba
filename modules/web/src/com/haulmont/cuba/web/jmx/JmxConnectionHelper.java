@@ -33,36 +33,8 @@ public final class JmxConnectionHelper {
     private JmxConnectionHelper() {
     }
 
-    protected static MBeanServerConnection getConnection(JmxInstance instance) {
-        if (ObjectUtils.equals(instance, LOCAL_JMX_INSTANCE)) {
-            return getLocalConnection();
-        } else {
-            return getRemoteConnection(instance);
-        }
-    }
-
     protected static MBeanServerConnection getLocalConnection() {
         return ManagementFactory.getPlatformMBeanServer();
-    }
-
-    protected static MBeanServerConnection getRemoteConnection(JmxInstance instance) {
-        MBeanServerConnectionFactoryBean factoryBean = new MBeanServerConnectionFactoryBean();
-        try {
-            factoryBean.setServiceUrl("service:jmx:rmi:///jndi/rmi://" + instance.getAddress() + "/jmxrmi");
-
-            String username = instance.getLogin();
-            if (StringUtils.isNotEmpty(username)) {
-                Properties properties = new Properties();
-                properties.put("jmx.remote.credentials", new String[]{username, instance.getPassword()});
-                factoryBean.setEnvironment(properties);
-            }
-
-            factoryBean.afterPropertiesSet();
-
-            return factoryBean.getObject();
-        } catch (IOException e) {
-            throw new JmxControlException(e);
-        }
     }
 
     @Nullable
@@ -87,5 +59,39 @@ public final class JmxConnectionHelper {
 
     protected static <T> T getProxy(MBeanServerConnection connection, ObjectName objectName, final Class<T> objectClass) {
         return JMX.newMBeanProxy(connection, objectName, objectClass, true);
+    }
+
+    protected static <T> T withConnection(JmxInstance instance, JmxAction<T> action) {
+        try {
+            if (ObjectUtils.equals(instance, LOCAL_JMX_INSTANCE)) {
+                return action.perform(instance, getLocalConnection());
+            } else {
+                MBeanServerConnectionFactoryBean factoryBean = new MBeanServerConnectionFactoryBean();
+                factoryBean.setServiceUrl("service:jmx:rmi:///jndi/rmi://" + instance.getAddress() + "/jmxrmi");
+
+                String username = instance.getLogin();
+                if (StringUtils.isNotEmpty(username)) {
+                    Properties properties = new Properties();
+                    properties.put("jmx.remote.credentials", new String[]{username, instance.getPassword()});
+                    factoryBean.setEnvironment(properties);
+                }
+
+                factoryBean.afterPropertiesSet();
+
+                MBeanServerConnection connection = factoryBean.getObject();
+                T result;
+                try {
+                    result = action.perform(instance, connection);
+                } finally {
+                    try {
+                        factoryBean.destroy();
+                    } catch (Exception ignored) {
+                    }
+                }
+                return result;
+            }
+        } catch (Exception e) {
+            throw new JmxControlException(e);
+        }
     }
 }

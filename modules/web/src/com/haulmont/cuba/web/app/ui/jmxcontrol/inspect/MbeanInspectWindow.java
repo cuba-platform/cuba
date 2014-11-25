@@ -94,7 +94,7 @@ public class MbeanInspectWindow extends AbstractEditor {
     }
 
     protected void reloadAttribute(ManagedBeanAttribute attribute) {
-        attribute = jmxControlAPI.loadAttributeValue(attribute);
+        jmxControlAPI.loadAttributeValue(attribute);
 
         attrDs.updateItem(attribute);
     }
@@ -228,6 +228,6 @@ public class MbeanInspectWindow extends AbstractEditor {
     }
 
     public void close() {
-        super.close("close", true);
+        super.close(Window.CLOSE_ACTION_ID, true);
     }
 }

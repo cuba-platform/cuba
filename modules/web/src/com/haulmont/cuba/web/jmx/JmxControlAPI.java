@@ -56,7 +56,7 @@ public interface JmxControlAPI {
      * @param info     managed bean descriptor
      * @return managed bean descriptor with attributes
      */
-    ManagedBeanInfo loadAttributes(ManagedBeanInfo info);
+    void loadAttributes(ManagedBeanInfo info);
 
     /**
      * Loads attribute value for managed bean attribute
@@ -64,7 +64,7 @@ public interface JmxControlAPI {
      * @param attribute attribute descriptor
      * @return attribute descriptor with value
      */
-    ManagedBeanAttribute loadAttributeValue(ManagedBeanAttribute attribute);
+    void loadAttributeValue(ManagedBeanAttribute attribute);
 
     /**
      * Saves attribute value to JMX node

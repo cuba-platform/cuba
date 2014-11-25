@@ -23,7 +23,9 @@ import java.io.Serializable;
 import java.lang.reflect.Proxy;
 import java.util.*;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+import static com.haulmont.cuba.web.jmx.JmxConnectionHelper.getObjectName;
+import static com.haulmont.cuba.web.jmx.JmxConnectionHelper.withConnection;
 
 /**
  * @author artamonov
@@ -84,208 +86,227 @@ public class JmxControlBean implements JmxControlAPI {
 
     @Override
     public String getRemoteNodeName(JmxInstance instance) {
-        checkNotNull(instance);
+        checkNotNullArgument(instance);
 
-        String remoteNodeName;
+        //noinspection UnnecessaryLocalVariable
+        String remoteNodeName = withConnection(instance, new JmxAction<String>() {
+            @Override
+            public String perform(JmxInstance jmx, MBeanServerConnection connection) throws IOException {
+                ObjectName nodeIdentifierBeanInfo = getObjectName(connection, JmxNodeIdentifierMBean.class);
 
-        final MBeanServerConnection connection = JmxConnectionHelper.getConnection(instance);
-        try {
-            ObjectName nodeIdentifierBeanInfo = JmxConnectionHelper.getObjectName(connection, JmxNodeIdentifierMBean.class);
+                if (nodeIdentifierBeanInfo != null) {
+                    JmxNodeIdentifierMBean identifier =
+                            JmxConnectionHelper.getProxy(connection, nodeIdentifierBeanInfo, JmxNodeIdentifierMBean.class);
 
-            if (nodeIdentifierBeanInfo != null) {
-                JmxNodeIdentifierMBean identifier =
-                        JmxConnectionHelper.getProxy(connection, nodeIdentifierBeanInfo, JmxNodeIdentifierMBean.class);
-
-                Object nodeName = identifier.getNodeName();
-                if (nodeName != null)
-                    remoteNodeName = nodeName.toString();
-                else
-                    remoteNodeName = getDefaultNodeName(instance);
-            } else {
-                remoteNodeName = getDefaultNodeName(instance);
+                    Object nodeName = identifier.getNodeName();
+                    if (nodeName != null) {
+                        return nodeName.toString();
+                    } else {
+                        return getDefaultNodeName(jmx);
+                    }
+                } else {
+                    return getDefaultNodeName(jmx);
+                }
             }
-        } catch (IOException e) {
-            throw new JmxControlException(e);
-        }
+        });
 
         return remoteNodeName;
     }
 
     @Override
     public List<ManagedBeanInfo> getManagedBeans(JmxInstance instance) {
-        checkNotNull(instance);
+        checkNotNullArgument(instance);
 
-        MBeanServerConnection connection = JmxConnectionHelper.getConnection(instance);
+        //noinspection UnnecessaryLocalVariable
+        List<ManagedBeanInfo> infos = withConnection(instance, new JmxAction<List<ManagedBeanInfo>>() {
+            @Override
+            public List<ManagedBeanInfo> perform(JmxInstance jmx, MBeanServerConnection connection) throws Exception {
+                Set<ObjectName> names = connection.queryNames(null, null);
+                List<ManagedBeanInfo> infoList = new ArrayList<>();
+                for (ObjectName name : names) {
+                    MBeanInfo info = connection.getMBeanInfo(name);
+                    ManagedBeanInfo mbi = new ManagedBeanInfo();
+                    mbi.setClassName(info.getClassName());
+                    mbi.setDescription(info.getDescription());
+                    mbi.setObjectName(name.toString());
+                    mbi.setDomain(name.getDomain());
+                    mbi.setPropertyList(name.getKeyPropertyListString());
+                    mbi.setJmxInstance(jmx);
 
-        try {
-            Set<ObjectName> names = connection.queryNames(null, null);
-            List<ManagedBeanInfo> infoList = new ArrayList<>();
-            for (ObjectName name : names) {
-                MBeanInfo info = connection.getMBeanInfo(name);
-                ManagedBeanInfo mbi = new ManagedBeanInfo();
-                mbi.setClassName(info.getClassName());
-                mbi.setDescription(info.getDescription());
-                mbi.setObjectName(name.toString());
-                mbi.setDomain(name.getDomain());
-                mbi.setPropertyList(name.getKeyPropertyListString());
-                mbi.setJmxInstance(instance);
+                    loadOperations(mbi, info);
 
-                loadOperations(mbi, info);
+                    infoList.add(mbi);
+                }
 
-                infoList.add(mbi);
+                Collections.sort(infoList, new MBeanComparator());
+                return infoList;
             }
+        });
 
-            Collections.sort(infoList, new MBeanComparator());
-            return infoList;
-        } catch (IOException | IntrospectionException | ReflectionException | InstanceNotFoundException e) {
-            throw new JmxControlException(e);
-        }
+        return infos;
     }
 
     @Override
-    public ManagedBeanInfo loadAttributes(ManagedBeanInfo mbinfo) {
-        checkNotNull(mbinfo);
-        checkNotNull(mbinfo.getJmxInstance());
+    public void loadAttributes(final ManagedBeanInfo mbinfo) {
+        checkNotNullArgument(mbinfo);
+        checkNotNullArgument(mbinfo.getJmxInstance());
 
-        try {
-            MBeanServerConnection connection = JmxConnectionHelper.getConnection(mbinfo.getJmxInstance());
-            ObjectName name = new ObjectName(mbinfo.getObjectName());
-            MBeanInfo info = connection.getMBeanInfo(name);
-            List<ManagedBeanAttribute> attrs = new ArrayList<>();
-            MBeanAttributeInfo[] attributes = info.getAttributes();
-            for (MBeanAttributeInfo attribute : attributes) {
-                ManagedBeanAttribute mba = new ManagedBeanAttribute();
-                mba.setMbean(mbinfo);
-                mba.setName(attribute.getName());
-                mba.setType(cleanType(attribute.getType()));
-                mba.setReadable(attribute.isReadable());
-                mba.setWriteable(attribute.isWritable());
+        withConnection(mbinfo.getJmxInstance(), new JmxAction<Void>() {
+            @Override
+            public Void perform(JmxInstance jmx, MBeanServerConnection connection) throws Exception {
+                ObjectName name = new ObjectName(mbinfo.getObjectName());
+                MBeanInfo info = connection.getMBeanInfo(name);
+                List<ManagedBeanAttribute> attrs = new ArrayList<>();
+                MBeanAttributeInfo[] attributes = info.getAttributes();
+                for (MBeanAttributeInfo attribute : attributes) {
+                    ManagedBeanAttribute mba = new ManagedBeanAttribute();
+                    mba.setMbean(mbinfo);
+                    mba.setName(attribute.getName());
+                    mba.setType(cleanType(attribute.getType()));
+                    mba.setReadable(attribute.isReadable());
+                    mba.setWriteable(attribute.isWritable());
 
-                String mask = "";
-                if (attribute.isReadable()) mask += "R";
-                if (attribute.isWritable()) mask += "W";
-                mba.setReadableWriteable(mask);
+                    String mask = "";
+                    if (attribute.isReadable()) {
+                        mask += "R";
+                    }
+                    if (attribute.isWritable()) {
+                        mask += "W";
+                    }
+                    mba.setReadableWriteable(mask);
 
-                if (mba.getReadable())
-                    try {
-                        Object value = connection.getAttribute(name, mba.getName());
-                        setSerializableValue(mba, value);
-                    } catch (Exception e) {
-                        log.error(e);
-                        mba.setValue(e.getMessage());
-                        mba.setWriteable(false);
+                    if (mba.getReadable()) {
+                        try {
+                            Object value = connection.getAttribute(name, mba.getName());
+                            setSerializableValue(mba, value);
+                        } catch (Exception e) {
+                            log.error(e);
+                            mba.setValue(e.getMessage());
+                            mba.setWriteable(false);
+                        }
                     }
 
-                attrs.add(mba);
-            }
-            Collections.sort(attrs, new AttributeComparator());
-            mbinfo.setAttributes(attrs);
-            return mbinfo;
-        } catch (Exception e) {
-            throw new JmxControlException(e);
-        }
-    }
-
-    @Override
-    public ManagedBeanAttribute loadAttributeValue(ManagedBeanAttribute attribute) {
-        checkNotNull(attribute);
-        checkNotNull(attribute.getMbean());
-        checkNotNull(attribute.getMbean().getJmxInstance());
-
-        try {
-            MBeanServerConnection connection = JmxConnectionHelper.getConnection(attribute.getMbean().getJmxInstance());
-
-            ObjectName name = new ObjectName(attribute.getMbean().getObjectName());
-
-            Object value = null;
-            if (attribute.getReadable())
-                try {
-                    value = connection.getAttribute(name, attribute.getName());
-                } catch (Exception e) {
-                    log.error(e);
-                    value = e.getMessage();
+                    attrs.add(mba);
                 }
-            setSerializableValue(attribute, value);
-            return attribute;
-        } catch (MalformedObjectNameException e) {
-            throw new JmxControlException(e);
-        }
-    }
-
-    @Override
-    public void saveAttributeValue(ManagedBeanAttribute attribute) {
-        checkNotNull(attribute);
-        checkNotNull(attribute.getMbean());
-        checkNotNull(attribute.getMbean().getJmxInstance());
-
-        try {
-            MBeanServerConnection connection = JmxConnectionHelper.getConnection(attribute.getMbean().getJmxInstance());
-
-            ObjectName name = new ObjectName(attribute.getMbean().getObjectName());
-
-            Attribute a = new Attribute(attribute.getName(), attribute.getValue());
-
-            log.info(String.format("Set value '%s' to attribute '%s' in '%s' on '%s'",
-                    a.getValue(), a.getName(), name.getCanonicalName(),
-                    attribute.getMbean().getJmxInstance().getNodeName()));
-
-            connection.setAttribute(name, a);
-        } catch (Exception e) {
-            log.info(String.format("Unable to set value '%s' to attribute '%s' in '%s' on '%s'",
-                    attribute.getValue(), attribute.getName(), attribute.getMbean().getObjectName(),
-                    attribute.getMbean().getJmxInstance().getNodeName()), e);
-
-            throw new JmxControlException(e);
-        }
-    }
-
-    @Override
-    public Object invokeOperation(ManagedBeanOperation operation, Object[] parameterValues) {
-        checkNotNull(operation);
-        checkNotNull(operation.getMbean());
-        checkNotNull(operation.getMbean().getJmxInstance());
-
-        try {
-            MBeanServerConnection connection = JmxConnectionHelper.getConnection(operation.getMbean().getJmxInstance());
-            ObjectName name = new ObjectName(operation.getMbean().getObjectName());
-
-            String[] types = new String[operation.getParameters().size()];
-            for (int i = 0; i < operation.getParameters().size(); i++) {
-                types[i] = operation.getParameters().get(i).getType();
+                Collections.sort(attrs, new AttributeComparator());
+                mbinfo.setAttributes(attrs);
+                return null;
             }
+        });
+    }
 
-            log.info(String.format("Invoke method '%s' from '%s' on '%s'",
-                    operation.getName(), name.getCanonicalName(), operation.getMbean().getJmxInstance().getNodeName()));
-            return connection.invoke(name, operation.getName(), parameterValues, types);
-        } catch (IOException | MalformedObjectNameException | ReflectionException
-                | MBeanException | InstanceNotFoundException e) {
+    @Override
+    public void loadAttributeValue(final ManagedBeanAttribute attribute) {
+        checkNotNullArgument(attribute);
+        checkNotNullArgument(attribute.getMbean());
+        checkNotNullArgument(attribute.getMbean().getJmxInstance());
 
-            log.warn(String.format("Error in method invocation '%s' from '%s' on '%s'",
-                    operation.getName(), operation.getMbean().getObjectName(),
-                    operation.getMbean().getJmxInstance().getNodeName()), e);
-            throw new JmxControlException(e);
-        }
+        withConnection(attribute.getMbean().getJmxInstance(), new JmxAction<Void>() {
+            @Override
+            public Void perform(JmxInstance jmx, MBeanServerConnection connection) throws Exception {
+                ObjectName name = new ObjectName(attribute.getMbean().getObjectName());
+
+                Object value = null;
+                if (attribute.getReadable()) {
+                    try {
+                        value = connection.getAttribute(name, attribute.getName());
+                    } catch (Exception e) {
+                        log.error(e);
+                        value = e.getMessage();
+                    }
+                }
+                setSerializableValue(attribute, value);
+
+                return null;
+            }
+        });
+    }
+
+    @Override
+    public void saveAttributeValue(final ManagedBeanAttribute attribute) {
+        checkNotNullArgument(attribute);
+        checkNotNullArgument(attribute.getMbean());
+        checkNotNullArgument(attribute.getMbean().getJmxInstance());
+
+        withConnection(attribute.getMbean().getJmxInstance(), new JmxAction<Void>() {
+            @Override
+            public Void perform(JmxInstance jmx, MBeanServerConnection connection) throws Exception {
+                try {
+                    ObjectName name = new ObjectName(attribute.getMbean().getObjectName());
+                    Attribute a = new Attribute(attribute.getName(), attribute.getValue());
+
+                    log.info(String.format("Set value '%s' to attribute '%s' in '%s' on '%s'",
+                            a.getValue(), a.getName(), name.getCanonicalName(),
+                            attribute.getMbean().getJmxInstance().getNodeName()));
+
+                    connection.setAttribute(name, a);
+                } catch (Exception e) {
+                    log.info(String.format("Unable to set value '%s' to attribute '%s' in '%s' on '%s'",
+                            attribute.getValue(), attribute.getName(), attribute.getMbean().getObjectName(),
+                            attribute.getMbean().getJmxInstance().getNodeName()), e);
+
+                    throw e;
+                }
+
+                return null;
+            }
+        });
+    }
+
+    @Override
+    public Object invokeOperation(final ManagedBeanOperation operation, final Object[] parameterValues) {
+        checkNotNullArgument(operation);
+        checkNotNullArgument(operation.getMbean());
+        checkNotNullArgument(operation.getMbean().getJmxInstance());
+
+        //noinspection UnnecessaryLocalVariable
+        Object result = withConnection(operation.getMbean().getJmxInstance(), new JmxAction<Object>() {
+            @Override
+            public Object perform(JmxInstance jmx, MBeanServerConnection connection) throws Exception {
+                try {
+                    ObjectName name = new ObjectName(operation.getMbean().getObjectName());
+
+                    String[] types = new String[operation.getParameters().size()];
+                    for (int i = 0; i < operation.getParameters().size(); i++) {
+                        types[i] = operation.getParameters().get(i).getType();
+                    }
+
+                    log.info(String.format("Invoke method '%s' from '%s' on '%s'",
+                            operation.getName(), name.getCanonicalName(), operation.getMbean().getJmxInstance().getNodeName()));
+                    return connection.invoke(name, operation.getName(), parameterValues, types);
+                } catch (Exception e) {
+                    log.warn(String.format("Error in method invocation '%s' from '%s' on '%s'",
+                            operation.getName(), operation.getMbean().getObjectName(),
+                            operation.getMbean().getJmxInstance().getNodeName()), e);
+                    throw e;
+                }
+            }
+        });
+
+        return result;
     }
 
     @Override
     public List<ManagedBeanDomain> getDomains(JmxInstance instance) {
-        checkNotNull(instance);
+        checkNotNullArgument(instance);
 
-        MBeanServerConnection connection = JmxConnectionHelper.getConnection(instance);
-
-        try {
-            String[] domains = connection.getDomains();
-            List<ManagedBeanDomain> domainList = new ArrayList<>();
-            for (String d : domains) {
-                ManagedBeanDomain mbd = new ManagedBeanDomain();
-                mbd.setName(d);
-                domainList.add(mbd);
+        //noinspection UnnecessaryLocalVariable
+        List<ManagedBeanDomain> domains = withConnection(instance, new JmxAction<List<ManagedBeanDomain>>() {
+            @Override
+            public List<ManagedBeanDomain> perform(JmxInstance jmx, MBeanServerConnection connection) throws Exception {
+                String[] domains = connection.getDomains();
+                List<ManagedBeanDomain> domainList = new ArrayList<>();
+                for (String d : domains) {
+                    ManagedBeanDomain mbd = new ManagedBeanDomain();
+                    mbd.setName(d);
+                    domainList.add(mbd);
+                }
+                Collections.sort(domainList, new DomainComparator());
+                return domainList;
             }
-            Collections.sort(domainList, new DomainComparator());
-            return domainList;
-        } catch (IOException e) {
-            throw new JmxControlException(e);
-        }
+        });
+
+        return domains;
     }
 
     private void loadOperations(ManagedBeanInfo mbean, MBeanInfo info) {
@@ -338,17 +359,20 @@ public class JmxControlBean implements JmxControlAPI {
     }
 
     private void setSerializableValue(ManagedBeanAttribute mba, Object value) {
-        if (value instanceof Serializable && !(value instanceof Proxy))
+        if (value instanceof Serializable && !(value instanceof Proxy)) {
             mba.setValue(value);
-        else if (value != null)
+        } else if (value != null) {
             mba.setValue(value.toString());
+        }
     }
 
     private String getDefaultNodeName(@SuppressWarnings("unused") JmxInstance instance) {
         return "Unknown JMX interface";
     }
 
-    /** Sorts domains alphabetically by name **/
+    /**
+     * Sorts domains alphabetically by name *
+     */
     private static class DomainComparator implements Comparator<ManagedBeanDomain> {
         @Override
         public int compare(ManagedBeanDomain mbd1, ManagedBeanDomain mbd2) {
@@ -358,7 +382,9 @@ public class JmxControlBean implements JmxControlAPI {
         }
     }
 
-    /** Sorts mbeans alphabetically by name **/
+    /**
+     * Sorts mbeans alphabetically by name *
+     */
     private static class MBeanComparator implements Comparator<ManagedBeanInfo> {
         @Override
         public int compare(ManagedBeanInfo mbd1, ManagedBeanInfo mbd2) {
@@ -368,7 +394,9 @@ public class JmxControlBean implements JmxControlAPI {
         }
     }
 
-    /** Sorts attributes alphabetically by name **/
+    /**
+     * Sorts attributes alphabetically by name *
+     */
     private static class AttributeComparator implements Comparator<ManagedBeanAttribute> {
         @Override
         public int compare(ManagedBeanAttribute mbd1, ManagedBeanAttribute mbd2) {
@@ -378,7 +406,9 @@ public class JmxControlBean implements JmxControlAPI {
         }
     }
 
-    /** Sorts operations alphabetically by name **/
+    /**
+     * Sorts operations alphabetically by name *
+     */
     private static class OperationComparator implements Comparator<ManagedBeanOperation> {
         @Override
         public int compare(ManagedBeanOperation o1, ManagedBeanOperation o2) {
