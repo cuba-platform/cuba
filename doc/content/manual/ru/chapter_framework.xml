@@ -4354,7 +4354,7 @@ private Set&lt;Entity&gt; saveAndReturnBookInstances(List&lt;BookInstance&gt; to
       <section id="screen_xml">
         <title>XML-дескриптор</title>
         <para>XML-дескриптор - это файл формата XML, описывающий <link linkend="datasources">источники данных</link> и расположение визуальных компонентов экрана.</para>
-        <para>Схема XML доступна по адресу <ulink url="http://schemas.haulmont.com/cuba/5.2/window.xsd">http://schemas.haulmont.com/cuba/5.2/window.xsd</ulink></para>
+        <para>Схема XML доступна по адресу <ulink url="http://schemas.haulmont.com/cuba/5.3/window.xsd">http://schemas.haulmont.com/cuba/5.3/window.xsd</ulink></para>
         <para>Рассмотрим структуру дескриптора.</para>
         <para><sgmltag>window</sgmltag> − корневой элемент.</para>
         <para>Атрибуты <sgmltag>window</sgmltag>:<itemizedlist>
@@ -12777,19 +12777,19 @@ cuba.themeConfig = havana-theme.properties halo-theme.properties facebook-theme.
           <listitem>
             <para>Переопределение значений свойств темы, установленных по умолчанию.</para>
             <para>Рассмотрим на примере изменения цвета фона текстовых полей, обязательных для ввода.</para>
-            <para>В пакете <code>res.nimbus</code> нужно создать файл <filename>nimbus.xml</filename> следующего содержания:<programlisting language="xml">&lt;theme xmlns=&quot;http://schemas.haulmont.com/cuba/5.2/desktop-theme.xsd&quot;&gt;
+            <para>В пакете <code>res.nimbus</code> нужно создать файл <filename>nimbus.xml</filename> следующего содержания:<programlisting language="xml">&lt;theme xmlns=&quot;http://schemas.haulmont.com/cuba/5.3/desktop-theme.xsd&quot;&gt;
     &lt;ui-defaults&gt;
         &lt;color property=&quot;cubaRequiredBackground&quot; value=&quot;#f78260&quot;/&gt;
     &lt;/ui-defaults&gt;
 &lt;/theme&gt;</programlisting></para>
             <para>Элемент <sgmltag>ui-defaults</sgmltag> служит для переопределения значений свойств темы платформы, установленных по умолчанию.</para>
-            <para>В элементе <sgmltag>ui-defaults</sgmltag> присутствуют как свойства, содержащиеся в стандартной  теме <code>Nimbus</code> (<ulink url="http://docs.oracle.com/javase/tutorial/uiswing/lookandfeel/_nimbusDefaults.html">http://docs.oracle.com/javase/tutorial/uiswing/lookandfeel/_nimbusDefaults.html</ulink>), так и свойства, созданные в платформе <trademark>CUBA</trademark>.</para>
-            <para>В данном примере переопределено значение свойства платформы  <trademark>CUBA</trademark> <sgmltag>cubaRequiredBackground</sgmltag>, хранящего цвет фона поля, обязательного для заполнения. Данное изменение коснется всех полей, обязательных для ввода.</para>
+            <para>В элементе <sgmltag>ui-defaults</sgmltag> присутствуют как свойства, содержащиеся в стандартной  теме <code>Nimbus</code> (<ulink url="http://docs.oracle.com/javase/tutorial/uiswing/lookandfeel/_nimbusDefaults.html">http://docs.oracle.com/javase/tutorial/uiswing/lookandfeel/_nimbusDefaults.html</ulink>), так и свойства, созданные в платформе.</para>
+            <para>В данном примере переопределено значение свойства платформы <sgmltag>cubaRequiredBackground</sgmltag>, хранящего цвет фона поля, обязательного для заполнения. Данное изменение коснется всех полей, обязательных для ввода.</para>
           </listitem>
           <listitem>
             <para>Создание стиля для элемента с помощью стандартных средств.</para>
             <para>Рассмотрим пример выделения надписи жирным цветом.</para>
-            <para>Для того чтобы создать такой стиль, необходимо определить элемент <sgmltag>style</sgmltag> в файле темы <filename>nimbus.xml</filename> следующим образом:<programlisting language="xml">&lt;theme xmlns=&quot;http://schemas.haulmont.com/cuba/5.2/desktop-theme.xsd&quot;&gt;
+            <para>Для того чтобы создать такой стиль, необходимо определить элемент <sgmltag>style</sgmltag> в файле темы <filename>nimbus.xml</filename> следующим образом:<programlisting language="xml">&lt;theme xmlns=&quot;http://schemas.haulmont.com/cuba/5.3/desktop-theme.xsd&quot;&gt;
     &lt;style name=&quot;boldlabel&quot;&gt;
         &lt;font style=&quot;bold&quot;/&gt;
     &lt;/style&gt;
@@ -12816,7 +12816,7 @@ cuba.themeConfig = havana-theme.properties halo-theme.properties facebook-theme.
         jlabel.setFont(originalFont.deriveFont(attributes));
     }
 }</programlisting></para>
-            <para>Определим пользовательский стиль в файле <filename>nimbus.xml</filename>:<programlisting language="xml">&lt;theme xmlns=&quot;http://schemas.haulmont.com/cuba/5.2/desktop-theme.xsd&quot;&gt;
+            <para>Определим пользовательский стиль в файле <filename>nimbus.xml</filename>:<programlisting language="xml">&lt;theme xmlns=&quot;http://schemas.haulmont.com/cuba/5.3/desktop-theme.xsd&quot;&gt;
     &lt;style name=&quot;label-underlined&quot; component=&quot;com.haulmont.cuba.desktop.gui.components.DesktopLabel&quot;&gt;
         &lt;custom class=&quot;com.sample.sales.desktop.gui.decorators.UnderlinedLabelDecorator&quot;/&gt;
     &lt;/style&gt;
@@ -13141,7 +13141,7 @@ public class MyComponentLoader extends ComponentLoader {
               <para>Теперь компонент можно использовать и в XML-дескрипторах экранов проекта:<programlisting language="xml">&lt;layout&gt;
     &lt;myComponent id=&quot;someId&quot; width=&quot;100%&quot; someParameter=&quot;10&quot;/&gt;
 &lt;/layout&gt;</programlisting></para>
-              <para>Для того, чтобы IDE подсказывала имя компонента и его атрибуты, можно определить собственную XSD и включать ее в экранах:<programlisting language="xml">&lt;window xmlns=&quot;http://schemas.haulmont.com/cuba/5.2/window.xsd&quot;
+              <para>Для того, чтобы IDE подсказывала имя компонента и его атрибуты, можно определить собственную XSD и включать ее в экранах:<programlisting language="xml">&lt;window xmlns=&quot;http://schemas.haulmont.com/cuba/5.3/window.xsd&quot;
         xmlns:app=&quot;http://schemas.company.com/app/0.1/app-components.xsd&quot;
         ...&gt;
 
@@ -13493,7 +13493,7 @@ locale: en</programlisting>
     &lt;/removeInstances&gt;
     &lt;softDeletion&gt;true&lt;/softDeletion&gt;
 &lt;/CommitRequest&gt;</programlisting>
-                <para>Семантика полей XML-документа определяется в схеме <ulink url="http://schemas.haulmont.com/cuba/5.2/restapi-commit.xsd">http://schemas.haulmont.com/cuba/5.2/restapi-commit.xsd</ulink>.</para>
+                <para>Семантика полей XML-документа определяется в схеме <ulink url="http://schemas.haulmont.com/cuba/5.3/restapi-commit.xsd">http://schemas.haulmont.com/cuba/5.3/restapi-commit.xsd</ulink>.</para>
                 <para>Функция вызывается посредством POST обращения к <code>{host:port}/app-portal/api/commit?s=&lt;sessionId&gt;</code>. XML  передается в теле запроса. Функция возвращает массив пар объектов  XML вида</para>
                 <programlisting language="xml">&lt;mapping&gt;
     &lt;pair&gt;
@@ -13501,7 +13501,7 @@ locale: en</programlisting>
         &lt;instance ...&gt;
     &lt;/pair&gt;
 &lt;/mapping&gt;</programlisting>
-                <para>Схема, содержащая  описание результата вызова функции, находится  по адресу <ulink url="http://schemas.haulmont.com/cuba/5.2/restapi-instances.xsd">http://schemas.haulmont.com/cuba/5.2/restapi-instances.xsd</ulink></para>
+                <para>Схема, содержащая  описание результата вызова функции, находится  по адресу <ulink url="http://schemas.haulmont.com/cuba/5.3/restapi-instances.xsd">http://schemas.haulmont.com/cuba/5.3/restapi-instances.xsd</ulink></para>
               </listitem>
             </varlistentry>
           </variablelist>
@@ -14736,7 +14736,7 @@ public class ExtUser extends User {
           <listitem>
             <para>Добавление нового элемента по умолчанию производится в конец списка соседних элементов. Чтобы добавить новый элемент в начало или с произвольным индексом, необходимо выполнить следующее: <itemizedlist>
                 <listitem>
-                  <para>определить в расширяющем дескрипторе дополнительный namespace: <code>xmlns:ext=&quot;http://schemas.haulmont.com/cuba/5.2/window-ext.xsd&quot;</code></para>
+                  <para>определить в расширяющем дескрипторе дополнительный namespace: <code>xmlns:ext=&quot;http://schemas.haulmont.com/cuba/5.3/window-ext.xsd&quot;</code></para>
                 </listitem>
                 <listitem>
                   <para>добавить в расширяющий элемент атрибут <sgmltag>ext:index</sgmltag> с желаемым индексом, например: <code>ext:index=&quot;0&quot;.</code></para>
@@ -14750,8 +14750,8 @@ public class ExtUser extends User {
 &lt;category name=&quot;com.haulmont.cuba.gui.xml.XmlInheritanceProcessor&quot;&gt;
     &lt;priority value=&quot;TRACE&quot;/&gt;
 &lt;/category&gt;</programlisting></para>
-      <para>Пример XML-дескриптора экрана браузера сущностей <code>ExtUser</code>:<programlisting language="xml">&lt;window xmlns=&quot;http://schemas.haulmont.com/cuba/5.2/window.xsd&quot;
-        xmlns:ext=&quot;http://schemas.haulmont.com/cuba/5.2/window-ext.xsd&quot;
+      <para>Пример XML-дескриптора экрана браузера сущностей <code>ExtUser</code>:<programlisting language="xml">&lt;window xmlns=&quot;http://schemas.haulmont.com/cuba/5.3/window.xsd&quot;
+        xmlns:ext=&quot;http://schemas.haulmont.com/cuba/5.3/window-ext.xsd&quot;
         extends=&quot;/com/haulmont/cuba/gui/app/security/user/browse/user-browse.xml&quot;&gt;
     &lt;layout&gt;
         &lt;groupTable id=&quot;usersTable&quot;&gt;
@@ -14768,8 +14768,8 @@ public class ExtUser extends User {
         template=&quot;com/sample/sales/gui/extuser/extuser-browse.xml&quot;/&gt;
 &lt;screen id=&quot;sec$User.lookup&quot;
         template=&quot;com/sample/sales/gui/extuser/extuser-browse.xml&quot;/&gt;</programlisting></para>
-      <para>Аналогично создаем экран редактирования:<programlisting language="xml">&lt;window xmlns=&quot;http://schemas.haulmont.com/cuba/5.2/window.xsd&quot;
-        xmlns:ext=&quot;http://schemas.haulmont.com/cuba/5.2/window-ext.xsd&quot;
+      <para>Аналогично создаем экран редактирования:<programlisting language="xml">&lt;window xmlns=&quot;http://schemas.haulmont.com/cuba/5.3/window.xsd&quot;
+        xmlns:ext=&quot;http://schemas.haulmont.com/cuba/5.3/window-ext.xsd&quot;
         extends=&quot;/com/haulmont/cuba/gui/app/security/user/edit/user-edit.xml&quot;&gt;
     &lt;layout&gt;
         &lt;fieldGroup id=&quot;fieldGroup&quot;&gt;
