@@ -15,16 +15,20 @@ import com.haulmont.cuba.core.entity.SendingMessage;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.app.Authentication;
+import com.sun.mail.smtp.SMTPAddressFailedException;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.core.task.TaskExecutor;
+import org.springframework.mail.MailSendException;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import javax.inject.Inject;
+import javax.mail.internet.AddressException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
@@ -96,6 +100,7 @@ public class Emailer implements EmailerAPI {
 
     @Override
     public List<SendingMessage> sendEmailAsync(EmailInfo info) {
+        //noinspection UnnecessaryLocalVariable
         List<SendingMessage> result = sendEmailAsync(info, null, null);
         return result;
     }
@@ -142,10 +147,12 @@ public class Emailer implements EmailerAPI {
         String[] splitAddresses = info.getAddresses().split("[,;]");
         for (String address : splitAddresses) {
             address = address.trim();
-            SendingMessage sendingMessage = convertToSendingMessage(address, info.getFrom(), info.getCaption(),
-                    info.getBody(), info.getAttachments(), attemptsCount, deadline);
+            if (StringUtils.isNotBlank(address)) {
+                SendingMessage sendingMessage = convertToSendingMessage(address, info.getFrom(), info.getCaption(),
+                        info.getBody(), info.getAttachments(), attemptsCount, deadline);
 
-            sendingMessageList.add(sendingMessage);
+                sendingMessageList.add(sendingMessage);
+            }
         }
         return sendingMessageList;
     }
@@ -161,7 +168,11 @@ public class Emailer implements EmailerAPI {
             markAsSent(sendingMessage);
         } catch (Exception e) {
             log.warn("Unable to send email to '" + sendingMessage.getAddress() + "'", e);
-            returnToQueue(sendingMessage);
+            if (isNeedToRetry(e)) {
+                returnToQueue(sendingMessage);
+            } else {
+                markAsNonSent(sendingMessage);
+            }
         }
     }
 
@@ -209,7 +220,7 @@ public class Emailer implements EmailerAPI {
         // to avoid additional overhead to load body and attachments back from FS
         try {
             SendingMessage clonedMessage = createClone(sendingMessage);
-            persistMessages(Collections.<SendingMessage>singletonList(clonedMessage), SendingStatus.SENDING);
+            persistMessages(Collections.singletonList(clonedMessage), SendingStatus.SENDING);
             return clonedMessage;
         } catch (Exception e) {
             log.error("Failed to persist message " + sendingMessage.getCaption(), e);
@@ -284,6 +295,7 @@ public class Emailer implements EmailerAPI {
         Integer messageAttemptsLimit = sendingMessage.getAttemptsCount();
         int defaultLimit = config.getDefaultSendingAttemptsCount();
         int attemptsLimit = messageAttemptsLimit != null ? messageAttemptsLimit : defaultLimit;
+        //noinspection UnnecessaryLocalVariable
         boolean res = sendingMessage.getAttemptsMade() != null && sendingMessage.getAttemptsMade() >= attemptsLimit;
         return res;
     }
@@ -296,7 +308,11 @@ public class Emailer implements EmailerAPI {
             returnToQueue(msg);
         } catch (Exception e) {
             log.error("Exception while sending email: ", e);
-            returnToQueue(msg);
+            if (isNeedToRetry(e)) {
+                returnToQueue(msg);
+            } else {
+                markAsNonSent(msg);
+            }
         }
     }
 
@@ -360,6 +376,7 @@ public class Emailer implements EmailerAPI {
             } catch (FileStorageException e) {
                 throw new RuntimeException(e);
             }
+            //noinspection UnnecessaryLocalVariable
             String res = bodyTextFromByteArray(bodyContent);
             return res;
         } else {
@@ -584,13 +601,23 @@ public class Emailer implements EmailerAPI {
         return bodyBytes;
     }
 
-
     protected String bodyTextFromByteArray(byte[] bodyContent) {
         try {
             return new String(bodyContent, BODY_STORAGE_ENCODING);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    protected boolean isNeedToRetry(Exception e) {
+        if (e instanceof MailSendException) {
+            if (e.getCause() instanceof SMTPAddressFailedException) {
+                return false;
+            }
+        } else if (e instanceof AddressException) {
+            return false;
+        }
+        return true;
     }
 
     @Override
