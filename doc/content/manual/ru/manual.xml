@@ -1320,6 +1320,15 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
           <para>Используется во всех стандартных <link linkend="app_tiers">блоках</link>.</para>
         </listitem>
       </varlistentry>
+      <varlistentry id="cuba.themeConfig">
+        <term>cuba.themeConfig</term>
+        <listitem>
+          <para>Задает набор файлов <filename>*-theme.properties</filename>,  в которых описаны переменные <link linkend="gui_themes">тем</link>, такие как размеры диалоговых окон и ширина полей ввода по умолчанию.  </para>
+          <para>Значением свойства должен быть список имен файлов, разделенный пробелами. Файлы загружаются по правилам интерфейса <link linkend="resources">Resources</link>.</para>
+          <para><para>Значение по умолчанию для Web Client: <literal>havana-theme.properties halo-theme.properties</literal></para>Значение по умолчанию для Desktop Client: <literal>nimbus-theme.properties</literal></para>
+          <para>Используется в блоках <structname>Web Client</structname> и <structname>Desktop Client</structname>.</para>
+        </listitem>
+      </varlistentry>
       <varlistentry id="cuba.triggerFilesCheck">
         <term>cuba.triggerFilesCheck</term>
         <listitem>
@@ -1493,6 +1502,15 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
           <para>Используется в блоке   <structname>Web Client</structname>.</para>
         </listitem>
       </varlistentry>
+      <varlistentry id="cuba.web.availableAppThemes">
+        <term>cuba.web.availableAppThemes</term>
+        <listitem>
+          <para>Задает список <link linkend="web_theme">тем веб клиента</link>, доступных для выбора пользователем. Рекомендуется всегда включать в этот список как минимум тему по умолчанию, заданную свойством <link linkend="cuba.web.theme">cuba.web.theme</link>. Значения списка разделяются символом &quot;|&quot;.</para>
+          <para>Значение по умолчанию: <literal>havana|halo</literal></para>
+          <para>Интерфейс: <code>WebConfig</code></para>
+          <para>Используется в блоке   <structname>Web Client</structname>.</para>
+        </listitem>
+      </varlistentry>
       <varlistentry id="cuba.web.foldersPaneDefaultWidth">
         <term>cuba.web.foldersPaneDefaultWidth</term>
         <listitem>
@@ -1590,6 +1608,25 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
               </listitem>
             </itemizedlist></para>
           <para>Значение по умолчанию: <literal>false</literal></para>
+          <para>Интерфейс: <code>WebConfig</code></para>
+          <para>Используется в блоке   <structname>Web Client</structname>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.web.theme">
+        <term>cuba.web.theme</term>
+        <listitem>
+          <para>Задает имя <link linkend="web_theme">темы</link>, используемой по умолчанию в веб клиенте. См. также свойство <link linkend="cuba.web.availableAppThemes">cuba.web.availableAppThemes</link>.</para>
+          <para>Значение по умолчанию: <literal>havana</literal></para>
+          <para>Интерфейс: <code>WebConfig</code></para>
+          <para>Используется в блоке <structname>Web Client</structname>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry id="cuba.web.useFontIcons">
+        <term>cuba.web.useFontIcons</term>
+        <listitem>
+          <para>При включенном свойстве для <link linkend="web_theme">темы</link> <application>halo</application> в качестве пиктограмм стандартных действий и экранов платформы используются элементы шрифта <ulink url="http://fortawesome.github.io/Font-Awesome">Font Awesome</ulink> вместо файлов изображений.</para>
+          <para>Соответствие между именем, указанным в свойстве <link linkend="gui_attr_basic_icon">icon</link> действия или визуального компонента, и элементом шрифта, задается в файле <filename>halo-theme.properties</filename> платформы. В нем ключи, начинающиеся с <code>cuba.web.icons</code> соответствуют именам пиктограмм, а их значения - константам перечисления <code>com.vaadin.server.FontAwesome</code>. Например, элемент шрифта для пиктограммы <link linkend="standard_actions">стандартного действия</link> <code>create</code>, задается строкой:<programlisting>cuba.web.icons.create.png = FILE_O</programlisting></para>
+          <para>Значение по умолчанию: <literal>true</literal></para>
           <para>Интерфейс: <code>WebConfig</code></para>
           <para>Используется в блоке   <structname>Web Client</structname>.</para>
         </listitem>

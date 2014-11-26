@@ -12516,209 +12516,222 @@ public void init(Map&lt;String, Object&gt; params) {
       <para>Тема служит для управления визуальным представлением приложения. </para>
       <section id="web_theme">
         <title>Тема в веб-приложениях</title>
-        <para>Тема состоит из файлов <filename>.scss</filename> и других ресурсов, например, картинок.</para>
-        <para>В платформе темой по умолчанию является тема <code>havana</code>.</para>
-        <para>Темы располагаются в модуле <structname>web</structname> проекта в папке <filename>themes</filename>. Тема целиком содержится в каталоге с названием темы. В каталоге темы должны располагаться следующие файлы:</para>
-        <itemizedlist>
-          <listitem>
-            <para><filename>styles.scss</filename> содержит собственные примеси и примеси расширяемой темы;</para>
-            <programlisting language="scss">@import &quot;havana-defaults&quot;;
-@import &quot;iceland-defaults&quot;;
-@import &quot;iceland&quot;;
+        <para>Тема веб-приложения состоит из файлов SCSS и других ресурсов, в том числе файлов изображений.</para>
+        <section id="web_theme_usage">
+          <title>Использование существующих тем</title>
+          <para>Платформа включает в себя две готовые темы: Halo и Havana. Приложение будет по умолчанию использовать ту из них, которая указана в свойстве приложения <link linkend="cuba.web.theme">cuba.web.theme</link>. Пользователь может выбрать другую доступную тему в стандартном экране <guimenu>Help</guimenu> -&gt; <guimenu>Settings</guimenu>. Если вы не хотите, чтобы пользователи имели возможность сами выбирать тему, зарегистрируйте экран <code>settings</code> в файле <link linkend="screens.xml">web-screens.xml</link> проекта с параметром <code>changeThemeEnabled = false</code>:
+          <programlisting language="xml">&lt;screen id=&quot;settings&quot; template=&quot;/com/haulmont/cuba/web/app/ui/core/settings/settings-window.xml&quot;&gt;
+    &lt;param name=&quot;changeThemeEnabled&quot; value=&quot;false&quot;/&gt;
+&lt;/screen&gt;          </programlisting></para>
+          <para>При использовании существующих тем можно настроить некоторые параметры фирменного стиля (branding): пиктограммы и заголовки окна логина и главного окна, пиктограмму вебсайта <filename>favicon.ico</filename>. Для этого необходимо выполнить следующее:<orderedlist>
+              <listitem>
+                <para>Создайте следующую файловую структуру внутри каталога <filename>modules/web</filename> проекта:<programlisting>VAADIN/
+  themes/
+    havana/
+      branding/
+        myapp-login.png
+        myapp-menu.png
+      favicon.ico</programlisting></para>
+                <para>Здесь <filename>havana</filename> - каталог с именем используемой темы, <filename>favicon.ico</filename> - пиктограмма вебсайта, <filename>myapp-login.png</filename> - изображение для окна логина, <filename>myapp-menu.png</filename> - изображение для главного окна. </para>
+              </listitem>
+              <listitem>
+                <para>В <application>CUBA Studio</application> откройте <guimenu>Project properties</guimenu> -&gt; <guimenu>Edit</guimenu> и нажмите кнопку <guibutton>Branding</guibutton> внизу страницы. Используя  ссылки <guibutton>Set application logo image</guibutton> и <guibutton>Set login window logo image</guibutton> задайте путь к файлам пиктограмм соответственно главного окна и окна логина. Путь указывается относительно каталога темы. Остальные ссылки служат для задания заголовков окон и текста приглашения окна логина.</para>
+                <para>Данные параметры сохраняются в <link linkend="main_message_pack">главном пакете сообщений</link> модуля <structname>gui</structname> (то есть в файле <filename>modules/gui/&lt;root_package&gt;/gui/messages.properties</filename> и его вариантах для разных локалей). Использование пакетов сообщений дает возможность использовать разные файлы изображений для разных локалей пользователей. Пример содержимого файла <filename>messages.properties</filename>:<programlisting>application.caption = MyApp
+application.logoImage = branding/myapp-menu.png
 
-.havana {
-  @include iceland;
+loginWindow.caption = MyApp Login
+loginWindow.welcomeLabel = Welcome to MyApp!
+loginWindow.logoImage = branding/myapp-login.png</programlisting></para>
+                <para>Путь к <code>favicon.ico</code> указывать не нужно, он должен обязательно находится в корне каталога с именем темы.</para>
+              </listitem>
+            </orderedlist>В существующую тему можно также добавить файлы изображений для использования в свойствах <link linkend="gui_attr_basic_icon">icon</link> <link linkend="gui_Action">действий</link> и визуальных компонентов, например <link linkend="gui_Button">Button</link>. </para>
+          <para>Например, чтобы добавить в тему Havana пиктограмму, достаточно в описанный выше каталог <filename>modules/web/VAADIN/themes/havana</filename>  добавить файл изображения (желательно в некоторый подкаталог): <programlisting>VAADIN/
+  themes/
+    havana/
+      images/
+        address-book.png</programlisting>После этого можно использовать эту пиктограмму, указывая в свойстве <code>icon</code> путь к ней относительно каталога темы:<programlisting language="xml">&lt;action id=&quot;adresses&quot;
+        icon=&quot;images/address-book.png&quot;/&gt;</programlisting></para>
+          <para>Вместо файлов изображений для пиктограмм можно использовать элементы шрифта <ulink url="http://fortawesome.github.io/Font-Awesome">Font Awesome</ulink>. Для этого достаточно указать в свойстве <code>icon</code> имя нужной константы перечисления <code>com.vaadin.server.FontAwesome</code> с префиксом <code>font-icon:</code>, например:<programlisting>&lt;action id=&quot;adresses&quot;
+        icon=&quot;font-icon:BOOK&quot;/&gt;</programlisting></para>
+          <para>В  проекте можно заменить изображения, используемые в стандартных действиях и экранах платформы. Для замены пиктограммы темы Havana достаточно положить в каталог <filename>modules/web/VAADIN/themes/havana/icons</filename> проекта нужный файл изображения. Например, для замены пиктограммы стандартного действия <code>create</code> это будет файл с именем  <filename>create.png</filename> (имя файла легко определить по URL соответствующего  HTML-элемента <code>img</code> в работающем приложении):<programlisting>VAADIN/
+  themes/
+    havana/
+      icons/
+        create.png</programlisting></para>
+          <para>В теме Halo по умолчанию (при включенном свойстве приложения <link linkend="cuba.web.useFontIcons">cuba.web.useFontIcons</link>) пиктограммы стандартных действий и экранов платформы загружаются из  шрифта <application>Font Awesome</application>. В этом случае заменить стандартную пиктограмму можно только создав свою тему на базе Halo (см. <link linkend="web_theme_creation">далее</link>) и задав в файле <filename>&lt;your_theme&gt;-theme.properties</filename> нужное соответствие между именем пиктограммы и именем элемента шрифта, например:<programlisting>cuba.web.icons.create.png = PLUS</programlisting></para>
+          <para>При выключенном свойстве <link linkend="cuba.web.useFontIcons">cuba.web.useFontIcons</link> пиктограммы стандартных действий и экранов платформы для темы Halo загружаются так же, как и для темы Havana - из файлов изображений в подкаталоге <filename>icons</filename>. Поэтому их можно заменить описанным для Havana способом.</para>
+        </section>
+        <section id="web_theme_extension">
+          <title>Расширение существующей темы</title>
+          <para>Существующая в платформе тема может быть изменена в  проекте приложения. Тема описывается в файлах <ulink url="http://sass-lang.com">SCSS</ulink> в определенной файловой структуре, поэтому простейший способ адаптации - изменение базовых переменных SCSS, влияющих на цвет фона, размеры компонентов и отступы между ними. Для изменения параметров отдельных компонентов требуется знание CSS.</para>
+          <para>Для адаптации (расширения) темы в проекте необходимо создать специальную файловую структуру в модуле <structname>web</structname>. Это удобно сделать с помощью <application>CUBA Studio</application>: откройте секцию <guimenu>Project properties</guimenu> и нажмите ссылку <guibutton>Create theme extension</guibutton>. В диалоговом окне выберите тему, которую вы хотите расширить. В результате в проекте будет создана структура каталогов, аналогичная описанной в <link linkend="web_theme_usage">предыдущем</link> разделе. Кроме того, скрипт сборки <link linkend="build.gradle">build.gradle</link> будет дополнен задачей <code>buildScssThemes</code>, автоматически запускаемой при сборке модуля <structname>web</structname>.</para>
+          <para>Рассмотрим пример расширения  темы Halo, так как она основана на теме <ulink url="https://vaadin.com/valo">Valo</ulink> фреймворка <application>Vaadin</application>, и предоставляет максимальные возможности адаптации.</para>
+          <para>Файл <filename>themes/halo/halo-ext-defaults.scss</filename> предназначен для размещения в нем переменных темы. Большинство переменных Halo соответствует описанным в <ulink url="https://vaadin.com/api/valo">документации по Valo</ulink>, ниже приведены основные:<programlisting language="">$v-background-color: #fafafa;        /* цвет фона компонентов */
+$v-app-background-color: #e7ebf2;    /* цвет фона приложения */
+$v-panel-background-color: #fff;     /* цвет фона панелей */
+$v-focus-color: #3b5998;             /* цвет выделения компонентов в фокусе */
+$v-error-indicator-color: #ed473b;   /* цвет выделения обязательных незаполненных полей */
+
+$v-line-height: 1.35;                /* высота строк */
+$v-font-size: 14px;                  /* размер шрифта */
+$v-font-weight: 400;                 /* начертание шрифта */
+$v-unit-size: 30px;                  /* базовый размер темы, определяет высоту кнопок, полей и другие размеры компонентов */
+
+$v-font-size--h1: 24px;              /* размер шрифта Label со стилем h1 */
+$v-font-size--h2: 20px;              /* размер шрифта Label со стилем h2 */
+$v-font-size--h3: 16px;              /* размер шрифта Label со стилем h3 */
+
+/* размеры отступов margin для контейнеров */
+$v-layout-margin-top: 10px;
+$v-layout-margin-left: 10px;
+$v-layout-margin-right: 10px;
+$v-layout-margin-bottom: 10px;
+
+/* размер отступа между компонентами в контейнере с включенной опцией spacing */
+$v-layout-spacing-vertical: 10px;
+$v-layout-spacing-horizontal: 10px;
+
+/* базовые размеры для строк таблицы */
+$v-table-row-height: 30px;
+$v-table-header-font-size: 13px;
+$v-table-cell-padding-horizontal: 7px;
+
+/* стиль фокуса для полей ввода */
+$v-focus-style: inset 0px 0px 5px 1px rgba($v-focus-color, 0.5);
+/* стиль, применяемый к обязательным полям ввода в фокусе */
+$v-error-focus-style: inset 0px 0px 5px 1px rgba($v-error-indicator-color, 0.5);</programlisting></para>
+          <para>Пример содержимого файла <filename>halo-ext-defaults.scss</filename> для темы с темным фоном и немного уменьшенными отступами:<programlisting>$v-background-color: #444D50;
+
+$v-font-size--h1: 22px;
+$v-font-size--h2: 18px;
+$v-font-size--h3: 16px;
+
+$v-layout-margin-top: 8px;
+$v-layout-margin-left: 8px;
+$v-layout-margin-right: 8px;
+$v-layout-margin-bottom: 8px;
+
+$v-layout-spacing-vertical: 8px;
+$v-layout-spacing-horizontal: 8px;
+
+$v-table-row-height: 25px;
+$v-table-header-font-size: 13px;
+$v-table-cell-padding-horizontal: 5px;</programlisting>Для изменения параметров отдельных компонентов необходимо добавить соответствующий код CSS в блок <code>@mixin halo-ext {...}</code> файла <filename>halo-ext.scss</filename>. Например, для того, чтобы пункты главного меню отображались жирным шрифтом, содержимое файла <filename>halo-ext.scss</filename> должно быть следующим:<programlisting language="">@import &quot;../halo/halo&quot;;
+
+@mixin halo-ext {
+  @include halo;
+
+  .v-menubar-menuitem-caption {
+    font-weight: bold;
+  }
+}</programlisting></para>
+        </section>
+        <section id="web_theme_creation">
+          <title>Создание новой темы</title>
+          <para>В проекте можно создать одну или несколько новых  тем и дать возможность пользователям выбирать среди них подходящую. Создание новой темы позволяет также переопределять переменные файла <filename>*-theme.properties</filename>, задающие некоторые параметры, требуемые на стороне сервера:<itemizedlist>
+              <listitem>
+                <para>Размеры диалоговых окон по умолчанию.</para>
+              </listitem>
+              <listitem>
+                <para>Ширина полей ввода  по умолчанию.</para>
+              </listitem>
+              <listitem>
+                <para>Размеры некоторых компонентов (<link linkend="gui_Filter">Filter</link>, <link linkend="gui_FileMultiUploadField">FileMultiUploadField</link>).</para>
+              </listitem>
+              <listitem>
+                <para>Соответствие между именами пиктограмм и именами констант перечисления <code>com.vaadin.server.FontAwesome</code> для использования элементов шрифта <application>Font Awesome</application> в стандартных действиях и экранах платформы при включенном свойстве <link linkend="cuba.web.useFontIcons">cuba.web.useFontIcons</link>.</para>
+              </listitem>
+            </itemizedlist></para>
+          <para>Рассмотрим пример создания на основе Halo новой темы Facebook, напоминающей интерфейс сайта известной социальной сети.<orderedlist>
+              <listitem>
+                <para>В <application>CUBA Studio</application> откройте секцию <guimenu>Project properties</guimenu> и нажмите ссылку <guibutton>Create theme extension</guibutton>. В диалоговом окне выберите <code>halo</code> и нажмите <guibutton>Create</guibutton>. В проекте будет создано расширение темы Halo, как описано в предыдущем разделе.</para>
+              </listitem>
+              <listitem>
+                <para>Переименуйте созданный в модуле <structname>web</structname> каталог <filename>themes/halo</filename> в <filename>themes/facebook</filename>, внутри него файл <filename>halo-ext.scss</filename> переименуйте в <filename>facebook.scss</filename>, <filename>halo-ext-defaults.scss</filename> в <filename>facebook-defaults.scss</filename>.</para>
+              </listitem>
+              <listitem>
+                <para>Отредактируйте файл <filename>styles.scss</filename>, заменив в нем импорты <code>halo-ext</code>  и корневой селектор <code>halo</code>:<programlisting language="">@import &quot;halo-defaults&quot;;
+@import &quot;facebook-defaults&quot;;
+@import &quot;facebook&quot;;
+
+.facebook {
+  @include facebook;
 }
 
-// hide Vaadin warning about theme version
 .v-theme-version {
   display: none;
-}</programlisting>
-          </listitem>
-          <listitem>
-            <para><filename>themeName.scss</filename> содержит основное определение темы. В этом файле подключается базовая тема, если она есть, и импортируются стили компонентов;</para>
-            <programlisting language="scss">// Подключаем базовую тему - &quot;../baseThemeFolder/baseThemeName.scss&quot;
-@import &quot;../havana/havana.scss&quot;;
-
-// Ссылаемся на стили для компонентов
-@import &quot;components/table/table.scss&quot;;
-
-// Основное определение темы
-@mixin iceland {
-  // Включаем стили из базовой темы
-  @include havana;
-
-  // Последовательно включаем стили компонентов
-  @include v-table;
-}</programlisting>
-          </listitem>
-          <listitem>
-            <para><filename>themeName-defaults.scss</filename>  содержит собственные и переопределенные переменные.</para>
-            <programlisting language="scss">$theme_appHeaderBackgroundColor: #315379;
-$theme_appMenuHighlightColor: #506d8d;</programlisting>
-          </listitem>
-        </itemizedlist>
-        <para>Ниже приведен общий вид структуры файлов.</para>
-        <programlisting>themes \ 
-  baseThemeName \
-    styles.scss    
-    themeName.scss  
-    favicon.ico
-    app \
-    branding \
-    components \ 
-      table \
-        table.scss
-        sprites \
-        icons \
-        ...
-    icons \</programlisting>
-        <para>Каталоги <filename>app</filename> и <filename>branding</filename> отделены от основных ресурсов для более простой последующей замены в темах расширений. В <filename>app</filename> предлагается размещать ресурсы, относящиеся к элементам приложения в целом (например: главное окно, меню). Каталог <filename>branding</filename> предназначен для размещения ресурсов, касающихся компании разработчика.</para>
-        <para>При создании новой темы удобно использовать существующую в качестве основы. Переопределять тему можно двумя путями: заменить изображения  или переопределить тему полностью со всеми стилями. В первом случае пересборка темы не требуется.</para>
-        <itemizedlist>
-          <listitem>
-            <para>Для замены изображений нужно поместить новые изображения в тему <code>havana</code> по тому же пути что и  для изображения по-умолчанию. Путь к заменяемому изображению можно найти в каталоге сервера - <code>tomcat/webapps/app/VAADIN/themes/havana</code>.</para>
-            <para>На рисунках ниже проиллюстрирована замена изображений и полученный результат.</para>
-            <figure>
-              <title>Замена изображений</title>
-              <mediaobject>
-                <imageobject>
-                  <imagedata align="center" fileref="img/gui_themes_replacing_images.png"/>
-                </imageobject>
-              </mediaobject>
-            </figure>
-            <figure>
-              <title>Новые изображения в приложении</title>
-              <mediaobject>
-                <imageobject>
-                  <imagedata align="center" fileref="img/gui_themes_example_login.png"/>
-                </imageobject>
-              </mediaobject>
-              <mediaobject>
-                <imageobject>
-                  <imagedata align="center" fileref="img/gui_themes_example_menu.png"/>
-                </imageobject>
-              </mediaobject>
-            </figure>
-          </listitem>
-          <listitem>
-            <para>При переопределении темы необходимо cоздать в модуле <structname>web</structname> на одном уровне с <filename>src</filename> каталог  <code>themes</code>. В нем создайте каталог с именем новой темы. В каталоге с темой необходимо создать файлы <filename>styles.scss</filename>, <filename>themeName.scss</filename>, <filename>themeName-defaults.scss</filename>. Для переопределения переменных необходимо задать им значения после включения примесей расширяемой темы.
-(Подробнее о примесях и переменных см. <ulink url="http://sass-lang.com/guide">http://sass-lang.com/guide</ulink>)</para>
-            <tip>
-              <title>Совет</title>
-              <para>При создании собственных стилей рекомендуется придерживаться единого стиля оформления - все стили помещать в корневую примесь, которая будет использоваться в дальнейшем. В качестве примера приведено описание стиля для кнопки.</para>
-              <programlisting language="scss">@mixin havana-button($primaryStyleName: v-button) {
-  .#{$primaryStyleName} {
-    display: inline-block;
-    ...
-    font-size: 12px;
-
-    .#{$primaryStyleName}-wrap {
-      vertical-align: middle;
-
-      .#{$primaryStyleName}-caption {
-        ...
-      }
-
-      .v-icon {
-        border-top: 2px transparent solid;
-      }
-    }
-  }
-}</programlisting>
-              <para>Описанная примесь импортируется в файле <filename>themeName.scss</filename>: </para>
-              <programlisting language="scss">@mixin havana {
-  ...
-  @include havana-button;
-  ...
-}</programlisting>
-            </tip>
-            <tip>
-              <para>Благодаря обратной совместимости  допускается использование блоков css при описании scss-стилей.</para>
-            </tip>
-            <para>Для получения возможности просматривать примеси исходной темы необходимо добавить зависимость  <code>name: &apos;cuba-web-themes&apos;</code> в конфигурации <code>provided</code> для модуля <structname>web</structname>.   </para>
-            <programlisting>configure(webModule) {
-    configurations {
-        webcontent
-        themes
-    }
-
-    dependencies {
-        ...
-
-        provided(group: &apos;com.haulmont.cuba&apos;, name: &apos;cuba-web-themes&apos;, version: baseVersion)
-    }
-}
-</programlisting>
-            <para>В скрипт сборки <filename>build.gradle</filename> необходимо добавить задачу сборки тем (для модуля <structname>web</structname>) и определить её как зависимость задачи <code>assemble</code>.
-</para>
-            <programlisting>...
-configure(webModule) {    
-    ...
-    task buildScssThemes(type: CubaWebScssThemeCreation)
-
-    assemble.dependsOn buildScssThemes
-}
-...</programlisting>
-            <para>Также необходимо добавить зависимость <code>name: &apos;cuba-web-themes&apos;</code> в конфигурации <code>themes</code> для модуля <structname>web</structname>.  </para>
-            <programlisting>configure(webModule) {
-    configurations {
-        webcontent
-        themes
-    }
-
-    dependencies {
-        ...
-
-        themes(group: &apos;com.haulmont.cuba&apos;, name: &apos;cuba-web-themes&apos;, version: baseVersion)
-    }
-}</programlisting>
-            <para>В <structname>cuba-plugin</structname> включен тип задачи <code>CubaWebScssThemeCreation</code>. Задачи этого типа могут выполняться со следующими параметрами:</para>
-            <itemizedlist>
-              <listitem>
-                <para><code>buildTimeStamp</code> -  строковая версия ресурсов в CSS, используется для управления кэшированием ресурсов в браузере. Опциональный параметр;</para>
+}</programlisting></para>
               </listitem>
               <listitem>
-                <para><code>scssDir</code> - базовый каталог для тем, по умолчанию <code>&apos;themes&apos;</code>;</para>
+                <para>Отредактируйте файл  <filename>facebook.scss</filename>, заменив в нем <code>@mixin halo-ext</code>:<programlisting language="">@import &quot;../halo/halo&quot;;
+
+@mixin facebook {
+  @include halo;
+}</programlisting></para>
               </listitem>
               <listitem>
-                <para><code>themes</code> - темы, которые необходимо собрать;</para>
+                <para>Поместите в файл <filename>facebook-defaults.scss</filename> следующие переменные:<programlisting>$v-background-color: #fafafa;
+$v-app-background-color: #e7ebf2;
+$v-panel-background-color: #fff;
+$v-focus-color: #3b5998;
+
+$v-border-radius: 0;
+$v-textfield-border-radius: 0;
+
+$v-font-family: Helvetica, Arial, &apos;lucida grande&apos;, tahoma, verdana, arial, sans-serif;
+$v-font-size: 14px;
+$v-font-color: #37404E;
+$v-font-weight: 400;
+
+$v-link-text-decoration: none;
+$v-shadow: 0 1px 0 (v-shade 0.2);
+$v-bevel: inset 0 1px 0 v-tint;
+$v-unit-size: 30px;
+$v-gradient: v-linear 12%;
+$v-overlay-shadow: 0 3px 8px v-shade, 0 0 0 1px (v-shade 0.7);
+$v-shadow-opacity: 20%;
+$v-selection-overlay-padding-horizontal: 0;
+$v-selection-overlay-padding-vertical: 6px;
+$v-selection-item-border-radius: 0;
+
+$v-line-height: 1.35;
+$v-font-size: 14px;
+$v-font-weight: 400;
+$v-unit-size: 25px;
+
+$v-font-size--h1: 22px;
+$v-font-size--h2: 18px;
+$v-font-size--h3: 16px;
+
+$v-layout-margin-top: 8px;
+$v-layout-margin-left: 8px;
+$v-layout-margin-right: 8px;
+$v-layout-margin-bottom: 8px;
+
+$v-layout-spacing-vertical: 8px;
+$v-layout-spacing-horizontal: 8px;
+
+$v-table-row-height: 25px;
+$v-table-header-font-size: 13px;
+$v-table-cell-padding-horizontal: 5px;
+
+$v-focus-style: inset 0px 0px 1px 1px rgba($v-focus-color, 0.5);
+$v-error-focus-style: inset 0px 0px 1px 1px rgba($v-error-indicator-color, 0.5);</programlisting></para>
               </listitem>
               <listitem>
-                <para><code>requiresResourcesFrom</code> - темы Vaadin, ресурсы которых необходимы при сборке. По умолчанию <code>[&apos;base&apos;]</code>;</para>
+                <para>Создайте в подкаталоге <filename>src</filename> модуля <structname>web</structname> файл <filename>facebook-theme.properties</filename> со следующим содержимым:<programlisting>@include=halo-theme.properties</programlisting></para>
+                <para>При необходимости в этом файле можно переопределять server-side переменные темы, заданные в файле <filename>halo-theme.properties</filename> платформы.</para>
               </listitem>
               <listitem>
-                <para><code>destDir</code> - каталог назначения, по умолчанию <code>&quot;${project.buildDir}/web/VAADIN/themes&quot;</code>;</para>
+                <para>В файл <filename>web-app.properties</filename> добавьте следующие свойства:<programlisting>cuba.web.theme = facebook
+cuba.web.availableAppThemes = facebook|halo|havana
+cuba.themeConfig = havana-theme.properties halo-theme.properties facebook-theme.properties</programlisting></para>
               </listitem>
               <listitem>
-                <para><code>compress</code> -  определяет необходимость сжатия CSS файла после сборки.   По умолчанию принимает значение <code>true</code>;</para>
+                <para>Пересоберите приложение и запустите сервер. Теперь при первом входе пользователь увидит приложение в теме Facebook, и в окне <guimenu>Help</guimenu> -&gt; <guimenu>Settings</guimenu> сможет выирать между темами Facebook, Halo, Havana.</para>
               </listitem>
-              <listitem>
-                <para><code>sprites</code> - определяет необходимость собирать спрайты, <code>false</code> по умолчанию;</para>
-              </listitem>
-              <listitem>
-                <para><code>cleanup</code> - определяет необходимость удалять пустые каталоги, <code>true</code> по умолчанию.</para>
-              </listitem>
-            </itemizedlist>
-            <programlisting>task buildScssThemes(type: CubaWebScssThemeCreation) {
-    buildTimeStamp = &apos;0&apos;
-    scssDir = &apos;themes&apos;
-    themes = [&apos;iceland&apos;] 
-    requiresResourcesFrom = [&apos;base&apos;]
-    destDir = &quot;${project.buildDir}/web/VAADIN/themes&quot;
-    compress = true
-    sprites = false
-    cleanup = true
-}</programlisting>
-            <para>Если задача такого типа будет выполняться без параметров, то в ходе ее выполнения в модуле будет найден каталог <filename>themes</filename> и все вложенные каталоги будут рассматриваться как отдельные темы.</para>
-            <programlisting>task buildScssThemes(type: CubaWebScssThemeCreation)</programlisting>
-          </listitem>
-        </itemizedlist>
-        <para><emphasis role="bold">Спрайты и изображения</emphasis> </para>
-        <para>Изображения, которые используются только из стилей компонентов отделены от изображений, назначаемых динамически из программного кода. Это позволяет упаковывать однотипные изображения в спрайты при помощи <ulink url="http://csssprites.org/#tutorials">Smart Sprites</ulink>.</para>
-        <warning>
-          <para>Каталоги <filename>sprites</filename> будут удалены из результирующей темы, если при сборке темы выполняется сборка спрайтов (<code>sprites=true</code>).</para>
-        </warning>
+            </orderedlist></para>
+        </section>
       </section>
       <section id="desktop_theme">
         <title>Тема в десктоп-приложениях</title>
@@ -12739,7 +12752,7 @@ configure(webModule) {
         <para><emphasis role="bold">Примеры</emphasis></para>
         <orderedlist>
           <listitem>
-            <para>Добавление пиктограммы</para>
+            <para>Добавление пиктограммы.</para>
             <para>Если в десктоп-приложении требуется добавить новую пиктограмму, например, для кнопки,   нужно создать пакет <code>res.nimbus.icons</code> в пакете <code>com.sample.sales.desktop</code> модуля <structname>desktop</structname> и поместить в него требуемое изображение.</para>
             <figure>
               <title/>
@@ -12762,7 +12775,7 @@ configure(webModule) {
             </figure>
           </listitem>
           <listitem>
-            <para>Переопределение значений свойств темы, установленных по умолчанию</para>
+            <para>Переопределение значений свойств темы, установленных по умолчанию.</para>
             <para>Рассмотрим на примере изменения цвета фона текстовых полей, обязательных для ввода.</para>
             <para>В пакете <code>res.nimbus</code> нужно создать файл <filename>nimbus.xml</filename> следующего содержания:<programlisting language="xml">&lt;theme xmlns=&quot;http://schemas.haulmont.com/cuba/5.2/desktop-theme.xsd&quot;&gt;
     &lt;ui-defaults&gt;
@@ -12774,7 +12787,7 @@ configure(webModule) {
             <para>В данном примере переопределено значение свойства платформы  <trademark>CUBA</trademark> <sgmltag>cubaRequiredBackground</sgmltag>, хранящего цвет фона поля, обязательного для заполнения. Данное изменение коснется всех полей, обязательных для ввода.</para>
           </listitem>
           <listitem>
-            <para>Создание стиля для элемента с помощью стандартных средств</para>
+            <para>Создание стиля для элемента с помощью стандартных средств.</para>
             <para>Рассмотрим пример выделения надписи жирным цветом.</para>
             <para>Для того чтобы создать такой стиль, необходимо определить элемент <sgmltag>style</sgmltag> в файле темы <filename>nimbus.xml</filename> следующим образом:<programlisting language="xml">&lt;theme xmlns=&quot;http://schemas.haulmont.com/cuba/5.2/desktop-theme.xsd&quot;&gt;
     &lt;style name=&quot;boldlabel&quot;&gt;
@@ -12786,7 +12799,7 @@ configure(webModule) {
             <para>Таким образом, данный стиль будет применен только к тем надписям, для которых  определен атрибут <link linkend="gui_attr_basic_stylename">stylename</link> со значением <literal>boldlabel</literal>.</para>
           </listitem>
           <listitem>
-            <para>Создание пользовательского стиля</para>
+            <para>Создание пользовательского стиля.</para>
             <para>Если не хватает стандартных средств изменения стиля компонента, есть возможность создать пользовательский стиль. </para>
             <para>Создадим пользовательский стиль, который будет применяться для компонента <link linkend="gui_Label">Label</link>. С помощью стиля содержимое компонента  <link linkend="gui_Label">Label</link> будет отображаться подчеркнутым.</para>
             <para>В первую очередь создадим класс-декоратор <code>UnderlinedLabelDecorator</code>:<programlisting language="java">public class UnderlinedLabelDecorator implements ComponentDecorator {

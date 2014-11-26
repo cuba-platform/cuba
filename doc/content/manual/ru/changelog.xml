@@ -13,6 +13,9 @@
                   <para>В связи доработкой интеграции с СУБД изменен <xref linkend="dbms_types"/> и добавлено свойство приложения <link linkend="cuba.dbmsVersion">cuba.dbmsVersion</link>.</para>
                 </listitem>
                 <listitem>
+                  <para>В связи с появлением новой темы Halo переработан <xref linkend="web_theme"/>, добавлены свойства приложения <link linkend="cuba.themeConfig">cuba.themeConfig</link>, <link linkend="cuba.web.availableAppThemes">cuba.web.availableAppThemes</link>, <link linkend="cuba.web.theme">cuba.web.theme</link>, <link linkend="cuba.web.useFontIcons">cuba.web.useFontIcons</link>.</para>
+                </listitem>
+                <listitem>
                   <para>Добавлен атрибут <code>align</code> колонки компонента <link linkend="gui_Table">Table</link>.</para>
                 </listitem>
                 <listitem>
