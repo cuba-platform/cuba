@@ -543,10 +543,13 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
             <para><sgmltag>view</sgmltag> - описатель <code>View</code></para>
             <para>Атрибуты <sgmltag>view</sgmltag>:<itemizedlist>
                 <listitem>
-                  <para><sgmltag>class</sgmltag> - класс сущности</para>
+                  <para><sgmltag>class</sgmltag> - класс сущности.</para>
                 </listitem>
                 <listitem>
-                  <para><sgmltag>name</sgmltag> - имя представления, должно быть уникальным в пределах сущности</para>
+                  <para><code>entity</code> - имя сущности, например <code>sales$Order</code>. Может быть использован <emphasis>вместо</emphasis> атрибута <code>class</code>. </para>
+                </listitem>
+                <listitem>
+                  <para><sgmltag>name</sgmltag> - имя представления, должно быть уникальным в пределах сущности.</para>
                 </listitem>
                 <listitem>
                   <para><sgmltag>systemProperties</sgmltag> - признак включения системных атрибутов сущности (входящих в состав <link linkend="entity_base_classes">базовых интерфейсов</link> персистентных сущностей <code>BaseEntity</code> и  <code>Updatable</code>). Необязательный атрибут, по умолчанию <literal>false</literal>.</para>
@@ -560,10 +563,10 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
               </itemizedlist></para>
             <para>Элементы <sgmltag>view</sgmltag>:<itemizedlist>
                 <listitem>
-                  <para><sgmltag>property</sgmltag> - описатель <code>ViewProperty</code></para>
+                  <para><sgmltag>property</sgmltag> - описатель <code>ViewProperty</code>.</para>
                   <para>Атрибуты <sgmltag>property</sgmltag>:<itemizedlist>
                       <listitem>
-                        <para><sgmltag>name</sgmltag> - имя атрибута сущности</para>
+                        <para><sgmltag>name</sgmltag> - имя атрибута сущности.</para>
                       </listitem>
                       <listitem>
                         <para><sgmltag>view</sgmltag> - для ссылочного атрибута указывает имя представления, с которым должна загружаться ассоциированная сущность. Порядок следования описателей в файле при этом не важен.</para>

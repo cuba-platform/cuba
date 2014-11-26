@@ -8819,6 +8819,9 @@ customersTable.setIconProvider(new Table.IconProvider() {
                     </mediaobject>
                   </listitem>
                 </itemizedlist></para>
+              <para>Элемент <code>column</code> может содержать вложенный элемент <link linkend="gui_formatter">formatter</link> для представления значения атрибута в виде, отличном от стандартного для данного <link linkend="datatype">Datatype</link>:<programlisting language="xml">&lt;column id=&quot;date&quot;&gt;
+    &lt;formatter class=&quot;com.haulmont.cuba.gui.components.formatters.DateFormatter&quot; format=&quot;yyyy-MM-dd HH:mm:ss&quot;/&gt;
+&lt;/column&gt;</programlisting></para>
             </listitem>
             <listitem id="gui_attr_table_rowsCount">
               <para><sgmltag>rowsCount</sgmltag> − необязательный элемент, создающий для таблицы компонент <code>RowsCount</code>, который позволяет загружать в таблицу данные постранично. Размер страницы задается путем ограничения количества записей в источнике данных методом <code>CollectionDatasource.setMaxResults()</code>. Как правило, это делает связанный с источником данных таблицы компонент <link linkend="gui_Filter">Filter</link>, однако при отсутствии универсального фильтра можно вызвать этот метод и напрямую из контроллера экрана.</para>
