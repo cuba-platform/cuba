@@ -7159,6 +7159,62 @@ public void init(Map&lt;String, Object&gt; params) {
             </tgroup>
           </informaltable>
         </section>
+        <section id="gui_Link">
+          <title>Link</title>
+          <para>Ссылка (<code>Link</code>) − компонент-гиперссылка, позволяющая открывать внешние веб-ресурсы единообразно для веб и десктоп клиента.</para>
+          <para>XML-имя компонента: <sgmltag>link</sgmltag></para>
+          <mediaobject>
+            <imageobject>
+              <imagedata align="center" fileref="img/gui_link_dia.png"/>
+            </imageobject>
+          </mediaobject>
+          <para>Пример XML-описания компонента <code>link</code>: <programlisting language="xml">&lt;link caption=&quot;Link&quot; url=&quot;https://www.cuba-platform.com&quot; target=&quot;_blank&quot;/&gt;</programlisting></para>
+          <para>Атрибуты <sgmltag>link</sgmltag>:</para>
+          <itemizedlist>
+            <listitem>
+              <para><code>url</code> - адрес ресурса.</para>
+            </listitem>
+            <listitem>
+              <para><code>target</code> - для веб клиента задает способ открытия страницы, аналогичен атрибуту <code>target</code> HTML-тега <code>&lt;a&gt;</code>.</para>
+            </listitem>
+          </itemizedlist>
+          <informaltable frame="none" pgwide="0" align="left">
+            <tgroup cols="4" colsep="1" rowsep="1" align="left"><colspec colname="c1"/><colspec colname="c2"/><colspec colname="c3"/><colspec colname="c4"/>c <tbody>
+                <row>
+                  <entry align="left">
+                    <link linkend="gui_attr_basic_enable">enable</link>
+                  </entry>
+                  <entry align="left">
+                    <link linkend="gui_attr_basic_stylename">stylename</link>
+                  </entry>
+                </row>
+                <row>
+                  <entry>
+                    <link linkend="gui_attr_basic_align">align</link>
+                  </entry>
+                  <entry align="left">
+                    <link linkend="gui_attr_basic_visible">visible</link>
+                  </entry>
+                </row>
+                <row>
+                  <entry align="left">
+                    <link linkend="gui_attr_basic_caption">caption</link>
+                  </entry>
+                  <entry align="left">
+                    <link linkend="gui_attr_basic_id">id</link>
+                  </entry>
+                </row>
+                <row>
+                  <entry align="left">
+                    <link linkend="gui_attr_basic_description">description</link>
+                  </entry>
+                  <entry>
+                    <link linkend="gui_attr_basic_width">width</link>
+                  </entry>
+                </row>
+              </tbody></tgroup>
+          </informaltable>
+        </section>
         <section id="gui_LinkButton">
           <title>LinkButton</title>
           <para>Кнопка-ссылка (<code>LinkButton</code>) − кнопка, выглядящая как гиперссылка.</para>

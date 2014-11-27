@@ -31,6 +31,9 @@
       <listitem>
         <itemizedlist>
           <listitem>
+            <para>Добавлен <xref linkend="gui_Link"/>.</para>
+          </listitem>
+          <listitem>
             <para>Добавлен <xref linkend="shortcuts"/>.</para>
           </listitem>
         </itemizedlist>
