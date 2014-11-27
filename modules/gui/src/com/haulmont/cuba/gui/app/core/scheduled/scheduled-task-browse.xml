@@ -3,13 +3,11 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<window
-        xmlns="http://schemas.haulmont.com/cuba/5.3/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/5.3/window.xsd"
         class="com.haulmont.cuba.gui.app.core.scheduled.ScheduledTaskBrowser"
         messagesPack="com.haulmont.cuba.gui.app.core.scheduled"
         caption="msg://taskBrowseCaption"
-        focusComponent="tasksTable"
-        >
+        focusComponent="tasksTable">
 
     <dsContext>
         <groupDatasource id="tasksDs" class="com.haulmont.cuba.core.entity.ScheduledTask" view="_local">
@@ -25,15 +23,11 @@
         </filter>
 
         <groupTable id="tasksTable" width="100%" presentations="true">
-            <actions>
-                <action id="refresh"/>
-            </actions>
             <buttonsPanel>
                 <button action="tasksTable.create" icon="icons/create.png"/>
                 <button id="activateBtn"/>
                 <button action="tasksTable.edit" icon="icons/edit.png"/>
                 <button action="tasksTable.remove" icon="icons/remove.png"/>
-                <button action="tasksTable.refresh" icon="icons/refresh.png"/>
                 <button action="tasksTable.executions"/>
             </buttonsPanel>
             <rowsCount/>
