@@ -375,6 +375,22 @@ cuba.useLocalServiceInvocation = false</programlisting></para>
           <listitem id="build.gradle_updateDb">
             <para><code>updateDb</code> - задача типа <code>CubaDbUpdate</code>, обновляющая базу данных приложения путем выполнения соответствующих <link linkend="db_scripts">скриптов</link>. Аналогична задаче <code>createDb</code>, за исключением отсутствия параметров <code>dropDbSql</code> и <code>createDbSql</code>.</para>
           </listitem>
+          <listitem>
+            <para><code>startDb</code> - задача типа <code>CubaHsqlStart</code>,  выполняющая запуск локального сервера HSQLDB. Параметры:<itemizedlist>
+                <listitem>
+                  <para><code>dbName</code> - имя базы данных, по умолчанию <code>cubadb</code>.</para>
+                </listitem>
+                <listitem>
+                  <para><code>dbDataDir</code> - каталог, в котором размещена база данных, по умолчанию подкаталог <code>data</code> проекта.</para>
+                </listitem>
+                <listitem>
+                  <para><code>dbPort</code> - порт сервера, по умолчанию 9001.</para>
+                </listitem>
+              </itemizedlist></para>
+          </listitem>
+          <listitem>
+            <para><code>stopDb</code> - задача типа <code>CubaHsqlStop</code>,  выполняющая остановку локального сервера HSQLDB. Параметры аналогичны задаче <code>startDb</code>.</para>
+          </listitem>
           <listitem id="build.gradle_start">
             <para><code>start</code> - задача типа <code>CubaStartTomcat</code>, выполняющая запуск локального сервера Tomcat, установленного задачей <link linkend="build.gradle_setupTomcat">setupTomcat</link>. Эта задача автоматически добавляется в проект при подключении плагина <structname>cuba</structname>, поэтому объявлять ее в <filename>build.gradle</filename> не нужно.</para>
           </listitem>
@@ -581,7 +597,7 @@ configure(webModule) {
       <para>Вкладки <guilabel>Init tables</guilabel>, <guilabel>Init constraints</guilabel>, <guilabel>Init data</guilabel> отображают скрипты <emphasis>создания</emphasis> БД, располагающиеся в каталоге <filename>db/init/{db_type}</filename> модуля <structname>core</structname>.</para>
       <para>На вкладке <guilabel>Init tables</guilabel> отображается скрипт создания таблиц <filename>10.create-db.sql</filename>. Код, относящийся к одной таблице, отделяется комментариями <code>begin {table_name} ... end {table_name}</code>. При изменении некоторой сущности в модели  Studio заменит код только между комментариями для соответствующей таблицы, не трогая  остальной код, в который могли быть внесены ручные изменения. Поэтому при ручном редактировании не удаляйте эти комментарии, иначе Studio не сможет правильно встраивать свои изменения в существующие файлы. </para>
       <para>На вкладке <guilabel>Init constraints</guilabel> отображается скрипт создания ограничений целостности <filename>20.create-db.sql</filename>. В нем также присутствуют разделяющие таблицы комментарии, которые нельзя удалять.</para>
-      <para>На вкладке <guilabel>Init constraints</guilabel> отображается скрипт <filename>30.create-db.sql</filename>, предназначенный для внесения дополнительной информации при инициализации БД. Это могут быть, например, функции, триггеры, или DML операторы для наполнения базы необходимыми данными. Содержимое данного скрипта создается вручную при необходимости.</para>
+      <para>На вкладке <guilabel>Init data</guilabel> отображается скрипт <filename>30.create-db.sql</filename>, предназначенный для внесения дополнительной информации при инициализации БД. Это могут быть, например, функции, триггеры, или DML операторы для наполнения базы необходимыми данными. Содержимое данного скрипта создается вручную при необходимости.</para>
       <tip>
         <para>На начальной стадии разработки приложения, когда модель данных активно меняется, рекомендуется пользоваться только скриптами <emphasis>создания</emphasis> БД (расположенными на вкладках  <guilabel>Init tables</guilabel>, <guilabel>Init constraints</guilabel>, <guilabel>Init data</guilabel>), а скрипты обновления на вкладке <guilabel>Update scripts</guilabel> удалять сразу после вызова команды <guibutton>Generate DB scripts</guibutton>. Это наиболее простой и надежный способ поддержания БД в актуальном состоянии. Разумеется, он имеет один существенный недостаток - при применении скриптов БД пересоздается с нуля, поэтому все внесенные в нее данные теряются. Этот недостаток можно частично компенсировать на этапе разработки, добавив в скрипт <guilabel>Init data</guilabel> команды для создания первичных данных при инициализации.</para>
         <para>Скрипты <emphasis>обновления</emphasis> становятся удобным и необходимым инструментом разработки и сопровождения БД на более позднем этапе, когда модель данных относительно стабильна, а в базах данных у разработчиков и в эксплуатации накоплены данные, которые нельзя терять при пересоздании БД с нуля.</para>

@@ -8051,62 +8051,7 @@ public void init(Map&lt;String, Object&gt; params) {
               </warning>
             </listitem>
             <listitem>
-              <para>В компоненте PickerField можно использовать горячие клавиши. Для стандартных действий это:</para>
-              <itemizedlist>
-                <listitem>
-                  <para><code>lookup</code> − <keycombo>
-                      <keycap>CTRL</keycap>
-                      <keycap>ALT</keycap>
-                      <keycap>L</keycap>
-                    </keycombo></para>
-                </listitem>
-                <listitem>
-                  <para><code>open</code> − <keycombo>
-                      <keycap>CTRL</keycap>
-                      <keycap>ALT</keycap>
-                      <keycap>O</keycap>
-                    </keycombo></para>
-                </listitem>
-                <listitem>
-                  <para><code>clear</code> − <keycombo>
-                      <keycap>CTRL</keycap>
-                      <keycap>ALT</keycap>
-                      <keycap>C</keycap>
-                    </keycombo></para>
-                </listitem>
-              </itemizedlist>
-              <para>Также поддерживается вызов действий сочетанием <keycombo>
-                  <keycap>CTRL</keycap>
-                  <keycap>ALT</keycap>
-                  <keycap>1</keycap>
-                </keycombo>, <keycombo>
-                  <keycap>CTRL</keycap>
-                  <keycap>ALT</keycap>
-                  <keycap>2</keycap>
-                </keycombo> и так далее по количеству действий. То есть при нажатии сочетания клавиш <keycombo>
-                  <keycap>CTRL</keycap>
-                  <keycap>ALT</keycap>
-                  <keycap>1</keycap>
-                </keycombo> произойдет вызов действия, которое описано первым в списке действий, при нажатии сочетания клавиш <keycombo>
-                  <keycap>CTRL</keycap>
-                  <keycap>ALT</keycap>
-                  <keycap>2</keycap>
-                </keycombo> − вызов второго действия и так далее.</para>
-              <para>Сочетания клавиш можно переназначить с помощью следующих <link linkend="app_properties">свойств приложения</link>, задаваемых в блоках <structname>Web</structname> и <structname>Desktop</structname> клиентов (см. интерфейс <code>ClientConfig</code>):</para>
-              <itemizedlist>
-                <listitem>
-                  <para><property>cuba.gui.pickerShortcut.modifiers</property> − модификаторы для вызова <link linkend="gui_Action">действий</link> по порядковому номеру, по умолчанию <literal>CTRL-ALT</literal></para>
-                </listitem>
-                <listitem>
-                  <para><property>cuba.gui.pickerShortcut.lookup</property> − вызов Lookup Action, по умолчанию <literal>CTRL-ALT-L</literal></para>
-                </listitem>
-                <listitem>
-                  <para><property>cuba.gui.pickerShortcut.open</property> − вызов Open Action, по умолчанию <literal>CTRL-ALT-O</literal></para>
-                </listitem>
-                <listitem>
-                  <para><property>cuba.gui.pickerShortcut.clear</property> − вызов Clear Action, по умолчанию <literal>CTRL-ALT-C</literal></para>
-                </listitem>
-              </itemizedlist>
+              <para>В компоненте <code>PickerField</code> можно использовать горячие клавиши: см. <xref linkend="shortcuts"/>.</para>
             </listitem>
           </itemizedlist>
           <para>Атрибуты <sgmltag>pickerField</sgmltag>:</para>
@@ -12166,7 +12111,7 @@ carCreateAction.setInitialValues(values);</programlisting></para>
           <title>Стандартные действия поля выбора</title>
           <para>Для компонентов <link linkend="gui_PickerField">PickerField</link>, <link linkend="gui_LookupPickerField">LookupPickerField</link> и <link linkend="gui_SearchPickerField">SearchPickerField</link>  набор стандартных действий определен в перечислении <code>PickerField.ActionType</code>. Реализации являются внутренними классами интерфейса <code>PickerField</code>.</para>
           <para>Рассмотрим их подробнее.<itemizedlist>
-              <listitem>
+              <listitem id="lookupAction">
                 <para><emphasis role="bold">LookupAction</emphasis> - действие с идентификатором <emphasis role="bold">lookup</emphasis>. Предназначено для выбора  экземпляра сущности и установки его в качестве значения компонента. При срабатывании открывает <link linkend="screen_lookup">экран выбора</link> сущностей.</para>
                 <para>В классе <code>LookupAction</code> определены следующие специфические методы:<itemizedlist>
                     <listitem>
@@ -12189,10 +12134,10 @@ carCreateAction.setInitialValues(values);</programlisting></para>
                     </listitem>
                   </itemizedlist></para>
               </listitem>
-              <listitem>
+              <listitem id="clearAction">
                 <para><emphasis role="bold">ClearAction</emphasis> - действие с идентификатором <emphasis role="bold">clear</emphasis>. Предназначено для очистки (то есть установки в <code>null</code>) текущего значения компонента.</para>
               </listitem>
-              <listitem>
+              <listitem id="openAction">
                 <para><emphasis role="bold">OpenAction</emphasis> - действие с идентификатором <emphasis role="bold">open</emphasis>. Предназначено для  открытия экрана редактирования экземпляра сущности, являющегося текущим значением компонента. </para>
                 <para>В классе <code>OpenAction</code> определены следующие специфические методы:<itemizedlist>
                     <listitem>
@@ -13155,6 +13100,74 @@ public class MyComponentLoader extends ComponentLoader {
           </orderedlist></para>
         <para>В <xref linkend="own_gui_component_sample"/> рассмотрен процесс интеграции в универсальный  UI компонента <application>IntStepper</application>, предназначенного для пошагового изменения целого значения.</para>
       </section>
+    </section>
+    <section id="shortcuts">
+      <title>Горячие клавиши</title>
+      <para>В данном разделе приведена информация обо всех горячих клавишах (shortcuts), которые используются по умолчанию в универсальном пользовательском интерфейсе приложения. Все перечисленные ниже <link linkend="app_properties">свойства приложения</link> принадлежат интерфейсу <code>ClientConfig</code> и используются в блоках <structname>Web Client</structname> и <structname>Desktop Client</structname>. </para>
+      <itemizedlist>
+        <listitem>
+          <para>Главное окно приложения.</para>
+          <itemizedlist>
+            <listitem>
+              <para><keycap>CTRL-SHIFT-PAGE_DOWN</keycap> - переход на следующую вкладку. Настраивается свойством приложения <code>cuba.gui.nextTabShortcut</code>.</para>
+            </listitem>
+            <listitem>
+              <para><keycap>CTRL-SHIFT-PAGE_UP</keycap> - переход на предыдущую вкладку. Настраивается свойством приложения <code>cuba.gui.previousTabShortcut</code>.</para>
+            </listitem>
+          </itemizedlist>
+        </listitem>
+        <listitem>
+          <para>Экраны.</para>
+          <itemizedlist>
+            <listitem>
+              <para><keycap>ESCAPE</keycap> - закрыть текущий <link linkend="abstractWindow">экран</link>. Настраивается свойством приложения <code>cuba.gui.closeShortcut</code>.</para>
+            </listitem>
+            <listitem>
+              <para><keycap>CTRL-ENTER</keycap> - закрыть текущий <link linkend="abstractEditor">экран редактирования</link> с  сохранением изменений. Настраивается свойством приложения <code>cuba.gui.commitShortcut</code>.</para>
+            </listitem>
+          </itemizedlist>
+        </listitem>
+        <listitem>
+          <para>Стандартные действия компонента-списка (<link linkend="gui_Table">Table</link>, <link linkend="gui_GroupTable">GroupTable</link>, <link linkend="gui_TreeTable">TreeTable</link>, <link linkend="gui_Tree">Tree</link>). Кроме указанных свойств приложения горячая клавиша для конкретного экземпляра действия может быть установлена его методом <code>setShortcut()</code>.</para>
+          <itemizedlist>
+            <listitem>
+              <para><keycap>CTRL-INSERT</keycap> - вызов действия <link linkend="createAction">CreateAction</link>. Настраивается свойством приложения <code>cuba.gui.tableInsertShortcut</code>. </para>
+            </listitem>
+            <listitem>
+              <para><keycap>CTRL-ALT-INSERT</keycap> - вызов действия <link linkend="addAction">AddAction</link>. Настраивается свойством приложения <code>cuba.gui.tableAddShortcut</code>.</para>
+            </listitem>
+            <listitem>
+              <para><keycap>ENTER</keycap> - вызов действия <link linkend="editAction">EditAction</link>. Настраивается свойством приложения <code>cuba.gui.tableEditShortcut</code>.</para>
+            </listitem>
+            <listitem>
+              <para><keycap>CTRL-DELETE</keycap> - вызов действий <link linkend="removeAction">RemoveAction</link> и <link linkend="excludeAction">ExcludeAction</link>. Настраивается свойством приложения <code>cuba.gui.tableRemoveShortcut</code>.</para>
+            </listitem>
+          </itemizedlist>
+        </listitem>
+        <listitem>
+          <para>Стандартные действия поля выбора (<link linkend="gui_PickerField">PickerField</link>, <link linkend="gui_LookupPickerField">LookupPickerField</link>, <link linkend="gui_SearchPickerField">SearchPickerField</link>).  Кроме указанных свойств приложения горячая клавиша для конкретного экземпляра действия может быть установлена его методом <code>setShortcut()</code>.</para>
+          <itemizedlist>
+            <listitem>
+              <para><keycap>CTRL-ALT-L</keycap> - вызов действия <link linkend="lookupAction">LookupAction</link>. Настраивается свойством приложения <code>cuba.gui.pickerShortcut.lookup</code>.</para>
+            </listitem>
+            <listitem>
+              <para><keycap>CTRL-ALT-O</keycap> - вызов действия <link linkend="openAction">OpenAction</link>. Настраивается свойством приложения <code>cuba.gui.pickerShortcut.open</code>.</para>
+            </listitem>
+            <listitem>
+              <para><keycap>CTRL-ALT-C</keycap> - вызов действия <link linkend="clearAction">ClearAction</link>. Настраивается свойством приложения <code>cuba.gui.pickerShortcut.clear</code>.</para>
+            </listitem>
+          </itemizedlist>
+          <para>В полях выбора кроме вышеперечисленных горячих клавиш поддерживается вызов действий сочетанием <keycap>CTRL-ALT-1</keycap>, <keycap>CTRL-ALT-2</keycap> и так далее по количеству действий. То есть при нажатии сочетания клавиш <keycap>CTRL-ALT-1</keycap> произойдет вызов действия, которое описано первым в списке действий, при нажатии сочетания клавиш <keycap>CTRL-ALT-2</keycap> − вызов второго действия и так далее. Сочетание <keycap>CTRL-ALT</keycap> можно заменить другим, указав его в свойстве приложения <code>cuba.gui.pickerShortcut.modifiers</code>.</para>
+        </listitem>
+        <listitem>
+          <para>Компонент <link linkend="gui_Filter">Filter</link>.</para>
+          <itemizedlist>
+            <listitem>
+              <para><keycap>SHIFT-ENTER</keycap> - применить выбранный фильтр. Настраивается свойством приложения <code>cuba.gui.filterApplyShortcut</code>.</para>
+            </listitem>
+          </itemizedlist>
+        </listitem>
+      </itemizedlist>
     </section>
   </section>
   <section id="portal">
