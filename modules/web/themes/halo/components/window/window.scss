@@ -5,7 +5,6 @@
 
 // Version: $Id$
 
-
 @mixin halo-window($primary-stylename: v-window) {
   .#{$primary-stylename}-contents {
     padding-left: round($v-unit-size/2);
@@ -22,5 +21,23 @@
 
   .#{$primary-stylename}-outerheader {
     border-bottom: valo-border();
+  }
+
+  @if ($v-window-animations-enabled == false) {
+    .#{$primary-stylename} {
+      @include animation(none);
+      @include transition(none);
+
+      &[class*="animate-in"] {
+        @include animation(none);
+      }
+      &[class*="animate-out"] {
+        @include animation(none);
+      }
+    }
+
+    .#{$primary-stylename}-modalitycurtain {
+      @include animation(none);
+    }
   }
 }
