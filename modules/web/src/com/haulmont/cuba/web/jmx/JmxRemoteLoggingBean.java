@@ -114,7 +114,7 @@ public class JmxRemoteLoggingBean implements JmxRemoteLoggingAPI {
             @Override
             public Void perform(JmxInstance jmx, MBeanServerConnection connection) throws Exception {
                 JmxLogControlMBean logControlMBean = getRemoteLogControl(connection);
-                logControlMBean.setLoggerLevel(level, loggerName);
+                logControlMBean.setLoggerLevel(loggerName, level);
                 return null;
             }
         });
