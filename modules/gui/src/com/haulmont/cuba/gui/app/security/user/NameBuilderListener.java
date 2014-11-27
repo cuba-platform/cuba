@@ -9,21 +9,27 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.FieldGroup;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.security.global.UserUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.text.ParseException;
-import java.util.Arrays;
-import java.util.List;
 
+/**
+ * @author pavlov
+ * @version $Id$
+ */
 public class NameBuilderListener<T extends Entity> extends DsListenerAdapter<T> {
 
-    private static final List<String> PROPERTY_NAMES = Arrays.asList("firstName", "lastName", "middleName");
+    protected Window window;
+    protected FieldGroup fieldGroup;
+    protected Datasource datasource;
 
-    private Window window;
-    private FieldGroup fieldGroup;
-    private String pattern;
+    protected String pattern;
+
+    protected NameBuilderListener() {
+    }
 
     public NameBuilderListener(Window window) {
         if (window == null)
@@ -47,10 +53,17 @@ public class NameBuilderListener<T extends Entity> extends DsListenerAdapter<T> 
         this.fieldGroup = fieldGroup;
     }
 
+    public NameBuilderListener(Datasource datasource) {
+        this.datasource = datasource;
+    }
+
     @Override
     public void valueChanged(Entity source, String property, Object prevValue, Object value) {
-        if (!PROPERTY_NAMES.contains(property))
+        if (!"firstName".equals(property)
+            && !"lastName".equals(property)
+            && !"middleName".equals(property)) {
             return;
+        }
 
         String firstName = getFieldValue("firstName");
         String lastName = getFieldValue("lastName");
@@ -69,17 +82,25 @@ public class NameBuilderListener<T extends Entity> extends DsListenerAdapter<T> 
             displayedName = "";
         }
 
-        if (window != null) {
-            Field field = window.getComponent("name");
+        setFullName(displayedName);
+    }
+
+    protected void setFullName(String displayedName) {
+        if (datasource != null) {
+            datasource.getItem().setValue("name", displayedName);
+        } else if (window != null) {
+            Field field = window.getComponentNN("name");
             field.setValue(displayedName);
         } else {
             fieldGroup.setFieldValue("name", displayedName);
         }
     }
 
-    private String getFieldValue(String name) {
-        if (window != null) {
-            Field field = window.getComponent(name);
+    protected String getFieldValue(String name) {
+        if (datasource != null) {
+            return datasource.getItem().getValue(name);
+        } else if (window != null) {
+            Field field = window.getComponentNN(name);
             return field.getValue();
         } else {
             return (String) fieldGroup.getFieldValue(name);

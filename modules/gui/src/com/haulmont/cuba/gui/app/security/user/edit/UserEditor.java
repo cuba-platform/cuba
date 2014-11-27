@@ -56,7 +56,10 @@ public class UserEditor extends AbstractEditor<User> {
     protected Table substTable;
 
     @Inject
-    protected FieldGroup fieldGroup;
+    protected FieldGroup fieldGroupLeft;
+
+    @Inject
+    protected FieldGroup fieldGroupRight;
 
     protected PasswordField passwField;
     protected PasswordField confirmPasswField;
@@ -93,7 +96,7 @@ public class UserEditor extends AbstractEditor<User> {
 
     @Override
     public void init(Map<String, Object> params) {
-        userDs.addListener(new NameBuilderListener<User>(fieldGroup));
+        userDs.addListener(new NameBuilderListener<User>(userDs));
 
         rolesTable.addAction(new AddRoleAction());
         rolesTable.addAction(new EditRoleAction());
@@ -174,7 +177,7 @@ public class UserEditor extends AbstractEditor<User> {
     }
 
     private void initCustomFields(final boolean isNew) {
-        fieldGroup.addCustomField("passw", new FieldGroup.CustomFieldGenerator() {
+        fieldGroupLeft.addCustomField("passw", new FieldGroup.CustomFieldGenerator() {
             @Override
             public Component generateField(Datasource datasource, String propertyId) {
                 passwField = factory.createComponent(PasswordField.NAME);
@@ -192,7 +195,7 @@ public class UserEditor extends AbstractEditor<User> {
             }
         });
 
-        fieldGroup.addCustomField("confirmPassw", new FieldGroup.CustomFieldGenerator() {
+        fieldGroupRight.addCustomField("confirmPassw", new FieldGroup.CustomFieldGenerator() {
             @Override
             public Component generateField(Datasource datasource, String propertyId) {
                 confirmPasswField = factory.createComponent(PasswordField.NAME);
@@ -210,7 +213,7 @@ public class UserEditor extends AbstractEditor<User> {
             }
         });
 
-        fieldGroup.addCustomField("language", new FieldGroup.CustomFieldGenerator() {
+        fieldGroupRight.addCustomField("language", new FieldGroup.CustomFieldGenerator() {
             @Override
             public Component generateField(Datasource datasource, String propertyId) {
                 languageLookup = factory.createComponent(LookupField.NAME);
@@ -228,7 +231,7 @@ public class UserEditor extends AbstractEditor<User> {
             }
         });
 
-        fieldGroup.addCustomField("group", new FieldGroup.CustomFieldGenerator() {
+        fieldGroupRight.addCustomField("group", new FieldGroup.CustomFieldGenerator() {
             @Override
             public Component generateField(Datasource datasource, String propertyId) {
                 PickerField pickerField = factory.createComponent(PickerField.NAME);
@@ -247,6 +250,7 @@ public class UserEditor extends AbstractEditor<User> {
     @Override
     protected boolean preCommit() {
         if (rolesDs.isModified()) {
+            @SuppressWarnings("unchecked")
             DatasourceImplementation<UserRole> rolesDsImpl = (DatasourceImplementation) rolesDs;
 
             CommitContext ctx = new CommitContext(Collections.emptyList(), rolesDsImpl.getItemsToDelete());
@@ -297,8 +301,10 @@ public class UserEditor extends AbstractEditor<User> {
     }
 
     public void initCopy() {
-        for (Entity item : rolesDs.getItems()) {
-            ((DatasourceImplementation) rolesDs).modified(item);
+        @SuppressWarnings("unchecked")
+        DatasourceImplementation<UserRole> rolesDsImpl = (DatasourceImplementation) rolesDs;
+        for (UserRole item : rolesDs.getItems()) {
+            rolesDsImpl.modified(item);
         }
     }
 
@@ -466,7 +472,7 @@ public class UserEditor extends AbstractEditor<User> {
             if (!substitutionsDs.getItemIds().isEmpty()) {
                 List<UUID> list = new ArrayList<>();
                 for (UUID usId : substitutionsDs.getItemIds()) {
-                    list.add(substitutionsDs.getItem(usId).getSubstitutedUser().getId());
+                    list.add(substitutionsDs.getItemNN(usId).getSubstitutedUser().getId());
                 }
                 params.put("existingIds", list);
             }

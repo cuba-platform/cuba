@@ -8,7 +8,7 @@
         caption="msg://caption"
         class="com.haulmont.cuba.gui.app.security.user.edit.UserEditor"
         messagesPack="com.haulmont.cuba.gui.app.security.user.edit"
-        focusComponent="fieldGroup">
+        focusComponent="fieldGroupLeft">
 
     <companions>
         <web class="com.haulmont.cuba.web.app.ui.security.user.UserEditorCompanion"/>
@@ -24,27 +24,43 @@
     <assign name="width" value="theme://cuba.gui.user-edit.field.width"/>
 
     <layout expand="split" spacing="true">
-        <fieldGroup id="fieldGroup" width="100%" datasource="userDs" border="visible">
-            <column flex="1" width="${width}" id="fieldGroupColumn1">
-                <field id="login" required="true" requiredMessage="msg://loginMsg"/>
-                <field id="passw" custom="true" caption="msg://password"/>
-                <field id="lastName"/>
-                <field id="middleName"/>
-                <field id="position"/>
-                <field id="email">
-                    <validator class="com.haulmont.cuba.gui.components.validators.EmailValidator" message="msg://email.alert"/>
-                </field>
-                <field id="ipMask"/>
-            </column>
-            <column flex="3" width="${width}" id="fieldGroupColumn2">
-                <field id="group" custom="true"/>
-                <field id="confirmPassw" custom="true" caption="msg://confirmPassword"/>
-                <field id="firstName"/>
-                <field id="name"/>
-                <field id="language" custom="true"/>
-                <field id="active"/>
-            </column>
-        </fieldGroup>
+        <groupBox id="propertiesBox">
+            <grid id="propertiesGrid" width="100%" spacing="true">
+                <columns>
+                    <column flex="1"/>
+                    <column flex="3"/>
+                </columns>
+                <rows>
+                    <row id="propertiesRow">
+                        <fieldGroup id="fieldGroupLeft" datasource="userDs" width="AUTO">
+                            <column width="${width}">
+                                <field id="login" required="true" requiredMessage="msg://loginMsg"/>
+                                <field id="passw" custom="true" caption="msg://password"/>
+                                <field id="lastName"/>
+                                <field id="middleName"/>
+                                <field id="position"/>
+                                <field id="email">
+                                    <validator class="com.haulmont.cuba.gui.components.validators.EmailValidator"
+                                               message="msg://email.alert"/>
+                                </field>
+                                <field id="ipMask"/>
+                            </column>
+                        </fieldGroup>
+
+                        <fieldGroup id="fieldGroupRight" datasource="userDs" width="AUTO">
+                            <column width="${width}">
+                                <field id="group" custom="true"/>
+                                <field id="confirmPassw" custom="true" caption="msg://confirmPassword"/>
+                                <field id="firstName"/>
+                                <field id="name"/>
+                                <field id="language" custom="true"/>
+                                <field id="active"/>
+                            </column>
+                        </fieldGroup>
+                    </row>
+                </rows>
+            </grid>
+        </groupBox>
 
         <split id="split" orientation="horizontal" pos="50" width="100%">
             <vbox id="roles-panel" expand="rolesTable" spacing="true" margin="false,true,false,false"
