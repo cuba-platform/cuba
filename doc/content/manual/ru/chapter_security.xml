@@ -343,7 +343,7 @@ private void calculateBalance() {
                   <para>Если компонент принадлежит фрейму, вложенному в экран, то сначала указывается идентификатор фрейма, а затем через точку идентификатор компонента внутри фрейма.</para>
                 </listitem>
                 <listitem>
-                  <para>Если необходимо установить разрешение для вкладки <link linkend="gui_TabSheet">TabSheet</link> или поля <link linkend="gui_FieldGroup">FiledGroup</link>, то сначала указывается идентификатор компонента, а затем в квадратных скобках идентификатор соответственно вкладки или поля.</para>
+                  <para>Если необходимо установить разрешение для вкладки <link linkend="gui_TabSheet">TabSheet</link> или поля <link linkend="gui_FieldGroup">FieldGroup</link>, то сначала указывается идентификатор компонента, а затем в квадратных скобках идентификатор соответственно вкладки или поля.</para>
                 </listitem>
               </itemizedlist></para>
           </listitem>
