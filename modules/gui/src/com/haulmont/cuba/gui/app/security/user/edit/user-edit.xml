@@ -36,24 +36,24 @@
                             <column width="${width}">
                                 <field id="login" required="true" requiredMessage="msg://loginMsg"/>
                                 <field id="passw" custom="true" caption="msg://password"/>
-                                <field id="lastName"/>
+                                <field id="confirmPassw" custom="true" caption="msg://confirmPassword"/>
+                                <field id="firstName"/>
                                 <field id="middleName"/>
-                                <field id="position"/>
-                                <field id="email">
-                                    <validator class="com.haulmont.cuba.gui.components.validators.EmailValidator"
-                                               message="msg://email.alert"/>
-                                </field>
-                                <field id="ipMask"/>
+                                <field id="lastName"/>
+                                <field id="name"/>
                             </column>
                         </fieldGroup>
 
                         <fieldGroup id="fieldGroupRight" datasource="userDs" width="AUTO">
                             <column width="${width}">
                                 <field id="group" custom="true"/>
-                                <field id="confirmPassw" custom="true" caption="msg://confirmPassword"/>
-                                <field id="firstName"/>
-                                <field id="name"/>
+                                <field id="position"/>
+                                <field id="email">
+                                    <validator class="com.haulmont.cuba.gui.components.validators.EmailValidator"
+                                               message="msg://email.alert"/>
+                                </field>
                                 <field id="language" custom="true"/>
+                                <field id="ipMask"/>
                                 <field id="active"/>
                             </column>
                         </fieldGroup>

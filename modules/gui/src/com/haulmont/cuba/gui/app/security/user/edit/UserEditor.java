@@ -195,7 +195,7 @@ public class UserEditor extends AbstractEditor<User> {
             }
         });
 
-        fieldGroupRight.addCustomField("confirmPassw", new FieldGroup.CustomFieldGenerator() {
+        fieldGroupLeft.addCustomField("confirmPassw", new FieldGroup.CustomFieldGenerator() {
             @Override
             public Component generateField(Datasource datasource, String propertyId) {
                 confirmPasswField = factory.createComponent(PasswordField.NAME);
