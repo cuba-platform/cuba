@@ -90,6 +90,12 @@ public class UserBrowser extends AbstractLookup {
         final boolean hasPermissionsToCreateSettings =
                 security.isEntityOpPermitted(metadata.getClassNN(UserSetting.class), EntityOp.CREATE);
 
+        changePasswAction.setEnabled(hasPermissionsToUpdateUsers);
+        changePasswAtLogonAction.setEnabled(hasPermissionsToUpdateUsers);
+        copySettingsAction.setEnabled(hasPermissionsToCreateSettings);
+
+        resetRememberMeAction.setEnabled(security.isEntityOpPermitted(RememberMeToken.class, EntityOp.DELETE));
+
         usersDs.addListener(new CollectionDsListenerAdapter<User>() {
             @Override
             public void itemChanged(Datasource<User> ds, User prevItem, User item) {
