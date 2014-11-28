@@ -107,6 +107,8 @@ public class EntityLoadInfo {
      * @return      info instance or null if the string can not be parsed. Any exception is silently swallowed.
      */
     public static @Nullable EntityLoadInfo parse(String str) {
+        Metadata metadata = AppBeans.get(Metadata.NAME);
+
         boolean isNew = false;
         if (str.startsWith(NEW_PREFIX)) {
             str = str.substring("NEW-".length());
@@ -115,11 +117,20 @@ public class EntityLoadInfo {
 
         int idDashPos = str.indexOf('-');
         if (idDashPos == -1) {
+            if (isNew) {
+                MetaClass metaClass = metadata.getSession().getClass(str);
+                if (metaClass == null) {
+                    return null;
+                }
+                Entity entity = metadata.create(metaClass);
+                MetaProperty primaryKeyProp = metadata.getTools().getPrimaryKeyProperty(metaClass);
+                boolean stringKey = primaryKeyProp != null && primaryKeyProp.getJavaType().equals(String.class);
+                return new EntityLoadInfo(entity.getId(), metaClass, null, stringKey, true);
+            }
             return null;
         }
 
         String entityName = str.substring(0, idDashPos);
-        Metadata metadata = AppBeans.get(Metadata.NAME);
         MetaClass metaClass = metadata.getSession().getClass(entityName);
         if (metaClass == null) {
             return null;
