@@ -19,6 +19,10 @@ public class CubaFieldGroupLayout extends GridLayout {
 
     protected Map<Integer, Integer> columnFieldCaptionWidth = null;
 
+    public CubaFieldGroupLayout() {
+        setHideEmptyRowsAndColumns(true);
+    }
+
     @Override
     protected CubaFieldGroupLayoutState getState() {
         return (CubaFieldGroupLayoutState) super.getState();
