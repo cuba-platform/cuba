@@ -58,7 +58,6 @@ public class FoldersBean implements Folders {
         Map<String, Object> params = new HashMap<>();
 
         WindowParams.DISABLE_AUTO_REFRESH.set(params, true);
-        WindowParams.DISABLE_APPLY_SETTINGS.set(params, true);
         WindowParams.DISABLE_RESUME_SUSPENDED.set(params, true);
 
         if (!StringUtils.isBlank(folder.getTabName())) {
@@ -92,7 +91,6 @@ public class FoldersBean implements Folders {
             }
             filterComponent.setFilterEntity(filterEntity);
         }
-        window.applySettings(new SettingsImpl(window.getId()));
 
         if (filterComponent != null && folder instanceof SearchFolder) {
             final SearchFolder searchFolder = (SearchFolder) folder;

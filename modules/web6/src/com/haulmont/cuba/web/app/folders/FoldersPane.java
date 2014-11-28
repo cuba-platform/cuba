@@ -604,7 +604,6 @@ public class FoldersPane extends VerticalLayout {
         Map<String, Object> params = new HashMap<String, Object>();
 
         WindowParams.DISABLE_AUTO_REFRESH.set(params, true);
-        WindowParams.DISABLE_APPLY_SETTINGS.set(params, true);
         WindowParams.DISABLE_RESUME_SUSPENDED.set(params, true);
 
         if (!StringUtils.isBlank(folder.getTabName())) {
@@ -637,8 +636,6 @@ public class FoldersPane extends VerticalLayout {
             }
             filterComponent.setFilterEntity(filterEntity);
         }
-
-        window.applySettings(new SettingsImpl(window.getId()));
 
         if (filterComponent != null && folder instanceof SearchFolder) {
             final SearchFolder searchFolder = (SearchFolder) folder;
