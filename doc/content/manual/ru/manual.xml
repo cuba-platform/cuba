@@ -1313,6 +1313,16 @@ menu-config.sales$Customer.lookup=Customers</programlisting></para>
           <para>Используется в блоке <structname>Web Client</structname>.</para>
         </listitem>
       </varlistentry>
+      <varlistentry id="cuba.systemInfoScriptsEnabled">
+        <term>cuba.systemInfoScriptsEnabled</term>
+        <listitem>
+          <para>Разрешает показ SQL-скриптов добавления/изменения/извлечения экземпляра сущности в окне <guilabel>System Information</guilabel>.</para>
+          <para>Данные скрипты фактически показывают содержимое строк базы данных, хранящих выбранный экземпляр сущности, независимо от настроек безопасности, в которых некоторые атрибуты могут быть запрещены. Поэтому рекомендуется либо отобрать право на <userinput>CUBA / Generic UI / System Information</userinput> для всех <link linkend="roles">ролей</link> пользователей, кроме администраторов, либо установить свойство <code>cuba.systemInfoScriptsEnabled</code> для всего приложения в <code>false</code>.</para>
+          <para>Значение по умолчанию: <literal>true</literal></para>
+          <para>Интерфейс:  <code>ClientConfig</code></para>
+          <para>Используется в блоках <structname>Web Client</structname> и <structname>Desktop Client</structname>.</para>
+        </listitem>
+      </varlistentry>
       <varlistentry id="cuba.tempDir">
         <term>cuba.tempDir</term>
         <listitem>

@@ -21,6 +21,9 @@
                 <listitem>
                   <para>Добавлено свойство приложения <link linkend="cuba.rest.productionMode">cuba.rest.productionMode</link>.</para>
                 </listitem>
+                <listitem>
+                  <para>Добавлено свойство приложения <link linkend="cuba.systemInfoScriptsEnabled">cuba.systemInfoScriptsEnabled</link>.</para>
+                </listitem>
               </itemizedlist></para>
           </listitem>
         </itemizedlist>
