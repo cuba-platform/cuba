@@ -102,7 +102,8 @@ public class FoldersServiceBean implements FoldersService {
                                 continue;
                         }
                     } catch (Exception e) {
-                        log.warn("Unable to evaluate AppFolder scripts", e);
+                        log.warn(String.format("Unable to evaluate AppFolder visibility script for folder: id: %s ," +
+                                " name: %s", folder.getId(), folder.getName()), e);
                         //continue;
                     }
 
@@ -170,7 +171,8 @@ public class FoldersServiceBean implements FoldersService {
                 folder.setQuantity(qty == null ? null : qty.intValue());
             }
         } catch (Exception e) {
-            log.warn("Unable to evaluate AppFolder scripts", e);
+            log.warn(String.format("Unable to evaluate AppFolder quantity script for folder: id: %s ," +
+                    " name: %s", folder.getId(), folder.getName()), e);
         }
     }
 
