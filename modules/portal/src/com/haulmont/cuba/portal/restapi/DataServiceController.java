@@ -18,6 +18,7 @@ import com.haulmont.cuba.core.sys.AbstractViewRepository;
 import com.haulmont.cuba.portal.config.RestConfig;
 import com.haulmont.cuba.security.entity.EntityOp;
 import freemarker.template.TemplateException;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Controller;
@@ -315,7 +316,8 @@ public class DataServiceController {
         if (isProductionMode) {
             msg = "Internal server error";
         } else {
-            msg = e.toString();
+            Throwable t = ExceptionUtils.getRootCause(e);
+            msg = t != null ? ExceptionUtils.getStackTrace(t) : ExceptionUtils.getStackTrace(e);
         }
         response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, msg);
     }
