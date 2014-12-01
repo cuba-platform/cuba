@@ -11,10 +11,7 @@ import com.haulmont.cuba.gui.components.Embedded;
 import com.haulmont.cuba.gui.export.ExportDataProvider;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
-import com.vaadin.terminal.ApplicationResource;
-import com.vaadin.terminal.ExternalResource;
-import com.vaadin.terminal.FileResource;
-import com.vaadin.terminal.StreamResource;
+import com.vaadin.terminal.*;
 
 import java.io.File;
 import java.io.InputStream;
@@ -36,9 +33,18 @@ public class WebEmbedded
     private Type type = Type.OBJECT;
     private ApplicationResource resource;
     private boolean disposed;
+    private boolean doNotSetSize = false;
 
     public WebEmbedded() {
-        component = new com.vaadin.ui.Embedded();
+        component = new com.vaadin.ui.Embedded() {
+            @Override
+            public void paintContent(PaintTarget target) throws PaintException {
+                super.paintContent(target);
+                if (doNotSetSize) {
+                    target.addAttribute("doNotSetSize", doNotSetSize);
+                }
+            }
+        };
         provideType();
     }
 
@@ -90,6 +96,18 @@ public class WebEmbedded
     public void setSource(String fileName, ExportDataProvider dataProvider) {
         resource = new WebEmbeddedApplicationResource(dataProvider, fileName, App.getInstance());
         component.setSource(resource);
+    }
+
+    public boolean isDoNotSetSize() {
+        return doNotSetSize;
+    }
+
+    /**
+     * Ability to disable auto size setting
+     */
+    public void setDoNotSetSize(boolean doNotSetSize) {
+        this.doNotSetSize = doNotSetSize;
+        component.requestRepaint();
     }
 
     @Override

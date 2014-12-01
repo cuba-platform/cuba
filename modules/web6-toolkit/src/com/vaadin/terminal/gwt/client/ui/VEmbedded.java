@@ -46,6 +46,8 @@ public class VEmbedded extends HTML implements Paintable {
 
     private ApplicationConnection client;
 
+    private boolean doNotSetSize = false;
+
     private final ClickEventHandler clickEventHandler = new ClickEventHandler(
             this, CLICK_EVENT_IDENTIFIER) {
 
@@ -96,19 +98,29 @@ public class VEmbedded extends HTML implements Paintable {
                     DOM.sinkEvents(el, Event.ONLOAD);
                 }
 
+                if (uidl.hasAttribute("doNotSetSize")) {
+                    doNotSetSize = true;
+                } else {
+                    doNotSetSize = false;
+                }
+
                 // Set attributes
                 Style style = el.getStyle();
-                String w = uidl.getStringAttribute("width");
-                if (w != null) {
-                    style.setProperty("width", w);
-                } else {
-                    style.setProperty("width", "");
+                if (!doNotSetSize) {
+                    String w = uidl.getStringAttribute("width");
+                    if (w != null) {
+                        style.setProperty("width", w);
+                    } else {
+                        style.setProperty("width", "");
+                    }
                 }
-                String h = uidl.getStringAttribute("height");
-                if (h != null) {
-                    style.setProperty("height", h);
-                } else {
-                    style.setProperty("height", "");
+                if (!doNotSetSize) {
+                    String h = uidl.getStringAttribute("height");
+                    if (h != null) {
+                        style.setProperty("height", h);
+                    } else {
+                        style.setProperty("height", "");
+                    }
                 }
                 DOM.setElementProperty(el, "src", getSrc(uidl, client));
 
@@ -202,8 +214,7 @@ public class VEmbedded extends HTML implements Paintable {
      * Creates the Object and Embed tags for the Flash plugin so it works
      * cross-browser
      *
-     * @param uidl
-     *            The UIDL
+     * @param uidl The UIDL
      * @return Tags concatenated into a string
      */
     private String createFlashEmbed(UIDL uidl) {
@@ -318,8 +329,7 @@ public class VEmbedded extends HTML implements Paintable {
     /**
      * Escapes the string so it is safe to write inside an HTML attribute.
      *
-     * @param attribute
-     *            The string to escape
+     * @param attribute The string to escape
      * @return An escaped version of <literal>attribute</literal>.
      */
     private String escapeAttribute(String attribute) {
@@ -376,22 +386,23 @@ public class VEmbedded extends HTML implements Paintable {
 
     @Override
     public void setWidth(String width) {
-        this.width = width;
-        if (isDynamicHeight()) {
-            int oldHeight = getOffsetHeight();
-            super.setWidth(width);
-            int newHeight = getOffsetHeight();
+        if (!doNotSetSize) {
+            this.width = width;
+            if (isDynamicHeight()) {
+                int oldHeight = getOffsetHeight();
+                super.setWidth(width);
+                int newHeight = getOffsetHeight();
             /*
              * Must notify parent if the height changes as a result of a width
              * change
              */
-            if (oldHeight != newHeight) {
-                Util.notifyParentOfSizeChange(this, false);
+                if (oldHeight != newHeight) {
+                    Util.notifyParentOfSizeChange(this, false);
+                }
+            } else {
+                super.setWidth(width);
             }
-        } else {
-            super.setWidth(width);
         }
-
     }
 
     private boolean isDynamicWidth() {
@@ -404,8 +415,10 @@ public class VEmbedded extends HTML implements Paintable {
 
     @Override
     public void setHeight(String height) {
-        this.height = height;
-        super.setHeight(height);
+        if (!doNotSetSize) {
+            this.height = height;
+            super.setHeight(height);
+        }
     }
 
     @Override
@@ -469,15 +482,17 @@ public class VEmbedded extends HTML implements Paintable {
      * size in certain cases (e.g. #6304).
      */
     private void updateElementDynamicSizeFromImage() {
-        if (isDynamicWidth()) {
-            getElement().getStyle().setWidth(
-                    getElement().getFirstChildElement().getOffsetWidth(),
-                    Unit.PX);
-        }
-        if (isDynamicHeight()) {
-            getElement().getStyle().setHeight(
-                    getElement().getFirstChildElement().getOffsetHeight(),
-                    Unit.PX);
+        if (!doNotSetSize) {
+            if (isDynamicWidth()) {
+                getElement().getStyle().setWidth(
+                        getElement().getFirstChildElement().getOffsetWidth(),
+                        Unit.PX);
+            }
+            if (isDynamicHeight()) {
+                getElement().getStyle().setHeight(
+                        getElement().getFirstChildElement().getOffsetHeight(),
+                        Unit.PX);
+            }
         }
     }
 }
