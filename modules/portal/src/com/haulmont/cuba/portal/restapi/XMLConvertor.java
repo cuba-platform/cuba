@@ -273,6 +273,7 @@ public class XMLConvertor implements Convertor {
             String xmlValue = fieldNode.getTextContent();
             if (isNullValue(fieldNode)) {
                 setNullField(bean, fieldName);
+                continue;
             }
 
             Object value;

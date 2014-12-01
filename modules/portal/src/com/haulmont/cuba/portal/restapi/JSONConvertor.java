@@ -200,7 +200,7 @@ public class JSONConvertor implements Convertor {
                 case DATATYPE:
                     String value = json.getString(key);
                     String typeName = property.getRange().asDatatype().getName();
-                    if (!StringDatatype.NAME.equals(typeName) && "null".equals(value))
+                    if (json.isNull(key) || (!StringDatatype.NAME.equals(typeName) && "null".equals(value)))
                             value = null;
                     setField(bean, key, property.getRange().asDatatype().parse(value));
                     break;
