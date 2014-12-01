@@ -146,14 +146,22 @@ public class CubaApplicationServlet extends VaadinServlet {
 
     protected void serviceAppRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
         RequestContext.create(request, response);
         AppContext.setSecurityContext(new VaadinSessionAwareSecurityContext());
+
+        long startTs = System.currentTimeMillis();
+
         try {
             super.service(request, response);
         } finally {
             RequestContext.destroy();
             AppContext.setSecurityContext(null);
+        }
+
+        long t = System.currentTimeMillis() - startTs;
+        if (t > (webConfig.getLogLongRequestsThresholdSec() * 1000)) {
+            log.warn(String.format("Too long request processing [%d ms]: ip=%s, url=%s",
+                    t, request.getRemoteAddr(), request.getRequestURI()));
         }
     }
 }
