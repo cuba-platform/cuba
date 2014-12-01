@@ -301,6 +301,10 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
             layout.addStyleName("cuba-app-full-header");
         }
 
+        if (webConfig.getUseInverseHeader()) {
+            layout.addStyleName("cuba-inverse-header");
+        }
+
         menuBarLayout = createMenuBarLayout();
 
         layout.addComponent(menuBarLayout);

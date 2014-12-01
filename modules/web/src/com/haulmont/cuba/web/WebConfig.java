@@ -159,17 +159,26 @@ public interface WebConfig extends Config {
     List<String> getAvailableAppThemes();
 
     /**
-     * @return Whether to use lightweight header (app icon, menu, app settings in the same row)
+     * @return Whether to use lightweight header (app icon, menu, app settings in the same row).
      */
     @DefaultBoolean(true)
     @Property("cuba.web.useLightHeader")
     boolean getUseLightHeader();
 
     /**
+     * @return Whether to use inverse header colors if it is supported by theme.
+     */
+    @DefaultBoolean(true)
+    @Property("cuba.web.useInverseHeader")
+    boolean getUseInverseHeader();
+
+    /**
+     * @deprecated Do not use in application code. Will be removed in Release 5.4.
      * @return Path to an image for use as wallpaper. Not used in the platform.
      */
     @Property("cuba.web.appWindowWallpaper")
     @Default("default")
+    @Deprecated
     String getAppWindowWallpaper();
 
     /**
