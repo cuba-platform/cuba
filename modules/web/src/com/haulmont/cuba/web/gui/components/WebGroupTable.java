@@ -647,7 +647,7 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
         }
 
         @Override
-        protected DatasourceListener createDatasourceListener() {
+        protected CollectionDatasourceListener createDatasourceListener() {
             return new GroupDataSourceRefreshListener();
         }
 

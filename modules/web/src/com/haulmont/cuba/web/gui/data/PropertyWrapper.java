@@ -17,6 +17,7 @@ import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
+import com.haulmont.cuba.gui.data.impl.DsListenerWeakWrapper;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.converter.Converter;
 
@@ -33,12 +34,13 @@ public class PropertyWrapper extends AbstractPropertyWrapper implements Property
     protected MetaPropertyPath propertyPath;
 
     protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
+    protected DsListenerAdapter<Entity> dsListener;
 
     public PropertyWrapper(Object item, MetaPropertyPath propertyPath) {
         this.item = item;
         this.propertyPath = propertyPath;
         if (item instanceof Datasource) {
-            ((Datasource) item).addListener(new DsListenerAdapter<Entity>() {
+            dsListener = new DsListenerAdapter<Entity>() {
                 @Override
                 public void itemChanged(Datasource<Entity> ds, Entity prevItem, Entity item) {
                     fireValueChangeEvent();
@@ -46,10 +48,13 @@ public class PropertyWrapper extends AbstractPropertyWrapper implements Property
 
                 @Override
                 public void valueChanged(Entity source, String property, Object prevValue, Object value) {
-                    if (property.equals(PropertyWrapper.this.propertyPath.toString()))
+                    if (property.equals(PropertyWrapper.this.propertyPath.toString())) {
                         fireValueChangeEvent();
+                    }
                 }
-            });
+            };
+            Datasource datasource = (Datasource) item;
+            datasource.addListener(new DsListenerWeakWrapper(datasource, dsListener));
         }
     }
 
@@ -76,8 +81,9 @@ public class PropertyWrapper extends AbstractPropertyWrapper implements Property
     public void setValue(Object newValue) throws Property.ReadOnlyException, Converter.ConversionException {
         final Instance instance = getInstance();
 
-        if (instance != null)
+        if (instance != null) {
             InstanceUtils.setValueEx(instance, propertyPath.getPath(), valueOf(newValue));
+        }
     }
 
     protected Object valueOf(Object newValue) throws Converter.ConversionException {

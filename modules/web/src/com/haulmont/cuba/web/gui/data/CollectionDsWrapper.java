@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
+import com.haulmont.cuba.gui.data.impl.CollectionDsListenerWeakWrapper;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -29,6 +30,7 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
     protected boolean ignoreListeners;
 
     protected CollectionDatasource datasource;
+    protected CollectionDatasourceListener dsListener;
 
     protected Collection<MetaPropertyPath> properties = new ArrayList<>();
     private List<ItemSetChangeListener> itemSetChangeListeners = new ArrayList<>();
@@ -45,11 +47,8 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
         this(datasource, null, autoRefresh);
     }
 
-    public CollectionDsWrapper(
-            CollectionDatasource datasource,
-            Collection<MetaPropertyPath> properties,
-            boolean autoRefresh
-    ) {
+    public CollectionDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties,
+                               boolean autoRefresh) {
         this.datasource = datasource;
         this.autoRefresh = autoRefresh;
 
@@ -62,14 +61,16 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
             this.properties.addAll(properties);
         }
 
-        datasource.addListener(createDatasourceListener());
+        dsListener = createDatasourceListener();
+        datasource.addListener(new CollectionDsListenerWeakWrapper(datasource, dsListener));
     }
 
-    protected DatasourceListener createDatasourceListener() {
-        if (datasource instanceof CollectionDatasource.Lazy)
+    protected CollectionDatasourceListener createDatasourceListener() {
+        if (datasource instanceof CollectionDatasource.Lazy) {
             return new LazyDataSourceRefreshListener();
-        else
+        } else {
             return new DataSourceRefreshListener();
+        }
     }
 
     protected void createProperties(View view, MetaClass metaClass) {

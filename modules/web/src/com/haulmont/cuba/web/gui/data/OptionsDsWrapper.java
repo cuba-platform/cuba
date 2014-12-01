@@ -11,8 +11,8 @@ import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.DatasourceListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
+import com.haulmont.cuba.gui.data.impl.CollectionDsListenerWeakWrapper;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -36,19 +36,17 @@ public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetCha
     protected boolean ignoreListeners;
 
     protected CollectionDatasource datasource;
+    protected CollectionDatasourceListener dsListener;
 
     protected Collection<MetaPropertyPath> properties = new ArrayList<>();
-    private List<ItemSetChangeListener> itemSetChangeListeners = new ArrayList<>();
+    protected List<ItemSetChangeListener> itemSetChangeListeners = new ArrayList<>();
 
     public OptionsDsWrapper(CollectionDatasource datasource, boolean autoRefresh) {
         this(datasource, null, autoRefresh);
     }
 
-    public OptionsDsWrapper(
-            CollectionDatasource datasource,
-            Collection<MetaPropertyPath> properties,
-            boolean autoRefresh) {
-
+    public OptionsDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties,
+                            boolean autoRefresh) {
         this.datasource = datasource;
         this.autoRefresh = autoRefresh;
 
@@ -61,10 +59,11 @@ public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetCha
             this.properties.addAll(properties);
         }
 
-        datasource.addListener(createDatasourceListener());
+        dsListener = createDatasourceListener();
+        datasource.addListener(new CollectionDsListenerWeakWrapper(datasource, dsListener));
     }
 
-    protected DatasourceListener createDatasourceListener() {
+    protected CollectionDatasourceListener createDatasourceListener() {
         return new DataSourceRefreshListener();
     }
 

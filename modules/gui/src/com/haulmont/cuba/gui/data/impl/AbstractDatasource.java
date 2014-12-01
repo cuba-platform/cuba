@@ -35,6 +35,7 @@ public abstract class AbstractDatasource<T extends Entity> implements Datasource
     protected Metadata metadata = AppBeans.get(Metadata.NAME);
 
     protected List<DatasourceListener> dsListeners = new ArrayList<>();
+    protected List<WeakDatasourceListener> weakListeners = new ArrayList<>();
 
     protected Collection itemToCreate = new HashSet();
     protected Collection itemToUpdate = new HashSet();
@@ -162,14 +163,38 @@ public abstract class AbstractDatasource<T extends Entity> implements Datasource
 
     @Override
     public void addListener(DatasourceListener<T> listener) {
+        if (!weakListeners.isEmpty()) {
+            for (WeakDatasourceListener weakListener : new ArrayList<>(weakListeners)) {
+                if (!weakListener.isAlive()) {
+                    dsListeners.remove(weakListener);
+                }
+            }
+        }
+
         if (dsListeners.indexOf(listener) < 0) {
             dsListeners.add(listener);
+
+            if (listener instanceof WeakDatasourceListener) {
+                weakListeners.add((WeakDatasourceListener) listener);
+            }
         }
     }
 
     @Override
     public void removeListener(DatasourceListener<T> listener) {
-        dsListeners.remove(listener);
+        boolean removed = dsListeners.remove(listener);
+
+        if (removed && listener instanceof WeakDatasourceListener) {
+            weakListeners.remove(listener);
+        }
+
+        if (!weakListeners.isEmpty()) {
+            for (WeakDatasourceListener weakListener : new ArrayList<>(weakListeners)) {
+                if (!weakListener.isAlive()) {
+                    dsListeners.remove(weakListener);
+                }
+            }
+        }
     }
 
     @Override
