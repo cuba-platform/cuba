@@ -7,6 +7,7 @@ package com.haulmont.cuba.web.toolkit.ui.client.grouptable;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.TableCellElement;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
@@ -548,6 +549,25 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
         @Override
         public void moveCol(int oldIndex, int newIndex) {
             //do nothing, columns reordering will be process on the server
+        }
+
+        @Override
+        public int getAvailableWidth() {
+            // fix for Halo based themes #PL-4570
+            // it does not set real width of group column to divider cell element
+
+            int availableWidth = super.getAvailableWidth();
+            HeaderCell headerCell = tHead.getHeaderCell(GROUP_DIVIDER_COLUMN_KEY);
+            int groupCellWidth = headerCell.getOffsetWidth();
+            Style headCellStyle = headerCell.getElement().getStyle();
+
+            if (!(groupCellWidth + "px").equals(headCellStyle.getWidth())) {
+                if (availableWidth - groupCellWidth > 0) {
+                    availableWidth -= groupCellWidth;
+                }
+            }
+
+            return availableWidth;
         }
     }
 
