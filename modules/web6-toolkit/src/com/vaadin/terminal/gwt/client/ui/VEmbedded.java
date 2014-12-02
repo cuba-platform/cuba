@@ -386,22 +386,20 @@ public class VEmbedded extends HTML implements Paintable {
 
     @Override
     public void setWidth(String width) {
-        if (!doNotSetSize) {
-            this.width = width;
-            if (isDynamicHeight()) {
-                int oldHeight = getOffsetHeight();
-                super.setWidth(width);
-                int newHeight = getOffsetHeight();
+        this.width = width;
+        if (isDynamicHeight()) {
+            int oldHeight = getOffsetHeight();
+            super.setWidth(width);
+            int newHeight = getOffsetHeight();
             /*
              * Must notify parent if the height changes as a result of a width
              * change
              */
-                if (oldHeight != newHeight) {
-                    Util.notifyParentOfSizeChange(this, false);
-                }
-            } else {
-                super.setWidth(width);
+            if (oldHeight != newHeight) {
+                Util.notifyParentOfSizeChange(this, false);
             }
+        } else {
+            super.setWidth(width);
         }
     }
 
@@ -415,10 +413,8 @@ public class VEmbedded extends HTML implements Paintable {
 
     @Override
     public void setHeight(String height) {
-        if (!doNotSetSize) {
-            this.height = height;
-            super.setHeight(height);
-        }
+        this.height = height;
+        super.setHeight(height);
     }
 
     @Override
@@ -482,17 +478,15 @@ public class VEmbedded extends HTML implements Paintable {
      * size in certain cases (e.g. #6304).
      */
     private void updateElementDynamicSizeFromImage() {
-        if (!doNotSetSize) {
-            if (isDynamicWidth()) {
-                getElement().getStyle().setWidth(
-                        getElement().getFirstChildElement().getOffsetWidth(),
-                        Unit.PX);
-            }
-            if (isDynamicHeight()) {
-                getElement().getStyle().setHeight(
-                        getElement().getFirstChildElement().getOffsetHeight(),
-                        Unit.PX);
-            }
+        if (isDynamicWidth()) {
+            getElement().getStyle().setWidth(
+                    getElement().getFirstChildElement().getOffsetWidth(),
+                    Unit.PX);
+        }
+        if (isDynamicHeight()) {
+            getElement().getStyle().setHeight(
+                    getElement().getFirstChildElement().getOffsetHeight(),
+                    Unit.PX);
         }
     }
 }
