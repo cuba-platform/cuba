@@ -16,15 +16,38 @@ public interface FileMultiUploadField extends Component, Component.HasCaption, C
     String NAME = "multiUpload";
 
     public abstract class UploadListener {
+
+        /**
+         * File upload finished. Executed in uploading thread. <br/>
+         * <b>Do not perform progress indication here!</b>
+         *
+         * @param fileName file name
+         */
         public void fileUploaded(String fileName) {
         }
 
+        /**
+         * File uploading started. Executed in uploading thread. <br/>
+         * <b>Do not perform progress indication here!</b>
+         *
+         * @param fileName file name
+         */
         public void fileUploadStart(String fileName) {
         }
 
+        /**
+         * Queue upload completed
+         */
         public void queueUploadComplete() {
         }
 
+        /**
+         * Handle uploading error.
+         *
+         * @param fileName file name
+         * @return true if error handled by listener.
+         *         If returned false then component shows default upload error notification.
+         */
         public boolean uploadError(String fileName) {
             return false;
         }
