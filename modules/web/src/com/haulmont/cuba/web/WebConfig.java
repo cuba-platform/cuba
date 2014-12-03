@@ -130,13 +130,6 @@ public interface WebConfig extends Config {
     int getMainTabCaptionLength();
 
     /**
-     * @return Whether to use disabling and dimming of browser window on long requests.
-     */
-    @Property("cuba.web.useUiBlocking")
-    @DefaultBoolean(true)
-    boolean getUseUiBlocking();
-
-    /**
      * @return Whether to handle back button click in browser on server-side.
      */
     @Property("cuba.web.allowHandleBrowserHistoryBack")
