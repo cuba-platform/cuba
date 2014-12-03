@@ -177,23 +177,8 @@ public interface WebConfig extends Config {
     String getResourcesRoot();
 
     /**
-     * @return Whether to generate unique suffixes for Ids in testing mode
-     */
-    @Property("cuba.web.allowIdSuffix")
-    @DefaultBoolean(false)
-    boolean getAllowIdSuffix();
-
-    /**
-     * Supports automatic testing.
-     * @return a name of request parameter that marks a request from an automatic testing tool, for example jMeter.
-     */
-    @Property("cuba.web.testModeParamName")
-    @Default("jmeter")
-    String getTestModeParamName();
-
-    /**
      * List of entity ids which can be restored by means of the restore screen.
-     * <p>Obsolete. Recommended way to specify this information is entity annotations
+     * @deprecated Recommended way to specify this information is entity annotations
      * in <code>*-metadata.xml</code></p>
      * @return comma-separated list of entity ids
      */
