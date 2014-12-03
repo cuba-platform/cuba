@@ -6,22 +6,28 @@ package com.haulmont.cuba.gui.app.core.file;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.FileDescriptor;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.FileStorageException;
+import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.Resource;
 import javax.inject.Inject;
 import java.io.File;
-import java.util.Map;
 
 /**
  * @author krivopustov
  * @version $Id$
  */
 public class FileEditor extends AbstractEditor<FileDescriptor> {
+
+    protected final Log log = LogFactory.getLog(getClass());
 
     @Inject
     protected Datasource<FileDescriptor> fileDs;
@@ -50,10 +56,6 @@ public class FileEditor extends AbstractEditor<FileDescriptor> {
     protected TimeSource timeSource;
 
     @Override
-    public void init(Map<String, Object> params) {
-    }
-
-    @Override
     public void setItem(Entity item) {
         super.setItem(item);
 
@@ -70,11 +72,12 @@ public class FileEditor extends AbstractEditor<FileDescriptor> {
     }
 
     @Override
-    public void commitAndClose() {
-        if (needSave) {
+    protected boolean postCommit(boolean committed, boolean close) {
+        if (committed && needSave) {
             saveFile();
         }
-        super.commitAndClose();
+
+        return super.postCommit(committed, close);
     }
 
     protected void saveFile() {
@@ -82,7 +85,8 @@ public class FileEditor extends AbstractEditor<FileDescriptor> {
         try {
             fileUploading.putFileIntoStorage(uploadField.getFileId(), fileDs.getItem());
         } catch (FileStorageException e) {
-            throw new RuntimeException(e);
+            showNotification(getMessage("fileEditor.unableToSaveFile"), NotificationType.ERROR);
+            log.error("Unable to save file to middleware", e);
         }
     }
 
@@ -90,14 +94,16 @@ public class FileEditor extends AbstractEditor<FileDescriptor> {
 
         @Override
         public void uploadSucceeded(Event event) {
-            getItem().setName(uploadField.getFileName());
-            getItem().setCreateDate(timeSource.currentTimestamp());
-            getItem().setExtension(FilenameUtils.getExtension(uploadField.getFileName()));
+            FileDescriptor fd = getItem();
+
+            fd.setName(uploadField.getFileName());
+            fd.setCreateDate(timeSource.currentTimestamp());
+            fd.setExtension(FilenameUtils.getExtension(uploadField.getFileName()));
 
             FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
             File file = fileUploading.getFile(uploadField.getFileId());
 
-            getItem().setSize(file.length());
+            fd.setSize(file.length());
 
             okBtn.setEnabled(true);
 
