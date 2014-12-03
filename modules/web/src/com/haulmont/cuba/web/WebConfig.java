@@ -173,15 +173,6 @@ public interface WebConfig extends Config {
     boolean getUseInverseHeader();
 
     /**
-     * @deprecated Do not use in application code. Will be removed in Release 5.4.
-     * @return Path to an image for use as wallpaper. Not used in the platform.
-     */
-    @Property("cuba.web.appWindowWallpaper")
-    @Default("default")
-    @Deprecated
-    String getAppWindowWallpaper();
-
-    /**
      * @return List of file extensions which should be shown in the browser instead of downloading as attachments.
      */
     @Property("cuba.web.viewFileExtensions")
