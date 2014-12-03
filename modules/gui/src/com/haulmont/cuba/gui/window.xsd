@@ -692,7 +692,18 @@
 
     <xs:complexType name="searchPickerFieldComponent">
         <xs:complexContent>
-            <xs:extension base="lookupPickerFieldComponent">
+            <xs:extension base="baseFieldComponent">
+                <xs:sequence>
+                    <xs:element name="validator" minOccurs="0" maxOccurs="1" type="validatorType"/>
+                    <xs:element name="actions" minOccurs="0" maxOccurs="1" type="componentActions"/>
+                </xs:sequence>
+
+                <xs:attributeGroup ref="hasOptions"/>
+                <xs:attributeGroup ref="hasCaptionSource"/>
+
+                <xs:attribute name="nullName" type="xs:string"/>
+                <xs:attribute name="metaClass" type="xs:string"/>
+
                 <xs:attribute name="minSearchStringLength" type="xs:integer"/>
                 <xs:attribute name="mode" type="searchMode"/>
             </xs:extension>
