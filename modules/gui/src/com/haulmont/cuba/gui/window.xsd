@@ -179,6 +179,25 @@
         </xs:restriction>
     </xs:simpleType>
 
+    <xs:simpleType name="operatorType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="EQUAL"/>
+            <xs:enumeration value="IN"/>
+            <xs:enumeration value="NOT_IN"/>
+            <xs:enumeration value="NOT_EQUAL"/>
+            <xs:enumeration value="GREATER"/>
+            <xs:enumeration value="GREATER_OR_EQUAL"/>
+            <xs:enumeration value="LESSER"/>
+            <xs:enumeration value="LESSER_OR_EQUAL"/>
+            <xs:enumeration value="CONTAINS"/>
+            <xs:enumeration value="DOES_NOT_CONTAIN"/>
+            <xs:enumeration value="EMPTY"/>
+            <xs:enumeration value="NOT_EMPTY"/>
+            <xs:enumeration value="STARTS_WITH"/>
+            <xs:enumeration value="ENDS_WITH"/>
+        </xs:restriction>
+    </xs:simpleType>
+
     <!-- Interfaces -->
 
     <xs:attributeGroup name="hasId">
@@ -935,6 +954,7 @@
                     <xs:attribute name="join" type="xs:string"/>
                     <xs:attribute name="paramWhere" type="xs:string"/>
                     <xs:attribute name="paramView" type="xs:string"/>
+                    <xs:attribute name="operatorType" type="operatorType"/>
                 </xs:complexType>
             </xs:element>
         </xs:sequence>
