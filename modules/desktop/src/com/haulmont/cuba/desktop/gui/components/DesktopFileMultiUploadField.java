@@ -11,6 +11,7 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.DesktopResources;
+import com.haulmont.cuba.desktop.TopLevelFrame;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.gui.components.FileMultiUploadField;
 import com.haulmont.cuba.gui.components.IFrame;
@@ -79,7 +80,14 @@ public class DesktopFileMultiUploadField extends DesktopAbstractComponent<JButto
 
                 notifyEndListeners(file);
             } catch (Exception ex) {
-                notifyErrorListeners(file, ex.getMessage());
+                if (!notifyErrorListeners(file)) {
+                    Messages messages = AppBeans.get(Messages.NAME);
+                    String uploadError = messages.formatMessage(DesktopFileMultiUploadField.class,
+                            "multiupload.uploadError", file.getName());
+
+                    TopLevelFrame topLevelFrame = DesktopComponentsHelper.getTopLevelFrame(this);
+                    topLevelFrame.showNotification(uploadError, IFrame.NotificationType.ERROR);
+                }
                 return;
             }
         }
@@ -116,9 +124,11 @@ public class DesktopFileMultiUploadField extends DesktopAbstractComponent<JButto
             uploadListener.queueUploadComplete();
     }
 
-    protected void notifyErrorListeners(File file, String message) {
+    protected boolean notifyErrorListeners(File file) {
+        boolean handled = false;
         for (UploadListener uploadListener : listeners)
-            uploadListener.uploadError(file.getName());
+            handled = handled | uploadListener.uploadError(file.getName());
+        return handled;
     }
 
     protected void notifyFileSizeExceedLimit(File file) {
