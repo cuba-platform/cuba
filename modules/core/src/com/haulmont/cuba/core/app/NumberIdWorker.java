@@ -49,6 +49,7 @@ public class NumberIdWorker implements NumberIdSequence {
         sequenceSupport = DbmsSpecificFactory.getSequenceSupport();
     }
 
+    @Override
     public Long createLongId(String entityName) {
         String seqName = getSequenceName(entityName);
         String sqlScript = sequenceSupport.getNextValueSql(seqName);
