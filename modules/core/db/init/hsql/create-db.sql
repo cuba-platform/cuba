@@ -49,7 +49,7 @@ create table SYS_FILE (
     DELETE_TS timestamp,
     DELETED_BY varchar(50),
     --
-    NAME varchar(500),
+    NAME varchar(500) not null,
     EXT varchar(20),
     FILE_SIZE bigint,
     CREATE_DATE timestamp,

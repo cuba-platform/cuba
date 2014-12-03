@@ -26,7 +26,7 @@ public class FileDescriptor extends StandardEntity {
 
     private static final long serialVersionUID = 564683944299730504L;
 
-    @Column(name = "NAME", length = 500)
+    @Column(name = "NAME", length = 500, nullable = false)
     private String name;
 
     @Column(name = "EXT", length = 20)
@@ -98,8 +98,9 @@ public class FileDescriptor extends StandardEntity {
      */
     public static FileDescriptor fromUrlParam(String urlParam) {
         String[] parts = urlParam.split(",");
-        if (parts.length != 3)
+        if (parts.length != 3) {
             throw new IllegalArgumentException("Invalid FileDescriptor format");
+        }
         FileDescriptor fd = new FileDescriptor();
         fd.setId(UuidProvider.fromString(parts[0]));
         fd.setExtension(parts[1]);

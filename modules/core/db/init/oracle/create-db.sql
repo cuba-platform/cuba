@@ -128,7 +128,7 @@ create table SYS_FILE (
     UPDATED_BY varchar2(50),
     DELETE_TS timestamp,
     DELETED_BY varchar2(50),
-    NAME varchar2(500),
+    NAME varchar2(500) not null,
     EXT varchar2(20),
     FILE_SIZE number(19),
     CREATE_DATE timestamp,
