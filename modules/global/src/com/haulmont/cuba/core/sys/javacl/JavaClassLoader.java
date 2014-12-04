@@ -126,7 +126,11 @@ public class JavaClassLoader extends URLClassLoader implements BeanFactoryAware,
 
             CompilationScope compilationScope = new CompilationScope(this, containerClassName);
             if (!compilationScope.compilationNeeded()) {
-                return getTimestampClass(fullClassName).clazz;
+                TimestampClass timestampClass = getTimestampClass(fullClassName);
+                if (timestampClass==null) {
+                    throw new ClassNotFoundException(fullClassName);
+                }
+                return timestampClass.clazz;
             }
 
             String src;
