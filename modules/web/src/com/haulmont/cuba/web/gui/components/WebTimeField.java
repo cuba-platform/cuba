@@ -182,15 +182,6 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implemen
         }
     }
 
-    protected void setValueInternal(Object value) {
-        boolean editable = isEditable();
-        setEditable(true);
-
-        setValue(value);
-
-        setEditable(editable);
-    }
-
     @Override
     public boolean getShowSeconds() {
         return showSeconds;

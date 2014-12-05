@@ -28,7 +28,6 @@ import com.vaadin.data.Property;
 import com.vaadin.ui.HorizontalLayout;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.LogFactory;
 
 import java.sql.Time;
 import java.util.Calendar;
@@ -187,16 +186,19 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
     @Override
     public void setValue(Object value) {
         if (!editable) {
-            LogFactory.getLog(getClass()).debug("Set value for non editable field ignored");
-            return;
+            setEditableInternal(true);
         }
 
         updatingInstance = true;
         try {
             dateField.setValue((Date) value);
-            timeField.setValueInternal(value);
+            timeField.setValue(value);
         } finally {
             updatingInstance = false;
+
+            if (!editable) {
+                setEditableInternal(false);
+            }
         }
 
         updateInstance();
@@ -231,7 +233,7 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
         updatingInstance = true;
         try {
             dateField.setValue((Date) value);
-            timeField.setValueInternal(value);
+            timeField.setValue(value);
         } finally {
             updatingInstance = false;
         }
@@ -407,6 +409,11 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
             return;
         }
         this.editable = editable;
+
+        setEditableInternal(editable);
+    }
+
+    protected void setEditableInternal(boolean editable) {
         timeField.setEditable(editable);
         dateField.setReadOnly(!editable);
 

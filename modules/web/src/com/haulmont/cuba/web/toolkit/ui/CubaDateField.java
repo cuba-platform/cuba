@@ -29,8 +29,6 @@ public class CubaDateField extends com.vaadin.ui.DateField implements Action.Con
      */
     protected ActionManager shortcutsManager;
 
-    private static final long serialVersionUID = 6017244766993879882L;
-
     protected String lastInvalidDateString;
 
     protected String dateString;

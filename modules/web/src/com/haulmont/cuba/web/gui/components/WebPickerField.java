@@ -27,7 +27,6 @@ import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 
@@ -110,11 +109,6 @@ public class WebPickerField
 
     @Override
     public void setValue(Object value) {
-        if (component.isReadOnly()) {
-            LogFactory.getLog(getClass()).debug("Set value for non editable field ignored");
-            return;
-        }
-
         if (value != null) {
             if (datasource == null && metaClass == null) {
                 throw new IllegalStateException("Datasource or metaclass must be set for field");
@@ -185,7 +179,6 @@ public class WebPickerField
 
                     @Override
                     public void valueChanged(Entity source, String property, Object prevValue, Object value) {
-
                         if (property.equals(metaPropertyPath.toString())) {
                             setValue(value);
                             fireValueChanged(prevValue, value);
