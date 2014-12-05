@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.client.testsupport;
 
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.PersistenceManagerService;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
@@ -38,6 +39,12 @@ public class CubaClientTestCase {
     @Mocked
     protected PersistenceManagerService persistenceManager;
 
+    @Mocked
+    protected GlobalConfig globalConfig;
+
+    @Mocked
+    protected ClientConfig clientConfig;
+
     protected TestMetadataClient metadata;
 
     protected TestViewRepositoryClient viewRepository;
@@ -49,6 +56,10 @@ public class CubaClientTestCase {
     protected TestSecurity security;
 
     protected TestExtendedEntities extendedEntities;
+
+    protected TestMessages messages;
+
+    protected TestMessageTools messageTools;
 
     /**
      * Add entities package to build metadata from. Should be invoked by concrete test classes in their @Before method.
@@ -87,6 +98,20 @@ public class CubaClientTestCase {
 
         new NonStrictExpectations() {
             {
+                configuration.getConfig(GlobalConfig.class); result = globalConfig;
+                configuration.getConfig(ClientConfig.class); result = clientConfig;
+                globalConfig.getConfDir(); result = System.getProperty("user.dir");
+                clientConfig.getRemoteMessagesSearchEnabled(); result = false;
+            }
+        };
+
+        messages = new TestMessages(userSessionSource, configuration, metadata, extendedEntities);
+        messageTools = messages.getTools();
+
+        messages.setConfiguration(configuration);
+
+        new NonStrictExpectations() {
+            {
                 AppBeans.get(Metadata.NAME); result = metadata;
                 AppBeans.get(Metadata.class); result = metadata;
                 AppBeans.get(Metadata.NAME, Metadata.class); result = metadata;
@@ -122,6 +147,14 @@ public class CubaClientTestCase {
                 AppBeans.get(ExtendedEntities.NAME); result = extendedEntities;
                 AppBeans.get(ExtendedEntities.class); result = extendedEntities;
                 AppBeans.get(ExtendedEntities.NAME, ExtendedEntities.class); result = extendedEntities;
+
+                AppBeans.get(Messages.NAME); result = messages;
+                AppBeans.get(Messages.class); result = messages;
+                AppBeans.get(Messages.NAME, Messages.class); result = messages;
+
+                AppBeans.get(MessageTools.NAME); result = messageTools;
+                AppBeans.get(MessageTools.class); result = messageTools;
+                AppBeans.get(MessageTools.NAME, MessageTools.class); result = messageTools;
             }
         };
     }
