@@ -168,7 +168,12 @@ public interface Component {
         void addListener(ValueListener listener);
         void removeListener(ValueListener listener);
 
+        /**
+         * @deprecated Use normal {@link com.haulmont.cuba.gui.data.ValueListener} with setValue
+         */
+        @Deprecated
         void setValueChangingListener(ValueChangingListener listener);
+        @Deprecated
         void removeValueChangingListener();
     }
 
