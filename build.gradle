@@ -387,7 +387,7 @@ configure(webModule) {
         compile(group: 'org.vaadin.addons', name: 'aceeditor', version: '0.8.11')
 
         provided(servletApi)
-        testCompile(clientModule, classifier: 'tests')
+        testCompile(cubaClientModule.sourceSets.test.output)
     }
 
     task enhanceTransient(type: CubaEnhanceTransient) {
