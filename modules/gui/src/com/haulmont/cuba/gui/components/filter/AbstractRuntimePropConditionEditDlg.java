@@ -281,7 +281,7 @@ public abstract class AbstractRuntimePropConditionEditDlg<T> {
     }
 
     protected void fillOperationSelect(Class clazz) {
-        List ops = new LinkedList(Op.availableOps(clazz));
+        List<Op> ops = new LinkedList<>(Op.availableOps(clazz));
         operationSelect.setOptionsList(ops);
         Op operator = condition.getOperator();
         if (operator != null) {
