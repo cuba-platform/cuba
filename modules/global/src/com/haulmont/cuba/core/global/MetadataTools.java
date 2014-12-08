@@ -58,16 +58,6 @@ public class MetadataTools {
      */
     public MetadataTools() {
     }
-
-    /**
-     * Constructor used in client-side tests.
-     */
-    public MetadataTools(Metadata metadata, Messages messages, UserSessionSource userSessionSource) {
-        this.metadata = metadata;
-        this.messages = messages;
-        this.userSessionSource = userSessionSource;
-    }
-
     /**
      * Formats a value according to the property type.
      * @param value    object to format

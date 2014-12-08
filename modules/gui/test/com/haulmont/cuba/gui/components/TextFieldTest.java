@@ -3,30 +3,21 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-package com.haulmont.cuba.web.test.ui;
+package com.haulmont.cuba.gui.components;
 
-import com.google.common.collect.ImmutableMap;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.client.testsupport.CubaClientTestCase;
 import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.DatasourceImpl;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.web.gui.WebComponentsFactory;
-import com.vaadin.server.VaadinSession;
-import mockit.Mocked;
-import mockit.NonStrictExpectations;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.annotation.Nullable;
-import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.*;
@@ -35,7 +26,7 @@ import static org.junit.Assert.*;
  * @author artamonov
  * @version $Id$
  */
-public class TextFieldTest extends CubaClientTestCase {
+public abstract class TextFieldTest extends CubaClientTestCase {
 
     protected ComponentsFactory factory;
 
@@ -44,20 +35,12 @@ public class TextFieldTest extends CubaClientTestCase {
         addEntityPackage("com.haulmont.cuba");
         setupInfrastructure();
 
-        new NonStrictExpectations() {
-            @Mocked VaadinSession vaadinSession;
-            {
-                vaadinSession.getLocale(); result = Locale.ENGLISH;
-                VaadinSession.getCurrent(); result = vaadinSession;
-
-                globalConfig.getAvailableLocales(); result = ImmutableMap.of("en", Locale.ENGLISH);
-                AppContext.getProperty("cuba.mainMessagePack"); result = "com.haulmont.cuba.web";
-            }
-        };
-
-        factory = new WebComponentsFactory();
+        initExpectations();
 
         messages.init();
+    }
+
+    protected void initExpectations() {
     }
 
     @Test

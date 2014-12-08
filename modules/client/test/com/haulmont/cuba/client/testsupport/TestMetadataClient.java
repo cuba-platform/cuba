@@ -7,7 +7,6 @@ package com.haulmont.cuba.client.testsupport;
 
 import com.haulmont.chile.core.loader.MetadataLoader;
 import com.haulmont.cuba.core.global.ExtendedEntities;
-import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.sys.MetadataImpl;
 import com.haulmont.cuba.core.sys.PersistentEntitiesMetadataLoader;
 
@@ -28,7 +27,7 @@ public class TestMetadataClient extends MetadataImpl {
         viewRepository.setMetadata(this);
 
         extendedEntities = new ExtendedEntities(this);
-        tools = new MetadataTools(this, null, null);
+        tools = new TestMetadataTools(this);
     }
 
     @Override

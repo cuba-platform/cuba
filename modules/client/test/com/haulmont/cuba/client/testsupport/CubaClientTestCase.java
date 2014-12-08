@@ -108,6 +108,9 @@ public class CubaClientTestCase {
         messages = new TestMessages(userSessionSource, configuration, metadata, extendedEntities);
         messageTools = messages.getTools();
 
+        ((TestMetadataTools) metadata.getTools()).setMessages(messages);
+        ((TestMetadataTools) metadata.getTools()).setUserSessionSource(userSessionSource);
+
         messages.setConfiguration(configuration);
 
         new NonStrictExpectations() {
