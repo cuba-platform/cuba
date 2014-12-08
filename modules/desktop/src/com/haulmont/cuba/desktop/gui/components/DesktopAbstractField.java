@@ -38,8 +38,9 @@ public abstract class DesktopAbstractField<C extends JComponent>
     protected String requiredMessage;
 
     protected Set<Validator> validators = new HashSet<>();
-    protected Color requiredBgColor = (Color) UIManager.get("cubaRequiredBackground");
+
     // todo move nimbus constants to theme
+    protected Color requiredBgColor = (Color) UIManager.get("cubaRequiredBackground");
     protected Color defaultBgColor = (Color) UIManager.get("nimbusLightBackground");
 
     @Override

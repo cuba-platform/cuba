@@ -264,11 +264,6 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
 
     @Override
     public void setValue(Object value) {
-        if (!isEditable()) {
-            log.debug("Set value for non editable field ignored");
-            return;
-        }
-
         if (!ObjectUtils.equals(prevValue, value)) {
             updateInstance(value);
             updateComponent(value);

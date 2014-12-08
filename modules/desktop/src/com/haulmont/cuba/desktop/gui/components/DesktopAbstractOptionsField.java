@@ -247,8 +247,9 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
     protected void updateInstance(Object value) {
         updatingInstance = true;
         try {
-            if (datasource != null && metaProperty != null && datasource.getItem() != null)
+            if (datasource != null && metaProperty != null && datasource.getItem() != null) {
                 InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), value);
+            }
         } finally {
             updatingInstance = false;
         }
@@ -256,17 +257,13 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
 
     @Override
     public void setValue(Object value) {
-        if (!isEditable()) {
-            log.debug("Set value for non editable field ignored");
-            return;
-        }
-
         if (!ObjectUtils.equals(prevValue, value)) {
             updateInstance(value);
             updateComponent(value);
             fireChangeListeners(value);
-        } else
-            updateComponent(value);
+        } else {
+            updateComponent(prevValue);
+        }
     }
 
     protected String getDisplayString(Entity entity) {

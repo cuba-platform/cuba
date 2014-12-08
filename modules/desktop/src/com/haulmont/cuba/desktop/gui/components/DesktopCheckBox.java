@@ -60,11 +60,6 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
 
     @Override
     public void setValue(Object value) {
-        if (!isEditable()) {
-            log.debug("Set value for non editable field ignored");
-            return;
-        }
-
         if (value == null) {
             value = false;
         }

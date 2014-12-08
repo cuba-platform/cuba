@@ -158,22 +158,18 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
 
     @Override
     public void setValue(Object value) {
-        if (!isEditable()) {
-            log.debug("Set value for non editable field ignored");
-            return;
+        if (!ObjectUtils.equals(prevValue, value)) {
+            if (valueChangingListener != null) {
+                value = fireValueChanging(prevValue, value);
+            }
         }
 
         if (!ObjectUtils.equals(prevValue, value)) {
-            if (valueChangingListener != null)
-                value = fireValueChanging(prevValue, value);
-
-            if (!ObjectUtils.equals(prevValue, value)) {
-                updateInstance(value);
-                updateComponent(value);
-                fireChangeListeners(value);
-            } else {
-                updateComponent(value);
-            }
+            updateInstance(value);
+            updateComponent(value);
+            fireChangeListeners(value);
+        } else {
+            updateComponent(prevValue);
         }
     }
 
