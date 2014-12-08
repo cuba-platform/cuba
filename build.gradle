@@ -345,7 +345,6 @@ configure(guiModule) {
     }
 
     dependencies {
-        compile(globalModule)
         compile(clientModule)
         compile(poi)
         compile(groovyArtifact)
@@ -367,8 +366,6 @@ configure(guiModule) {
 configure(webModule) {
     dependencies {
         compile(sharedLibModule)
-        compile(globalModule)
-        compile(clientModule)
         compile(guiModule)
         compile(webAuthModule)
 
@@ -389,7 +386,8 @@ configure(webModule) {
         provided(servletApi)
 
         testCompile(clientModule.sourceSets.test.output)
-        testCompile(servletApi)
+        testCompile(guiModule.sourceSets.test.output)
+        testRuntime(servletApi)
     }
 
     task enhanceTransient(type: CubaEnhanceTransient) {
@@ -525,14 +523,16 @@ configure(desktopModule) {
     mainClassName = 'com.haulmont.cuba.desktop.App'
 
     dependencies {
-        compile(globalModule)
-        compile(clientModule)
         compile(guiModule)
         compile(group: 'com.miglayout', name: 'miglayout-swing', version: '4.2')
         compile(group: 'com.haulmont.thirdparty', name: 'glazedlists', version: '1.9.20110801')
         compile(group: 'com.haulmont.thirdparty', name: 'swingx-core', version: '1.6.5-1')
 
         assemble.dependsOn = [classes]
+
+        testCompile(clientModule.sourceSets.test.output)
+        testCompile(guiModule.sourceSets.test.output)
+        testRuntime(servletApi)
     }
 
     installApp {
@@ -592,8 +592,6 @@ configure(portalModule) {
 configure(webLegacyModule) {
     dependencies {
         compile(sharedLibModule)
-        compile(globalModule)
-        compile(clientModule)
         compile(guiModule)
         compile(webAuthModule)
 
@@ -608,6 +606,10 @@ configure(webLegacyModule) {
 
         provided(webToolkitLegacyModule)
         provided(servletApi)
+
+        testCompile(clientModule.sourceSets.test.output)
+        testCompile(guiModule.sourceSets.test.output)
+        testRuntime(servletApi)
     }
 
     task enhanceTransient(type: CubaEnhanceTransient) {

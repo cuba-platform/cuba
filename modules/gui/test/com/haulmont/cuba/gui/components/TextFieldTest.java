@@ -15,6 +15,7 @@ import com.haulmont.cuba.gui.data.impl.DatasourceImpl;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.User;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.annotation.Nullable;
@@ -26,6 +27,7 @@ import static org.junit.Assert.*;
  * @author artamonov
  * @version $Id$
  */
+@Ignore
 public abstract class TextFieldTest extends CubaClientTestCase {
 
     protected ComponentsFactory factory;
