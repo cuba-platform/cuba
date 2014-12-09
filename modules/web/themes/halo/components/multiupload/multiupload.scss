@@ -5,7 +5,7 @@
 
 // Version: $Id$
 
-@mixin havana-cuba-multiupload($primary-stylename : cuba-multiupload) {
+@mixin halo-cuba-multiupload($primary-stylename : cuba-multiupload) {
   .#{$primary-stylename} {
     @include box-defaults;
 

@@ -1,0 +1,32 @@
+/*
+ * Copyright (c) 2008-2014 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+ */
+
+// Version: $Id$
+
+@mixin halo-cuba-resizabletextarea($primary-stylename: cuba-resizabletextarea) {
+  $textarea-corner-color: valo-border-color($color: $v-overlay-background-color, $strength: 0.5);
+
+  .#{$primary-stylename}-resize-corner {
+    z-index: 1001;
+    position: absolute;
+    bottom: $v-border-radius;
+    right: $v-border-radius;
+    background: transparent;
+    width: round($v-unit-size/2);
+    height: round($v-unit-size/2);
+
+    &:after {
+      content:'';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 0 0 round($v-unit-size/2) round($v-unit-size/2);
+      border-color: transparent transparent $textarea-corner-color transparent;
+    }
+  }
+}

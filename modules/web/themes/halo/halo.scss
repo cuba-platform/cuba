@@ -39,6 +39,7 @@
 @import "components/orderedlayout/orderedlayout";
 @import "components/fieldgrouplayout/fieldgrouplayout";
 @import "components/sourcecodeeditor/sourcecodeeditor";
+@import "components/resizabletextarea/resizabletextarea";
 
 // Application specific
 @import "app/log-control";
@@ -82,8 +83,9 @@
   @include halo-cuba-contextmenu;
   @include halo-cuba-widgetstree;
   @include halo-cuba-searchselect;
-  @include havana-cuba-multiupload;
+  @include halo-cuba-multiupload;
   @include halo-cuba-fieldgrouplayout;
+  @include halo-cuba-resizabletextarea;
 
   @include cuba-log-control;
   @include cuba-login-window;
