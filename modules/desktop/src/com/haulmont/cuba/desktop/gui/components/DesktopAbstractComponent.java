@@ -90,7 +90,7 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
 
     public void assignAutoDebugId() {
         App app = App.getInstance();
-        if (app.isTestMode()) {
+        if (app != null && app.isTestMode()) {
             C impl = getImpl();
             // always change name, do not assign auto id for components
             if (getId() == null && impl != null) {

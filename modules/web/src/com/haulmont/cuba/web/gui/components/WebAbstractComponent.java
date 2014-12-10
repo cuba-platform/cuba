@@ -56,7 +56,7 @@ public class WebAbstractComponent<T extends com.vaadin.ui.Component>
 
     public void assignAutoDebugId() {
         AppUI ui = AppUI.getCurrent();
-        if (ui.isTestMode()) {
+        if (ui != null && ui.isTestMode()) {
             String alternativeDebugId = getAlternativeDebugId();
 
             // always change cuba id, do not assign auto id for components

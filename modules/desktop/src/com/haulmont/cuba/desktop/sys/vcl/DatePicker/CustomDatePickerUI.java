@@ -24,7 +24,10 @@ public class CustomDatePickerUI extends BasicDatePickerUI {
         b.setName("popupButton");
         b.setRolloverEnabled(false);
         b.setMargin(new Insets(0, 3, 0, 3));
-        b.setIcon(App.getInstance().getResources().getIcon("/components/datefield/open-button.png"));
+        App app = App.getInstance();
+        if (app != null) {
+            b.setIcon(app.getResources().getIcon("/components/datefield/open-button.png"));
+        }
         b.setFocusable(false);
         b.setPreferredSize(new Dimension(22, DesktopComponentsHelper.BUTTON_HEIGHT));
         return b;
@@ -37,6 +40,5 @@ public class CustomDatePickerUI extends BasicDatePickerUI {
         pickerMap.remove(JXDatePicker.CANCEL_KEY);
         InputMap pickerInputMap = datePicker.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         pickerInputMap.remove(KeyStroke.getKeyStroke("ESCAPE"));
-
     }
 }

@@ -16,9 +16,8 @@ import java.util.Locale;
 import java.util.UUID;
 
 /**
- * <p>$Id: TestUserSessionSource.java 8266 2012-06-26 11:59:00Z krivopustov $</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class TestUserSessionSource extends AbstractUserSessionSource {
 
@@ -40,7 +39,7 @@ public class TestUserSessionSource extends AbstractUserSessionSource {
             user.setName("Test Administrator");
             user.setPassword(DigestUtils.md5Hex("test_admin"));
 
-            session = new UserSession(UUID.randomUUID(), user, Collections.<Role>emptyList(), Locale.getDefault(), false);
+            session = new UserSession(UUID.randomUUID(), user, Collections.<Role>emptyList(), Locale.ENGLISH, false);
         }
         return session;
     }

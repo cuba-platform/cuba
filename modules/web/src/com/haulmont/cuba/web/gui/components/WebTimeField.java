@@ -35,6 +35,7 @@ import java.util.Locale;
  * @version $Id$
  */
 public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implements TimeField {
+
     protected boolean showSeconds;
 
     protected String placeholder;
@@ -122,8 +123,14 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implemen
         return timeFormat.contains("a");
     }
 
-    private void updateWidth() {
-        ThemeConstants theme = App.getInstance().getThemeConstants();
+    protected void updateWidth() {
+        if (!App.isBound()) {
+            return;
+        }
+
+        App app = App.getInstance();
+
+        ThemeConstants theme = app.getThemeConstants();
         int digitWidth = theme.getInt("cuba.web.WebTimeField.digitWidth");
 
         int width = isAmPmUsed() ? digitWidth : 0;
@@ -229,7 +236,7 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implemen
         updateWidth();
     }
 
-    private void updateTimeFormat() {
+    protected void updateTimeFormat() {
         String mask = StringUtils.replaceChars(timeFormat, "Hhmsa", "####U");
         placeholder = StringUtils.replaceChars(mask, "#U", "__");
         component.setMask(mask);
