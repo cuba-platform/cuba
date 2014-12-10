@@ -20,6 +20,7 @@ import com.haulmont.cuba.security.entity.User;
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -32,7 +33,8 @@ import static org.junit.Assert.*;
  * @author artamonov
  * @version $Id$
  */
-public class LookupFieldTest extends CubaClientTestCase {
+@Ignore
+public abstract class LookupFieldTest extends CubaClientTestCase {
 
     protected ComponentsFactory factory;
 
