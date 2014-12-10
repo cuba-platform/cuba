@@ -32,7 +32,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 @ManagedBean("cuba_EntityListenerManager")
 public class EntityListenerManager {
 
-    private static class Key {
+    protected static class Key {
         private final Class entityClass;
         private final EntityListenerType type;
 
@@ -66,15 +66,15 @@ public class EntityListenerManager {
     private Log log = LogFactory.getLog(EntityListenerManager.class);
 
     @Inject
-    private Persistence persistence;
+    protected Persistence persistence;
 
-    private Map<Key, List> cache = new ConcurrentHashMap<>();
+    protected Map<Key, List> cache = new ConcurrentHashMap<>();
 
-    private Map<Class<? extends BaseEntity>, Set<String>> dynamicListeners = new ConcurrentHashMap<>();
+    protected Map<Class<? extends BaseEntity>, Set<String>> dynamicListeners = new ConcurrentHashMap<>();
 
-    private ReadWriteLock lock = new ReentrantReadWriteLock();
+    protected ReadWriteLock lock = new ReentrantReadWriteLock();
 
-    private volatile boolean enabled = true;
+    protected volatile boolean enabled = true;
 
     /**
      * Register an entity listener by its class. The listener instance will be instatiated as a plain object.
@@ -99,8 +99,8 @@ public class EntityListenerManager {
     /**
      * Register an entity listener which is a ManagedBean.
      *
-     * @param entityClass       entity
-     * @param listenerBeanName  listener bean name
+     * @param entityClass      entity
+     * @param listenerBeanName listener bean name
      */
     public void addListener(Class<? extends BaseEntity> entityClass, String listenerBeanName) {
         lock.writeLock().lock();
@@ -120,7 +120,7 @@ public class EntityListenerManager {
     public void fireListener(BaseEntity entity, EntityListenerType type) {
         if (!enabled)
             return;
-        
+
         List listeners = getListener(entity.getClass(), type);
         for (Object listener : listeners) {
             switch (type) {
@@ -166,7 +166,7 @@ public class EntityListenerManager {
         this.enabled = enable;
     }
 
-    private void logExecution(EntityListenerType type, BaseEntity entity) {
+    protected void logExecution(EntityListenerType type, BaseEntity entity) {
         if (log.isDebugEnabled()) {
             StringBuilder sb = new StringBuilder();
             sb.append("Executing ").append(type).append(" entity listener for ")
@@ -175,7 +175,7 @@ public class EntityListenerManager {
                 Set<String> dirty = persistence.getTools().getDirtyFields(entity);
                 if (!dirty.isEmpty()) {
                     sb.append(", changedProperties: ");
-                    for (Iterator<String> it = dirty.iterator(); it.hasNext();) {
+                    for (Iterator<String> it = dirty.iterator(); it.hasNext(); ) {
                         String field = it.next();
                         sb.append(field);
                         if (it.hasNext())
@@ -187,7 +187,7 @@ public class EntityListenerManager {
         }
     }
 
-    private List<?> getListener(Class<? extends BaseEntity> entityClass, EntityListenerType type) {
+    protected List<?> getListener(Class<? extends BaseEntity> entityClass, EntityListenerType type) {
         Key key = new Key(entityClass, type);
 
         if (!cache.containsKey(key)) {
@@ -199,7 +199,7 @@ public class EntityListenerManager {
         }
     }
 
-    private List<?> findListener(Class<? extends BaseEntity> entityClass, EntityListenerType type) {
+    protected List<?> findListener(Class<? extends BaseEntity> entityClass, EntityListenerType type) {
         log.trace("get listener " + type + " for class " + entityClass.getName());
         List<String> names = getDeclaredListeners(entityClass);
         if (names.isEmpty()) {
@@ -241,7 +241,7 @@ public class EntityListenerManager {
         return result;
     }
 
-    private List<String> getDeclaredListeners(Class<? extends BaseEntity> entityClass) {
+    protected List<String> getDeclaredListeners(Class<? extends BaseEntity> entityClass) {
         lock.readLock().lock();
         try {
             List<String> listeners = new ArrayList<>();
