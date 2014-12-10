@@ -36,6 +36,7 @@
   .#{$primary-stylename} .cuba-tokenlist-label-content {
     white-space: nowrap;
     outline: none;
+    font-size: $v-font-size;
   }
 
   .#{$primary-stylename} .cuba-tokenlist-label-content .content {
