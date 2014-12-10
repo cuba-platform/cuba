@@ -6,7 +6,9 @@
 package com.haulmont.cuba.desktop;
 
 import com.google.common.base.Strings;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
 import com.haulmont.cuba.desktop.sys.DisabledGlassPane;
@@ -67,9 +69,13 @@ public class TopLevelFrame extends JFrame {
 
     public DesktopWindowManager getWindowManager() {
         if (windowManager == null)
-            windowManager = new DesktopWindowManager(this);
+            initWindowManager();
 
         return windowManager;
+    }
+
+    protected void initWindowManager() {
+        windowManager = new DesktopWindowManager(this);
     }
 
     protected void showNotificationPopup(String title, String caption, IFrame.NotificationType type) {

@@ -5,7 +5,6 @@
 
 package com.haulmont.cuba.desktop.sys;
 
-import com.google.common.base.Strings;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.client.ClientConfig;
@@ -40,8 +39,6 @@ import javax.swing.AbstractAction;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -56,21 +53,21 @@ public class DesktopWindowManager extends WindowManager {
 
     private static final Log log = LogFactory.getLog(DesktopWindowManager.class);
 
-    private static final float NEW_WINDOW_SCALE = 0.7f;
+    protected static final float NEW_WINDOW_SCALE = 0.7f;
 
-    private JTabbedPane tabsPane;
+    protected JTabbedPane tabsPane;
 
-    private final Map<JComponent, WindowBreadCrumbs> tabs = new HashMap<>();
-    private final Map<Window, WindowOpenMode> windowOpenMode = new LinkedHashMap<>();
-    private final Map<WindowBreadCrumbs, Stack<Map.Entry<Window, Integer>>> stacks = new HashMap<>();
-    private final Map<Window, Integer> windows = new HashMap<>();
-    private final TopLevelFrame frame;
-    private final boolean isMainWindowManager;
+    protected final Map<JComponent, WindowBreadCrumbs> tabs = new HashMap<>();
+    protected final Map<Window, WindowOpenMode> windowOpenMode = new LinkedHashMap<>();
+    protected final Map<WindowBreadCrumbs, Stack<Map.Entry<Window, Integer>>> stacks = new HashMap<>();
+    protected final Map<Window, Integer> windows = new HashMap<>();
+    protected final TopLevelFrame frame;
+    protected final boolean isMainWindowManager;
 
-    private boolean disableSavingScreenHistory;
-    private ScreenHistorySupport screenHistorySupport = new ScreenHistorySupport();
+    protected boolean disableSavingScreenHistory;
+    protected ScreenHistorySupport screenHistorySupport = new ScreenHistorySupport();
 
-    private boolean recursiveFramesClose = false;
+    protected boolean recursiveFramesClose = false;
 
     public DesktopWindowManager(TopLevelFrame frame) {
         this.frame = frame;
@@ -102,7 +99,7 @@ public class DesktopWindowManager extends WindowManager {
         );
     }
 
-    private void closeTab(JComponent tabContent) {
+    protected void closeTab(JComponent tabContent) {
         if (tabContent == null)
             return;
         WindowBreadCrumbs breadCrumbs = tabs.get(tabContent);
@@ -185,7 +182,7 @@ public class DesktopWindowManager extends WindowManager {
         }
     }
 
-    private Integer getWindowHashCode(Window window) {
+    protected Integer getWindowHashCode(Window window) {
         return windows.get(window);
     }
 
@@ -304,7 +301,7 @@ public class DesktopWindowManager extends WindowManager {
     }
 
     /**
-     * @param window Window implementation (DesktopWindow)
+     * @param window   Window implementation (DesktopWindow)
      * @param position new tab position
      */
     protected void moveWindowTab(Window window, int position) {
@@ -347,14 +344,14 @@ public class DesktopWindowManager extends WindowManager {
         }
     }
 
-    private void showInMainWindowManager(Window window, String caption, String description, OpenType openType, boolean multipleOpen) {
+    protected void showInMainWindowManager(Window window, String caption, String description, OpenType openType, boolean multipleOpen) {
         DesktopWindowManager mainMgr = App.getInstance().getMainFrame().getWindowManager();
         windows.remove(window);
         window.setWindowManager(mainMgr);
         mainMgr.showWindow(window, caption, openType, multipleOpen);
     }
 
-    private TopLevelFrame createTopLevelFrame(String caption) {
+    protected TopLevelFrame createTopLevelFrame(String caption) {
         final TopLevelFrame windowFrame = new TopLevelFrame(caption);
         Dimension size = frame.getSize();
         int width = Math.round(size.width * NEW_WINDOW_SCALE);
@@ -366,14 +363,14 @@ public class DesktopWindowManager extends WindowManager {
         return windowFrame;
     }
 
-    private void closeFrame(TopLevelFrame frame) {
+    protected void closeFrame(TopLevelFrame frame) {
         frame.setVisible(false);
         frame.dispose();
         frame.getWindowManager().dispose();
         App.getInstance().unregisterFrame(getFrame());
     }
 
-    private JComponent showNewWindow(Window window, String caption) {
+    protected JComponent showNewWindow(Window window, String caption) {
         window.setHeight("100%");
         window.setWidth("100%");
 
@@ -617,7 +614,7 @@ public class DesktopWindowManager extends WindowManager {
         return dialog;
     }
 
-    private JComponent showWindowThisTab(Window window, String caption, String description) {
+    protected JComponent showWindowThisTab(Window window, String caption, String description) {
         getDialogParams().reset();
 
         window.setWidth("100%");
@@ -668,15 +665,15 @@ public class DesktopWindowManager extends WindowManager {
         return layout;
     }
 
-    private void setActiveWindowCaption(String caption, String description, int tabIndex) {
+    protected void setActiveWindowCaption(String caption, String description, int tabIndex) {
         ((ButtonTabComponent) tabsPane.getTabComponentAt(tabIndex)).setCaption(formatTabCaption(caption, description));
     }
 
-    private void setTopLevelWindowCaption(String caption) {
+    protected void setTopLevelWindowCaption(String caption) {
         frame.setTitle(caption);
     }
 
-    private WindowBreadCrumbs createBreadCrumbs() {
+    protected WindowBreadCrumbs createBreadCrumbs() {
         final WindowBreadCrumbs breadCrumbs = new WindowBreadCrumbs();
         breadCrumbs.addListener(
                 new WindowBreadCrumbs.Listener() {
@@ -861,7 +858,7 @@ public class DesktopWindowManager extends WindowManager {
         return popupMenu;
     }
 
-    private void detachTab(int tabIndex) {
+    protected void detachTab(int tabIndex) {
         //Create new top-level frame, put this tab to it with breadcrumbs.
         // remove tab data from this window manager
         JComponent tabContent = (JComponent) tabsPane.getComponentAt(tabIndex);
@@ -924,7 +921,7 @@ public class DesktopWindowManager extends WindowManager {
         }
     }
 
-    private String formatTabCaption(String caption, String description) {
+    protected String formatTabCaption(String caption, String description) {
         String s = formatTabDescription(caption, description);
         Configuration configuration = AppBeans.get(Configuration.NAME);
         int maxLength = configuration.getConfig(DesktopConfig.class).getMainTabCaptionLength();

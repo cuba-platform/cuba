@@ -178,7 +178,7 @@ public class App implements ConnectionListener {
         int width = size.width;
         int height = size.height;
 
-        loginDialog.setLocation(mainX + mainWidth/2 - width/2, mainY + mainHeight/2 - height/2);
+        loginDialog.setLocation(mainX + mainWidth / 2 - width / 2, mainY + mainHeight / 2 - height / 2);
     }
 
     protected LoginDialog createLoginDialog() {
@@ -268,7 +268,7 @@ public class App implements ConnectionListener {
 
     protected void initUI() {
         ToolTipManager.sharedInstance().setEnabled(false);
-        mainFrame = new TopLevelFrame(getApplicationTitle());
+        mainFrame = createMainFrame();
         mainFrame.setName("MainFrame");
         mainFrame.addWindowListener(
                 new WindowAdapter() {
@@ -284,6 +284,10 @@ public class App implements ConnectionListener {
         mainFrame.setContentPane(createStartContentPane());
         registerFrame(mainFrame);
         createMainWindowProperties().load();
+    }
+
+    protected TopLevelFrame createMainFrame() {
+        return new TopLevelFrame(getApplicationTitle());
     }
 
     protected MainWindowProperties createMainWindowProperties() {
@@ -461,18 +465,18 @@ public class App implements ConnectionListener {
     private void recursiveClosingFrames(final Iterator<TopLevelFrame> it, final Runnable onSuccess) {
         final TopLevelFrame frame = it.next();
         frame.getWindowManager().checkModificationsAndCloseAll(new Runnable() {
-            @Override
-            public void run() {
-                if (!it.hasNext()) {
-                    onSuccess.run();
-                } else {
-                    frame.getWindowManager().dispose();
-                    frame.dispose();
-                    it.remove();
-                    recursiveClosingFrames(it, onSuccess);
-                }
-            }
-        }, null
+                                                                   @Override
+                                                                   public void run() {
+                                                                       if (!it.hasNext()) {
+                                                                           onSuccess.run();
+                                                                       } else {
+                                                                           frame.getWindowManager().dispose();
+                                                                           frame.dispose();
+                                                                           it.remove();
+                                                                           recursiveClosingFrames(it, onSuccess);
+                                                                       }
+                                                                   }
+                                                               }, null
         );
     }
 
