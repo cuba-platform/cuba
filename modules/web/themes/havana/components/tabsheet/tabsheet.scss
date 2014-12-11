@@ -173,6 +173,10 @@
       }
     }
 
+    .#{$primary-stylename}-tabcontainer {
+      position: relative;
+    }
+
     .#{$primary-stylename}-hidetabs .#{$primary-stylename}-tabcontainer {
       display: none;
     }
@@ -184,8 +188,14 @@
     .#{$primary-stylename}-scroller {
       white-space: nowrap;
       text-align: right;
-      height: 29px;
-      margin-top: -29px;
+      margin: 0;
+
+      padding-left: 15px;
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      background-color: transparent;
     }
 
     .#{$primary-stylename}-scrollerPrev,
@@ -194,9 +204,16 @@
       width: 16px;
       height: 16px;
       opacity: 0.9999;
-      margin-top: -1px;
       background: transparent;
       background-repeat: no-repeat;
+      outline: none;
+
+      margin-top: 8px;
+    }
+
+    .#{$primary-stylename}-scrollerPrev:focus,
+    .#{$primary-stylename}-scrollerNext:focus {
+      outline: none;
     }
 
     .#{$primary-stylename}-scrollerPrev-disabled,
@@ -204,10 +221,16 @@
       border: none;
       width: 16px;
       height: 16px;
-      margin-top: -1px;
       opacity: 0.9999;
       color: #fff;
       background: transparent none;
+
+      outline: none;
+    }
+
+    .#{$primary-stylename}-scrollerPrev-disabled:focus,
+    .#{$primary-stylename}-scrollerNext-disabled:focus {
+      outline: none;
     }
 
     .#{$primary-stylename}-scrollerNext,
