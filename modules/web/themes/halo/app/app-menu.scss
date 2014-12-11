@@ -128,12 +128,15 @@
         @include box-shadow(none);
 
         .cuba-main-menu {
+          .v-menubar-menuitem-more-item,
           .v-menubar-menuitem-caption {
             color: #adaeb0;
           }
 
           .v-menubar-menuitem:hover .v-menubar-menuitem-caption,
-          .v-menubar-menuitem-selected .v-menubar-menuitem-caption {
+          .v-menubar-menuitem.v-menubar-menuitem-more-item:hover,
+          .v-menubar-menuitem-selected .v-menubar-menuitem-caption,
+          .v-menubar-menuitem-selected.v-menubar-menuitem-more-item {
             color: #e8e8e8;
           }
         }
