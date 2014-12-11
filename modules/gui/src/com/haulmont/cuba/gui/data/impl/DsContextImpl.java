@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.gui.data.impl;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
@@ -366,6 +367,7 @@ public class DsContextImpl implements DsContextImplementation {
 
     @Override
     public <T extends Datasource> T get(String id) {
+        Preconditions.checkNotNullArgument(id, "Null datasource ID");
         Datasource ds = null;
         if (!id.contains(".")) {
             ds = datasourceMap.get(id);

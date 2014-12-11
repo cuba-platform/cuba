@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.*;
@@ -55,7 +56,11 @@ public class RuntimePropertiesFrame extends AbstractWindow {
     @Override
     public void init(Map<String, Object> params) {
         String dsId = (String) params.get("runtimeDs");
+        Preconditions.checkNotNullArgument(dsId, "runtimePropsDatasource is not set");
+
         String categoriesDsId = (String) params.get("categoriesDs");
+        Preconditions.checkNotNullArgument(categoriesDsId, "categoriesDs is not set");
+
         rows = (String) params.get("rows");
         cols = (String) params.get("cols");
         fieldWidth = (String) params.get("fieldWidth");

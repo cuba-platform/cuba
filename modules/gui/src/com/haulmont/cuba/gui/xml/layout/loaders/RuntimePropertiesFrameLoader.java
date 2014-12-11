@@ -40,9 +40,15 @@ public class RuntimePropertiesFrameLoader extends IFrameLoader {
         if (src == null)
             src = DEFAULT_DESCRIPTOR;
         String runtimeDs = element.attributeValue("runtimeDs");
+        if (StringUtils.isEmpty(runtimeDs))
+            throw new GuiDevelopmentException("runtimePropsDatasource is not set for runtimeProperties component", context.getFullFrameId());
         context.getParams().put("runtimeDs", runtimeDs);
+
         String categoriesDs = element.attributeValue("categoriesDs");
+        if (StringUtils.isEmpty(categoriesDs))
+            throw new GuiDevelopmentException("categoriesDs is not set for runtimeProperties component", context.getFullFrameId());
         context.getParams().put("categoriesDs", categoriesDs);
+
         String rows = element.attributeValue("rows");
         context.getParams().put("rows", rows);
         String cols = element.attributeValue("cols");
