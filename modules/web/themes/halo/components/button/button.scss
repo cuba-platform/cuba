@@ -9,6 +9,7 @@
 
   .#{$primary-stylename} {
     font-size: $v-font-size;
+    overflow: hidden;
   }
 
   .#{$primary-stylename}-link {
