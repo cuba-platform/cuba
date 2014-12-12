@@ -149,7 +149,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                 new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
-                        if (e.getClickCount() == 2) {
+                        if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
                             handleClickAction();
                         }
                     }
@@ -168,7 +168,14 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                         if (e.isPopupTrigger() && contextMenuEnabled) {
                             // select row
                             Point p = e.getPoint();
-                            int rowNumber = impl.convertRowIndexToModel(impl.rowAtPoint(p));
+                            int viewRowIndex = impl.rowAtPoint(p);
+
+                            int rowNumber;
+                            if (viewRowIndex >= 0) {
+                                rowNumber = impl.convertRowIndexToModel(viewRowIndex);
+                            } else {
+                                rowNumber = -1;
+                            }
                             ListSelectionModel model = impl.getSelectionModel();
 
                             if (!model.isSelectedIndex(rowNumber)) {
