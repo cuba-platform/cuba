@@ -5,7 +5,6 @@
 
 package com.haulmont.cuba.web.app.ui.security.user;
 
-import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.app.security.user.edit.UserEditor;
 import com.haulmont.cuba.gui.components.PasswordField;
 import com.haulmont.cuba.web.App;

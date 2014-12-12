@@ -66,9 +66,6 @@ public class UserEditor extends AbstractEditor<User> {
     protected LookupField languageLookup;
 
     @Inject
-    protected Companion companion;
-
-    @Inject
     protected UserSession userSession;
 
     @Inject
@@ -122,6 +119,8 @@ public class UserEditor extends AbstractEditor<User> {
                         }
 
                         if (userSession.getUser().equals(getItem())) {
+                            Companion companion = getCompanion();
+
                             for (Entity entity : result) {
                                 if (entity instanceof UserSubstitution) {
                                     companion.refreshUserSubstitutions();
@@ -183,6 +182,8 @@ public class UserEditor extends AbstractEditor<User> {
                 passwField = factory.createComponent(PasswordField.NAME);
                 if (isNew) {
                     passwField.setRequiredMessage(getMessage("passwMsg"));
+
+                    Companion companion = getCompanion();
                     if (companion != null) {
                         companion.initPasswordField(passwField);
                     } else {
@@ -201,6 +202,8 @@ public class UserEditor extends AbstractEditor<User> {
                 confirmPasswField = factory.createComponent(PasswordField.NAME);
                 if (isNew) {
                     confirmPasswField.setRequiredMessage(getMessage("confirmPasswMsg"));
+
+                    Companion companion = getCompanion();
                     if (companion != null) {
                         companion.initPasswordField(confirmPasswField);
                     } else {
