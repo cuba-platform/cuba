@@ -1222,6 +1222,11 @@ public class DesktopWindow implements Window, Component.Disposable,
             DesktopComponentsHelper.adjustSize(cancelBtn);
             buttonsPanel.add(cancelBtn);
 
+            if (App.getInstance().isTestMode()) {
+                selectBtn.setName("selectButton");
+                cancelBtn.setName("cancelButton");
+            }
+
             panel.add(buttonsPanel);
         }
 

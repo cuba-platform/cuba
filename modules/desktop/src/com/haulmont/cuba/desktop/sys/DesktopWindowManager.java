@@ -1112,7 +1112,7 @@ public class DesktopWindowManager extends WindowManager {
     public void showMessageDialog(final String title, final String message, IFrame.MessageType messageType) {
         showOptionDialog(title, message, messageType, false, new Action[]{
                 new DialogAction(DialogAction.Type.OK)
-        });
+        }, "messageDialog");
     }
 
     private JPanel createButtonsPanel(Action[] actions, final JDialog dialog) {
@@ -1176,8 +1176,12 @@ public class DesktopWindowManager extends WindowManager {
     }
 
     private void showOptionDialog(final String title, final String message, IFrame.MessageType messageType,
-                                  boolean alwaysModal, final Action[] actions) {
+                                  boolean alwaysModal, final Action[] actions, String debugName) {
         final DialogWindow dialog = new DialogWindow(frame, title);
+
+        if (App.getInstance().isTestMode()) {
+            dialog.setName(debugName);
+        }
         dialog.setModal(false);
 
         if (!alwaysModal && actions.length == 1) {
@@ -1282,7 +1286,7 @@ public class DesktopWindowManager extends WindowManager {
 
     @Override
     public void showOptionDialog(String title, String message, IFrame.MessageType messageType, final Action[] actions) {
-        showOptionDialog(title, message, messageType, true, actions);
+        showOptionDialog(title, message, messageType, true, actions, "optionDialog");
     }
 
     @Override
