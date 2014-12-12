@@ -133,6 +133,7 @@
 
     <view class="com.haulmont.cuba.security.entity.ScreenHistoryEntity" name="browse" extends="_local">
         <property name="user" view="_minimal"/>
+        <property name="createTs"/>
     </view>
 
     <view class="com.haulmont.cuba.core.entity.SendingMessage" name="sendingMessage.browse">
