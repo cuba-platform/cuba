@@ -1249,6 +1249,8 @@ public class DesktopWindowManager extends WindowManager {
                     JDialog dialog = (JDialog) container;
                     dialog.pack();
                 }
+
+                dialog.requestFocus();
             }
         });
         dialog.setVisible(true);
