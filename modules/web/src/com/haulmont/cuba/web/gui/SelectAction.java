@@ -53,7 +53,7 @@ public class SelectAction implements Button.ClickListener {
 
         final Window.Lookup.Handler lookupHandler = window.getLookupHandler();
 
-        window.close("select");
+        window.close(Window.SELECT_ACTION_ID);
         for (Object obj : selected) {
             if (obj instanceof Instance) {
                 ((Instance) obj).removeAllListeners();

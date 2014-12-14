@@ -40,6 +40,12 @@ public interface Window extends IFrame, Component.HasCaption {
      */
     String CLOSE_ACTION_ID = "close";
 
+    /**
+     * Constant that passed to {@link #close(String)} and {@link #close(String, boolean)} methods when
+     * the lookup screen is closed with selected items. Propagated to {@link CloseListener#windowClosed}.
+     */
+    String SELECT_ACTION_ID = "select";
+
     String BROWSE_WINDOW_SUFFIX = ".browse";
 
     String LOOKUP_WINDOW_SUFFIX = ".lookup";

@@ -1257,7 +1257,7 @@ public class DesktopWindow implements Window, Component.Disposable,
                 } else {
                     throw new UnsupportedOperationException();
                 }
-                close("select");
+                close(Window.SELECT_ACTION_ID);
                 for (Object obj : selected) {
                     if (obj instanceof Instance) {
                         ((Instance) obj).removeAllListeners();
