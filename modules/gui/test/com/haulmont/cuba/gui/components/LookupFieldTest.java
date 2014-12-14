@@ -6,26 +6,26 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.client.sys.PersistenceManagerClient;
-import com.haulmont.cuba.client.testsupport.CubaClientTestCase;
 import com.haulmont.cuba.core.app.PersistenceManagerService;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
+import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.DatasourceImpl;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.*;
 
@@ -34,19 +34,7 @@ import static org.junit.Assert.*;
  * @version $Id$
  */
 @Ignore
-public abstract class LookupFieldTest extends CubaClientTestCase {
-
-    protected ComponentsFactory factory;
-
-    @Before
-    public void setUp() throws Exception {
-        addEntityPackage("com.haulmont.cuba");
-        setupInfrastructure();
-
-        initExpectations();
-
-        messages.init();
-    }
+public abstract class LookupFieldTest extends AbstractComponentTest {
 
     protected void initExpectations() {
         new NonStrictExpectations() {
@@ -120,7 +108,6 @@ public abstract class LookupFieldTest extends CubaClientTestCase {
                 .setAllowCommit(false)
                 .buildCollectionDatasource();
 
-        groupsDs.includeItem(g);
         Group g1 = new Group();
         groupsDs.includeItem(g1);
         Group g2 = new Group();
@@ -129,40 +116,27 @@ public abstract class LookupFieldTest extends CubaClientTestCase {
         component.setOptionsDatasource(groupsDs);
 
         component.setValue(g2);
+        assertEquals(g2, groupsDs.getItem());
+
         component.setDatasource(testDs, "group");
         assertEquals(g, component.getValue());
 
+        assertEquals(g, groupsDs.getItem());
+        assertFalse(groupsDs.containsItem(g.getId())); // todo artamonov WTF ???
+
         component.setValue(g1);
         assertEquals(g1, testDs.getItem().getGroup());
+        assertEquals(g1, groupsDs.getItem());
 
         testDs.getItem().setGroup(g2);
         assertEquals(g2, component.getValue());
     }
 
-    /*@Test
+    @Test
     public void testValueChangeListener() {
-        TextField component = factory.createComponent(TextField.NAME);
+        LookupField component = factory.createComponent(LookupField.NAME);
 
         final AtomicInteger counter = new AtomicInteger(0);
-
-        ValueListener okListener = new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property,
-                                     @Nullable Object prevValue, @Nullable Object value) {
-                assertNull(prevValue);
-                assertEquals("OK", value);
-
-                counter.addAndGet(1);
-            }
-        };
-        component.addListener(okListener);
-        component.setValue("OK");
-
-        assertEquals(1, counter.get());
-        component.removeListener(okListener);
-
-        component.setValue("Test");
-        assertEquals(1, counter.get());
 
         //noinspection unchecked
         Datasource<User> testDs = new DsBuilder()
@@ -174,36 +148,81 @@ public abstract class LookupFieldTest extends CubaClientTestCase {
         testDs.setItem(new User());
         ((DatasourceImpl) testDs).valid();
 
-        ValueListener dsLoadListener = new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property,
-                                     @Nullable Object prevValue, @Nullable Object value) {
-                assertEquals("Test", prevValue);
-                assertNull(value);
+        assertNull(component.getValue());
+        final Group g = new Group();
+        testDs.getItem().setGroup(g);
 
-                counter.addAndGet(1);
-            }
-        };
-        component.addListener(dsLoadListener);
-        component.setDatasource(testDs, "login");
+        CollectionDatasource<Group, UUID> groupsDs = new DsBuilder()
+                .setId("testDs")
+                .setJavaClass(Group.class)
+                .setView(viewRepository.getView(Group.class, View.LOCAL))
+                .setRefreshMode(CollectionDatasource.RefreshMode.NEVER)
+                .setAllowCommit(false)
+                .buildCollectionDatasource();
 
-        assertEquals(2, counter.get());
+        groupsDs.includeItem(g);
+        final Group g1 = new Group();
+        groupsDs.includeItem(g1);
+        final Group g2 = new Group();
+        groupsDs.includeItem(g2);
 
-        component.removeListener(dsLoadListener);
+        component.setOptionsDatasource(groupsDs);
 
-        ValueListener dsListener = new ValueListener() {
+        ValueListener listener1 = new ValueListener() {
             @Override
             public void valueChanged(Object source, String property,
                                      @Nullable Object prevValue, @Nullable Object value) {
                 assertNull(prevValue);
-                assertEquals("dsValue", value);
+                assertEquals(g2, value);
 
                 counter.addAndGet(1);
             }
         };
-        component.addListener(dsListener);
-        testDs.getItem().setLogin("dsValue");
+        component.addListener(listener1);
+        component.setValue(g2);
+
+        component.removeListener(listener1);
+        assertEquals(1, counter.get());
+
+        ValueListener listener2 = new ValueListener() {
+            @Override
+            public void valueChanged(Object source, String property,
+                                     @Nullable Object prevValue, @Nullable Object value) {
+                assertEquals(g2, prevValue);
+                assertEquals(g, value);
+
+                counter.addAndGet(1);
+            }
+        };
+
+        component.addListener(listener2);
+
+        component.setDatasource(testDs, "group");
+        assertEquals(g, component.getValue());
+
+        assertEquals(2, counter.get());
+
+        component.removeListener(listener2);
+        component.setValue(g1);
+        assertEquals(g1, testDs.getItem().getGroup());
+
+        assertEquals(2, counter.get());
+
+        ValueListener listener3 = new ValueListener() {
+            @Override
+            public void valueChanged(Object source, String property,
+                                     @Nullable Object prevValue, @Nullable Object value) {
+                assertEquals(g1, prevValue);
+                assertEquals(g2, value);
+
+                counter.addAndGet(1);
+            }
+        };
+
+        component.addListener(listener3);
+        testDs.getItem().setGroup(g2);
+        assertEquals(g2, component.getValue());
 
         assertEquals(3, counter.get());
-    }*/
+    }
 }

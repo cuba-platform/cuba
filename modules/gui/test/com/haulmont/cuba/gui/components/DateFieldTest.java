@@ -5,15 +5,12 @@
 
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.cuba.client.testsupport.CubaClientTestCase;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.DatasourceImpl;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.User;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -24,28 +21,13 @@ import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
 
 /**
  * @author artamonov
  * @version $Id$
  */
 @Ignore
-public abstract class DateFieldTest extends CubaClientTestCase {
-    protected ComponentsFactory factory;
-
-    @Before
-    public void setUp() throws Exception {
-        addEntityPackage("com.haulmont.cuba");
-        setupInfrastructure();
-
-        initExpectations();
-
-        messages.init();
-    }
-
-    protected void initExpectations() {
-    }
+public abstract class DateFieldTest extends AbstractComponentTest {
 
     @Test
     public void testNew() {

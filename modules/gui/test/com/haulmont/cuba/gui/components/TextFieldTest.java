@@ -28,22 +28,7 @@ import static org.junit.Assert.*;
  * @version $Id$
  */
 @Ignore
-public abstract class TextFieldTest extends CubaClientTestCase {
-
-    protected ComponentsFactory factory;
-
-    @Before
-    public void setUp() throws Exception {
-        addEntityPackage("com.haulmont.cuba");
-        setupInfrastructure();
-
-        initExpectations();
-
-        messages.init();
-    }
-
-    protected void initExpectations() {
-    }
+public abstract class TextFieldTest extends AbstractComponentTest {
 
     @Test
     public void testNew() {

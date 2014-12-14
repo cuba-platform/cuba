@@ -34,11 +34,7 @@ import java.util.*;
  * @author abramov
  * @version $Id$
  */
-public class WebPickerField
-        extends
-            WebAbstractField<CubaPickerField>
-        implements
-            PickerField {
+public class WebPickerField extends WebAbstractField<CubaPickerField> implements PickerField {
 
     protected CaptionMode captionMode = CaptionMode.ITEM;
     protected String captionProperty;
@@ -68,7 +64,7 @@ public class WebPickerField
 
                     Object propertyValue = value.getValue(captionProperty);
 
-                    MetaClass metaClass = metadata.getClass(value.getClass());
+                    MetaClass metaClass = metadata.getClassNN(value.getClass());
                     MetaProperty property = metaClass.getProperty(captionProperty);
                     return metadataTools.format(propertyValue, property);
                 }

@@ -38,10 +38,9 @@ public class DesktopLookupFieldTest extends LookupFieldTest {
         };
 
         new MockUp<AutoCompleteSupport>() {
-
+            @SuppressWarnings("UnusedDeclaration")
             @Mock
             public void checkAccessThread() {
-                System.out.println(1);
             }
         };
     }
