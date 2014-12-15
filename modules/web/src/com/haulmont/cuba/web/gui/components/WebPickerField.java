@@ -167,17 +167,14 @@ public class WebPickerField extends WebAbstractField<CubaPickerField> implements
                 new DsListenerAdapter() {
                     @Override
                     public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
-                        Object prevValue = getValue();
                         Object newValue = InstanceUtils.getValueEx(item, metaPropertyPath.getPath());
                         setValue(newValue);
-                        fireValueChanged(prevValue, newValue);
                     }
 
                     @Override
                     public void valueChanged(Entity source, String property, Object prevValue, Object value) {
                         if (property.equals(metaPropertyPath.toString())) {
                             setValue(value);
-                            fireValueChanged(prevValue, value);
                         }
                     }
                 }
@@ -185,12 +182,11 @@ public class WebPickerField extends WebAbstractField<CubaPickerField> implements
 
         if (datasource.getState() == Datasource.State.VALID && datasource.getItem() != null) {
             if (property.equals(metaPropertyPath.toString())) {
-                Object prevValue = getValue();
                 Object newValue = InstanceUtils.getValueEx(datasource.getItem(), metaPropertyPath.getPath());
                 setValue(newValue);
-                fireValueChanged(prevValue, newValue);
             }
         }
+
         setRequired(metaProperty.isMandatory());
         if (StringUtils.isEmpty(getRequiredMessage())) {
             MessageTools messageTools = AppBeans.get(MessageTools.NAME);
@@ -245,12 +241,13 @@ public class WebPickerField extends WebAbstractField<CubaPickerField> implements
         PickerButton pButton = new PickerButton();
         pButton.setAction(action);
         // no captions for picker buttons
-        pButton.<Button>getComponent().setCaption("");
+        Button vButton = pButton.getComponent();
+        vButton.setCaption("");
 
         if (oldButton == null) {
-            component.addButton(pButton.<Button>getComponent());
+            component.addButton(vButton);
         } else {
-            component.replaceButton(oldButton, pButton.<Button>getComponent());
+            component.replaceButton(oldButton, vButton);
         }
 
         // apply Editable after action owner is set

@@ -166,10 +166,6 @@ public class WebPickerField
 
     @Override
     public void setValue(Object value) {
-        setValueInternal(value);
-    }
-
-    protected void setValueInternal(Object value) {
         if (value != null) {
             if (datasource == null && metaClass == null) {
                 throw new IllegalStateException("Datasource or metaclass must be set for field");
@@ -229,17 +225,14 @@ public class WebPickerField
                 new DsListenerAdapter() {
                     @Override
                     public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
-                        Object prevValue = value;
                         Object newValue = InstanceUtils.getValueEx(item, propertyPath.getPath());
-                        setValueInternal(newValue);
-                        fireValueChanged(prevValue, newValue);
+                        setValue(newValue);
                     }
 
                     @Override
                     public void valueChanged(Entity source, String property, Object prevValue, Object value) {
                         if (property.equals(propertyPath.toString())) {
-                            setValueInternal(value);
-                            fireValueChanged(prevValue, value);
+                            setValue(value);
                         }
                     }
                 }
@@ -247,10 +240,8 @@ public class WebPickerField
 
         if (datasource.getState() == Datasource.State.VALID && datasource.getItem() != null) {
             if (property.equals(propertyPath.toString())) {
-                Object prevValue = value;
                 Object newValue = InstanceUtils.getValueEx(datasource.getItem(), propertyPath.getPath());
-                setValueInternal(newValue);
-                fireValueChanged(prevValue, newValue);
+                setValue(newValue);
             }
         }
 
