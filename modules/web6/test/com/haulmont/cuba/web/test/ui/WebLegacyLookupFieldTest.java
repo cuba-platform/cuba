@@ -10,6 +10,8 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.LookupFieldTest;
 import com.haulmont.cuba.web.gui.WebComponentsFactory;
 import mockit.NonStrictExpectations;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import java.util.Locale;
 
@@ -33,5 +35,12 @@ public class WebLegacyLookupFieldTest extends LookupFieldTest {
                 AppContext.getProperty("cuba.mainMessagePack"); result = "com.haulmont.cuba.web";
             }
         };
+    }
+
+    @Ignore
+    @Override
+    @Test
+    public void testDatasource() {
+        super.testDatasource();
     }
 }
