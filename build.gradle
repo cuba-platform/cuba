@@ -311,7 +311,7 @@ configure(coreModule) {
         port = 9001
     }
 
-    task createDb(dependsOn: assemble, description: 'Creates local HSQL database', type: CubaDbCreation) {
+    task createDb(dependsOn: assembleDbScripts, description: 'Creates local HSQL database', type: CubaDbCreation) {
         dbms = 'hsql'
         dbName = hsqlDbName
         dbUser = 'sa'
