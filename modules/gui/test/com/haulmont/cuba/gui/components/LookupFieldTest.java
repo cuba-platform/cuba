@@ -36,7 +36,10 @@ import static org.junit.Assert.*;
 @Ignore
 public abstract class LookupFieldTest extends AbstractComponentTest {
 
+    @Override
     protected void initExpectations() {
+        super.initExpectations();
+
         new NonStrictExpectations() {
             @Mocked PersistenceManagerService persistenceManagerService;
             {
@@ -98,6 +101,7 @@ public abstract class LookupFieldTest extends AbstractComponentTest {
 
         assertNull(component.getValue());
         Group g = new Group();
+        g.setName("Group 0");
         testDs.getItem().setGroup(g);
 
         CollectionDatasource<Group, UUID> groupsDs = new DsBuilder()
@@ -109,8 +113,10 @@ public abstract class LookupFieldTest extends AbstractComponentTest {
                 .buildCollectionDatasource();
 
         Group g1 = new Group();
+        g1.setName("Group 1");
         groupsDs.includeItem(g1);
         Group g2 = new Group();
+        g2.setName("Group 2");
         groupsDs.includeItem(g2);
 
         component.setOptionsDatasource(groupsDs);
@@ -122,7 +128,7 @@ public abstract class LookupFieldTest extends AbstractComponentTest {
         assertEquals(g, component.getValue());
 
         assertEquals(g, groupsDs.getItem());
-        assertFalse(groupsDs.containsItem(g.getId())); // todo artamonov WTF ???
+        assertFalse(groupsDs.containsItem(g.getId())); // due to #PL-4625
 
         component.setValue(g1);
         assertEquals(g1, testDs.getItem().getGroup());

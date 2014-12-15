@@ -114,7 +114,6 @@ public class DesktopLookupField
                             if (selectedItem instanceof ValueWrapper) {
                                 Object selectedValue = ((ValueWrapper) selectedItem).getValue();
                                 setValue(selectedValue);
-                                updateOptionsDsItem();
                             } else if (selectedItem instanceof String && newOptionAllowed && newOptionHandler != null) {
                                 restorePreviousItemText();
                                 newOptionHandler.addNewOption((String) selectedItem);
@@ -464,6 +463,16 @@ public class DesktopLookupField
             super.setValue(value);
         } finally {
             settingValue = false;
+        }
+    }
+
+    @Override
+    protected void fireChangeListeners(Object newValue) {
+        Object oldValue = prevValue;
+        prevValue = newValue;
+        if (!ObjectUtils.equals(oldValue, newValue)) {
+            updateOptionsDsItem();
+            fireValueChanged(oldValue, newValue);
         }
     }
 
