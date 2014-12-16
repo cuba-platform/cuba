@@ -242,8 +242,8 @@ public class WebFieldGroup
                     ((CubaCheckBox) fieldImpl).setCaptionManagedByLayout(true);
                 }
 
-                if (StringUtils.isEmpty(fieldComponent.getId())) {
-                    fieldComponent.setId(fieldConfig.getId());
+                if (StringUtils.isEmpty(fieldImpl.getCubaId())) {
+                    fieldImpl.setCubaId(fieldConfig.getId());
                 }
 
                 assignTypicalAttributes(fieldComponent);
