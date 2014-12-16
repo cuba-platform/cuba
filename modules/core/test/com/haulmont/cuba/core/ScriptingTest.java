@@ -24,7 +24,7 @@ public class ScriptingTest extends CubaTestCase {
         scripting = AppBeans.get(Scripting.class);
     }
 
-    public void testEvaluate() throws Exception {
+    public void testSimpleEvaluate() throws Exception {
         Integer intResult = scripting.evaluateGroovy("2 + 2", new Binding());
         assertEquals((Integer)4, intResult);
 
@@ -32,5 +32,26 @@ public class ScriptingTest extends CubaTestCase {
         binding.setVariable("instance", new User());
         Boolean boolResult = scripting.evaluateGroovy("return PersistenceHelper.isNew(instance)", binding);
         assertTrue(boolResult);
+    }
+
+    public void testImportsEvaluate() {
+        String result = scripting.evaluateGroovy("import com.haulmont.bali.util.StringHelper\n" +
+                                                 "return StringHelper.removeExtraSpaces(' Hello! ')", (Binding) null);
+        assertNotNull(result);
+    }
+
+    public void testPackageAndImportsEvaluate() {
+        String result = scripting.evaluateGroovy("package com.haulmont.cuba.core\n" +
+                "import com.haulmont.bali.util.StringHelper\n" +
+                "return StringHelper.removeExtraSpaces(' Hello! ')", (Binding) null);
+        assertNotNull(result);
+    }
+    
+    public void testPackageOnlyEvaluate() {
+        Binding binding = new Binding();
+        binding.setVariable("instance", new User());
+        Boolean result = scripting.evaluateGroovy("package com.haulmont.cuba.core\n"+
+                                       "return PersistenceHelper.isNew(instance)", binding);
+        assertTrue(result);
     }
 }

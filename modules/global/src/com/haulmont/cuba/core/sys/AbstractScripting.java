@@ -44,6 +44,7 @@ public abstract class AbstractScripting implements Scripting {
     private Log log = LogFactory.getLog(getClass());
 
     private static final Pattern IMPORT_PATTERN = Pattern.compile("\\bimport\\b\\s+");
+    private static final Pattern PACKAGE_PATTERN = Pattern.compile("\\bpackage\\b\\s+.+");
 
     private JavaClassLoader javaClassLoader;
 
@@ -133,7 +134,15 @@ public abstract class AbstractScripting implements Scripting {
                                 matcher.appendReplacement(s, sb + "$0");
                                 result = matcher.appendTail(s).toString();
                             } else {
-                                result = sb.append(text).toString();
+                                Matcher packageMatcher = PACKAGE_PATTERN.matcher(text);
+                                if (packageMatcher.find()) {
+                                    StringBuffer s = new StringBuffer();
+                                    packageMatcher.appendReplacement(s, "$0\n"+sb);
+                                    result = packageMatcher.appendTail(s).toString();
+                                }
+                                else {
+                                    result = sb.append(text).toString();
+                                }
                             }
 
                             CompilerConfiguration cc = new CompilerConfiguration();
