@@ -123,7 +123,7 @@ class ConditionsTableModel extends AbstractTableModel {
     public boolean isCellEditable(int rowIndex, int columnIndex) {
         Pair<Node<AbstractCondition>, Integer> nodeWithLevel = getNodeWithLevel(rowIndex);
         AbstractCondition condition = nodeWithLevel.getFirst().getData();
-        return !(condition instanceof GroupCondition && columnIndex == 4);
+        return !(condition instanceof GroupCondition && columnIndex == 4) && !(columnIndex == 0);
     }
 
     public void addNode(Node<AbstractCondition> node) {
