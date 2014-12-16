@@ -237,10 +237,11 @@ public final class InstanceUtils {
                 throw new IllegalArgumentException("Invalid name pattern: " + pattern);
 
             String format = StringUtils.substring(pattern, 0, pos);
+            String trimmedFormat = format.trim();
 
-            if (format.startsWith("#")) {
+            if (trimmedFormat.startsWith("#")) {
                 try {
-                    Method method = instance.getClass().getMethod(format.substring(1));
+                    Method method = instance.getClass().getMethod(trimmedFormat.substring(1));
                     Object result = method.invoke(instance);
                     return (String) result;
                 } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
