@@ -20,7 +20,7 @@
     </dsContext>
     <layout>
         <split width="100%" height="100%" orientation="horizontal" pos="70">
-            <vbox id="leftBox" expand="table" spacing="true" height="100%">
+            <vbox id="leftBox" expand="table" spacing="true" height="100%" margin="false,true,false,false">
                 <filter id="genericFilter" datasource="sendingMessageDs">
                     <properties include=".*"/>
                 </filter>
@@ -42,7 +42,7 @@
                 </table>
             </vbox>
 
-            <scrollBox width="100%" height="100%">
+            <scrollBox width="100%" height="100%" margin="false;false;false;true">
                 <fieldGroup id="fg" datasource="sendingMessageDs" editable="false" border="visible" width="100%">
                     <column width="100%">
                         <field id="address"/>

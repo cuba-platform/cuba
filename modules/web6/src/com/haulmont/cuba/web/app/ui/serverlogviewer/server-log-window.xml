@@ -30,11 +30,11 @@
                 </columns>
                 <rows>
                     <row>
-                        <label value="msg://jmx.localJmxNode"/>
+                        <label value="msg://jmx.localJmxNode" align="MIDDLE_LEFT"/>
                         <label id="localJmxField" stylename="h2" width="400px"/>
                     </row>
                     <row>
-                        <label value="msg://jmx.targetJmxNode"/>
+                        <label value="msg://jmx.targetJmxNode" align="MIDDLE_LEFT"/>
                         <lookupPickerField id="jmxConnectionField" optionsDatasource="jmxInstancesDs" width="400px"/>
                     </row>
                 </rows>
@@ -44,11 +44,11 @@
         <tabSheet width="100%">
             <tab id="viewTab" caption="msg://tab.view" margin="true">
                 <hbox id="logSelectBox" spacing="true">
-                    <label id="labelLogFile" value="msg://log.file"/>
+                    <label id="labelLogFile" value="msg://log.file" align="MIDDLE_LEFT"/>
                     <lookupField id="logFileNameField" width="300px"/>
                     <button id="downloadButton" caption="msg://actions.Download" invoke="downloadLog"/>
                     <button id="showTailButton" caption="msg://actions.ShowTail" invoke="showLogTail"/>
-                    <checkBox id="autoRefreshCheck" caption="msg://actions.autoRefresh"/>
+                    <checkBox id="autoRefreshCheck" caption="msg://actions.autoRefresh" align="MIDDLE_LEFT"/>
                 </hbox>
             </tab>
             <tab id="optionsTab" caption="msg://tab.options" margin="true">
@@ -57,9 +57,9 @@
                         <columns count="5"/>
                         <rows>
                             <row>
-                                <label value="msg://logger.name"/>
+                                <label value="msg://logger.name" align="MIDDLE_LEFT"/>
                                 <lookupField id="loggerNameField" width="300px"/>
-                                <label value="msg://logger.level"/>
+                                <label value="msg://logger.level" align="MIDDLE_LEFT"/>
                                 <lookupField id="loggerLevelField" width="80px"/>
                                 <hbox spacing="true">
                                     <button caption="msg://actions.Get" invoke="getLoggerLevel"/>
@@ -68,9 +68,9 @@
                                 </hbox>
                             </row>
                             <row>
-                                <label value="msg://appender.name"/>
+                                <label value="msg://appender.name" align="MIDDLE_LEFT"/>
                                 <lookupField id="appenderNameField" width="300px"/>
-                                <label value="msg://appender.level"/>
+                                <label value="msg://appender.level" align="MIDDLE_LEFT"/>
                                 <lookupField id="appenderLevelField" width="80px"/>
                                 <hbox spacing="true">
                                     <button caption="msg://actions.Get" invoke="getAppenderLevel"/>

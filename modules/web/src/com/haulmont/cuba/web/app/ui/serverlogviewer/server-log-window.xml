@@ -45,7 +45,7 @@
         <tabSheet width="100%">
             <tab id="viewTab" caption="msg://tab.view" margin="true">
                 <hbox id="logSelectBox" spacing="true">
-                    <label id="labelLogFile" value="msg://log.file"/>
+                    <label id="labelLogFile" value="msg://log.file" align="MIDDLE_LEFT"/>
                     <lookupField id="logFileNameField" width="${logFieldWidth}"/>
                     <button id="downloadButton" caption="msg://actions.Download" invoke="downloadLog"/>
                     <button id="showTailButton" caption="msg://actions.ShowTail" invoke="showLogTail"/>
