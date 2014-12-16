@@ -5,8 +5,6 @@
 
 package com.haulmont.cuba.gui.dev;
 
-import com.haulmont.cuba.core.global.ClientType;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentVisitor;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.*;
@@ -190,10 +188,8 @@ public class LayoutAnalyzer {
                             tips = new ArrayList<>();
                         }
                         if (component.getAlignment() != null && component.getAlignment() != Component.Alignment.TOP_LEFT) {
-                            if (AppConfig.getClientType() == ClientType.DESKTOP
-                                    && component instanceof Label
-                                    && component.getAlignment() == Component.Alignment.MIDDLE_LEFT) {
-                                // ignore default align for desktop label
+                            if (component instanceof Label) {
+                                // ignore align for labels
                                 continue;
                             }
 
