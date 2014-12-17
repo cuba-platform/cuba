@@ -15,10 +15,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.client.Tools;
 import com.haulmont.cuba.web.toolkit.ui.client.aggregation.TableAggregationRow;
 import com.haulmont.cuba.web.toolkit.ui.client.table.CubaScrollTableWidget;
-import com.vaadin.client.BrowserInfo;
-import com.vaadin.client.ComponentConnector;
-import com.vaadin.client.UIDL;
-import com.vaadin.client.Util;
+import com.vaadin.client.*;
 import com.vaadin.shared.ui.table.TableConstants;
 
 import java.util.HashSet;
@@ -255,6 +252,8 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
         return new TableAggregationRow(getAggregatableTable()) {
             @Override
             protected boolean addSpecificCell(String columnId, int colIndex) {
+                VConsole.log(">> addSpecificCell ");
+
                 if (GROUP_DIVIDER_COLUMN_KEY.equals(columnId)) {
                     addCell("", aligns[colIndex], "", false);
                     return true;
@@ -394,13 +393,15 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
 
                 addGroupCell(uidl.getStringAttribute("groupCaption"));
 
+                currentColIndex++;
+
                 if (uidl.getChildCount() > 0) {
                     Iterator cells = uidl.getChildIterator();
-                    while (colIndex < visibleColOrder.length) {
-                        String columnId = visibleColOrder[colIndex];
+                    while (currentColIndex < visibleColOrder.length) {
+                        String columnId = visibleColOrder[currentColIndex];
 
                         if (GROUP_DIVIDER_COLUMN_KEY.equals(columnId)) { //paint cell for columns group divider
-                            addDividerCell(aligns[colIndex]);
+                            addDividerCell(aligns[currentColIndex]);
                         } else if (cells.hasNext()) {
                             final Object cell = cells.next();
 
@@ -415,20 +416,20 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
                                         + columnId);
                             }
 
-                            boolean sorted = tHead.getHeaderCell(colIndex).isSorted();
+                            boolean sorted = tHead.getHeaderCell(currentColIndex).isSorted();
                             if (cell instanceof String) {
-                                addCell(uidl, cell.toString(), aligns[colIndex], style,
+                                addCell(uidl, cell.toString(), aligns[currentColIndex], style,
                                         isRenderHtmlInCells(), sorted, description);
                             } else {
                                 final ComponentConnector cellContent = client
                                         .getPaintable((UIDL) cell);
 
-                                addCell(uidl, cellContent.getWidget(), aligns[colIndex],
+                                addCell(uidl, cellContent.getWidget(), aligns[currentColIndex],
                                         style, sorted, description);
                             }
                         }
 
-                        colIndex++;
+                        currentColIndex++;
                     }
                     hasCells = true;
                 } else {
