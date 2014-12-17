@@ -15,7 +15,10 @@ import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.client.Tools;
 import com.haulmont.cuba.web.toolkit.ui.client.aggregation.TableAggregationRow;
 import com.haulmont.cuba.web.toolkit.ui.client.table.CubaScrollTableWidget;
-import com.vaadin.client.*;
+import com.vaadin.client.BrowserInfo;
+import com.vaadin.client.ComponentConnector;
+import com.vaadin.client.UIDL;
+import com.vaadin.client.Util;
 import com.vaadin.shared.ui.table.TableConstants;
 
 import java.util.HashSet;
@@ -252,8 +255,6 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
         return new TableAggregationRow(getAggregatableTable()) {
             @Override
             protected boolean addSpecificCell(String columnId, int colIndex) {
-                VConsole.log(">> addSpecificCell ");
-
                 if (GROUP_DIVIDER_COLUMN_KEY.equals(columnId)) {
                     addCell("", aligns[colIndex], "", false);
                     return true;

@@ -486,7 +486,7 @@ configure(webToolkitModule) {
         compile(group: 'com.vaadin', name: 'vaadin-client-compiler', version: vaadinVersion)
 
 //        Uncomment for SuperDevMode debug
-        compile(servletApi)
+//        compile(servletApi)
     }
 
     task buildWidgetSet(type: CubaWidgetSetBuilding) {
