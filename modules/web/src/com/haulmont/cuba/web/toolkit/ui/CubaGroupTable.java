@@ -101,13 +101,19 @@ public class CubaGroupTable extends CubaTable implements GroupTableContainer {
         }
 
         if (variables.containsKey("collapsedcolumns")) {
+            final Object[] ids = (Object[]) variables
+                    .get("collapsedcolumns");
+            Set<Object> idSet = new HashSet<>();
+            for (Object id : ids) {
+                idSet.add(columnIdMap.get(id.toString()));
+            }
+
             boolean needToRegroup = false;
             final List<Object> groupProperties = new ArrayList<>(getGroupProperties());
             for (int index = 0; index < groupProperties.size(); index++) {
                 final Object propertyId = groupProperties.get(index);
-                if (isColumnCollapsed(propertyId)) {
-                    groupProperties.subList(index, groupProperties.size())
-                            .clear();
+                if (idSet.contains(propertyId)) {
+                    groupProperties.subList(index, groupProperties.size()).clear();
                     needToRegroup = true;
                     break;
                 }

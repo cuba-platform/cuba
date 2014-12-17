@@ -11,6 +11,7 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.TableCellElement;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.web.toolkit.ui.client.Tools;
 import com.haulmont.cuba.web.toolkit.ui.client.aggregation.TableAggregationRow;
 import com.haulmont.cuba.web.toolkit.ui.client.table.CubaScrollTableWidget;
@@ -346,42 +347,21 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
             protected void updateStyleNames(String primaryStyleName) {
                 super.updateStyleNames(primaryStyleName);
 
-                if (groupDividerCell != null)
+                if (groupDividerCell != null) {
                     groupDividerCell.addClassName(CLASSNAME + "-group-divider");
+                }
             }
         }
 
         protected class CubaGroupTableGroupRow extends CubaGroupTableRow {
-            private Integer groupColIndex;
-            private String groupKey;
-            private boolean expanded;
 
-            private Integer colSpan;
-            private Boolean hasCells;
+            protected Integer groupColIndex;
+            protected String groupKey;
+            protected boolean expanded;
+            protected Boolean hasCells;
 
             public CubaGroupTableGroupRow(UIDL uidl, char[] aligns) {
                 super(uidl, aligns);
-            }
-
-            @Override
-            protected void initCellWidths() {
-                super.initCellWidths();
-
-                Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-                    @Override
-                    public void execute() {
-                        setWidthForSpannedCell();
-                    }
-                });
-            }
-
-            protected void setWidthForSpannedCell() {
-                int spanWidth = 0;
-                for (int ix = groupColIndex; ix < colSpan; ix++) {
-                    spanWidth += tHead.getHeaderCell(ix).getOffsetWidth();
-                }
-                Util.setWidthExcludingPaddingAndBorder((Element) getElement().getChild(groupColIndex),
-                        spanWidth, 13, false);
             }
 
             @Override
@@ -450,30 +430,86 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
 
                         colIndex++;
                     }
-                    colSpan = 0;
                     hasCells = true;
                 } else {
                     TableCellElement td = getElement().getLastChild().cast();
-                    colSpan = visibleColOrder.length - groupColIndex;
+                    int colSpan = visibleColOrder.length - groupColIndex;
                     td.setColSpan(colSpan);
                     hasCells = false;
                 }
+            }
 
+            @Override
+            protected void setCellWidth(int cellIx, int w) {
+                if (hasCells) {
+                    super.setCellWidth(cellIx, w);
+                } else {
+                    calcAndSetWidthForSpannedCell();
+                }
+            }
+
+            @Override
+            protected void initCellWidths() {
+                if (!hasCells) {
+                    setSpannedRowWidthAfterDOMFullyInited();
+                } else {
+                    super.initCellWidths();
+                }
+            }
+
+            private void setSpannedRowWidthAfterDOMFullyInited() {
+                // Defer setting width on spanned columns to make sure that
+                // they are added to the DOM before trying to calculate
+                // widths.
                 Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
                     @Override
                     public void execute() {
-                        setWidthForSpannedCell();
+                        calcAndSetWidthForSpannedCell();
                     }
                 });
             }
 
-            @Override
-            protected void setCellWidth(int cellIx, int width) {
-                if (hasCells || groupColIndex > cellIx) {
-                    super.setCellWidth(cellIx, width);
-                } else {
-                    setWidthForSpannedCell();
+            private void calcAndSetWidthForSpannedCell() {
+                final int cells = tHead.getVisibleCellCount();
+                for (int i = (showRowHeaders ? 1 : 0); i < groupColIndex; i++) {
+                    int w = CubaGroupTableWidget.this.getColWidth(getColKeyByIndex(i));
+                    if (w < 0) {
+                        w = 0;
+                    }
+                    super.setCellWidth(i, w);
                 }
+
+                Element tr = getElement();
+
+                int totalSpannedWidth = 0;
+                for (int i = groupColIndex; i < cells; i++) {
+
+                    int headerWidth = tHead.getHeaderCell(i).getOffsetWidth();
+                    totalSpannedWidth += headerWidth;
+                }
+
+                Element td = DOM.getChild(tr, DOM.getChildCount(tr) - 1);
+
+                Style wrapperStyle = td.getFirstChildElement().getStyle();
+                Util.setWidthExcludingPaddingAndBorder(td, totalSpannedWidth, 13, false);
+
+                String tdWidthPx = td.getStyle().getWidth().replace("px", "");
+                int wrapperWidth = Integer.parseInt(tdWidthPx);
+                if (BrowserInfo.get().isWebkit()
+                        || BrowserInfo.get().isOpera10()) {
+                            /*
+                             * Some versions of Webkit and Opera ignore the width
+                             * definition of zero width table cells. Instead, use 1px
+                             * and compensate with a negative margin.
+                             */
+                    if (totalSpannedWidth == 0) {
+                        wrapperWidth = 1;
+                        wrapperStyle.setMarginRight(-1, Style.Unit.PX);
+                    } else {
+                        wrapperStyle.clearMarginRight();
+                    }
+                }
+                wrapperStyle.setPropertyPx("width", wrapperWidth);
             }
 
             protected void addGroupCell(String text) {
@@ -568,6 +604,11 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
             }
 
             return availableWidth;
+        }
+
+        @Override
+        public boolean isGeneratedRow(Widget row) {
+            return row instanceof CubaGroupTableGroupRow;
         }
     }
 
