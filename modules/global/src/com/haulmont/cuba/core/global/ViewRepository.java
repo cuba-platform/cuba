@@ -9,6 +9,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 
 import javax.annotation.Nullable;
+import java.util.Collection;
 
 /**
  * Represents a repository of {@link View} objects, accessible by names.
@@ -48,4 +49,10 @@ public interface ViewRepository {
      */
     @Nullable
     View findView(MetaClass metaClass, String name);
+
+    @Nullable
+    Collection<String> getViewNames(MetaClass metaClass);
+
+    @Nullable
+    Collection<String> getViewNames(Class<? extends Entity> entityClass);
 }

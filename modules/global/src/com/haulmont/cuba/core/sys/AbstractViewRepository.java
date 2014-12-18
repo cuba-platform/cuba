@@ -37,7 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Base implementation of the {@link ViewRepository}. Contains methods to store {@link View} objects and deploy
  * them from XML.
- *
+ * <p/>
  * <p/> Don't replace this class completely, because the framework uses it directly.
  *
  * @author krivopustov
@@ -147,9 +147,10 @@ public class AbstractViewRepository implements ViewRepository {
 
     /**
      * Get View for an entity.
-     * @param entityClass   entity class
-     * @param name          view name
-     * @return              view instance. Throws {@link com.haulmont.cuba.core.global.ViewNotFoundException} if not found.
+     *
+     * @param entityClass entity class
+     * @param name        view name
+     * @return view instance. Throws {@link com.haulmont.cuba.core.global.ViewNotFoundException} if not found.
      */
     @Override
     public View getView(Class<? extends Entity> entityClass, String name) {
@@ -158,9 +159,10 @@ public class AbstractViewRepository implements ViewRepository {
 
     /**
      * Get View for an entity.
-     * @param metaClass     entity class
-     * @param name          view name
-     * @return              view instance. Throws {@link com.haulmont.cuba.core.global.ViewNotFoundException} if not found.
+     *
+     * @param metaClass entity class
+     * @param name      view name
+     * @return view instance. Throws {@link com.haulmont.cuba.core.global.ViewNotFoundException} if not found.
      */
     @Override
     public View getView(MetaClass metaClass, String name) {
@@ -176,9 +178,10 @@ public class AbstractViewRepository implements ViewRepository {
 
     /**
      * Searches for a View for an entity
-     * @param metaClass     entity class
-     * @param name          view name
-     * @return              view instance or null if no view found
+     *
+     * @param metaClass entity class
+     * @param name      view name
+     * @return view instance or null if no view found
      */
     @Override
     @Nullable
@@ -204,6 +207,18 @@ public class AbstractViewRepository implements ViewRepository {
         }
 
         return copy;
+    }
+
+    @Override
+    public Collection<String> getViewNames(MetaClass metaClass) {
+        Map<String, View> viewMap = storage.get(metaClass);
+        return viewMap != null ? viewMap.keySet() : null;
+    }
+
+    @Override
+    public Collection<String> getViewNames(Class<? extends Entity> entityClass) {
+        MetaClass metaClass = metadata.getClassNN(entityClass);
+        return getViewNames(metaClass);
     }
 
     @SuppressWarnings("unchecked")
@@ -481,7 +496,7 @@ public class AbstractViewRepository implements ViewRepository {
                     if (refView == null) {
                         throw new DevelopmentException(
                                 String.format("View %s/%s definition error: unable to find/deploy referenced view %s/%s",
-                                              metaClass.getName(), viewName, range.asClass().getName(), refViewName));
+                                        metaClass.getName(), viewName, range.asClass().getName(), refViewName));
                     }
                 }
             }
