@@ -12,7 +12,6 @@ import org.apache.commons.lang.StringUtils;
 import javax.mail.internet.MimeUtility;
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.util.Iterator;
 import java.util.UUID;
 
 /**
@@ -23,7 +22,8 @@ public class CubaFileDownloader extends AbstractExtension {
 
     public static final String DOWNLOAD_RESOURCE_PREFIX = "download-";
     public static final String VIEW_RESOURCE_PREFIX = "view-";
-    private boolean overrideContentType = true;
+
+    protected boolean overrideContentType = true;
 
     public void downloadFile(Resource resource) {
         String resourceId = DOWNLOAD_RESOURCE_PREFIX + UUID.randomUUID().toString();
@@ -61,8 +61,8 @@ public class CubaFileDownloader extends AbstractExtension {
      * Checks whether the content type should be overridden.
      *
      * @return <code>true</code> if the content type will be overridden when
-     *         possible; <code>false</code> if the original content type will be
-     *         used.
+     * possible; <code>false</code> if the original content type will be
+     * used.
      * @see #setOverrideContentType(boolean)
      */
     public boolean isOverrideContentType() {
@@ -75,67 +75,71 @@ public class CubaFileDownloader extends AbstractExtension {
     }
 
     @Override
-    public boolean handleConnectorRequest(VaadinRequest request,
-                                          VaadinResponse response, String path) throws IOException {
-        String targetResourceKey = null;
-
-        synchronized (getState()) {
-            Iterator<String> resourceIterator = getState().resources.keySet().iterator();
-            while (resourceIterator.hasNext() && targetResourceKey == null) {
-                String resourceKey = resourceIterator.next();
-                if (path.matches(resourceKey + "(/.*)?"))
-                    targetResourceKey = resourceKey;
-            }
+    public boolean handleConnectorRequest(VaadinRequest request, VaadinResponse response,
+                                          String path) throws IOException {
+        if (path == null) {
+            return false;
         }
 
-        if (targetResourceKey == null)
-            return false;
+        String targetResourceKey = null;
+        DownloadStream stream;
 
-        Resource resource = getResource(targetResourceKey);
-        boolean isViewDocumentRequest = targetResourceKey.startsWith(VIEW_RESOURCE_PREFIX);
-
-        WebBrowser browser = Page.getCurrent().getWebBrowser();
-        boolean isFirefox = browser.isFirefox();
-        boolean isChrome = browser.isChrome();
-
+        VaadinSession session = getSession();
+        session.lock();
         try {
-            if (resource instanceof ConnectorResource) {
-                DownloadStream stream = ((ConnectorResource) resource).getStream();
-
-                String fileName;
-
-                if (isChrome)
-                    fileName = MimeUtility.encodeWord(stream.getFileName(), "UTF-8", "Q");
-                else
-                    fileName = URLEncoder.encode(stream.getFileName(), "UTF-8").replaceAll("\\+", "%20");
-
-                if (stream.getParameter("Content-Disposition") == null) {
-                    // Content-Disposition: attachment generally forces download
-                    stream.setParameter("Content-Disposition",
-                            (isViewDocumentRequest ? "inline" : "attachment") + "; " +
-                            (isFirefox ? "filename*=UTF-8''" + fileName : "filename=\"" + fileName + "\""));
-                }
-
-                // Content-Type to block eager browser plug-ins from hijacking the
-                // file
-                if (isOverrideContentType() && !isViewDocumentRequest) {
-                    stream.setContentType("application/octet-stream;charset=UTF-8");
-                } else {
-                    if (StringUtils.isNotEmpty(stream.getContentType())) {
-                        stream.setContentType(stream.getContentType() + ";charset=UTF-8\"");
-                    } else {
-                        stream.setContentType(";charset=UTF-8\"");
-                    }
-                }
-                stream.writeResponse(request, response);
-                return true;
-            } else {
+            String[] parts = path.split("/", 2);
+            targetResourceKey = parts[0];
+            if (targetResourceKey.isEmpty()) {
                 return false;
             }
-        } finally {
-            synchronized (getState()) {
-                getState().resources.remove(targetResourceKey);
+
+            Resource resource = getResource(targetResourceKey);
+            if (resource == null) {
+                return false;
             }
+
+            boolean isViewDocumentRequest = targetResourceKey.startsWith(VIEW_RESOURCE_PREFIX);
+
+            WebBrowser browser = Page.getCurrent().getWebBrowser();
+            boolean isFirefox = browser.isFirefox();
+            boolean isChrome = browser.isChrome();
+
+            stream = ((ConnectorResource) resource).getStream();
+
+            String fileName;
+            if (isChrome) {
+                fileName = MimeUtility.encodeWord(stream.getFileName(), "UTF-8", "Q");
+            } else {
+                fileName = URLEncoder.encode(stream.getFileName(), "UTF-8").replaceAll("\\+", "%20");
+            }
+
+            if (stream.getParameter("Content-Disposition") == null) {
+                // Content-Disposition: attachment generally forces download
+                stream.setParameter("Content-Disposition",
+                        (isViewDocumentRequest ? "inline" : "attachment") + "; " +
+                                (isFirefox ? "filename*=UTF-8''" + fileName : "filename=\"" + fileName + "\""));
+            }
+
+            // Content-Type to block eager browser plug-ins from hijacking the
+            // file
+            if (isOverrideContentType() && !isViewDocumentRequest) {
+                stream.setContentType("application/octet-stream;charset=UTF-8");
+            } else {
+                if (StringUtils.isNotEmpty(stream.getContentType())) {
+                    stream.setContentType(stream.getContentType() + ";charset=UTF-8\"");
+                } else {
+                    stream.setContentType(";charset=UTF-8\"");
+                }
+            }
+        } finally {
+            if (targetResourceKey != null) {
+                setResource(targetResourceKey, null);
+            }
+
+            session.unlock();
         }
+
+        stream.writeResponse(request, response);
+        return true;
     }
 }
