@@ -296,6 +296,7 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
     /**
      * @return a companion implementation, specific for the current client type
      */
+    @Nullable
     public <T> T getCompanion() {
         //noinspection unchecked
         return (T) _companion;
