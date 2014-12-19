@@ -34,7 +34,7 @@ public class WebTabSheet extends WebAbstractComponent<com.vaadin.ui.TabSheet> im
     protected ComponentLoader.Context context;
 
     public WebTabSheet() {
-        component = new TabSheetEx(this);
+        component = new com.vaadin.ui.TabSheet();
         component.setCloseHandler(new DefaultCloseHandler());
     }
 
@@ -348,19 +348,6 @@ public class WebTabSheet extends WebAbstractComponent<com.vaadin.ui.TabSheet> im
     protected void fireTabChanged() {
         for (TabChangeListener listener : listeners) {
             listener.tabChanged(getTab());
-        }
-    }
-
-    protected static class TabSheetEx extends com.vaadin.ui.TabSheet implements WebComponentEx {
-        private Component component;
-
-        private TabSheetEx(Component component) {
-            this.component = component;
-        }
-
-        @Override
-        public Component asComponent() {
-            return component;
         }
     }
 

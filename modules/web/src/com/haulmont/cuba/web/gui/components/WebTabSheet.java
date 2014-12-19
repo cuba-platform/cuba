@@ -39,7 +39,7 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
     protected ComponentLoader.Context context;
 
     public WebTabSheet() {
-        component = new TabSheetEx(this);
+        component = new CubaTabSheet();
         component.setCloseHandler(new DefaultCloseHandler());
     }
 
@@ -390,19 +390,6 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
     protected void fireTabChanged() {
         for (TabChangeListener listener : listeners) {
             listener.tabChanged(getTab());
-        }
-    }
-
-    protected static class TabSheetEx extends CubaTabSheet implements WebComponentEx {
-        private Component component;
-
-        public TabSheetEx(Component component) {
-            this.component = component;
-        }
-
-        @Override
-        public Component asComponent() {
-            return component;
         }
     }
 
