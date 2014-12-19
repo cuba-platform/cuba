@@ -177,8 +177,18 @@
     white-space: nowrap;
   }
 
+  .#{$primary-stylename}-calendarpanel-day {
+    border: 1px solid transparent;
+    height: 14px
+  }
+
   .#{$primary-stylename}-calendarpanel-day-today {
     border: 1px solid $cuba-datefield-today-color;
+    height: 14px
+  }
+
+  .#{$primary-stylename}-calendarpanel-day-focused {
+    border: 1px solid $cuba-datefield-day-focus-color;
     height: 14px
   }
 
