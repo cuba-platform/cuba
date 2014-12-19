@@ -118,9 +118,8 @@ public class UserEditor extends AbstractEditor<User> {
                             }
                         }
 
-                        if (userSession.getUser().equals(getItem())) {
-                            Companion companion = getCompanion();
-
+                        Companion companion = getCompanion();
+                        if (companion != null && userSession.getUser().equals(getItem())) {
                             for (Entity entity : result) {
                                 if (entity instanceof UserSubstitution) {
                                     companion.refreshUserSubstitutions();
