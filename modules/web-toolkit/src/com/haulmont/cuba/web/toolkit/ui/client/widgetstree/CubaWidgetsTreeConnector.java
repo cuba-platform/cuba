@@ -21,8 +21,7 @@ import java.util.List;
  * @version $Id$
  */
 @Connect(CubaWidgetsTree.class)
-public class CubaWidgetsTreeConnector extends CubaTreeConnector
-        implements HasComponentsConnector {
+public class CubaWidgetsTreeConnector extends CubaTreeConnector implements HasComponentsConnector {
 
     List<ComponentConnector> nodeWidgets;
 
@@ -57,6 +56,7 @@ public class CubaWidgetsTreeConnector extends CubaTreeConnector
                 return treeNode;
             }
         }
-        return super.createNode(childUidl);
+        // all branches should return instance of same TreeNode class
+        return getWidget().new WidgetTreeNode();
     }
 }

@@ -63,6 +63,11 @@ public class CubaTreeWidget extends VTree implements ShortcutActionHandler.Short
         return (CubaTreeConnector) ConnectorMap.get(client).getConnector(this);
     }
 
+    @Override
+    protected Class<? extends Widget> getTreeNodeClass() {
+        return CubaTreeNode.class;
+    }
+
     public class CubaTreeNode extends TreeNode {
 
         @Override

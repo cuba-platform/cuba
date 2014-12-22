@@ -21,7 +21,7 @@ public class CubaWidgetsTreeWidget extends CubaTreeWidget {
 
     public class WidgetTreeNode extends TreeNode {
         protected Widget nodeWidget;
-        private SimplePanel nodeWidgetRoot;
+        protected SimplePanel nodeWidgetRoot;
 
         public void setNodeWidget(Widget nodeWidget) {
             this.nodeWidget = nodeWidget;
@@ -30,6 +30,11 @@ public class CubaWidgetsTreeWidget extends CubaTreeWidget {
 
         @Override
         protected void constructDom() {
+            if (nodeWidget == null) {
+                super.constructDom();
+                return;
+            }
+
             addStyleName(CLASSNAME);
 
             nodeCaptionDiv = DOM.createDiv();
@@ -71,5 +76,10 @@ public class CubaWidgetsTreeWidget extends CubaTreeWidget {
     @Override
     public void setStyleName(String style) {
         super.setStyleName(style + " cuba-widgetstree");
+    }
+
+    @Override
+    protected Class<? extends Widget> getTreeNodeClass() {
+        return WidgetTreeNode.class;
     }
 }
