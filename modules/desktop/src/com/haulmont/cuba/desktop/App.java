@@ -318,7 +318,7 @@ public class App implements ConnectionListener {
                 forceExit();
             }
         } catch (Throwable e) {
-            log.warn("Error closing application: " + e);
+            log.warn("Error closing application", e);
             String title = messages.getMainMessage("errorPane.title");
             String text = messages.getMainMessage("unexpectedCloseException.message") + "\n";
             if (e instanceof RemoteAccessException) {
