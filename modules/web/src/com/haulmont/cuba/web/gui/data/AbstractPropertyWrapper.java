@@ -8,6 +8,7 @@ import com.vaadin.data.Property;
 import com.vaadin.data.util.converter.Converter;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -15,10 +16,12 @@ import java.util.List;
  * @version $Id$
  */
 public abstract class AbstractPropertyWrapper implements Property, Property.ValueChangeNotifier {
+
     protected boolean readOnly;
     protected Object item;
 
-    protected List<ValueChangeListener> listeners = new ArrayList<>();
+    // lazily initialized listeners list
+    protected List<ValueChangeListener> listeners = null;
 
     @Override
     public Object getValue() {
@@ -36,24 +39,28 @@ public abstract class AbstractPropertyWrapper implements Property, Property.Valu
     }
 
     @Override
-    public void setReadOnly(boolean newStatus) {
-        readOnly = newStatus;
+    public void setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
     }
 
     protected void fireValueChangeEvent() {
-        final ValueChangeEvent changeEvent = createValueChangeEvent();
-        for (ValueChangeListener listener : new ArrayList<>(listeners)) {
-            listener.valueChange(changeEvent);
+        if (listeners != null) {
+            final ValueChangeEvent changeEvent = new ValueChangeEvent();
+            for (ValueChangeListener listener : new ArrayList<>(listeners)) {
+                listener.valueChange(changeEvent);
+            }
         }
-    }
-
-    protected ValueChangeEvent createValueChangeEvent() {
-        return new ValueChangeEvent();
     }
 
     @Override
     public void addValueChangeListener(ValueChangeListener listener) {
-        if (!listeners.contains(listener)) listeners.add(listener);
+        if (listeners == null) {
+            listeners = new LinkedList<>();
+        }
+
+        if (!listeners.contains(listener)) {
+            listeners.add(listener);
+        }
     }
 
     @Override
@@ -63,7 +70,13 @@ public abstract class AbstractPropertyWrapper implements Property, Property.Valu
 
     @Override
     public void removeValueChangeListener(ValueChangeListener listener) {
-        listeners.remove(listener);
+        if (listeners != null) {
+            listeners.remove(listener);
+
+            if (listeners.isEmpty()) {
+                listeners = null;
+            }
+        }
     }
 
     @Override

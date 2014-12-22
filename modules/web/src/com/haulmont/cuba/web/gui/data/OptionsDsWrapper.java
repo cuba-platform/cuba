@@ -30,8 +30,6 @@ import java.util.*;
  */
 public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetChangeNotifier {
 
-    private static final long serialVersionUID = 1440434590495905389L;
-
     protected boolean autoRefresh;
     protected boolean ignoreListeners;
 
@@ -39,7 +37,9 @@ public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetCha
     protected CollectionDatasourceListener dsListener;
 
     protected Collection<MetaPropertyPath> properties = new ArrayList<>();
-    protected List<ItemSetChangeListener> itemSetChangeListeners = new ArrayList<>();
+
+    // lazily initialized listeners list
+    protected List<ItemSetChangeListener> itemSetChangeListeners = null;
 
     public OptionsDsWrapper(CollectionDatasource datasource, boolean autoRefresh) {
         this(datasource, null, autoRefresh);
@@ -60,6 +60,7 @@ public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetCha
         }
 
         dsListener = createDatasourceListener();
+        //noinspection unchecked
         datasource.addListener(new CollectionDsListenerWeakWrapper(datasource, dsListener));
     }
 
@@ -72,7 +73,9 @@ public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetCha
     }
 
     protected void fireItemSetChanged() {
-        if (ignoreListeners) return;
+        if (ignoreListeners) {
+            return;
+        }
 
         ignoreListeners = true;
 
@@ -81,8 +84,9 @@ public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetCha
             return;
         }
 
-        if (!itemSetChangeListeners.isEmpty()) {
+        if (itemSetChangeListeners != null) {
             StaticItemSetChangeEvent event = new StaticItemSetChangeEvent(this);
+
             for (ItemSetChangeListener listener : itemSetChangeListeners) {
                 listener.containerItemSetChange(event);
             }
@@ -96,13 +100,14 @@ public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetCha
         CollectionDsHelper.autoRefreshInvalid(datasource, autoRefresh);
 
         Entity entity = (Entity) itemId;
+        //noinspection unchecked
         final Object item = datasource.getItem(entity.getId());
         return item == null ? null : getItemWrapper(item);
     }
 
     protected Map<Object, ItemWrapper> itemsCache = new HashMap<>();
 
-    protected synchronized Item getItemWrapper(Object item) {
+    protected Item getItemWrapper(Object item) {
         ItemWrapper wrapper = itemsCache.get(item);
         if (wrapper == null) {
             wrapper = createItemWrapper(item);
@@ -132,7 +137,7 @@ public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetCha
                     String message = String.format(
                             "Some datasource listener has modified the component while it is in rendering state. Please refresh datasource '%s' explicitly",
                             datasource.getId());
-                    throw new IllegalStateException(message);
+                    throw new IllegalStateException(message, ex);
                 }
 
                 throw ex;
@@ -143,8 +148,10 @@ public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetCha
 
         Collection itemIds = datasource.getItemIds();
         ArrayList items = new ArrayList(itemIds.size());
-        for (Object id : itemIds)
+        for (Object id : itemIds) {
+            //noinspection unchecked
             items.add(datasource.getItem(id));
+        }
 
         return items;
     }
@@ -170,11 +177,8 @@ public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetCha
     @Override
     public boolean containsId(Object itemId) {
         CollectionDsHelper.autoRefreshInvalid(datasource, autoRefresh);
-        if (itemId == null) {
-            return false;
-        } else {
-            return datasource.containsItem(((Entity) itemId).getId());
-        }
+        //noinspection unchecked
+        return itemId != null && datasource.containsItem(((Entity) itemId).getId());
     }
 
     @Override
@@ -199,6 +203,7 @@ public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetCha
 
     @Override
     public boolean removeContainerProperty(Object propertyId) throws UnsupportedOperationException {
+        //noinspection SuspiciousMethodCalls
         return this.properties.remove(propertyId);
     }
 
@@ -209,7 +214,11 @@ public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetCha
 
     @Override
     public void addItemSetChangeListener(ItemSetChangeListener listener) {
-        this.itemSetChangeListeners.add(listener);
+        if (itemSetChangeListeners == null) {
+            itemSetChangeListeners = new LinkedList<>();
+        }
+
+        itemSetChangeListeners.add(listener);
     }
 
     @Override
@@ -219,7 +228,13 @@ public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetCha
 
     @Override
     public void removeItemSetChangeListener(ItemSetChangeListener listener) {
-        this.itemSetChangeListeners.remove(listener);
+        if (itemSetChangeListeners != null) {
+            itemSetChangeListeners.remove(listener);
+
+            if (itemSetChangeListeners.isEmpty()) {
+                itemSetChangeListeners = null;
+            }
+        }
     }
 
     @Override
@@ -227,6 +242,7 @@ public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetCha
         removeItemSetChangeListener(listener);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Object nextItemId(Object itemId) {
         if (datasource instanceof CollectionDatasource.Ordered) {
@@ -236,6 +252,7 @@ public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetCha
         throw new UnsupportedOperationException();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Object prevItemId(Object itemId) {
         if (datasource instanceof CollectionDatasource.Ordered) {
@@ -245,6 +262,7 @@ public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetCha
         throw new UnsupportedOperationException();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Object firstItemId() {
         if (datasource instanceof CollectionDatasource.Ordered) {
@@ -254,6 +272,7 @@ public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetCha
         throw new UnsupportedOperationException();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Object lastItemId() {
         if (datasource instanceof CollectionDatasource.Ordered) {
@@ -263,6 +282,7 @@ public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetCha
         throw new UnsupportedOperationException();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean isFirstId(Object itemId) {
         if (datasource instanceof CollectionDatasource.Ordered) {
@@ -272,6 +292,7 @@ public class OptionsDsWrapper implements Container.Ordered, Container.ItemSetCha
         throw new UnsupportedOperationException();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean isLastId(Object itemId) {
         if (datasource instanceof CollectionDatasource.Ordered) {

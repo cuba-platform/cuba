@@ -25,10 +25,10 @@ import java.util.*;
  */
 public class ItemWrapper implements Item, Item.PropertySetChangeNotifier {
 
-    private static final long serialVersionUID = -7298696379571470141L;
+    protected Map<MetaPropertyPath, PropertyWrapper> properties = new HashMap<>();
 
-    private Map<MetaPropertyPath, PropertyWrapper> properties = new HashMap<>();
-    private List<PropertySetChangeListener> listeners = new ArrayList<>();
+    // lazily initialized listeners list
+    protected List<PropertySetChangeListener> listeners = null;
 
     protected Object item;
     protected MetaClass metaClass;
@@ -54,13 +54,18 @@ public class ItemWrapper implements Item, Item.PropertySetChangeNotifier {
                 }
             };
             CollectionDatasource datasource = (CollectionDatasource) item;
+            //noinspection unchecked
             datasource.addListener(new CollectionDsListenerWeakWrapper(datasource, collectionDslistener));
         }
     }
 
     protected void fireItemPropertySetChanged() {
-        for (PropertySetChangeListener listener : listeners) {
-            listener.itemPropertySetChange(new PropertySetChangeEvent());
+        if (listeners != null) {
+            PropertySetChangeEvent event = new PropertySetChangeEvent();
+
+            for (PropertySetChangeListener listener : listeners) {
+                listener.itemPropertySetChange(event);
+            }
         }
     }
 
@@ -97,7 +102,13 @@ public class ItemWrapper implements Item, Item.PropertySetChangeNotifier {
 
     @Override
     public void addPropertySetChangeListener(PropertySetChangeListener listener) {
-        if (!listeners.contains(listener)) listeners.add(listener);
+        if (listeners == null) {
+            listeners = new LinkedList<>();
+        }
+
+        if (!listeners.contains(listener)) {
+            listeners.add(listener);
+        }
     }
 
     @Override
@@ -107,7 +118,13 @@ public class ItemWrapper implements Item, Item.PropertySetChangeNotifier {
 
     @Override
     public void removePropertySetChangeListener(PropertySetChangeListener listener) {
-        listeners.remove(listener);
+        if (listeners != null) {
+            listeners.remove(listener);
+
+            if (listeners.isEmpty()) {
+                listeners = null;
+            }
+        }
     }
 
     @Override

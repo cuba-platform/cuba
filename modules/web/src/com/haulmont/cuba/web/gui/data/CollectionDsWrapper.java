@@ -24,8 +24,6 @@ import java.util.*;
  */
 public class CollectionDsWrapper implements Container, Container.ItemSetChangeNotifier {
 
-    private static final long serialVersionUID = 1440434590495905389L;
-
     protected boolean autoRefresh;
     protected boolean ignoreListeners;
 
@@ -33,15 +31,9 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
     protected CollectionDatasourceListener dsListener;
 
     protected Collection<MetaPropertyPath> properties = new ArrayList<>();
-    private List<ItemSetChangeListener> itemSetChangeListeners = new ArrayList<>();
 
-    public CollectionDsWrapper(CollectionDatasource datasource) {
-        this(datasource, false);
-    }
-
-    public CollectionDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties) {
-        this(datasource, properties, false);
-    }
+    // lazily initialized listeners list
+    protected List<ItemSetChangeListener> itemSetChangeListeners = null;
 
     public CollectionDsWrapper(CollectionDatasource datasource, boolean autoRefresh) {
         this(datasource, null, autoRefresh);
@@ -62,15 +54,12 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
         }
 
         dsListener = createDatasourceListener();
+        //noinspection unchecked
         datasource.addListener(new CollectionDsListenerWeakWrapper(datasource, dsListener));
     }
 
     protected CollectionDatasourceListener createDatasourceListener() {
-        if (datasource instanceof CollectionDatasource.Lazy) {
-            return new LazyDataSourceRefreshListener();
-        } else {
-            return new DataSourceRefreshListener();
-        }
+        return new DataSourceRefreshListener();
     }
 
     protected void createProperties(View view, MetaClass metaClass) {
@@ -78,7 +67,10 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
     }
 
     protected void fireItemSetChanged() {
-        if (ignoreListeners) return;
+        if (ignoreListeners) {
+            return;
+        }
+
         ignoreListeners = true;
 
         if (UI.getCurrent().getConnectorTracker().isWritingResponse()) {
@@ -86,7 +78,7 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
             return;
         }
 
-        if (!itemSetChangeListeners.isEmpty()) {
+        if (itemSetChangeListeners != null) {
             StaticItemSetChangeEvent event = new StaticItemSetChangeEvent(this);
             for (ItemSetChangeListener listener : itemSetChangeListeners) {
                 listener.containerItemSetChange(event);
@@ -97,13 +89,14 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
     @Override
     public Item getItem(Object itemId) {
         CollectionDsHelper.autoRefreshInvalid(datasource, autoRefresh);
+        //noinspection unchecked
         final Object item = datasource.getItem(itemId);
         return item == null ? null : getItemWrapper(item);
     }
 
     protected Map<Object, ItemWrapper> itemsCache = new HashMap<>();
 
-    protected synchronized Item getItemWrapper(Object item) {
+    protected Item getItemWrapper(Object item) {
         ItemWrapper wrapper = itemsCache.get(item);
         if (wrapper == null) {
             wrapper = createItemWrapper(item);
@@ -149,6 +142,7 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
     @Override
     public boolean containsId(Object itemId) {
         CollectionDsHelper.autoRefreshInvalid(datasource, autoRefresh);
+        //noinspection unchecked
         return datasource.containsItem(itemId);
     }
 
@@ -174,6 +168,7 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
 
     @Override
     public boolean removeContainerProperty(Object propertyId) throws UnsupportedOperationException {
+        //noinspection SuspiciousMethodCalls
         return this.properties.remove(propertyId);
     }
 
@@ -184,7 +179,11 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
 
     @Override
     public void addItemSetChangeListener(ItemSetChangeListener listener) {
-        this.itemSetChangeListeners.add(listener);
+        if (itemSetChangeListeners == null) {
+            itemSetChangeListeners = new LinkedList<>();
+        }
+
+        itemSetChangeListeners.add(listener);
     }
 
     @Override
@@ -194,7 +193,13 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
 
     @Override
     public void removeItemSetChangeListener(ItemSetChangeListener listener) {
-        this.itemSetChangeListeners.remove(listener);
+        if (itemSetChangeListeners != null) {
+            itemSetChangeListeners.remove(listener);
+
+            if (itemSetChangeListeners.isEmpty()) {
+                itemSetChangeListeners = null;
+            }
+        }
     }
 
     @Override
@@ -202,29 +207,14 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
         removeItemSetChangeListener(listener);
     }
 
-    protected void checkMaxFetchUI(CollectionDatasource ds) {
-//        String entityName = ds.getMetaClass().getName();
-//        if (ds.size() >= persistenceManager.getMaxFetchUI(entityName)) {
-//            log.debug("MaxFetchUI threshold exceeded for " + entityName);
-//            String msg = MessageProvider.getMessage(AppConfig.getMessagesPack(), "maxFetchUIExceeded");
-//            App app = App.getInstance();
-//            app.getAppLog().debug(entityName + ": " + msg);
-//            app.getWindowManager().showNotification(msg, IFrame.NotificationType.HUMANIZED);
-//        }
-    }
-
     protected class DataSourceRefreshListener implements CollectionDatasourceListener<Entity> {
         @Override
-        public void itemChanged(Datasource ds, Entity prevItem, Entity item) {}
+        public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
+        }
 
         @Override
         public void stateChanged(Datasource<Entity> ds, Datasource.State prevState, Datasource.State state) {
-            final boolean prevIgnoreListeners = ignoreListeners;
-            try {
-                itemsCache.clear();
-            } finally {
-                ignoreListeners = prevIgnoreListeners;
-            }
+            itemsCache.clear();
         }
 
         @Override
@@ -244,24 +234,14 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
 
         @Override
         public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
+            itemsCache.clear();
+
             final boolean prevIgnoreListeners = ignoreListeners;
             try {
-                itemsCache.clear();
                 fireItemSetChanged();
-                if (!(ds instanceof CollectionDatasource.Lazy)) {
-                    checkMaxFetchUI(ds);
-                }
             } finally {
                 ignoreListeners = prevIgnoreListeners;
             }
-        }
-    }
-
-    protected class LazyDataSourceRefreshListener extends DataSourceRefreshListener
-            implements LazyCollectionDatasourceListener<Entity> {
-        @Override
-        public void completelyLoaded(CollectionDatasource.Lazy ds) {
-            checkMaxFetchUI(ds);
         }
     }
 
