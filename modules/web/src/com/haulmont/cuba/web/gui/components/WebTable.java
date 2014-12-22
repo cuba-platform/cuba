@@ -58,11 +58,7 @@ public class WebTable extends WebAbstractTable<CubaTable> {
     protected class TableDsWrapper extends CollectionDsWrapper
             implements AggregationContainer {
 
-        private List<Object> aggregationProperties = null;
-
-        public TableDsWrapper(CollectionDatasource datasource) {
-            super(datasource, true);
-        }
+        protected List<Object> aggregationProperties = null;
 
         public TableDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties) {
             super(datasource, properties, true);
@@ -134,11 +130,7 @@ public class WebTable extends WebAbstractTable<CubaTable> {
     protected class SortableTableDsWrapper extends SortableCollectionDsWrapper
             implements AggregationContainer, TableContainer {
 
-        private List<Object> aggregationProperties = null;
-
-        public SortableTableDsWrapper(CollectionDatasource datasource) {
-            super(datasource, true);
-        }
+        protected List<Object> aggregationProperties = null;
 
         public SortableTableDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties) {
             super(datasource, properties, true);
