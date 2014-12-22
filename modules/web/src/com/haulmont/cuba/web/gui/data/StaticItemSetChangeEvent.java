@@ -5,15 +5,15 @@
 
 package com.haulmont.cuba.web.gui.data;
 
+import com.vaadin.data.Container;
+
 /**
  * @author artamonov
  * @version $Id$
  */
-import com.vaadin.data.Container;
-
 public class StaticItemSetChangeEvent implements Container.ItemSetChangeEvent {
 
-    private final Container container;
+    protected final Container container;
 
     public StaticItemSetChangeEvent(Container container) {
         this.container = container;

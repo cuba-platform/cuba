@@ -70,7 +70,7 @@ public class FoldersPane extends VerticalLayout {
 
     protected Object appFoldersRoot;
     protected Object searchFoldersRoot;
-    private FoldersPaneTimer timer;
+    protected FoldersPaneTimer timer;
 
     protected static final int DEFAULT_VERT_SPLIT_POS = 50;
     protected int horizontalSplitPos;
@@ -106,6 +106,7 @@ public class FoldersPane extends VerticalLayout {
 
         setHeight(100, Unit.PERCENTAGE);
         setStyleName("cuba-folders-pane");
+        //noinspection unchecked
         folderUpdateBackgroundTaskWrapper = new BackgroundTaskWrapper(new AppFolderUpdateBackgroundTask(10));
     }
 
@@ -143,8 +144,6 @@ public class FoldersPane extends VerticalLayout {
     protected MenuBar.Command createMenuBarCommand() {
         return new MenuBar.Command() {
 
-            private static final long serialVersionUID = 6869815029204595973L;
-
             @Override
             public void menuSelected(MenuBar.MenuItem selectedItem) {
                 showFolders(!visible);
@@ -155,7 +154,7 @@ public class FoldersPane extends VerticalLayout {
         };
     }
 
-    private synchronized void showFolders(boolean show) {
+    protected void showFolders(boolean show) {
         if (show == visible)
             return;
 
@@ -286,6 +285,7 @@ public class FoldersPane extends VerticalLayout {
     protected void collapseItemInTree(Tree tree, final String foldersCollapse) {
         String s = userSettingService.loadSetting(foldersCollapse);
         List<UUID> idFolders = strToIds(s);
+        //noinspection unchecked, RedundantCast
         for (AbstractSearchFolder folder : (Collection<AbstractSearchFolder>) tree.getItemIds()) {
             if (idFolders.contains(folder.getId())) {
                 tree.collapseItem(folder);
@@ -406,6 +406,7 @@ public class FoldersPane extends VerticalLayout {
 
     protected Collection<AppFolder> getRecursivelyChildAppFolders(AppFolder parentFolder) {
         Collection<AppFolder> result = new LinkedList<>();
+        //noinspection unchecked
         Collection<AppFolder> childFolders = (Collection<AppFolder>) appFoldersTree.getChildren(parentFolder);
         if (childFolders != null) {
             result.addAll(childFolders);
@@ -627,6 +628,7 @@ public class FoldersPane extends VerticalLayout {
             @SuppressWarnings("unchecked")
             List result = new ArrayList(searchFoldersTree.getItemIds());
             result.remove(searchFoldersRoot);
+            //noinspection unchecked
             return result;
         }
     }
@@ -642,8 +644,6 @@ public class FoldersPane extends VerticalLayout {
     }
 
     protected class FolderTreeStyleProvider implements Tree.ItemStyleGenerator {
-        private static final long serialVersionUID = 3346848644718707748L;
-
         @Override
         public String getStyle(Tree source, Object itemId) {
             Folder folder = ((Folder) itemId);
@@ -669,8 +669,6 @@ public class FoldersPane extends VerticalLayout {
     }
 
     protected class FolderClickListener implements ItemClickEvent.ItemClickListener {
-        private static final long serialVersionUID = -5975272418037777967L;
-
         @Override
         public void itemClick(ItemClickEvent event) {
             Folder folder = (Folder) event.getItemId();
@@ -697,16 +695,13 @@ public class FoldersPane extends VerticalLayout {
     }
 
     protected class AppFolderActionsHandler implements Action.Handler {
-
-        private static final long serialVersionUID = -2312945707104156806L;
-
-        private OpenAction openAction = new OpenAction();
-        private CreateAction createAction = new CreateAction(true);
-        private CopyAction copyAction = new CopyAction();
-        private EditAction editAction = new EditAction();
-        private RemoveAction removeAction = new RemoveAction();
-        private ExportAction exportAction = new ExportAction();
-        private ImportAction importAction = new ImportAction();
+        protected OpenAction openAction = new OpenAction();
+        protected CreateAction createAction = new CreateAction(true);
+        protected CopyAction copyAction = new CopyAction();
+        protected EditAction editAction = new EditAction();
+        protected RemoveAction removeAction = new RemoveAction();
+        protected ExportAction exportAction = new ExportAction();
+        protected ImportAction importAction = new ImportAction();
 
         @Override
         public Action[] getActions(Object target, Object sender) {
@@ -734,15 +729,13 @@ public class FoldersPane extends VerticalLayout {
 
     protected class SearchFolderActionsHandler extends AppFolderActionsHandler {
 
-        private static final long serialVersionUID = -4187914216755933883L;
-
-        private OpenAction openAction = new OpenAction();
-        private CopyAction copyAction = new CopyAction();
-        private CreateAction createAction = new CreateAction(false);
-        private EditAction editAction = new EditAction();
-        private RemoveAction removeAction = new RemoveAction();
-        private ExportAction exportAction = new ExportAction();
-        private ImportAction importAction = new ImportAction();
+        protected OpenAction openAction = new OpenAction();
+        protected CopyAction copyAction = new CopyAction();
+        protected CreateAction createAction = new CreateAction(false);
+        protected EditAction editAction = new EditAction();
+        protected RemoveAction removeAction = new RemoveAction();
+        protected ExportAction exportAction = new ExportAction();
+        protected ImportAction importAction = new ImportAction();
 
         @Override
         public Action[] getActions(Object target, Object sender) {
@@ -781,44 +774,42 @@ public class FoldersPane extends VerticalLayout {
             }
         }
 
-        private boolean isGlobalFolder(SearchFolder folder) {
+        protected boolean isGlobalFolder(SearchFolder folder) {
             return (folder.getUser() == null);
         }
 
-        private boolean isFilterFolder(SearchFolder folder) {
+        protected boolean isFilterFolder(SearchFolder folder) {
             return (folder.getFilterComponentId() != null);
         }
 
-        private boolean isOwner(SearchFolder folder) {
+        protected boolean isOwner(SearchFolder folder) {
             return userSessionSource.getUserSession().getUser().equals(folder.getUser());
         }
 
-        private boolean isGlobalSearchFolderPermitted() {
+        protected boolean isGlobalSearchFolderPermitted() {
             return (userSessionSource.getUserSession().isSpecificPermitted("cuba.gui.searchFolder.global"));
         }
 
-        private Action[] createAllActions() {
+        protected Action[] createAllActions() {
             return new Action[] {openAction, copyAction, createAction,
                     editAction, removeAction, exportAction, importAction};
         }
 
-        private Action[] createWithoutOpenActions() {
+        protected Action[] createWithoutOpenActions() {
             return new Action[] {createAction, editAction, removeAction};
         }
 
-        private Action[] createOnlyCreateAction() {
+        protected Action[] createOnlyCreateAction() {
             return new Action[] {createAction};
         }
 
-        private Action[] createOpenCreateAction() {
+        protected Action[] createOpenCreateAction() {
             return new Action[] {openAction, createAction, copyAction};
         }
 
     }
 
     protected abstract class FolderAction extends Action {
-
-        private static final long serialVersionUID = -4097329335200783939L;
 
         public FolderAction(String caption) {
             super(caption);
@@ -828,8 +819,6 @@ public class FoldersPane extends VerticalLayout {
     }
 
     protected class OpenAction extends FolderAction {
-
-        private static final long serialVersionUID = 1000154780292112851L;
 
         public OpenAction() {
             super(messages.getMainMessage("folders.openFolderAction"));
@@ -843,8 +832,6 @@ public class FoldersPane extends VerticalLayout {
     }
 
     protected class CreateAction extends FolderAction {
-
-        private static final long serialVersionUID = -7050374751418360734L;
 
         private boolean isAppFolder;
 
@@ -872,7 +859,6 @@ public class FoldersPane extends VerticalLayout {
     }
 
     protected class CopyAction extends FolderAction {
-        private static final long serialVersionUID = -4472902118887902921L;
 
         public CopyAction() {
             super(messages.getMainMessage("folders.copyFolderAction"));
@@ -888,8 +874,6 @@ public class FoldersPane extends VerticalLayout {
     }
 
     protected class EditAction extends FolderAction {
-
-        private static final long serialVersionUID = 297056776792080638L;
 
         public EditAction() {
             super(messages.getMainMessage("folders.editFolderAction"));
@@ -924,8 +908,6 @@ public class FoldersPane extends VerticalLayout {
 
     protected class RemoveAction extends FolderAction {
 
-        private static final long serialVersionUID = 6861269931995018516L;
-
         public RemoveAction() {
             super(messages.getMainMessage("folders.removeFolderAction"));
         }
@@ -952,8 +934,6 @@ public class FoldersPane extends VerticalLayout {
 
     protected class ExportAction extends FolderAction {
 
-        private static final long serialVersionUID = -8455267774573271204L;
-
         public ExportAction() {
             super(messages.getMainMessage("folders.exportFolderAction"));
         }
@@ -969,7 +949,6 @@ public class FoldersPane extends VerticalLayout {
     }
 
     protected class ImportAction extends FolderAction {
-        private static final long serialVersionUID = 5466565178242730937L;
 
         public ImportAction() {
             super(messages.getMainMessage("folders.importFolderAction"));
@@ -1039,6 +1018,7 @@ public class FoldersPane extends VerticalLayout {
         return menuBar.getItems().isEmpty() ? null : menuBar.getItems().get(0);
     }
 
+    // used for instance of to detect folders pane timer
     protected static class FoldersPaneTimer extends CubaTimer {
     }
 }

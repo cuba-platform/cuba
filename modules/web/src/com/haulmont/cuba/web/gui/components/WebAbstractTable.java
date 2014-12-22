@@ -682,6 +682,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         this.datasource = datasource;
 
         // drop cached datasources for components before update table cells on client
+        //noinspection unchecked
         datasource.addListener(new CollectionDsListenerAdapter<Entity>() {
             @Override
             public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
@@ -757,7 +758,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         }
 
         if (aggregationCells != null) {
-            getDatasource().addListener(createAggregationDatasourceListener());
+            //noinspection unchecked
+            datasource.addListener(createAggregationDatasourceListener());
         }
 
         setVisibleColumns(getPropertyColumns());
@@ -776,6 +778,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             rowsCount.setDatasource(datasource);
         }
 
+        //noinspection unchecked
         datasource.addListener(new CollectionDsListenerAdapter<Entity>() {
             @Override
             public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
@@ -787,6 +790,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
                 Set<Object> newSelection = new HashSet<>();
                 for (Object entityId : selectedItemIds) {
+                    //noinspection unchecked
                     if (ds.containsItem(entityId)) {
                         newSelection.add(entityId);
                     }
@@ -804,6 +808,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             }
         });
 
+        //noinspection unchecked
         datasource.addListener(new CollectionDsActionsNotifier(this));
 
         for (Action action : getActions()) {
@@ -1392,12 +1397,14 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             } else {
                 Formatter formatter = column.getFormatter();
                 if (formatter != null) {
+                    //noinspection unchecked
                     cellText = formatter.format(value);
                 } else {
                     Datatype datatype = Datatypes.get(value.getClass());
                     if (datatype != null) {
                         UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
 
+                        //noinspection unchecked
                         cellText = datatype.format(value, sessionSource.getLocale());
                     } else {
                         cellText = value.toString();
@@ -1410,8 +1417,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
     protected class TablePropertyWrapper extends PropertyWrapper {
 
-        private ValueChangeListener calcListener;
-        private static final long serialVersionUID = -7942046867909695346L;
+        protected ValueChangeListener calcListener;
 
         public TablePropertyWrapper(Object item, MetaPropertyPath propertyPath) {
             super(item, propertyPath);

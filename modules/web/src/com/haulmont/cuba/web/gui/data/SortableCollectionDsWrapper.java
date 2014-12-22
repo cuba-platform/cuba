@@ -12,23 +12,20 @@ import com.vaadin.data.Item;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
+
+import static com.haulmont.cuba.gui.data.CollectionDatasource.Sortable.Order;
+import static com.haulmont.cuba.gui.data.CollectionDatasource.Sortable.SortInfo;
 
 /**
  * @author abramov
  * @version $Id$
  */
 public class SortableCollectionDsWrapper extends CollectionDsWrapper implements Container.Sortable {
-    public SortableCollectionDsWrapper(CollectionDatasource datasource) {
-        super(datasource);
-    }
 
     public SortableCollectionDsWrapper(CollectionDatasource datasource, boolean autoRefresh) {
         super(datasource, autoRefresh);
-    }
-
-    public SortableCollectionDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties) {
-        super(datasource, properties);
     }
 
     public SortableCollectionDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties, boolean autoRefresh) {
@@ -37,18 +34,18 @@ public class SortableCollectionDsWrapper extends CollectionDsWrapper implements 
 
     @Override
     public void sort(Object[] propertyId, boolean[] ascending) {
-        List<CollectionDatasource.Sortable.SortInfo> infos = new ArrayList<>();
+        List<SortInfo> infos = new LinkedList<>();
         for (int i = 0; i < propertyId.length; i++) {
             final MetaPropertyPath propertyPath = (MetaPropertyPath) propertyId[i];
 
-            final CollectionDatasource.Sortable.SortInfo<MetaPropertyPath> info =
-                    new CollectionDatasource.Sortable.SortInfo<>();
+            final SortInfo<MetaPropertyPath> info = new SortInfo<>();
             info.setPropertyPath(propertyPath);
-            info.setOrder(ascending[i] ? CollectionDatasource.Sortable.Order.ASC : CollectionDatasource.Sortable.Order.DESC);
+            info.setOrder(ascending[i] ? Order.ASC : Order.DESC);
 
             infos.add(info);
         }
-        ((CollectionDatasource.Sortable) datasource).sort(infos.toArray(new CollectionDatasource.Sortable.SortInfo[infos.size()]));
+        SortInfo[] sortInfos = infos.toArray(new SortInfo[infos.size()]);
+        ((CollectionDatasource.Sortable) datasource).sort(sortInfos);
     }
 
     @Override
@@ -58,11 +55,13 @@ public class SortableCollectionDsWrapper extends CollectionDsWrapper implements 
 
     @Override
     public Object nextItemId(Object itemId) {
+        //noinspection unchecked
         return ((CollectionDatasource.Sortable) datasource).nextItemId(itemId);
     }
 
     @Override
     public Object prevItemId(Object itemId) {
+        //noinspection unchecked
         return ((CollectionDatasource.Sortable) datasource).prevItemId(itemId);
     }
 
@@ -78,11 +77,13 @@ public class SortableCollectionDsWrapper extends CollectionDsWrapper implements 
 
     @Override
     public boolean isFirstId(Object itemId) {
+        //noinspection unchecked
         return ((CollectionDatasource.Sortable) datasource).isFirstId(itemId);
     }
 
     @Override
     public boolean isLastId(Object itemId) {
+        //noinspection unchecked
         return ((CollectionDatasource.Sortable) datasource).isLastId(itemId);
     }
 

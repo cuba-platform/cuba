@@ -19,7 +19,8 @@ import java.util.List;
  * @version $Id$
  */
 public class EnumerationContainer implements com.vaadin.data.Container {
-    private List<Enum> values;
+
+    protected List<Enum> values;
 
     public EnumerationContainer(List<Enum> values) {
         this.values = values;
@@ -57,6 +58,7 @@ public class EnumerationContainer implements com.vaadin.data.Container {
 
     @Override
     public boolean containsId(Object itemId) {
+        //noinspection SuspiciousMethodCalls
         return values.contains(itemId);
     }
 
@@ -91,16 +93,17 @@ public class EnumerationContainer implements com.vaadin.data.Container {
     }
 
     protected static class EnumerationItem implements Item {
-        private Enum item;
-        private String name;
+        protected Enum item;
+        protected String name;
 
         public EnumerationItem(Object itemId) {
             this.item = (Enum) itemId;
 
             Messages messages = AppBeans.get(Messages.NAME);
             name = messages.getMessage(item);
-            if (StringUtils.isEmpty(name))
+            if (StringUtils.isEmpty(name)) {
                 name = item.toString();
+            }
         }
 
         @Override

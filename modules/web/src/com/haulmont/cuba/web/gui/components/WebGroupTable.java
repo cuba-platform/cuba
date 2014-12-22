@@ -233,23 +233,18 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
     protected class GroupTableDsWrapper extends SortableCollectionDsWrapper
             implements GroupTableContainer, AggregationContainer {
 
-        private boolean groupDatasource;
-        private List<Object> aggregationProperties = null;
+        protected boolean groupDatasource;
+        protected List<Object> aggregationProperties = null;
 
         //Supports items expanding
-        private final Set<GroupInfo> expanded = new HashSet<>();
+        protected final Set<GroupInfo> expanded = new HashSet<>();
 
-        private Set<GroupInfo> expandState = new HashSet<>();
+        protected Set<GroupInfo> expandState = new HashSet<>();
 
         //Items cache
-        private LinkedList<Object> cachedItemIds;
-        private Object first;
-        private Object last;
-
-        public GroupTableDsWrapper(CollectionDatasource datasource) {
-            super(datasource, true);
-            groupDatasource = datasource instanceof GroupDatasource;
-        }
+        protected LinkedList<Object> cachedItemIds;
+        protected Object first;
+        protected Object last;
 
         public GroupTableDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties) {
             super(datasource, properties, true);
@@ -286,7 +281,7 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
             }
         }
 
-        private void doGroup(Object[] properties) {
+        protected void doGroup(Object[] properties) {
             saveState();
             ((GroupDatasource) datasource).groupBy(properties);
             restoreState();
@@ -306,13 +301,13 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
             }
         }
 
-        private void saveState() {
+        protected void saveState() {
             //save expanding state
             expandState.clear();
             expandState.addAll(expanded);
         }
 
-        private void restoreState() {
+        protected void restoreState() {
             collapseAll();
             //restore groups expanding
             if (hasGroups()) {
@@ -323,14 +318,14 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
             expandState.clear();
         }
 
-        private void fillGroupAggregationCells(Map<Table.Column, GroupAggregationCells> cells) {
+        protected void fillGroupAggregationCells(Map<Table.Column, GroupAggregationCells> cells) {
             final Collection roots = rootGroups();
             for (final Object rootGroup : roots) {
                 __fillGroupAggregationCells(rootGroup, cells);
             }
         }
 
-        private void __fillGroupAggregationCells(Object groupId, Map<Table.Column, GroupAggregationCells> cells) {
+        protected void __fillGroupAggregationCells(Object groupId, Map<Table.Column, GroupAggregationCells> cells) {
             final Set<Table.Column> aggregatableColumns = aggregationCells.keySet();
 
             for (final Column column : aggregatableColumns) {
@@ -432,7 +427,7 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
             }
         }
 
-        private void expand(Collection groupIds) {
+        protected void expand(Collection groupIds) {
             for (final Object groupId : groupIds) {
                 expanded.add((GroupInfo) groupId);
                 if (hasChildren(groupId)) {
@@ -599,9 +594,10 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
             super.sort(propertyId, ascending);
         }
 
-        protected synchronized LinkedList getCachedItemIds() {
+        protected LinkedList getCachedItemIds() {
             if (cachedItemIds == null) {
                 final LinkedList<Object> result = new LinkedList<>();
+                //noinspection unchecked
                 final List<GroupInfo> roots = ((GroupDatasource) datasource).rootGroups();
                 for (final GroupInfo root : roots) {
                     result.add(root);
@@ -617,7 +613,7 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
             return cachedItemIds;
         }
 
-        private void collectItemIds(GroupInfo groupId, final List<Object> itemIds) {
+        protected void collectItemIds(GroupInfo groupId, final List<Object> itemIds) {
             if (expanded.contains(groupId)) {
                 if (((GroupDatasource) datasource).hasChildren(groupId)) {
                     @SuppressWarnings("unchecked")
@@ -713,7 +709,7 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
     }
 
     protected class GroupAggregationCells {
-        private Map<Object, String> cells = new HashMap<>();
+        protected Map<Object, String> cells = new HashMap<>();
 
         public void addCell(Object groupId, String value) {
             cells.put(groupId, value);

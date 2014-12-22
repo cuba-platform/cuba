@@ -29,8 +29,6 @@ import java.text.ParseException;
  */
 public class PropertyWrapper extends AbstractPropertyWrapper implements PropertyValueStringify {
 
-    private static final long serialVersionUID = 5863216328152195113L;
-
     protected MetaPropertyPath propertyPath;
 
     protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
@@ -54,6 +52,7 @@ public class PropertyWrapper extends AbstractPropertyWrapper implements Property
                 }
             };
             Datasource datasource = (Datasource) item;
+            //noinspection unchecked
             datasource.addListener(new DsListenerWeakWrapper(datasource, dsListener));
         }
     }
@@ -111,6 +110,7 @@ public class PropertyWrapper extends AbstractPropertyWrapper implements Property
                         return newValue;
                     } else {
                         Datatype newValueDatatype = Datatypes.getNN(newValue.getClass());
+                        //noinspection unchecked
                         String str = newValueDatatype.format(newValue);
                         try {
                             obj = datatype.parse(str);

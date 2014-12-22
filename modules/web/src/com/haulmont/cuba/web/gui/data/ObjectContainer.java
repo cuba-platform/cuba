@@ -13,8 +13,6 @@ import org.apache.commons.collections.Predicate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -24,24 +22,18 @@ import java.util.*;
  */
 public class ObjectContainer implements com.vaadin.data.Container {
 
-    private transient Log log = LogFactory.getLog(getClass());
+    private Log log = LogFactory.getLog(getClass());
 
-    private static List<String> methodsName = new ArrayList<>();
-
+    protected static List<String> methodsName = new ArrayList<>();
     static {
         methodsName.add("getName");
         methodsName.add("getCaption");
     }
 
-    private List values;
+    protected List values;
 
     public ObjectContainer(List values) {
         this.values = values;
-    }
-
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        in.defaultReadObject();
-        log = LogFactory.getLog(getClass());
     }
 
     @Override
@@ -110,8 +102,8 @@ public class ObjectContainer implements com.vaadin.data.Container {
     }
 
     protected class ObjectItem implements Item {
-        private Object item;
-        private String name;
+        protected Object item;
+        protected String name;
 
         public ObjectItem(final Object item) {
             this.item = item;
