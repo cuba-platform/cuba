@@ -27,7 +27,6 @@ import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.VaadinService;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.server.WrappedSession;
-import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -235,6 +234,7 @@ public class LoginWindow extends UIView implements Action.Handler {
 
         Image logoImage = getLogoImage();
         if (logoImage != null) {
+            logoImage.setStyleName("cuba-login-icon");
             titleLayout.addComponent(logoImage);
             titleLayout.setComponentAlignment(logoImage, Alignment.MIDDLE_LEFT);
         }
