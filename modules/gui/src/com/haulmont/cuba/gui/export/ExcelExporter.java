@@ -68,6 +68,11 @@ public class ExcelExporter {
 
     private final Messages messages;
 
+    public enum ExportMode {
+        SELECTED_ROWS,
+        ALL_ROWS
+    }
+
     public ExcelExporter() {
         messages = AppBeans.get(Messages.NAME);
 
@@ -77,6 +82,10 @@ public class ExcelExporter {
 
     public void exportTable(Table table, ExportDisplay display) {
         exportTable(table, table.getColumns(), display);
+    }
+
+    public void exportTable(Table table, List<Table.Column> columns, ExportDisplay display, ExportMode exportMode) {
+        exportTable(table, columns, false, display, null, null, exportMode);
     }
 
     protected void createWorkbookWithSheet() {
@@ -104,13 +113,15 @@ public class ExcelExporter {
 
     public void exportTable(Table table, List<Table.Column> columns, Boolean exportExpanded,
                             ExportDisplay display, List<String> filterDescription) {
-        exportTable(table, columns, exportExpanded, display, filterDescription, null);
+        exportTable(table, columns, exportExpanded, display, filterDescription, null, ExportMode.ALL_ROWS);
     }
 
     public void exportTable(Table table, List<Table.Column> columns, Boolean exportExpanded,
-                            ExportDisplay display, List<String> filterDescription, String fileName) {
-        if (display == null)
+                            ExportDisplay display, List<String> filterDescription, String fileName, ExportMode exportMode) {
+
+        if (display == null) {
             throw new IllegalArgumentException("ExportDisplay is null");
+        }
 
         createWorkbookWithSheet();
         createFonts();
@@ -166,23 +177,30 @@ public class ExcelExporter {
         }
 
         CollectionDatasource datasource = table.getDatasource();
-        if (table instanceof TreeTable) {
-            TreeTable treeTable = (TreeTable) table;
-            HierarchicalDatasource ds = treeTable.getDatasource();
-            for (Object itemId : ds.getRootItemIds()) {
-                r = createHierarhicalRow(treeTable, columns, exportExpanded, r, itemId);
-            }
-        } else if (table instanceof GroupTable && datasource instanceof GroupDatasource
-                && ((GroupDatasource) datasource).hasGroups()) {
-            GroupDatasource ds = (GroupDatasource) datasource;
-            for (Object item : ds.rootGroups()) {
-                r = createGroupRow((GroupTable) table, columns, ++r, (GroupInfo) item, 0);
+        if (exportMode == ExportMode.SELECTED_ROWS && table.getSelected().size() > 0) {
+            for (Entity item : table.getSelected()) {
+                createRow(table, columns, 0, ++r, item.getId());
             }
         } else {
-            for (Object itemId : datasource.getItemIds()) {
-                createRow(table, columns, 0, ++r, itemId);
+            if (table instanceof TreeTable) {
+                TreeTable treeTable = (TreeTable) table;
+                HierarchicalDatasource ds = treeTable.getDatasource();
+                for (Object itemId : ds.getRootItemIds()) {
+                    r = createHierarhicalRow(treeTable, columns, exportExpanded, r, itemId);
+                }
+            } else if (table instanceof GroupTable && datasource instanceof GroupDatasource
+                    && ((GroupDatasource) datasource).hasGroups()) {
+                GroupDatasource ds = (GroupDatasource) datasource;
+                for (Object item : ds.rootGroups()) {
+                    r = createGroupRow((GroupTable) table, columns, ++r, (GroupInfo) item, 0);
+                }
+            } else {
+                for (Object itemId : datasource.getItemIds()) {
+                    createRow(table, columns, 0, ++r, itemId);
+                }
             }
         }
+
         for (int c = 0; c < columns.size(); c++) {
             sheet.setColumnWidth(c, sizers[c].getWidth() * COL_WIDTH_MAGIC);
         }
@@ -386,8 +404,7 @@ public class ExcelExporter {
             if (sizers[sizersIndex].isNotificationRequired(notificationReqiured)) {
                 sizers[sizersIndex].notifyCellValue(str, stdFont);
             }
-        }
-        else {
+        } else {
             String str = sizersIndex == 0 ? createSpaceString(level) + cellValue.toString() : cellValue.toString();
             cell.setCellValue(new HSSFRichTextString(str));
             if (sizers[sizersIndex].isNotificationRequired(notificationReqiured)) {
