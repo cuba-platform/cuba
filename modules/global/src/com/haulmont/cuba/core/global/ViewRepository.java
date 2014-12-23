@@ -50,9 +50,17 @@ public interface ViewRepository {
     @Nullable
     View findView(MetaClass metaClass, String name);
 
-    @Nullable
+    /**
+     * Returns names of views defined for the metaClass
+     * @param metaClass entity class
+     * @return names of views
+     */
     Collection<String> getViewNames(MetaClass metaClass);
 
-    @Nullable
+    /**
+     * Returns names of views defined for the entityClass
+     * @param entityClass entity class
+     * @return names of views
+     */
     Collection<String> getViewNames(Class<? extends Entity> entityClass);
 }

@@ -211,8 +211,12 @@ public class AbstractViewRepository implements ViewRepository {
 
     @Override
     public Collection<String> getViewNames(MetaClass metaClass) {
-        Map<String, View> viewMap = storage.get(metaClass);
-        return viewMap != null ? viewMap.keySet() : null;
+        if (metaClass != null) {
+            Map<String, View> viewMap = storage.get(metaClass);
+            return viewMap != null ? viewMap.keySet() : Collections.<String>emptyList();
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     @Override
