@@ -37,12 +37,44 @@
       min-width: $v-unit-size;
       height: $v-unit-size;
 
+      border: valo-border($v-textfield-border,
+                          darkest-color($v-textfield-background-color, $v-app-background-color));
+
       border-top-left-radius: 0;
       border-bottom-left-radius: 0;
       border-left: 0;
 
       border-top-right-radius: 0;
       border-bottom-right-radius: 0;
+
+      color: mix($v-textfield-background-color, valo-font-color($v-textfield-background-color));
+      background: $v-textfield-background-color;
+      @include box-shadow(valo-bevel-and-shadow(
+              $bevel: $v-textfield-bevel,
+              $shadow: $v-textfield-shadow,
+              $background-color:
+              $v-textfield-background-color, $gradient: none));
+
+      .v-ie8 & {
+        background-color: $v-textfield-background-color;
+      }
+
+      @if $v-hover-styles-enabled and type-of($v-textfield-background-color) == color {
+        &:hover {
+          color: valo-font-color($v-textfield-background-color);
+        }
+      }
+
+      &:after,
+      &:hover:after {
+        background: transparent;
+      }
+
+      &:active:after {
+        @if type-of($v-textfield-background-color) == color {
+          @include valo-button-active-style($v-textfield-background-color);
+        }
+      }
     }
 
     .v-slot:last-child .v-button {
@@ -101,6 +133,12 @@
   .#{$primary-stylename}.v-readonly {
     .v-textfield.v-textfield-readonly {
       @include valo-textfield-readonly-style;
+    }
+  }
+
+  .#{$primary-stylename}.v-disabled {
+    .v-button:hover {
+      color: mix($v-textfield-background-color, valo-font-color($v-textfield-background-color));
     }
   }
 }
