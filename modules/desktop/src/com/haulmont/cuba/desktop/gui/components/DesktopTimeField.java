@@ -152,12 +152,12 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
 
     @Override
     public Datasource getDatasource() {
-        return null;
+        return datasource;
     }
 
     @Override
     public MetaProperty getMetaProperty() {
-        return null;
+        return metaProperty;
     }
 
     @Override
