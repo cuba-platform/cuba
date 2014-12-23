@@ -12,11 +12,11 @@
 
   .#{$primary-stylename} .cuba-tokenlist-label.v-widget {
     clear: both;
-    margin: 0 $v-layout-margin-right $v-layout-margin-bottom 0;
+    margin: 0 round($v-layout-margin-right/2) round($v-layout-margin-bottom) 0;
     height: $v-unit-size;
     cursor: pointer;
-    display: inline-block;
-    padding-left: $v-layout-margin-left;
+    display: block;
+    padding-left: round($v-layout-margin-left/2);
   }
 
   .#{$primary-stylename} .cuba-tokenlist-label-close {
@@ -24,19 +24,21 @@
     width: $v-unit-size;
     cursor: pointer;
     display: inline-block;
+    float: right;
     text-align: center;
+    font-size: $v-font-size;
+    line-height: $v-unit-size;
 
-    &:before {
+    &:after {
       font-family: FontAwesome;
       content: "\f00d";
-      line-height: $v-unit-size;
     }
   }
 
   .#{$primary-stylename} .cuba-tokenlist-label-content {
     white-space: nowrap;
     outline: none;
-    font-size: $v-font-size;
+    font-size: 0;
   }
 
   .#{$primary-stylename} .cuba-tokenlist-label-content .content {
@@ -45,12 +47,8 @@
     overflow: hidden;
     display: inline-block;
     line-height: $v-unit-size;
+    font-size: $v-font-size;
     vertical-align: top;
-  }
-
-  .#{$primary-stylename}.inline .cuba-tokenlist-label.v-widget {
-    clear: none;
-    margin-right: $v-layout-margin-right;
     float: left;
   }
 
@@ -65,5 +63,25 @@
 
   .#{$primary-stylename} .cuba-tokenlist-label.open .content {
     cursor: pointer;
+  }
+
+  .#{$primary-stylename}.inline {
+    .cuba-tokenlist-label.v-widget {
+      clear: none;
+      margin-right: round($v-layout-margin-right/2);
+      float: left;
+    }
+
+    .cuba-tokenlist-label.v-widget {
+      display: inline-block;
+    }
+
+    .cuba-tokenlist-label-close {
+      float: none;
+    }
+
+    .cuba-tokenlist-label-content .content {
+      float: none;
+    }
   }
 }

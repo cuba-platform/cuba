@@ -16,7 +16,7 @@
     height: 25px;
     background: #fafafa;
     cursor: pointer;
-    display: inline-block;
+    display: block;
     padding-left: 5px;
   }
 
@@ -26,6 +26,7 @@
     background: #fafafa url(images/token-remove.png) center no-repeat;
     cursor: pointer;
     display: inline-block;
+    float: right;
   }
 
   .#{$primary-stylename} .cuba-tokenlist-label-content {
@@ -41,11 +42,6 @@
     display: inline-block;
     line-height: 25px;
     vertical-align: top;
-  }
-
-  .#{$primary-stylename}.inline .cuba-tokenlist-label.v-widget {
-    clear: none;
-    margin-right: 5px;
     float: left;
   }
 
@@ -60,5 +56,25 @@
 
   .#{$primary-stylename} .cuba-tokenlist-label.open .content {
     cursor: pointer;
+  }
+
+  .#{$primary-stylename}.inline {
+    .cuba-tokenlist-label.v-widget {
+      clear: none;
+      margin-right: 5px;
+      float: left;
+    }
+
+    .cuba-tokenlist-label.v-widget {
+      display: inline-block;
+    }
+
+    .cuba-tokenlist-label-close {
+      float: none;
+    }
+
+    .cuba-tokenlist-label-content .content {
+      float: none;
+    }
   }
 }

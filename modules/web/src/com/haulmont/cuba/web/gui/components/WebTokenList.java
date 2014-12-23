@@ -85,6 +85,7 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
     @Override
     public void setDatasource(CollectionDatasource datasource) {
         this.datasource = datasource;
+        //noinspection unchecked
         datasource.addListener(new CollectionDsListenerAdapter<Entity>() {
             @Override
             public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
@@ -563,8 +564,10 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
         public void refreshComponent() {
             if (inline) {
                 addStyleName("inline");
+                scrollContainerlayout.setSizeUndefined();
             } else {
                 removeStyleName("inline");
+                scrollContainerlayout.setWidth(100, Unit.PERCENTAGE);
             }
 
             if (editor != null) {
@@ -589,7 +592,7 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
                 List<Instance> usedItems = new ArrayList<>();
 
                 // New tokens
-                for (final Object itemId : datasource.getItemIds()) {
+                for (final Object itemId : datasource.getItems()) {
                     final Instance item = datasource.getItem(itemId);
                     CubaTokenListLabel f = itemComponents.get(item);
                     if (f == null) {
@@ -599,7 +602,7 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
                     }
                     f.setEditable(isEditable());
                     f.setText(instanceCaption(item));
-                    f.setWidth("-1px");
+                    f.setWidthUndefined();
 
                     setTokenStyle(f, itemId);
                     scrollContainerlayout.addComponent(f);
