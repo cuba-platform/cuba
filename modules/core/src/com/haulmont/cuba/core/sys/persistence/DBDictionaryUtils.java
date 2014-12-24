@@ -49,8 +49,8 @@ public final class DBDictionaryUtils {
             buf.append(" = ");
             buf.append(join.getAlias2()).append(".").append(to[i]);
 
-            // KK: support deferred delete for collections
-            if ((inverse || persistenceManager.isManyToManyLinkTable(from[i].getTable().getIdentifier().getName()))
+            // KK: support soft delete for collections
+            if ((inverse || persistenceManager.isSecondaryTable(from[i].getTable().getIdentifier().getName()))
                     && to[i].getTable().containsColumn(DBIdentifier.newColumn(deleteTsCol), null)
                     && persistence.getEntityManagerContext().isSoftDeletion()) {
                 buf.append(" AND ");

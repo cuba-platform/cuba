@@ -32,11 +32,11 @@ public interface PersistenceManagerAPI {
     List<String> getSoftDeleteTables();
 
     /**
-     * Checks whether the table provided is a ManyToMany link table.
+     * Checks whether the table provided is a ManyToMany link table or a secondary table in JOINED inheritance strategy.
      * @param table table name
      * @return      true/false
      */
-    boolean isManyToManyLinkTable(String table);
+    boolean isSecondaryTable(String table);
 
     /**
      * Whether to use a lazy collection datasource for this entity, based on current statistics.

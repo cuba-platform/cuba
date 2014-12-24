@@ -17,7 +17,10 @@ import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.JoinTable;
+import javax.persistence.Table;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -37,7 +40,7 @@ public class PersistenceManager implements PersistenceManagerAPI {
 
     protected volatile Set<String> softDeleteTables;
 
-    protected volatile Set<String> manyToManyLinkTables;
+    protected volatile Set<String> secondaryTables;
 
     protected Map<String, EntityStatistics> statisticsCache;
 
@@ -76,11 +79,11 @@ public class PersistenceManager implements PersistenceManagerAPI {
     }
 
     @Override
-    public boolean isManyToManyLinkTable(String table) {
-        if (manyToManyLinkTables == null) {
-            initManyToManyLinkTables();
+    public boolean isSecondaryTable(String table) {
+        if (secondaryTables == null) {
+            initSecondaryTables();
         }
-        return manyToManyLinkTables.contains(table);
+        return secondaryTables.contains(table);
     }
 
     protected synchronized void initSoftDeleteTables() {
@@ -125,9 +128,9 @@ public class PersistenceManager implements PersistenceManagerAPI {
         }
     }
 
-    protected synchronized void initManyToManyLinkTables() {
-        if (manyToManyLinkTables == null) { // double checked locking
-            log.debug("Searching for ManyToMany link tables");
+    protected synchronized void initSecondaryTables() {
+        if (secondaryTables == null) { // double checked locking
+            log.debug("Searching for secondary tables");
             HashSet<String> set = new HashSet<>();
 
             Collection<MetaClass> metaClasses = metadata.getTools().getAllPersistentMetaClasses();
@@ -138,10 +141,27 @@ public class PersistenceManager implements PersistenceManagerAPI {
                         set.add(joinTable.name());
                     }
                 }
+
+                if (isJoinTableInheritance(metaClass)) {
+                    Table table = (Table) metaClass.getJavaClass().getAnnotation(Table.class);
+                    if (table != null) {
+                        set.add(table.name());
+                    }
+                }
             }
 
-            manyToManyLinkTables = set;
+            secondaryTables = set;
         }
+    }
+
+    private boolean isJoinTableInheritance(MetaClass metaClass) {
+        for (MetaClass aClass : metaClass.getAncestors()) {
+            Inheritance inheritance = (Inheritance) aClass.getJavaClass().getAnnotation(Inheritance.class);
+            if (inheritance != null && inheritance.strategy() == InheritanceType.JOINED) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
