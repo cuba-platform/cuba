@@ -149,7 +149,7 @@ public class RunnerBean implements Runner {
     }
 
     protected void registerExecutionFinish(ScheduledTask task, ScheduledExecution execution, Object result) {
-        if ((!BooleanUtils.isTrue(task.getLogStart()) && !BooleanUtils.isTrue(task.getSingleton())) || execution == null)
+        if ((!BooleanUtils.isTrue(task.getLogFinish()) && !BooleanUtils.isTrue(task.getSingleton())) || execution == null)
             return;
 
         log.trace(task + ": registering execution finish");
