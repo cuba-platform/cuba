@@ -1238,6 +1238,7 @@ public class DesktopWindowManager extends WindowManager {
         initShortcut(dialog, panel, actions);
 
         dialog.pack();
+        dialog.setResizable(false);
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
