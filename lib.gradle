@@ -1,0 +1,11 @@
+/*
+ * Copyright (c) 2008-2014 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+ */
+
+project.ext.vaadinVersion = '7.3.5.cuba.5'
+
+project.ext.vaadinServer = [group: 'com.vaadin', name: 'vaadin-server', version: vaadinVersion]
+project.ext.vaadinClient = [group: 'com.vaadin', name: 'vaadin-client', version: vaadinVersion]
+project.ext.vaadinCompiler = [group: 'com.vaadin', name: 'vaadin-client-compiler', version: vaadinVersion]
+project.ext.vaadinThemes = [group: 'com.vaadin', name: 'vaadin-themes', version: vaadinVersion]

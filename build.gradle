@@ -60,7 +60,8 @@ def webToolkitLegacyModule = project(':cuba-web6-toolkit')
 def webModuleThemes = project(':cuba-web-themes')
 def webLegacyModuleThemes = project(':cuba-web6-themes')
 
-def vaadinVersion = '7.3.5.cuba.5'
+apply from: "$rootProject.projectDir/lib.gradle"
+
 def vaadinLegacyVersion = '6.6.1.161'
 def springVersion = '3.2.8.RELEASE'
 def springSecurityVersion = '3.2.3.RELEASE'
@@ -376,7 +377,7 @@ configure(webModule) {
         compile(group: 'org.springframework', name: 'spring-webmvc', version: springVersion)
         compile(group: 'org.json', name: 'json', version: '20090211')
 
-        compile(group: 'com.vaadin', name: 'vaadin-server', version: vaadinVersion) {
+        compile(vaadinServer) {
             exclude(group: 'com.vaadin', module: 'vaadin-sass-compiler')
         }
         // compile(group: 'com.vaadin', name: 'vaadin-themes', version: vaadinVersion)
@@ -482,8 +483,8 @@ configure(webToolkitModule) {
     dependencies {
         compile(webModule)
 
-        compile(group: 'com.vaadin', name: 'vaadin-client', version: vaadinVersion)
-        compile(group: 'com.vaadin', name: 'vaadin-client-compiler', version: vaadinVersion)
+        compile(vaadinClient)
+        compile(vaadinCompiler)
 
 //        Uncomment for SuperDevMode debug
 //        compile(servletApi)
