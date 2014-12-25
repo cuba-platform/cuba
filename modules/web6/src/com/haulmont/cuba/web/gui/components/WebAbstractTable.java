@@ -1680,8 +1680,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         }
     }
 
-    protected class WebTableFieldFactory extends com.haulmont.cuba.web.gui.components.AbstractFieldFactory
-            implements TableFieldFactory {
+    protected class WebTableFieldFactory extends AbstractFieldFactory implements TableFieldFactory {
 
         @Override
         public com.vaadin.ui.Field createField(com.vaadin.data.Container container,

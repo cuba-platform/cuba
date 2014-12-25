@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Copyright (c) 2008-2014 Haulmont. All rights reserved.
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-package com.haulmont.cuba.web.gui.components;
+package com.haulmont.cuba.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
@@ -13,9 +13,10 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -27,6 +28,8 @@ import javax.persistence.TemporalType;
  * @version $Id$
  */
 public abstract class AbstractFieldFactory implements FieldFactory {
+
+    protected ComponentsFactory componentsFactory = AppConfig.getFactory();
 
     @Override
     public Component createField(Datasource datasource, String property, Element xmlDescriptor) {
@@ -62,19 +65,19 @@ public abstract class AbstractFieldFactory implements FieldFactory {
     }
 
     protected Component createNumberField(Datasource datasource, String property) {
-        WebTextField textField = new WebTextField();
+        TextField textField = componentsFactory.createComponent(TextField.NAME);
         textField.setDatasource(datasource, property);
         return textField;
     }
 
     protected Component createBooleanField(Datasource datasource, String property) {
-        WebCheckBox checkBox = new WebCheckBox();
+        CheckBox checkBox = componentsFactory.createComponent(CheckBox.NAME);
         checkBox.setDatasource(datasource, property);
         return checkBox;
     }
 
     protected Component createMaskedField(Datasource datasource, String property, Element xmlDescriptor) {
-        WebMaskedField maskedField = new WebMaskedField();
+        MaskedField maskedField = componentsFactory.createComponent(MaskedField.NAME);
         maskedField.setDatasource(datasource, property);
         if (xmlDescriptor != null) {
             maskedField.setMask(xmlDescriptor.attributeValue("mask"));
@@ -83,19 +86,19 @@ public abstract class AbstractFieldFactory implements FieldFactory {
     }
 
     protected Component createStringField(Datasource datasource, String property, Element xmlDescriptor) {
-        WebAbstractTextField textField = null;
+        TextInputField textField = null;
 
         if (xmlDescriptor != null) {
             final String rows = xmlDescriptor.attributeValue("rows");
             if (!StringUtils.isEmpty(rows)) {
-                WebAbstractTextArea textArea = new WebResizableTextArea();
+                TextArea textArea = componentsFactory.createComponent(TextArea.NAME);
                 textArea.setRows(Integer.parseInt(rows));
                 textField = textArea;
             }
         }
 
         if (textField == null) {
-            textField = new WebTextField();
+            textField = componentsFactory.createComponent(TextField.NAME);
         }
 
         textField.setDatasource(datasource, property);
@@ -116,7 +119,7 @@ public abstract class AbstractFieldFactory implements FieldFactory {
 
     protected Component createDateField(Datasource datasource, String property, MetaPropertyPath mpp,
                                         Element xmlDescriptor) {
-        WebDateField dateField = new WebDateField();
+        DateField dateField = componentsFactory.createComponent(DateField.NAME);
         dateField.setDatasource(datasource, property);
 
         MetaProperty metaProperty = mpp.getMetaProperty();
@@ -169,8 +172,9 @@ public abstract class AbstractFieldFactory implements FieldFactory {
     }
 
     protected Component createTimeField(Datasource datasource, String property, Element xmlDescriptor) {
-        WebTimeField timeField = new WebTimeField();
+        TimeField timeField = componentsFactory.createComponent(TimeField.NAME);
         timeField.setDatasource(datasource, property);
+
         if (xmlDescriptor != null) {
             String showSeconds = xmlDescriptor.attributeValue("showSeconds");
             if (Boolean.valueOf(showSeconds)) {
@@ -186,11 +190,11 @@ public abstract class AbstractFieldFactory implements FieldFactory {
         CollectionDatasource optionsDatasource = getOptionsDatasource(datasource, property);
 
         if (optionsDatasource == null) {
-            pickerField = new WebPickerField();
+            pickerField = componentsFactory.createComponent(PickerField.NAME);
             pickerField.addLookupAction();
             pickerField.addClearAction();
         } else {
-            WebLookupPickerField lookupPickerField = new WebLookupPickerField();
+            LookupPickerField lookupPickerField = componentsFactory.createComponent(LookupPickerField.NAME);
             lookupPickerField.setOptionsDatasource(optionsDatasource);
 
             pickerField = lookupPickerField;
@@ -200,10 +204,12 @@ public abstract class AbstractFieldFactory implements FieldFactory {
             }
         }
 
-        String captionProperty = xmlDescriptor.attributeValue("captionProperty");
-        if (StringUtils.isNotEmpty(captionProperty)) {
-            pickerField.setCaptionMode(CaptionMode.PROPERTY);
-            pickerField.setCaptionProperty(captionProperty);
+        if (xmlDescriptor != null) {
+            String captionProperty = xmlDescriptor.attributeValue("captionProperty");
+            if (StringUtils.isNotEmpty(captionProperty)) {
+                pickerField.setCaptionMode(CaptionMode.PROPERTY);
+                pickerField.setCaptionProperty(captionProperty);
+            }
         }
 
         pickerField.setDatasource(datasource, property);
@@ -212,14 +218,14 @@ public abstract class AbstractFieldFactory implements FieldFactory {
     }
 
     protected Component createEnumField(Datasource datasource, String property) {
-        WebLookupField lookupField = new WebLookupField();
+        LookupField lookupField = componentsFactory.createComponent(LookupField.NAME);
         lookupField.setDatasource(datasource, property);
 
         return lookupField;
     }
 
     protected Component createUnsupportedField(MetaPropertyPath mpp) {
-        WebLabel label = new WebLabel();
+        Label label = componentsFactory.createComponent(Label.NAME);
         label.setValue("TODO: " + (mpp != null ? mpp.getRange() : ""));
         return label;
     }

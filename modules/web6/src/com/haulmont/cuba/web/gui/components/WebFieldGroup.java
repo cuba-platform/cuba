@@ -11,10 +11,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Security;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.DatasourceComponent;
-import com.haulmont.cuba.gui.components.Field;
-import com.haulmont.cuba.gui.components.ValidationException;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -818,7 +815,7 @@ public class WebFieldGroup
         }
     }
 
-    protected class WebFieldGroupFieldFactory extends com.haulmont.cuba.web.gui.components.AbstractFieldFactory {
+    protected class WebFieldGroupFieldFactory extends AbstractFieldFactory {
 
         @Override
         protected CollectionDatasource getOptionsDatasource(Datasource datasource, String property) {

@@ -849,7 +849,7 @@ public class WebFieldGroup
         }
     }
 
-    protected class WebFieldGroupFieldFactory extends com.haulmont.cuba.web.gui.components.AbstractFieldFactory {
+    protected class WebFieldGroupFieldFactory extends AbstractFieldFactory {
 
         @Override
         protected CollectionDatasource getOptionsDatasource(Datasource datasource, String property) {
