@@ -48,8 +48,6 @@ public class LayoutLoaderConfig {
         config.register(ScrollBoxLayout.NAME, ScrollBoxLayoutLoader.class);
         config.register("scrollbox", ScrollBoxLayoutLoader.class); // for backward compatibility
         config.register(GroupBoxLayout.NAME, GroupBoxLayoutLoader.class);
-        config.register(ToggleBoxLayout.NAME, ToggleBoxLayoutLoader.class);
-        config.register("togglebox", ToggleBoxLayoutLoader.class); // for backward compatibility
         config.register(HtmlBoxLayout.NAME, HtmlBoxLayoutLoader.class);
         config.register("htmlbox", HtmlBoxLayoutLoader.class); // for backward compatibility
         config.register(FlowBoxLayout.NAME, FlowBoxLayoutLoader.class);
