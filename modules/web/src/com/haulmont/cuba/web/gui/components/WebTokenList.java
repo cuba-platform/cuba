@@ -592,7 +592,7 @@ public class WebTokenList extends WebAbstractField<WebTokenList.CubaTokenList> i
                 List<Instance> usedItems = new ArrayList<>();
 
                 // New tokens
-                for (final Object itemId : datasource.getItems()) {
+                for (final Object itemId : datasource.getItemIds()) {
                     final Instance item = datasource.getItem(itemId);
                     CubaTokenListLabel f = itemComponents.get(item);
                     if (f == null) {
