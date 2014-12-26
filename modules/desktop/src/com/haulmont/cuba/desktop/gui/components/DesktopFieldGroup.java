@@ -9,6 +9,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
+import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
@@ -63,6 +64,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
     protected Security security = AppBeans.get(Security.NAME);
     protected MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+    protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
 
     protected Map<Integer, Integer> columnFieldCaptionWidth = null;
     protected int fieldCaptionWidth = -1;
@@ -726,7 +728,9 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
                     fieldDatasource != null ? fieldDatasource.getMetaClass().getPropertyPath(propertyId) : null;
 
             if (propertyPath != null) {
-                caption = messageTools.getPropertyCaption(propertyPath.getMetaClass(), propertyId);
+                MetaClass propertyMetaClass = metadataTools.getEnclosingMetaClass(propertyPath);
+                String propertyName = propertyPath.getMetaProperty().getName();
+                caption = messageTools.getPropertyCaption(propertyMetaClass, propertyName);
             }
         }
         return caption;

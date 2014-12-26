@@ -7,10 +7,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MessageTools;
-import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.Security;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -52,6 +49,7 @@ public class WebFieldGroup
     protected Security security = AppBeans.get(Security.NAME);
 
     protected MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+    protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
     protected Messages messages = AppBeans.get(Messages.NAME);
 
     public WebFieldGroup() {
@@ -299,7 +297,9 @@ public class WebFieldGroup
                     fieldDatasource != null ? fieldDatasource.getMetaClass().getPropertyPath(propertyId) : null;
 
             if (propertyPath != null) {
-                caption = messageTools.getPropertyCaption(propertyPath.getMetaClass(), propertyId);
+                MetaClass propertyMetaClass = metadataTools.getEnclosingMetaClass(propertyPath);
+                String propertyName = propertyPath.getMetaProperty().getName();
+                caption = messageTools.getPropertyCaption(propertyMetaClass, propertyName);
             }
         }
         return caption;
@@ -396,7 +396,9 @@ public class WebFieldGroup
             if (caption == null) {
                 MetaPropertyPath propertyPath = fieldDatasource.getMetaClass().getPropertyPath(fieldConf.getId());
                 if (propertyPath != null) {
-                    caption = messageTools.getPropertyCaption(propertyPath.getMetaClass(), fieldConf.getId());
+                    MetaClass propertyMetaClass = metadataTools.getEnclosingMetaClass(propertyPath);
+                    String propertyName = propertyPath.getMetaProperty().getName();
+                    caption = messageTools.getPropertyCaption(propertyMetaClass, propertyName);
                 }
             }
 

@@ -6,6 +6,8 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.WindowManager;
@@ -33,10 +35,12 @@ import java.util.List;
  */
 public abstract class AbstractTableLoader extends ComponentLoader {
 
+    private Log log = LogFactory.getLog(getClass());
+
     protected ComponentsFactory factory;
     protected LayoutLoaderConfig config;
 
-    private Log log = LogFactory.getLog(getClass());
+    protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
 
     public AbstractTableLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
         super(context);
@@ -280,7 +284,11 @@ public abstract class AbstractTableLoader extends ComponentLoader {
         if (column.getCaption() == null) {
             String columnCaption;
             if (column.getId() instanceof MetaPropertyPath) {
-                columnCaption = messageTools.getPropertyCaption(((MetaPropertyPath) column.getId()).getMetaProperty());
+                MetaPropertyPath mpp = (MetaPropertyPath) column.getId();
+                String propertyName = mpp.getMetaProperty().getName();
+                MetaClass propertyMetaClass = metadataTools.getEnclosingMetaClass(mpp);
+
+                columnCaption = messageTools.getPropertyCaption(propertyMetaClass, propertyName);
             } else {
                 Class<?> declaringClass = ds.getMetaClass().getJavaClass();
                 String className = declaringClass.getName();

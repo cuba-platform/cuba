@@ -667,7 +667,10 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                 if (!property.getRange().getCardinality().isMany() && !metadataTools.isSystem(property)) {
                     Table.Column column = new Table.Column(metaPropertyPath);
 
-                    column.setCaption(messageTools.getPropertyCaption(property));
+                    String propertyName = property.getName();
+                    MetaClass propertyMetaClass = metadataTools.getEnclosingMetaClass(metaPropertyPath);
+
+                    column.setCaption(messageTools.getPropertyCaption(propertyMetaClass, propertyName));
                     column.setType(metaPropertyPath.getRangeJavaClass());
 
                     Element element = DocumentHelper.createElement("column");

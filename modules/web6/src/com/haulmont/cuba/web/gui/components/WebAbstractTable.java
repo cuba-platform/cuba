@@ -692,14 +692,19 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
         final Collection<Object> columns;
         if (this.columns.isEmpty()) {
-            Collection<MetaPropertyPath> paths = metadataTools.getViewPropertyPaths(datasource.getView(), datasource.getMetaClass());
+            MessageTools messageTools = AppBeans.get(MessageTools.NAME);
+            Collection<MetaPropertyPath> paths =
+                    metadataTools.getViewPropertyPaths(datasource.getView(), datasource.getMetaClass());
+
             for (MetaPropertyPath metaPropertyPath : paths) {
                 MetaProperty property = metaPropertyPath.getMetaProperty();
                 if (!property.getRange().getCardinality().isMany() && !metadataTools.isSystem(property)) {
                     Table.Column column = new Table.Column(metaPropertyPath);
 
-                    MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-                    column.setCaption(messageTools.getPropertyCaption(property));
+                    String propertyName = property.getName();
+                    MetaClass propertyMetaClass = metadataTools.getEnclosingMetaClass(metaPropertyPath);
+
+                    column.setCaption(messageTools.getPropertyCaption(propertyMetaClass, propertyName));
                     column.setType(metaPropertyPath.getRangeJavaClass());
 
                     Element element = DocumentHelper.createElement("column");

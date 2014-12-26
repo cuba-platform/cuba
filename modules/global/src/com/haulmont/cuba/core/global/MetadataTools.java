@@ -29,6 +29,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.*;
 
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+
 /**
  * Utility class to provide common metadata-related functionality.
  * <p/> Implemented as Spring bean to allow extension in application projects.
@@ -58,6 +60,7 @@ public class MetadataTools {
      */
     public MetadataTools() {
     }
+
     /**
      * Formats a value according to the property type.
      * @param value    object to format
@@ -284,6 +287,28 @@ public class MetadataTools {
      */
     public boolean isEmbeddable(MetaClass metaClass) {
         return metaClass.getJavaClass().isAnnotationPresent(javax.persistence.Embeddable.class);
+    }
+
+    /**
+     * Get metaclass that contains metaproperty for passed propertyPath.
+     * Resolves real metaclass for property in consideration of inherited entity classes and extended classes.
+     *
+     * @param propertyPath Property path
+     * @return metaclass
+     */
+    public MetaClass getEnclosingMetaClass(MetaPropertyPath propertyPath) {
+        checkNotNullArgument(propertyPath, "Property path should not be null");
+
+        MetaProperty[] propertyChain = propertyPath.get();
+        MetaClass currentMetaClass = propertyPath.getMetaClass();
+        int chainIndex = 0;
+        while (chainIndex != propertyChain.length - 1) {
+            MetaProperty chainProperty = propertyChain[chainIndex];
+            currentMetaClass = chainProperty.getRange().asClass();
+            chainIndex++;
+        }
+
+        return currentMetaClass;
     }
 
     /**
