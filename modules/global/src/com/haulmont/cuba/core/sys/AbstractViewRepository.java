@@ -235,6 +235,7 @@ public class AbstractViewRepository implements ViewRepository {
         Preconditions.checkNotNullArgument(metaClass, "MetaClass is null");
         lock.readLock().lock();
         try {
+            checkInitialized();
             Map<String, View> viewMap = storage.get(metaClass);
             return viewMap != null ? viewMap.keySet() : Collections.<String>emptyList();
         } finally {
@@ -300,9 +301,15 @@ public class AbstractViewRepository implements ViewRepository {
     }
 
     public void deployViews(String resourceUrl) {
+        lock.readLock().lock();
+        try {
+            checkInitialized();
+        } finally {
+            lock.readLock().unlock();
+        }
+
         Element rootElem = DocumentHelper.createDocument().addElement("views");
 
-        lock.readLock().unlock();
         lock.writeLock().lock();
         try {
             addFile(rootElem, resourceUrl);
@@ -310,7 +317,6 @@ public class AbstractViewRepository implements ViewRepository {
             for (Element viewElem : Dom4j.elements(rootElem, "view")) {
                 deployView(rootElem, viewElem, new HashSet<ViewInfo>());
             }
-            lock.readLock().lock();
         } finally {
             lock.writeLock().unlock();
         }
@@ -321,6 +327,13 @@ public class AbstractViewRepository implements ViewRepository {
     }
 
     public void deployViews(Reader xml) {
+        lock.readLock().lock();
+        try {
+            checkInitialized();
+        } finally {
+            lock.readLock().unlock();
+        }
+
         SAXReader reader = new SAXReader();
         Document doc;
         try {
@@ -351,12 +364,9 @@ public class AbstractViewRepository implements ViewRepository {
     }
 
     public View deployView(Element rootElem, Element viewElem) {
-        lock.readLock().unlock();
         lock.writeLock().lock();
         try {
-            View view = deployView(rootElem, viewElem, new HashSet<ViewInfo>());
-            lock.readLock().lock();
-            return view;
+            return deployView(rootElem, viewElem, new HashSet<ViewInfo>());
         } finally {
             lock.writeLock().unlock();
         }
