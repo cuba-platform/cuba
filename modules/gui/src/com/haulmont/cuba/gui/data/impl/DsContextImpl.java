@@ -330,10 +330,15 @@ public class DsContextImpl implements DsContextImplementation {
 
             @Override
             public void valueChanged(Entity source, String property, Object prevValue, Object value) {
-                if (propertyName != null && ObjectUtils.equals(propertyName, property)) {
-                    final Entity item = Datasource.State.VALID.equals(dependFrom.getState()) ? dependFrom.getItem() : null;
-                    if (ObjectUtils.equals(item, source)) {
-                        datasource.refresh();
+                if (propertyName != null) {
+                    // parameter can use a property path with more than one element, e.g. :ds$driversDs.status.id,
+                    // but we should listen the first level property
+                    String listeningProperty = propertyName.split("\\.")[0];
+                    if (listeningProperty.equals(property)) {
+                        final Entity item = Datasource.State.VALID.equals(dependFrom.getState()) ? dependFrom.getItem() : null;
+                        if (ObjectUtils.equals(item, source)) {
+                            datasource.refresh();
+                        }
                     }
                 }
             }
