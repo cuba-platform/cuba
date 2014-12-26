@@ -6,7 +6,6 @@ package com.haulmont.cuba.web;
 
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.security.app.UserManagementService;
@@ -446,11 +445,9 @@ public class LoginWindow extends UIView implements Action.Handler {
         } catch (LoginException e) {
             log.info("Login failed: " + e.toString());
 
-            String message = messages.getMainMessage("loginWindow.loginFailed", resolvedLocale);
-            new Notification(
-                    ComponentsHelper.preprocessHtmlMessage(message),
-                    StringUtils.abbreviate(e.getMessage(), 1000), Notification.Type.ERROR_MESSAGE, true)
-            .show(ui.getPage());
+            String title = messages.getMainMessage("loginWindow.loginFailed", resolvedLocale);
+            String message = StringUtils.abbreviate(e.getMessage(), 1000);
+            new Notification(title, message, Notification.Type.ERROR_MESSAGE, true).show(ui.getPage());
 
             if (loginByRememberMe) {
                 loginByRememberMe = false;

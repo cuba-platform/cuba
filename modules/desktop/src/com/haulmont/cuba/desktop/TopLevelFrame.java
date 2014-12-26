@@ -13,10 +13,7 @@ import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
 import com.haulmont.cuba.desktop.sys.DisabledGlassPane;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.components.IFrame;
 import net.miginfocom.swing.MigLayout;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
@@ -26,6 +23,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+
+import static com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper.convertNotificationType;
+import static com.haulmont.cuba.gui.ComponentsHelper.preprocessHtmlMessage;
+import static com.haulmont.cuba.gui.components.IFrame.NotificationType;
+import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
 
 /**
  * Represents Top level application frame
@@ -78,7 +80,7 @@ public class TopLevelFrame extends JFrame {
         windowManager = new DesktopWindowManager(this);
     }
 
-    protected void showNotificationPopup(String title, String caption, IFrame.NotificationType type) {
+    protected void showNotificationPopup(String title, String caption, NotificationType type) {
         JPanel panel = new JPanel(new MigLayout("flowy"));
         panel.setBorder(BorderFactory.createLineBorder(Color.gray));
 
@@ -137,12 +139,12 @@ public class TopLevelFrame extends JFrame {
         }
     }
 
-    protected String preparePopupText(String title, String caption) {
-        if (StringUtils.isNotBlank(title)) {
-            caption = String.format("<b>%s</b><br>%s", title, caption);
+    protected String preparePopupText(String caption, String description) {
+        if (StringUtils.isNotBlank(caption)) {
+            description = String.format("<b>%s</b><br>%s", caption, description);
         }
         StringBuilder sb = new StringBuilder("<html>");
-        String[] strings = caption.split("(<br>)|(<br/>)");
+        String[] strings = description.split("(<br>)|(<br/>)");
         for (String string : strings) {
             sb.append(string).append("<br/>");
         }
@@ -150,40 +152,39 @@ public class TopLevelFrame extends JFrame {
         return sb.toString();
     }
 
-    public void showNotification(String caption, String description, IFrame.NotificationType type) {
+    public void showNotification(String caption, String description, NotificationType type) {
         Configuration configuration = AppBeans.get(Configuration.NAME);
         DesktopConfig config = configuration.getConfig(DesktopConfig.class);
 
-        caption = Strings.nullToEmpty(ComponentsHelper.preprocessHtmlMessage(
-                IFrame.NotificationType.isHTML(type) ? caption : StringEscapeUtils.escapeHtml(caption)));
-        description = Strings.nullToEmpty(ComponentsHelper.preprocessHtmlMessage(
-                IFrame.NotificationType.isHTML(type) ? description : StringEscapeUtils.escapeHtml(description)));
+        if (!NotificationType.isHTML(type)) {
+            caption = preprocessHtmlMessage(escapeHtml(Strings.nullToEmpty(caption)));
+            description = preprocessHtmlMessage(escapeHtml(Strings.nullToEmpty(description)));
+        }
 
         if (config.isDialogNotificationsEnabled()
-                && type != IFrame.NotificationType.TRAY && type != IFrame.NotificationType.TRAY_HTML) {
+                && type != NotificationType.TRAY
+                && type != NotificationType.TRAY_HTML) {
             showNotificationDialog(caption, description, type);
         } else {
             showNotificationPopup(caption, description, type);
         }
     }
 
-    public void showNotification(String caption, IFrame.NotificationType type) {
+    public void showNotification(String caption, NotificationType type) {
         showNotification(null, caption, type);
     }
 
-    protected void showNotificationDialog(String caption, String description, IFrame.NotificationType type) {
+    protected void showNotificationDialog(String caption, String description, NotificationType type) {
         Messages messages = AppBeans.get(Messages.NAME);
         String title = messages.getMessage(AppConfig.getMessagesPack(), "notification.title." + type);
         String text = preparePopupText(caption, description);
-
-        int messageType = DesktopComponentsHelper.convertNotificationType(type);
 
         String closeText = messages.getMainMessage("actions.Close");
         JButton option = new JButton(closeText);
         option.setPreferredSize(new Dimension(80, DesktopComponentsHelper.BUTTON_HEIGHT));
 
         @SuppressWarnings("MagicConstant")
-        JOptionPane pane = new JOptionPane(text, messageType,
+        JOptionPane pane = new JOptionPane(text, convertNotificationType(type),
                 JOptionPane.DEFAULT_OPTION, null,
                 new Object[]{option}, option);
 

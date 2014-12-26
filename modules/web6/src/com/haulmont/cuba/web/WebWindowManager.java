@@ -40,6 +40,11 @@ import org.apache.commons.logging.LogFactory;
 import javax.annotation.Nullable;
 import java.util.*;
 
+import static com.haulmont.cuba.gui.ComponentsHelper.preprocessHtmlMessage;
+import static com.haulmont.cuba.gui.components.IFrame.MessageType;
+import static com.haulmont.cuba.gui.components.IFrame.NotificationType;
+import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.convertNotificationType;
+
 /**
  * @author krivopustov
  * @version $Id$
@@ -256,11 +261,11 @@ public class WebWindowManager extends WindowManager {
                     }
                 } else {
                     final Integer hashCode = getWindowHashCode(window);
-                    ComponentContainer tab = null;
+                    Layout tab = null;
                     if (hashCode != null && !multipleOpen) {
                         tab = findTab(hashCode);
                     }
-                    ComponentContainer oldLayout = tab;
+                    Layout oldLayout = tab;
                     final WindowBreadCrumbs oldBreadCrumbs = tabs.get(oldLayout);
 
                     if (oldBreadCrumbs != null
@@ -681,7 +686,7 @@ public class WebWindowManager extends WindowManager {
             win.setCubaId("dialog_" + window.getId());
         }
 
-        Layout layout = (Layout) WebComponentsHelper.getComposition(window);
+        Layout layout = WebComponentsHelper.getComposition(window);
 
         // surround window layout with outer layout to prevent double painting
         VerticalLayout outerLayout = new VerticalLayout();
@@ -808,7 +813,7 @@ public class WebWindowManager extends WindowManager {
             showOptionDialog(
                     messages.getMessage(WebWindow.class, "closeUnsaved.caption"),
                     messages.getMessage(WebWindow.class, "discardChangesOnClose"),
-                    IFrame.MessageType.WARNING,
+                    MessageType.WARNING,
                     new Action[]{
                             new AbstractAction(messages.getMessage(WebWindow.class, "actions.Yes")) {
                                 @Override
@@ -977,31 +982,31 @@ public class WebWindowManager extends WindowManager {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
-    public void showNotification(String caption, IFrame.NotificationType type) {
-        caption = ComponentsHelper.preprocessHtmlMessage(
-                IFrame.NotificationType.isHTML(type) ? caption : StringEscapeUtils.escapeHtml(caption));
-
-        appWindow.showNotification(caption, WebComponentsHelper.convertNotificationType(type));
+    public void showNotification(String caption, NotificationType type) {
+        if (!NotificationType.isHTML(type)) {
+            caption = preprocessHtmlMessage(StringEscapeUtils.escapeHtml(caption));
+        }
+        appWindow.showNotification(caption, convertNotificationType(type));
     }
 
     @Override
-    public void showNotification(String caption, String description, IFrame.NotificationType type) {
-        caption = ComponentsHelper.preprocessHtmlMessage(
-                IFrame.NotificationType.isHTML(type) ? caption : StringEscapeUtils.escapeHtml(caption));
-        description = ComponentsHelper.preprocessHtmlMessage(
-                IFrame.NotificationType.isHTML(type) ? description : StringEscapeUtils.escapeHtml(description));
+    public void showNotification(String caption, String description, NotificationType type) {
+        if (!NotificationType.isHTML(type)) {
+            caption = preprocessHtmlMessage(StringEscapeUtils.escapeHtml(caption));
+            description = preprocessHtmlMessage(StringEscapeUtils.escapeHtml(description));
+        }
 
         com.vaadin.ui.Window.Notification notify = new com.vaadin.ui.Window.Notification(
-                caption, description, WebComponentsHelper.convertNotificationType(type));
+                caption, description, convertNotificationType(type));
 
-        if (type.equals(IFrame.NotificationType.HUMANIZED)) {
+        if (type.equals(NotificationType.HUMANIZED)) {
             notify.setDelayMsec(3000);
         }
         appWindow.showNotification(notify);
     }
 
     @Override
-    public void showMessageDialog(String title, String message, IFrame.MessageType messageType) {
+    public void showMessageDialog(String title, String message, MessageType messageType) {
         removeWindowsWithName("cuba-message-dialog");
 
         final com.vaadin.ui.Window window = new com.vaadin.ui.Window(title);
@@ -1037,9 +1042,16 @@ public class WebWindowManager extends WindowManager {
         layout.setMargin(true);
         window.setContent(layout);
 
-        Label messageLab = new Label(ComponentsHelper.preprocessHtmlMessage(
-                IFrame.MessageType.isHTML(messageType) ? message : StringEscapeUtils.escapeHtml(message)));
-        messageLab.setContentMode(Label.CONTENT_XHTML);
+        Label messageLab = new Label();
+        messageLab.setWidth("100%");
+        if (MessageType.isHTML(messageType)) {
+            messageLab.setContentMode(Label.CONTENT_XHTML);
+            messageLab.setValue(message);
+        } else {
+            messageLab.setContentMode(Label.CONTENT_PREFORMATTED);
+            messageLab.setValue(message);
+        }
+
         layout.addComponent(messageLab);
 
         HorizontalLayout buttonsContainer = new HorizontalLayout();
@@ -1063,7 +1075,6 @@ public class WebWindowManager extends WindowManager {
 
         layout.addComponent(buttonsContainer);
 
-        messageLab.setWidth("100%");
         layout.setComponentAlignment(buttonsContainer, com.vaadin.ui.Alignment.BOTTOM_RIGHT);
 
         float width;
@@ -1091,7 +1102,7 @@ public class WebWindowManager extends WindowManager {
     }
 
     @Override
-    public void showOptionDialog(String title, String message, IFrame.MessageType messageType, Action[] actions) {
+    public void showOptionDialog(String title, String message, MessageType messageType, Action[] actions) {
         removeWindowsWithName("cuba-option-dialog");
 
         final com.vaadin.ui.Window window = new com.vaadin.ui.Window(title);
@@ -1111,10 +1122,15 @@ public class WebWindowManager extends WindowManager {
             }
         });
 
-        Label messageLab = new Label(ComponentsHelper.preprocessHtmlMessage(
-                IFrame.MessageType.isHTML(messageType) ? message : StringEscapeUtils.escapeHtml(message)));
+        Label messageLab = new Label();
         messageLab.setWidth("100%");
-        messageLab.setContentMode(Label.CONTENT_XHTML);
+        if (MessageType.isHTML(messageType)) {
+            messageLab.setContentMode(Label.CONTENT_XHTML);
+            messageLab.setValue(message);
+        } else {
+            messageLab.setContentMode(Label.CONTENT_PREFORMATTED);
+            messageLab.setValue(message);
+        }
 
         float width;
         if (getDialogParams().getWidth() != null) {
@@ -1328,7 +1344,7 @@ public class WebWindowManager extends WindowManager {
         }
     }
 
-    public  void setDebugId(Component component, String id) {
+    public void setDebugId(Component component, String id) {
         if (app.isTestModeRequest()) {
             if (webConfig.getAllowIdSuffix()) {
                 component.setDebugId(generateDebugId(id));

@@ -45,6 +45,8 @@ import java.net.URISyntaxException;
 import java.util.*;
 import java.util.List;
 
+import static com.haulmont.cuba.gui.components.IFrame.MessageType;
+
 /**
  * @author krivopustov
  * @version $Id$
@@ -631,7 +633,8 @@ public class DesktopWindowManager extends WindowManager {
             throw new IllegalStateException("BreadCrumbs not found");
 
         Window currentWindow = breadCrumbs.getCurrentWindow();
-        windowOpenMode.get(currentWindow.getFrame()).setFocusOwner(frame.getFocusOwner());
+        Window currentWindowFrame = currentWindow.getFrame();
+        windowOpenMode.get(currentWindowFrame).setFocusOwner(frame.getFocusOwner());
 
         Set<Map.Entry<Window, Integer>> set = windows.entrySet();
         boolean pushed = false;
@@ -666,7 +669,9 @@ public class DesktopWindowManager extends WindowManager {
     }
 
     protected void setActiveWindowCaption(String caption, String description, int tabIndex) {
-        ((ButtonTabComponent) tabsPane.getTabComponentAt(tabIndex)).setCaption(formatTabCaption(caption, description));
+        ButtonTabComponent tabComponent = (ButtonTabComponent) tabsPane.getTabComponentAt(tabIndex);
+        String formattedCaption = formatTabCaption(caption, description);
+        tabComponent.setCaption(formattedCaption);
     }
 
     protected void setTopLevelWindowCaption(String caption) {
@@ -1032,7 +1037,8 @@ public class DesktopWindowManager extends WindowManager {
                     putToWindowMap(entry.getKey(), entry.getValue());
                 }
                 JComponent component = DesktopComponentsHelper.getComposition(currentWindow);
-                final java.awt.Component focusedCmp = windowOpenMode.get(currentWindow.getFrame()).getFocusOwner();
+                Window currentWindowFrame = currentWindow.getFrame();
+                final java.awt.Component focusedCmp = windowOpenMode.get(currentWindowFrame).getFocusOwner();
                 if (focusedCmp != null) {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
@@ -1109,13 +1115,13 @@ public class DesktopWindowManager extends WindowManager {
     }
 
     @Override
-    public void showMessageDialog(final String title, final String message, IFrame.MessageType messageType) {
+    public void showMessageDialog(final String title, final String message, MessageType messageType) {
         showOptionDialog(title, message, messageType, false, new Action[]{
                 new DialogAction(DialogAction.Type.OK)
         }, "messageDialog");
     }
 
-    private JPanel createButtonsPanel(Action[] actions, final JDialog dialog) {
+    protected JPanel createButtonsPanel(Action[] actions, final JDialog dialog) {
         JPanel buttonsPanel = new JPanel();
         for (final Action action : actions) {
             JButton button = new JButton(action.getCaption());
@@ -1142,7 +1148,7 @@ public class DesktopWindowManager extends WindowManager {
         return buttonsPanel;
     }
 
-    private void initShortcut(final JDialog dialog, JPanel panel, final Action[] actions) {
+    protected void initShortcut(final JDialog dialog, JPanel panel, final Action[] actions) {
         Configuration configuration = AppBeans.get(Configuration.NAME);
         ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
 
@@ -1175,8 +1181,8 @@ public class DesktopWindowManager extends WindowManager {
         });
     }
 
-    private void showOptionDialog(final String title, final String message, IFrame.MessageType messageType,
-                                  boolean alwaysModal, final Action[] actions, String debugName) {
+    protected void showOptionDialog(final String title, final String message, MessageType messageType,
+                                    boolean alwaysModal, final Action[] actions, String debugName) {
         final DialogWindow dialog = new DialogWindow(frame, title);
 
         if (App.getInstance().isTestMode()) {
@@ -1184,7 +1190,7 @@ public class DesktopWindowManager extends WindowManager {
         }
         dialog.setModal(false);
 
-        if (!alwaysModal && actions.length == 1) {
+        if (actions.length == 1) {
             final Action action = actions[0];
             dialog.addWindowListener(new WindowAdapter() {
                 @Override
@@ -1194,7 +1200,7 @@ public class DesktopWindowManager extends WindowManager {
                     cleanupAfterModalDialogClosed(null);
                 }
             });
-        } else {
+        } else if (actions.length > 1) {
             dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
         }
 
@@ -1216,7 +1222,7 @@ public class DesktopWindowManager extends WindowManager {
         }
 
         String msg = message;
-        if (!IFrame.MessageType.isHTML(messageType)) {
+        if (!MessageType.isHTML(messageType)) {
             msg = StringEscapeUtils.escapeHtml(msg);
             msg = ComponentsHelper.preprocessHtmlMessage("<html>" + msg + "</html>");
         } else {
@@ -1274,7 +1280,7 @@ public class DesktopWindowManager extends WindowManager {
         }
     }
 
-    private Icon convertMessageType(IFrame.MessageType messageType) {
+    protected Icon convertMessageType(MessageType messageType) {
         switch (messageType) {
             case CONFIRMATION:
             case CONFIRMATION_HTML:
@@ -1288,7 +1294,7 @@ public class DesktopWindowManager extends WindowManager {
     }
 
     @Override
-    public void showOptionDialog(String title, String message, IFrame.MessageType messageType, final Action[] actions) {
+    public void showOptionDialog(String title, String message, MessageType messageType, final Action[] actions) {
         showOptionDialog(title, message, messageType, true, actions, "optionDialog");
     }
 
@@ -1304,6 +1310,7 @@ public class DesktopWindowManager extends WindowManager {
     /**
      * @deprecated Use {@link WindowManager#setWindowCaption(com.haulmont.cuba.gui.components.Window, String, String)}
      */
+    @Deprecated
     public void setCurrentWindowCaption(Window window, String caption, String description) {
         setWindowCaption(window, caption, description);
     }
@@ -1352,7 +1359,7 @@ public class DesktopWindowManager extends WindowManager {
         protected Window window;
         protected OpenType openType;
         protected Object data;
-        private java.awt.Component focusOwner;
+        protected java.awt.Component focusOwner;
 
         public WindowOpenMode(Window window, OpenType openType) {
             this.window = window;
@@ -1385,7 +1392,7 @@ public class DesktopWindowManager extends WindowManager {
     }
 
     public class TabCloseTask implements Runnable {
-        private final WindowBreadCrumbs breadCrumbs;
+        protected final WindowBreadCrumbs breadCrumbs;
 
         public TabCloseTask(WindowBreadCrumbs breadCrumbs) {
             this.breadCrumbs = breadCrumbs;
@@ -1440,7 +1447,7 @@ public class DesktopWindowManager extends WindowManager {
             showOptionDialog(
                     messages.getMainMessage("closeUnsaved.caption"),
                     messages.getMainMessage("discardChangesOnClose"),
-                    IFrame.MessageType.WARNING,
+                    MessageType.WARNING,
                     new Action[]{
                             new com.haulmont.cuba.gui.components.AbstractAction(
                                     messages.getMainMessage("closeApplication")) {

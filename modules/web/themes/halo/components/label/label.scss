@@ -72,4 +72,9 @@
   .#{$primary-stylename}-semi-bold-label {
     font-weight: 600;
   }
+
+  .#{$primary-stylename} pre {
+    margin: 0;
+    font-family: $v-font-family;
+  }
 }

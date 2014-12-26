@@ -37,7 +37,6 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -46,6 +45,9 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 import static com.haulmont.cuba.gui.components.Component.AUTO_SIZE;
+import static com.haulmont.cuba.gui.components.IFrame.MessageType;
+import static com.haulmont.cuba.gui.components.IFrame.NotificationType;
+import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.convertNotificationType;
 
 /**
  * @author krivopustov
@@ -689,7 +691,7 @@ public class WebWindowManager extends WindowManager {
         win.addCloseListener(new com.vaadin.ui.Window.CloseListener() {
             @Override
             public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
-                window.close(Window.CLOSE_ACTION_ID, true);
+                window.close(Window.CLOSE_ACTION_ID);
             }
         });
 
@@ -819,7 +821,7 @@ public class WebWindowManager extends WindowManager {
             showOptionDialog(
                     messages.getMessage(WebWindow.class, "closeUnsaved.caption"),
                     messages.getMessage(WebWindow.class, "discardChangesOnClose"),
-                    IFrame.MessageType.WARNING,
+                    MessageType.WARNING,
                     new Action[]{
                             new AbstractAction(messages.getMessage(WebWindow.class, "closeApplication")) {
                                 @Override
@@ -990,12 +992,8 @@ public class WebWindowManager extends WindowManager {
 
     @Override
     public void showNotification(String caption, IFrame.NotificationType type) {
-        boolean html = IFrame.NotificationType.isHTML(type);
-        Notification notification = new Notification(
-                html ? ComponentsHelper.preprocessHtmlMessage(caption) : caption,
-                WebComponentsHelper.convertNotificationType(type));
-
-        notification.setHtmlContentAllowed(html);
+        Notification notification = new Notification(caption, convertNotificationType(type));
+        notification.setHtmlContentAllowed(NotificationType.isHTML(type));
         if (type.equals(IFrame.NotificationType.HUMANIZED)) {
             notification.setDelayMsec(HUMANIZED_NOTIFICATION_DELAY_MSEC);
         }
@@ -1004,13 +1002,8 @@ public class WebWindowManager extends WindowManager {
 
     @Override
     public void showNotification(String caption, String description, IFrame.NotificationType type) {
-        boolean html = IFrame.NotificationType.isHTML(type);
-        Notification notification = new Notification(
-                html ? ComponentsHelper.preprocessHtmlMessage(caption) : caption,
-                html ? ComponentsHelper.preprocessHtmlMessage(description) : description,
-                WebComponentsHelper.convertNotificationType(type));
-
-        notification.setHtmlContentAllowed(html);
+        Notification notification = new Notification(caption, description, convertNotificationType(type));
+        notification.setHtmlContentAllowed(NotificationType.isHTML(type));
         if (type.equals(IFrame.NotificationType.HUMANIZED)) {
             notification.setDelayMsec(HUMANIZED_NOTIFICATION_DELAY_MSEC);
         }
@@ -1018,7 +1011,7 @@ public class WebWindowManager extends WindowManager {
     }
 
     @Override
-    public void showMessageDialog(String title, String message, IFrame.MessageType messageType) {
+    public void showMessageDialog(String title, String message, MessageType messageType) {
         final com.vaadin.ui.Window window = new com.vaadin.ui.Window(title);
 
         if (ui.isTestMode()) {
@@ -1052,9 +1045,12 @@ public class WebWindowManager extends WindowManager {
         layout.setMargin(new MarginInfo(true, false, false, false));
         window.setContent(layout);
 
-        Label messageLab = new Label(ComponentsHelper.preprocessHtmlMessage(
-                IFrame.MessageType.isHTML(messageType) ? message : StringEscapeUtils.escapeHtml(message)));
-        messageLab.setContentMode(ContentMode.HTML);
+        Label messageLab = new Label(message);
+        if (MessageType.isHTML(messageType)) {
+            messageLab.setContentMode(ContentMode.HTML);
+        } else {
+            messageLab.setContentMode(ContentMode.PREFORMATTED);
+        }
         layout.addComponent(messageLab);
 
         HorizontalLayout buttonsContainer = new HorizontalLayout();
@@ -1106,7 +1102,7 @@ public class WebWindowManager extends WindowManager {
     }
 
     @Override
-    public void showOptionDialog(String title, String message, IFrame.MessageType messageType, Action[] actions) {
+    public void showOptionDialog(String title, String message, MessageType messageType, Action[] actions) {
         final com.vaadin.ui.Window window = new com.vaadin.ui.Window(title);
 
         if (ui.isTestMode()) {
@@ -1122,9 +1118,12 @@ public class WebWindowManager extends WindowManager {
             }
         });
 
-        Label messageLab = new Label(ComponentsHelper.preprocessHtmlMessage(
-                IFrame.MessageType.isHTML(messageType) ? message : StringEscapeUtils.escapeHtml(message)));
-        messageLab.setContentMode(ContentMode.HTML);
+        Label messageLab = new Label(message);
+        if (MessageType.isHTML(messageType)) {
+            messageLab.setContentMode(ContentMode.HTML);
+        } else {
+            messageLab.setContentMode(ContentMode.PREFORMATTED);
+        }
 
         float width;
         if (getDialogParams().getWidth() != null) {
@@ -1320,7 +1319,7 @@ public class WebWindowManager extends WindowManager {
                 List<LayoutTip> tipsList = analyzer.analyze(window);
 
                 if (tipsList.isEmpty()) {
-                    showNotification("No layout problems found", IFrame.NotificationType.HUMANIZED);
+                    showNotification("No layout problems found", NotificationType.HUMANIZED);
                 } else {
                     window.openWindow("layoutAnalyzer", OpenType.DIALOG, ParamsMap.of("tipsList", tipsList));
                 }
