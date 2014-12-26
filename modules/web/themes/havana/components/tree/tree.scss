@@ -75,4 +75,9 @@
   .#{$primary-stylename}:focus {
     border-color: $cuba-field-focused-border-color;
   }
+
+  .#{$primary-stylename},
+  .v-scrollable.v-panel-content>.v-widget.#{$primary-stylename} {
+    overflow: auto;
+  }
 }
