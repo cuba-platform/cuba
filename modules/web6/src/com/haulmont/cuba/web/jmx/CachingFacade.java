@@ -8,6 +8,8 @@ package com.haulmont.cuba.web.jmx;
 import com.haulmont.cuba.client.sys.PersistenceManagerClient;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Scripting;
+import com.haulmont.cuba.core.global.ViewRepository;
+import com.haulmont.cuba.core.sys.AbstractViewRepository;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -32,6 +34,9 @@ public class CachingFacade implements CachingFacadeMBean {
     @Inject
     private PersistenceManagerClient persistenceManagerClient;
 
+    @Inject
+    private ViewRepository viewRepository;
+
     @Override
     public int getMessagesCacheSize() {
         return messages.getCacheSize();
@@ -53,5 +58,10 @@ public class CachingFacade implements CachingFacadeMBean {
     public void clearPersistenceManagerClientCache() {
         persistenceManagerClient.clearCache();
         log.info("PersistenceManagerClient cache has been cleared");
+    }
+
+    @Override
+    public void clearViewRepositoryCache() {
+        ((AbstractViewRepository) viewRepository).reset();
     }
 }

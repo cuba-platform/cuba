@@ -33,6 +33,8 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Base implementation of the {@link ViewRepository}. Contains methods to store {@link View} objects and deploy
@@ -57,22 +59,32 @@ public class AbstractViewRepository implements ViewRepository {
     @Inject
     protected Resources resources;
 
-    private volatile boolean initialized;
+    protected volatile boolean initialized;
+
+    protected ReadWriteLock lock = new ReentrantReadWriteLock();
 
     protected void checkInitialized() {
         if (!initialized) {
-            synchronized (this) {
+            lock.readLock().unlock();
+            lock.writeLock().lock();
+            try {
                 if (!initialized) {
                     log.info("Initializing views");
                     init();
                     initialized = true;
                 }
+                lock.readLock().lock();
+            } finally {
+                lock.writeLock().unlock();
             }
         }
     }
 
     protected void init() {
         StopWatch initTiming = new Log4JStopWatch("ViewRepository.init." + getClass().getSimpleName());
+
+        storage.clear();
+        readFileNames.clear();
 
         String configName = AppContext.getProperty("cuba.viewsConfig");
         if (!StringUtils.isBlank(configName)) {
@@ -86,7 +98,7 @@ public class AbstractViewRepository implements ViewRepository {
             checkDuplicates(rootElem);
 
             for (Element viewElem : Dom4j.elements(rootElem, "view")) {
-                deployView(rootElem, viewElem);
+                deployView(rootElem, viewElem, new HashSet<ViewInfo>());
             }
         }
 
@@ -145,6 +157,10 @@ public class AbstractViewRepository implements ViewRepository {
         }
     }
 
+    public void reset() {
+        initialized = false;
+    }
+
     /**
      * Get View for an entity.
      *
@@ -190,10 +206,15 @@ public class AbstractViewRepository implements ViewRepository {
             return null;
         }
 
-        checkInitialized();
+        lock.readLock().lock();
+        try {
+            checkInitialized();
 
-        View view = retrieveView(metaClass, name, new HashSet<ViewInfo>());
-        return copyView(view);
+            View view = retrieveView(metaClass, name, new HashSet<ViewInfo>());
+            return copyView(view);
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     protected View copyView(@Nullable View view) {
@@ -212,12 +233,18 @@ public class AbstractViewRepository implements ViewRepository {
     @Override
     public Collection<String> getViewNames(MetaClass metaClass) {
         Preconditions.checkNotNullArgument(metaClass, "MetaClass is null");
-        Map<String, View> viewMap = storage.get(metaClass);
-        return viewMap != null ? viewMap.keySet() : Collections.<String>emptyList();
+        lock.readLock().lock();
+        try {
+            Map<String, View> viewMap = storage.get(metaClass);
+            return viewMap != null ? viewMap.keySet() : Collections.<String>emptyList();
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     @Override
     public Collection<String> getViewNames(Class<? extends Entity> entityClass) {
+        Preconditions.checkNotNullArgument(entityClass, "entityClass is null");
         MetaClass metaClass = metadata.getClassNN(entityClass);
         return getViewNames(metaClass);
     }
@@ -275,10 +302,17 @@ public class AbstractViewRepository implements ViewRepository {
     public void deployViews(String resourceUrl) {
         Element rootElem = DocumentHelper.createDocument().addElement("views");
 
-        addFile(rootElem, resourceUrl);
+        lock.readLock().unlock();
+        lock.writeLock().lock();
+        try {
+            addFile(rootElem, resourceUrl);
 
-        for (Element viewElem : Dom4j.elements(rootElem, "view")) {
-            deployView(rootElem, viewElem);
+            for (Element viewElem : Dom4j.elements(rootElem, "view")) {
+                deployView(rootElem, viewElem, new HashSet<ViewInfo>());
+            }
+            lock.readLock().lock();
+        } finally {
+            lock.writeLock().unlock();
         }
     }
 
@@ -317,10 +351,18 @@ public class AbstractViewRepository implements ViewRepository {
     }
 
     public View deployView(Element rootElem, Element viewElem) {
-        return deployView(rootElem, viewElem, new HashSet<ViewInfo>());
+        lock.readLock().unlock();
+        lock.writeLock().lock();
+        try {
+            View view = deployView(rootElem, viewElem, new HashSet<ViewInfo>());
+            lock.readLock().lock();
+            return view;
+        } finally {
+            lock.writeLock().unlock();
+        }
     }
 
-    public View deployView(Element rootElem, Element viewElem, Set<ViewInfo> visited) {
+    protected View deployView(Element rootElem, Element viewElem, Set<ViewInfo> visited) {
         String viewName = getViewName(viewElem);
         MetaClass metaClass = getMetaClass(viewElem);
 
@@ -566,7 +608,7 @@ public class AbstractViewRepository implements ViewRepository {
         return refMetaClass;
     }
 
-    public void storeView(MetaClass metaClass, View view) {
+    protected void storeView(MetaClass metaClass, View view) {
         Map<String, View> views = storage.get(metaClass);
         if (views == null) {
             views = new ConcurrentHashMap<>();
@@ -585,12 +627,17 @@ public class AbstractViewRepository implements ViewRepository {
     }
 
     public List<View> getAll() {
-        checkInitialized();
-        List<View> list = new ArrayList<>();
-        for (Map<String, View> viewMap : storage.values()) {
-            list.addAll(viewMap.values());
+        lock.readLock().lock();
+        try {
+            checkInitialized();
+            List<View> list = new ArrayList<>();
+            for (Map<String, View> viewMap : storage.values()) {
+                list.addAll(viewMap.values());
+            }
+            return list;
+        } finally {
+            lock.readLock().unlock();
         }
-        return list;
     }
 
     protected static class ViewInfo {

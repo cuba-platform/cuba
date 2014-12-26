@@ -19,4 +19,6 @@ public interface CachingFacadeMBean {
     void clearMessagesCache();
 
     void clearPersistenceManagerClientCache();
+
+    void clearViewRepositoryCache();
 }
