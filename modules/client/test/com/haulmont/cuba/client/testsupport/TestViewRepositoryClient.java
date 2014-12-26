@@ -29,6 +29,7 @@ public class TestViewRepositoryClient extends AbstractViewRepository {
 
     @Override
     protected void init() {
+        initialized = true;
         if (!StringUtils.isEmpty(viewsConfig))
             deployViews(viewsConfig);
     }

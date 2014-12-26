@@ -73,8 +73,8 @@ public class AbstractViewRepository implements ViewRepository {
                     init();
                     initialized = true;
                 }
-                lock.readLock().lock();
             } finally {
+                lock.readLock().lock();
                 lock.writeLock().unlock();
             }
         }
