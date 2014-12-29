@@ -115,6 +115,11 @@ public class PersistenceImpl implements Persistence {
         EntityManagerContext ctx = contextHolder.get();
         if (ctx != null) {
             impl.setSoftDeletion(ctx.isSoftDeletion());
+        } else {
+            ctx = new EntityManagerContext();
+            ctx.setSoftDeletion(isSoftDeletion());
+            contextHolder.set(ctx);
+            impl.setSoftDeletion(isSoftDeletion());
         }
 
         EntityManager em = (EntityManager) Proxy.newProxyInstance(

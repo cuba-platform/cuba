@@ -82,16 +82,15 @@ public interface Persistence {
     EntityManager getEntityManager();
 
     /**
-     * Global soft deletion indication. Each new {@link com.haulmont.cuba.core.EntityManager}
-     * will be created with the same SoftDeletion value.
+     * Global soft deletion attribute. True by default.
      *
      * @return true if soft deletion is on
      */
     boolean isSoftDeletion();
 
     /**
-     * Global soft deletion indication. Each new {@link com.haulmont.cuba.core.EntityManager}
-     * will be created with the same SoftDeletion value.
+     * Set the global soft deletion attribute. The new value affects all {@link EntityManager}s created in
+     * new transactions.
      *
      * @param value true if soft deletion is on
      */
