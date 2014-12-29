@@ -6,9 +6,8 @@
 package com.haulmont.cuba.web.jmx;
 
 /**
- * <p>$Id$</p>
- *
  * @author Alexander Budarov
+ * @version $Id$
  */
 public interface CachingFacadeMBean {
 
@@ -21,4 +20,8 @@ public interface CachingFacadeMBean {
     void clearPersistenceManagerClientCache();
 
     void clearViewRepositoryCache();
+
+    void clearWindowConfig();
+
+    void clearMenuConfig();
 }

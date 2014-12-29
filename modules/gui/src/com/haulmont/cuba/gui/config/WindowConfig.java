@@ -28,6 +28,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -50,17 +52,36 @@ public class WindowConfig {
 
     protected Map<String, WindowInfo> screens = new HashMap<>();
 
+    @Inject
     protected Resources resources;
 
+    @Inject
     protected Metadata metadata;
 
-    @Inject
-    public WindowConfig(Resources resources, Metadata metadata) {
-        this.resources = resources;
-        this.metadata = metadata;
+    protected volatile boolean initialized;
 
-        final String configName = AppContext.getProperty(WINDOW_CONFIG_XML_PROP);
+    protected ReadWriteLock lock = new ReentrantReadWriteLock();
 
+    protected void checkInitialized() {
+        if (!initialized) {
+            lock.readLock().unlock();
+            lock.writeLock().lock();
+            try {
+                if (!initialized) {
+                    init();
+                    initialized = true;
+                }
+            } finally {
+                lock.readLock().lock();
+                lock.writeLock().unlock();
+            }
+        }
+    }
+
+    protected void init() {
+        screens.clear();
+
+        String configName = AppContext.getProperty(WINDOW_CONFIG_XML_PROP);
         StrTokenizer tokenizer = new StrTokenizer(configName);
         for (String location : tokenizer.getTokenArray()) {
             Resource resource = resources.getResource(location);
@@ -81,7 +102,7 @@ public class WindowConfig {
     }
 
     @SuppressWarnings("unchecked")
-    public void loadConfig(Element rootElem) {
+    protected void loadConfig(Element rootElem) {
         for (Element element : (List<Element>) rootElem.elements("include")) {
             String fileName = element.attributeValue("file");
             if (!StringUtils.isBlank(fileName)) {
@@ -105,6 +126,13 @@ public class WindowConfig {
     }
 
     /**
+     * Make the config to reload screens on next request.
+     */
+    public void reset() {
+        initialized = false;
+    }
+
+    /**
      * Get screen information by screen ID.
      *
      * @param id screen ID as set up in <code>screens.xml</code>
@@ -112,22 +140,29 @@ public class WindowConfig {
      */
     @Nullable
     public WindowInfo findWindowInfo(String id) {
-        WindowInfo windowInfo = screens.get(id);
-        if (windowInfo == null) {
-            Matcher matcher = ENTITY_SCREEN_PATTERN.matcher(id);
-            if (matcher.matches()) {
-                MetaClass metaClass = metadata.getClass(matcher.group(1));
-                if (metaClass == null)
-                    return null;
-                MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalMetaClass(metaClass);
-                if (originalMetaClass != null) {
-                    String originalId = new StringBuilder(id)
-                            .replace(matcher.start(1), matcher.end(1), originalMetaClass.getName()).toString();
-                    windowInfo = screens.get(originalId);
+        lock.readLock().lock();
+        try {
+            checkInitialized();
+
+            WindowInfo windowInfo = screens.get(id);
+            if (windowInfo == null) {
+                Matcher matcher = ENTITY_SCREEN_PATTERN.matcher(id);
+                if (matcher.matches()) {
+                    MetaClass metaClass = metadata.getClass(matcher.group(1));
+                    if (metaClass == null)
+                        return null;
+                    MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalMetaClass(metaClass);
+                    if (originalMetaClass != null) {
+                        String originalId = new StringBuilder(id)
+                                .replace(matcher.start(1), matcher.end(1), originalMetaClass.getName()).toString();
+                        windowInfo = screens.get(originalId);
+                    }
                 }
             }
+            return windowInfo;
+        } finally {
+            lock.readLock().unlock();
         }
-        return windowInfo;
     }
 
     /**
@@ -156,7 +191,13 @@ public class WindowConfig {
      * All registered screens
      */
     public Collection<WindowInfo> getWindows() {
-        return screens.values();
+        lock.readLock().lock();
+        try {
+            checkInitialized();
+            return screens.values();
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public String getMetaClassScreenId(MetaClass metaClass, String suffix) {

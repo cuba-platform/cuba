@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.MissingResourceException;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * GenericUI class holding information about the main menu structure.
@@ -42,7 +44,14 @@ public class MenuConfig {
 
     private static Log log = LogFactory.getLog(MenuConfig.class);
     
-    private List<MenuItem> rootItems = new ArrayList<>();
+    protected List<MenuItem> rootItems = new ArrayList<>();
+
+    @Inject
+    protected Resources resources;
+
+    protected volatile boolean initialized;
+
+    protected ReadWriteLock lock = new ReentrantReadWriteLock();
 
     /**
      * Localized menu item caption.
@@ -57,9 +66,26 @@ public class MenuConfig {
         }
     }
 
-    @Inject
-    public MenuConfig(Resources resources) {
-        final String configName = AppContext.getProperty(MENU_CONFIG_XML_PROP);
+    protected void checkInitialized() {
+        if (!initialized) {
+            lock.readLock().unlock();
+            lock.writeLock().lock();
+            try {
+                if (!initialized) {
+                    init();
+                    initialized = true;
+                }
+            } finally {
+                lock.readLock().lock();
+                lock.writeLock().unlock();
+            }
+        }
+    }
+
+    protected void init() {
+        rootItems.clear();
+
+        String configName = AppContext.getProperty(MENU_CONFIG_XML_PROP);
 
         StrTokenizer tokenizer = new StrTokenizer(configName);
         for (String location : tokenizer.getTokenArray()) {
@@ -82,13 +108,26 @@ public class MenuConfig {
     }
 
     /**
+     * Make the config to reload screens on next request.
+     */
+    public void reset() {
+        initialized = false;
+    }
+
+    /**
      * Main menu root items
      */
     public List<MenuItem> getRootItems() {
-        return Collections.unmodifiableList(rootItems);
+        lock.readLock().lock();
+        try {
+            checkInitialized();
+            return Collections.unmodifiableList(rootItems);
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
-    private void loadMenuItems(Element parentElement, MenuItem parentItem) {
+    protected void loadMenuItems(Element parentElement, MenuItem parentItem) {
         for (Element element : ((List<Element>) parentElement.elements())) {
             MenuItem menuItem = null;
             MenuItem currentParentItem = parentItem;
@@ -156,7 +195,7 @@ public class MenuConfig {
         }
     }
 
-    private void addItem(List<MenuItem> items, MenuItem menuItem, MenuItem beforeItem, boolean before) {
+    protected void addItem(List<MenuItem> items, MenuItem menuItem, MenuItem beforeItem, boolean before) {
         if (beforeItem == null) {
             items.add(menuItem);
         } else {
@@ -168,7 +207,7 @@ public class MenuConfig {
         }
     }
 
-    private MenuItem findItem(String id, MenuItem item) {
+    protected MenuItem findItem(String id, MenuItem item) {
         if (id.equals(item.getId()))
             return item;
         else if (!item.getChildren().isEmpty()) {
@@ -181,7 +220,7 @@ public class MenuConfig {
         return null;
     }
 
-    private void loadShortcut(MenuItem menuItem, Element element) {
+    protected void loadShortcut(MenuItem menuItem, Element element) {
         String shortcut = element.attributeValue("shortcut");
         if (shortcut == null || shortcut.isEmpty()) {
             return;

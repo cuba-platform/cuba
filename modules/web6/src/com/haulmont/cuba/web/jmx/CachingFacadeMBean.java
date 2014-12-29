@@ -21,4 +21,8 @@ public interface CachingFacadeMBean {
     void clearPersistenceManagerClientCache();
 
     void clearViewRepositoryCache();
+
+    void clearWindowConfig();
+
+    void clearMenuConfig();
 }

@@ -10,6 +10,8 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.global.ViewRepository;
 import com.haulmont.cuba.core.sys.AbstractViewRepository;
+import com.haulmont.cuba.gui.config.MenuConfig;
+import com.haulmont.cuba.gui.config.WindowConfig;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -37,6 +39,12 @@ public class CachingFacade implements CachingFacadeMBean {
     @Inject
     private ViewRepository viewRepository;
 
+    @Inject
+    private WindowConfig windowConfig;
+
+    @Inject
+    private MenuConfig menuConfig;
+
     @Override
     public int getMessagesCacheSize() {
         return messages.getCacheSize();
@@ -63,5 +71,15 @@ public class CachingFacade implements CachingFacadeMBean {
     @Override
     public void clearViewRepositoryCache() {
         ((AbstractViewRepository) viewRepository).reset();
+    }
+
+    @Override
+    public void clearWindowConfig() {
+        windowConfig.reset();
+    }
+
+    @Override
+    public void clearMenuConfig() {
+        menuConfig.reset();
     }
 }
