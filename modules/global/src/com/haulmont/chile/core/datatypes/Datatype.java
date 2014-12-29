@@ -27,11 +27,11 @@ public interface Datatype<T> {
     /** Java class representing this Datatype */
     Class getJavaClass();
 
-    /** Converts value to String. Returns not null string for null value.  */
+    /** Converts value to String. Returns an empty string for null value.  */
     @Nonnull
     String format(@Nullable T value);
 
-    /** Converts value to String taking into account local formats. Returns not null string for null value. */
+    /** Converts value to String taking into account local formats. Returns an empty string for null value. */
     @Nonnull
     String format(@Nullable T value, Locale locale);
 
