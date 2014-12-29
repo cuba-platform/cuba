@@ -1,0 +1,30 @@
+<window xmlns="http://schemas.haulmont.com/cuba/5.3/window.xsd"
+        class="com.haulmont.cuba.gui.components.filter.addcondition.AddConditionWindow"
+        messagesPack="com.haulmont.cuba.gui.components.filter.addcondition"
+        caption="msg://AddCondition.caption">
+    <dsContext>
+        <collectionDatasource
+                id="conditionDescriptorsDs"
+                class="com.haulmont.cuba.gui.components.filter.descriptor.AbstractConditionDescriptor"
+                datasourceClass="com.haulmont.cuba.gui.components.filter.addcondition.ConditionDescriptorsDs"/>
+    </dsContext>
+    <actions>
+        <action id="search" invoke="search" shortcut="ENTER" icon="icons/search.png" caption="msg://AddCondition.searchBtn.caption"/>
+        <action id="select" invoke="select" shortcut="CTRL-ENTER" icon="icons/ok.png" caption="msg://actions.Select"/>
+        <action id="cancel" invoke="cancel" shortcut="ESCAPE" icon="icons/cancel.png" caption="msg://actions.Cancel"/>
+    </actions>
+    <layout spacing="true" expand="tree">
+        <hbox spacing="true" expand="treeFilter" width="100%">
+            <label value="msg://AddCondition.filter" align="MIDDLE_LEFT"/>
+            <textField id="treeFilter"/>
+            <button id="searchBtn" action="search"/>
+        </hbox>
+        <tree id="tree" width="100%">
+            <treechildren datasource="conditionDescriptorsDs" captionProperty="treeCaption"/>
+        </tree>
+        <hbox spacing="true">
+            <button id="selectBtn" action="select"/>
+            <button id="cancelBtn" action="cancel"/>
+        </hbox>
+    </layout>
+</window>

@@ -144,4 +144,37 @@
 
     <screen id="layoutAnalyzer"
             template="/com/haulmont/cuba/gui/dev/layout-analyzer.xml"/>
+
+    <screen id="filterEditor"
+            template="/com/haulmont/cuba/gui/components/filter/edit/filter-edit.xml"/>
+
+    <screen id="addCondition"
+            template="/com/haulmont/cuba/gui/components/filter/addcondition/add-condition.xml"/>
+
+    <screen id="saveFilter"
+            template="/com/haulmont/cuba/gui/components/filter/save-filter.xml"/>
+
+    <screen id="inListParamEditor"
+            template="/com/haulmont/cuba/gui/components/filter/in-list-param-edit.xml"/>
+
+    <screen id="customConditionFrame"
+            template="/com/haulmont/cuba/gui/components/filter/edit/custom-condition-frame.xml"/>
+
+    <screen id="runtimePropConditionFrame"
+            template="/com/haulmont/cuba/gui/components/filter/edit/runtime-prop-condition-frame.xml"/>
+
+    <screen id="propertyConditionFrame"
+            template="/com/haulmont/cuba/gui/components/filter/edit/property-condition-frame.xml"/>
+
+    <screen id="customConditionEditor"
+            template="/com/haulmont/cuba/gui/components/filter/edit/custom-condition-edit.xml"/>
+
+    <screen id="runtimePropConditionEditor"
+            template="/com/haulmont/cuba/gui/components/filter/edit/runtime-prop-condition-edit.xml"/>
+
+    <screen id="groupConditionFrame"
+            template="/com/haulmont/cuba/gui/components/filter/edit/group-condition-frame.xml"/>
+
+    <screen id="testCategorizedEntityBrowser" template="com/haulmont/cuba/gui/testcategorizedentity/test-categorized-entity-browse.xml"/>
+    <screen id="sys$TestCategorizedEntity.edit" template="com/haulmont/cuba/gui/testcategorizedentity/test-categorized-entity-edit.xml"/>
 </screen-config>

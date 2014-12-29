@@ -14,7 +14,7 @@
     <layout expand="tableBox" spacing="true">
         <hbox id="lookupBox" spacing="true"/>
         <vbox id="filterBox" spacing="true">
-            <filter id="filter" visible="false">
+            <filter id="filter" visible="false" manualApplyRequired="true">
                 <properties include=".*"/>
             </filter>
         </vbox>

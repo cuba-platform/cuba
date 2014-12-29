@@ -7,6 +7,7 @@ package com.haulmont.cuba.gui.components.filter;
 
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.datastruct.Tree;
+import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -60,5 +61,46 @@ public class ConditionsTree extends Tree<AbstractCondition> {
                 return node;
         }
         return null;
+    }
+
+    /**
+     * Removes a node with condition from the tree. Do nothing if condition is not in the tree.
+     * @param condition condition to remove
+     */
+    public void removeCondition(AbstractCondition condition) {
+        Node<AbstractCondition> node = getNode(condition);
+        if (node != null) {
+            if (node.getParent() == null) {
+                getRootNodes().remove(node);
+            } else {
+                node.getParent().getChildren().remove(node);
+            }
+        }
+    }
+
+    /**
+     * Creates a copy of conditionsTree. Each node of new tree contains a copy of source condition.
+     */
+    public ConditionsTree createCopy() {
+        ConditionsTree copyTree = new ConditionsTree();
+        List<Node<AbstractCondition>> newRootNodes = new ArrayList<>();
+        for (Node<AbstractCondition> rootNode : this.getRootNodes()) {
+            Node<AbstractCondition> newRootNode = new Node<>();
+            newRootNodes.add(newRootNode);
+            recursivelyCopyNode(rootNode, newRootNode);
+        }
+        copyTree.setRootNodes(newRootNodes);
+        return copyTree;
+    }
+
+    protected void recursivelyCopyNode(Node<AbstractCondition> srcNode, Node<AbstractCondition> dstNode) {
+        AbstractCondition srcCondition = srcNode.getData();
+        AbstractCondition dstCondition = srcCondition.createCopy();
+        dstNode.setData(dstCondition);
+        for (Node<AbstractCondition> srcChild : srcNode.getChildren()) {
+            Node<AbstractCondition> dstChild = new Node<>();
+            dstNode.addChild(dstChild);
+            recursivelyCopyNode(srcChild, dstChild);
+        }
     }
 }

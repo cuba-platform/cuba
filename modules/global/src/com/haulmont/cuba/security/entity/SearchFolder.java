@@ -34,7 +34,7 @@ public class SearchFolder extends AbstractSearchFolder {
     protected Presentation presentation;
 
     @Column(name="IS_SET")
-    protected Boolean isSet;
+    protected Boolean isSet = false;
 
     @Column(name="ENTITY_TYPE")
     protected String entityType;

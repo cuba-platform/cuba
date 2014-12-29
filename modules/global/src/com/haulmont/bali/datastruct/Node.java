@@ -104,6 +104,7 @@ public class Node<T> implements Serializable {
         } else {
             children.get(index); //just to throw the exception, and stop here
             children.add(index, child);
+            child.parent = this;
         }
     }
 

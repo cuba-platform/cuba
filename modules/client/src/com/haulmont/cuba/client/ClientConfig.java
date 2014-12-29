@@ -123,6 +123,13 @@ public interface ClientConfig extends Config {
     boolean getGenericFilterTrimParamValues();
 
     /**
+     * @return Number of columns with conditions in generic filter UI component
+     */
+    @Property("cuba.gui.genericFilterColumnsQty")
+    @DefaultInt(3)
+    int getGenericFilterColumnsQty();
+
+    /**
      * Support e-mail. Exception reports and feedback emails are sent to this address.
      */
     @Property("cuba.supportEmail")

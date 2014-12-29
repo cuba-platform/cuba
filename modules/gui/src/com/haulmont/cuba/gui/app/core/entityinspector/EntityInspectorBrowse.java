@@ -232,6 +232,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
         entitiesTable.setMultiSelect(true);
         filter.setDatasource(entitiesDs);
         filter.setVisible(true);
+        filter.loadFiltersAndApplyDefault();
         filter.apply(true);
     }
 

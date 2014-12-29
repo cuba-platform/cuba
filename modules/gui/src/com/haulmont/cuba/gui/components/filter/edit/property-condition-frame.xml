@@ -1,0 +1,41 @@
+<!--
+  ~ Copyright (c) 2008-2014 Haulmont. All rights reserved.
+  ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+  -->
+
+<window xmlns="http://schemas.haulmont.com/cuba/5.3/window.xsd"
+        class="com.haulmont.cuba.gui.components.filter.edit.PropertyConditionFrame"
+        messagesPack="com.haulmont.cuba.gui.components.filter.edit">
+
+    <layout spacing="true">
+        <grid id="conditionGrid" spacing="true" width="100%">
+            <columns>
+                <column/>
+                <column flex="1"/>
+            </columns>
+            <rows>
+                <row>
+                    <label id="hiddenLabel" value="msg://hidden" align="MIDDLE_LEFT"/>
+                    <checkBox id="hidden"/>
+                </row>
+                <row>
+                    <label id="requiredLabel" value="msg://required" align="MIDDLE_LEFT"/>
+                    <checkBox id="required"/>
+                </row>
+                <row>
+                    <label id="widthLabel" value="msg://width" align="MIDDLE_LEFT"/>
+                    <lookupField id="width" width="theme://cuba.gui.filterEditor.widthLookup.width"/>
+                </row>
+                <row>
+                    <label id="defaultValueLayoutLabel" htmlEnabled="true" value="msg://defaultValue" align="MIDDLE_LEFT"/>
+                    <hbox id="defaultValueLayout" align="MIDDLE_LEFT"/>
+                </row>
+                <row>
+                    <label value="msg://PropertyConditionFrame.operation" align="MIDDLE_LEFT"/>
+                    <hbox id="operationLayout"/>
+                </row>
+            </rows>
+        </grid>
+
+    </layout>
+</window>

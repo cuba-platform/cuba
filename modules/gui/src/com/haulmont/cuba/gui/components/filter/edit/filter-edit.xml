@@ -1,0 +1,82 @@
+<!--
+  ~ Copyright (c) 2008-2014 Haulmont. All rights reserved.
+  ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+  -->
+
+<window xmlns="http://schemas.haulmont.com/cuba/5.3/window.xsd"
+        class="com.haulmont.cuba.gui.components.filter.edit.FilterEditor"
+        messagesPack="com.haulmont.cuba.gui.components.filter.edit"
+        caption="msg://caption"
+        focusComponent="conditionsTree">
+
+    <dsContext>
+        <collectionDatasource id="conditionsDs"
+                              class="com.haulmont.cuba.gui.components.filter.condition.AbstractCondition"
+                              datasourceClass="com.haulmont.cuba.gui.components.filter.edit.ConditionsDs"/>
+    </dsContext>
+
+    <actions>
+        <action id="commit" invoke="commitAndClose" caption="msg://actions.Ok" icon="icons/ok.png" shortcut="CTRL-ENTER"/>
+    </actions>
+
+    <layout spacing="true" expand="mainLayout">
+        <hbox id="mainLayout" spacing="true" width="100%" expand="conditionPropertiesLayout">
+            <vbox id="leftPanel" height="100%" spacing="true" expand="conditionsTree" width="theme://cuba.gui.filterEditor.leftPanel.width">
+                <grid spacing="true" width="100%">
+                    <columns>
+                        <column/>
+                        <column flex="1"/>
+                    </columns>
+                    <rows>
+                        <row>
+                            <label value="msg://filterName" align="MIDDLE_LEFT"/>
+                            <textField id="filterName" width="100%"/>
+                        </row>
+                        <row>
+                            <label id="availableForAllLabel" value="msg://availableForAll" align="MIDDLE_LEFT"/>
+                            <checkBox id="availableForAllCb"/>
+                        </row>
+                        <row>
+                            <label id="defaultLabel" value="msg://default" align="MIDDLE_LEFT"/>
+                            <checkBox id="defaultCb"/>
+                        </row>
+                        <row>
+                            <label id="applyDefaultLabel" value="msg://applyDefault" align="MIDDLE_LEFT"/>
+                            <checkBox id="applyDefaultCb"/>
+                        </row>
+                    </rows>
+                </grid>
+                <hbox spacing="true">
+                    <button id="addBtn" action="conditionsTree.add"/>
+                    <button id="removeBtn" action="conditionsTree.remove"/>
+                    <button id="addGroupAndBtn" action="conditionsTree.addAndGroup"/>
+                    <button id="addGroupOrBtn" action="conditionsTree.addOrGroup"/>
+                    <button id="moveUpBtn" action="conditionsTree.moveConditionUp"/>
+                    <button id="moveDownBtn" action="conditionsTree.moveConditionDown"/>
+                </hbox>
+                <tree id="conditionsTree" width="100%">
+                    <actions>
+                        <action id="add" invoke="addCondition" caption="msg://addCondition"/>
+                        <action id="remove" trackSelection="true" invoke="removeCondition" caption="msg://removeCondition"/>
+                        <action id="addAndGroup" invoke="addAndGroup" caption="msg://addAndGroup"/>
+                        <action id="addOrGroup" invoke="addOrGroup" caption="msg://addOrGroup"/>
+                        <action id="moveConditionUp" trackSelection="true" invoke="moveConditionUp" caption="msg://moveUp" icon="icons/up.png"/>
+                        <action id="moveConditionDown" trackSelection="true" invoke="moveConditionDown" caption="msg://moveDown" icon="icons/down.png"/>
+                        <action id="showComponentName" trackSelection="true" invoke="showComponentName" caption="msg://showComponentName"/>
+                    </actions>
+                    <treechildren datasource="conditionsDs" captionProperty="locCaption"/>
+                </tree>
+            </vbox>
+            <groupBox id="conditionPropertiesLayout" caption="msg://conditionProperties" height="100%">
+                <iframe id="customConditionFrame" screen="customConditionFrame" visible="false"/>
+                <iframe id="runtimePropConditionFrame" screen="runtimePropConditionFrame" visible="false"/>
+                <iframe id="propertyConditionFrame" screen="propertyConditionFrame" visible="false"/>
+                <iframe id="groupConditionFrame" screen="groupConditionFrame" visible="false"/>
+            </groupBox>
+        </hbox>
+        <hbox spacing="true">
+            <button id="okBtn" action="commit"/>
+            <button id="cancelBtn" invoke="cancel" caption="msg://actions.Cancel" icon="icons/cancel.png"/>
+        </hbox>
+    </layout>
+</window>

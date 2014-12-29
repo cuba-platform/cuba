@@ -1,0 +1,71 @@
+<!--
+  ~ Copyright (c) 2008-2014 Haulmont. All rights reserved.
+  ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+  -->
+
+<window xmlns="http://schemas.haulmont.com/cuba/5.3/window.xsd"
+        class="com.haulmont.cuba.gui.components.filter.edit.CustomConditionFrame"
+        messagesPack="com.haulmont.cuba.gui.components.filter.edit"
+        focusComponent="nameField">
+
+    <layout spacing="true" expand="conditionGrid">
+        <grid id="conditionGrid" spacing="true" width="100%">
+            <columns>
+                <column/>
+                <column flex="1"/>
+            </columns>
+            <rows>
+                <row>
+                    <label id="hiddenLabel" value="msg://hidden" align="MIDDLE_LEFT"/>
+                    <checkBox id="hidden"/>
+                </row>
+                <row>
+                    <label id="requiredLabel" value="msg://required" align="MIDDLE_LEFT"/>
+                    <checkBox id="required"/>
+                </row>
+                <row>
+                    <label id="widthLabel" value="msg://width" align="MIDDLE_LEFT"/>
+                    <lookupField id="width" width="theme://cuba.gui.filterEditor.widthLookup.width"/>
+                </row>
+                <row>
+                    <label id="defaultValueLayoutLabel" htmlEnabled="true" value="msg://defaultValue" align="MIDDLE_LEFT"/>
+                    <hbox id="defaultValueLayout" align="MIDDLE_LEFT"/>
+                </row>
+                <row>
+                    <label value="msg://CustomConditionFrame.hintLabel" htmlEnabled="true" colspan="2"/>
+                </row>
+                <row>
+                    <label id="nameLab" value="msg://CustomConditionFrame.name" align="MIDDLE_LEFT"/>
+                    <textField id="nameField" width="theme://cuba.gui.customConditionFrame.field.width"/>
+                </row>
+                <row>
+                    <label value="msg://CustomConditionFrame.join" align="MIDDLE_LEFT"/>
+                    <sourceCodeEditor id="joinField" height="theme://cuba.gui.customConditionFrame.joinField.height" width="theme://cuba.gui.customConditionFrame.field.width"/>
+                </row>
+                <row>
+                    <label value="msg://CustomConditionFrame.where" align="MIDDLE_LEFT"/>
+                    <sourceCodeEditor id="whereField" height="theme://cuba.gui.customConditionFrame.whereField.height" width="theme://cuba.gui.customConditionFrame.field.width"/>
+                </row>
+                <row>
+                    <label value="msg://CustomConditionFrame.type" align="MIDDLE_LEFT"/>
+                    <hbox spacing="true" align="MIDDLE_LEFT" width="theme://cuba.gui.customConditionFrame.field.width" expand="typeSelect">
+                        <lookupField id="typeSelect"/>
+                        <checkBox id="inExprCb" caption="msg://CustomConditionFrame.inExpr" align="MIDDLE_LEFT"/>
+                    </hbox>
+                </row>
+                <row>
+                    <label id="entityLab" value="msg://CustomConditionFrame.entity" align="MIDDLE_LEFT"/>
+                    <lookupField id="entitySelect" width="theme://cuba.gui.customConditionFrame.field.width"/>
+                </row>
+                <row>
+                    <label id="paramWhereLab" value="msg://CustomConditionFrame.entityParamWhere" align="MIDDLE_LEFT"/>
+                    <textArea id="entityParamWhereField" height="theme://cuba.gui.customConditionFrame.entityParamWhereField.height" width="theme://cuba.gui.customConditionFrame.field.width"/>
+                </row>
+                <row>
+                    <label id="paramViewLab" value="msg://CustomConditionFrame.entityParamView" align="MIDDLE_LEFT"/>
+                    <textField id="entityParamViewField" width="theme://cuba.gui.customConditionFrame.field.width"/>
+                </row>
+            </rows>
+        </grid>
+    </layout>
+</window>

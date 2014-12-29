@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.gui.components.actions;
 
+import com.haulmont.bali.datastruct.Node;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.client.ClientConfig;
@@ -14,12 +15,19 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.ExtendedEntities;
 import com.haulmont.cuba.core.global.MessageTools;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentFinder;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.filter.ConditionsTree;
+import com.haulmont.cuba.gui.components.filter.FilterParser;
+import com.haulmont.cuba.gui.components.filter.Op;
+import com.haulmont.cuba.gui.components.filter.Param;
+import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
+import com.haulmont.cuba.gui.components.filter.condition.PropertyCondition;
+import com.haulmont.cuba.gui.components.filter.descriptor.PropertyConditionDescriptor;
 import com.haulmont.cuba.security.entity.FilterEntity;
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -44,7 +52,6 @@ public class RelatedAction extends AbstractAction {
 
     protected ExtendedEntities extendedEntities = AppBeans.get(ExtendedEntities.NAME);
     protected RelatedEntitiesService relatedEntitiesService = AppBeans.get(RelatedEntitiesService.NAME);
-    protected RelatedEntitiesAssistant assistant = AppBeans.get(RelatedEntitiesAssistant.NAME);
 
     public RelatedAction(String id, ListComponent owner, MetaClass metaClass, MetaProperty metaProperty) {
         super(id);
@@ -128,7 +135,7 @@ public class RelatedAction extends AbstractAction {
 
         MetaClass effectiveMetaClass = extendedEntities.getEffectiveMetaClass(metaProperty.getRange().asClass());
 
-        filterEntity.setXml(assistant.getRelatedEntitiesFilterXml(effectiveMetaClass, relatedIds, component));
+        filterEntity.setXml(getRelatedEntitiesFilterXml(effectiveMetaClass, relatedIds, component));
 
         component.setFilterEntity(filterEntity);
 
@@ -139,6 +146,30 @@ public class RelatedAction extends AbstractAction {
                 || (component.getManualApplyRequired() == null && clientConfig.getGenericFilterManualApplyRequired())) {
             component.apply(true);
         }
+    }
+
+    protected String getRelatedEntitiesFilterXml(MetaClass metaClass, List<UUID> ids, Filter component) {
+        ConditionsTree tree = new ConditionsTree();
+
+        String filterComponentPath = ComponentsHelper.getFilterComponentPath(component);
+        String[] strings = ValuePathHelper.parse(filterComponentPath);
+        String filterComponentName = ValuePathHelper.format(Arrays.copyOfRange(strings, 1, strings.length));
+
+        PropertyConditionDescriptor conditionDescriptor = new PropertyConditionDescriptor("id", "id", AppConfig.getMessagesPack(), filterComponentName, component.getDatasource());
+
+        PropertyCondition condition = (PropertyCondition) conditionDescriptor.createCondition();
+        condition.setInExpr(true);
+        condition.setHidden(true);
+        condition.setOperator(Op.IN);
+
+        Param param = new Param(condition.createParamName(), UUID.class, "", "", component.getDatasource(), metaClass.getProperty("id"), true, true);
+        param.setValue(ids);
+
+        condition.setParam(param);
+
+        tree.setRootNodes(Collections.singletonList(new Node<AbstractCondition>(condition)));
+
+        return FilterParser.getXml(tree, Param.ValueProperty.VALUE);
     }
 
     protected List<UUID> getRelatedIds(Set<Entity> selectedParents) {

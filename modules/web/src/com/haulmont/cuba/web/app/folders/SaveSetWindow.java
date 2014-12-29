@@ -7,9 +7,9 @@ package com.haulmont.cuba.web.app.folders;
 
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.filter.UserSetHelper;
 import com.haulmont.cuba.security.entity.SearchFolder;
 import com.haulmont.cuba.web.AppUI;
-import com.haulmont.cuba.web.gui.components.WebFilter;
 
 import java.util.Map;
 import java.util.Set;
@@ -62,7 +62,7 @@ public class SaveSetWindow extends AbstractWindow {
                 return;
             }
             String filterXml = folder.getFilterXml();
-            folder.setFilterXml(WebFilter.UserSetHelper.addEntities(filterXml, ids));
+            folder.setFilterXml(UserSetHelper.addEntities(filterXml, ids));
             foldersPane.saveFolder(folder);
             foldersPane.refreshFolders();
             close(COMMIT_ACTION_ID, true);
@@ -79,7 +79,7 @@ public class SaveSetWindow extends AbstractWindow {
         public void actionPerform(Component component) {
             QueryParser parser = QueryTransformerFactory.createParser(query);
             String entityAlias = parser.getEntityAlias(entityType);
-            String filterXml = WebFilter.UserSetHelper.generateSetFilter(ids, entityClass, componentId, entityAlias);
+            String filterXml = UserSetHelper.generateSetFilter(ids, entityClass, componentId, entityAlias);
             Metadata metadata = AppBeans.get(Metadata.NAME);
             final SearchFolder folder = metadata.create(SearchFolder.class);
             UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);

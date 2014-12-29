@@ -12,11 +12,21 @@
     border: 0;
   }
 
-  .cuba-generic-filter-editorlayout .v-table-cuba-filter-conditions .v-treetable-treespacer {
-    top: 6px;
-  }
-
   .v-button.v-button-link.remove-applied-filter .v-icon {
     border: 0;
+  }
+
+  .cuba-generic-filter .filter-control-with-border {
+    border-top: solid 1px #a5c4e0;
+    padding-top: 5px;
+  }
+
+  .cuba-generic-filter .filter-control-no-border {
+    border-top: none;
+    padding-top: 0px;
+  }
+
+  .cuba-generic-filter .filter-conditions .v-gridlayout-spacing-on {
+    padding-left: 20px;
   }
 }

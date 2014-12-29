@@ -4,14 +4,13 @@
  */
 package com.haulmont.cuba.security.entity;
 
+import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.StandardEntity;
-import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.annotation.EnableRestore;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 import javax.persistence.*;
-import javax.persistence.Entity;
 
 /**
  * A filter component settings.
@@ -43,16 +42,16 @@ public class FilterEntity extends StandardEntity {
     protected User user;
 
     @Transient
-    protected Boolean isDefault;
+    protected Boolean isDefault = false;
 
     @Transient
-    protected Boolean applyDefault;
+    protected Boolean applyDefault = false;
 
     @Transient
     protected AbstractSearchFolder folder;
 
     @Transient
-    protected Boolean isSet;
+    protected Boolean isSet = false;
 
     public String getComponentId() {
         return componentId;

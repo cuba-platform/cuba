@@ -6,7 +6,6 @@
 package com.haulmont.cuba.desktop.gui;
 
 import com.haulmont.cuba.desktop.gui.components.*;
-import com.haulmont.cuba.desktop.gui.components.filter.DesktopFilter;
 import com.haulmont.cuba.gui.ComponentPalette;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;

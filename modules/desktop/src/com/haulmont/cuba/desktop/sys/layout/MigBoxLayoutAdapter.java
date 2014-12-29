@@ -42,7 +42,7 @@ public class MigBoxLayoutAdapter extends BoxLayoutAdapter {
     @Override
     protected void update() {
         LC lc = new LC();
-        lc.hideMode(2); // The size of an invisible component will be set to 0, 0 and the gaps will also be set to 0 around it.
+        lc.hideMode(3); //  Invisible components will not participate in the layout at all and it will for instance not take up a grid cell
         lc.fill(); // always give all space to components, otherwise align doesn't work
         AC rowConstr = new AC();
         AC colConstr = new AC();

@@ -1,0 +1,21 @@
+<!--
+  ~ Copyright (c) 2008-2014 Haulmont. All rights reserved.
+  ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+  -->
+
+<window xmlns="http://schemas.haulmont.com/cuba/5.3/window.xsd"
+        class="com.haulmont.cuba.gui.components.filter.edit.RuntimePropConditionEditor"
+        caption="msg://RuntimePropConditionEditor.caption"
+        messagesPack="com.haulmont.cuba.gui.components.filter.edit"
+        focusComponent="runtimePropConditionFrame.categoryLookup">
+    <actions>
+        <action id="commit" invoke="commit" caption="msg://actions.Ok" icon="icons/ok.png" shortcut="CTRL-ENTER"/>
+    </actions>
+    <layout spacing="true">
+        <iframe id="runtimePropConditionFrame" screen="runtimePropConditionFrame"/>
+        <hbox spacing="true">
+            <button id="commit" action="commit"/>
+            <button id="cancel" invoke="cancel" caption="msg://actions.Cancel" icon="icons/cancel.png"/>
+        </hbox>
+    </layout>
+</window>
