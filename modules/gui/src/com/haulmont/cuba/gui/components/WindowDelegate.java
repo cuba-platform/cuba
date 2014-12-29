@@ -21,9 +21,7 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
 import java.lang.reflect.Constructor;
-import java.util.Collection;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author krivopustov
@@ -99,25 +97,37 @@ public class WindowDelegate {
     }
 
     public void saveSettings() {
-        ComponentsHelper.walkComponents(
-                window,
-                new ComponentVisitor() {
-                    public void visit(Component component, String name) {
-                        if (component instanceof Component.HasSettings && WindowDelegate.this.settings != null) {
-                            log.trace("Saving settings for : " + name + " : " + component);
-                            Element e = WindowDelegate.this.settings.get(name);
-                            boolean modified = ((Component.HasSettings) component).saveSettings(e);
-                            if (component instanceof Component.HasPresentations && ((Component.HasPresentations) component).isUsePresentations()) {
-                                Object def = ((Component.HasPresentations) component).getDefaultPresentationId();
-                                e.addAttribute("presentation", def != null ? def.toString() : "");
-                                ((Component.HasPresentations) component).getPresentations().commit();
+        if (settings != null) {
+            final Set<String> visitedIds = new HashSet<>();
+
+            ComponentsHelper.walkComponents(
+                    window,
+                    new ComponentVisitor() {
+                        @Override
+                        public void visit(Component component, String name) {
+                            if (component instanceof Component.HasSettings) {
+                                log.trace("Saving settings for : " + name + " : " + component);
+
+                                if (visitedIds.contains(name)) {
+                                    log.warn("Names of some HasSettings components clashed, set Id for component explicitly, name=" + name);
+                                }
+
+                                visitedIds.add(name);
+
+                                Element e = WindowDelegate.this.settings.get(name);
+                                boolean modified = ((Component.HasSettings) component).saveSettings(e);
+
+                                if (component instanceof Component.HasPresentations
+                                        && ((Component.HasPresentations) component).isUsePresentations()) {
+                                    Object def = ((Component.HasPresentations) component).getDefaultPresentationId();
+                                    e.addAttribute("presentation", def != null ? def.toString() : "");
+                                    ((Component.HasPresentations) component).getPresentations().commit();
+                                }
+                                WindowDelegate.this.settings.setModified(modified);
                             }
-                            WindowDelegate.this.settings.setModified(modified);
                         }
                     }
-                }
-        );
-        if (settings != null) {
+            );
             settings.commit();
         }
     }
@@ -127,6 +137,7 @@ public class WindowDelegate {
         ComponentsHelper.walkComponents(
                 window,
                 new ComponentVisitor() {
+                    @Override
                     public void visit(Component component, String name) {
                         if (component instanceof Component.HasSettings) {
                             log.trace("Applying settings for : " + name + " : " + component);
@@ -149,6 +160,7 @@ public class WindowDelegate {
         ComponentsHelper.walkComponents(
                 window,
                 new ComponentVisitor() {
+                    @Override
                     public void visit(Component component, String name) {
                         if (component instanceof Component.Disposable) {
                             ((Component.Disposable) component).dispose();
