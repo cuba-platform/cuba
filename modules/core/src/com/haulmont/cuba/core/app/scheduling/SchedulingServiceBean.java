@@ -14,11 +14,14 @@ import com.haulmont.cuba.core.app.scheduled.MethodParameterInfo;
 import com.haulmont.cuba.core.entity.ScheduledTask;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.CubaDefaultListableBeanFactory;
 import com.haulmont.cuba.security.entity.User;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.aop.TargetClassAware;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +38,10 @@ import java.util.*;
 public class SchedulingServiceBean implements SchedulingService {
 
     private Log log = LogFactory.getLog(getClass());
+
+    protected List<String> beansToIgnore = Arrays.asList("dataSource", "entityManagerFactory", "hibernateSessionFactory",
+            "mailSendTaskExecutor", "scheduler", "sqlSession", "sqlSessionFactory", "transactionManager",
+            "cuba_ServerInfoService", "cuba_LoginService", "cuba_LocalizedMessageService");
 
     @Inject
     protected Persistence persistence;
@@ -62,7 +69,8 @@ public class SchedulingServiceBean implements SchedulingService {
         String[] beanNames = AppContext.getApplicationContext().getBeanDefinitionNames();
         for (String name : beanNames) {
             if (AppContext.getApplicationContext().isSingleton(name)
-                    && name.contains("_") && !name.startsWith("base_") && !name.endsWith("Service")) {
+                    && !name.startsWith("org.springframework.")
+                    && !beansToIgnore.contains(name)) {
                 List<MethodInfo> availableMethods = getAvailableMethods(name);
                 if (!availableMethods.isEmpty())
                     result.put(name, availableMethods);
@@ -74,15 +82,27 @@ public class SchedulingServiceBean implements SchedulingService {
 
     protected List<MethodInfo> getAvailableMethods(String beanName) {
         List<MethodInfo> methods = new ArrayList<MethodInfo>();
-        Object bean = AppBeans.get(beanName);
-
         try {
+            AutowireCapableBeanFactory beanFactory = AppContext.getApplicationContext().getAutowireCapableBeanFactory();
+            if (beanFactory instanceof CubaDefaultListableBeanFactory) {
+                BeanDefinition beanDefinition = ((CubaDefaultListableBeanFactory) beanFactory).getBeanDefinition(beanName);
+                if (beanDefinition.isAbstract())
+                    return methods;
+            }
+
+            Object bean = AppBeans.get(beanName);
+
             List<Class> classes = ClassUtils.getAllInterfaces(bean.getClass());
             for (Class aClass : classes) {
                 if (aClass.getName().startsWith("org.springframework."))
                     continue;
 
                 Class<?> targetClass = bean instanceof TargetClassAware ? ((TargetClassAware) bean).getTargetClass() : bean.getClass();
+
+                Service serviceAnn = targetClass.getAnnotation(Service.class);
+                if (serviceAnn != null)
+                    return methods;
+
                 for (Method method : aClass.getMethods()) {
                     if (isMethodAvailable(method)) {
                         Method targetClassMethod = targetClass.getMethod(method.getName(), method.getParameterTypes());
