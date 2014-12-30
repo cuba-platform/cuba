@@ -15,10 +15,7 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.validators.DateValidator;
-import com.haulmont.cuba.gui.components.validators.DoubleValidator;
-import com.haulmont.cuba.gui.components.validators.IntegerValidator;
-import com.haulmont.cuba.gui.components.validators.ScriptValidator;
+import com.haulmont.cuba.gui.components.validators.*;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.gui.xml.DeclarativeAction;
@@ -368,8 +365,11 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         Field.Validator validator = null;
         if (property.getRange().isDatatype()) {
             Datatype<Object> dt = property.getRange().asDatatype();
-            if (dt.equals(Datatypes.get(IntegerDatatype.NAME)) || dt.equals(Datatypes.get(LongDatatype.NAME))) {
+            if (dt.equals(Datatypes.get(IntegerDatatype.NAME))) {
                 validator = new IntegerValidator(messages.getMainMessage("validation.invalidNumber"));
+
+            } else if (dt.equals(Datatypes.get(LongDatatype.NAME))) {
+                validator = new LongValidator(messages.getMainMessage("validation.invalidNumber"));
 
             } else if (dt.equals(Datatypes.get(DoubleDatatype.NAME)) || dt.equals(Datatypes.get(BigDecimalDatatype.NAME))) {
                 validator = new DoubleValidator(messages.getMainMessage("validation.invalidNumber"));

@@ -21,6 +21,7 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.validators.DateValidator;
 import com.haulmont.cuba.gui.components.validators.DoubleValidator;
 import com.haulmont.cuba.gui.components.validators.IntegerValidator;
+import com.haulmont.cuba.gui.components.validators.LongValidator;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
@@ -282,17 +283,17 @@ public class RuntimePropertiesFrame extends AbstractWindow {
         if (property.getRange().isDatatype()) {
             Datatype<Object> dt = property.getRange().asDatatype();
 
-            if (dt.equals(Datatypes.get(IntegerDatatype.NAME)) || dt.equals(Datatypes.get(LongDatatype.NAME))) {
-                validator = new IntegerValidator(
-                        messages.getMessage(AppConfig.getMessagesPack(),
-                                "validation.invalidNumber"));
+            if (dt.equals(Datatypes.get(IntegerDatatype.NAME))) {
+                validator = new IntegerValidator(messages.getMainMessage("validation.invalidNumber"));
+
+            } else if (dt.equals(Datatypes.get(LongDatatype.NAME))) {
+                validator = new LongValidator(messages.getMainMessage("validation.invalidNumber"));
+
             } else if (dt.equals(Datatypes.get(DoubleDatatype.NAME)) || dt.equals(Datatypes.get(BigDecimalDatatype.NAME))) {
-                validator = new DoubleValidator(
-                        messages.getMessage(AppConfig.getMessagesPack(),
-                                "validation.invalidNumber"));
+                validator = new DoubleValidator(messages.getMainMessage("validation.invalidNumber"));
+
             } else if (dt.equals(Datatypes.get(DateDatatype.NAME))) {
-                validator = new DateValidator(messages.getMessage(AppConfig.getMessagesPack(),
-                        "validation.invalidDate"));
+                validator = new DateValidator(messages.getMainMessage("validation.invalidDate"));
             }
         }
         return validator;
