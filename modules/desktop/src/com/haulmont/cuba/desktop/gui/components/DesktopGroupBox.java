@@ -41,6 +41,7 @@ public class DesktopGroupBox extends DesktopAbstractBox implements GroupBoxLayou
                 fireExpandListeners();
             }
         });
+        layoutAdapter.setFlowDirection(BoxLayoutAdapter.FlowDirection.Y);
 
         setWidth("100%");
     }
