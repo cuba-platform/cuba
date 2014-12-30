@@ -107,6 +107,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
 
         loadHeight(component, element);
         loadWidth(component, element);
+        loadAlign(component, element);
 
         loadBorder(component, element);
 

@@ -1034,6 +1034,7 @@
         <xs:attributeGroup ref="hasSize"/>
         <xs:attributeGroup ref="hasStyle"/>
         <xs:attributeGroup ref="hasVisibility"/>
+        <xs:attributeGroup ref="hasAlign"/>
 
         <xs:attributeGroup ref="hasCaptionProp"/>
         <xs:attributeGroup ref="hasEditState"/>
@@ -1185,6 +1186,7 @@
 
         <xs:attributeGroup ref="hasId"/>
         <xs:attributeGroup ref="hasSize"/>
+        <xs:attributeGroup ref="hasAlign"/>
 
         <xs:attribute name="orientation" type="orientation"/>
         <xs:attribute name="pos" type="xs:int"/>
@@ -1255,6 +1257,7 @@
 
         <xs:attributeGroup ref="hasId"/>
         <xs:attributeGroup ref="hasSize"/>
+        <xs:attributeGroup ref="hasAlign"/>
         <xs:attributeGroup ref="hasStyle"/>
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasEnableProp"/>

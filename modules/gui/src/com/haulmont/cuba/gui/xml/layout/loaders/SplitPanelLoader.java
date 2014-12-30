@@ -63,8 +63,9 @@ public class SplitPanelLoader extends ContainerLoader{
             component.setSplitPosition(Integer.parseInt(pos));
         }
 
-        loadHeight(component, element, "-1px");
-        loadWidth(component, element, "-1px");
+        loadHeight(component, element, Component.AUTO_SIZE);
+        loadWidth(component, element, Component.AUTO_SIZE);
+        loadAlign(component, element);
 
         assignFrame(component);
     }
