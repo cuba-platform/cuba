@@ -142,6 +142,26 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
     }
 
     @Override
+    public String getCaption() {
+        return delegate.getCaption();
+    }
+
+    @Override
+    public void setCaption(String caption) {
+        delegate.setCaption(caption);
+    }
+
+    @Override
+    public String getDescription() {
+        return null;
+    }
+
+    @Override
+    public void setDescription(String description) {
+        //do nothing
+    }
+
+    @Override
     public void add(Component component) {
         throw new UnsupportedOperationException();
     }

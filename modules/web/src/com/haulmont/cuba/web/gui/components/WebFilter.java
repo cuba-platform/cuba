@@ -33,7 +33,6 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
 
         Container layout = delegate.getLayout();
         com.vaadin.ui.Component unwrap = WebComponentsHelper.unwrap(layout);
-//        unwrap.setWidth("100%");
         component.addComponent(unwrap);
         component.setWidth("100%");
     }
@@ -140,6 +139,26 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
     @Override
     public void setMargin(boolean topEnable, boolean rightEnable, boolean bottomEnable, boolean leftEnable) {
         component.setMargin(new MarginInfo(topEnable, rightEnable, bottomEnable, leftEnable));
+    }
+
+    @Override
+    public String getCaption() {
+        return delegate.getCaption();
+    }
+
+    @Override
+    public void setCaption(String caption) {
+        delegate.setCaption(caption);
+    }
+
+    @Override
+    public String getDescription() {
+        return null;
+    }
+
+    @Override
+    public void setDescription(String description) {
+        //do nothing
     }
 
     @Override

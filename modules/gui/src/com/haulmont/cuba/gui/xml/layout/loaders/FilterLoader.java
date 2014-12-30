@@ -38,6 +38,7 @@ public class FilterLoader extends ComponentLoader {
         loadEnable(filter, element);
         loadStyleName(filter, element);
         loadMargin(filter, element);
+        loadCaption(filter, element);
 
         String useMaxResults = element.attributeValue("useMaxResults");
         filter.setUseMaxResults(useMaxResults == null || Boolean.valueOf(useMaxResults));

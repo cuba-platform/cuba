@@ -962,6 +962,7 @@
         <xs:attributeGroup ref="hasId"/>
         <xs:attributeGroup ref="requiresDatasource"/>
 
+        <xs:attributeGroup ref="hasCaptionProp"/>
         <xs:attributeGroup ref="hasStyle"/>
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasEnableProp"/>
