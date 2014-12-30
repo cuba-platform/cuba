@@ -107,6 +107,7 @@ public class FilterDelegate {
     protected LinkButton filterModifiedIndicator;
     protected SaveAction saveAction;
 
+    protected String caption;
     protected boolean useMaxResults;
     protected Boolean manualApplyRequired;
     protected boolean folderActionsEnabled = true;
@@ -345,6 +346,9 @@ public class FilterDelegate {
      */
     protected void fillActions() {
         settingsBtn.removeAllActions();
+
+        if (filterEntity == null)
+            return;
 
         saveAction = new SaveAction();
         SaveAsAction saveAsAction = new SaveAsAction();
@@ -1080,6 +1084,15 @@ public class FilterDelegate {
             ((CollectionDatasource.Suspendable) datasource).refreshIfNotSuspended();
         else
             datasource.refresh();
+    }
+
+    public String getCaption() {
+        return caption;
+    }
+
+    public void setCaption(String caption) {
+        this.caption = caption;
+        layout.setCaption(caption);
     }
 
     public void setUseMaxResults(boolean useMaxResults) {
