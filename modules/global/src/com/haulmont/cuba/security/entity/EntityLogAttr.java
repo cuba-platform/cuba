@@ -84,8 +84,9 @@ public class EntityLogAttr extends AbstractNotPersistentEntity {
                     return getValue();
                 } else if (property.getRange().isEnum()) {
                     String nameKey = property.getRange().asEnumeration().getJavaClass().getSimpleName() + "." + getValue();
+                    String packageName = property.getRange().asEnumeration().getJavaClass().getPackage().getName();
                     Messages messages = AppBeans.get(Messages.NAME);
-                    return messages.getMessage(entityName.substring(0, entityName.lastIndexOf(".")), nameKey);
+                    return messages.getMessage(packageName, nameKey);
                 } else {
                     return getValue();
                 }
