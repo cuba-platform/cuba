@@ -117,7 +117,6 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
         compile(group: 'org.apache.openjpa', name: 'openjpa', version: '2.3.0') {
             exclude(group: 'junit', module: 'junit')
         }
-        //compile(group: 'net.sourceforge.serp', name: 'serp', version: '1.13.1')
         compile(group: 'org.antlr', name: 'antlr-runtime', version: '3.2')
         compile(group: 'org.freemarker', name: 'freemarker', version: '2.3.16')
         compile(group: 'aopalliance', name: 'aopalliance', version: '1.0')
