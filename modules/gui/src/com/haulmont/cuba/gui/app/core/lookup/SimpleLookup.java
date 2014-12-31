@@ -8,6 +8,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
@@ -34,6 +35,8 @@ public class SimpleLookup extends AbstractLookup {
 
     @Inject
     protected Metadata metadata;
+    @Inject
+    protected MessageTools messageTools;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -114,7 +117,7 @@ public class SimpleLookup extends AbstractLookup {
             MetaPropertyPath metaPropertyPath = new MetaPropertyPath(metaClass, metaProperty);
             Table.Column column = new Table.Column(metaPropertyPath);
             column.setType(metaProperty.getJavaType());
-            String caption = MessageProvider.getMessage(metaClass.getJavaClass(), metaClass.getJavaClass().getSimpleName() + "." + columnName);
+            String caption = messageTools.getPropertyCaption(metaClass, metaProperty.getName());
             column.setCaption(caption);
             table.addColumn(column);
         }
