@@ -42,7 +42,6 @@ import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
-import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -642,8 +641,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
             });
 
             Button searchBtn = new CubaButton();
-            searchBtn.setStyleName(BaseTheme.BUTTON_LINK);
-            searchBtn.addStyleName("cuba-fts-button");
+            searchBtn.setStyleName("cuba-fts-button");
             searchBtn.setIcon(WebComponentsHelper.getIcon("app/images/fts-button.png"));
             searchBtn.addClickListener(
                     new Button.ClickListener() {

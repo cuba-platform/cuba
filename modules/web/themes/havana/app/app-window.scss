@@ -110,10 +110,11 @@
     padding-left: 10px;
   }
 
-  .cuba-fts-button.v-button.v-button-link {
+  .cuba-fts-button.v-button {
     display: inline-block;
     border: 1px solid $cuba-field-border-color;
     border-left: 0;
+    padding: 0;
 
     height: 25px;
     line-height: 18px;
