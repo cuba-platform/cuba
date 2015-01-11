@@ -87,19 +87,40 @@ public abstract class AbstractMessages implements Messages {
         log.debug("Main message pack: " + mainMessagePack);
 
         for (Locale locale : globalConfig.getAvailableLocales().values()) {
+            String numberDecimalSeparator = getMessage(mainMessagePack, "numberDecimalSeparator", locale);
+            String numberGroupingSeparator = getMessage(mainMessagePack, "numberGroupingSeparator", locale);
+            String integerFormat = getMessage(mainMessagePack, "integerFormat", locale);
+            String doubleFormat = getMessage(mainMessagePack, "doubleFormat", locale);
+            String decimalFormat = getMessage(mainMessagePack, "decimalFormat", locale);
+            String dateFormat = getMessage(mainMessagePack, "dateFormat", locale);
+            String dateTimeFormat = getMessage(mainMessagePack, "dateTimeFormat", locale);
+            String timeFormat = getMessage(mainMessagePack, "timeFormat", locale);
+            String trueString = getMessage(mainMessagePack, "trueString", locale);
+            String falseString = getMessage(mainMessagePack, "falseString", locale);
+            if (numberDecimalSeparator.equals("numberDecimalSeparator")
+                    || numberGroupingSeparator.equals("numberGroupingSeparator")
+                    || integerFormat.equals("integerFormat")
+                    || doubleFormat.equals("doubleFormat")
+                    || decimalFormat.equals("decimalFormat")
+                    || dateFormat.equals("dateFormat")
+                    || dateTimeFormat.equals("dateTimeFormat")
+                    || timeFormat.equals("timeFormat"))
+                throw new DevelopmentException("Localized format strings are not defined. " +
+                        "Check cuba.mainMessagePack application property, it must point to a valid set of main message packs.");
+
             Datatypes.setFormatStrings(
                     messageTools.trimLocale(locale),
                     new FormatStrings(
-                            getMessage(mainMessagePack, "numberDecimalSeparator", locale).charAt(0),
-                            getMessage(mainMessagePack, "numberGroupingSeparator", locale).charAt(0),
-                            getMessage(mainMessagePack, "integerFormat", locale),
-                            getMessage(mainMessagePack, "doubleFormat", locale),
-                            getMessage(mainMessagePack, "decimalFormat", locale),
-                            getMessage(mainMessagePack, "dateFormat", locale),
-                            getMessage(mainMessagePack, "dateTimeFormat", locale),
-                            getMessage(mainMessagePack, "timeFormat", locale),
-                            getMessage(mainMessagePack, "trueString", locale),
-                            getMessage(mainMessagePack, "falseString", locale)
+                            numberDecimalSeparator.charAt(0),
+                            numberGroupingSeparator.charAt(0),
+                            integerFormat,
+                            doubleFormat,
+                            decimalFormat,
+                            dateFormat,
+                            dateTimeFormat,
+                            timeFormat,
+                            trueString,
+                            falseString
                     )
             );
         }
