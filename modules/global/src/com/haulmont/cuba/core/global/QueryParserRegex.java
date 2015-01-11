@@ -43,6 +43,9 @@ public class QueryParserRegex implements QueryParser {
     public static final String PARAM_PATTERN_REGEX = ":([a-zA-Z_0-9$\\.]+)";
     public static final Pattern PARAM_PATTERN = Pattern.compile(PARAM_PATTERN_REGEX, Pattern.CASE_INSENSITIVE);
 
+    public static final String OR_PATTERN_REGEX = "\\bOR\\b";
+    public static final Pattern OR_PATTERN = Pattern.compile(OR_PATTERN_REGEX, Pattern.CASE_INSENSITIVE);
+
     protected String source;
 
     QueryParserRegex(String source) {

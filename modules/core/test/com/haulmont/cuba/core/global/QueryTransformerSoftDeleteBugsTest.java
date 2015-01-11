@@ -13,16 +13,76 @@ import junit.framework.TestCase;
  */
 public class QueryTransformerSoftDeleteBugsTest extends TestCase {
 
-    // #PL-1998
+    // #PL-1998 (fixed)
     public void testAddWhereDeleteTs() throws Exception {
-        QueryTransformerRegex transformer = new QueryTransformerRegex(
+        QueryTransformerRegex transformer;
+        String res;
+
+        transformer = new QueryTransformerRegex(
                 "select u from sec$User u where u.active = true or u.active = true",
                 "sec$User");
-
         transformer.addWhere("{E}.deleteTs is null");
-        String res = transformer.getResult();
+        res = transformer.getResult();
         assertEquals(
-                "select u from sec$User u where u.active = true or u.active = true and (u.deleteTs is null)",
+                "select u from sec$User u where (u.active = true or u.active = true) and (u.deleteTs is null)",
+                res);
+
+        // other cases
+
+        transformer = new QueryTransformerRegex(
+                "select u from sec$User u where u.active = true",
+                "sec$User");
+        transformer.addWhere("{E}.deleteTs is null");
+        res = transformer.getResult();
+        assertEquals(
+                "select u from sec$User u where u.active = true and (u.deleteTs is null)",
+                res);
+
+        transformer = new QueryTransformerRegex(
+                "select u from sec$User u where (u.active = true)",
+                "sec$User");
+        transformer.addWhere("{E}.deleteTs is null");
+        res = transformer.getResult();
+        assertEquals(
+                "select u from sec$User u where (u.active = true) and (u.deleteTs is null)",
+                res);
+
+        transformer = new QueryTransformerRegex(
+                "select u from sec$User u where u.active = true and u.active = true",
+                "sec$User");
+        transformer.addWhere("{E}.deleteTs is null");
+        res = transformer.getResult();
+        assertEquals(
+                "select u from sec$User u where u.active = true and u.active = true and (u.deleteTs is null)",
+                res);
+
+        transformer = new QueryTransformerRegex(
+                "select u from sec$User u",
+                "sec$User");
+        transformer.addWhere("{E}.deleteTs is null");
+        res = transformer.getResult();
+        assertEquals(
+                "select u from sec$User u where (u.deleteTs is null)",
+                res);
+
+        // addJoinAndWhere
+
+        transformer = new QueryTransformerRegex(
+                "select u from sec$User u where u.active = true or u.active = true",
+                "sec$User");
+        transformer.addJoinAndWhere("join u.group g", "{E}.deleteTs is null");
+        res = transformer.getResult();
+        assertEquals(
+                "select u from sec$User u join u.group g where (u.active = true or u.active = true) and (u.deleteTs is null)",
+                res);
+
+        transformer = new QueryTransformerRegex(
+                "select u from sec$User u where (u.active = true)",
+                "sec$User");
+        transformer.addJoinAndWhere("join u.group g", "{E}.deleteTs is null");
+        res = transformer.getResult();
+        assertEquals(
+                "select u from sec$User u join u.group g where (u.active = true) and (u.deleteTs is null)",
                 res);
     }
 

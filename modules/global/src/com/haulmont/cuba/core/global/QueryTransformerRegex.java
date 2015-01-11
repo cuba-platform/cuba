@@ -40,10 +40,21 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
 
         StringBuilder sb = new StringBuilder();
         Matcher whereMatcher = WHERE_PATTERN.matcher(buffer);
-        if (whereMatcher.find(entityMatcher.end()))
+        int whereEnd = -1;
+        boolean needOpenBracket = false;
+        if (whereMatcher.find(entityMatcher.end())) {
+            whereEnd = whereMatcher.end();
+
+            Matcher orMatcher = OR_PATTERN.matcher(buffer);
+            orMatcher.region(whereEnd + 1, insertPos);
+            if (orMatcher.find()) { // surround with brackets if there is OR inside WHERE
+                sb.append(")");
+                needOpenBracket = true;
+            }
             sb.append(" and ");
-        else
+        } else {
             sb.append(" where ");
+        }
 
         sb.append("(").append(where);
         int idx;
@@ -51,6 +62,11 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
             sb.replace(idx, idx + ALIAS_PLACEHOLDER.length(), alias);
         }
         sb.append(")");
+
+        if (needOpenBracket) {
+            buffer.insert(whereEnd + 1, "(");
+            insertPos++;
+        }
 
         buffer.insert(insertPos, sb);
 
@@ -133,9 +149,7 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
         if (!StringUtils.isBlank(join)) {
             buffer.insert(insertPos, " ");
             insertPos++;
-            int joinLen = join.length();
             buffer.insert(insertPos, join);
-            insertPos += joinLen;
 
             Matcher paramMatcher = PARAM_PATTERN.matcher(join);
             while (paramMatcher.find()) {
@@ -143,19 +157,35 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
             }
         }
         if (!StringUtils.isBlank(where)) {
-            StringBuilder sb = new StringBuilder();
-            whereMatcher = WHERE_PATTERN.matcher(buffer);
-            if (whereMatcher.find(entityMatcher.end()))
-                sb.append(" and ");
-            else
-                sb.append(" where ");
-
-            sb.append("(").append(where).append(")");
-
             insertPos = buffer.length();
             Matcher lastClauseMatcher = LAST_CLAUSE_PATTERN.matcher(buffer);
             if (lastClauseMatcher.find(entityMatcher.end()))
                 insertPos = lastClauseMatcher.start() - 1;
+
+            StringBuilder sb = new StringBuilder();
+            whereMatcher = WHERE_PATTERN.matcher(buffer);
+            int whereEnd = -1;
+            boolean needOpenBracket = false;
+            if (whereMatcher.find(entityMatcher.end())) {
+                whereEnd = whereMatcher.end();
+
+                Matcher orMatcher = OR_PATTERN.matcher(buffer);
+                orMatcher.region(whereEnd + 1, insertPos);
+                if (orMatcher.find()) { // surround with brackets if there is OR inside WHERE
+                    sb.append(")");
+                    needOpenBracket = true;
+                }
+                sb.append(" and ");
+            } else {
+                sb.append(" where ");
+            }
+
+            sb.append("(").append(where).append(")");
+
+            if (needOpenBracket) {
+                buffer.insert(whereEnd + 1, "(");
+                insertPos++;
+            }
 
             buffer.insert(insertPos, sb);
 
