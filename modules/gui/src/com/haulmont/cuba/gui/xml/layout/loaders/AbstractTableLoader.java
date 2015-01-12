@@ -286,7 +286,7 @@ public abstract class AbstractTableLoader extends ComponentLoader {
             if (column.getId() instanceof MetaPropertyPath) {
                 MetaPropertyPath mpp = (MetaPropertyPath) column.getId();
                 String propertyName = mpp.getMetaProperty().getName();
-                MetaClass propertyMetaClass = metadataTools.getEnclosingMetaClass(mpp);
+                MetaClass propertyMetaClass = metadataTools.getPropertyEnclosingMetaClass(mpp);
 
                 columnCaption = messageTools.getPropertyCaption(propertyMetaClass, propertyName);
             } else {

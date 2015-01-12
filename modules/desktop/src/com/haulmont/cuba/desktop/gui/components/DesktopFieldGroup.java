@@ -728,7 +728,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
                     fieldDatasource != null ? fieldDatasource.getMetaClass().getPropertyPath(propertyId) : null;
 
             if (propertyPath != null) {
-                MetaClass propertyMetaClass = metadataTools.getEnclosingMetaClass(propertyPath);
+                MetaClass propertyMetaClass = metadataTools.getPropertyEnclosingMetaClass(propertyPath);
                 String propertyName = propertyPath.getMetaProperty().getName();
                 caption = messageTools.getPropertyCaption(propertyMetaClass, propertyName);
             }

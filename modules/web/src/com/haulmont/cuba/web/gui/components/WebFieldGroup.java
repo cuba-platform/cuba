@@ -310,7 +310,7 @@ public class WebFieldGroup
                     fieldDatasource.getMetaClass().getPropertyPath(propertyId) : null;
 
             if (propertyPath != null) {
-                MetaClass propertyMetaClass = metadataTools.getEnclosingMetaClass(propertyPath);
+                MetaClass propertyMetaClass = metadataTools.getPropertyEnclosingMetaClass(propertyPath);
                 String propertyName = propertyPath.getMetaProperty().getName();
                 caption = messageTools.getPropertyCaption(propertyMetaClass, propertyName);
             }
@@ -416,7 +416,7 @@ public class WebFieldGroup
             if (caption == null) {
                 MetaPropertyPath propertyPath = fieldDatasource.getMetaClass().getPropertyPath(fieldConf.getId());
                 if (propertyPath != null) {
-                    MetaClass propertyMetaClass = metadataTools.getEnclosingMetaClass(propertyPath);
+                    MetaClass propertyMetaClass = metadataTools.getPropertyEnclosingMetaClass(propertyPath);
                     String propertyName = propertyPath.getMetaProperty().getName();
                     caption = messageTools.getPropertyCaption(propertyMetaClass, propertyName);
                 }

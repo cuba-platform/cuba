@@ -296,7 +296,7 @@ public class MetadataTools {
      * @param propertyPath Property path
      * @return metaclass
      */
-    public MetaClass getEnclosingMetaClass(MetaPropertyPath propertyPath) {
+    public MetaClass getPropertyEnclosingMetaClass(MetaPropertyPath propertyPath) {
         checkNotNullArgument(propertyPath, "Property path should not be null");
 
         MetaProperty[] propertyChain = propertyPath.get();

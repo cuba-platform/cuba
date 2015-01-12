@@ -79,7 +79,7 @@ public class SecurityImpl implements Security {
     }
 
     protected boolean isEntityAttrReadPermitted(MetaPropertyPath mpp) {
-        MetaClass propertyMetaClass = metadata.getTools().getEnclosingMetaClass(mpp);
+        MetaClass propertyMetaClass = metadata.getTools().getPropertyEnclosingMetaClass(mpp);
         String propertyName = mpp.getMetaProperty().getName();
 
         return isEntityOpPermitted(propertyMetaClass, EntityOp.READ)
@@ -93,7 +93,7 @@ public class SecurityImpl implements Security {
     }
 
     protected boolean isEntityAttrUpdatePermitted(MetaPropertyPath mpp) {
-        MetaClass propertyMetaClass = metadata.getTools().getEnclosingMetaClass(mpp);
+        MetaClass propertyMetaClass = metadata.getTools().getPropertyEnclosingMetaClass(mpp);
         String propertyName = mpp.getMetaProperty().getName();
 
         return (isEntityOpPermitted(propertyMetaClass, EntityOp.CREATE)
