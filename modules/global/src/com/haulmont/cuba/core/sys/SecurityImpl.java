@@ -6,7 +6,6 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.ExtendedEntities;
 import com.haulmont.cuba.core.global.Metadata;
@@ -76,41 +75,30 @@ public class SecurityImpl implements Security {
     @Override
     public boolean isEntityAttrReadPermitted(MetaClass metaClass, String propertyPath) {
         MetaPropertyPath mpp = metaClass.getPropertyPath(propertyPath);
-        return mpp != null && isEntityAttrReadPermitted(metaClass, mpp.get(), 0);
+        return mpp != null && isEntityAttrReadPermitted(mpp);
     }
 
-    protected boolean isEntityAttrReadPermitted(MetaClass metaClass,
-                                                MetaProperty[] propertyChain, int chainIndex) {
-        MetaProperty chainProperty = propertyChain[chainIndex];
+    protected boolean isEntityAttrReadPermitted(MetaPropertyPath mpp) {
+        MetaClass propertyMetaClass = metadata.getTools().getEnclosingMetaClass(mpp);
+        String propertyName = mpp.getMetaProperty().getName();
 
-        if (chainIndex == propertyChain.length - 1) {
-            return isEntityOpPermitted(metaClass, EntityOp.READ)
-                    && isEntityAttrPermitted(metaClass, chainProperty.getName(), EntityAttrAccess.VIEW);
-        } else {
-            MetaClass chainMetaClass = chainProperty.getRange().asClass();
-
-            return isEntityAttrReadPermitted(chainMetaClass, propertyChain, chainIndex + 1);
-        }
+        return isEntityOpPermitted(propertyMetaClass, EntityOp.READ)
+                && isEntityAttrPermitted(propertyMetaClass, propertyName, EntityAttrAccess.VIEW);
     }
 
     @Override
     public boolean isEntityAttrUpdatePermitted(MetaClass metaClass, String propertyPath) {
         MetaPropertyPath mpp = metaClass.getPropertyPath(propertyPath);
-        return mpp != null && isEntityAttrUpdatePermitted(metaClass, mpp.get(), 0);
+        return mpp != null && isEntityAttrUpdatePermitted(mpp);
     }
 
-    protected boolean isEntityAttrUpdatePermitted(MetaClass metaClass,
-                                                  MetaProperty[] propertyChain, int chainIndex) {
-        MetaProperty chainProperty = propertyChain[chainIndex];
+    protected boolean isEntityAttrUpdatePermitted(MetaPropertyPath mpp) {
+        MetaClass propertyMetaClass = metadata.getTools().getEnclosingMetaClass(mpp);
+        String propertyName = mpp.getMetaProperty().getName();
 
-        if (chainIndex == propertyChain.length - 1) {
-            return (isEntityOpPermitted(metaClass, EntityOp.CREATE) || isEntityOpPermitted(metaClass, EntityOp.UPDATE))
-                    && isEntityAttrPermitted(metaClass, chainProperty.getName(), EntityAttrAccess.MODIFY);
-        } else {
-            MetaClass chainMetaClass = chainProperty.getRange().asClass();
-
-            return isEntityAttrUpdatePermitted(chainMetaClass, propertyChain, chainIndex + 1);
-        }
+        return (isEntityOpPermitted(propertyMetaClass, EntityOp.CREATE)
+                    || isEntityOpPermitted(propertyMetaClass, EntityOp.UPDATE))
+                && isEntityAttrPermitted(propertyMetaClass, propertyName, EntityAttrAccess.MODIFY);
     }
 
     @Override

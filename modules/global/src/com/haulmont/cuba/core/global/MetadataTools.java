@@ -300,15 +300,12 @@ public class MetadataTools {
         checkNotNullArgument(propertyPath, "Property path should not be null");
 
         MetaProperty[] propertyChain = propertyPath.get();
-        MetaClass currentMetaClass = propertyPath.getMetaClass();
-        int chainIndex = 0;
-        while (chainIndex != propertyChain.length - 1) {
-            MetaProperty chainProperty = propertyChain[chainIndex];
-            currentMetaClass = chainProperty.getRange().asClass();
-            chainIndex++;
+        if (propertyChain.length > 1) {
+            MetaProperty chainProperty = propertyChain[propertyChain.length - 2];
+            return chainProperty.getRange().asClass();
+        } else {
+            return propertyPath.getMetaClass();
         }
-
-        return currentMetaClass;
     }
 
     /**
