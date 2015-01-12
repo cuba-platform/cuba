@@ -48,7 +48,7 @@ public class ThemeConstantsRepository {
         if (!initialized) {
             synchronized (this) {
                 if (!initialized) {
-                    log.info("Loading theme constants");
+                    log.debug("Loading theme constants");
                     init();
                     initialized = true;
                 }
