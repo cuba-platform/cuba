@@ -24,7 +24,10 @@ import org.perf4j.log4j.Log4JStopWatch;
 import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
@@ -105,7 +108,7 @@ public abstract class AbstractMessages implements Messages {
                     || dateFormat.equals("dateFormat")
                     || dateTimeFormat.equals("dateTimeFormat")
                     || timeFormat.equals("timeFormat"))
-                throw new DevelopmentException("Localized format strings are not defined. " +
+                log.warn("Localized format strings are not defined. " +
                         "Check cuba.mainMessagePack application property, it must point to a valid set of main message packs.");
 
             Datatypes.setFormatStrings(
