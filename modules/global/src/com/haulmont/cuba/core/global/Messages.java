@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.core.global;
 
+import javax.annotation.Nullable;
 import java.util.Locale;
 
 /**
@@ -146,6 +147,18 @@ public interface Messages {
      * @return          localized message or the key if the message not found
      */
     String getMessage(String packs, String key, Locale locale);
+
+    /**
+     * Returns localized message or null if not found.
+     * @param packs     list of whitespace-separated package names. Searching of message is performed in reverse order -
+     *                  starts from last name in the list. Each package is searched for the key, if the key is not found
+     *                  in this package, it is searched in parent package, and so forth
+     * @param key       message key
+     * @param locale    message locale. If null, current user locale is used.
+     * @return          localized message or null if the message not found
+     */
+    @Nullable
+    String findMessage(String packs, String key, @Nullable Locale locale);
 
     /**
      * Get localized message and use it as a format string for parameters provided

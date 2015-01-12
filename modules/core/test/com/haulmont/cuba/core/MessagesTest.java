@@ -8,6 +8,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.mp_test.MpTestObj;
 import com.haulmont.cuba.core.mp_test.nested.MpTestNestedEnum;
 import com.haulmont.cuba.core.mp_test.nested.MpTestNestedObj;
@@ -18,11 +19,11 @@ import org.apache.log4j.Logger;
 import javax.annotation.Nullable;
 import java.util.Locale;
 
-public class MessageProviderTest extends CubaTestCase {
+public class MessagesTest extends CubaTestCase {
 
     private final TestAppender appender;
 
-    public MessageProviderTest() {
+    public MessagesTest() {
         appender = new TestAppender();
         Logger.getRootLogger().addAppender(appender);
     }
@@ -172,6 +173,26 @@ public class MessageProviderTest extends CubaTestCase {
                 Locale.forLanguageTag("fr"));
         assertEquals("Message0 in French", msg);
         assertEquals(0, getSearchMessagesCount());
+    }
+
+    public void testFind() throws Exception {
+        Messages messages = AppBeans.get(Messages.class);
+        UserSessionSource uss = AppBeans.get(UserSessionSource.class);
+
+        String msg = messages.findMessage("com.haulmont.cuba.core.mp_test.nested", "key0", uss.getLocale());
+        assertEquals("Message0", msg);
+
+        msg = messages.findMessage("com.haulmont.cuba.core.mp_test.nested", "non-existing-message", uss.getLocale());
+        assertNull(msg);
+
+        msg = messages.findMessage("com.haulmont.cuba.core.mp_test.nested", "key0", null);
+        assertEquals("Message0", msg);
+
+        msg = messages.findMessage("com.haulmont.cuba.core.mp_test.nested", "non-existing-message", null);
+        assertNull(msg);
+
+        msg = messages.getMessage("com.haulmont.cuba.core.mp_test.nested", "non-existing-message", uss.getLocale());
+        assertEquals("non-existing-message", msg);
     }
 
     private int getSearchMessagesCount() {

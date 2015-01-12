@@ -208,7 +208,7 @@ public abstract class AbstractMessages implements Messages {
     @Override
     public String getMainMessage(String key, Locale locale) {
         Preconditions.checkNotNullArgument(key, "Message key is null");
-        return internalGetMessage(mainMessagePack, key, locale);
+        return internalGetMessage(mainMessagePack, key, locale, key);
     }
 
     @Override
@@ -235,11 +235,28 @@ public abstract class AbstractMessages implements Messages {
         Preconditions.checkNotNullArgument(key, "Message key is null");
 
         String compositeKey = packs + "/" + key;
-        String msg = internalGetMessage(mainMessagePack, compositeKey, locale);
-        if (!msg.equals(compositeKey))
+        String msg = internalGetMessage(mainMessagePack, compositeKey, locale, null);
+        if (msg != null)
             return msg;
 
-        return internalGetMessage(packs, key, locale);
+        return internalGetMessage(packs, key, locale, key);
+    }
+
+    @Nullable
+    @Override
+    public String findMessage(String packs, String key, @Nullable Locale locale) {
+        Preconditions.checkNotNullArgument(packs, "Messages pack name is null");
+        Preconditions.checkNotNullArgument(key, "Message key is null");
+
+        if (locale == null)
+            locale = getUserLocale();
+
+        String compositeKey = packs + "/" + key;
+        String msg = internalGetMessage(mainMessagePack, compositeKey, locale, null);
+        if (msg != null)
+            return msg;
+
+        return internalGetMessage(packs, key, locale, null);
     }
 
     @Override
@@ -264,7 +281,7 @@ public abstract class AbstractMessages implements Messages {
         notFoundCache.clear();
     }
 
-    protected String internalGetMessage(String packs, String key, Locale locale) {
+    protected String internalGetMessage(String packs, String key, Locale locale, String defaultValue) {
         locale = messageTools.trimLocale(locale);
 
         String cacheKey = makeCacheKey(packs, key, locale, false);
@@ -275,7 +292,7 @@ public abstract class AbstractMessages implements Messages {
 
         String notFound = notFoundCache.get(cacheKey);
         if (notFound != null)
-            return notFound;
+            return defaultValue;
 
         msg = searchMessage(packs, key, locale, false, new HashSet<String>());
         if (msg != null) {
@@ -284,7 +301,7 @@ public abstract class AbstractMessages implements Messages {
         }
 
         notFoundCache.put(cacheKey, key);
-        return key;
+        return defaultValue;
     }
 
     @Nullable
