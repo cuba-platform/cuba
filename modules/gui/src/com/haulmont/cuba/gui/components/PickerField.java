@@ -17,6 +17,7 @@ import com.haulmont.cuba.gui.WindowManagerProvider;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.LogFactory;
 
@@ -235,6 +236,11 @@ public interface PickerField extends Field, Component.ActionsHolder {
                             public void handleLookup(Collection items) {
                                 if (!items.isEmpty()) {
                                     final Object item = items.iterator().next();
+                                    Object oldValue = pickerField.getValue();
+                                    // we need to reset value and assign it again if entity has same id
+                                    if (oldValue != item && ObjectUtils.equals(oldValue, item)) {
+                                        pickerField.setValue(null);
+                                    }
                                     pickerField.setValue(item);
                                     afterSelect(items);
                                 }
@@ -457,20 +463,22 @@ public interface PickerField extends Field, Component.ActionsHolder {
         }
 
         protected void afterCommitOpenedEntity(Entity item) {
-            if (!(pickerField instanceof LookupPickerField))
-                return;
+            if (pickerField instanceof LookupPickerField) {
+                LookupPickerField lookupPickerField = ((LookupPickerField) pickerField);
 
-            LookupPickerField lookupPickerField = ((LookupPickerField) pickerField);
-
-            CollectionDatasource optionsDatasource = lookupPickerField.getOptionsDatasource();
-            if (optionsDatasource != null && optionsDatasource.containsItem(item.getId())) {
-                optionsDatasource.updateItem(item);
-            }
-            if (lookupPickerField.getDatasource() != null) {
-                boolean modified = lookupPickerField.getDatasource().isModified();
-                lookupPickerField.setValue(null);
-                lookupPickerField.setValue(item);
-                ((DatasourceImplementation) lookupPickerField.getDatasource()).setModified(modified);
+                CollectionDatasource optionsDatasource = lookupPickerField.getOptionsDatasource();
+                if (optionsDatasource != null && optionsDatasource.containsItem(item.getId())) {
+                    optionsDatasource.updateItem(item);
+                }
+                if (lookupPickerField.getDatasource() != null) {
+                    boolean modified = lookupPickerField.getDatasource().isModified();
+                    lookupPickerField.setValue(null);
+                    lookupPickerField.setValue(item);
+                    ((DatasourceImplementation) lookupPickerField.getDatasource()).setModified(modified);
+                }
+            } else {
+                pickerField.setValue(null);
+                pickerField.setValue(item);
             }
         }
 
