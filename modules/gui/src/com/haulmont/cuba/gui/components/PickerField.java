@@ -235,8 +235,18 @@ public interface PickerField extends Field, Component.ActionsHolder {
                             @Override
                             public void handleLookup(Collection items) {
                                 if (!items.isEmpty()) {
-                                    final Object item = items.iterator().next();
+                                    final Entity item = (Entity) items.iterator().next();
                                     Object oldValue = pickerField.getValue();
+
+                                    if (pickerField instanceof LookupField) {
+                                        LookupField lookupPickerField = ((LookupField) pickerField);
+
+                                        CollectionDatasource optionsDatasource = lookupPickerField.getOptionsDatasource();
+                                        if (optionsDatasource != null && optionsDatasource.containsItem(item.getId())) {
+                                            optionsDatasource.updateItem(item);
+                                        }
+                                    }
+
                                     // we need to reset value and assign it again if entity has same id
                                     if (oldValue != item && ObjectUtils.equals(oldValue, item)) {
                                         pickerField.setValue(null);
@@ -463,19 +473,20 @@ public interface PickerField extends Field, Component.ActionsHolder {
         }
 
         protected void afterCommitOpenedEntity(Entity item) {
-            if (pickerField instanceof LookupPickerField) {
-                LookupPickerField lookupPickerField = ((LookupPickerField) pickerField);
+            if (pickerField instanceof LookupField) {
+                LookupField lookupPickerField = ((LookupField) pickerField);
 
                 CollectionDatasource optionsDatasource = lookupPickerField.getOptionsDatasource();
                 if (optionsDatasource != null && optionsDatasource.containsItem(item.getId())) {
                     optionsDatasource.updateItem(item);
                 }
-                if (lookupPickerField.getDatasource() != null) {
-                    boolean modified = lookupPickerField.getDatasource().isModified();
-                    lookupPickerField.setValue(null);
-                    lookupPickerField.setValue(item);
-                    ((DatasourceImplementation) lookupPickerField.getDatasource()).setModified(modified);
-                }
+            }
+
+            if (pickerField.getDatasource() != null) {
+                boolean modified = pickerField.getDatasource().isModified();
+                pickerField.setValue(null);
+                pickerField.setValue(item);
+                ((DatasourceImplementation) pickerField.getDatasource()).setModified(modified);
             } else {
                 pickerField.setValue(null);
                 pickerField.setValue(item);
