@@ -32,7 +32,7 @@ public class Timer extends AbstractComponent {
     protected Window owner = null;
 
     public Timer(int delay, boolean repeating) {
-        if (delay < 500)  {
+        if (delay < 50)  {
             throw new IllegalArgumentException("Too little timer value");
         }
         this.delay = delay;
@@ -101,7 +101,7 @@ public class Timer extends AbstractComponent {
     }
 
     public void setDelay(int delay) {
-        if (delay < 500) {
+        if (delay < 50) {
             throw new IllegalArgumentException("Too little timer value");
         }
         this.delay = delay;
