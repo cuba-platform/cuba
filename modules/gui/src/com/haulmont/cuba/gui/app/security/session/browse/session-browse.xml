@@ -60,13 +60,13 @@
             </buttonsPanel>
             <rowsCount/>
             <columns>
-                <column id="id" caption="msg://id"/>
-                <column id="login" caption="msg://login"/>
-                <column id="userName" caption="msg://userName"/>
-                <column id="address" caption="msg://address"/>
-                <column id="clientInfo" caption="msg://clientInfo"/>
-                <column id="since" caption="msg://since"/>
-                <column id="lastUsedTs" caption="msg://lastUsedTs"/>
+                <column id="id"/>
+                <column id="login"/>
+                <column id="userName"/>
+                <column id="address"/>
+                <column id="clientInfo"/>
+                <column id="since"/>
+                <column id="lastUsedTs"/>
             </columns>
             <rows datasource="sessionsDs"/>
         </groupTable>
