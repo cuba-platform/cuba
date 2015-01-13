@@ -133,39 +133,48 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
         inRefresh = true;
         try {
-            savedParameters = parameters;
-
-            Collection prevIds = data.keySet();
-            invalidate();
+            Collection prevIds = beforeRefresh(parameters);
 
             loadData(parameters);
 
-            State prevState = state;
-            if (!prevState.equals(State.VALID)) {
-                state = State.VALID;
-                fireStateChanged(prevState);
-            }
-
-            if (this.item != null && !prevIds.contains(this.item.getId())) {
-                setItem(null);
-            } else if (this.item != null) {
-                setItem(getItem(this.item.getId()));
-            } else {
-                setItem(null);
-            }
-
-            if (sortInfos != null && sortInfos.length > 0)
-                doSort();
-
-            suspended = false;
-            refreshOnResumeRequired = false;
-
-            fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH, Collections.<Entity>emptyList());
-
-            checkDataLoadError();
+            afterRefresh(parameters, prevIds);
         } finally {
             inRefresh = false;
         }
+    }
+
+    protected Collection beforeRefresh(Map<String, Object> parameters) {
+        savedParameters = parameters;
+        Collection prevIds = data.keySet();
+        invalidate();
+        return prevIds;
+    }
+
+    @SuppressWarnings("unused")
+    protected void afterRefresh(Map<String, Object> parameters, Collection prevIds) {
+        State prevState = state;
+        if (!prevState.equals(State.VALID)) {
+            state = State.VALID;
+            fireStateChanged(prevState);
+        }
+
+        if (this.item != null && !prevIds.contains(this.item.getId())) {
+            setItem(null);
+        } else if (this.item != null) {
+            setItem(getItem(this.item.getId()));
+        } else {
+            setItem(null);
+        }
+
+        if (sortInfos != null && sortInfos.length > 0)
+            doSort();
+
+        suspended = false;
+        refreshOnResumeRequired = false;
+
+        fireCollectionChanged(CollectionDatasourceListener.Operation.REFRESH, Collections.<Entity>emptyList());
+
+        checkDataLoadError();
     }
 
     @Override
@@ -482,51 +491,63 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         StopWatch sw = new Log4JStopWatch(tag, Logger.getLogger(UIPerformanceLogger.class));
 
         if (needLoading()) {
-            final LoadContext context = new LoadContext(metaClass);
-
-            LoadContext.Query q = createLoadContextQuery(context, params);
-            if (q == null) {
-                detachListener(data.values());
-                data.clear();
+            LoadContext context = beforeLoadData(params);
+            if (context == null) {
                 return;
             }
-
-            if (sortInfos != null && sortOnDb) {
-                setSortDirection(q);
-            }
-
-            if (firstResult > 0)
-                q.setFirstResult(firstResult);
-
-            if (maxResults > 0) {
-                q.setMaxResults(maxResults);
-            }
-
-            context.setView(view);
-            context.setSoftDeletion(isSoftDeletion());
-
-            prepareLoadContext(context);
-
-            dataLoadError = null;
             try {
                 final Collection<T> entities = dataSupplier.loadList(context);
 
-                detachListener(data.values());
-                data.clear();
-
-                for (T entity : entities) {
-                    data.put(entity.getId(), entity);
-                    attachListener(entity);
-                }
-
-                lastQuery = context.getQuery();
-
+                afterLoadData(params, context, entities);
             } catch (Throwable e) {
                 dataLoadError = e;
             }
         }
 
         sw.stop();
+    }
+
+    protected LoadContext beforeLoadData(Map<String, Object> params) {
+        final LoadContext context = new LoadContext(metaClass);
+
+        LoadContext.Query q = createLoadContextQuery(context, params);
+        if (q == null) {
+            detachListener(data.values());
+            data.clear();
+            return null;
+        }
+
+        if (sortInfos != null && sortOnDb) {
+            setSortDirection(q);
+        }
+
+        if (firstResult > 0)
+            q.setFirstResult(firstResult);
+
+        if (maxResults > 0) {
+            q.setMaxResults(maxResults);
+        }
+
+        context.setView(view);
+        context.setSoftDeletion(isSoftDeletion());
+
+        prepareLoadContext(context);
+
+        dataLoadError = null;
+        return context;
+    }
+
+    @SuppressWarnings("unused")
+    protected void afterLoadData(Map<String, Object> params, LoadContext context, Collection<T> entities) {
+        detachListener(data.values());
+        data.clear();
+
+        for (T entity : entities) {
+            data.put(entity.getId(), entity);
+            attachListener(entity);
+        }
+
+        lastQuery = context.getQuery();
     }
 
     @Override
