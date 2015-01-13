@@ -36,6 +36,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * Central class of the web application. An instance of this class is created for each client's session and is bound
@@ -114,21 +115,20 @@ public abstract class App {
     }
 
     protected ThemeConstants loadTheme() {
+        ThemeConstantsRepository themeRepository = AppBeans.get(ThemeConstantsRepository.NAME);
         String appWindowTheme = webConfig.getAppWindowTheme();
         String userAppTheme = cookies.getCookieValue(APP_THEME_COOKIE_PREFIX + globalConfig.getWebContextName());
         if (userAppTheme != null) {
             if (!StringUtils.equals(userAppTheme, appWindowTheme)) {
                 // check theme support
-                List<String> supportedThemes = webConfig.getAvailableAppThemes();
+                Set<String> supportedThemes = themeRepository.getAvailableThemes();
                 if (supportedThemes.contains(userAppTheme)) {
                     appWindowTheme = userAppTheme;
                 }
             }
         }
 
-        ThemeConstantsRepository themeRepository = AppBeans.get(ThemeConstantsRepository.NAME);
         ThemeConstants theme = themeRepository.getConstants(appWindowTheme);
-
         if (theme == null) {
             throw new IllegalStateException("Unable to use theme constants '" + appWindowTheme + "'");
         }

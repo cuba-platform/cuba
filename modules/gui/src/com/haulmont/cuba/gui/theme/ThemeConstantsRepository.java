@@ -21,10 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * @author artamonov
@@ -75,7 +72,7 @@ public class ThemeConstantsRepository {
                 }
             }
 
-            Map<String, ThemeConstants> themes = new HashMap<>();
+            Map<String, ThemeConstants> themes = new LinkedHashMap<>();
 
             for (Map.Entry<String, Map<String, String>> entry : themeProperties.entrySet()) {
                 themes.put(entry.getKey(), new ThemeConstants(entry.getValue()));
@@ -140,5 +137,11 @@ public class ThemeConstantsRepository {
         checkInitialized();
 
         return themeConstantsMap.get(themeName);
+    }
+
+    public Set<String> getAvailableThemes() {
+        checkInitialized();
+
+        return themeConstantsMap.keySet();
     }
 }

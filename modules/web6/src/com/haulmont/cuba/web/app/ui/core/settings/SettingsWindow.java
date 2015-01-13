@@ -4,21 +4,23 @@
  */
 package com.haulmont.cuba.web.app.ui.core.settings;
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppWindow;
-import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.UserSettingsTools;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static com.haulmont.cuba.web.auth.ActiveDirectoryConnection.ACTIVE_DIRECTORY_USER_SESSION_ATTRIBUTE;
 
@@ -73,9 +75,9 @@ public class SettingsWindow extends AbstractWindow {
         else
             modeOptions.setValue(msgSingle);
 
-        WebConfig webConfig = configuration.getConfig(WebConfig.class);
-        List<String> themesList = webConfig.getAvailableAppThemes();
-        appThemeField.setOptionsList(themesList);
+        ThemeConstantsRepository themeRepository = AppBeans.get(ThemeConstantsRepository.NAME);
+        Set<String> supportedThemes = themeRepository.getAvailableThemes();
+        appThemeField.setOptionsList(new ArrayList<>(supportedThemes));
 
         String userAppTheme = userSettingsTools.loadAppWindowTheme();
         appThemeField.setValue(userAppTheme);

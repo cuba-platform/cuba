@@ -8,6 +8,7 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
+import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
 import com.haulmont.cuba.security.app.UserManagementService;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
@@ -37,9 +38,9 @@ import javax.annotation.Nullable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Standard login window.
@@ -166,7 +167,8 @@ public class LoginWindow extends UIView implements Action.Handler {
         if (userAppTheme != null) {
             if (!StringUtils.equals(userAppTheme, uiTheme)) {
                 // check theme support
-                List<String> supportedThemes = webConfig.getAvailableAppThemes();
+                ThemeConstantsRepository themeRepository = AppBeans.get(ThemeConstantsRepository.NAME);
+                Set<String> supportedThemes = themeRepository.getAvailableThemes();
                 if (supportedThemes.contains(userAppTheme)) {
                     app.applyTheme(userAppTheme);
                     ui.setTheme(userAppTheme);

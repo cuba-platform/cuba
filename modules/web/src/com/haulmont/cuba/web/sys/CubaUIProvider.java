@@ -8,6 +8,7 @@ package com.haulmont.cuba.web.sys;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
+import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
 import com.vaadin.server.DefaultUIProvider;
@@ -15,8 +16,8 @@ import com.vaadin.server.UICreateEvent;
 import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.Cookie;
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Custom provider for possible extension
@@ -40,7 +41,8 @@ public class CubaUIProvider extends DefaultUIProvider {
         if (userAppTheme != null) {
             if (!StringUtils.equals(userAppTheme, appWindowTheme)) {
                 // check theme support
-                List<String> supportedThemes = webConfig.getAvailableAppThemes();
+                ThemeConstantsRepository themeRepository = AppBeans.get(ThemeConstantsRepository.NAME);
+                Set<String> supportedThemes = themeRepository.getAvailableThemes();
                 if (supportedThemes.contains(userAppTheme)) {
 
                     return userAppTheme;

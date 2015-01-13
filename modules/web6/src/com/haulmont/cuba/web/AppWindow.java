@@ -16,6 +16,7 @@ import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.ShowInfoAction;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserSubstitution;
@@ -501,7 +502,8 @@ public class AppWindow extends FocusHandlerWindow implements UserSubstitutionLis
 
         if (!Objects.equals(themeName, getTheme())) {
             // check theme support
-            List<String> supportedThemes = webConfig.getAvailableAppThemes();
+            ThemeConstantsRepository themeRepository = AppBeans.get(ThemeConstantsRepository.NAME);
+            Set<String> supportedThemes = themeRepository.getAvailableThemes();
             if (supportedThemes.contains(themeName)) {
                 app.applyTheme(themeName);
                 setTheme(themeName);

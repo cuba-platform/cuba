@@ -22,6 +22,7 @@ import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.dev.LayoutAnalyzer;
 import com.haulmont.cuba.gui.dev.LayoutTip;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
+import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserSubstitution;
@@ -502,7 +503,8 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
 
         if (!Objects.equals(themeName, ui.getTheme())) {
             // check theme support
-            List<String> supportedThemes = webConfig.getAvailableAppThemes();
+            ThemeConstantsRepository themeRepository = AppBeans.get(ThemeConstantsRepository.NAME);
+            Set<String> supportedThemes = themeRepository.getAvailableThemes();
             if (supportedThemes.contains(themeName)) {
                 app.applyTheme(themeName);
                 ui.setTheme(themeName);

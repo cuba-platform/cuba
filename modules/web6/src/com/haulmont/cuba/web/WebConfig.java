@@ -151,11 +151,13 @@ public interface WebConfig extends Config {
     String getAppWindowTheme();
 
     /**
+     * @deprecated Replaced with cuba.themeConfig app property
      * @return Supported web themes
      */
     @Property("cuba.web.availableAppThemes")
     @Factory(factory = StringListTypeFactory.class)
     @Default("peyto|havana")
+    @Deprecated
     List<String> getAvailableAppThemes();
 
     /**

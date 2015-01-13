@@ -162,11 +162,12 @@ public abstract class App extends Application
         cookies.updateCookies(request);
 
         if (!themeInitialized) {
+            ThemeConstantsRepository themeRepository = AppBeans.get(ThemeConstantsRepository.NAME);
             String appWindowTheme = webConfig.getAppWindowTheme();
             String userAppTheme = cookies.getCookieValue(APP_THEME_COOKIE_PREFIX + globalConfig.getWebContextName());
             if (userAppTheme != null) {
                 // check theme support
-                List<String> supportedThemes = webConfig.getAvailableAppThemes();
+                Set<String> supportedThemes = themeRepository.getAvailableThemes();
                 if (supportedThemes.contains(userAppTheme)) {
                     if (!StringUtils.equals(userAppTheme, getTheme())) {
                         setTheme(userAppTheme);
@@ -175,7 +176,6 @@ public abstract class App extends Application
                 }
             }
 
-            ThemeConstantsRepository themeRepository = AppBeans.get(ThemeConstantsRepository.NAME);
             ThemeConstants theme = themeRepository.getConstants(appWindowTheme);
 
             if (theme == null) {
