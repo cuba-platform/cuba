@@ -82,9 +82,7 @@ public class DataServiceQueryBuilder {
         Query query = em.createQuery(queryString);
 
         if (useSecurityConstraints) {
-            boolean constraintsApplied = security.applyConstraints(query);
-            if (constraintsApplied && log.isDebugEnabled())
-                log.debug("Constraints applyed: " + printQuery(query.getQueryString()));
+            applyConstraints(query);
         }
 
         QueryParser parser = QueryTransformerFactory.createParser(queryString);
@@ -120,6 +118,12 @@ public class DataServiceQueryBuilder {
         }
 
         return query;
+    }
+
+    protected void applyConstraints(Query query) {
+        boolean constraintsApplied = security.applyConstraints(query);
+        if (constraintsApplied && log.isDebugEnabled())
+            log.debug("Constraints applyed: " + printQuery(query.getQueryString()));
     }
 
     public static String printQuery(String query) {
