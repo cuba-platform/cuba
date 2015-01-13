@@ -28,6 +28,7 @@ public class LoadContext implements Serializable {
     protected boolean useSecurityConstraints = true;
     protected List<Query> prevQueries = new ArrayList<>();
     protected int queryKey;
+    protected Map<String, Object> dbHints = new HashMap<>();
 
     /**
      * @param metaClass metaclass of the loaded entities
@@ -166,6 +167,13 @@ public class LoadContext implements Serializable {
      */
     public void setQueryKey(int queryKey) {
         this.queryKey = queryKey;
+    }
+
+    /**
+     * @return custom hints which can be used later during query construction
+     */
+    public Map<String, Object> getDbHints() {
+        return dbHints;
     }
 
     @Override

@@ -71,6 +71,8 @@ public class DataWorkerBean implements DataWorker {
             if (!context.isSoftDeletion())
                 em.setSoftDeletion(false);
 
+            persistence.getEntityManagerContext().setDbHints(context.getDbHints());
+
             // persist new
             for (Entity entity : context.getCommitInstances()) {
                 if (PersistenceHelper.isNew(entity)) {
@@ -173,6 +175,8 @@ public class DataWorkerBean implements DataWorker {
             if (!context.isSoftDeletion())
                 em.setSoftDeletion(false);
 
+            persistence.getEntityManagerContext().setDbHints(context.getDbHints());
+
             // persist new or merge detached
             Set newInstanceIdSet = new HashSet(context.getNewInstanceIds());
             for (Entity entity : context.getCommitInstances()) {
@@ -268,6 +272,7 @@ public class DataWorkerBean implements DataWorker {
 
             if (!context.isSoftDeletion())
                 em.setSoftDeletion(false);
+            persistence.getEntityManagerContext().setDbHints(context.getDbHints());
 
             com.haulmont.cuba.core.Query query = createQuery(em, context);
             final List<A> resultList = query.getResultList();
@@ -311,6 +316,7 @@ public class DataWorkerBean implements DataWorker {
         try {
             final EntityManager em = persistence.getEntityManager();
             em.setSoftDeletion(context.isSoftDeletion());
+            persistence.getEntityManagerContext().setDbHints(context.getDbHints());
 
             boolean ensureDistinct = false;
             if (configuration.getConfig(ServerConfig.class).getInMemoryDistinct() && context.getQuery() != null) {

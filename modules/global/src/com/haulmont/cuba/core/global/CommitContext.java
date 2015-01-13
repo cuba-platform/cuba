@@ -26,6 +26,7 @@ public class CommitContext implements Serializable {
     protected Map<Object, View> views = new HashMap<>();
 
     protected boolean softDeletion = true;
+    protected Map<String, Object> dbHints = new HashMap<>();
 
     public CommitContext() {
     }
@@ -88,6 +89,13 @@ public class CommitContext implements Serializable {
      */
     public Map<Object, View> getViews() {
         return views;
+    }
+
+    /**
+     * @return custom hints which can be used later during query construction
+     */
+    public Map<String, Object> getDbHints() {
+        return dbHints;
     }
 
     /**
