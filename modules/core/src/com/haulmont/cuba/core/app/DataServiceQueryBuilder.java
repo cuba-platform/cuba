@@ -37,10 +37,10 @@ public class DataServiceQueryBuilder {
 
     private Log log = LogFactory.getLog(getClass());
 
-    private String queryString;
-    private Map<String, Object> queryParams;
-    private String entityName;
-    private boolean useSecurityConstraints;
+    protected String queryString;
+    protected Map<String, Object> queryParams;
+    protected String entityName;
+    protected boolean useSecurityConstraints;
 
     @Inject
     protected Metadata metadata;
