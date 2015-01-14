@@ -35,4 +35,9 @@
     font-weight: 600;
     line-height: 26px;
   }
+
+  .#{$primary-stylename} pre {
+    margin: 0;
+    font-family: verdana, tahoma, sans-serif;
+  }
 }
