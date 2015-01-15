@@ -83,6 +83,10 @@
         font-size: 12px;
         font-family: $cuba-havana-fonts;
         border: 1px solid $cuba-window-border-color;
+
+        & > .v-scrollable > .v-layout:first-child {
+          padding-top: 5px;
+        }
       }
 
       .#{$primary-stylename}-footer {

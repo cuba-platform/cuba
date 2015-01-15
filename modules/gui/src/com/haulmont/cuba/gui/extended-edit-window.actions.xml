@@ -5,7 +5,7 @@
 
 <window xmlns="http://schemas.haulmont.com/cuba/5.3/window.xsd">
     <layout>
-        <hbox spacing="true" height="AUTO" stylename="cuba-extended-edit-window-actions">
+        <hbox spacing="true" stylename="cuba-extended-edit-window-actions">
             <button id="windowCommitAndClose" action="windowCommitAndClose" icon="icons/ok.png"/>
             <button id="windowCommit" action="windowCommit"/>
             <button id="windowClose" action="windowClose" icon="icons/cancel.png"/>

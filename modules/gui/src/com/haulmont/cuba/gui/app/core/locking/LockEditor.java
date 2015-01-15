@@ -33,6 +33,8 @@ public class LockEditor extends AbstractEditor {
 
     @Override
     public void init(Map<String, Object> params) {
+        getDialogParams().setWidthAuto();
+
         Map<String, Object> options = new TreeMap<>();
         for (MetaClass metaClass : metadata.getTools().getAllPersistentMetaClasses()) {
             if (metadata.getExtendedEntities().getExtendedClass(metaClass) == null) {

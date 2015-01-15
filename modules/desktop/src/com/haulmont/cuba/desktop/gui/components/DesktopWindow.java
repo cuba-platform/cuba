@@ -607,7 +607,7 @@ public class DesktopWindow implements Window, Component.Disposable,
                     java.awt.Container container = panel.getTopLevelAncestor();
                     if (container instanceof DialogWindow) {
                         DialogWindow dialog = (DialogWindow) container;
-                        if (!dialog.isResizable() && getHeight() <= 0) {
+                        if (!dialog.isResizable() && (getHeight() <= 0 || getWidth() <= 0)) {
                             dialog.pack();
                         }
                     }

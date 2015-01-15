@@ -41,6 +41,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 import static com.haulmont.cuba.gui.ComponentsHelper.preprocessHtmlMessage;
+import static com.haulmont.cuba.gui.components.Component.AUTO_SIZE;
 import static com.haulmont.cuba.gui.components.IFrame.MessageType;
 import static com.haulmont.cuba.gui.components.IFrame.NotificationType;
 import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.convertNotificationType;
@@ -678,12 +679,12 @@ public class WebWindowManager extends WindowManager {
                                          boolean forciblyDialog) {
         removeWindowsWithName(window.getId());
 
-        final com.vaadin.ui.Window win = createDialogWindow(window);
-        win.setName(window.getId());
-        setDebugId(win, window.getId());
+        final com.vaadin.ui.Window vWindow = createDialogWindow(window);
+        vWindow.setName(window.getId());
+        setDebugId(vWindow, window.getId());
 
         if (app.isTestMode()) {
-            win.setCubaId("dialog_" + window.getId());
+            vWindow.setCubaId("dialog_" + window.getId());
         }
 
         Layout layout = WebComponentsHelper.getComposition(window);
@@ -691,11 +692,10 @@ public class WebWindowManager extends WindowManager {
         // surround window layout with outer layout to prevent double painting
         VerticalLayout outerLayout = new VerticalLayout();
         outerLayout.addComponent(layout);
-        outerLayout.setExpandRatio(layout, 1);
 
-        win.setContent(outerLayout);
+        vWindow.setContent(outerLayout);
 
-        win.addListener(new com.vaadin.ui.Window.CloseListener() {
+        vWindow.addListener(new com.vaadin.ui.Window.CloseListener() {
             @Override
             public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
                 window.close(Window.CLOSE_ACTION_ID, true);
@@ -719,49 +719,70 @@ public class WebWindowManager extends WindowManager {
             }
         });
 
-        WebComponentsHelper.setActions(win, actions);
+        WebComponentsHelper.setActions(vWindow, actions);
 
         final DialogParams dialogParams = getDialogParams();
-        boolean dialogParamsIsNull = dialogParams.getHeight() == null && dialogParams.getWidth() == null &&
-                dialogParams.getResizable() == null;
+        boolean dialogParamsSizeUndefined = dialogParams.getHeight() == null && dialogParams.getWidth() == null;
 
-        if (forciblyDialog && dialogParamsIsNull) {
+        if (forciblyDialog && dialogParamsSizeUndefined) {
             outerLayout.setHeight(100, Sizeable.UNITS_PERCENTAGE);
-            win.setWidth(800, Sizeable.UNITS_PIXELS);
-            win.setHeight(500, Sizeable.UNITS_PIXELS);
-            win.setResizable(true);
+            outerLayout.setExpandRatio(layout, 1);
+
+            vWindow.setWidth(800, Sizeable.UNITS_PIXELS);
+            vWindow.setHeight(500, Sizeable.UNITS_PIXELS);
+
+            // resizable by default, but may be overridden in dialog params
+            vWindow.setResizable(BooleanUtils.isNotFalse(dialogParams.getResizable()));
+
             window.setHeight("100%");
         } else {
-            if (dialogParams.getWidth() != null) {
-                win.setWidth(dialogParams.getWidth().floatValue(), Sizeable.UNITS_PIXELS);
+            if (dialogParams.getWidth() == null) {
+                vWindow.setWidth(600, Sizeable.UNITS_PIXELS);
+            } else if (dialogParams.getWidth() == DialogParams.AUTO_SIZE_PX) {
+                vWindow.setWidth(-1, Sizeable.UNITS_PIXELS);
+                layout.setWidth(-1, Sizeable.UNITS_PIXELS);
+                outerLayout.setWidth(-1, Sizeable.UNITS_PIXELS);
+
+                window.setWidth(AUTO_SIZE);
             } else {
-                win.setWidth(600, Sizeable.UNITS_PIXELS);
+                vWindow.setWidth(dialogParams.getWidth().floatValue(), Sizeable.UNITS_PIXELS);
+            }
+
+            if (dialogParams.getHeight() != null && dialogParams.getHeight() != DialogParams.AUTO_SIZE_PX) {
+                vWindow.setHeight(dialogParams.getHeight().floatValue(), Sizeable.UNITS_PIXELS);
+                outerLayout.setHeight("100%");
+                outerLayout.setExpandRatio(layout, 1);
+
+                layout.setHeight("100%");
+                window.setHeight("100%");
+            } else {
+                window.setHeight(AUTO_SIZE);
             }
 
             if (dialogParams.getHeight() != null) {
-                win.setHeight(dialogParams.getHeight().floatValue(), Sizeable.UNITS_PIXELS);
-                win.getContent().setHeight("100%");
+                vWindow.setHeight(dialogParams.getHeight().floatValue(), Sizeable.UNITS_PIXELS);
+                vWindow.getContent().setHeight("100%");
             }
 
-            if (dialogParams.getCloseable() != null) {
-                win.setClosable(dialogParams.getCloseable());
-            }
+            vWindow.setResizable(BooleanUtils.isTrue(dialogParams.getResizable()));
+        }
 
-            win.setResizable(BooleanUtils.isTrue(dialogParams.getResizable()));
+        if (dialogParams.getCloseable() != null) {
+            vWindow.setClosable(dialogParams.getCloseable());
         }
 
         boolean modal = true;
         if (!hasModalWindow() && dialogParams.getModal() != null) {
             modal = dialogParams.getModal();
         }
-        win.setModal(modal);
+        vWindow.setModal(modal);
 
         dialogParams.reset();
 
-        appWindow.addWindow(win);
-        win.center();
+        appWindow.addWindow(vWindow);
+        vWindow.center();
 
-        return win;
+        return vWindow;
     }
 
     protected WindowBreadCrumbs createWindowBreadCrumbs() {

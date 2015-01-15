@@ -11,7 +11,6 @@ import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
-import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.ObjectUtils;
@@ -61,7 +60,6 @@ public class LogWindow extends Window {
         });
 
         VerticalLayout layout = new VerticalLayout();
-        layout.setMargin(new MarginInfo(true, false, false, false));
         layout.setSpacing(true);
         layout.setSizeFull();
         setContent(layout);

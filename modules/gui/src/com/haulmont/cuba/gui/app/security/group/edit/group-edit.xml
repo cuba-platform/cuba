@@ -4,7 +4,7 @@
   -->
 
 <window xmlns="http://schemas.haulmont.com/cuba/5.3/window.xsd"
-        class="com.haulmont.cuba.gui.components.AbstractEditor"
+        class="com.haulmont.cuba.gui.app.security.group.edit.GroupEditor"
         messagesPack="com.haulmont.cuba.gui.app.security.group"
         caption="msg://editor.caption"
         datasource="group"
@@ -20,6 +20,6 @@
                    width="theme://cuba.gui.group-edit.nameField.width"/>
         </fieldGroup>
 
-        <iframe id="windowActions" screen="editWindowActions"/>
+        <iframe id="windowActions" screen="editWindowActions" width="AUTO"/>
     </layout>
 </window>

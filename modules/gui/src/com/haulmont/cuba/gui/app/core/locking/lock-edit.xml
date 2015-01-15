@@ -33,6 +33,6 @@
                 </row>
             </rows>
         </grid>
-        <iframe id="windowActions" screen="editWindowActions"/>
+        <iframe id="windowActions" screen="editWindowActions" width="AUTO"/>
     </layout>
 </window>

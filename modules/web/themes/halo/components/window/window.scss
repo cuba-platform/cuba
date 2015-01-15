@@ -9,6 +9,10 @@
   .#{$primary-stylename}-contents {
     padding-left: round($v-unit-size/2);
     padding-right: round($v-unit-size/2);
+
+    & > .v-scrollable > .v-layout:first-child {
+      padding-top: round($v-unit-size/3);
+    }
   }
 
   .#{$primary-stylename}-footer {

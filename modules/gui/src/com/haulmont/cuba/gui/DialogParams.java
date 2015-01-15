@@ -19,6 +19,8 @@ package com.haulmont.cuba.gui;
  */
 public class DialogParams {
 
+    public static final int AUTO_SIZE_PX = -1;
+
     private Integer width;
     private Integer height;
     private Boolean resizable;
@@ -52,6 +54,11 @@ public class DialogParams {
 
     public DialogParams setWidth(Integer width) {
         this.width = width;
+        return this;
+    }
+
+    public DialogParams setWidthAuto() {
+        this.width = AUTO_SIZE_PX;
         return this;
     }
 

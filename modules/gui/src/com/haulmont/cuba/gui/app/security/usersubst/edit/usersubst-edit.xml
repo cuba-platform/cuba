@@ -32,31 +32,30 @@
 
     <layout spacing="true">
         <grid spacing="true">
-            <columns>
-                <column flex="1"/>
-                <column flex="1"/>
-            </columns>
+            <columns count="2"/>
             <rows>
                 <row>
-                    <label value="msg://user"/>
+                    <label value="msg://user" align="MIDDLE_LEFT"/>
                     <textField id="user" datasource="subst" property="user"
-                               required="true" editable="false" requiredMessage="msg://userMsg" width="${fieldWidth}"/>
+                               required="true" editable="false" requiredMessage="msg://userMsg"
+                               width="${fieldWidth}"/>
                 </row>
                 <row>
-                    <label value="msg://substUser"/>
+                    <label value="msg://substUser" align="MIDDLE_LEFT"/>
                     <lookupField id="substUser" datasource="subst" property="substitutedUser"
-                                 required="true" optionsDatasource="users" requiredMessage="msg://substUserMsg" width="${fieldWidth}"/>
+                                 required="true" optionsDatasource="users" requiredMessage="msg://substUserMsg"
+                                 width="${fieldWidth}"/>
                 </row>
                 <row id="startDateRow">
-                    <label value="msg://startDate"/>
+                    <label value="msg://startDate" align="MIDDLE_LEFT"/>
                     <dateField id="startDateField" datasource="subst" property="startDate" resolution="DAY"/>
                 </row>
                 <row id="endDateRow">
-                    <label value="msg://endDate"/>
+                    <label value="msg://endDate" align="MIDDLE_LEFT"/>
                     <dateField id="endDateField" datasource="subst" property="endDate" resolution="DAY"/>
                 </row>
             </rows>
         </grid>
-        <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+        <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml" width="AUTO"/>
     </layout>
 </window>

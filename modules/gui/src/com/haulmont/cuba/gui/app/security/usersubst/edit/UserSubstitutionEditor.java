@@ -12,6 +12,7 @@ import com.haulmont.cuba.gui.components.ValidationErrors;
 import com.haulmont.cuba.security.entity.UserSubstitution;
 
 import javax.inject.Inject;
+import java.util.Map;
 
 /**
  * @author krivopustov
@@ -24,6 +25,13 @@ public class UserSubstitutionEditor extends AbstractEditor<UserSubstitution> {
 
     @Inject
     protected LookupField substUser;
+
+    @Override
+    public void init(Map<String, Object> params) {
+        super.init(params);
+
+        getDialogParams().setWidthAuto();
+    }
 
     @Override
     protected void postInit() {

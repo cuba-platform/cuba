@@ -27,9 +27,7 @@ import com.haulmont.cuba.web.toolkit.ui.CubaWindow;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.Page;
-import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.BorderStyle;
-import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -48,6 +46,7 @@ import static com.haulmont.cuba.gui.components.Component.AUTO_SIZE;
 import static com.haulmont.cuba.gui.components.IFrame.MessageType;
 import static com.haulmont.cuba.gui.components.IFrame.NotificationType;
 import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.convertNotificationType;
+import static com.vaadin.server.Sizeable.Unit;
 
 /**
  * @author krivopustov
@@ -671,24 +670,17 @@ public class WebWindowManager extends WindowManager {
 
     protected Component showWindowDialog(final Window window, final String caption, final String description,
                                          boolean forciblyDialog) {
-        final com.vaadin.ui.Window win = createDialogWindow(window);
-
+        final com.vaadin.ui.Window vWindow = createDialogWindow(window);
+        vWindow.setStyleName("cuba-app-dialog-window");
         if (ui.isTestMode()) {
-            win.setCubaId("dialog_" + window.getId());
-            win.setId(ui.getTestIdManager().getTestId("dialog_" + window.getId()));
+            vWindow.setCubaId("dialog_" + window.getId());
+            vWindow.setId(ui.getTestIdManager().getTestId("dialog_" + window.getId()));
         }
 
         Layout layout = WebComponentsHelper.getComposition(window);
+        vWindow.setContent(layout);
 
-        // surround window layout with outer layout to prevent double painting
-        VerticalLayout outerLayout = new VerticalLayout();
-        outerLayout.setStyleName("cuba-app-dialog-window");
-        outerLayout.addComponent(layout);
-        outerLayout.setMargin(new MarginInfo(true, false, false, false));
-
-        win.setContent(outerLayout);
-
-        win.addCloseListener(new com.vaadin.ui.Window.CloseListener() {
+        vWindow.addCloseListener(new com.vaadin.ui.Window.CloseListener() {
             @Override
             public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
                 window.close(Window.CLOSE_ACTION_ID);
@@ -712,59 +704,62 @@ public class WebWindowManager extends WindowManager {
             }
         });
 
-        WebComponentsHelper.setActions(win, actions);
+        WebComponentsHelper.setActions(vWindow, actions);
 
         final DialogParams dialogParams = getDialogParams();
-        boolean dialogParamsIsNull = dialogParams.getHeight() == null && dialogParams.getWidth() == null &&
-                dialogParams.getResizable() == null;
+        boolean dialogParamsSizeUndefined = dialogParams.getHeight() == null && dialogParams.getWidth() == null;
 
         ThemeConstants theme = app.getThemeConstants();
 
-        if (forciblyDialog && dialogParamsIsNull) {
-            outerLayout.setHeight(100, Sizeable.Unit.PERCENTAGE);
-            outerLayout.setExpandRatio(layout, 1);
+        if (forciblyDialog && dialogParamsSizeUndefined) {
+            layout.setHeight(100, Unit.PERCENTAGE);
 
-            win.setWidth(theme.getInt("cuba.web.WebWindowManager.forciblyDialog.width"), Sizeable.Unit.PIXELS);
-            win.setHeight(theme.getInt("cuba.web.WebWindowManager.forciblyDialog.height"), Sizeable.Unit.PIXELS);
-            win.setResizable(true);
+            vWindow.setWidth(theme.getInt("cuba.web.WebWindowManager.forciblyDialog.width"), Unit.PIXELS);
+            vWindow.setHeight(theme.getInt("cuba.web.WebWindowManager.forciblyDialog.height"), Unit.PIXELS);
+
+            // resizable by default, but may be overridden in dialog params
+            vWindow.setResizable(BooleanUtils.isNotFalse(dialogParams.getResizable()));
 
             window.setHeight("100%");
         } else {
-            if (dialogParams.getWidth() != null) {
-                win.setWidth(dialogParams.getWidth().floatValue(), Sizeable.Unit.PIXELS);
+            if (dialogParams.getWidth() == null) {
+                vWindow.setWidth(theme.getInt("cuba.web.WebWindowManager.dialog.width"), Unit.PIXELS);
+            } else if (dialogParams.getWidth() == DialogParams.AUTO_SIZE_PX) {
+                vWindow.setWidthUndefined();
+                layout.setWidthUndefined();
+                window.setWidth(AUTO_SIZE);
             } else {
-                win.setWidth(theme.getInt("cuba.web.WebWindowManager.dialog.width"), Sizeable.Unit.PIXELS);
+                vWindow.setWidth(dialogParams.getWidth().floatValue(), Unit.PIXELS);
             }
 
-            if (dialogParams.getHeight() != null) {
-                win.setHeight(dialogParams.getHeight().floatValue(), Sizeable.Unit.PIXELS);
-                outerLayout.setHeight("100%");
-                outerLayout.setExpandRatio(layout, 1);
-
+            if (dialogParams.getHeight() != null && dialogParams.getHeight() != DialogParams.AUTO_SIZE_PX) {
+                vWindow.setHeight(dialogParams.getHeight().floatValue(), Unit.PIXELS);
+                layout.setHeight("100%");
                 window.setHeight("100%");
             } else {
                 window.setHeight(AUTO_SIZE);
             }
 
-            if (dialogParams.getCloseable() != null) {
-                win.setClosable(dialogParams.getCloseable());
-            }
+            // non resizable by default
+            vWindow.setResizable(BooleanUtils.isTrue(dialogParams.getResizable()));
+        }
 
-            win.setResizable(BooleanUtils.isTrue(dialogParams.getResizable()));
+        if (dialogParams.getCloseable() != null) {
+            vWindow.setClosable(dialogParams.getCloseable());
         }
 
         boolean modal = true;
         if (!hasModalWindow() && dialogParams.getModal() != null) {
             modal = dialogParams.getModal();
         }
-        win.setModal(modal);
+        vWindow.setModal(modal);
 
         dialogParams.reset();
 
-        ui.addWindow(win);
-        win.center();
+        ui.addWindow(vWindow);
+        vWindow.center();
 
-        return win;
+        return vWindow;
     }
 
     protected WindowBreadCrumbs createWindowBreadCrumbs() {
@@ -1042,7 +1037,6 @@ public class WebWindowManager extends WindowManager {
 
         VerticalLayout layout = new VerticalLayout();
         layout.setStyleName("cuba-app-message-dialog");
-        layout.setMargin(new MarginInfo(true, false, false, false));
         window.setContent(layout);
 
         Label messageLab = new Label(message);
@@ -1085,7 +1079,7 @@ public class WebWindowManager extends WindowManager {
             width = app.getThemeConstants().getInt("cuba.web.WebWindowManager.messageDialog.width");
         }
 
-        window.setWidth(width, Sizeable.Unit.PIXELS);
+        window.setWidth(width, Unit.PIXELS);
         window.setResizable(false);
 
         boolean modal = true;
@@ -1133,18 +1127,17 @@ public class WebWindowManager extends WindowManager {
         }
         getDialogParams().reset();
 
-        window.setWidth(width, Sizeable.Unit.PIXELS);
+        window.setWidth(width, Unit.PIXELS);
         window.setResizable(false);
         window.setModal(true);
 
         final VerticalLayout layout = new VerticalLayout();
         layout.setStyleName("cuba-app-option-dialog");
-        layout.setMargin(new MarginInfo(true, false, false, false));
         layout.setSpacing(true);
         window.setContent(layout);
 
         HorizontalLayout actionsBar = new HorizontalLayout();
-        actionsBar.setHeight(-1, Sizeable.Unit.PIXELS);
+        actionsBar.setHeight(-1, Unit.PIXELS);
 
         HorizontalLayout buttonsContainer = new HorizontalLayout();
         buttonsContainer.setSpacing(true);

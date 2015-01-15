@@ -45,6 +45,7 @@ import java.net.URISyntaxException;
 import java.util.*;
 import java.util.List;
 
+import static com.haulmont.cuba.gui.components.Component.AUTO_SIZE;
 import static com.haulmont.cuba.gui.components.IFrame.MessageType;
 
 /**
@@ -555,30 +556,39 @@ public class DesktopWindowManager extends WindowManager {
             // todo move it to desktop application preferences
             dim.width = 800;
             dim.height = 500;
-            dialog.setResizable(true);
+
+            dialog.setResizable(BooleanUtils.isNotFalse(dialogParams.getResizable()));
+            if (!dialog.isResizable()) {
+                dialog.setFixedHeight(dim.height);
+                dialog.setFixedWidth(dim.width);
+            }
 
             window.setHeight("100%");
         } else {
-            if (dialogParams.getWidth() != null)
-                dim.width = dialogParams.getWidth();
-            else
+            dialog.setResizable(BooleanUtils.isTrue(dialogParams.getResizable()));
+            if (dialogParams.getWidth() == null) {
                 dim.width = 600;
+                if (!dialog.isResizable()) {
+                    dialog.setFixedWidth(dim.width);
+                }
+            } else if (dialogParams.getWidth() == DialogParams.AUTO_SIZE_PX) {
+                window.setWidth(AUTO_SIZE);
+            } else {
+                dim.width = dialogParams.getWidth();
+                if (!dialog.isResizable()) {
+                    dialog.setFixedWidth(dim.width);
+                }
+            }
 
-            boolean resizable = BooleanUtils.isTrue(dialogParams.getResizable());
-            if (dialogParams.getHeight() != null) {
+            if (dialogParams.getHeight() != null && dialogParams.getHeight() != DialogParams.AUTO_SIZE_PX) {
                 dim.height = dialogParams.getHeight();
 
-                if (!resizable) {
+                if (!dialog.isResizable()) {
                     dialog.setFixedHeight(dim.height);
                 }
                 window.setHeight("100%");
             } else {
-                window.setHeight(Component.AUTO_SIZE);
-            }
-
-            dialog.setResizable(resizable);
-            if (!resizable) {
-                dialog.setFixedWidth(dim.width);
+                window.setHeight(AUTO_SIZE);
             }
         }
 

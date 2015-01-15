@@ -36,6 +36,7 @@ public class LayoutAnalyzer {
     protected List<Inspection> rootInspections = new ArrayList<>();
     {
         rootInspections.add(new RelativeHeightComponentInsideUndefinedHeightDialog());
+        rootInspections.add(new RelativeWidthComponentInsideUndefinedWidthDialog());
         rootInspections.add(new ExpandOfSingleComponent());
     }
 
@@ -225,6 +226,33 @@ public class LayoutAnalyzer {
                         tips.add(warn("Nested component '" + id + "'",
                                 "Nested component has relative height %s%% inside window with undefined height",
                                 component.getHeight()));
+                    }
+                }
+
+                return tips != null ? tips : Collections.<LayoutTip>emptyList();
+            }
+            return Collections.emptyList();
+        }
+    }
+
+    public static class RelativeWidthComponentInsideUndefinedWidthDialog implements Inspection {
+
+        @Nonnull
+        @Override
+        public List<LayoutTip> analyze(Component c, String path) {
+            if (c instanceof Window && c.getWidth() < 0) {
+                List<LayoutTip> tips = null;
+
+                Component.Container container = (Component.Container) c;
+                for (Component component : container.getOwnComponents()) {
+                    if (tips == null) {
+                        tips = new ArrayList<>();
+                    }
+                    if (component.getWidthUnits() == Component.UNITS_PERCENTAGE && component.getWidth() > 0) {
+                        String id = component.getId() != null ? component.getId() : component.getClass().getSimpleName();
+                        tips.add(warn("Nested component '" + id + "'",
+                                "Nested component has relative width %s%% inside window with undefined width",
+                                component.getWidth()));
                     }
                 }
 

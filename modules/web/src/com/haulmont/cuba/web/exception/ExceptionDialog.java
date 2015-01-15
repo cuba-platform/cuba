@@ -14,7 +14,6 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.toolkit.ui.CubaButton;
-import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.shared.ui.window.WindowMode;
 import com.vaadin.ui.*;
@@ -76,7 +75,6 @@ public class ExceptionDialog extends Window {
         final String stackTrace = getStackTrace(throwable);
 
         mainLayout = new VerticalLayout();
-        mainLayout.setMargin(new MarginInfo(true, false, false, false));
         mainLayout.setSpacing(true);
 
         TextArea textArea = new TextArea();

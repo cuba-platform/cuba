@@ -8,8 +8,6 @@ package com.haulmont.cuba.desktop.sys;
 import javax.annotation.Nullable;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 
 /**
  * Dialog that can be enabled/disabled like the main frame.
@@ -45,6 +43,10 @@ public class DialogWindow extends JDialog {
         return fixedHeight;
     }
 
+    public Integer getFixedWidth() {
+        return fixedWidth;
+    }
+
     @Override
     public Dimension getPreferredSize() {
         if (fixedHeight != null && fixedWidth != null) {
@@ -57,6 +59,11 @@ public class DialogWindow extends JDialog {
             return new Dimension(fixedWidth, super.getPreferredSize().height);
         }
 
+        if (fixedHeight != null) {
+            // dialog does not grow by vertical axis
+            return new Dimension(super.getPreferredSize().width, fixedHeight);
+        }
+
         return super.getPreferredSize();
     }
 
@@ -66,21 +73,5 @@ public class DialogWindow extends JDialog {
 
     public void setFixedHeight(Integer fixedHeight) {
         this.fixedHeight = fixedHeight;
-
-        if (fixedHeight != null) {
-            // Hack to prevent dialog resizing
-            addComponentListener(new ComponentAdapter() {
-
-                @Override
-                public void componentResized(ComponentEvent e) {
-                    Rectangle b = getBounds();
-                    if (b.height != DialogWindow.this.fixedHeight) {
-                        b.height = DialogWindow.this.fixedHeight;
-                        setBounds(b);
-                    }
-                    super.componentResized(e);
-                }
-            });
-        }
     }
 }

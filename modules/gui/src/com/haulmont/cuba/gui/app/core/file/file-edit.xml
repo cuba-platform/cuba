@@ -20,13 +20,10 @@
     <layout spacing="true">
         <upload id="uploadField"/>
         <grid spacing="true">
-            <columns>
-                <column flex="1"/>
-                <column flex="1"/>
-            </columns>
+            <columns count="2"/>
             <rows>
                 <row>
-                    <label value="msg://name"/>
+                    <label value="msg://name" align="MIDDLE_LEFT"/>
                     <textField id="nameField" datasource="fileDs" property="name"
                                width="theme://cuba.gui.file-edit.nameField.width"/>
                 </row>
@@ -47,6 +44,6 @@
                 </row>
             </rows>
         </grid>
-        <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+        <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml" width="AUTO"/>
     </layout>
 </window>

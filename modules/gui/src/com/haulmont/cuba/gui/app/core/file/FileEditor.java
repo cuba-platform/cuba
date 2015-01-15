@@ -20,6 +20,7 @@ import org.apache.commons.logging.LogFactory;
 import javax.annotation.Resource;
 import javax.inject.Inject;
 import java.io.File;
+import java.util.Map;
 
 /**
  * @author krivopustov
@@ -54,6 +55,13 @@ public class FileEditor extends AbstractEditor<FileDescriptor> {
 
     @Inject
     protected TimeSource timeSource;
+
+    @Override
+    public void init(Map<String, Object> params) {
+        super.init(params);
+
+        getDialogParams().setWidthAuto();
+    }
 
     @Override
     public void setItem(Entity item) {
