@@ -13,7 +13,9 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.CategorizedEntity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Filter;
+import com.haulmont.cuba.gui.components.ValuePathHelper;
 import com.haulmont.cuba.gui.components.filter.descriptor.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
@@ -38,6 +40,7 @@ public class ConditionDescriptorsTreeBuilder {
     protected Filter filter;
     protected int hierarchyDepth;
     protected Security security;
+    protected String filterComponentName;
 
     /**
      * @param filter
@@ -47,12 +50,12 @@ public class ConditionDescriptorsTreeBuilder {
         this.filter = filter;
         this.hierarchyDepth = hierarchyDepth;
         security = AppBeans.get(Security.class);
+        filterComponentName = getFilterComponentName();
     }
 
     public Tree<AbstractConditionDescriptor> build() {
         Messages messages = AppBeans.get(Messages.class);
         String messagesPack = filter.getFrame().getMessagesPack();
-        String filterComponentName = filter.getId();
         CollectionDatasource datasource = filter.getDatasource();
 
         Tree<AbstractConditionDescriptor> tree = new Tree<>();
@@ -134,7 +137,7 @@ public class ConditionDescriptorsTreeBuilder {
                 if (isPropertyAllowed(property)) {
                     String propertyPath = mpp.toString() + "." + property.getName();
                     PropertyConditionDescriptor childPropertyConditionDescriptor =
-                            new PropertyConditionDescriptor(propertyPath, null, filter.getFrame().getMessagesPack(), filter.getId(), filter.getDatasource());
+                            new PropertyConditionDescriptor(propertyPath, null, filter.getFrame().getMessagesPack(), filterComponentName, filter.getDatasource());
                     descriptors.add(childPropertyConditionDescriptor);
                 }
             }
@@ -183,7 +186,7 @@ public class ConditionDescriptorsTreeBuilder {
         for (String prop : includedProps) {
             if (exclPattern == null || !exclPattern.matcher(prop).matches()) {
                 AbstractConditionDescriptor conditionDescriptor =
-                        new PropertyConditionDescriptor(prop, null, filter.getFrame().getMessagesPack(), filter.getId(), filter.getDatasource());
+                        new PropertyConditionDescriptor(prop, null, filter.getFrame().getMessagesPack(), filterComponentName, filter.getDatasource());
                 descriptors.add(conditionDescriptor);
             }
         }
@@ -198,6 +201,15 @@ public class ConditionDescriptorsTreeBuilder {
                 && metadataTools.isPersistent(property)             // exclude transient properties
                 && messageTools.hasPropertyCaption(property)        // exclude not localized properties (they are usually not for end user)
                 && !property.getRange().getCardinality().isMany();  // exclude ToMany
+    }
+
+    protected String getFilterComponentName() {
+        String filterComponentName = ComponentsHelper.getFilterComponentPath(filter);
+        String[] parts = ValuePathHelper.parse(filterComponentName);
+        if (parts.length > 1) {
+            filterComponentName = ValuePathHelper.format(Arrays.copyOfRange(parts, 1, parts.length));
+        }
+        return filterComponentName;
     }
 
     private class ConditionDescriptorComparator implements Comparator<AbstractConditionDescriptor> {
