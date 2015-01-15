@@ -1402,16 +1402,18 @@ public class FilterDelegate {
             window.addListener(new Window.CloseListener() {
                 @Override
                 public void windowClosed(String actionId) {
-                    String filterName = window.getFilterName();
-                    FilterEntity newFilterEntity = metadata.create(FilterEntity.class);
-                    InstanceUtils.copy(filterEntity, newFilterEntity);
-                    newFilterEntity.setId(UuidProvider.createUuid());
-                    filterEntity = newFilterEntity;
-                    filterEntity.setName(filterName);
-                    filterEntity.setXml(FilterParser.getXml(conditions, Param.ValueProperty.DEFAULT_VALUE));
-                    saveFilterEntity();
-                    fillFiltersLookup();
-                    filtersLookup.setValue(filterEntity);
+                    if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                        String filterName = window.getFilterName();
+                        FilterEntity newFilterEntity = metadata.create(FilterEntity.class);
+                        InstanceUtils.copy(filterEntity, newFilterEntity);
+                        newFilterEntity.setId(UuidProvider.createUuid());
+                        filterEntity = newFilterEntity;
+                        filterEntity.setName(filterName);
+                        filterEntity.setXml(FilterParser.getXml(conditions, Param.ValueProperty.DEFAULT_VALUE));
+                        saveFilterEntity();
+                        fillFiltersLookup();
+                        filtersLookup.setValue(filterEntity);
+                    }
                 }
             });
         }
