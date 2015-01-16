@@ -14,6 +14,7 @@ import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
 
 import javax.annotation.ManagedBean;
+import javax.inject.Inject;
 
 /**
  * @author krivopustov
@@ -22,6 +23,7 @@ import javax.annotation.ManagedBean;
 @ManagedBean(UserSessionSource.NAME)
 public class WebUserSessionSource extends AbstractUserSessionSource {
 
+    @Inject
     private UserSessionService userSessionService;
 
     public void setUserSessionService(UserSessionService userSessionService) {
