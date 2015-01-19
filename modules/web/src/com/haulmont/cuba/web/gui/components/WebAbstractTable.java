@@ -15,7 +15,6 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.CheckBox;
 import com.haulmont.cuba.gui.components.Field;
@@ -36,7 +35,6 @@ import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
-import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.haulmont.cuba.web.toolkit.ui.CubaEnhancedTable;
 import com.haulmont.cuba.web.toolkit.ui.CubaFieldWrapper;
 import com.vaadin.data.Item;
@@ -45,11 +43,9 @@ import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.Resource;
 import com.vaadin.ui.*;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextArea;
-import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -59,8 +55,6 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import javax.annotation.Nullable;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.*;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
@@ -293,16 +287,16 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                     for (MetaPropertyPath propertyId : propertyIds) {
                         final Table.Column column = columns.get(propertyId);
                         if (column != null) {
-                            final String clickAction = column.getXmlDescriptor() == null ?
-                                    null : column.getXmlDescriptor().attributeValue("clickAction");
+                            final String isLink = column.getXmlDescriptor() == null ?
+                                    null : column.getXmlDescriptor().attributeValue("link");
 
                             if (component.getColumnGenerator(column.getId()) == null) {
                                 if (propertyId.getRange().isClass()) {
-                                    if (!isLookup && StringUtils.isNotEmpty(clickAction)) {
+                                    if (!isLookup && StringUtils.isNotEmpty(isLink)) {
                                         addGeneratedColumn(propertyId, new ReadOnlyAssociationGenerator(column));
                                     }
                                 } else if (propertyId.getRange().isDatatype()) {
-                                    if (!isLookup && !StringUtils.isEmpty(clickAction)) {
+                                    if (!isLookup && !StringUtils.isEmpty(isLink)) {
                                         addGeneratedColumn(propertyId, new CodePropertyGenerator(column));
                                     } else {
                                         if (column.getMaxTextLength() != null) {
@@ -625,16 +619,16 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         for (MetaPropertyPath propertyPath : properties) {
             final Table.Column column = columns.get(propertyPath);
             if (column != null && !(editable && BooleanUtils.isTrue(column.isEditable()))) {
-                final String clickAction =
+                final String isLink =
                         column.getXmlDescriptor() == null ?
-                                null : column.getXmlDescriptor().attributeValue("clickAction");
+                                null : column.getXmlDescriptor().attributeValue("link");
 
                 if (propertyPath.getRange().isClass()) {
-                    if (!isLookup && StringUtils.isNotEmpty(clickAction)) {
+                    if (!isLookup && StringUtils.isNotEmpty(isLink)) {
                         addGeneratedColumn(propertyPath, new ReadOnlyAssociationGenerator(column));
                     }
                 } else if (propertyPath.getRange().isDatatype()) {
-                    if (!isLookup && !StringUtils.isEmpty(clickAction)) {
+                    if (!isLookup && !StringUtils.isEmpty(isLink)) {
                         addGeneratedColumn(propertyPath, new CodePropertyGenerator(column));
                     } else if (editable && BooleanUtils.isTrue(column.isCalculatable())) {
                         addGeneratedColumn(propertyPath, new CalculatableColumnGenerator());
@@ -1506,68 +1500,73 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             this.column = column;
         }
 
-        public com.vaadin.ui.Component generateCell(AbstractSelect source, final Object itemId, Object columnId) {
-            final Item item = source.getItem(itemId);
-            final Property property = item.getItemProperty(columnId);
-            final Object value = property.getValue();
+        public com.vaadin.ui.Component generateCell(final Object itemId, Object columnId) {
+            String fieldPropertyId = String.valueOf(columnId);
+            Column columnConf = columns.get(columnId);
 
-            final com.vaadin.ui.Button component = new CubaButton();
-            component.setData(value);
-            component.setCaption(value == null ? "" : ((PropertyWrapper)property).getFormattedValue());
-            component.setStyleName(BaseTheme.BUTTON_LINK);
+            Item item = component.getItem(itemId);
+            Entity entity = ((ItemWrapper)item).getItem();
+            Datasource fieldDatasource = getItemDatasource(entity);
 
-            component.addClickListener(new com.vaadin.ui.Button.ClickListener() {
-                @Override
-                public void buttonClick(Button.ClickEvent event) {
-                    final Element element = column.getXmlDescriptor();
-                    if (element == null)
-                        return;
+            AbstractFieldFactory factory = (AbstractFieldFactory)component.getTableFieldFactory();
+            com.haulmont.cuba.gui.components.Component columnComponent =
+                    factory.createField(fieldDatasource, fieldPropertyId, columnConf.getXmlDescriptor());
 
-                    // todo move it to TableLoader
-                    final String clickAction = element.attributeValue("clickAction");
-                    if (!StringUtils.isEmpty(clickAction)) {
+            com.vaadin.ui.Field fieldImpl = getFieldImplementation(columnComponent);
 
-                        if (clickAction.startsWith("open:")) {
-                            final com.haulmont.cuba.gui.components.IFrame frame = WebAbstractTable.this.getFrame();
-                            String screenName = clickAction.substring("open:".length()).trim();
-                            final Window window = frame.openEditor(screenName, getItem(item, property), WindowManager.OpenType.THIS_TAB);
+            if (columnComponent instanceof Field) {
+                Field cubaField = (Field) columnComponent;
 
-                            window.addListener(new Window.CloseListener() {
-                                @SuppressWarnings("unchecked")
-                                @Override
-                                public void windowClosed(String actionId) {
-                                    if (Window.COMMIT_ACTION_ID.equals(actionId) && window instanceof Window.Editor) {
-                                        Entity item = ((Window.Editor) window).getItem();
-                                        if (item != null) {
-                                            datasource.updateItem(item);
-                                        }
-                                    }
-                                }
-                            });
-                        } else if (clickAction.startsWith("invoke:")) {
-                            final com.haulmont.cuba.gui.components.IFrame frame = WebAbstractTable.this.getFrame();
-                            String methodName = clickAction.substring("invoke:".length()).trim();
-                            try {
-                                IFrame controllerFrame = WebComponentsHelper.getControllerFrame(frame);
-                                Method method = controllerFrame.getClass().getMethod(methodName, Object.class);
-                                method.invoke(controllerFrame, getItem(item, property));
-                            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                                throw new RuntimeException("Unable to invoke clickAction", e);
-                            }
-
-                        } else {
-                            throw new UnsupportedOperationException("Unsupported clickAction format: " + clickAction);
-                        }
-                    }
+                if (columnConf.getDescription() != null) {
+                    cubaField.setDescription(columnConf.getDescription());
                 }
-            });
+            }
 
-            return component;
+            if (columnConf.getWidth() != null) {
+                columnComponent.setWidth(columnConf.getWidth() + "px");
+            } else if (!(columnComponent instanceof CheckBox)) {
+                columnComponent.setWidth("100%");
+            }
+
+            if (columnComponent instanceof BelongToFrame) {
+                BelongToFrame belongToFrame = (BelongToFrame) columnComponent;
+                if (belongToFrame.getFrame() == null) {
+                    belongToFrame.setFrame(getFrame());
+                }
+            }
+
+            applyPermissions(columnComponent);
+
+            return fieldImpl;
+        }
+
+        protected com.vaadin.ui.Field getFieldImplementation(com.haulmont.cuba.gui.components.Component columnComponent) {
+            com.vaadin.ui.Component composition = WebComponentsHelper.getComposition(columnComponent);
+            com.vaadin.ui.Field fieldImpl;
+            if (composition instanceof com.vaadin.ui.Field) {
+                fieldImpl = (com.vaadin.ui.Field) composition;
+            } else {
+                fieldImpl = new CubaFieldWrapper(columnComponent);
+            }
+            return fieldImpl;
+        }
+
+        protected void applyPermissions(com.haulmont.cuba.gui.components.Component columnComponent) {
+            if (columnComponent instanceof DatasourceComponent) {
+                DatasourceComponent dsComponent = (DatasourceComponent) columnComponent;
+                MetaPropertyPath propertyPath = dsComponent.getMetaPropertyPath();
+
+                if (propertyPath != null) {
+                    MetaClass metaClass = dsComponent.getDatasource().getMetaClass();
+                    dsComponent.setEditable(security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString())
+                            && dsComponent.isEditable());
+                }
+            }
         }
 
         @Override
         public com.vaadin.ui.Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
-            return generateCell(((AbstractSelect) source), itemId, columnId);
+            return generateCell(itemId, columnId);
         }
 
         protected abstract Entity getItem(Item item, Property property);

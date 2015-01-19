@@ -14,6 +14,7 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -22,6 +23,10 @@ import org.dom4j.Element;
 
 import javax.annotation.Nullable;
 import javax.persistence.TemporalType;
+import java.lang.reflect.Method;
+
+import static com.haulmont.cuba.gui.WindowManager.OpenType;
+import static com.haulmont.cuba.gui.components.EntityLinkField.EntityLinkClickHandler;
 
 /**
  * @author artamonov
@@ -185,36 +190,103 @@ public abstract class AbstractFieldFactory implements FieldFactory {
     }
 
     protected Component createEntityField(Datasource datasource, String property, Element xmlDescriptor) {
-        PickerField pickerField;
-
-        CollectionDatasource optionsDatasource = getOptionsDatasource(datasource, property);
-
-        if (optionsDatasource == null) {
-            pickerField = componentsFactory.createComponent(PickerField.NAME);
-            pickerField.addLookupAction();
-            pickerField.addClearAction();
-        } else {
-            LookupPickerField lookupPickerField = componentsFactory.createComponent(LookupPickerField.NAME);
-            lookupPickerField.setOptionsDatasource(optionsDatasource);
-
-            pickerField = lookupPickerField;
-
-            if (pickerField.getAction(PickerField.LookupAction.NAME) != null) {
-                pickerField.removeAction(pickerField.getAction(PickerField.LookupAction.NAME));
-            }
-        }
-
+        String linkAttribute = null;
         if (xmlDescriptor != null) {
-            String captionProperty = xmlDescriptor.attributeValue("captionProperty");
-            if (StringUtils.isNotEmpty(captionProperty)) {
-                pickerField.setCaptionMode(CaptionMode.PROPERTY);
-                pickerField.setCaptionProperty(captionProperty);
-            }
+            linkAttribute = xmlDescriptor.attributeValue("link");
         }
 
-        pickerField.setDatasource(datasource, property);
+        if (!Boolean.valueOf(linkAttribute)) {
+            PickerField pickerField;
+            CollectionDatasource optionsDatasource = getOptionsDatasource(datasource, property);
 
-        return pickerField;
+            if (optionsDatasource == null) {
+                pickerField = componentsFactory.createComponent(PickerField.NAME);
+                pickerField.addLookupAction();
+                pickerField.addClearAction();
+            } else {
+                LookupPickerField lookupPickerField = componentsFactory.createComponent(LookupPickerField.NAME);
+                lookupPickerField.setOptionsDatasource(optionsDatasource);
+
+                pickerField = lookupPickerField;
+
+                if (pickerField.getAction(PickerField.LookupAction.NAME) != null) {
+                    pickerField.removeAction(pickerField.getAction(PickerField.LookupAction.NAME));
+                }
+            }
+
+            if (xmlDescriptor != null) {
+                String captionProperty = xmlDescriptor.attributeValue("captionProperty");
+                if (StringUtils.isNotEmpty(captionProperty)) {
+                    pickerField.setCaptionMode(CaptionMode.PROPERTY);
+                    pickerField.setCaptionProperty(captionProperty);
+                }
+            }
+
+            pickerField.setDatasource(datasource, property);
+
+            return pickerField;
+        } else {
+            EntityLinkField linkField = componentsFactory.createComponent(EntityLinkField.NAME);
+
+            linkField.setDatasource(datasource, property);
+
+            if (xmlDescriptor != null) {
+                String linkScreen = xmlDescriptor.attributeValue("linkScreen");
+                if (StringUtils.isNotEmpty(linkScreen)) {
+                    linkField.setScreen(linkScreen);
+                }
+
+                final String invokeMethodName = xmlDescriptor.attributeValue("linkInvoke");
+                if (StringUtils.isNotEmpty(invokeMethodName)) {
+                    linkField.setCustomClickHandler(new EntityLinkClickHandler() {
+                        @Override
+                        public void onClick(EntityLinkField field) {
+                            Window frame = ComponentsHelper.getWindow(field);
+                            if (frame == null) {
+                                throw new IllegalStateException("Please specify Frame for EntityLinkField");
+                            }
+
+                            Object controller;
+                            if (frame instanceof WrappedFrame) {
+                                controller = ((WrappedFrame) frame).getWrapper();
+                            } else if (frame instanceof WrappedWindow) {
+                                controller = ((WrappedWindow) frame).getWrapper();
+                            } else {
+                                controller = frame;
+                            }
+                            Method method;
+                            try {
+                                method = controller.getClass().getMethod(invokeMethodName, EntityLinkField.class);
+                                try {
+                                    method.invoke(controller, field);
+                                } catch (Exception e) {
+                                    throw new RuntimeException(e);
+                                }
+                            } catch (NoSuchMethodException e) {
+                                try {
+                                    method = controller.getClass().getMethod(invokeMethodName);
+                                    try {
+                                        method.invoke(controller);
+                                    } catch (Exception e1) {
+                                        throw new RuntimeException(e1);
+                                    }
+                                } catch (NoSuchMethodException e1) {
+                                    throw new IllegalStateException("No suitable methods named " + invokeMethodName + " for invoke");
+                                }
+                            }
+                        }
+                    });
+                }
+
+                String openTypeAttribute = xmlDescriptor.attributeValue("linkScreenOpenType");
+                if (StringUtils.isNotEmpty(openTypeAttribute)) {
+                    OpenType openType = OpenType.valueOf(openTypeAttribute);
+                    linkField.setScreenOpenType(openType);
+                }
+            }
+
+            return linkField;
+        }
     }
 
     protected Component createEnumField(Datasource datasource, String property) {

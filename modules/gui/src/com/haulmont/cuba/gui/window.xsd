@@ -881,11 +881,16 @@
         <xs:attributeGroup ref="hasCaptionProp"/>
         <xs:attributeGroup ref="hasVisibility"/>
 
-        <xs:attribute name="clickAction" type="xs:string"/>
         <xs:attribute name="collapsed" type="xs:boolean"/>
         <xs:attribute name="maxTextLength" type="xs:integer"/>
         <xs:attribute name="calculatable" type="xs:boolean"/>
         <xs:attribute name="align" type="columnAlignment"/>
+
+        <!-- Show entity reference as clickable link -->
+        <xs:attribute name="link" type="xs:boolean"/>
+        <xs:attribute name="linkScreen" type="xs:string"/>
+        <xs:attribute name="linkInvoke" type="xs:string"/>
+        <xs:attribute name="linkScreenOpenType" type="openType"/>
 
         <!-- Additional attributes, use only for editable table -->
         <xs:attributeGroup ref="hasOptions"/>
@@ -1011,6 +1016,12 @@
         <xs:attribute name="required" type="xs:boolean"/>
         <xs:attribute name="mask" type="xs:string"/>
         <xs:attribute name="valueMode" type="maskedFieldValueMode"/>
+
+        <!-- Show entity reference as clickable link -->
+        <xs:attribute name="link" type="xs:boolean"/>
+        <xs:attribute name="linkScreen" type="xs:string"/>
+        <xs:attribute name="linkScreenOpenType" type="openType"/>
+        <xs:attribute name="linkInvoke" type="xs:string"/>
     </xs:complexType>
 
     <!-- FieldGroup -->
