@@ -23,7 +23,7 @@ import java.util.List;
 public class DesktopProgressBar extends DesktopAbstractComponent<JProgressBar> implements ProgressBar {
 
     protected boolean editable = true;
-    protected List<ValueListener> listeners = new ArrayList<ValueListener>();
+    protected List<ValueListener> listeners = new ArrayList<>();
     protected Object prevValue;
 
     private static final int WHOLE_PROGRESS = 100;

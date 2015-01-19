@@ -6,10 +6,8 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.ProgressBar;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -18,16 +16,22 @@ import org.dom4j.Element;
  * @author Alexander Budarov
  * @version $Id$
  */
-public class ProgressBarLoader extends AbstractFieldLoader {
+public class ProgressBarLoader extends ComponentLoader {
 
-    public ProgressBarLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
-        super(context, config, factory);
+    public ProgressBarLoader(Context context) {
+        super(context);
     }
 
     @Override
-    protected void initComponent(Field field, Element element, Component parent) {
-        ProgressBar component = (ProgressBar) field;
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) {
+        final ProgressBar component = factory.createComponent(element.getName());
 
+        initComponent(component, element, parent);
+
+        return component;
+    }
+
+    protected void initComponent(ProgressBar component, Element element, Component parent) {
         assignXmlDescriptor(component, element);
         loadId(component, element);
 
