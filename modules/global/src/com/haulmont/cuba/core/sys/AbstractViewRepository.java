@@ -201,8 +201,12 @@ public class AbstractViewRepository implements ViewRepository {
      */
     @Override
     @Nullable
-    public View findView(MetaClass metaClass, String name) {
-        if (metaClass == null || name == null) {
+    public View findView(MetaClass metaClass, @Nullable String name) {
+        if (metaClass == null) {
+            throw new IllegalArgumentException("Passed metaClass should not be null");
+        }
+
+        if (name == null) {
             return null;
         }
 
