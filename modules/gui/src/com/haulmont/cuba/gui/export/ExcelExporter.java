@@ -44,23 +44,23 @@ import java.util.List;
  * @version $Id$
  */
 public class ExcelExporter {
-    private static final int COL_WIDTH_MAGIC = 48;
+    protected static final int COL_WIDTH_MAGIC = 48;
 
     private static final int SPACE_COUNT = 10;
 
-    private HSSFWorkbook wb;
+    protected HSSFWorkbook wb;
 
-    private HSSFFont boldFont;
+    protected HSSFFont boldFont;
 
     private HSSFFont stdFont;
 
-    private HSSFSheet sheet;
+    protected HSSFSheet sheet;
 
     private HSSFCellStyle timeFormatCellStyle;
 
     private HSSFCellStyle dateFormatCellStyle;
 
-    private ExcelAutoColumnSizer[] sizers;
+    protected ExcelAutoColumnSizer[] sizers;
 
     private final String trueStr;
 
@@ -219,7 +219,7 @@ public class ExcelExporter {
         display.show(new ByteArrayDataProvider(out.toByteArray()), fileName + ".xls", ExportFormat.XLS);
     }
 
-    private void createFormats() {
+    protected void createFormats() {
         timeFormatCellStyle = wb.createCellStyle();
         timeFormatCellStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat("m/d/yy h:mm"));
 
