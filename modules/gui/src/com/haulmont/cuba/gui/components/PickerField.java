@@ -6,16 +6,19 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.DevelopmentException;
+import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowManagerProvider;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -400,9 +403,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
             WindowManager wm;
             Window window = ComponentsHelper.getWindow(pickerField);
             if (window == null) {
-                LogFactory.getLog(PickerField.class).warn("Please specify Frame for PickerField");
-
-                wm = AppBeans.get(WindowManagerProvider.class).get();
+                throw new IllegalStateException("Please specify Frame for EntityLinkField");
             } else {
                 wm = window.getWindowManager();
             }
@@ -418,10 +419,8 @@ public interface PickerField extends Field, Component.ActionsHolder {
                 return;
             }
 
-            LoadContext ctx = new LoadContext(entity.getClass());
-            ctx.setId(entity.getId());
-            ctx.setView(View.MINIMAL);
-            entity = AppBeans.get(DataService.class).load(ctx);
+            DataSupplier dataSupplier = window.getDsContext().getDataSupplier();
+            entity = dataSupplier.reload(entity, View.MINIMAL);
 
             if (entity != null) {
                 String windowAlias = editScreen;
