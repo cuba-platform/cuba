@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.core.entity;
 
+import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 import javax.persistence.*;
@@ -16,12 +17,15 @@ import javax.persistence.Entity;
 @SystemLevel
 public class AppFolder extends AbstractSearchFolder {
 
+    private static final long serialVersionUID = -3587493035203986325L;
+
     @Column(name = "VISIBILITY_SCRIPT", length = 200)
     protected String visibilityScript;
 
     @Column(name = "QUANTITY_SCRIPT", length = 200)
     protected String quantityScript;
 
+    @MetaProperty
     @Transient
     protected Integer quantity;
 

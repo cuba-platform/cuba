@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.core.entity;
 
+import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
@@ -68,6 +69,7 @@ public abstract class AbstractSearchFolder extends Folder {
         this.applyDefault = applyDefault;
     }
 
+    @MetaProperty
     public String getLocName() {
         Messages messages = AppBeans.get(Messages.NAME);
         return messages.getMainMessage(name);
