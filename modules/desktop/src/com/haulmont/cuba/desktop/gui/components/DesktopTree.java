@@ -48,6 +48,9 @@ public class DesktopTree extends DesktopAbstractActionsHolderComponent<JTree> im
     protected String captionProperty;
     protected TreeModelAdapter model;
 
+    protected Action doubleClickAction;
+    protected MouseAdapter itemClickListener;
+
     public DesktopTree() {
         impl = new JTree();
         treeView = new JScrollPane(impl);
@@ -247,6 +250,38 @@ public class DesktopTree extends DesktopAbstractActionsHolderComponent<JTree> im
         }
 
         assignAutoDebugId();
+    }
+
+    @Override
+    public void setItemClickAction(Action action) {
+        if (this.doubleClickAction != action) {
+            if (action != null) {
+                if (itemClickListener == null) {
+                    itemClickListener = new MouseAdapter() {
+                        @Override
+                        public void mouseClicked(MouseEvent e) {
+                            if (e.getButton() == 1
+                                    && e.getClickCount() == 2
+                                    && doubleClickAction != null) {
+                                doubleClickAction.actionPerform(DesktopTree.this);
+                            }
+                        }
+                    };
+                    impl.addMouseListener(itemClickListener);
+                    impl.setToggleClickCount(0);
+                }
+            } else {
+                impl.removeMouseListener(itemClickListener);
+                impl.setToggleClickCount(2);
+                itemClickListener = null;
+            }
+            this.doubleClickAction = action;
+        }
+    }
+
+    @Override
+    public Action getItemClickAction() {
+        return doubleClickAction;
     }
 
     @Override

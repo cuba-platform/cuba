@@ -8,7 +8,6 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Security;
-import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.ShowInfoAction;
@@ -19,6 +18,7 @@ import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
 import com.haulmont.cuba.web.gui.data.HierarchicalDsWrapper;
 import com.vaadin.data.Property;
+import com.vaadin.event.ItemClickEvent;
 import com.vaadin.ui.AbstractSelect;
 import org.apache.commons.lang.StringUtils;
 
@@ -36,6 +36,9 @@ public class WebTree extends WebAbstractList<com.haulmont.cuba.web.toolkit.ui.Tr
     protected String hierarchyProperty;
     protected CaptionMode captionMode = CaptionMode.ITEM;
     protected String captionProperty;
+
+    protected Action doubleClickAction;
+    protected ItemClickEvent.ItemClickListener itemClickListener;
 
     public WebTree() {
         component = new com.haulmont.cuba.web.toolkit.ui.Tree();
@@ -221,6 +224,39 @@ public class WebTree extends WebAbstractList<com.haulmont.cuba.web.toolkit.ui.Tr
         }
 
         assignAutoDebugId();
+    }
+
+    @Override
+    public Action getItemClickAction() {
+        return doubleClickAction;
+    }
+
+    @Override
+    public void setItemClickAction(Action action) {
+        if (this.doubleClickAction != action) {
+            if (action != null) {
+                if (itemClickListener == null) {
+                    component.setDoubleClickMode(true);
+                    itemClickListener = new ItemClickEvent.ItemClickListener() {
+                        @Override
+                        public void itemClick(ItemClickEvent event) {
+                            if (event.isDoubleClick()) {
+                                if (doubleClickAction != null) {
+                                    doubleClickAction.actionPerform(WebTree.this);
+                                }
+                            }
+                        }
+                    };
+                    component.addListener(itemClickListener);
+                }
+            } else {
+                component.setDoubleClickMode(false);
+                component.removeListener(itemClickListener);
+                itemClickListener = null;
+            }
+
+            this.doubleClickAction = action;
+        }
     }
 
     @Override

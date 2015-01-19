@@ -29,4 +29,10 @@ public interface Tree extends ListComponent, Component.Editable {
 
     String getHierarchyProperty();
     void setDatasource(HierarchicalDatasource datasource);
+
+    /**
+     * Assign action to be executed on double click inside a tree node.
+     */
+    void setItemClickAction(Action action);
+    Action getItemClickAction();
 }

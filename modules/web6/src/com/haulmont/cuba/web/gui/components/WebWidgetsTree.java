@@ -58,6 +58,16 @@ public class WebWidgetsTree
     }
 
     @Override
+    public void setItemClickAction(Action action) {
+        //do nothing
+    }
+
+    @Override
+    public Action getItemClickAction() {
+        return null;
+    }
+
+    @Override
     public void expandTree() {
         com.vaadin.data.Container.Hierarchical container =
                 (com.vaadin.data.Container.Hierarchical) component.getContainerDataSource();

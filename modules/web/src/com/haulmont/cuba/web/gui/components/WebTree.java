@@ -19,6 +19,7 @@ import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
 import com.haulmont.cuba.web.gui.data.HierarchicalDsWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaTree;
 import com.vaadin.data.Property;
+import com.vaadin.event.ItemClickEvent;
 import com.vaadin.ui.AbstractSelect;
 import org.apache.commons.lang.StringUtils;
 
@@ -36,6 +37,9 @@ public class WebTree extends WebAbstractList<CubaTree> implements Tree {
     protected String hierarchyProperty;
     protected CaptionMode captionMode = CaptionMode.ITEM;
     protected String captionProperty;
+
+    protected Action doubleClickAction;
+    protected ItemClickEvent.ItemClickListener itemClickListener;
 
     public WebTree() {
         component = new CubaTree();
@@ -105,7 +109,7 @@ public class WebTree extends WebAbstractList<CubaTree> implements Tree {
                 component.setItemCaptionMode(AbstractSelect.ItemCaptionMode.PROPERTY);
                 break;
             }
-            default :{
+            default: {
                 throw new UnsupportedOperationException();
             }
         }
@@ -224,6 +228,39 @@ public class WebTree extends WebAbstractList<CubaTree> implements Tree {
     }
 
     @Override
+    public Action getItemClickAction() {
+        return doubleClickAction;
+    }
+
+    @Override
+    public void setItemClickAction(Action action) {
+        if (this.doubleClickAction != action) {
+            if (action != null) {
+                if (itemClickListener == null) {
+                    component.setDoubleClickMode(true);
+                    itemClickListener = new ItemClickEvent.ItemClickListener() {
+                        @Override
+                        public void itemClick(ItemClickEvent event) {
+                            if (event.isDoubleClick()) {
+                                if (doubleClickAction != null) {
+                                    doubleClickAction.actionPerform(WebTree.this);
+                                }
+                            }
+                        }
+                    };
+                    component.addItemClickListener(itemClickListener);
+                }
+            } else {
+                component.setDoubleClickMode(false);
+                component.removeItemClickListener(itemClickListener);
+                itemClickListener = null;
+            }
+
+            this.doubleClickAction = action;
+        }
+    }
+
+    @Override
     public boolean isEditable() {
         return !component.isReadOnly();
     }
@@ -239,7 +276,7 @@ public class WebTree extends WebAbstractList<CubaTree> implements Tree {
             return id;
         }
         if (datasource != null && StringUtils.isNotEmpty(datasource.getId())) {
-            return getClass().getSimpleName()  + "_" + datasource.getId();
+            return getClass().getSimpleName() + "_" + datasource.getId();
         }
 
         return getClass().getSimpleName();
