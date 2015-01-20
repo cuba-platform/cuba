@@ -10,10 +10,12 @@ import com.haulmont.cuba.web.toolkit.ui.client.window.CubaWindowClientRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.window.CubaWindowServerRpc;
 import com.haulmont.cuba.web.toolkit.ui.client.window.CubaWindowState;
 import com.vaadin.event.Action;
+import com.vaadin.event.ConnectorEvent;
 import com.vaadin.server.KeyMapper;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Window;
 
+import java.lang.reflect.Method;
 import java.util.*;
 
 /**
@@ -62,6 +64,52 @@ public class CubaWindow extends Window {
         }
     };
 
+    protected static final Method BEFORE_WINDOW_CLOSE_METHOD;
+    static {
+        try {
+            BEFORE_WINDOW_CLOSE_METHOD = PreCloseListener.class.getDeclaredMethod(
+                    "beforeWindowClose", new Class[] { PreCloseEvent.class });
+        } catch (final java.lang.NoSuchMethodException e) {
+            // This should never happen
+            throw new java.lang.RuntimeException(
+                    "Internal error, window close method not found");
+        }
+    }
+
+    public static class PreCloseEvent extends ConnectorEvent {
+
+        private boolean preventClose = false;
+
+        public PreCloseEvent(CubaWindow window) {
+            super(window);
+        }
+
+        @Override
+        public CubaWindow getConnector() {
+            return (CubaWindow) super.getConnector();
+        }
+
+        public boolean isPreventClose() {
+            return preventClose;
+        }
+
+        public void setPreventClose(boolean preventClose) {
+            this.preventClose = preventClose;
+        }
+    }
+
+    public interface PreCloseListener {
+        void beforeWindowClose(PreCloseEvent event);
+    }
+
+    public void addPreCloseListener(PreCloseListener listener) {
+        addListener(PreCloseEvent.class, listener, BEFORE_WINDOW_CLOSE_METHOD);
+    }
+
+    public void removePreCloseListener(PreCloseListener listener) {
+        removeListener(PreCloseEvent.class, listener, BEFORE_WINDOW_CLOSE_METHOD);
+    }
+
     public CubaWindow() {
         this("");
     }
@@ -102,5 +150,19 @@ public class CubaWindow extends Window {
 
     public void removeContextActionHandler(Action.Handler actionHandler) {
         contextActionHandlers.remove(actionHandler);
+    }
+
+    @Override
+    public void close() {
+        PreCloseEvent event = new PreCloseEvent(this);
+        fireEvent(event);
+
+        if (!event.isPreventClose()) {
+            super.close();
+        }
+    }
+
+    public void dispose() {
+        super.close();
     }
 }

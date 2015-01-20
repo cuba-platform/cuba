@@ -42,8 +42,8 @@ public class SaveSetWindow extends AbstractWindow {
         query = (String) params.get("query");
         foldersSelect = getComponent("folderSelect");
 
-        Button createBtn = getComponent("createNew");
-        Button insertBtn = getComponent("insertBtn");
+        Button createBtn = getComponentNN("createNew");
+        Button insertBtn = getComponentNN("insertBtn");
 
         insertBtn.setAction(new InsertAction());
         createBtn.setAction(new CreateSetAction());
@@ -99,12 +99,6 @@ public class SaveSetWindow extends AbstractWindow {
             };
 
             final FolderEditWindow window = AppFolderEditWindow.create(false, false, folder, null, commitHandler);
-            window.addCloseListener(new com.vaadin.ui.Window.CloseListener() {
-                @Override
-                public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
-                    AppUI.getCurrent().removeWindow(window);
-                }
-            });
             AppUI.getCurrent().addWindow(window);
             window.addCloseListener(new com.vaadin.ui.Window.CloseListener() {
                 @Override

@@ -388,7 +388,6 @@ public abstract class App {
                 }
 
                 for (com.vaadin.ui.Window win : new ArrayList<>(ui.getWindows())) {
-                    WebWindowManager.removeCloseListeners(win);
                     ui.removeWindow(win);
                 }
             }

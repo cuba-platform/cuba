@@ -670,7 +670,7 @@ public class WebWindowManager extends WindowManager {
 
     protected Component showWindowDialog(final Window window, final String caption, final String description,
                                          boolean forciblyDialog) {
-        final com.vaadin.ui.Window vWindow = createDialogWindow(window);
+        final CubaWindow vWindow = createDialogWindow(window);
         vWindow.setStyleName("cuba-app-dialog-window");
         if (ui.isTestMode()) {
             vWindow.setCubaId("dialog_" + window.getId());
@@ -680,10 +680,12 @@ public class WebWindowManager extends WindowManager {
         Layout layout = WebComponentsHelper.getComposition(window);
         vWindow.setContent(layout);
 
-        vWindow.addCloseListener(new com.vaadin.ui.Window.CloseListener() {
+        vWindow.addPreCloseListener(new CubaWindow.PreCloseListener() {
             @Override
-            public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
-                window.close(Window.CLOSE_ACTION_ID, true);
+            public void beforeWindowClose(CubaWindow.PreCloseEvent event) {
+                event.setPreventClose(true);
+
+                window.close(Window.CLOSE_ACTION_ID);
             }
         });
 
@@ -768,7 +770,7 @@ public class WebWindowManager extends WindowManager {
         return windowBreadCrumbs;
     }
 
-    protected com.vaadin.ui.Window createDialogWindow(Window window) {
+    protected CubaWindow createDialogWindow(Window window) {
         CubaWindow dialogWindow = new CubaWindow(window.getCaption());
         dialogWindow.setErrorHandler(ui);
         // if layout analyzer allowed
@@ -888,9 +890,8 @@ public class WebWindowManager extends WindowManager {
 
         switch (openMode.openType) {
             case DIALOG: {
-                final com.vaadin.ui.Window win = (com.vaadin.ui.Window) openMode.getData();
-                removeCloseListeners(win);
-                ui.removeWindow(win);
+                final CubaWindow cubaDialogWindow = (CubaWindow) openMode.getData();
+                cubaDialogWindow.dispose();
                 fireListeners(window, tabs.size() != 0);
                 break;
             }
@@ -1007,37 +1008,31 @@ public class WebWindowManager extends WindowManager {
 
     @Override
     public void showMessageDialog(String title, String message, MessageType messageType) {
-        final com.vaadin.ui.Window window = new com.vaadin.ui.Window(title);
+        final com.vaadin.ui.Window vWindow = new com.vaadin.ui.Window(title);
 
         if (ui.isTestMode()) {
-            window.setCubaId("messageDialog");
-            window.setId(ui.getTestIdManager().getTestId("messageDialog"));
+            vWindow.setCubaId("messageDialog");
+            vWindow.setId(ui.getTestIdManager().getTestId("messageDialog"));
         }
 
-        window.addAction(new ShortcutListener("Esc", ShortcutAction.KeyCode.ESCAPE, null) {
+        // todo artamonov get shortcuts from config
+        vWindow.addAction(new ShortcutListener("Esc", ShortcutAction.KeyCode.ESCAPE, null) {
             @Override
             public void handleAction(Object sender, Object target) {
-                window.close();
+                vWindow.close();
             }
         });
 
-        window.addAction(new ShortcutListener("Enter", ShortcutAction.KeyCode.ENTER, null) {
+        vWindow.addAction(new ShortcutListener("Enter", ShortcutAction.KeyCode.ENTER, null) {
             @Override
             public void handleAction(Object sender, Object target) {
-                window.close();
-            }
-        });
-
-        window.addCloseListener(new com.vaadin.ui.Window.CloseListener() {
-            @Override
-            public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
-                ui.removeWindow(window);
+                vWindow.close();
             }
         });
 
         VerticalLayout layout = new VerticalLayout();
         layout.setStyleName("cuba-app-message-dialog");
-        window.setContent(layout);
+        vWindow.setContent(layout);
 
         Label messageLab = new Label(message);
         if (MessageType.isHTML(messageType)) {
@@ -1059,7 +1054,7 @@ public class WebWindowManager extends WindowManager {
         button.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                ui.removeWindow(window);
+                vWindow.close();
             }
         });
 
@@ -1079,20 +1074,20 @@ public class WebWindowManager extends WindowManager {
             width = app.getThemeConstants().getInt("cuba.web.WebWindowManager.messageDialog.width");
         }
 
-        window.setWidth(width, Unit.PIXELS);
-        window.setResizable(false);
+        vWindow.setWidth(width, Unit.PIXELS);
+        vWindow.setResizable(false);
 
         boolean modal = true;
         if (!hasModalWindow() && dialogParams.getModal() != null) {
             modal = dialogParams.getModal();
         }
-        window.setModal(modal);
+        vWindow.setModal(modal);
 
         dialogParams.reset();
 
-        ui.addWindow(window);
-        window.center();
-        window.focus();
+        ui.addWindow(vWindow);
+        vWindow.center();
+        vWindow.focus();
     }
 
     @Override
@@ -1104,13 +1099,6 @@ public class WebWindowManager extends WindowManager {
             window.setId(ui.getTestIdManager().getTestId("optionDialog"));
         }
         window.setClosable(false);
-
-        window.addCloseListener(new com.vaadin.ui.Window.CloseListener() {
-            @Override
-            public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
-                ui.removeWindow(window);
-            }
-        });
 
         Label messageLab = new Label(message);
         if (MessageType.isHTML(messageType)) {
@@ -1275,6 +1263,7 @@ public class WebWindowManager extends WindowManager {
     @Override
     protected void checkCanOpenWindow(WindowInfo windowInfo, WindowManager.OpenType openType, Map<String, Object> params) {
         if (WindowManager.OpenType.NEW_TAB.equals(openType)) {
+            //noinspection StatementWithEmptyBody
             if (!windowInfo.getMultipleOpen() && getWindow(getHash(windowInfo, params)) != null) {
                 //window is already open
             } else {
