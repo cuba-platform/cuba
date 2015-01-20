@@ -683,7 +683,7 @@ public class WebWindowManager extends WindowManager {
         vWindow.addCloseListener(new com.vaadin.ui.Window.CloseListener() {
             @Override
             public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
-                window.close(Window.CLOSE_ACTION_ID);
+                window.close(Window.CLOSE_ACTION_ID, true);
             }
         });
 
