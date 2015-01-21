@@ -238,7 +238,7 @@ public class FilterDelegate {
         appliedFiltersLayout = componentsFactory.createComponent(BoxLayout.VBOX);
         layout.add(appliedFiltersLayout);
 
-        conditionsLayout = componentsFactory.createComponent(BoxLayout.HBOX);
+        conditionsLayout = componentsFactory.createComponent(HBoxLayout.class);
         conditionsLayout.setWidth("100%");
         conditionsLayout.setStyleName("filter-conditions");
         layout.add(conditionsLayout);

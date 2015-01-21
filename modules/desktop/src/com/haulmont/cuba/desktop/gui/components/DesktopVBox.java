@@ -6,12 +6,13 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
+import com.haulmont.cuba.gui.components.VBoxLayout;
 
 /**
  * @author krivopustov
  * @version $Id$
  */
-public class DesktopVBox extends DesktopAbstractBox implements AutoExpanding {
+public class DesktopVBox extends DesktopAbstractBox implements AutoExpanding, VBoxLayout {
 
     public DesktopVBox() {
         layoutAdapter.setFlowDirection(BoxLayoutAdapter.FlowDirection.Y);

@@ -4,13 +4,14 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.cuba.gui.components.HBoxLayout;
 import com.haulmont.cuba.web.toolkit.ui.CubaHorizontalActionsLayout;
 
 /**
  * @author abramov
  * @version $Id$
  */
-public class WebHBoxLayout extends WebAbstractBox {
+public class WebHBoxLayout extends WebAbstractBox implements HBoxLayout{
 
     public WebHBoxLayout() {
         component = new CubaHorizontalActionsLayout();

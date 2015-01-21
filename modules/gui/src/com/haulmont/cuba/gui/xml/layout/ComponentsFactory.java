@@ -29,6 +29,14 @@ public interface ComponentsFactory {
     <T extends Component> T createComponent(String name);
 
     /**
+     * Create a component instance by its type.
+     *
+     * @param type component type
+     * @return component instance for the current client type (web or desktop)
+     */
+    <T extends Component> T createComponent(Class<T> type);
+
+    /**
      * Create a timer instance.
      * @return client-specific implementation of the timer
      */

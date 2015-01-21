@@ -6,13 +6,14 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
+import com.haulmont.cuba.gui.components.HBoxLayout;
 
 /**
  * <p>$Id$</p>
  *
  * @author krivopustov
  */
-public class DesktopHBox extends DesktopAbstractBox implements AutoExpanding {
+public class DesktopHBox extends DesktopAbstractBox implements AutoExpanding, HBoxLayout {
 
     public DesktopHBox() {
         layoutAdapter.setFlowDirection(BoxLayoutAdapter.FlowDirection.X);

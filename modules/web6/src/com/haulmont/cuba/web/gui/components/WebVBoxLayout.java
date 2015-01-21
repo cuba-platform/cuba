@@ -4,13 +4,14 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.cuba.gui.components.VBoxLayout;
 import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
 
 /**
  * @author abramov
  * @version $Id$
  */
-public class WebVBoxLayout extends WebAbstractBox {
+public class WebVBoxLayout extends WebAbstractBox implements VBoxLayout {
 
     public WebVBoxLayout() {
         component = new VerticalActionsLayout();

@@ -29,8 +29,8 @@ public class DesktopComponentsFactory implements ComponentsFactory {
         classes.put(Window.Lookup.NAME, DesktopWindow.Lookup.class);
 
         classes.put(IFrame.NAME, DesktopFrame.class);
-        classes.put(BoxLayout.HBOX, DesktopHBox.class);
-        classes.put(BoxLayout.VBOX, DesktopVBox.class);
+        classes.put(HBoxLayout.NAME, DesktopHBox.class);
+        classes.put(VBoxLayout.NAME, DesktopVBox.class);
         classes.put(GridLayout.NAME, DesktopGridLayout.class);
         classes.put(ScrollBoxLayout.NAME, DesktopScrollBoxLayout.class);
         classes.put(SplitPanel.NAME, DesktopSplitPanel.class);
@@ -103,6 +103,24 @@ public class DesktopComponentsFactory implements ComponentsFactory {
             return (T) componentClass.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public <T extends Component> T createComponent(Class<T> type) {
+        String name = null;
+        java.lang.reflect.Field nameField;
+        try {
+            nameField = type.getField("NAME");
+            name = (String) nameField.get(null);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            //ignore
+        }
+
+        if (name != null) {
+            return createComponent(name);
+        } else {
+            throw new IllegalStateException(String.format("Class '%s' doesn't have NAME property", type.getName()));
         }
     }
 

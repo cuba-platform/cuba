@@ -27,8 +27,8 @@ public class WebComponentsFactory implements ComponentsFactory {
         classes.put(Window.Editor.NAME, WebWindow.Editor.class);
         classes.put(Window.Lookup.NAME, WebWindow.Lookup.class);
 
-        classes.put(BoxLayout.HBOX, WebHBoxLayout.class);
-        classes.put(BoxLayout.VBOX, WebVBoxLayout.class);
+        classes.put(HBoxLayout.NAME, WebHBoxLayout.class);
+        classes.put(VBoxLayout.NAME, WebVBoxLayout.class);
         classes.put(GridLayout.NAME, WebGridLayout.class);
         classes.put(ScrollBoxLayout.NAME, WebScrollBoxLayout.class);
         classes.put(HtmlBoxLayout.NAME, WebHtmlBoxLayout.class);
@@ -107,6 +107,24 @@ public class WebComponentsFactory implements ComponentsFactory {
             throw new RuntimeException(e);
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public <T extends Component> T createComponent(Class<T> type) {
+        String name = null;
+        java.lang.reflect.Field nameField;
+        try {
+            nameField = type.getField("NAME");
+            name = (String) nameField.get(null);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            //ignore
+        }
+
+        if (name != null) {
+            return createComponent(name);
+        } else {
+            throw new IllegalStateException(String.format("Class '%s' doesn't have NAME property", type.getName()));
         }
     }
 
