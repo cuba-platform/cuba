@@ -101,6 +101,7 @@ public class VButton extends FocusWidget implements Paintable, ClickHandler,
     private int clickShortcut = 0;
 
     protected boolean useResponsePending = false;
+    protected boolean focused = false;
 
     public VButton() {
         super(DOM.createDiv());
@@ -120,6 +121,19 @@ public class VButton extends FocusWidget implements Paintable, ClickHandler,
         wrapper.appendChild(captionElement);
 
         addClickHandler(this);
+
+        addFocusHandler(new FocusHandler() {
+            @Override
+            public void onFocus(FocusEvent event) {
+                focused = true;
+            }
+        });
+        addBlurHandler(new BlurHandler() {
+            @Override
+            public void onBlur(BlurEvent event) {
+                focused = false;
+            }
+        });
     }
 
     @Override
@@ -377,8 +391,9 @@ public class VButton extends FocusWidget implements Paintable, ClickHandler,
         if (id == null || client == null) {
             return;
         }
-        if (BrowserInfo.get().isSafari()) {
-            VButton.this.setFocus(true);
+
+        if (!focused) {
+            return;
         }
 
         if (responsePending) {

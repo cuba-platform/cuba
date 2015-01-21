@@ -13,6 +13,7 @@ import com.vaadin.data.Validator;
 import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.server.ErrorEvent;
 import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.Component;
 
 import javax.annotation.Nullable;
 
@@ -36,6 +37,10 @@ public class InvalidValueExceptionHandler extends AbstractExceptionHandler {
             AbstractComponent component = DefaultErrorHandler.findAbstractComponent(event);
             if (component != null) {
                 component.markAsDirty();
+            }
+
+            if (component instanceof Component.Focusable) {
+                ((Component.Focusable) component).focus();
             }
         }
         return handled;

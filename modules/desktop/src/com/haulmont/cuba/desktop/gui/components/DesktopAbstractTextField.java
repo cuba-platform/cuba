@@ -262,6 +262,8 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
     }
 
     protected void showValidationMessage() {
+        impl.requestFocus();
+
         Messages messages = AppBeans.get(Messages.NAME);
         DesktopComponentsHelper.getTopLevelFrame(this).showNotification(
                 messages.getMessage(AppConfig.getMessagesPack(), "validationFail"),

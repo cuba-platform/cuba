@@ -6,13 +6,16 @@
 package com.haulmont.cuba.web.exception;
 
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.web.App;
 import com.vaadin.data.Validator;
-import com.vaadin.ui.Window;
+import com.vaadin.terminal.ParameterHandler;
+import com.vaadin.terminal.Terminal;
+import com.vaadin.terminal.URIHandler;
+import com.vaadin.terminal.VariableOwner;
+import com.vaadin.terminal.gwt.server.ChangeVariablesErrorEvent;
+import com.vaadin.ui.Component;
 
 import javax.annotation.Nullable;
 
@@ -24,6 +27,31 @@ public class InvalidValueExceptionHandler extends AbstractExceptionHandler {
 
     public InvalidValueExceptionHandler() {
         super(Validator.InvalidValueException.class.getName());
+    }
+
+    @Override
+    public boolean handle(Terminal.ErrorEvent event, App app) {
+        boolean handled = super.handle(event, app);
+
+        //noinspection ThrowableResultOfMethodCallIgnored
+        if (handled && event.getThrowable() != null) {
+            // Finds the original source of the error/exception
+            Object owner = null;
+            if (event instanceof VariableOwner.ErrorEvent) {
+                owner = ((VariableOwner.ErrorEvent) event).getVariableOwner();
+            } else if (event instanceof URIHandler.ErrorEvent) {
+                owner = ((URIHandler.ErrorEvent) event).getURIHandler();
+            } else if (event instanceof ParameterHandler.ErrorEvent) {
+                owner = ((ParameterHandler.ErrorEvent) event).getParameterHandler();
+            } else if (event instanceof ChangeVariablesErrorEvent) {
+                owner = ((ChangeVariablesErrorEvent) event).getComponent();
+            }
+
+            if (owner instanceof Component.Focusable) {
+                ((Component.Focusable) owner).focus();
+            }
+        }
+        return handled;
     }
 
     @Override

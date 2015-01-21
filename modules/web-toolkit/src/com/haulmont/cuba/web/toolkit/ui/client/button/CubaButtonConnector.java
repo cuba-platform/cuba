@@ -30,6 +30,11 @@ public class CubaButtonConnector extends ButtonConnector {
     }
 
     @Override
+    public CubaButtonWidget getWidget() {
+        return (CubaButtonWidget) super.getWidget();
+    }
+
+    @Override
     public CubaButtonState getState() {
         return (CubaButtonState) super.getState();
     }
@@ -43,6 +48,10 @@ public class CubaButtonConnector extends ButtonConnector {
 
     @Override
     public void onClick(ClickEvent event) {
+        if (!getWidget().isFocused()) {
+            return;
+        }
+
         if (pendingResponse) {
             return;
         }

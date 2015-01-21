@@ -34,6 +34,10 @@ public class DesktopButton extends DesktopAbstractComponent<JButton> implements 
                 new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
+                        if (!impl.isFocusOwner()) {
+                            return;
+                        }
+
                         if (e.getWhen() <= responseEndTs) {
                             return;
                         }
