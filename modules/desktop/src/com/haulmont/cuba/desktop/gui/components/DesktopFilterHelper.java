@@ -30,6 +30,11 @@ public class DesktopFilterHelper implements FilterHelper {
     }
 
     @Override
+    public void setLookupTextInputAllowed(LookupField lookupField, boolean value) {
+
+    }
+
+    @Override
     public AbstractSearchFolder saveFolder(AbstractSearchFolder folder) {
         return null;
     }

@@ -24,6 +24,7 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.app.folders.AppFolderEditWindow;
 import com.haulmont.cuba.web.app.folders.FolderEditWindow;
 import com.haulmont.cuba.web.app.folders.FoldersPane;
+import com.haulmont.cuba.web.toolkit.ui.FilterSelect;
 import com.vaadin.event.Transferable;
 import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
@@ -59,6 +60,12 @@ public class Web6FilterHelper implements FilterHelper {
     public void setLookupNullSelectionAllowed(LookupField lookupField, boolean value) {
         Select vSelect = WebComponentsHelper.unwrap(lookupField);
         vSelect.setNullSelectionAllowed(value);
+    }
+
+    @Override
+    public void setLookupTextInputAllowed(LookupField lookupField, boolean value) {
+        FilterSelect vSelect = WebComponentsHelper.unwrap(lookupField);
+        vSelect.setTextInputAllowed(value);
     }
 
     @Override

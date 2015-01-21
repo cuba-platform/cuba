@@ -59,6 +59,12 @@ public class WebFilterHelper implements FilterHelper {
     }
 
     @Override
+    public void setLookupTextInputAllowed(LookupField lookupField, boolean value) {
+        ComboBox vComboBox = WebComponentsHelper.unwrap(lookupField);
+        vComboBox.setTextInputAllowed(value);
+    }
+
+    @Override
     @Nullable
     public AbstractSearchFolder saveFolder(AbstractSearchFolder folder) {
         FoldersPane foldersPane = AppUI.getCurrent().getAppWindow().getFoldersPane();

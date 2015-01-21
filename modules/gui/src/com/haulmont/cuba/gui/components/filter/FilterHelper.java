@@ -25,6 +25,8 @@ public interface FilterHelper {
 
     void setLookupNullSelectionAllowed(LookupField lookupField, boolean value);
 
+    void setLookupTextInputAllowed(LookupField lookupField, boolean value);
+
     /**
      * Saves a folder to a FoldersPane
      * @return saved folder or null if foldersPane not found

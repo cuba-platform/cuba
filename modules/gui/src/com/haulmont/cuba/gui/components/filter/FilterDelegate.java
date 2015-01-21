@@ -257,6 +257,7 @@ public class FilterDelegate {
         filtersLookup.setWidth(theme.get("cuba.gui.filter.select.width"));
         filtersLookup.addListener(new FiltersLookupChangeListener());
         filterHelper.setLookupNullSelectionAllowed(filtersLookup, false);
+        filterHelper.setLookupTextInputAllowed(filtersLookup, false);
 
         Button searchBtn = componentsFactory.createComponent(Button.NAME);
         controlsLayout.add(searchBtn);
