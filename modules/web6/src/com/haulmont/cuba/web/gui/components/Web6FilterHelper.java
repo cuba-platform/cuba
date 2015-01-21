@@ -32,7 +32,6 @@ import com.vaadin.event.dd.acceptcriteria.Not;
 import com.vaadin.event.dd.acceptcriteria.Or;
 import com.vaadin.terminal.gwt.client.ui.dd.VerticalDropLocation;
 import com.vaadin.ui.AbstractSelect;
-import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Select;
 
@@ -73,12 +72,6 @@ public class Web6FilterHelper implements FilterHelper {
     @Override
     public void openFolderEditWindow(boolean isAppFolder, AbstractSearchFolder folder, Presentations presentations, Runnable commitHandler) {
         final FolderEditWindow window = AppFolderEditWindow.create(isAppFolder, false, folder, presentations, commitHandler);
-        window.addListener(new com.vaadin.ui.Window.CloseListener() {
-            @Override
-            public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
-                App.getInstance().removeWindow(window);
-            }
-        });
         App.getInstance().addWindow(window);
     }
 
@@ -204,5 +197,4 @@ public class Web6FilterHelper implements FilterHelper {
             }
         });
     }
-
 }

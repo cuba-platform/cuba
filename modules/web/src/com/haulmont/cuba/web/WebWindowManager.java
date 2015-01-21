@@ -873,13 +873,6 @@ public class WebWindowManager extends WindowManager {
         windows.clear();
     }
 
-    public static void removeCloseListeners(com.vaadin.ui.Window win) {
-        Collection listeners = win.getListeners(com.vaadin.ui.Window.CloseEvent.class);
-        for (Object listener : listeners) {
-            win.removeCloseListener((com.vaadin.ui.Window.CloseListener) listener);
-        }
-    }
-
     protected void closeWindow(Window window, WindowOpenMode openMode) {
         if (!disableSavingScreenHistory) {
             screenHistorySupport.saveScreenHistory(window, openMode.getOpenType());

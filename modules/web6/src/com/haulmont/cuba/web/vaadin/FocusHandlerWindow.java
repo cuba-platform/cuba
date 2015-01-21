@@ -5,12 +5,12 @@
 
 package com.haulmont.cuba.web.vaadin;
 
+import com.haulmont.cuba.web.toolkit.CubaWindow;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.Window;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -21,7 +21,7 @@ import org.apache.commons.logging.LogFactory;
  * @author artamonov
  * @version $Id$
  */
-public class FocusHandlerWindow extends Window {
+public class FocusHandlerWindow extends CubaWindow {
 
     private static final Log log = LogFactory.getLog(FocusHandlerWindow.class);
 

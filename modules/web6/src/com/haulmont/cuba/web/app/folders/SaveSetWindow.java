@@ -94,17 +94,13 @@ public class SaveSetWindow extends AbstractWindow {
             };
 
             final FolderEditWindow window = AppFolderEditWindow.create(false, false, folder, null, commitHandler);
-            window.addListener(new com.vaadin.ui.Window.CloseListener() {
-                public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
-                    App.getInstance().getAppWindow().removeWindow(window);
-                }
-            });
-            App.getInstance().getAppWindow().addWindow(window);
             window.addListener(new com.vaadin.ui.Window.CloseListener(){
+                @Override
                 public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
                     close(COMMIT_ACTION_ID);
                 }
             });
+            App.getInstance().getAppWindow().addWindow(window);
         }
     }
 }

@@ -19,6 +19,8 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 /**
+ * Dialog window container for OpenType.DIALOG windows.
+ *
  * @author artamonov
  * @version $Id$
  */

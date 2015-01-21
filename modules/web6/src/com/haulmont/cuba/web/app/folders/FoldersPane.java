@@ -928,15 +928,6 @@ public class FoldersPane extends VerticalLayout {
                             refreshFolders();
                         }
                     });
-
-            window.addListener(new com.vaadin.ui.Window.CloseListener() {
-                private static final long serialVersionUID = 5604371155722856067L;
-
-                @Override
-                public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
-                    App.getInstance().getAppWindow().removeWindow(window);
-                }
-            });
             App.getInstance().getAppWindow().addWindow(window);
         }
     }
@@ -988,14 +979,6 @@ public class FoldersPane extends VerticalLayout {
                 } else
                     return;
             }
-            window.addListener(new com.vaadin.ui.Window.CloseListener() {
-                private static final long serialVersionUID = 3267969862627920749L;
-
-                @Override
-                public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
-                    App.getInstance().getAppWindow().removeWindow(window);
-                }
-            });
             App.getInstance().getAppWindow().addWindow(window);
         }
     }

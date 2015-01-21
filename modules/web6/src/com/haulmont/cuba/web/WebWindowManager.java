@@ -17,6 +17,7 @@ import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.sys.WindowBreadCrumbs;
+import com.haulmont.cuba.web.toolkit.CubaWindow;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.ui.ActionsTabSheet;
 import com.haulmont.cuba.web.vaadin.FocusHandlerWindow;
@@ -679,7 +680,7 @@ public class WebWindowManager extends WindowManager {
                                          boolean forciblyDialog) {
         removeWindowsWithName(window.getId());
 
-        final com.vaadin.ui.Window vWindow = createDialogWindow(window);
+        final CubaWindow vWindow = createDialogWindow(window);
         vWindow.setName(window.getId());
         setDebugId(vWindow, window.getId());
 
@@ -695,10 +696,12 @@ public class WebWindowManager extends WindowManager {
 
         vWindow.setContent(outerLayout);
 
-        vWindow.addListener(new com.vaadin.ui.Window.CloseListener() {
+        vWindow.addListener(new CubaWindow.PreCloseListener() {
             @Override
-            public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
-                window.close(Window.CLOSE_ACTION_ID, true);
+            public void beforeWindowClose(CubaWindow.PreCloseEvent event) {
+                event.setPreventClose(true);
+
+                window.close(Window.CLOSE_ACTION_ID);
             }
         });
 
@@ -791,7 +794,7 @@ public class WebWindowManager extends WindowManager {
         return windowBreadCrumbs;
     }
 
-    protected com.vaadin.ui.Window createDialogWindow(Window window) {
+    protected CubaWindow createDialogWindow(Window window) {
         return new FocusHandlerWindow(window.getCaption());
     }
 
@@ -889,24 +892,15 @@ public class WebWindowManager extends WindowManager {
         windows.clear();
     }
 
-    public static void removeCloseListeners(com.vaadin.ui.Window win) {
-        Collection listeners = win.getListeners(com.vaadin.ui.Window.CloseEvent.class);
-        for (Object listener : listeners) {
-            win.removeListener((com.vaadin.ui.Window.CloseListener) listener);
-        }
-    }
-
     private void closeWindow(Window window, WindowOpenMode openMode) {
-
         if (!disableSavingScreenHistory) {
             screenHistorySupport.saveScreenHistory(window, openMode.getOpenType());
         }
 
         switch (openMode.openType) {
             case DIALOG: {
-                final com.vaadin.ui.Window win = (com.vaadin.ui.Window) openMode.getData();
-                removeCloseListeners(win);
-                appWindow.removeWindow(win);
+                final CubaWindow cubaDialogWindow = (CubaWindow) openMode.getData();
+                cubaDialogWindow.dispose();
                 fireListeners(window, getTabs().size() != 0);
                 break;
             }
@@ -1052,13 +1046,6 @@ public class WebWindowManager extends WindowManager {
             }
         });
 
-        window.addListener(new com.vaadin.ui.Window.CloseListener() {
-            @Override
-            public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
-                appWindow.removeWindow(window);
-            }
-        });
-
         VerticalLayout layout = new VerticalLayout();
         layout.setMargin(true);
         window.setContent(layout);
@@ -1135,13 +1122,6 @@ public class WebWindowManager extends WindowManager {
         }
 
         window.setClosable(false);
-
-        window.addListener(new com.vaadin.ui.Window.CloseListener() {
-            @Override
-            public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
-                appWindow.removeWindow(window);
-            }
-        });
 
         Label messageLab = new Label();
         messageLab.setWidth("100%");
@@ -1351,6 +1331,7 @@ public class WebWindowManager extends WindowManager {
     @Override
     protected void checkCanOpenWindow(WindowInfo windowInfo, OpenType openType, Map<String, Object> params) {
         if (OpenType.NEW_TAB.equals(openType)) {
+            //noinspection StatementWithEmptyBody
             if (!windowInfo.getMultipleOpen() && getWindow(getHash(windowInfo, params)) != null) {
                 //window already opened
             } else {

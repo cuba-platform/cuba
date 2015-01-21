@@ -749,7 +749,6 @@ public abstract class App extends Application
                     wm.closeAll();
                 }
 
-                WebWindowManager.removeCloseListeners(win);
                 removeWindow(win);
             }
         } catch (Throwable e) {
