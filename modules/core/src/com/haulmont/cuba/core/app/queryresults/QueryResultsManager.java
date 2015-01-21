@@ -132,7 +132,8 @@ public class QueryResultsManager implements QueryResultsManagerAPI {
         return queryHolder.equals(oldQueryHolder);
     }
 
-    private void insert(int queryKey, List<UUID> idList) {
+    @Override
+    public void insert(int queryKey, List<UUID> idList) {
         UUID userSessionId = userSessionSource.getUserSession().getId();
         long start = System.currentTimeMillis();
         String logMsg = "Insert " + idList.size() + " query results for " + userSessionId + " / " + queryKey;
@@ -168,7 +169,8 @@ public class QueryResultsManager implements QueryResultsManagerAPI {
         }
     }
 
-    private void delete(int queryKey) {
+    @Override
+    public void delete(int queryKey) {
         UUID userSessionId = userSessionSource.getUserSession().getId();
         long start = System.currentTimeMillis();
         String logMsg = "Delete query results for " + userSessionId + " / " + queryKey;

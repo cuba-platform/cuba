@@ -11,6 +11,8 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.presentations.Presentations;
 
 import javax.annotation.Nullable;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Interface to be implemented by classes with client-specific behaviour that cannot be placed into
@@ -19,7 +21,7 @@ import javax.annotation.Nullable;
  * @version $Id$
  */
 public interface FilterHelper {
-    String NAME = "cuba_filterHelper";
+    String NAME = "cuba_FilterHelper";
 
     void setLookupNullSelectionAllowed(LookupField lookupField, boolean value);
 
@@ -40,4 +42,6 @@ public interface FilterHelper {
     void removeFolderFromFoldersPane(Folder folder);
 
     boolean isTableActionsEnabled();
+
+    void initTableFtsTooltips(Table table, Map<UUID, String> tooltips);
 }

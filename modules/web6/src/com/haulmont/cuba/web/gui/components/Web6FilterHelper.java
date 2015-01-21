@@ -12,6 +12,7 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.LookupField;
+import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Tree;
 import com.haulmont.cuba.gui.components.filter.ConditionsTree;
 import com.haulmont.cuba.gui.components.filter.FilterHelper;
@@ -32,14 +33,12 @@ import com.vaadin.event.dd.acceptcriteria.Or;
 import com.vaadin.terminal.gwt.client.ui.dd.VerticalDropLocation;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Select;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author gorbunkov
@@ -191,4 +190,19 @@ public class Web6FilterHelper implements FilterHelper {
     public boolean isTableActionsEnabled() {
         return true;
     }
+
+    @Override
+    public void initTableFtsTooltips(Table table, final Map<UUID, String> tooltips) {
+        com.haulmont.cuba.web.toolkit.ui.Table vTable = WebComponentsHelper.unwrap(table);
+        vTable.setItemDescriptionGenerator(new com.haulmont.cuba.web.toolkit.ui.Table.ItemDescriptionGenerator() {
+            @Override
+            public String generateDescription(Component source, Object itemId, Object propertyId) {
+                if (tooltips.keySet().contains(itemId)) {
+                    return tooltips.get(itemId);
+                }
+                return null;
+            }
+        });
+    }
+
 }

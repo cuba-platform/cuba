@@ -31,6 +31,10 @@ public class CustomCondition extends AbstractCondition {
 
     private String join;
 
+    public CustomCondition() {
+        super();
+    }
+
     protected CustomCondition(AbstractCondition other) {
         super(other);
         this.join = ((CustomCondition) other).join;

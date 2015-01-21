@@ -10,8 +10,8 @@ import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.Folder;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.LookupField;
+import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Tree;
 import com.haulmont.cuba.gui.components.filter.ConditionsTree;
 import com.haulmont.cuba.gui.components.filter.FilterHelper;
@@ -19,7 +19,6 @@ import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.condition.GroupCondition;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.presentations.Presentations;
-import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.app.folders.AppFolderEditWindow;
 import com.haulmont.cuba.web.app.folders.FolderEditWindow;
@@ -33,14 +32,12 @@ import com.vaadin.event.dd.acceptcriteria.Or;
 import com.vaadin.shared.ui.dd.VerticalDropLocation;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Component;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author gorbunkov
@@ -54,9 +51,6 @@ public class WebFilterHelper implements FilterHelper {
 
     @Inject
     protected Messages messages;
-
-    @Inject
-    protected UserSessionSource userSessionSource;
 
     @Override
     public void setLookupNullSelectionAllowed(LookupField lookupField, boolean value) {
@@ -77,14 +71,8 @@ public class WebFilterHelper implements FilterHelper {
 
     @Override
     public void openFolderEditWindow(boolean isAppFolder, AbstractSearchFolder folder, Presentations presentations, Runnable commitHandler) {
-        final FolderEditWindow window = AppFolderEditWindow.create(isAppFolder, false, folder, presentations, commitHandler);
-        window.addCloseListener(new com.vaadin.ui.Window.CloseListener() {
-            @Override
-            public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
-                App.getInstance().getAppUI().removeWindow(window);
-            }
-        });
-        App.getInstance().getAppUI().addWindow(window);
+        FolderEditWindow window = AppFolderEditWindow.create(isAppFolder, false, folder, presentations, commitHandler);
+        AppUI.getCurrent().addWindow(window);
     }
 
     @Override
@@ -192,5 +180,19 @@ public class WebFilterHelper implements FilterHelper {
     @Override
     public boolean isTableActionsEnabled() {
         return true;
+    }
+
+    @Override
+    public void initTableFtsTooltips(Table table, final Map<UUID, String> tooltips) {
+        com.vaadin.ui.Table vTable = WebComponentsHelper.unwrap(table);
+        vTable.setItemDescriptionGenerator(new AbstractSelect.ItemDescriptionGenerator() {
+            @Override
+            public String generateDescription(Component source, Object itemId, Object propertyId) {
+                if (tooltips.keySet().contains(itemId)) {
+                    return tooltips.get(itemId);
+                }
+                return null;
+            }
+        });
     }
 }

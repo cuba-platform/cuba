@@ -8,12 +8,15 @@ package com.haulmont.cuba.desktop.gui.components;
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.Folder;
 import com.haulmont.cuba.gui.components.LookupField;
+import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Tree;
 import com.haulmont.cuba.gui.components.filter.ConditionsTree;
 import com.haulmont.cuba.gui.components.filter.FilterHelper;
 import com.haulmont.cuba.gui.presentations.Presentations;
 
 import javax.annotation.ManagedBean;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * @author gorbunkov
@@ -59,5 +62,10 @@ public class DesktopFilterHelper implements FilterHelper {
     @Override
     public boolean isTableActionsEnabled() {
         return false;
+    }
+
+    @Override
+    public void initTableFtsTooltips(Table table, Map<UUID, String> tooltips) {
+        //do nothing
     }
 }

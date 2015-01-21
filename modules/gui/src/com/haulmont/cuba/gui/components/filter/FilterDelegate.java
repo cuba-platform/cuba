@@ -14,6 +14,7 @@ import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.app.PersistenceManagerService;
+import com.haulmont.cuba.core.app.QueryResultsService;
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.AppFolder;
 import com.haulmont.cuba.core.entity.Entity;
@@ -50,7 +51,7 @@ import java.util.*;
 
 /**
  * Class encapsulates common  generic filter behaviour. Client specific behaviour is placed into implementations of
- * {@link com.haulmont.cuba.gui.components.filter.FilterHelper}. All filter components delegates its method invocations
+ * {@link com.haulmont.cuba.gui.components.filter.FilterHelper}. All filter components delegates their method invocations
  * to this class.
  *
  * @author gorbunkov
@@ -61,8 +62,8 @@ public class FilterDelegate {
     protected static final String GLOBAL_FILTER_PERMISSION = "cuba.gui.filter.global";
     protected static final String GLOBAL_APP_FOLDERS_PERMISSION = "cuba.gui.appFolder.global";
     protected static final String FILTER_EDIT_PERMISSION = "cuba.gui.filter.edit";
-    protected static final String FILTER_REMOVE_DISABLED_ICON = "icons/filter-remove-disabled.png";
-    protected static final String FILTER_REMOVE_ENABLED_ICON = "icons/filter-remove-enabled.png";
+    protected static final String FILTER_REMOVE_DISABLED_ICON = "icons/eye-plus.png";
+    protected static final String FILTER_REMOVE_ENABLED_ICON = "icons/eye-minus.png";
 
     protected static final Log log = LogFactory.getLog(FilterDelegate.class);
 
@@ -77,14 +78,18 @@ public class FilterDelegate {
     protected Configuration configuration;
     protected ClientConfig clientConfig;
     protected GlobalConfig globalConfig;
+    protected FtsConfig ftsConfig;
     protected DataService dataService;
     protected Security security;
     protected AddConditionHelper addConditionHelper;
     protected FilterHelper filterHelper;
+    protected FtsFilterHelper ftsFilterHelper;
+    protected QueryResultsService queryResultsService;
 
     protected Filter filter;
     protected FilterEntity adHocFilter;
     protected ConditionsTree conditions;
+    protected ConditionsTree prevConditions;
     protected FilterEntity filterEntity;
     protected FilterEntity initialFilterEntity;
     protected CollectionDatasource datasource;
@@ -106,6 +111,8 @@ public class FilterDelegate {
     protected Component applyTo;
     protected LinkButton filterModifiedIndicator;
     protected SaveAction saveAction;
+    protected TextField ftsSearchCriteriaField;
+    protected LinkButton switchFilterModeButton;
 
     protected String caption;
     protected boolean useMaxResults;
@@ -114,6 +121,7 @@ public class FilterDelegate {
     protected boolean filtersLookupListenerEnabled = true;
     protected boolean conditionsRemoveEnabled = false;
     protected boolean editable;
+    protected FilterMode filterMode;
 
     public FilterDelegate(Filter filter) {
         this.filter = filter;
@@ -122,6 +130,7 @@ public class FilterDelegate {
         configuration = AppBeans.get(Configuration.class);
         globalConfig = configuration.getConfig(GlobalConfig.class);
         clientConfig = configuration.getConfig(ClientConfig.class);
+        ftsConfig = configuration.getConfig(FtsConfig.class);
         componentsFactory = AppBeans.get(ComponentsFactory.class);
         messages = AppBeans.get(Messages.class);
         ThemeConstantsManager themeConstantsManager = AppBeans.get(ThemeConstantsManager.class);
@@ -131,9 +140,12 @@ public class FilterDelegate {
         metadata = AppBeans.get(Metadata.class);
         userSessionSource = AppBeans.get(UserSessionSource.NAME);
         persistenceManager = AppBeans.get(PersistenceManagerService.class);
-        clientConfig = configuration.getConfig(ClientConfig.class);
         dataService = AppBeans.get(DataService.class);
         security = AppBeans.get(Security.class);
+        queryResultsService = AppBeans.get(QueryResultsService.class);
+        ftsFilterHelper = AppBeans.get(FtsFilterHelper.class);
+
+        filterMode = FilterMode.GENERIC_MODE;
 
         createLayout();
 
@@ -195,7 +207,11 @@ public class FilterDelegate {
                 @Override
                 public void actionPerform(Component component) {
                     if (isVisible() && datasource != null) {
-                        apply(false);
+                        if (filterMode == FilterMode.GENERIC_MODE) {
+                            apply(false);
+                        } else {
+                            applyFts();
+                        }
                     }
                 }
             });
@@ -203,10 +219,18 @@ public class FilterDelegate {
     }
 
     public void createLayout() {
-        layout = componentsFactory.createComponent(GroupBoxLayout.NAME);
-        layout.setOrientation(GroupBoxLayout.Orientation.VERTICAL);
-        layout.setStyleName("cuba-generic-filter");
-        layout.setWidth("100%");
+        if (layout == null) {
+            layout = componentsFactory.createComponent(GroupBoxLayout.NAME);
+            layout.setOrientation(GroupBoxLayout.Orientation.VERTICAL);
+            layout.setStyleName("cuba-generic-filter");
+            layout.setWidth("100%");
+        } else {
+            Collection<Component> components = layout.getComponents();
+            for (Component component : components) {
+                layout.remove(component);
+            }
+        }
+        layout.setSpacing(false);
 
         appliedFiltersLayout = componentsFactory.createComponent(BoxLayout.VBOX);
         layout.add(appliedFiltersLayout);
@@ -216,11 +240,11 @@ public class FilterDelegate {
         conditionsLayout.setStyleName("filter-conditions");
         layout.add(conditionsLayout);
 
-        controlsLayout = createControlsLayout();
+        controlsLayout = filterMode == FilterMode.GENERIC_MODE ? createControlsLayoutForGeneric() : createControlsLayoutForFts();
         layout.add(controlsLayout);
     }
 
-    protected Component.Container createControlsLayout() {
+    protected Component.Container createControlsLayoutForGeneric() {
         final BoxLayout controlsLayout = componentsFactory.createComponent(BoxLayout.HBOX);
         controlsLayout.setSpacing(true);
         controlsLayout.setWidth("100%");
@@ -241,6 +265,7 @@ public class FilterDelegate {
                 apply(false);
             }
         });
+        searchBtn.setAlignment(Component.Alignment.MIDDLE_LEFT);
 
         Component gap = componentsFactory.createComponent(BoxLayout.HBOX);
         controlsLayout.add(gap);
@@ -259,16 +284,19 @@ public class FilterDelegate {
 
         allowRemoveButton = componentsFactory.createComponent(LinkButton.NAME);
         controlsLayout.add(allowRemoveButton);
-        allowRemoveButton.setAlignment(Component.Alignment.MIDDLE_LEFT);
+        allowRemoveButton.setAlignment(Component.Alignment.MIDDLE_RIGHT);
         allowRemoveButton.setAction(new AbstractAction("") {
             @Override
             public void actionPerform(Component component) {
                 conditionsRemoveEnabled = !conditionsRemoveEnabled;
                 allowRemoveButton.setIcon(conditionsRemoveEnabled ? FILTER_REMOVE_ENABLED_ICON : FILTER_REMOVE_DISABLED_ICON);
+                allowRemoveButton.setDescription(conditionsRemoveEnabled ? getMessage("Filter.forbidRemoveConditions") : getMessage("Filter.allowRemoveConditions"));
+
                 fillConditionsLayout(false);
                 updateFilterModifiedIndicator();
             }
         });
+        allowRemoveButton.setIcon(FILTER_REMOVE_DISABLED_ICON);
         allowRemoveButton.setDescription(getMessage("Filter.allowRemoveConditions"));
 
         filterModifiedIndicator = componentsFactory.createComponent(LinkButton.NAME);
@@ -285,9 +313,83 @@ public class FilterDelegate {
         createMaxResultsLayout();
         controlsLayout.add(maxResultsLayout);
 
-        searchBtn.setAlignment(Component.Alignment.MIDDLE_RIGHT);
+        switchFilterModeButton = createSwitchFilterModeButton();
+        switchFilterModeButton.setAlignment(Component.Alignment.MIDDLE_RIGHT);
+        controlsLayout.add(switchFilterModeButton);
 
         return controlsLayout;
+    }
+
+    protected Component.Container createControlsLayoutForFts() {
+        final BoxLayout controlsLayout = componentsFactory.createComponent(BoxLayout.HBOX);
+        controlsLayout.setSpacing(true);
+        controlsLayout.setWidth("100%");
+
+        ftsSearchCriteriaField = componentsFactory.createComponent(TextField.NAME);
+        ftsSearchCriteriaField.setAlignment(Component.Alignment.MIDDLE_LEFT);
+        ftsSearchCriteriaField.setWidth(theme.get("cuba.gui.filter.ftsSearchCriteriaField.width"));
+        ftsSearchCriteriaField.requestFocus();
+        controlsLayout.add(ftsSearchCriteriaField);
+
+        Button searchBtn = componentsFactory.createComponent(Button.NAME);
+        searchBtn.setCaption(getMessage("Filter.search"));
+        searchBtn.setIcon("icons/search.png");
+        searchBtn.setAction(new AbstractAction("search") {
+            @Override
+            public void actionPerform(Component component) {
+                applyFts();
+            }
+        });
+        searchBtn.setAlignment(Component.Alignment.MIDDLE_LEFT);
+        controlsLayout.add(searchBtn);
+
+        Component gap = componentsFactory.createComponent(BoxLayout.HBOX);
+        controlsLayout.add(gap);
+        controlsLayout.expand(gap);
+
+        createMaxResultsLayout();
+        controlsLayout.add(maxResultsLayout);
+
+        switchFilterModeButton = createSwitchFilterModeButton();
+        switchFilterModeButton.setAlignment(Component.Alignment.MIDDLE_RIGHT);
+        controlsLayout.add(switchFilterModeButton);
+
+        return controlsLayout;
+    }
+
+    protected boolean isFtsModeEnabled() {
+        return ftsConfig.getEnabled()
+                && ftsFilterHelper != null
+                && datasource != null
+                && ftsFilterHelper.isEntityIndexed(datasource.getMetaClass().getName());
+    }
+
+    protected LinkButton createSwitchFilterModeButton() {
+        LinkButton switchFilterModeButton = componentsFactory.createComponent(LinkButton.NAME);
+        String caption = filterMode == FilterMode.GENERIC_MODE ? getMessage("Filter.ftsSearch") : getMessage("Filter.generalSearch");
+        switchFilterModeButton.setCaption(caption);
+        switchFilterModeButton.setAction(new AbstractAction("switchFilterMode") {
+            @Override
+            public void actionPerform(Component component) {
+                filterMode = (filterMode == FilterMode.GENERIC_MODE) ? FilterMode.FTS_MODE : FilterMode.GENERIC_MODE;
+                if (filterMode == FilterMode.FTS_MODE) {
+                    prevConditions = conditions;
+                }
+                conditions = (filterMode == FilterMode.GENERIC_MODE) ? prevConditions : new ConditionsTree();
+                createLayout();
+                initMaxResults();
+                if (filterMode == FilterMode.GENERIC_MODE) {
+                    fillFiltersLookup();
+                    filtersLookupListenerEnabled = false;
+                    filtersLookup.setValue(filterEntity);
+                    filtersLookupListenerEnabled = true;
+                    fillConditionsLayout(true);
+                    fillActions();
+//                    setFilterEntity(filterEntity);
+                }
+            }
+        });
+        return switchFilterModeButton;
     }
 
     protected void createMaxResultsLayout() {
@@ -627,7 +729,7 @@ public class FilterDelegate {
                 }
             }
 
-            //groupBox for group conditions must occupy the while line in conditions grid
+            //groupBox for group conditions must occupy the whole line in conditions grid
             Integer conditionWidth = condition.isGroup() ? columnsQty : condition.getWidth();
             int nextColumnEnd = nextColumnStart + conditionWidth - 1;
             if (nextColumnEnd >= columnsQty) {
@@ -718,6 +820,7 @@ public class FilterDelegate {
 
         conditionsRemoveEnabled = false;
         allowRemoveButton.setIcon(FILTER_REMOVE_DISABLED_ICON);
+        allowRemoveButton.setDescription(getMessage("Filter.allowRemoveConditions"));
 
         fillActions();
 
@@ -965,6 +1068,10 @@ public class FilterDelegate {
         } else if (useMaxResults) {
             initMaxResults();
         }
+
+        if (!isFtsModeEnabled()) {
+            controlsLayout.remove(switchFilterModeButton);
+        }
     }
 
     public CollectionDatasource getDatasource() {
@@ -997,6 +1104,54 @@ public class FilterDelegate {
 
         applyDatasourceFilter();
 
+        initDatasourceMaxResults();
+
+        refreshDatasource();
+
+
+        if (filterEntity != null) {
+            lastAppliedFilter = new AppliedFilter(filterEntity, conditions);
+        } else {
+            lastAppliedFilter = null;
+        }
+
+        fillActions();
+
+        return true;
+    }
+
+    protected void applyFts() {
+        if (ftsFilterHelper == null)
+            return;
+
+        String searchTerm = ftsSearchCriteriaField.getValue();
+        if (Strings.isNullOrEmpty(searchTerm)) {
+            windowManager.showNotification(getMessage("Filter.fillSearchCondition"), IFrame.NotificationType.TRAY);
+            return;
+        }
+
+        FtsFilterHelper.FtsSearchResult ftsSearchResult = ftsFilterHelper.search(searchTerm, datasource.getMetaClass().getName());
+
+        int queryKey = ftsSearchResult.getQueryKey();
+        CustomCondition ftsCondition = ftsFilterHelper.createFtsCondition(queryKey);
+        conditions.getRootNodes().add(new Node<AbstractCondition>(ftsCondition));
+
+        applyDatasourceFilter();
+        initDatasourceMaxResults();
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("sessionId", userSessionSource.getUserSession().getId());
+        params.put("queryKey", queryKey);
+        datasource.refresh(params);
+
+        if ((applyTo != null) && (Table.class.isAssignableFrom(applyTo.getClass()))) {
+            filterHelper.initTableFtsTooltips((Table) applyTo, ftsSearchResult.getHitInfos());
+        }
+
+        queryResultsService.delete(queryKey);
+    }
+
+    protected void initDatasourceMaxResults() {
         if (useMaxResults) {
             int maxResults;
             if (BooleanUtils.isTrue((Boolean) maxResultsCb.getValue())) {
@@ -1013,19 +1168,6 @@ public class FilterDelegate {
         if (datasource instanceof CollectionDatasource.SupportsPaging) {
             ((CollectionDatasource.SupportsPaging) datasource).setFirstResult(0);
         }
-
-        refreshDatasource();
-
-
-        if (filterEntity != null) {
-            lastAppliedFilter = new AppliedFilter(filterEntity, conditions);
-        } else {
-            lastAppliedFilter = null;
-        }
-
-        fillActions();
-
-        return true;
     }
 
     protected void applyDatasourceFilter() {
@@ -1713,5 +1855,10 @@ public class FilterDelegate {
             this.layout = layout;
             this.button = button;
         }
+    }
+
+    protected enum FilterMode {
+        GENERIC_MODE,
+        FTS_MODE
     }
 }
