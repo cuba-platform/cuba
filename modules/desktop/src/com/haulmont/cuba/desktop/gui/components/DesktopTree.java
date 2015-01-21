@@ -260,10 +260,20 @@ public class DesktopTree extends DesktopAbstractActionsHolderComponent<JTree> im
                     itemClickListener = new MouseAdapter() {
                         @Override
                         public void mouseClicked(MouseEvent e) {
-                            if (e.getButton() == 1
-                                    && e.getClickCount() == 2
-                                    && doubleClickAction != null) {
-                                doubleClickAction.actionPerform(DesktopTree.this);
+                            if (isEditable()) {
+                                if (e.getButton() == MouseEvent.BUTTON1
+                                        && e.getClickCount() == 2
+                                        && doubleClickAction != null) {
+
+                                    int rowForLocation = impl.getRowForLocation(e.getX(), e.getY());
+                                    TreePath pathForLocation = impl.getPathForRow(rowForLocation);
+
+                                    if (pathForLocation != null) {
+                                        impl.setSelectionPath(pathForLocation);
+
+                                        doubleClickAction.actionPerform(DesktopTree.this);
+                                    }
+                                }
                             }
                         }
                     };

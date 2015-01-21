@@ -1130,11 +1130,11 @@ public class DesktopWindow implements Window, Component.Disposable,
                         });
             } else if (lookupComponent instanceof Tree) {
                 final Tree tree = (Tree) lookupComponent;
-                final JTree treeComponent = (JTree) DesktopComponentsHelper.unwrap(tree);
+                final JTree treeComponent = DesktopComponentsHelper.unwrap(tree);
                 treeComponent.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mousePressed(MouseEvent e) {
-                        if (e.getClickCount() == 2) {
+                        if (e.getClickCount() == 2 && e.getButton() == MouseEvent.BUTTON1) {
                             int rowForLocation = treeComponent.getRowForLocation(e.getX(), e.getY());
                             TreePath pathForLocation = treeComponent.getPathForRow(rowForLocation);
                             if (pathForLocation != null) {
