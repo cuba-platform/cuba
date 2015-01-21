@@ -19,6 +19,7 @@ import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.AppFolder;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
@@ -143,7 +144,9 @@ public class FilterDelegate {
         dataService = AppBeans.get(DataService.class);
         security = AppBeans.get(Security.class);
         queryResultsService = AppBeans.get(QueryResultsService.class);
-        ftsFilterHelper = AppBeans.get(FtsFilterHelper.class);
+        if (AppBeans.containsBean(FtsFilterHelper.NAME)) {
+            ftsFilterHelper = AppBeans.get(FtsFilterHelper.class);
+        }
 
         filterMode = FilterMode.GENERIC_MODE;
 
