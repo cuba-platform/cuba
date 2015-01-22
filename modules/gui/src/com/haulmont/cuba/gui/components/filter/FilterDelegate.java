@@ -98,6 +98,7 @@ public class FilterDelegate {
     protected List<FilterEntity> filterEntities = new ArrayList<>();
     protected AppliedFilter lastAppliedFilter;
     protected LinkedList<AppliedFilterHolder> appliedFilters = new LinkedList<>();
+    protected List<Filter.FilterEntityChangeListener> filterEntityChangeListeners = new ArrayList<>();
 
     protected GroupBoxLayout layout;
     protected LookupField filtersLookup;
@@ -837,6 +838,9 @@ public class FilterDelegate {
                 !getResultingManualApplyRequired())
             apply(true);
 
+        for (Filter.FilterEntityChangeListener listener : filterEntityChangeListeners) {
+            listener.filterEntityChanged(filterEntity);
+        }
     }
 
     /**
@@ -1459,6 +1463,29 @@ public class FilterDelegate {
 
     public boolean isEditable() {
         return editable;
+    }
+
+    public Object getParamValue(String paramName) {
+        Component component = getOwnComponent(paramName);
+        if (component instanceof Component.HasValue) {
+            return ((Component.HasValue) component).getValue();
+        }
+        return null;
+    }
+
+    public void setParamValue(String paramName, Object value) {
+        Component component = getOwnComponent(paramName);
+        if (component instanceof Component.HasValue) {
+            ((Component.HasValue) component).setValue(value);
+        }
+    }
+
+    public void addFilterEntityChangeListener(Filter.FilterEntityChangeListener listener) {
+        filterEntityChangeListeners.add(listener);
+    }
+
+    public List<Filter.FilterEntityChangeListener> getFilterEntityChangeListeners() {
+        return filterEntityChangeListeners;
     }
 
     protected class FiltersLookupChangeListener implements ValueListener {

@@ -7,6 +7,8 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.security.entity.FilterEntity;
 
+import java.util.List;
+
 /**
  * @author krivopustov
  * @version $Id$
@@ -16,6 +18,10 @@ public interface Filter
         Component.HasXmlDescriptor, Component.HasSettings, Component.HasCaption {
 
     String NAME = "filter";
+
+    public interface FilterEntityChangeListener {
+        void filterEntityChanged(FilterEntity filterEntity);
+    }
 
     CollectionDatasource getDatasource();
     void setDatasource(CollectionDatasource datasource);
@@ -50,4 +56,10 @@ public interface Filter
 
     void setFolderActionsEnabled(boolean enabled);
     boolean isFolderActionsEnabled();
+
+    void setParamValue(String paramName, Object value);
+    Object getParamValue(String paramName);
+
+    void addFilterEntityChangeListener(FilterEntityChangeListener listener);
+    List<FilterEntityChangeListener> getFilterEntityChangeListeners();
 }

@@ -92,6 +92,7 @@ public class ParamWrapper implements Component.HasValue {
 
     @Override
     public void setValue(Object value) {
+        param.setValue(value);
     }
 
     @Override

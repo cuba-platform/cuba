@@ -20,6 +20,7 @@ import javax.annotation.Nullable;
 import javax.swing.*;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * Generic filter implementation for the desktop-client.
@@ -213,6 +214,26 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     @Override
     public Collection<Component> getComponents() {
         return getOwnComponents();
+    }
+
+    @Override
+    public void setParamValue(String paramName, Object value) {
+        delegate.setParamValue(paramName, value);
+    }
+
+    @Override
+    public Object getParamValue(String paramName) {
+        return delegate.getParamValue(paramName);
+    }
+
+    @Override
+    public void addFilterEntityChangeListener(FilterEntityChangeListener listener) {
+        delegate.addFilterEntityChangeListener(listener);
+    }
+
+    @Override
+    public List<FilterEntityChangeListener> getFilterEntityChangeListeners() {
+        return delegate.getFilterEntityChangeListeners();
     }
 
 }

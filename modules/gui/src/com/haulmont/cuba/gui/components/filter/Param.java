@@ -75,6 +75,7 @@ public class Param {
     protected boolean required;
     protected List<String> runtimeEnum;
     protected UUID categoryAttrId;
+    protected Component editComponent;
 
     protected Messages messages = AppBeans.get(Messages.NAME);
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
@@ -142,6 +143,9 @@ public class Param {
             this.value = value;
             for (ValueListener listener : listeners) {
                 listener.valueChanged(this, "value", prevValue, value);
+            }
+            if (this.editComponent instanceof Component.HasValue) {
+                ((Component.HasValue) editComponent).setValue(value);
             }
         }
     }
@@ -318,6 +322,8 @@ public class Param {
             default:
                 throw new UnsupportedOperationException("Unsupported param type: " + type);
         }
+
+        this.editComponent = component;
 
         return component;
     }

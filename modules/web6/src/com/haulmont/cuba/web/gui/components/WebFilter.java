@@ -201,4 +201,24 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
     public Collection<Component> getComponents() {
         return getOwnComponents();
     }
+
+    @Override
+    public void setParamValue(String paramName, Object value) {
+        delegate.setParamValue(paramName, value);
+    }
+
+    @Override
+    public Object getParamValue(String paramName) {
+        return delegate.getParamValue(paramName);
+    }
+
+    @Override
+    public void addFilterEntityChangeListener(FilterEntityChangeListener listener) {
+        delegate.addFilterEntityChangeListener(listener);
+    }
+
+    @Override
+    public List<FilterEntityChangeListener> getFilterEntityChangeListeners() {
+        return delegate.getFilterEntityChangeListeners();
+    }
 }
