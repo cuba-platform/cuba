@@ -204,4 +204,11 @@ public class Web6FilterHelper implements FilterHelper {
             }
         });
     }
+
+    @Override
+    public void removeTableFtsTooltips(Table table) {
+        com.haulmont.cuba.web.toolkit.ui.Table vTable = WebComponentsHelper.unwrap(table);
+        vTable.setItemDescriptionGenerator(null);
+    }
+
 }

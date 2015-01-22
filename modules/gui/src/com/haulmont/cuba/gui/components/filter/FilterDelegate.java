@@ -1107,11 +1107,8 @@ public class FilterDelegate {
         }
 
         applyDatasourceFilter();
-
         initDatasourceMaxResults();
-
         refreshDatasource();
-
 
         if (filterEntity != null) {
             lastAppliedFilter = new AppliedFilter(filterEntity, conditions);
@@ -1121,6 +1118,10 @@ public class FilterDelegate {
 
         fillActions();
 
+        if ((applyTo != null) && (Table.class.isAssignableFrom(applyTo.getClass()))) {
+            filterHelper.removeTableFtsTooltips((Table) applyTo);
+        }
+
         return true;
     }
 
@@ -1129,30 +1130,30 @@ public class FilterDelegate {
             return;
 
         String searchTerm = ftsSearchCriteriaField.getValue();
-        if (Strings.isNullOrEmpty(searchTerm)) {
+        if (Strings.isNullOrEmpty(searchTerm) && clientConfig.getGenericFilterChecking()) {
             windowManager.showNotification(getMessage("Filter.fillSearchCondition"), IFrame.NotificationType.TRAY);
             return;
         }
 
-        FtsFilterHelper.FtsSearchResult ftsSearchResult = ftsFilterHelper.search(searchTerm, datasource.getMetaClass().getName());
+        Map<String, Object> params = new HashMap<>();
 
-        int queryKey = ftsSearchResult.getQueryKey();
-        CustomCondition ftsCondition = ftsFilterHelper.createFtsCondition(queryKey);
-        conditions.getRootNodes().add(new Node<AbstractCondition>(ftsCondition));
+        if (!Strings.isNullOrEmpty(searchTerm)) {
+            FtsFilterHelper.FtsSearchResult ftsSearchResult = ftsFilterHelper.search(searchTerm, datasource.getMetaClass().getName());
+            int queryKey = ftsSearchResult.getQueryKey();
+            params.put("sessionId", userSessionSource.getUserSession().getId());
+            params.put("queryKey", queryKey);
+
+            CustomCondition ftsCondition = ftsFilterHelper.createFtsCondition(queryKey);
+            conditions.getRootNodes().add(new Node<AbstractCondition>(ftsCondition));
+
+            if ((applyTo != null) && (Table.class.isAssignableFrom(applyTo.getClass()))) {
+                filterHelper.initTableFtsTooltips((Table) applyTo, ftsSearchResult.getHitInfos());
+            }
+        }
 
         applyDatasourceFilter();
         initDatasourceMaxResults();
-
-        Map<String, Object> params = new HashMap<>();
-        params.put("sessionId", userSessionSource.getUserSession().getId());
-        params.put("queryKey", queryKey);
         datasource.refresh(params);
-
-        if ((applyTo != null) && (Table.class.isAssignableFrom(applyTo.getClass()))) {
-            filterHelper.initTableFtsTooltips((Table) applyTo, ftsSearchResult.getHitInfos());
-        }
-
-        queryResultsService.delete(queryKey);
     }
 
     protected void initDatasourceMaxResults() {

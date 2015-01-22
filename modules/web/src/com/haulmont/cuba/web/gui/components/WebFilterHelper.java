@@ -201,4 +201,11 @@ public class WebFilterHelper implements FilterHelper {
             }
         });
     }
+
+    @Override
+    public void removeTableFtsTooltips(Table table) {
+        com.vaadin.ui.Table vTable = WebComponentsHelper.unwrap(table);
+        vTable.setItemDescriptionGenerator(null);
+    }
+
 }

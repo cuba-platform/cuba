@@ -73,4 +73,9 @@ public class DesktopFilterHelper implements FilterHelper {
     public void initTableFtsTooltips(Table table, Map<UUID, String> tooltips) {
         //do nothing
     }
+
+    @Override
+    public void removeTableFtsTooltips(Table table) {
+
+    }
 }
