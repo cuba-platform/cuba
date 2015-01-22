@@ -64,12 +64,18 @@ public class ParamEditor implements AbstractCondition.Listener {
 
     @Override
     public void paramChanged() {
+        Component oldParamEditComponent = paramEditComponent;
         mainLayout.remove(paramEditComponent);
         paramEditComponent = condition.getParam().createEditComponent(Param.ValueProperty.VALUE);
-        if (paramEditComponent instanceof Field)
+        if (paramEditComponent instanceof Field) {
             ((Field) paramEditComponent).setRequired(condition.getRequired());
+            if (paramEditComponent.getClass().equals(oldParamEditComponent.getClass())) {
+                ((Field) paramEditComponent).setValue(((Field) oldParamEditComponent).getValue());
+            }
+        }
         mainLayout.add(paramEditComponent);
         mainLayout.expand(paramEditComponent);
+
     }
 
     @Override
