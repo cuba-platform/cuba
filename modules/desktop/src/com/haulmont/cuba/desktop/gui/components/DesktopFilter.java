@@ -6,11 +6,13 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
+import com.haulmont.cuba.desktop.sys.layout.MigBoxLayoutAdapter;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Filter;
 import com.haulmont.cuba.gui.components.filter.FilterDelegate;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.security.entity.FilterEntity;
+import net.miginfocom.layout.AC;
 import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
 import org.dom4j.Element;
@@ -18,6 +20,7 @@ import org.dom4j.Element;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.*;
+import java.awt.*;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -42,11 +45,12 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
             topLc.debug(1000);
         MigLayout topLayout = new MigLayout(topLc);
         impl = new JPanel(topLayout);
-        setWidth("100%");
 
         Container layout = delegate.getLayout();
         JComponent unwrap = DesktopComponentsHelper.unwrap(layout);
-        impl.add(unwrap);
+        impl.add(unwrap, "width 100%");
+
+        setWidth("100%");
     }
 
     @Override
