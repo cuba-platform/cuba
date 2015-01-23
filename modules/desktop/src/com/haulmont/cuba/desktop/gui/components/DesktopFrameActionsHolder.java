@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.cuba.desktop.sys.ValidationAlertHolder;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
 import org.apache.commons.lang.ObjectUtils;
@@ -17,13 +18,12 @@ import java.util.*;
  * Encapsulates {@link com.haulmont.cuba.gui.components.Component.ActionsHolder} functionality for desktop frames and
  * windows.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class DesktopFrameActionsHolder {
 
-    private List<Action> actionList = new LinkedList<Action>();
+    private List<Action> actionList = new LinkedList<>();
     private Map<Action, KeyStroke> shortcutActions = new HashMap<>();
 
     private Component component;
@@ -44,7 +44,20 @@ public class DesktopFrameActionsHolder {
 
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    action.actionPerform(component);
+                    ValidationAlertHolder.validationExpected();
+
+                    try {
+                        DesktopComponentsHelper.flushCurrentInputField();
+
+                        if (!ValidationAlertHolder.isFailed()) {
+                            ValidationAlertHolder.clear();
+
+                            action.actionPerform(component);
+                        }
+                    } finally {
+                        ValidationAlertHolder.clear();
+                    }
+
                 }
             });
             shortcutActions.put(action, keyStroke);

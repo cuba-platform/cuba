@@ -14,6 +14,7 @@ import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
+import com.haulmont.cuba.desktop.sys.ValidationAlertHolder;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.TextInputField;
@@ -153,6 +154,7 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
             rawValue = StringUtils.trimToNull((String) rawValue);
         }
 
+        //noinspection unchecked
         return (V) rawValue;
     }
 
@@ -206,6 +208,7 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
 
         valueFormatter.setMetaProperty(metaProperty);
 
+        //noinspection unchecked
         datasource.addListener(
                 new DsListenerAdapter() {
                     @Override
@@ -262,6 +265,10 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
     }
 
     protected void showValidationMessage() {
+        if (ValidationAlertHolder.isListen()) {
+            ValidationAlertHolder.validationFailed();
+        }
+
         impl.requestFocus();
 
         Messages messages = AppBeans.get(Messages.NAME);
@@ -296,6 +303,7 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
                 // used for properly parsing BigDecimal values
                 Object datatypeValue = datatype.parse(rawValue, locale);
 
+                //noinspection unchecked
                 return datatype.parse(datatype.format(datatypeValue));
             } catch (ParseException ignored) {
                 showValidationMessage();
@@ -369,7 +377,7 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
 
         @Override
         public void keyPressed(KeyEvent e) {
-            if (KeyEvent.VK_ENTER == e.getKeyCode()) {
+            if (KeyEvent.VK_ENTER == e.getKeyCode() && e.getModifiers() == 0) {
                 flush();
             }
         }
