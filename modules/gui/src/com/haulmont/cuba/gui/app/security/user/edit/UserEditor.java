@@ -511,8 +511,17 @@ public class UserEditor extends AbstractEditor<User> {
             getDialogParams().setWidth(themeConstants.getInt("cuba.gui.UserEditor.substitutionEditor.width"));
 
             if (substitutionsDs.getItem() != null) {
+                Map<String, Object> params = new HashMap<>();
+                if (!substitutionsDs.getItemIds().isEmpty()) {
+                    List<UUID> list = new ArrayList<>();
+                    for (UUID usId : substitutionsDs.getItemIds()) {
+                        list.add(substitutionsDs.getItem(usId).getSubstitutedUser().getId());
+                    }
+                    list.remove(substitutionsDs.getItem().getSubstitutedUser().getId());
+                    params.put("existingIds", list);
+                }
                 Window substitutionEditor = openEditor("sec$UserSubstitution.edit", substitutionsDs.getItem(),
-                        WindowManager.OpenType.DIALOG, substitutionsDs);
+                        WindowManager.OpenType.DIALOG, params, substitutionsDs);
                 substitutionEditor.addListener(new CloseListener() {
                     @Override
                     public void windowClosed(String actionId) {
