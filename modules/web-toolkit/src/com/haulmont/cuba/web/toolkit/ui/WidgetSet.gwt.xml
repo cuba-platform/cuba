@@ -18,6 +18,10 @@
         <when-type-is class="com.vaadin.client.VTooltip"/>
     </replace-with>
 
+    <replace-with class="com.haulmont.cuba.web.toolkit.ui.client.appui.AppUIConnector">
+        <when-type-is class="com.vaadin.client.ui.ui.UIConnector"/>
+    </replace-with>
+
     <!-- Text selection enable functions deffered binding -->
 
     <replace-with class="com.haulmont.cuba.web.toolkit.ui.client.sys.ToolsImplIE">

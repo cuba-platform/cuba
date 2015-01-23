@@ -42,6 +42,11 @@ public class InvalidValueExceptionHandler extends AbstractExceptionHandler {
             if (component instanceof Component.Focusable) {
                 ((Component.Focusable) component).focus();
             }
+
+            //noinspection ThrowableResultOfMethodCallIgnored
+            if (event.getThrowable() instanceof Validator.InvalidValueException) {
+                app.getAppUI().discardAccumulatedEvents();
+            }
         }
         return handled;
     }

@@ -11,6 +11,7 @@ import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.web.sys.LinkHandler;
 import com.haulmont.cuba.gui.TestIdManager;
+import com.haulmont.cuba.web.toolkit.ui.client.appui.AppUIClientRpc;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.server.*;
 import com.vaadin.ui.Component;
@@ -244,5 +245,12 @@ public class AppUI extends UI implements ErrorHandler {
     public void detach() {
         log.trace("Detaching UI " + this);
         super.detach();
+    }
+
+    /**
+     * For internal use only.
+     */
+    public void discardAccumulatedEvents() {
+        getRpcProxy(AppUIClientRpc.class).discardAccumulatedEvents();
     }
 }
