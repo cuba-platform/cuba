@@ -2727,4 +2727,32 @@ public class ApplicationConnection {
         return uri;
     }
 
+    /**
+     * Discard next events in client-side event queue, exclude CubaTimer events and polling.
+     */
+    public void discardAccumulatedEvents() {
+        boolean isTimerRequest = false;
+        for (String pendingVariable : pendingVariables) {
+            if ("timer".equals(pendingVariable)) {
+                isTimerRequest = true;
+            }
+        }
+        if (!isTimerRequest) {
+            pendingVariables.clear();
+        }
+
+        for (ArrayList<String> variableBurst : new ArrayList<ArrayList<String>>(pendingVariableBursts)) {
+            isTimerRequest = false;
+            for (String pendingVariable : variableBurst) {
+                if ("timer".equals(pendingVariable)) {
+                    isTimerRequest = true;
+                }
+            }
+            if (!isTimerRequest) {
+                pendingVariableBursts.remove(variableBurst);
+            }
+        }
+
+        VConsole.log(">> DISCARD");
+    }
 }

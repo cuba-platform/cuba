@@ -208,6 +208,10 @@ public class VView extends SimplePanel implements Container, ResizeHandler,
         boolean firstPaint = connection == null;
         connection = client;
 
+        if (uidl.hasAttribute("discard")) {
+            client.discardAccumulatedEvents();
+        }
+
         immediate = uidl.hasAttribute("immediate");
         resizeLazy = uidl.hasAttribute(RESIZE_LAZY);
         String newTheme = uidl.getStringAttribute("theme");

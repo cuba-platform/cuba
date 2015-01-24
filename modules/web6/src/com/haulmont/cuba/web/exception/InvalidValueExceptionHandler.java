@@ -9,6 +9,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.AppWindow;
 import com.vaadin.data.Validator;
 import com.vaadin.terminal.ParameterHandler;
 import com.vaadin.terminal.Terminal;
@@ -49,6 +50,11 @@ public class InvalidValueExceptionHandler extends AbstractExceptionHandler {
 
             if (owner instanceof Component.Focusable) {
                 ((Component.Focusable) owner).focus();
+            }
+
+            //noinspection ThrowableResultOfMethodCallIgnored
+            if (event.getThrowable() instanceof Validator.InvalidValueException) {
+                app.getAppWindow().discardAccumulatedEvents();
             }
         }
         return handled;

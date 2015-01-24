@@ -21,8 +21,7 @@ import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.TableCellElement;
 import com.google.gwt.dom.client.TableElement;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.user.client.*;
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -50,10 +49,14 @@ public class VTabsheet extends VTabsheetBase {
         private boolean hasIcon = false;
 
         private String[] actionKeys = null;
+        private boolean focused = false;
 
         TabSheetCaption() {
             super(null, client);
-            sinkEvents(Event.ONCONTEXTMENU);
+
+            getElement().setTabIndex(0);
+            getElement().getStyle().setProperty("outline", "0");
+            sinkEvents(Event.ONCONTEXTMENU | Event.FOCUSEVENTS);
         }
 
         @Override
@@ -86,22 +89,31 @@ public class VTabsheet extends VTabsheetBase {
 
         @Override
         public void onBrowserEvent(Event event) {
+            if (closable) {
+                if (event.getTypeInt() == Event.ONFOCUS) {
+                    focused = true;
+                } else if (event.getTypeInt() == Event.ONBLUR) {
+                    focused = false;
+                }
+            }
+
             //client.handleTooltipEvent(event, VTabsheet.this, getElement());
-            if (closable && event.getTypeInt() == Event.ONCLICK
-                    && event.getEventTarget().cast() == closeButton) {
-//                final String tabKey = tabKeys.get(tb.getTabIndex(this))
+            if (focused) {
+                if (closable && event.getTypeInt() == Event.ONCLICK
+                        && event.getEventTarget().cast() == closeButton) {
+//                  final String tabKey = tabKeys.get(tb.getTabIndex(this))
 //                        .toString();
-                if (isEnabled()) {
-                    client.updateVariable(id, "close", getTabKey(), true);
-                    event.stopPropagation();
-                    event.preventDefault();
+                    if (isEnabled()) {
+                        client.updateVariable(id, "close", getTabKey(), true);
+                        event.stopPropagation();
+                        event.preventDefault();
+                        return;
+                    }
+                } else if (event.getTypeInt() == Event.ONCONTEXTMENU
+                        && isEnabled() && actionKeys != null && actionKeys.length > 0) {
+                    showContextMenu(event);
                     return;
                 }
-            } else if (event.getTypeInt() == Event.ONCONTEXTMENU
-                    && isEnabled() && actionKeys != null && actionKeys.length > 0)
-            {
-                showContextMenu(event);
-                return;
             }
 
             super.onBrowserEvent(event);
@@ -204,6 +216,9 @@ public class VTabsheet extends VTabsheetBase {
                         .setClassName(VTabsheet.CLASSNAME + "-caption-close");
                 getElement().insertBefore(closeButton,
                         getElement().getLastChild());
+
+                DOM.sinkEvents(closeButton, Event.FOCUSEVENTS | Event.MOUSEEVENTS);
+
             } else if (!closable && closeButton != null) {
                 getElement().removeChild(closeButton);
                 closeButton = null;
@@ -223,7 +238,6 @@ public class VTabsheet extends VTabsheetBase {
             }
             return width;
         }
-
     }
 
     class TabsheetAction extends TreeAction {

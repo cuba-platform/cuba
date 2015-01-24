@@ -146,6 +146,8 @@ public class AppWindow extends FocusHandlerWindow implements UserSubstitutionLis
     protected ShortcutListener nextTabShortcut;
     protected ShortcutListener previousTabShortcut;
 
+    protected boolean requiredDiscardAccumulatedEvents = false;
+
     public AppWindow(App app) {
         log.trace("Creating " + this);
         this.app = app;
@@ -894,6 +896,11 @@ public class AppWindow extends FocusHandlerWindow implements UserSubstitutionLis
 
     @Override
     public void paintContent(PaintTarget target) throws PaintException {
+        if (requiredDiscardAccumulatedEvents) {
+            target.addAttribute("discard", true);
+            requiredDiscardAccumulatedEvents = false;
+        }
+
         super.paintContent(target);
 
         // Paint richNotifications
@@ -945,6 +952,13 @@ public class AppWindow extends FocusHandlerWindow implements UserSubstitutionLis
             throw new RuntimeException("No user session found");
 
         substUserSelect.select(us.getCurrentOrSubstitutedUser());
+    }
+
+    /**
+     * For internal use only.
+     */
+    public void discardAccumulatedEvents() {
+        this.requiredDiscardAccumulatedEvents = true;
     }
 
     protected class SubstitutedUserChangeListener implements Property.ValueChangeListener {
