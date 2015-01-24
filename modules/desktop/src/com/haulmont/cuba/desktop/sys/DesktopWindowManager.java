@@ -16,6 +16,9 @@ import com.haulmont.cuba.desktop.TopLevelFrame;
 import com.haulmont.cuba.desktop.gui.components.DesktopAbstractComponent;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.desktop.gui.components.DesktopWindow;
+import com.haulmont.cuba.desktop.sys.validation.ValidationAlertHolder;
+import com.haulmont.cuba.desktop.sys.validation.ValidationAwareAction;
+import com.haulmont.cuba.desktop.sys.validation.ValidationAwareWindowClosingListener;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
@@ -35,7 +38,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.Nullable;
-import javax.swing.AbstractAction;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -89,17 +91,12 @@ public class DesktopWindowManager extends WindowManager {
                 KeyStroke.getKeyStroke("control W"),
                 "closeTab"
         );
-        tabsPane.getActionMap().put(
-                "closeTab",
-                new AbstractAction() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        DesktopComponentsHelper.flushCurrentInputField();
-
-                        closeTab((JComponent) tabsPane.getSelectedComponent());
-                    }
-                }
-        );
+        tabsPane.getActionMap().put("closeTab", new ValidationAwareAction() {
+            @Override
+            public void actionPerformedAfterValidation(ActionEvent e) {
+                closeTab((JComponent) tabsPane.getSelectedComponent());
+            }
+        });
     }
 
     protected void closeTab(JComponent tabContent) {
@@ -436,8 +433,6 @@ public class DesktopWindowManager extends WindowManager {
         window.addAction(new com.haulmont.cuba.gui.components.AbstractAction("closeWindowShortcutAction", closeShortcut) {
             @Override
             public void actionPerform(Component component) {
-                DesktopComponentsHelper.flushCurrentInputField();
-
                 window.close("close");
             }
         });
@@ -452,8 +447,6 @@ public class DesktopWindowManager extends WindowManager {
                 }
 
                 if (isMainWindowManager && getLastDialogWindow() == null && tabsPane.getTabCount() > 1) {
-                    DesktopComponentsHelper.flushCurrentInputField();
-
                     int selectedIndex = getSelectedTabIndex();
 
                     int newIndex = (selectedIndex + tabsPane.getTabCount() - 1) % tabsPane.getTabCount();
@@ -475,8 +468,6 @@ public class DesktopWindowManager extends WindowManager {
                 }
 
                 if (isMainWindowManager && getLastDialogWindow() == null && tabsPane.getTabCount() > 1) {
-                    DesktopComponentsHelper.flushCurrentInputField();
-
                     int selectedIndex = getSelectedTabIndex();
 
                     int newIndex = (selectedIndex + 1) % tabsPane.getTabCount();
@@ -536,18 +527,14 @@ public class DesktopWindowManager extends WindowManager {
 
         if (dialogParams.getCloseable() == null ||
                 dialogParams.getCloseable()) {
-            dialog.addWindowListener(
-                    new WindowAdapter() {
-                        @Override
-                        public void windowClosing(WindowEvent e) {
-                            DesktopComponentsHelper.flushCurrentInputField();
-
-                            if (window.close("close", false)) {
-                                dialog.dispose();
-                            }
-                        }
+            dialog.addWindowListener(new ValidationAwareWindowClosingListener() {
+                @Override
+                public void windowClosingAfterValidation(WindowEvent e) {
+                    if (window.close("close", false)) {
+                        dialog.dispose();
                     }
-            );
+                }
+            });
         }
 
         Dimension dim = new Dimension();
@@ -747,19 +734,25 @@ public class DesktopWindowManager extends WindowManager {
                 tabsPane, true, true,
                 new ButtonTabComponent.CloseListener() {
                     @Override
-                    public void onTabClose(int tabIndex) {
-                        DesktopComponentsHelper.flushCurrentInputField();
-
-                        JComponent tabContent = (JComponent) tabsPane.getComponentAt(tabIndex);
-                        closeTab(tabContent);
+                    public void onTabClose(final int tabIndex) {
+                        ValidationAlertHolder.runIfValid(new Runnable() {
+                            @Override
+                            public void run() {
+                                JComponent tabContent = (JComponent) tabsPane.getComponentAt(tabIndex);
+                                closeTab(tabContent);
+                            }
+                        });
                     }
                 },
                 new ButtonTabComponent.DetachListener() {
                     @Override
-                    public void onDetach(int tabIndex) {
-                        DesktopComponentsHelper.flushCurrentInputField();
-
-                        detachTab(tabIndex);
+                    public void onDetach(final int tabIndex) {
+                        ValidationAlertHolder.runIfValid(new Runnable() {
+                            @Override
+                            public void run() {
+                                detachTab(tabIndex);
+                            }
+                        });
                     }
                 }
         );
@@ -911,11 +904,9 @@ public class DesktopWindowManager extends WindowManager {
                           Window window, Integer hashCode, final JComponent tabContent,
                           Map<Window, WindowOpenMode> openModes) {
         frame.add(tabContent);
-        frame.addWindowListener(new WindowAdapter() {
+        frame.addWindowListener(new ValidationAwareWindowClosingListener() {
             @Override
-            public void windowClosing(WindowEvent e) {
-                DesktopComponentsHelper.flushCurrentInputField();
-
+            public void windowClosingAfterValidation(WindowEvent e) {
                 closeTab(tabContent);
             }
         });

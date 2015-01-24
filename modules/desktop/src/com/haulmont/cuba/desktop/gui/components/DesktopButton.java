@@ -7,13 +7,13 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
+import com.haulmont.cuba.desktop.sys.validation.ValidationAwareActionListener;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Button;
 import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
@@ -30,31 +30,26 @@ public class DesktopButton extends DesktopAbstractComponent<JButton> implements 
 
     public DesktopButton() {
         impl = createImplementation();
-        impl.addActionListener(
-                new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        if (!impl.isFocusOwner()) {
-                            return;
-                        }
+        impl.addActionListener(new ValidationAwareActionListener() {
+            @Override
+            public void actionPerformedAfterValidation(ActionEvent e) {
+                if (action != null) {
+                    if (!impl.isFocusOwner()) {
+                        return;
+                    }
 
-                        if (e.getWhen() <= responseEndTs) {
-                            return;
-                        }
+                    if (e.getWhen() <= responseEndTs) {
+                        return;
+                    }
 
-                        try {
-                            // it is unnecessary for DesktopButton but needed for DesktopLinkButton
-                            DesktopComponentsHelper.flushCurrentInputField();
-
-                            if (action != null) {
-                                action.actionPerform(DesktopButton.this);
-                            }
-                        } finally {
-                            responseEndTs = System.currentTimeMillis();
-                        }
+                    try {
+                        action.actionPerform(DesktopButton.this);
+                    } finally {
+                        responseEndTs = System.currentTimeMillis();
                     }
                 }
-        );
+            }
+        });
         DesktopComponentsHelper.adjustSize(impl);
     }
 

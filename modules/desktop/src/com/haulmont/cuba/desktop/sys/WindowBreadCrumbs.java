@@ -5,7 +5,7 @@
 
 package com.haulmont.cuba.desktop.sys;
 
-import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
+import com.haulmont.cuba.desktop.sys.validation.ValidationAwareActionListener;
 import com.haulmont.cuba.gui.components.Window;
 import org.apache.commons.lang.StringUtils;
 import org.jdesktop.swingx.JXHyperlink;
@@ -13,7 +13,6 @@ import org.jdesktop.swingx.JXHyperlink;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.Serializable;
 import java.util.*;
 
@@ -88,18 +87,16 @@ public class WindowBreadCrumbs extends JPanel {
             JButton button = new JXHyperlink();
             button.setFocusable(false);
             button.setText(StringUtils.trimToEmpty(window.getCaption()));
-            button.addActionListener(
-                    new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            DesktopComponentsHelper.flushCurrentInputField();
-
-                            Window win = btn2win.get((JButton)e.getSource());
-                            if (win != null)
-                                fireListeners(win);
-                        }
+            button.addActionListener(new ValidationAwareActionListener() {
+                @Override
+                public void actionPerformedAfterValidation(ActionEvent e) {
+                    JButton btn = (JButton) e.getSource();
+                    Window win = btn2win.get(btn);
+                    if (win != null) {
+                        fireListeners(win);
                     }
-            );
+                }
+            });
 
             btn2win.put(button, window);
 

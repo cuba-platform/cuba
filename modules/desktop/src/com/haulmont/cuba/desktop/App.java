@@ -11,8 +11,9 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.remoting.ClusterInvocationSupport;
 import com.haulmont.cuba.desktop.exception.ExceptionHandlers;
 import com.haulmont.cuba.desktop.gui.SessionMessagesNotifier;
-import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.desktop.sys.*;
+import com.haulmont.cuba.desktop.sys.validation.ValidationAwareActionListener;
+import com.haulmont.cuba.desktop.sys.validation.ValidationAwareWindowClosingListener;
 import com.haulmont.cuba.desktop.theme.DesktopTheme;
 import com.haulmont.cuba.desktop.theme.DesktopThemeLoader;
 import com.haulmont.cuba.gui.AppConfig;
@@ -40,7 +41,6 @@ import javax.swing.plaf.InputMapUIResource;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.net.MalformedURLException;
@@ -270,16 +270,12 @@ public class App implements ConnectionListener {
         ToolTipManager.sharedInstance().setEnabled(false);
         mainFrame = createMainFrame();
         mainFrame.setName("MainFrame");
-        mainFrame.addWindowListener(
-                new WindowAdapter() {
-                    @Override
-                    public void windowClosing(WindowEvent e) {
-                        DesktopComponentsHelper.flushCurrentInputField();
-
-                        exit();
-                    }
-                }
-        );
+        mainFrame.addWindowListener(new ValidationAwareWindowClosingListener() {
+            @Override
+            public void windowClosingAfterValidation(WindowEvent e) {
+                exit();
+            }
+        });
 
         mainFrame.setContentPane(createStartContentPane());
         registerFrame(mainFrame);
@@ -365,16 +361,12 @@ public class App implements ConnectionListener {
         menu.add(item);
 
         item = new JMenuItem(messages.getMessage(AppConfig.getMessagesPack(), "mainMenu.exit", loc));
-        item.addActionListener(
-                new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        DesktopComponentsHelper.flushCurrentInputField();
-
-                        exit();
-                    }
-                }
-        );
+        item.addActionListener(new ValidationAwareActionListener() {
+            @Override
+            public void actionPerformedAfterValidation(ActionEvent e) {
+                exit();
+            }
+        });
         menu.add(item);
 
         if (isTestMode()) {
@@ -417,29 +409,21 @@ public class App implements ConnectionListener {
         JMenuItem item;
 
         item = new JMenuItem(messages.getMessage(AppConfig.getMessagesPack(), "mainMenu.disconnect"));
-        item.addActionListener(
-                new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        DesktopComponentsHelper.flushCurrentInputField();
-
-                        logout();
-                    }
-                }
-        );
+        item.addActionListener(new ValidationAwareActionListener() {
+            @Override
+            public void actionPerformedAfterValidation(ActionEvent e) {
+                logout();
+            }
+        });
         menu.add(item);
 
         item = new JMenuItem(messages.getMessage(AppConfig.getMessagesPack(), "mainMenu.exit"));
-        item.addActionListener(
-                new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        DesktopComponentsHelper.flushCurrentInputField();
-
-                        exit();
-                    }
-                }
-        );
+        item.addActionListener(new ValidationAwareActionListener() {
+            @Override
+            public void actionPerformedAfterValidation(ActionEvent e) {
+                exit();
+            }
+        });
         menu.add(item);
 
         MenuBuilder builder = new MenuBuilder(connection.getSession(), menuBar);

@@ -8,6 +8,7 @@ package com.haulmont.cuba.desktop.sys;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
+import com.haulmont.cuba.desktop.sys.validation.ValidationAwareActionListener;
 import com.haulmont.cuba.gui.NoSuchScreenException;
 import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.gui.config.*;
@@ -21,7 +22,6 @@ import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -94,17 +94,15 @@ public class MenuBuilder {
         } catch (NoSuchScreenException e) {
             return;
         }
-        final MenuCommand command = new MenuCommand(App.getInstance().getMainFrame().getWindowManager(), item, windowInfo);
-        jMenuItem.addActionListener(
-                new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        DesktopComponentsHelper.flushCurrentInputField();
 
-                        command.execute();
-                    }
-                }
-        );
+        DesktopWindowManager wm = App.getInstance().getMainFrame().getWindowManager();
+        final MenuCommand command = new MenuCommand(wm, item, windowInfo);
+        jMenuItem.addActionListener(new ValidationAwareActionListener() {
+            @Override
+            public void actionPerformedAfterValidation(ActionEvent e) {
+                command.execute();
+            }
+        });
     }
 
     private void createSubMenu(JMenu jMenu, MenuItem item) {

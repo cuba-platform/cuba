@@ -3,8 +3,9 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-package com.haulmont.cuba.desktop.sys;
+package com.haulmont.cuba.desktop.sys.validation;
 
+import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import org.apache.commons.lang.BooleanUtils;
 
 /**
@@ -36,5 +37,21 @@ public final class ValidationAlertHolder {
 
     public static boolean isFailed() {
         return BooleanUtils.isTrue(validationAlert);
+    }
+
+    public static void runIfValid(Runnable r) {
+        validationExpected();
+
+        try {
+            DesktopComponentsHelper.flushCurrentInputField();
+
+            if (!isFailed()) {
+                clear();
+
+                r.run();
+            }
+        } finally {
+            clear();
+        }
     }
 }

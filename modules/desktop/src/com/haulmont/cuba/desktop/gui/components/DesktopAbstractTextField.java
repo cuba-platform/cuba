@@ -14,7 +14,7 @@ import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
-import com.haulmont.cuba.desktop.sys.ValidationAlertHolder;
+import com.haulmont.cuba.desktop.sys.validation.ValidationAlertHolder;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.TextInputField;

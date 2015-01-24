@@ -5,7 +5,7 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
-import com.haulmont.cuba.desktop.sys.ValidationAlertHolder;
+import com.haulmont.cuba.desktop.sys.validation.ValidationAwareAction;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
 import org.apache.commons.lang.ObjectUtils;
@@ -40,24 +40,10 @@ public class DesktopFrameActionsHolder {
             InputMap inputMap = panel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
             inputMap.put(keyStroke, action.getId());
             ActionMap actionMap = panel.getActionMap();
-            actionMap.put(action.getId(), new javax.swing.AbstractAction() {
-
+            actionMap.put(action.getId(), new ValidationAwareAction() {
                 @Override
-                public void actionPerformed(ActionEvent e) {
-                    ValidationAlertHolder.validationExpected();
-
-                    try {
-                        DesktopComponentsHelper.flushCurrentInputField();
-
-                        if (!ValidationAlertHolder.isFailed()) {
-                            ValidationAlertHolder.clear();
-
-                            action.actionPerform(component);
-                        }
-                    } finally {
-                        ValidationAlertHolder.clear();
-                    }
-
+                public void actionPerformedAfterValidation(ActionEvent e) {
+                    action.actionPerform(component);
                 }
             });
             shortcutActions.put(action, keyStroke);

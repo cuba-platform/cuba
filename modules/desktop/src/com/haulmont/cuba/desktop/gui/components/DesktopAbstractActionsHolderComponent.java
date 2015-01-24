@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.cuba.desktop.sys.validation.ValidationAwareAction;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.gui.components.ShortcutsDelegate;
@@ -34,11 +35,9 @@ public class DesktopAbstractActionsHolderComponent<C extends JComponent> extends
             @Override
             protected KeyCombination attachShortcut(final String actionId, KeyCombination keyCombination) {
                 impl.getInputMap().put(DesktopComponentsHelper.convertKeyCombination(keyCombination), actionId);
-                impl.getActionMap().put(actionId, new AbstractAction() {
+                impl.getActionMap().put(actionId, new ValidationAwareAction() {
                     @Override
-                    public void actionPerformed(ActionEvent e) {
-                        DesktopComponentsHelper.flushCurrentInputField();
-
+                    public void actionPerformedAfterValidation(ActionEvent e) {
                         Action action = getAction(actionId);
                         if ((action != null) && (action.isEnabled()) && (action.isVisible())) {
                             action.actionPerform(DesktopAbstractActionsHolderComponent.this);
