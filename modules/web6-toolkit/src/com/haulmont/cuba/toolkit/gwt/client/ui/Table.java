@@ -1342,8 +1342,6 @@ public abstract class Table
                 bodyHeight = h;
             }
 
-            VConsole.log(">> size init " + bodyHeight);
-
             bodyContainer.setHeight(bodyHeight + "px");
         }
 
@@ -2346,8 +2344,6 @@ public abstract class Table
                     containerHeight += row.getHeight();
                 }
             }
-
-            VConsole.log(">> setContainerHeight " + containerHeight);
 
             DOM.setStyleAttribute(container, "height", containerHeight + "px");
         }
