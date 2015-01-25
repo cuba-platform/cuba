@@ -170,6 +170,7 @@ public class VWindow extends VOverlay implements Container,
     private boolean visibilityChangesDisabled;
 
     private int bringToFrontSequence = -1;
+    private boolean focused = false;
 
     private VLazyExecutor delayedContentsSizeUpdater = new VLazyExecutor(200,
             new ScheduledCommand() {
@@ -251,6 +252,9 @@ public class VWindow extends VOverlay implements Container,
         DOM.setElementProperty(resizeBox, "className", CLASSNAME + "-resizebox");
         closeBox = DOM.createDiv();
         DOM.setElementProperty(closeBox, "className", CLASSNAME + "-closebox");
+        DOM.setElementAttribute(closeBox, "tabindex", "0");
+        closeBox.getStyle().setProperty("outline", "0");
+        DOM.sinkEvents(closeBox,  Event.FOCUSEVENTS);
         DOM.appendChild(footer, resizeBox);
 
         wrapper = DOM.createDiv();
@@ -268,7 +272,7 @@ public class VWindow extends VOverlay implements Container,
         DOM.appendChild(super.getContainerElement(), wrapper);
 
         sinkEvents(Event.MOUSEEVENTS | Event.TOUCHEVENTS | Event.ONCLICK
-                | Event.ONLOSECAPTURE);
+                | Event.ONLOSECAPTURE | Event.FOCUSEVENTS);
 
         setWidget(contentPanel);
 
@@ -871,6 +875,12 @@ public class VWindow extends VOverlay implements Container,
 
     @Override
     public void onBrowserEvent(final Event event) {
+        if (event.getTypeInt() == Event.ONFOCUS) {
+            focused = true;
+        } else if (event.getTypeInt() == Event.ONBLUR) {
+            focused = false;
+        }
+
         boolean bubble = true;
 
         final int type = event.getTypeInt();
@@ -920,7 +930,9 @@ public class VWindow extends VOverlay implements Container,
     }
 
     private void onCloseClick() {
-        client.updateVariable(id, "close", true, true);
+        if (focused) {
+            client.updateVariable(id, "close", true, true);
+        }
     }
 
     private void onResizeEvent(Event event) {
