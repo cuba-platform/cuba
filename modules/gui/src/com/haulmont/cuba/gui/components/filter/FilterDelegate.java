@@ -19,8 +19,10 @@ import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.AppFolder;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.gui.*;
+import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowManagerProvider;
+import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
@@ -42,10 +44,14 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.security.entity.SearchFolder;
 import com.haulmont.cuba.security.entity.User;
-import org.apache.commons.lang.*;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.dom4j.*;
+import org.dom4j.Attribute;
+import org.dom4j.Element;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -124,6 +130,7 @@ public class FilterDelegate {
     protected boolean conditionsRemoveEnabled = false;
     protected boolean editable;
     protected FilterMode filterMode;
+    protected boolean editActionEnabled;
 
     public FilterDelegate(Filter filter) {
         this.filter = filter;
@@ -468,7 +475,7 @@ public class FilterDelegate {
         SaveAsFolderAction saveAsSearchFolderAction = new SaveAsFolderAction(false);
 
         boolean isGlobal = filterEntity.getUser() == null;
-        boolean userCanEditGlobalFilter = userSessionSource.getUserSession().isSpecificPermitted(GLOBAL_FILTER_PERMISSION);
+        boolean userCanEditGlobalFilter = getUserCanEditGlobalFilter();
         boolean userCanEditGlobalAppFolder = userSessionSource.getUserSession().isSpecificPermitted(GLOBAL_APP_FOLDERS_PERMISSION);
         boolean createdByCurrentUser = userSessionSource.getUserSession().getCurrentOrSubstitutedUser().equals(filterEntity.getUser());
         boolean hasCode = !Strings.isNullOrEmpty(filterEntity.getCode());
@@ -479,7 +486,7 @@ public class FilterDelegate {
         boolean isDefault = BooleanUtils.isTrue(filterEntity.getIsDefault());
         boolean isAdHocFilter = filterEntity == adHocFilter;
 
-        boolean editActionEnabled = !isSet &&
+        editActionEnabled = !isSet &&
                 ((isGlobal && userCanEditGlobalFilter) || (!isGlobal && createdByCurrentUser)) &&
                 ((!isFolder && !hasCode) || isSearchFolder || (isAppFolder && userCanEditGlobalAppFolder));
 
@@ -531,6 +538,10 @@ public class FilterDelegate {
 
         filterModifiedIndicator.setAction(saveAction);
         filterModifiedIndicator.setCaption("");
+    }
+
+    protected boolean getUserCanEditGlobalFilter() {
+        return userSessionSource.getUserSession().isSpecificPermitted(GLOBAL_FILTER_PERMISSION);
     }
 
     protected void saveFilterEntity() {
@@ -586,7 +597,7 @@ public class FilterDelegate {
         folder.setFilterComponentId(filterEntity.getComponentId());
         folder.setFilterXml(newXml);
         if (!isAppFolder) {
-            if (userSessionSource.getUserSession().isSpecificPermitted(GLOBAL_FILTER_PERMISSION))
+            if (getUserCanEditGlobalFilter())
                 ((SearchFolder) folder).setUser(filterEntity.getUser());
             else
                 ((SearchFolder) folder).setUser(userSessionSource.getUserSession().getCurrentOrSubstitutedUser());
@@ -865,7 +876,7 @@ public class FilterDelegate {
     }
 
     protected void updateFilterModifiedIndicator() {
-        saveAction.setEnabled(isFilterModified());
+        saveAction.setEnabled(editActionEnabled && isFilterModified());
     }
 
     protected void loadFilterEntities() {
@@ -1581,6 +1592,11 @@ public class FilterDelegate {
                         FilterEntity newFilterEntity = metadata.create(FilterEntity.class);
                         InstanceUtils.copy(filterEntity, newFilterEntity);
                         newFilterEntity.setId(UuidProvider.createUuid());
+                        //if filter was global but current user cannot create global filter then new filter
+                        //will be connected with current user
+                        if (newFilterEntity.getUser() == null && !getUserCanEditGlobalFilter()) {
+                            newFilterEntity.setUser(userSessionSource.getUserSession().getCurrentOrSubstitutedUser());
+                        }
                         filterEntity = newFilterEntity;
                         filterEntity.setName(filterName);
                         filterEntity.setXml(FilterParser.getXml(conditions, Param.ValueProperty.DEFAULT_VALUE));
