@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.gui.components.filter;
 
+import com.haulmont.bali.datastruct.Node;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.Instance;
@@ -12,13 +13,11 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
+import com.haulmont.cuba.gui.components.filter.condition.GroupCondition;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author krivopustov
@@ -27,23 +26,14 @@ import java.util.Map;
 public class AppliedFilter {
 
     private FilterEntity filterEntity;
-    private LinkedHashMap<String, String> params = new LinkedHashMap<>();
 
     protected Messages messages = AppBeans.get(Messages.NAME);
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
+    protected ConditionsTree conditions;
 
     public AppliedFilter(FilterEntity filterEntity, ConditionsTree conditions) {
         this.filterEntity = filterEntity;
-
-        for (AbstractCondition condition : conditions.toConditionsList()) {
-            Param param = condition.getParam();
-            if (condition.getHidden() || param == null)
-                continue;
-            Object value = param.getValue();
-            if (value != null) {
-                params.put(condition.getLocCaption() + " " + condition.getOperationCaption(), formatParamValue(value));
-            }
-        }
+        this.conditions = conditions.createCopy();
     }
 
     public String getText() {
@@ -53,16 +43,57 @@ public class AppliedFilter {
         }
         StringBuilder sb = new StringBuilder(name);
 
-        if (!params.isEmpty()) {
+        List<Node<AbstractCondition>> visibleRootNodesWithValues = new ArrayList<>();
+        for (Node<AbstractCondition> rootNode : conditions.getRootNodes()) {
+            AbstractCondition condition = rootNode.getData();
+            if (!condition.getHidden() && (condition.isGroup() || condition.getParam() != null && condition.getParam().getValue() != null))
+                visibleRootNodesWithValues.add(rootNode);
+        }
+
+        Iterator<Node<AbstractCondition>> iterator = visibleRootNodesWithValues.iterator();
+        if (iterator.hasNext())
             sb.append(": ");
-            for (Iterator<Map.Entry<String, String>> it = params.entrySet().iterator(); it.hasNext(); ) {
-                Map.Entry<String, String> entry = it.next();
-                sb.append(entry.getKey()).append(" ").append(entry.getValue());
-                if (it.hasNext())
+        while (iterator.hasNext()) {
+            Node<AbstractCondition> rootNode = iterator.next();
+            recursivelyCreateConditionCaption(rootNode, sb);
+            if (iterator.hasNext())
+                sb.append(", ");
+        }
+
+        return sb.toString();
+    }
+
+    protected void recursivelyCreateConditionCaption(Node<AbstractCondition> node, StringBuilder sb) {
+        AbstractCondition condition = node.getData();
+        if (condition.getHidden()) return;
+        if (condition.isGroup()) {
+            GroupType groupType = ((GroupCondition) condition).getGroupType();
+            sb.append(messages.getMessage(groupType))
+                    .append("(");
+
+            List<Node<AbstractCondition>> visibleChildNodes = new ArrayList<>();
+            for (Node<AbstractCondition> childNode : node.getChildren()) {
+                AbstractCondition childCondition = childNode.getData();
+                if (!childCondition.getHidden() && (childCondition.isGroup() || childCondition.getParam() != null && childCondition.getParam().getValue() != null))
+                    visibleChildNodes.add(childNode);
+            }
+
+            Iterator<Node<AbstractCondition>> iterator = visibleChildNodes.iterator();
+            while (iterator.hasNext()) {
+                Node<AbstractCondition> childNode = iterator.next();
+                recursivelyCreateConditionCaption(childNode, sb);
+                if (iterator.hasNext())
                     sb.append(", ");
             }
+            sb.append(")");
+        } else {
+            Param param = condition.getParam();
+            sb.append(condition.getLocCaption())
+                    .append(" ")
+                    .append(condition.getOperationCaption())
+                    .append(" ")
+                    .append(formatParamValue(param.getValue()));
         }
-        return sb.toString();
     }
 
     private String formatParamValue(Object value) {
@@ -102,7 +133,7 @@ public class AppliedFilter {
         AppliedFilter that = (AppliedFilter) o;
 
         if (!filterEntity.equals(that.filterEntity)) return false;
-        if (!params.equals(that.params)) return false;
+        if (!conditions.equals(that.conditions)) return false;
 
         return true;
     }
@@ -110,7 +141,7 @@ public class AppliedFilter {
     @Override
     public int hashCode() {
         int result = filterEntity.hashCode();
-        result = 31 * result + params.hashCode();
+        result = 31 * result + conditions.hashCode();
         return result;
     }
 }
