@@ -13,8 +13,11 @@ import com.haulmont.cuba.gui.components.Tree;
 import com.haulmont.cuba.gui.components.filter.ConditionsTree;
 import com.haulmont.cuba.gui.components.filter.FilterHelper;
 import com.haulmont.cuba.gui.presentations.Presentations;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.ManagedBean;
+import javax.inject.Inject;
 import java.util.Map;
 import java.util.UUID;
 
@@ -24,6 +27,12 @@ import java.util.UUID;
  */
 @ManagedBean(FilterHelper.NAME)
 public class DesktopFilterHelper implements FilterHelper {
+
+    private Log log = LogFactory.getLog(DesktopFilterHelper.class);
+
+    @Inject
+    protected DesktopFilterDragAndDropSupport dragAndDropSupport;
+
     @Override
     public void setLookupNullSelectionAllowed(LookupField lookupField, boolean value) {
 
@@ -51,7 +60,7 @@ public class DesktopFilterHelper implements FilterHelper {
 
     @Override
     public void initConditionsDragAndDrop(Tree tree, ConditionsTree conditions) {
-        //todo gorbunkov
+        dragAndDropSupport.initDragAndDrop(tree, conditions);
     }
 
     @Override
@@ -78,4 +87,5 @@ public class DesktopFilterHelper implements FilterHelper {
     public void removeTableFtsTooltips(Table table) {
 
     }
+
 }
