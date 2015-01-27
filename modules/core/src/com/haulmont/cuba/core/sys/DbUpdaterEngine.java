@@ -22,6 +22,7 @@ import org.apache.commons.lang.text.StrTokenizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.annotation.Nullable;
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.FilenameFilter;
@@ -52,9 +53,16 @@ public class DbUpdaterEngine implements DbUpdater {
 
     protected boolean changelogTableExists = false;
 
+    protected final Map<String, String> requiredTables = new HashMap<>();
+    {
+        requiredTables.put("reports", "report_report");
+        requiredTables.put("workflow", "wf_proc");
+        requiredTables.put("ccpayments", "cc_credit_card");
+        requiredTables.put("bpmn", "bpmn_group");
+    }
+
     // register handlers for script files
     protected final Map<String, FileHandler> extensionHandlers = new HashMap<>();
-
     {
         extensionHandlers.put(SQL_EXTENSION, new FileHandler() {
             @Override
@@ -91,6 +99,10 @@ public class DbUpdaterEngine implements DbUpdater {
     }
 
     protected List<File> getUpdateScripts() {
+        return getUpdateScripts(null);
+    }
+
+    protected List<File> getUpdateScripts(@Nullable String oneModuleDir) {
         List<File> databaseScripts = new ArrayList<>();
         List<File> additionalScripts = new ArrayList<>();
 
@@ -100,6 +112,8 @@ public class DbUpdaterEngine implements DbUpdater {
             String[] moduleDirs = dbDir.list();
             Arrays.sort(moduleDirs);
             for (String moduleDirName : moduleDirs) {
+                if (oneModuleDir != null && !oneModuleDir.equals(moduleDirName))
+                    continue;
                 File moduleDir = new File(dbDir, moduleDirName);
                 File initDir = new File(moduleDir, "update");
                 File scriptDir = new File(initDir, dbmsType);
@@ -269,6 +283,8 @@ public class DbUpdaterEngine implements DbUpdater {
             return;
         }
 
+        runRequiredInitScripts();
+
         List<File> files = getUpdateScripts();
         Set<String> scripts = getExecutedScripts();
         for (File file : files) {
@@ -280,6 +296,36 @@ public class DbUpdaterEngine implements DbUpdater {
             }
         }
         log.info("Database is up-to-date");
+    }
+
+    protected void runRequiredInitScripts() {
+        for (String dirName : getModuleDirs()) {
+            String moduleName = dirName.substring(3);
+            String reqTable = requiredTables.get(moduleName);
+            if (reqTable != null) {
+                try {
+                    executeSql("select * from " + reqTable + " where 0=1");
+                } catch (SQLException e) {
+                    if (e.getMessage() != null && e.getMessage().toLowerCase().contains(reqTable)) {
+                        // probably the required table does not exist
+                        log.info("Required table for " + moduleName + " does not exist, running init scripts");
+                        List<File> initScripts = getInitScripts(dirName);
+                        try {
+                            for (File file : initScripts) {
+                                executeScript(file);
+                                markScript(getScriptName(file), true);
+                            }
+                        } finally {
+                            List<File> updateFiles = getUpdateScripts(dirName);
+                            for (File file : updateFiles)
+                                markScript(getScriptName(file), true);
+                        }
+                    } else {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -350,21 +396,27 @@ public class DbUpdaterEngine implements DbUpdater {
             String sql = tokenizer.nextToken().trim();
             if (!isEmpty(sql)) {
                 log.debug("Executing SQL:\n" + sql);
-                Connection connection = null;
-                Statement statement = null;
                 try {
-                    connection = getDataSource().getConnection();
-                    statement = connection.createStatement();
-                    statement.execute(sql);
+                    executeSql(sql);
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
-                } finally {
-                    DbUtils.closeQuietly(statement);
-                    DbUtils.closeQuietly(connection);
                 }
             }
         }
         return true;
+    }
+
+    protected void executeSql(String sql) throws SQLException {
+        Connection connection = null;
+        Statement statement = null;
+        try {
+            connection = getDataSource().getConnection();
+            statement = connection.createStatement();
+            statement.execute(sql);
+        } finally {
+            DbUtils.closeQuietly(statement);
+            DbUtils.closeQuietly(connection);
+        }
     }
 
     protected boolean executeGroovyScript(File file) {
@@ -408,12 +460,27 @@ public class DbUpdaterEngine implements DbUpdater {
         return false;
     }
 
+    protected List<String> getModuleDirs() {
+        if (dbDir.exists()) {
+            String[] moduleDirs = dbDir.list();
+            Arrays.sort(moduleDirs);
+            return Arrays.asList(moduleDirs);
+        }
+        return Collections.emptyList();
+    }
+
     protected List<File> getInitScripts() {
+        return getInitScripts(null);
+    }
+
+    protected List<File> getInitScripts(@Nullable String oneModuleDir) {
         List<File> files = new ArrayList<>();
         if (dbDir.exists()) {
             String[] moduleDirs = dbDir.list();
             Arrays.sort(moduleDirs);
             for (String moduleDirName : moduleDirs) {
+                if (oneModuleDir != null && !oneModuleDir.equals(moduleDirName))
+                    continue;
                 File moduleDir = new File(dbDir, moduleDirName);
                 File initDir = new File(moduleDir, "init");
                 File scriptDir = new File(initDir, dbmsType);
