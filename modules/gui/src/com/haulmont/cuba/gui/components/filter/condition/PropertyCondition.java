@@ -10,6 +10,7 @@ import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.filter.operationedit.AbstractOperationEditor;
 import com.haulmont.cuba.gui.components.filter.Op;
@@ -43,7 +44,7 @@ public class PropertyCondition extends AbstractCondition {
     public PropertyCondition(Element element, String messagesPack, String filterComponentName, Datasource datasource) {
         super(element, messagesPack, filterComponentName, datasource);
 
-        this.locCaption = FilterConditionUtils.getPropertyLocCaption(datasource.getMetaClass(), name);
+//        this.locCaption = FilterConditionUtils.getPropertyLocCaption(datasource.getMetaClass(), name);
         String text = element.getText();
         Matcher matcher = PATTERN_NULL.matcher(text);
         if (!matcher.matches()) {
@@ -147,6 +148,20 @@ public class PropertyCondition extends AbstractCondition {
     }
 
     @Override
+    public String getLocCaption() {
+        if (Strings.isNullOrEmpty(caption)) {
+            return getPropertyLocCaption();
+        } else {
+            MessageTools messageTools = AppBeans.get(MessageTools.class);
+            return messageTools.loadString(messagesPack, caption);
+        }
+    }
+
+    public String getPropertyLocCaption() {
+        return FilterConditionUtils.getPropertyLocCaption(datasource.getMetaClass(), name);
+    }
+
+    @Override
     public String getOperationCaption() {
         Messages messages = AppBeans.get(Messages.NAME);
         return messages.getMessage(operator);
@@ -158,19 +173,8 @@ public class PropertyCondition extends AbstractCondition {
         return operationEditor;
     }
 
-//    @Override
-//    protected void copyFrom(AbstractCondition condition) {
-//        super.copyFrom(condition);
-//        if (condition instanceof PropertyCondition) {
-//            this.operator = ((PropertyCondition) condition).operator;
-//        }
-//    }
-
     @Override
     public AbstractCondition createCopy() {
-//        PropertyCondition propertyCondition = new PropertyCondition(this);
-//        propertyCondition.copyFrom(this);
-//        return propertyCondition;
         return new PropertyCondition(this);
     }
 }

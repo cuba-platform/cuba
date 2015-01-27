@@ -28,7 +28,15 @@
                 </row>
                 <row>
                     <label id="defaultValueLayoutLabel" htmlEnabled="true" value="msg://defaultValue" align="MIDDLE_LEFT"/>
-                    <hbox id="defaultValueLayout" align="MIDDLE_LEFT"/>
+                    <hbox id="defaultValueLayout" align="MIDDLE_LEFT" width="theme://cuba.gui.conditionFrame.textField.width"/>
+                </row>
+                <row>
+                    <label id="propertyLabel" value="msg://property" align="MIDDLE_LEFT"/>
+                    <textField id="property" width="theme://cuba.gui.conditionFrame.textField.width" editable="false"/>
+                </row>
+                <row>
+                    <label id="captionLabel" value="msg://filterCaption" align="MIDDLE_LEFT"/>
+                    <textField id="caption" width="theme://cuba.gui.conditionFrame.textField.width"/>
                 </row>
                 <row>
                     <label value="msg://PropertyConditionFrame.operation" align="MIDDLE_LEFT"/>

@@ -6,6 +6,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.filter.FilterHelper;
 import com.haulmont.cuba.gui.components.filter.Param;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -20,6 +21,9 @@ public abstract class ConditionFrame<T extends AbstractCondition> extends Abstra
 
     @Inject
     protected ClientConfig clientConfig;
+
+    @Inject
+    protected ThemeConstants theme;
 
     protected T condition;
 
@@ -57,7 +61,6 @@ public abstract class ConditionFrame<T extends AbstractCondition> extends Abstra
     public void setCondition(T condition) {
         this.condition = condition;
 
-
         if (hidden != null) {
             hidden.setValue(condition.getHidden());
         }
@@ -77,6 +80,9 @@ public abstract class ConditionFrame<T extends AbstractCondition> extends Abstra
                 defaultValueComponent = condition.getParam().createEditComponent(Param.ValueProperty.DEFAULT_VALUE);
                 defaultValueLayout.add(defaultValueComponent);
                 defaultValueComponent.setAlignment(Alignment.MIDDLE_LEFT);
+                if (defaultValueComponent instanceof TextField) {
+                    defaultValueComponent.setWidth(theme.get("cuba.gui.conditionFrame.textField.width"));
+                }
             }
         }
 

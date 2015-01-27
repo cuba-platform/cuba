@@ -18,6 +18,11 @@ import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
+import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
+import java.awt.*;
+import java.awt.event.MouseEvent;
 import java.util.Map;
 import java.util.UUID;
 
@@ -35,7 +40,6 @@ public class DesktopFilterHelper implements FilterHelper {
 
     @Override
     public void setLookupNullSelectionAllowed(LookupField lookupField, boolean value) {
-
     }
 
     @Override
@@ -80,7 +84,18 @@ public class DesktopFilterHelper implements FilterHelper {
 
     @Override
     public void initTableFtsTooltips(Table table, Map<UUID, String> tooltips) {
-        //do nothing
+        final JTable dTable = DesktopComponentsHelper.unwrap(table);
+        Class<?> columnClass = dTable.getColumnClass(0);
+        DefaultTableCellRenderer tableCellRenderer = new DefaultTableCellRenderer() {
+            @Override
+            public String getToolTipText(MouseEvent event) {
+                int rowIndex = dTable.rowAtPoint(event.getPoint());
+//                dTable.getModel().getValueAt();
+//                event.get
+                return "hello";
+            }
+        };
+        dTable.setDefaultRenderer(columnClass, tableCellRenderer);
     }
 
     @Override

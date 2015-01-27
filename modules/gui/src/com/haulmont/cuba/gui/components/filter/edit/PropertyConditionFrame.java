@@ -7,6 +7,7 @@ package com.haulmont.cuba.gui.components.filter.edit;
 
 import com.haulmont.cuba.gui.components.BoxLayout;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.components.filter.condition.PropertyCondition;
 
 import javax.inject.Inject;
@@ -21,6 +22,12 @@ public class PropertyConditionFrame extends ConditionFrame<PropertyCondition> {
     @Inject
     protected BoxLayout operationLayout;
 
+    @Inject
+    protected TextField caption;
+
+    @Inject
+    protected TextField property;
+
     protected Component operationComponent;
 
     @Override
@@ -34,12 +41,15 @@ public class PropertyConditionFrame extends ConditionFrame<PropertyCondition> {
             operationLayout.remove(operationComponent);
         operationComponent = condition.createOperationEditor().getComponent();
         operationLayout.add(operationComponent);
+        caption.setValue(condition.getCaption());
+        property.setValue(condition.getPropertyLocCaption());
     }
 
     @Override
     public boolean commit() {
         if (!super.commit())
             return false;
+        condition.setCaption((String) caption.getValue());
         return true;
     }
 }
