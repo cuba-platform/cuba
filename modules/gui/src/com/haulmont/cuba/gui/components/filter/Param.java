@@ -138,14 +138,18 @@ public class Param {
     }
 
     public void setValue(Object value) {
+        setValue(value, true);
+    }
+
+    protected void setValue(Object value, boolean updateEditComponent) {
         if (!ObjectUtils.equals(value, this.value)) {
             Object prevValue = this.value;
             this.value = value;
             for (ValueListener listener : listeners) {
                 listener.valueChanged(this, "value", prevValue, value);
             }
-            if (this.editComponent instanceof Component.HasValue) {
-                ((Component.HasValue) editComponent).setValue(value == null ? null : formatValue(value));
+            if ( updateEditComponent && this.editComponent instanceof Component.HasValue) {
+                ((Component.HasValue) editComponent).setValue(value);
             }
         }
     }
@@ -362,7 +366,7 @@ public class Param {
     private void _setValue(Object value, ValueProperty valueProperty) {
         switch (valueProperty) {
             case VALUE:
-                setValue(value);
+                setValue(value, false);
                 break;
             case DEFAULT_VALUE:
                 setDefaultValue(value);
