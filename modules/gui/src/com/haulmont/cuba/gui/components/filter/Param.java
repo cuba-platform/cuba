@@ -145,7 +145,7 @@ public class Param {
                 listener.valueChanged(this, "value", prevValue, value);
             }
             if (this.editComponent instanceof Component.HasValue) {
-                ((Component.HasValue) editComponent).setValue(formatValue(value));
+                ((Component.HasValue) editComponent).setValue(value == null ? null : formatValue(value));
             }
         }
     }
