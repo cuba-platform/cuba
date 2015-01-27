@@ -118,7 +118,6 @@ public class RuntimePropConditionFrame extends ConditionFrame<RuntimePropConditi
         condition.setJoin("join " + alias + ".category.categoryAttrs ca, sys$CategoryAttributeValue cav ");
 
         String paramName;
-        String categoryAttrParamName = condition.createParamName();
         String operation = operationLookup.<Op>getValue().getText();
         Op op = operationLookup.getValue();
 
@@ -151,8 +150,8 @@ public class RuntimePropConditionFrame extends ConditionFrame<RuntimePropConditi
                 valueFieldName +
                 " " +
                 operation +
-                (op.isUnary() ? " " : paramStr) + "and cav.categoryAttribute.id=:" +
-                categoryAttrParamName;
+                (op.isUnary() ? " " : paramStr) + "and cav.categoryAttribute.id='" +
+                attributeLookup.<CategoryAttribute>getValue().getId() + "'";
         paramName = condition.createParamName();
         where = where.replace("?", ":" + paramName);
 
@@ -175,12 +174,8 @@ public class RuntimePropConditionFrame extends ConditionFrame<RuntimePropConditi
         }
 
         condition.setParam(param);
-
-        Param categoryAttrParam = new Param(categoryAttrParamName, UUID.class,
-                null, null, condition.getDatasource(), false, condition.getRequired());
-        categoryAttrParam.setValue(attributeLookup.<CategoryAttribute>getValue().getId());
-        condition.setCategoryAttributeParam(categoryAttrParam);
         condition.setCategoryId(categoryLookup.<Category>getValue().getId());
+        condition.setCategoryAttributeId(attributeLookup.<CategoryAttribute>getValue().getId());
         condition.setLocCaption(attribute.getName());
 
         return true;
@@ -239,11 +234,7 @@ public class RuntimePropConditionFrame extends ConditionFrame<RuntimePropConditi
         query.setParameter("id", category.getId());
         context.setView("_local");
         List<CategoryAttribute> attributes = dataService.loadList(context);
-        UUID attrId = null;
-        if (condition.getCategoryAttributeParam() != null) {
-            Param p = condition.getCategoryAttributeParam();
-            attrId = (UUID) p.getValue();
-        }
+        UUID attrId = condition.getCategoryAttributeId();
         CategoryAttribute selectedAttribute = null;
         Map<String, Object> attributesMap = new TreeMap<>();
         for (CategoryAttribute attribute : attributes) {

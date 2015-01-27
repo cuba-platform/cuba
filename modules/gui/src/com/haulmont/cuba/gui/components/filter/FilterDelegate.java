@@ -1288,14 +1288,6 @@ public class FilterDelegate {
             if (condition.getParam() != null) {
                 String paramName = condition.getParam().getName();
 
-                if (condition instanceof RuntimePropCondition) {
-                    String paramName2 = ((RuntimePropCondition) condition).getCategoryAttributeParam().getName();
-                    String componentName2 = paramName2.substring(paramName.lastIndexOf('.') + 1);
-                    if (id.equals(componentName2)) {
-                        ParamWrapper w = new ParamWrapper(condition, ((RuntimePropCondition) condition).getCategoryAttributeParam());
-                        return (T) w;
-                    }
-                }
                 String componentName = paramName.substring(paramName.lastIndexOf('.') + 1);
                 if (id.equals(componentName)) {
                     ParamWrapper wrapper = new ParamWrapper(condition, condition.getParam());

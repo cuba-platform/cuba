@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.gui.components.filter.condition;
 
+import com.google.common.base.Strings;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
@@ -37,15 +38,15 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 @SystemLevel
 public class RuntimePropCondition extends AbstractCondition {
 
-    private Param categoryAttributeParam;
     private UUID categoryId;
+    private UUID categoryAttributeId;
     protected String join;
 
     public RuntimePropCondition(RuntimePropCondition condition) {
         super(condition);
         this.join = condition.getJoin();
         this.categoryId = condition.getCategoryId();
-        this.categoryAttributeParam = condition.getCategoryAttributeParam();
+        this.categoryAttributeId = condition.getCategoryAttributeId();
     }
 
     public RuntimePropCondition(AbstractConditionDescriptor descriptor, String entityAlias) {
@@ -70,13 +71,18 @@ public class RuntimePropCondition extends AbstractCondition {
         text = element.getText();
         join = element.attributeValue("join");
         categoryId = UUID.fromString(element.attributeValue("category"));
-
-        List<Element> paramElements = Dom4j.elements(element, "param");
-        for (Element paramElement : paramElements) {
-            if (BooleanUtils.toBoolean(paramElement.attributeValue("hidden", "false"), "true", "false")) {
-                String paramName = paramElement.attributeValue("name");
-                categoryAttributeParam = new Param(paramName, UUID.class, null, null, this.getDatasource(), false, required);
-                categoryAttributeParam.parseValue(paramElement.getText());
+        String categoryAttributeValue = element.attributeValue("categoryAttribute");
+        if (!Strings.isNullOrEmpty(categoryAttributeValue)) {
+            categoryAttributeId = UUID.fromString(categoryAttributeValue);
+        } else {
+            //for backward compatibility
+            List<Element> paramElements = Dom4j.elements(element, "param");
+            for (Element paramElement : paramElements) {
+                if (BooleanUtils.toBoolean(paramElement.attributeValue("hidden", "false"), "true", "false")) {
+                    categoryAttributeId = UUID.fromString(paramElement.getText());
+                    String paramName = paramElement.attributeValue("name");
+                    text = text.replace(":" + paramName, "'" + categoryAttributeId + "'");
+                }
             }
         }
     }
@@ -89,23 +95,11 @@ public class RuntimePropCondition extends AbstractCondition {
             element.addAttribute("locCaption", locCaption);
         }
         element.addAttribute("category", categoryId.toString());
+        element.addAttribute("categoryAttribute", categoryAttributeId.toString());
         element.addAttribute("entityAlias", entityAlias);
         if (!isBlank(join)) {
             element.addAttribute("join", StringEscapeUtils.escapeXml(join));
         }
-
-        Element paramElem = element.addElement("param");
-        paramElem.addAttribute("name", categoryAttributeParam.getName());
-        paramElem.addAttribute("hidden", "true");
-        paramElem.setText(categoryAttributeParam.formatValue(categoryAttributeParam.getValue()));
-    }
-
-    public Param getCategoryAttributeParam() {
-        return categoryAttributeParam;
-    }
-
-    public void setCategoryAttributeParam(Param categoryAttributeParam) {
-        this.categoryAttributeParam = categoryAttributeParam;
     }
 
     public UUID getCategoryId() {
@@ -114,6 +108,14 @@ public class RuntimePropCondition extends AbstractCondition {
 
     public void setCategoryId(UUID id) {
         categoryId = id;
+    }
+
+    public UUID getCategoryAttributeId() {
+        return categoryAttributeId;
+    }
+
+    public void setCategoryAttributeId(UUID categoryAttributeId) {
+        this.categoryAttributeId = categoryAttributeId;
     }
 
     @Override
@@ -162,21 +164,8 @@ public class RuntimePropCondition extends AbstractCondition {
         this.text = where;
     }
 
-//    @Override
-//    protected void copyFrom(AbstractCondition condition) {
-//        super.copyFrom(condition);
-//        if (condition instanceof RuntimePropCondition) {
-//            this.join = ((RuntimePropCondition) condition).getJoin();
-//            this.categoryId = ((RuntimePropCondition) condition).getCategoryId();
-//            this.categoryAttributeParam = ((RuntimePropCondition) condition).getCategoryAttributeParam();
-//        }
-//    }
-
     @Override
     public AbstractCondition createCopy() {
-//        RuntimePropCondition runtimePropCondition = new RuntimePropCondition();
-//        runtimePropCondition.copyFrom(this);
-//        return runtimePropCondition;
         return new RuntimePropCondition(this);
     }
 }
