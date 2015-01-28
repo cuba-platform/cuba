@@ -40,11 +40,12 @@ public class DesktopFilterHelper implements FilterHelper {
 
     @Override
     public void setLookupNullSelectionAllowed(LookupField lookupField, boolean value) {
+        lookupField.setRequired(!value);
     }
 
     @Override
     public void setLookupTextInputAllowed(LookupField lookupField, boolean value) {
-
+        //do nothing
     }
 
     @Override
@@ -84,18 +85,6 @@ public class DesktopFilterHelper implements FilterHelper {
 
     @Override
     public void initTableFtsTooltips(Table table, Map<UUID, String> tooltips) {
-        final JTable dTable = DesktopComponentsHelper.unwrap(table);
-        Class<?> columnClass = dTable.getColumnClass(0);
-        DefaultTableCellRenderer tableCellRenderer = new DefaultTableCellRenderer() {
-            @Override
-            public String getToolTipText(MouseEvent event) {
-                int rowIndex = dTable.rowAtPoint(event.getPoint());
-//                dTable.getModel().getValueAt();
-//                event.get
-                return "hello";
-            }
-        };
-        dTable.setDefaultRenderer(columnClass, tableCellRenderer);
     }
 
     @Override
