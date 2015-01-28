@@ -243,6 +243,7 @@ configure(coreModule) {
         jdbc(postgres)
         jdbc(hsqldb)
 
+        testCompile(group: 'commons-dbcp', name: 'commons-dbcp', version: '1.4')
         testRuntime(servletApi)
         testRuntime(hsqldb)
     	testRuntime(postgres)

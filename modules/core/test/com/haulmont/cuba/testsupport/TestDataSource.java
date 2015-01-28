@@ -4,32 +4,33 @@
  */
 package com.haulmont.cuba.testsupport;
 
+import org.apache.commons.dbcp.BasicDataSource;
+
 import javax.sql.DataSource;
+import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.DriverManager;
-import java.io.PrintWriter;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
 
 public class TestDataSource implements DataSource {
 
-    private String connUrl;
-    private String user;
-    private String password;
+    private BasicDataSource dataSource;
 
     public TestDataSource(String connUrl, String user, String password) {
-        this.connUrl = connUrl;
-        this.user = user;
-        this.password = password;
+        dataSource = new BasicDataSource();
+        dataSource.setUrl(connUrl);
+        dataSource.setUsername(user);
+        dataSource.setPassword(password);
+        dataSource.setMaxActive(20);
     }
 
     public Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(connUrl, user, password);
+        return dataSource.getConnection();
     }
 
     public Connection getConnection(String username, String password) throws SQLException {
-        return DriverManager.getConnection(connUrl, username, password);
+        return dataSource.getConnection(username, password);
     }
 
     public PrintWriter getLogWriter() throws SQLException {
