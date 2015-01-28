@@ -150,6 +150,9 @@ public class RuntimePropsDatasourceImpl
 
         this.valid();
         inittedBefore = true;
+        if (!itemToDelete.isEmpty()) {
+            modified = true;
+        }
     }
 
     protected void createOptionsDatasource(CategoryAttribute attribute, final SetValueEntity attributeValue) {
