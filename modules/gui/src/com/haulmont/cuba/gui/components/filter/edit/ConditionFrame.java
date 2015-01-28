@@ -27,6 +27,8 @@ public abstract class ConditionFrame<T extends AbstractCondition> extends Abstra
 
     protected T condition;
 
+    protected Filter filter;
+
     protected Component defaultValueComponent;
     protected CheckBox required;
     protected CheckBox hidden;
@@ -35,6 +37,7 @@ public abstract class ConditionFrame<T extends AbstractCondition> extends Abstra
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
+        this.filter = (Filter) params.get("filter");
         initComponents();
         T conditionParam = (T) params.get("condition");
         if (conditionParam != null) {
@@ -49,7 +52,8 @@ public abstract class ConditionFrame<T extends AbstractCondition> extends Abstra
 
         if (width != null) {
             List<Integer> widthValues = new ArrayList<>();
-            for (int i = 1; i <= clientConfig.getGenericFilterColumnsQty(); i++) {
+            int conditionsColumnsQty = filter != null ? filter.getColumnsQty() : clientConfig.getGenericFilterColumnsQty();
+            for (int i = 1; i <= conditionsColumnsQty; i++) {
                 widthValues.add(i);
             }
             width.setOptionsList(widthValues);

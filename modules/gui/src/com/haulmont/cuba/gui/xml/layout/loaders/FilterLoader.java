@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.google.common.base.Strings;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Filter;
@@ -53,6 +54,10 @@ public class FilterLoader extends ComponentLoader {
 
         String editable = element.attributeValue("editable");
         filter.setEditable(editable == null || Boolean.valueOf(editable));
+
+        String columnsQty = element.attributeValue("columnsQty");
+        if (!Strings.isNullOrEmpty(columnsQty))
+            filter.setColumnsQty(Integer.valueOf(columnsQty));
 
         String folderActionsEnabled = element.attributeValue("folderActionsEnabled");
         if (folderActionsEnabled != null) {

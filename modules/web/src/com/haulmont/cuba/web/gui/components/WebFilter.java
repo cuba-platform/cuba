@@ -221,4 +221,14 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
     public List<FilterEntityChangeListener> getFilterEntityChangeListeners() {
         return delegate.getFilterEntityChangeListeners();
     }
+
+    @Override
+    public void setColumnsQty(int columnsQty) {
+        delegate.setColumnsQty(columnsQty);
+    }
+
+    @Override
+    public int getColumnsQty() {
+        return delegate.getColumnsQty();
+    }
 }

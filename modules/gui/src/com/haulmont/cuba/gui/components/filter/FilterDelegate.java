@@ -27,7 +27,6 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.condition.CustomCondition;
-import com.haulmont.cuba.gui.components.filter.condition.RuntimePropCondition;
 import com.haulmont.cuba.gui.components.filter.edit.FilterEditor;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
@@ -131,6 +130,7 @@ public class FilterDelegate {
     protected boolean editable;
     protected FilterMode filterMode;
     protected boolean editActionEnabled;
+    protected Integer columnsQty;
 
     public FilterDelegate(Filter filter) {
         this.filter = filter;
@@ -686,7 +686,7 @@ public class FilterDelegate {
             return;
         }
 
-        int columnsQty = clientConfig.getGenericFilterColumnsQty();
+        int columnsQty = getColumnsQty();
         int row = 0;
         int nextColumnStart = 0;
         GridLayout grid = componentsFactory.createComponent(GridLayout.NAME);
@@ -1489,6 +1489,14 @@ public class FilterDelegate {
 
     public List<Filter.FilterEntityChangeListener> getFilterEntityChangeListeners() {
         return filterEntityChangeListeners;
+    }
+
+    public Integer getColumnsQty() {
+        return columnsQty != null ? columnsQty : clientConfig.getGenericFilterColumnsQty();
+    }
+
+    public void setColumnsQty(int columnsQty) {
+        this.columnsQty = columnsQty;
     }
 
     protected class FiltersLookupChangeListener implements ValueListener {

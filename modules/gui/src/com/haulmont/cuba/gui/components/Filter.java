@@ -62,4 +62,10 @@ public interface Filter
 
     void addFilterEntityChangeListener(FilterEntityChangeListener listener);
     List<FilterEntityChangeListener> getFilterEntityChangeListeners();
+
+    /**
+     * Number of conditions to be displayed in one row
+     */
+    void setColumnsQty(int columnsQty);
+    int getColumnsQty();
 }

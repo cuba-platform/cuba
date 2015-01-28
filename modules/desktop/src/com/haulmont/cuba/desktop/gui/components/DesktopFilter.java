@@ -240,4 +240,13 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         return delegate.getFilterEntityChangeListeners();
     }
 
+    @Override
+    public void setColumnsQty(int columnsQty) {
+        delegate.setColumnsQty(columnsQty);
+    }
+
+    @Override
+    public int getColumnsQty() {
+        return delegate.getColumnsQty();
+    }
 }

@@ -221,4 +221,15 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
     public List<FilterEntityChangeListener> getFilterEntityChangeListeners() {
         return delegate.getFilterEntityChangeListeners();
     }
+
+    @Override
+    public void setColumnsQty(int columnsQty) {
+        delegate.setColumnsQty(columnsQty);
+    }
+
+    @Override
+    public int getColumnsQty() {
+        return delegate.getColumnsQty();
+    }
+
 }
