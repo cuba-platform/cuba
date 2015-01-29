@@ -140,7 +140,11 @@ public class DatasourceImpl<T extends Entity>
 
     @Override
     public void refresh() {
-        // Do Nothing
+        State prevState = state;
+        if (!prevState.equals(State.VALID)) {
+            state = State.VALID;
+            fireStateChanged(prevState);
+        }
     }
 
     @Override
