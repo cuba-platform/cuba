@@ -4,6 +4,7 @@
  */
 package com.haulmont.bali.util;
 
+import org.apache.commons.lang.reflect.ConstructorUtils;
 import org.dom4j.Element;
 
 import javax.annotation.Nullable;
@@ -53,10 +54,13 @@ public final class ReflectionHelper {
      * @return          created object instance
      * @throws NoSuchMethodException    if the class has no constructor matching the given arguments
      */
+    @SuppressWarnings("unchecked")
     public static <T> T newInstance(Class<T> cls, Object... params) throws NoSuchMethodException {
         Class[] paramTypes = getParamTypes(params);
 
-        Constructor<T> constructor = cls.getConstructor(paramTypes);
+        Constructor<T> constructor = ConstructorUtils.getMatchingAccessibleConstructor(cls, paramTypes);
+        if (constructor == null)
+            throw new NoSuchMethodException("Cannot find a matching constructor for " + cls.getName() + " and given parameters");
         try {
             return constructor.newInstance(params);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
