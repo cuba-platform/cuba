@@ -5,14 +5,13 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
-import com.haulmont.cuba.desktop.sys.layout.MigBoxLayoutAdapter;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Filter;
 import com.haulmont.cuba.gui.components.filter.FilterDelegate;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.security.entity.FilterEntity;
-import net.miginfocom.layout.AC;
 import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
 import org.dom4j.Element;
@@ -20,7 +19,6 @@ import org.dom4j.Element;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.*;
-import java.awt.*;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -36,8 +34,8 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     protected FilterDelegate delegate;
 
     public DesktopFilter() {
-        delegate = new FilterDelegate(this);
-
+        delegate = AppBeans.get(FilterDelegate.class);
+        delegate.setFilter(this);
         LC topLc = new LC();
         topLc.hideMode(3);
         topLc.insetsAll("0");

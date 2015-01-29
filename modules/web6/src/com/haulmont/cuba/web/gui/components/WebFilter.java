@@ -4,18 +4,21 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.filter.*;
+import com.haulmont.cuba.gui.components.Filter;
+import com.haulmont.cuba.gui.components.filter.FilterDelegate;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.security.entity.FilterEntity;
-import com.haulmont.cuba.web.toolkit.ui.*;
+import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
 import com.vaadin.ui.Layout;
-import org.dom4j.*;
+import org.dom4j.Element;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Generic filter implementation for the web-client.
@@ -28,8 +31,13 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
     protected FilterDelegate delegate;
 
     public WebFilter() {
-        delegate = new FilterDelegate(this);
+        delegate = AppBeans.get(FilterDelegate.class);
+        delegate.setFilter(this);
         component = new VerticalActionsLayout();
+        Container layout = delegate.getLayout();
+        com.vaadin.ui.Component unwrap = WebComponentsHelper.unwrap(layout);
+        component.addComponent(unwrap);
+        component.setWidth("100%");
     }
 
     @Override
@@ -55,11 +63,6 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
     @Override
     public void loadFiltersAndApplyDefault() {
         delegate.loadFiltersAndApplyDefault();
-        Container layout = delegate.getLayout();
-        com.vaadin.ui.Component unwrap = WebComponentsHelper.unwrap(layout);
-        unwrap.setWidth("100%");
-        component.addComponent(unwrap);
-//        component.setWidth("100%");
     }
 
     @Override

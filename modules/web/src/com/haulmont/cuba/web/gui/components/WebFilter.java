@@ -4,18 +4,21 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.filter.*;
+import com.haulmont.cuba.gui.components.Filter;
+import com.haulmont.cuba.gui.components.filter.FilterDelegate;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.security.entity.FilterEntity;
-import com.haulmont.cuba.web.toolkit.ui.*;
+import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
 import com.vaadin.shared.ui.MarginInfo;
-import org.dom4j.*;
+import org.dom4j.Element;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Generic filter implementation for the web-client.
@@ -28,9 +31,9 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
     protected FilterDelegate delegate;
 
     public WebFilter() {
-        delegate = new FilterDelegate(this);
+        delegate = AppBeans.get(FilterDelegate.class);
+        delegate.setFilter(this);
         component = new CubaVerticalActionsLayout();
-
         Container layout = delegate.getLayout();
         com.vaadin.ui.Component unwrap = WebComponentsHelper.unwrap(layout);
         component.addComponent(unwrap);
