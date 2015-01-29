@@ -17,6 +17,7 @@ import com.haulmont.cuba.gui.components.ShowInfoAction;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserSubstitution;
@@ -26,6 +27,7 @@ import com.haulmont.cuba.web.actions.DoNotChangeSubstUserAction;
 import com.haulmont.cuba.web.app.UserSettingsTools;
 import com.haulmont.cuba.web.app.folders.FoldersPane;
 import com.haulmont.cuba.web.gui.WebTimer;
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebSplitPanel;
 import com.haulmont.cuba.web.sys.MenuBuilder;
 import com.haulmont.cuba.web.sys.WindowBreadCrumbs;
@@ -572,7 +574,9 @@ public class AppWindow extends FocusHandlerWindow implements UserSubstitutionLis
             HorizontalLayout searchLayout = new HorizontalLayout();
             searchLayout.setMargin(false, true, false, true);
 
-            final TextField searchField = new com.haulmont.cuba.web.toolkit.ui.TextField();
+            ComponentsFactory componentsFactory = AppBeans.get(ComponentsFactory.class);
+            com.haulmont.cuba.gui.components.TextField searchFieldComponent = componentsFactory.createComponent(com.haulmont.cuba.gui.components.TextField.class);
+            final TextField searchField = WebComponentsHelper.unwrap(searchFieldComponent);
             searchField.setWidth(120, Sizeable.UNITS_PIXELS);
             searchField.setDebugId("ftsField." + (int) (Math.random() * 1000000));
             if (app.isTestMode()) {

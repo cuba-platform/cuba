@@ -63,13 +63,16 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
             @Override
             public String format(Object value) {
                 Datatype datatype = getActualDatatype();
+                String formattedValue = null;
                 if (datatype != null) {
-                    return datatype.format(value, locale);
+                    formattedValue = datatype.format(value, locale);
                 } else if (value != null) {
-                    return value.toString();
-                } else {
-                    return null;
+                    formattedValue = value.toString();
                 }
+                if (trimming) {
+                    formattedValue = StringUtils.trim(formattedValue);
+                }
+                return formattedValue;
             }
 
             @Override
@@ -125,6 +128,9 @@ public abstract class WebAbstractTextField<T extends AbstractTextField>
         Object value = super.getValue();
         Datatype datatype = getActualDatatype();
         if (value instanceof String && datatype != null) {
+            if (trimming) {
+                value = StringUtils.trim((String) value);
+            }
             value = Strings.emptyToNull((String) value);
             try {
                 return (V) datatype.parse((String) value, locale);
