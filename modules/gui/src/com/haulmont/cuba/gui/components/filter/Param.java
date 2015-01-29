@@ -341,6 +341,7 @@ public class Param {
             }
         });
         field.setValue(_getValue(valueProperty));
+        field.setAlignment(Component.Alignment.MIDDLE_LEFT);
         return field;
     }
 

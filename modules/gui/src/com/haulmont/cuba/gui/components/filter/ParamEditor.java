@@ -19,7 +19,6 @@ public class ParamEditor implements AbstractCondition.Listener {
     protected Component field;
     protected String fieldWidth = null;
     protected BoxLayout mainLayout;
-    protected BoxLayout component;
     protected Label captionLbl;
     protected Component operationEditor;
     protected Component paramEditComponent;
@@ -29,12 +28,9 @@ public class ParamEditor implements AbstractCondition.Listener {
         this.condition = condition;
 
         ComponentsFactory componentsFactory = AppBeans.get(ComponentsFactory.class);
-        component = componentsFactory.createComponent(BoxLayout.HBOX);
-        component.setWidth("100%");
         mainLayout = componentsFactory.createComponent(BoxLayout.HBOX);
         mainLayout.setWidth("100%");
         mainLayout.setSpacing(true);
-        component.add(mainLayout);
 
         captionLbl = componentsFactory.createComponent(Label.NAME);
         captionLbl.setAlignment(Component.Alignment.MIDDLE_LEFT);
@@ -55,9 +51,8 @@ public class ParamEditor implements AbstractCondition.Listener {
         removeButton = componentsFactory.createComponent(LinkButton.NAME);
         removeButton.setIcon("icons/item-remove.png");
         removeButton.setAlignment(Component.Alignment.MIDDLE_LEFT);
-        component.add(removeButton);
         removeButton.setVisible(removeButtonVisible);
-        component.expand(mainLayout);
+        mainLayout.add(removeButton);
 
         condition.addListener(this);
     }
@@ -88,7 +83,7 @@ public class ParamEditor implements AbstractCondition.Listener {
     }
 
     public Component getComponent() {
-        return component;
+        return mainLayout;
     }
 
     public LinkButton getRemoveButton() {
