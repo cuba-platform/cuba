@@ -6,6 +6,7 @@
 package com.haulmont.cuba.core;
 
 import com.haulmont.cuba.core.app.UniqueNumbersAPI;
+import com.haulmont.cuba.core.global.AppBeans;
 
 /**
  * @author krivopustov
@@ -13,8 +14,16 @@ import com.haulmont.cuba.core.app.UniqueNumbersAPI;
  */
 public class UniqueNumbersTest extends CubaTestCase {
     public void test() {
-        UniqueNumbersAPI mBean = Locator.lookup(UniqueNumbersAPI.NAME);
+        UniqueNumbersAPI mBean = AppBeans.get(UniqueNumbersAPI.NAME);
         long n = mBean.getNextNumber("test1");
         assertTrue(n >= 0);
+    }
+
+    public void testSequenceDeletion() throws Exception {
+        UniqueNumbersAPI uniqueNumbersAPI = AppBeans.get(UniqueNumbersAPI.NAME);
+
+        uniqueNumbersAPI.getCurrentNumber("s1");
+        uniqueNumbersAPI.deleteDbSequence("s1");
+        uniqueNumbersAPI.getCurrentNumber("s1");
     }
 }

@@ -83,6 +83,7 @@ public class UniqueNumbers implements UniqueNumbersAPI {
         try {
             executeScript(sqlScript);
             tx.commit();
+            existingSequences.remove(seqName);
         } finally {
             tx.end();
         }
