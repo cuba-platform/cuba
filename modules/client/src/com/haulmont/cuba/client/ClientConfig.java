@@ -103,7 +103,7 @@ public interface ClientConfig extends Config {
      * If false, no checks are performed and the filter applyes, refreshing connected table.
      */
     @Property("cuba.gui.genericFilterChecking")
-    @DefaultBoolean(true)
+    @DefaultBoolean(false)
     boolean getGenericFilterChecking();
 
     /**
