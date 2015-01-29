@@ -22,6 +22,9 @@ import java.util.Locale;
  */
 public class WebLookupFieldTest extends LookupFieldTest {
 
+    @Mocked
+    VaadinSession vaadinSession;
+
     public WebLookupFieldTest() {
         factory = new WebComponentsFactory();
     }
@@ -31,8 +34,6 @@ public class WebLookupFieldTest extends LookupFieldTest {
         super.initExpectations();
 
         new NonStrictExpectations() {
-            @Mocked
-            VaadinSession vaadinSession;
             {
                 vaadinSession.getLocale(); result = Locale.ENGLISH;
                 VaadinSession.getCurrent(); result = vaadinSession;

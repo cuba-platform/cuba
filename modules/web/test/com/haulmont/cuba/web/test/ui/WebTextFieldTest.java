@@ -21,6 +21,8 @@ import java.util.Locale;
  */
 public class WebTextFieldTest extends TextFieldTest {
 
+    @Mocked VaadinSession vaadinSession;
+
     public WebTextFieldTest() {
         factory = new WebComponentsFactory();
     }
@@ -30,7 +32,6 @@ public class WebTextFieldTest extends TextFieldTest {
         super.initExpectations();
 
         new NonStrictExpectations() {
-            @Mocked VaadinSession vaadinSession;
             {
                 vaadinSession.getLocale(); result = Locale.ENGLISH;
                 VaadinSession.getCurrent(); result = vaadinSession;

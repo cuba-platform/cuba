@@ -7,6 +7,7 @@ package com.haulmont.cuba.gui.filter;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.client.testsupport.CubaClientTestCase;
 import com.haulmont.cuba.core.global.GlobalConfig;
+import mockit.Mocked;
 import mockit.NonStrictExpectations;
 import org.dom4j.Document;
 import org.junit.Before;
@@ -20,13 +21,15 @@ import static org.junit.Assert.assertEquals;
 
 public class QueryFilterTest extends CubaClientTestCase {
 
+    @Mocked
+    GlobalConfig globalConfig;
+
     @Before
     public void setUp() {
         addEntityPackage("com.haulmont.cuba");
         setupInfrastructure();
 
         new NonStrictExpectations() {
-            GlobalConfig globalConfig;
             {
                 configuration.getConfig(GlobalConfig.class); result = globalConfig;
 

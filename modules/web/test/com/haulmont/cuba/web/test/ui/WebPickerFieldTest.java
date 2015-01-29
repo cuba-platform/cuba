@@ -22,6 +22,9 @@ import java.util.Locale;
  */
 public class WebPickerFieldTest extends PickerFieldTest {
 
+    @Mocked
+    VaadinSession vaadinSession;
+
     public WebPickerFieldTest() {
         factory = new WebComponentsFactory();
     }
@@ -31,8 +34,6 @@ public class WebPickerFieldTest extends PickerFieldTest {
         super.initExpectations();
 
         new NonStrictExpectations() {
-            @Mocked
-            VaadinSession vaadinSession;
             {
                 vaadinSession.getLocale(); result = Locale.ENGLISH;
                 VaadinSession.getCurrent(); result = vaadinSession;

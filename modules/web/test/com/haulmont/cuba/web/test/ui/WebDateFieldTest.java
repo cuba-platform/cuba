@@ -20,6 +20,10 @@ import java.util.Locale;
  * @version $Id$
  */
 public class WebDateFieldTest extends DateFieldTest {
+
+    @Mocked
+    VaadinSession vaadinSession;
+
     public WebDateFieldTest() {
         factory = new WebComponentsFactory();
     }
@@ -29,8 +33,6 @@ public class WebDateFieldTest extends DateFieldTest {
         super.initExpectations();
 
         new NonStrictExpectations() {
-            @Mocked
-            VaadinSession vaadinSession;
             {
                 vaadinSession.getLocale(); result = Locale.ENGLISH;
                 VaadinSession.getCurrent(); result = vaadinSession;

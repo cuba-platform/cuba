@@ -70,6 +70,9 @@ public class DsContextTest extends CubaClientTestCase {
     private CollectionDatasource<TestPartEntity,UUID> partsDs;
     private Datasource<TestPartEntity> partDs;
 
+    @Mocked ClientConfig clientConfig;
+    @Mocked PersistenceHelper persistenceHelper;
+
     @Before
     public void setUp() throws Exception {
         addEntityPackage("com.haulmont.cuba");
@@ -82,8 +85,6 @@ public class DsContextTest extends CubaClientTestCase {
         dataService.commitCount = 0;
 
         new NonStrictExpectations() {
-            @Mocked ClientConfig clientConfig;
-            @Mocked PersistenceHelper persistenceHelper;
             {
                 configuration.getConfig(ClientConfig.class); result = clientConfig;
 

@@ -32,11 +32,12 @@ public class ControllerDependencyInjectorTest extends CubaClientTestCase {
 
     private Messages messages = new MessagesClientImpl();
 
+    @Mocked ApplicationContext applicationContext;
+
     @Before
     public void setUp() throws Exception {
         setupInfrastructure();
         new NonStrictExpectations() {
-            @Mocked ApplicationContext applicationContext;
             {
                 AppContext.getApplicationContext();
                 result = applicationContext;

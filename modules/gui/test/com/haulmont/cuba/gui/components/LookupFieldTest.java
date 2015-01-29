@@ -36,12 +36,13 @@ import static org.junit.Assert.*;
 @Ignore
 public abstract class LookupFieldTest extends AbstractComponentTest {
 
+    @Mocked PersistenceManagerService persistenceManagerService;
+
     @Override
     protected void initExpectations() {
         super.initExpectations();
 
         new NonStrictExpectations() {
-            @Mocked PersistenceManagerService persistenceManagerService;
             {
                 AppBeans.get(PersistenceManagerClient.NAME); result = persistenceManagerService;
                 AppBeans.get(PersistenceManagerClient.class); result = persistenceManagerService;
