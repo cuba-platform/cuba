@@ -27,6 +27,7 @@
 @import "components/fieldgroup/fieldgroup";
 @import "components/splitpanel/splitpanel";
 @import "components/twincolumn/twincolumn";
+@import "components/flowlayout/flowlayout";
 @import "components/pickerfield/pickerfield";
 @import "components/contextmenu/contextmenu";
 @import "components/maskedfield/maskedfield";
@@ -77,6 +78,7 @@
   @include halo-cuba-groupbox;
   @include halo-cuba-tokenlist;
   @include halo-cuba-grouptable;
+  @include halo-cuba-flowlayout;
   @include halo-cuba-fieldgroup;
   @include halo-cuba-maskedfield;
   @include halo-cuba-pickerfield;
