@@ -50,6 +50,7 @@ public class DesktopTree extends DesktopAbstractActionsHolderComponent<JTree> im
 
     protected Action doubleClickAction;
     protected MouseAdapter itemClickListener;
+    protected boolean editable = true;
 
     public DesktopTree() {
         impl = new JTree();
@@ -371,12 +372,12 @@ public class DesktopTree extends DesktopAbstractActionsHolderComponent<JTree> im
 
     @Override
     public boolean isEditable() {
-        return impl.isEditable();
+        return editable;
     }
 
     @Override
     public void setEditable(boolean editable) {
-        impl.setEditable(editable);
+        this.editable = editable;
     }
 
     protected class SelectionListener implements TreeSelectionListener {
