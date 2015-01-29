@@ -46,6 +46,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
+import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.convertAlignment;
+
 /**
  * @author krivopustov
  * @version $Id$
@@ -576,13 +578,48 @@ public class WebWindow implements Window, Component.Wrapper,
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
-    public void add(Component component) {
-        getContainer().addComponent(WebComponentsHelper.getComposition(component));
-        if (component.getId() != null) {
-            componentByIds.put(component.getId(), component);
-            registerComponent(component);
+    public void add(Component childComponent) {
+        if (ownComponents.contains(childComponent)) {
+            remove(childComponent);
         }
-        ownComponents.add(component);
+
+        ComponentContainer container = getContainer();
+        com.vaadin.ui.Component vComponent = WebComponentsHelper.getComposition(childComponent);
+        container.addComponent(vComponent);
+
+        com.vaadin.ui.Alignment alignment = convertAlignment(childComponent.getAlignment());
+        ((AbstractOrderedLayout) container).setComponentAlignment(vComponent, alignment);
+
+        if (childComponent.getId() != null) {
+            componentByIds.put(childComponent.getId(), childComponent);
+            registerComponent(childComponent);
+        }
+        ownComponents.add(childComponent);
+    }
+
+    @Override
+    public void add(Component childComponent, int index) {
+        if (ownComponents.contains(childComponent)) {
+            remove(childComponent);
+        }
+
+        ComponentContainer container = getContainer();
+        com.vaadin.ui.Component vComponent = WebComponentsHelper.getComposition(childComponent);
+        ((AbstractOrderedLayout)container).addComponent(vComponent, index);
+
+        com.vaadin.ui.Alignment alignment = convertAlignment(childComponent.getAlignment());
+        ((AbstractOrderedLayout) container).setComponentAlignment(vComponent, alignment);
+
+        if (childComponent.getId() != null) {
+            componentByIds.put(childComponent.getId(), childComponent);
+            registerComponent(childComponent);
+        }
+
+        List<Component> componentsTempList = new ArrayList<>(ownComponents);
+        componentsTempList.add(index, childComponent);
+
+        ownComponents.clear();
+        ownComponents.addAll(componentsTempList);
     }
 
     @Override

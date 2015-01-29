@@ -87,6 +87,8 @@ public interface IFrame
      */
     DialogParams getDialogParams();
 
+    void add(Component childComponent, int index);
+
     /**
      * Open a simple screen.
      *

@@ -12,4 +12,6 @@ public interface BoxLayout extends ExpandingLayout, Component.Spacing, Component
 
     String VBOX = "vbox";
     String HBOX = "hbox";
+
+    void add(Component childComponent, int index);
 }

@@ -18,13 +18,17 @@ import java.util.*;
  * @author abramov
  * @version $Id$
  */
-class WebAbstractBox extends WebAbstractComponent<AbstractOrderedLayout> implements BoxLayout {
+public abstract class WebAbstractBox extends WebAbstractComponent<AbstractOrderedLayout> implements BoxLayout {
 
     protected Collection<Component> ownComponents = new LinkedHashSet<>();
     protected Map<String, Component> componentByIds = new HashMap<>();
 
     @Override
     public void add(Component childComponent) {
+        if (ownComponents.contains(childComponent)) {
+            remove(childComponent);
+        }
+
         final com.vaadin.ui.Component vaadinComponent = WebComponentsHelper.getComposition(childComponent);
 
         component.addComponent(vaadinComponent);
@@ -37,6 +41,30 @@ class WebAbstractBox extends WebAbstractComponent<AbstractOrderedLayout> impleme
             }
         }
         ownComponents.add(childComponent);
+    }
+
+    @Override
+    public void add(Component childComponent, int index) {
+        if (ownComponents.contains(childComponent)) {
+            remove(childComponent);
+        }
+
+        com.vaadin.ui.Component vComponent = WebComponentsHelper.getComposition(childComponent);
+        component.addComponent(vComponent, index);
+        component.setComponentAlignment(vComponent, WebComponentsHelper.convertAlignment(childComponent.getAlignment()));
+
+        if (childComponent.getId() != null) {
+            componentByIds.put(childComponent.getId(), childComponent);
+            if (frame != null) {
+                frame.registerComponent(childComponent);
+            }
+        }
+
+        List<Component> componentsTempList = new ArrayList<>(ownComponents);
+        componentsTempList.add(index, childComponent);
+
+        ownComponents.clear();
+        ownComponents.addAll(componentsTempList);
     }
 
     @Override

@@ -622,6 +622,10 @@ public class DesktopWindow implements Window, Component.Disposable,
 
     @Override
     public void add(Component component) {
+        if (ownComponents.contains(component)) {
+            remove(component);
+        }
+
         ComponentCaption caption = null;
         boolean haveDescription = false;
         if (DesktopContainerHelper.hasExternalCaption(component)) {
@@ -655,6 +659,56 @@ public class DesktopWindow implements Window, Component.Disposable,
             registerComponent(component);
         }
         ownComponents.add(component);
+
+        DesktopContainerHelper.assignContainer(component, this);
+
+        requestRepaint();
+    }
+
+    @Override
+    public void add(Component component, int index) {
+        if (ownComponents.contains(component)) {
+            remove(component);
+        }
+
+        ComponentCaption caption = null;
+        boolean haveDescription = false;
+        if (DesktopContainerHelper.hasExternalCaption(component)) {
+            caption = new ComponentCaption(component);
+            captions.put(component, caption);
+            getContainer().add(caption, layoutAdapter.getCaptionConstraints(component), index);  // CAUTION this dramatically wrong
+        } else if (DesktopContainerHelper.hasExternalDescription(component)) {
+            caption = new ComponentCaption(component);
+            captions.put(component, caption);
+            haveDescription = true;
+        }
+
+        JComponent composition = DesktopComponentsHelper.getComposition(component);
+        // if component have description without caption, we need to wrap
+        // component to view Description button horizontally after component
+        if (haveDescription) {
+            JPanel wrapper = new JPanel();
+            BoxLayoutAdapter adapter = BoxLayoutAdapter.create(wrapper);
+            adapter.setExpandLayout(true);
+            adapter.setSpacing(false);
+            adapter.setMargin(false);
+            wrapper.add(composition);
+            wrapper.add(caption, new CC().alignY("top"));
+            getContainer().add(wrapper, layoutAdapter.getConstraints(component), index);
+            wrappers.put(component, new Pair<>(wrapper, adapter));
+        } else {
+            getContainer().add(composition, layoutAdapter.getConstraints(component), index);
+        }
+        if (component.getId() != null) {
+            componentByIds.put(component.getId(), component);
+            registerComponent(component);
+        }
+
+        List<Component> componentsTempList = new ArrayList<>(ownComponents);
+        componentsTempList.add(index, component);
+
+        ownComponents.clear();
+        ownComponents.addAll(componentsTempList);
 
         DesktopContainerHelper.assignContainer(component, this);
 

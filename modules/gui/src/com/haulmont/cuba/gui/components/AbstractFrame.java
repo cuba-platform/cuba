@@ -293,6 +293,11 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
         return frame.getDialogParams();
     }
 
+    @Override
+    public void add(Component childComponent, int index) {
+        frame.add(childComponent, index);
+    }
+
     /**
      * @return a companion implementation, specific for the current client type
      */
