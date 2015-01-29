@@ -5,10 +5,7 @@
 
 package com.haulmont.cuba.gui.components.filter.addcondition;
 
-import com.haulmont.cuba.gui.components.AbstractWindow;
-import com.haulmont.cuba.gui.components.Button;
-import com.haulmont.cuba.gui.components.TextField;
-import com.haulmont.cuba.gui.components.Tree;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.filter.descriptor.AbstractConditionDescriptor;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
@@ -58,6 +55,12 @@ public class AddConditionWindow extends AbstractWindow {
                 .setResizable(true);
         conditionDescriptorsDs.refresh(params);
         expandTreeRoots();
+        tree.setItemClickAction(new AbstractAction("select") {
+            @Override
+            public void actionPerform(Component component) {
+                select();
+            }
+        });
     }
 
     public void expandTreeRoots() {
