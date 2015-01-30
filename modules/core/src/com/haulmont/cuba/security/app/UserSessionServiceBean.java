@@ -60,6 +60,13 @@ public class UserSessionServiceBean implements UserSessionService {
     }
 
     @Override
+    public void setSessionLocale(UUID sessionId, Locale locale) {
+        UserSession userSession = userSessionManager.getSession(sessionId);
+        userSession.setLocale(locale);
+        userSessions.propagate(sessionId);
+    }
+
+    @Override
     public void setSessionAddress(UUID sessionId, String address) {
         UserSession userSession = userSessionManager.getSession(sessionId);
         userSession.setAddress(address);

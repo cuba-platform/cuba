@@ -10,6 +10,7 @@ import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.UserSession;
 
 import java.io.Serializable;
+import java.util.Locale;
 
 /**
  * Client-side extension of {@link UserSession}.
@@ -32,6 +33,13 @@ public class ClientUserSession extends UserSession {
         super.setAttribute(name, value);
         UserSessionService uss = AppBeans.get(UserSessionService.NAME);
         uss.setSessionAttribute(id, name, value);
+    }
+
+    @Override
+    public void setLocale(Locale locale) {
+        super.setLocale(locale);
+        UserSessionService uss = AppBeans.get(UserSessionService.NAME);
+        uss.setSessionLocale(id, locale);
     }
 
     @Override

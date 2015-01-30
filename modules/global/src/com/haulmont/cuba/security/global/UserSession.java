@@ -31,7 +31,7 @@ public class UserSession implements Serializable {
     protected UUID id;
     protected User user;
     protected User substitutedUser;
-    private List<String> roles = new ArrayList<String>();
+    private List<String> roles = new ArrayList<>();
     private EnumSet<RoleType> roleTypes = EnumSet.noneOf(RoleType.class);
     protected Locale locale;
     protected String address;
@@ -56,13 +56,14 @@ public class UserSession implements Serializable {
 
         this.locale = locale;
 
+        //noinspection unchecked
         permissions = new Map[PermissionType.values().length];
         for (int i = 0; i < permissions.length; i++) {
-            permissions[i] = new HashMap<String, Integer>();
+            permissions[i] = new HashMap<>();
         }
 
-        constraints = new HashMap<String, List<String[]>>();
-        attributes = new ConcurrentHashMap<String, Serializable>();
+        constraints = new HashMap<>();
+        attributes = new ConcurrentHashMap<>();
     }
 
     public UserSession(UserSession src, User user, Collection<Role> roles, Locale locale) {
@@ -138,6 +139,10 @@ public class UserSession implements Serializable {
      */
     public Locale getLocale() {
         return locale;
+    }
+
+    public void setLocale(Locale locale) {
+        this.locale = locale;
     }
 
     /**
@@ -270,7 +275,7 @@ public class UserSession implements Serializable {
     public void addConstraint(String entityName, String joinClause, String whereClause) {
         List<String[]> list = constraints.get(entityName);
         if (list == null) {
-            list = new ArrayList<String[]>();
+            list = new ArrayList<>();
             constraints.put(entityName, list);
         }
         list.add(new String[] {joinClause, whereClause});
@@ -293,6 +298,7 @@ public class UserSession implements Serializable {
      *             </ul>
      * @return attribute value or null if attribute with the given name is not found
      */
+    @SuppressWarnings("unchecked")
     @Nullable
     public <T> T getAttribute(String name) {
         if ("userId".equals(name))
@@ -324,6 +330,7 @@ public class UserSession implements Serializable {
      * User session attribute names. Attribute is a named serializable object bound to session.
      */
     public Collection<String> getAttributeNames() {
+        //noinspection unchecked
         return new ArrayList(attributes.keySet());
     }
 

@@ -11,10 +11,7 @@ import com.haulmont.cuba.security.global.UserSession;
 
 import javax.annotation.Nullable;
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Service interface to active {@link UserSession}s management.
@@ -43,6 +40,15 @@ public interface UserSessionService {
      * doesn't exist
      */
     void setSessionAttribute(UUID sessionId, String name, Serializable value);
+
+    /**
+     * Set user locale into the session, propagating changes to the cluster.
+     * @param sessionId an active session identifier
+     * @param locale    user locale
+     * @throws com.haulmont.cuba.security.global.NoUserSessionException in case of a session with the specified ID
+     * doesn't exist
+     */
+    void setSessionLocale(UUID sessionId, Locale locale);
 
     /**
      * Set client's address into the session, propagating changes to the cluster.
