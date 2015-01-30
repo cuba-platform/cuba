@@ -286,7 +286,15 @@ public class MetadataTools {
      * Determine whether the given metaclass is embeddable.
      */
     public boolean isEmbeddable(MetaClass metaClass) {
-        return metaClass.getJavaClass().isAnnotationPresent(javax.persistence.Embeddable.class);
+        Class javaClass;
+        try {
+            // RuntimePropertiesMetaClass can throw UnsupportedOperationException
+            javaClass = metaClass.getJavaClass();
+        } catch (UnsupportedOperationException e) {
+            return false;
+        }
+
+        return javaClass.isAnnotationPresent(javax.persistence.Embeddable.class);
     }
 
     /**
