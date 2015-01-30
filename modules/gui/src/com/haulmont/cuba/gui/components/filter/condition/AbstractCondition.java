@@ -126,11 +126,6 @@ public abstract class AbstractCondition extends AbstractNotPersistentEntity{
         if (!isBlank(aclass))
             javaClass = scripting.loadClass(aclass);
 
-        String operatorName = element.attributeValue("operatorType", null);
-        if (operatorName != null) {
-            operator = Op.valueOf(operatorName);
-        }
-
         List<Element> paramElements = Dom4j.elements(element, "param");
         if (!paramElements.isEmpty()) {
             Element paramElem = paramElements.iterator().next();
@@ -147,15 +142,22 @@ public abstract class AbstractCondition extends AbstractNotPersistentEntity{
                 }
             }
 
-            if (unary) {
-                param = new Param(paramName, null, null, null, null, false, required);
-
-            } else {
-                param = createParam();
-            }
-
+            param = createParam();
             param.parseValue(paramElem.getText());
             param.setDefaultValue(param.getValue());
+        }
+
+        String operatorName = element.attributeValue("operatorType", null);
+        if (operatorName != null) {
+            //for backward compatibility with old filters that still use EMPTY operator
+            if ("EMPTY".equals(operatorName)) {
+                operatorName = "NOT_EMPTY";
+                if (BooleanUtils.isTrue((Boolean) param.getValue()))
+                    param.setValue(false);
+                    param.setDefaultValue(false);
+            }
+
+            operator = Op.valueOf(operatorName);
         }
     }
 
@@ -177,6 +179,9 @@ public abstract class AbstractCondition extends AbstractNotPersistentEntity{
     }
 
     protected Param createParam() {
+        if (unary)
+            return new Param(paramName, null, null, null, null, false, required);
+
         if (Strings.isNullOrEmpty(paramName)) {
             paramName = createParamName();
         }

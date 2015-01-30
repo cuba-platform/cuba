@@ -126,7 +126,7 @@ public class RuntimePropCondition extends AbstractCondition {
             if (operator.isUnary()) {
                 unary = true;
                 inExpr = false;
-                setParam(new Param(paramName, null, null, null, null, false, required));
+                setParam(new Param(paramName, Boolean.class, null, null, null, false, required));
             } else {
                 unary = false;
                 inExpr = operator.equals(Op.IN) || operator.equals(Op.NOT_IN);
@@ -148,6 +148,25 @@ public class RuntimePropCondition extends AbstractCondition {
         return operationEditor;
     }
 
+    @Override
+    protected Param createParam() {
+        if (unary)
+            return new Param(paramName, Boolean.class, null, null, null, false, required);
+
+        return super.createParam();
+    }
+
+    @Override
+    protected void updateText() {
+        if (operator == Op.NOT_EMPTY) {
+            if (BooleanUtils.isTrue((Boolean) param.getValue())) {
+                text = text.replace(" is null ", " is not null ");
+            } else if (BooleanUtils.isFalse((Boolean) param.getValue())) {
+                text = text.replace(" is not null ", " is null ");
+            }
+        }
+    }
+
     public String getJoin() {
         return join;
     }
@@ -157,6 +176,7 @@ public class RuntimePropCondition extends AbstractCondition {
     }
 
     public String getWhere() {
+        updateText();
         return text;
     }
 

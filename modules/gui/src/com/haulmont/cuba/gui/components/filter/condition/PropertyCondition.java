@@ -18,6 +18,7 @@ import com.haulmont.cuba.gui.components.filter.Param;
 import com.haulmont.cuba.gui.components.filter.descriptor.AbstractConditionDescriptor;
 import com.haulmont.cuba.gui.components.filter.operationedit.PropertyOperationEditor;
 import com.haulmont.cuba.gui.data.Datasource;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.dom4j.Element;
 
@@ -44,7 +45,6 @@ public class PropertyCondition extends AbstractCondition {
     public PropertyCondition(Element element, String messagesPack, String filterComponentName, Datasource datasource) {
         super(element, messagesPack, filterComponentName, datasource);
 
-//        this.locCaption = FilterConditionUtils.getPropertyLocCaption(datasource.getMetaClass(), name);
         String text = element.getText();
         Matcher matcher = PATTERN_NULL.matcher(text);
         if (!matcher.matches()) {
@@ -56,10 +56,8 @@ public class PropertyCondition extends AbstractCondition {
                 throw new IllegalStateException("Unable to build condition from: " + text);
             }
         }
-        String operatorName = element.attributeValue("operatorType", null);
-        if (operatorName != null) {
-            operator = Op.valueOf(operatorName);
-        } else {
+
+        if (operator == null) {
             operator = Op.fromString(matcher.group(2));
         }
 
@@ -75,6 +73,9 @@ public class PropertyCondition extends AbstractCondition {
 
     @Override
     protected Param createParam() {
+        if (unary)
+            return new Param(paramName, Boolean.class, null, null, null, false, required);
+
         if (Strings.isNullOrEmpty(paramName)) {
             paramName = createParamName();
         }
@@ -96,7 +97,8 @@ public class PropertyCondition extends AbstractCondition {
             sb.append(".id");
         }
 
-        sb.append(" ").append(operator.getText());
+        if (operator != Op.NOT_EMPTY)
+            sb.append(" ").append(operator.getText());
 
         if (!operator.isUnary()) {
             if (inExpr) {
@@ -112,6 +114,10 @@ public class PropertyCondition extends AbstractCondition {
             if (operator == Op.NOT_IN) {
                 sb.append(") or (").append(entityAlias).append(".").append(name).append(" is null)) ");
             }
+        }
+
+        if (operator == Op.NOT_EMPTY) {
+            sb.append(BooleanUtils.isTrue((Boolean) param.getValue()) ? " is not null" : " is null");
         }
 
         text = sb.toString();
@@ -137,7 +143,7 @@ public class PropertyCondition extends AbstractCondition {
             if (operator.isUnary()) {
                 unary = true;
                 inExpr = false;
-                setParam(new Param(paramName, null, null, null, null, false, required));
+                setParam(new Param(paramName, Boolean.class, null, null, null, false, required));
             } else {
                 unary = false;
                 inExpr = operator.equals(Op.IN) || operator.equals(Op.NOT_IN);

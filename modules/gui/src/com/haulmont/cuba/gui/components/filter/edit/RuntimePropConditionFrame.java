@@ -162,7 +162,7 @@ public class RuntimePropConditionFrame extends ConditionFrame<RuntimePropConditi
         condition.setInExpr(Op.IN.equals(op) || Op.NOT_IN.equals(op));
         condition.setOperator(operationLookup.<Op>getValue());
         Param param;
-        Class paramJavaClass = op.isUnary() ? null : javaClass;
+        Class paramJavaClass = op.isUnary() ? Boolean.class : javaClass;
         if (SetValueEntity.class.isAssignableFrom(javaClass)) {
             condition.setJavaClass(String.class);
             param = new Param(paramName, paramJavaClass, null, null, condition.getDatasource(),
