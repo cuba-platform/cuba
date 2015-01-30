@@ -798,7 +798,13 @@ public class GroupTable extends Table implements GroupTableContainer {
     }
 
     protected void groupBy(Object[] properties, boolean rerender) {
-        ((GroupTableContainer) items).groupBy(properties);
+        GroupTableContainer groupTableContainer = (GroupTableContainer) items;
+        if (groupTableContainer.getGroupProperties().isEmpty() && properties.length == 0) {
+            // no need to regroup and refreshRenderedCells
+            return;
+        }
+
+        groupTableContainer.groupBy(properties);
         if (rerender) {
             resetPageBuffer();
             refreshRenderedCells();
