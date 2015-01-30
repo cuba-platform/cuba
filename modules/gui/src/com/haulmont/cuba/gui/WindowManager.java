@@ -316,6 +316,10 @@ public abstract class WindowManager {
     }
 
     public <T extends Window> T openWindow(WindowInfo windowInfo, WindowManager.OpenType openType, Map<String, Object> params) {
+        if (params == null) {
+            params = Collections.emptyMap();
+        }
+
         checkCanOpenWindow(windowInfo, openType, params);
         Integer hashCode = getHash(windowInfo, params);
         params = createParametersMap(windowInfo, params);
@@ -412,6 +416,10 @@ public abstract class WindowManager {
     public <T extends Window> T openEditor(WindowInfo windowInfo, Entity item,
                                            OpenType openType, Map<String, Object> params,
                                            Datasource parentDs) {
+        if (params == null) {
+            params = Collections.emptyMap();
+        }
+
         checkCanOpenWindow(windowInfo, openType, params);
 
         Integer hashCode = getHash(windowInfo, params);
@@ -461,9 +469,12 @@ public abstract class WindowManager {
         return (T) window;
     }
 
-    public <T extends Window> T openLookup(
-            WindowInfo windowInfo, Window.Lookup.Handler handler,
-            OpenType openType, Map<String, Object> params) {
+    public <T extends Window> T openLookup(WindowInfo windowInfo, Window.Lookup.Handler handler,
+                                           OpenType openType, Map<String, Object> params) {
+        if (params == null) {
+            params = Collections.emptyMap();
+        }
+
         checkCanOpenWindow(windowInfo, openType, params);
 
         params = createParametersMap(windowInfo, params);
@@ -518,6 +529,10 @@ public abstract class WindowManager {
             WindowInfo windowInfo,
             Map<String, Object> params
     ) {
+        if (params == null) {
+            params = Collections.emptyMap();
+        }
+
         //Parameters can be useful later
         params = createParametersMap(windowInfo, params);
 
