@@ -23,8 +23,8 @@ import javax.management.MBeanServer;
 import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -80,7 +80,7 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
                 Message msg = new Message(null, null, bytes);
                 try {
                     channel.send(msg);
-                } catch (ChannelNotConnectedException | ChannelClosedException e) {
+                } catch (Exception e) {
                     log.error("Error sending message", e);
                 }
             }
@@ -122,7 +122,7 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
             stream = resources.getResource(configName).getInputStream();
 
             channel = new JChannel(XmlConfigurator.getInstance(stream));
-            channel.setOpt(Channel.LOCAL, false); // do not receive a copy of our own messages
+            channel.setDiscardOwnMessages(true); // do not receive a copy of our own messages
             channel.setReceiver(new ClusterReceiver());
             channel.connect(getClusterName());
             channel.getState(null, 5000);
@@ -187,7 +187,7 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
         if (currentView == null || channel == null)
             return true;
 
-        Vector<Address> members = currentView.getMembers();
+        List<Address> members = currentView.getMembers();
         if (members.size() == 0)
             return true;
 
@@ -224,11 +224,9 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
         }
 
         @Override
-        public byte[] getState() {
+        public void getState(OutputStream output) {
             log.debug("Sending state");
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            DataOutputStream out = new DataOutputStream(outputStream);
-            try {
+            try (DataOutputStream out = new DataOutputStream(output)) {
                 Map<String, byte[]> state = new HashMap<>();
                 for (Map.Entry<String, ClusterListener> entry : listeners.entrySet()) {
                     byte[] data = entry.getValue().getState();
@@ -250,8 +248,6 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
             } catch (IOException e) {
                 log.error("Error sending state", e);
             }
-
-            return outputStream.toByteArray();
         }
 
         @Override
@@ -260,13 +256,13 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
         }
 
         @Override
-        public void setState(byte[] state) {
+        public void setState(InputStream input) {
             log.debug("Receiving state");
-            if (state.length == 0)
-                return;
-            
-            DataInputStream in = new DataInputStream(new ByteArrayInputStream(state));
-            try {
+
+            try (DataInputStream in = new DataInputStream(input)) {
+                if (input.available() == 0)
+                    return;
+
                 String magic = in.readUTF();
                 if (!STATE_MAGIC.equals(magic)) {
                     log.debug("Invalid magic in state received");
@@ -295,6 +291,10 @@ public class ClusterManager implements ClusterManagerAPI, AppContext.Listener {
 
         @Override
         public void block() {
+        }
+
+        @Override
+        public void unblock() {
         }
     }
 }
