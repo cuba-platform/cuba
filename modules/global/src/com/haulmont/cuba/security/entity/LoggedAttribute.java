@@ -19,7 +19,7 @@ import javax.persistence.Entity;
  */
 @Entity(name = "sec$LoggedAttribute")
 @Table(name = "SEC_LOGGED_ATTR")
-@Listeners("cuba_LoggedAttributeLifecycleListener")
+@Listeners("cuba_LoggedAttributeListener")
 @SystemLevel
 public class LoggedAttribute extends BaseUuidEntity {
 

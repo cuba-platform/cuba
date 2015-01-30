@@ -20,7 +20,7 @@ import com.haulmont.cuba.core.entity.annotation.SystemLevel;
  */
 @Entity(name = "sec$LoggedEntity")
 @Table(name = "SEC_LOGGED_ENTITY")
-@Listeners("cuba_LoggedEntityLifecycleListener")
+@Listeners("cuba_LoggedEntityListener")
 @SystemLevel
 public class LoggedEntity extends BaseUuidEntity {
 
