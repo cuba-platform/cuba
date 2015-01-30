@@ -61,8 +61,10 @@ public class QueryImpl<T> implements TypedQuery<T> {
                 log.trace("Creating SQL query: " + queryString);
                 if (resultClass == null)
                     query = emDelegate.createNativeQuery(queryString);
-                else
-                    query = emDelegate.createNativeQuery(queryString, resultClass);
+                else {
+                    Class effectiveClass = metadata.getExtendedEntities().getEffectiveClass(resultClass);
+                    query = emDelegate.createNativeQuery(queryString, effectiveClass);
+                }
                 query.setFlushMode(FlushModeType.COMMIT);
             } else {
                 log.trace("Creating JPQL query: " + queryString);
