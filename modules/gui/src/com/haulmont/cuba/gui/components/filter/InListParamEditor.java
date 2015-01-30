@@ -102,6 +102,7 @@ public class InListParamEditor extends AbstractWindow {
             });
 
             componentLayout.add(lookup);
+            lookup.requestFocus();
 
         } else if (metaClass != null) {
             final PickerField picker = componentsFactory.createComponent(PickerField.NAME);
@@ -128,6 +129,7 @@ public class InListParamEditor extends AbstractWindow {
             picker.addClearAction();
 
             componentLayout.add(picker);
+            picker.requestFocus();
 
         } else if (runtimeEnum != null) {
             final LookupField lookup = componentsFactory.createComponent(LookupField.NAME);
@@ -146,6 +148,7 @@ public class InListParamEditor extends AbstractWindow {
             });
 
             componentLayout.add(lookup);
+            lookup.requestFocus();
         } else if (itemClass.isEnum()) {
             Map<String, Object> options = new HashMap<>();
             for (Object obj : itemClass.getEnumConstants()) {
@@ -168,6 +171,7 @@ public class InListParamEditor extends AbstractWindow {
             });
 
             componentLayout.add(lookup);
+            lookup.requestFocus();
 
         } else if (Date.class.isAssignableFrom(itemClass)) {
             final DateField dateField = componentsFactory.createComponent(DateField.NAME);
@@ -204,6 +208,8 @@ public class InListParamEditor extends AbstractWindow {
 
             componentLayout.add(dateField);
             componentLayout.add(addButton);
+            dateField.requestFocus();
+
         } else
             throw new UnsupportedOperationException();
     }

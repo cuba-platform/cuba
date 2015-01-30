@@ -73,6 +73,7 @@ public class InListParamComponent {
                         if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                             setValues(editor.getValues());
                         }
+                        field.requestFocus();
                     }
                 });
             }
