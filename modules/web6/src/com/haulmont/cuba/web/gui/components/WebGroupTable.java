@@ -41,7 +41,14 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
     protected boolean rerender = true;
 
     public WebGroupTable() {
-        component = new com.haulmont.cuba.web.toolkit.ui.GroupTable() {
+        component = createGroupTableComponent();
+        initComponent(component);
+
+        component.setGroupPropertyValueFormatter(new AggregatableGroupPropertyValueFormatter());
+    }
+
+    protected com.haulmont.cuba.web.toolkit.ui.GroupTable createGroupTableComponent() {
+        return new com.haulmont.cuba.web.toolkit.ui.GroupTable() {
             @Override
             public Resource getItemIcon(Object itemId) {
                 return WebGroupTable.this.getItemIcon(itemId);
@@ -65,9 +72,6 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
                 groupBy(properties, rerender);
             }
         };
-        initComponent(component);
-
-        component.setGroupPropertyValueFormatter(new AggregatableGroupPropertyValueFormatter());
     }
 
     @Override
