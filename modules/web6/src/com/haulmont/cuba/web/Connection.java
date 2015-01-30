@@ -83,6 +83,13 @@ public interface Connection {
     void update(UserSession session) throws LoginException;
 
     /**
+     * Check if session is alive on middleware
+     *
+     * @return true if call to middleware performed successfully
+     */
+    boolean isAlive();
+
+    /**
      * Add a connection listener.
      * @param listener  listener to add
      */

@@ -103,7 +103,7 @@ public class DefaultApp extends App implements ConnectionListener {
 
         // it does not exist yet, create it.
         if (window == null) {
-            if (connection.isConnected()) {
+            if (connection.isConnected() && connection.isAlive()) {
                 final AppWindow appWindow = createAppWindow();
                 appWindow.setName(name);
                 addWindow(appWindow);

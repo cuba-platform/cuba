@@ -12,9 +12,11 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.security.app.LoginService;
+import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.IpMatcher;
 import com.haulmont.cuba.security.global.LoginException;
+import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.vaadin.terminal.gwt.server.WebApplicationContext;
 import com.vaadin.terminal.gwt.server.WebBrowser;
@@ -44,6 +46,7 @@ public abstract class AbstractConnection implements Connection {
 
     protected LoginService loginService = AppBeans.get(LoginService.NAME);
     protected Messages messages = AppBeans.get(Messages.NAME);
+    protected UserSessionService userSessionService = AppBeans.get(UserSessionService.NAME);
 
     @Override
     public boolean isConnected() {
@@ -70,6 +73,26 @@ public abstract class AbstractConnection implements Connection {
             internalLogout();
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public boolean isAlive() {
+        if (!isConnected()) {
+            return false;
+        }
+
+        UserSession session = getSession();
+        if (session == null) {
+            return false;
+        }
+
+        try {
+            userSessionService.getUserSession(session.getId());
+        } catch (NoUserSessionException ignored) {
+            return false;
+        }
+
+        return true;
     }
 
     protected void internalLogin() throws LoginException {
