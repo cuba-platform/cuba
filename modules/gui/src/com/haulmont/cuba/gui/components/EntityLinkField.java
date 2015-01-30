@@ -46,6 +46,9 @@ public interface EntityLinkField extends Field {
     MetaClass getMetaClass();
     void setMetaClass(MetaClass metaClass);
 
+    ListComponent getOwner();
+    void setOwner(ListComponent owner);
+
     interface EntityLinkClickHandler {
 
         void onClick(EntityLinkField field);

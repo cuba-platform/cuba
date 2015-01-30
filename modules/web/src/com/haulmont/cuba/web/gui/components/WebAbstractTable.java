@@ -1535,6 +1535,10 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                 }
             }
 
+            if (columnComponent instanceof EntityLinkField) {
+                ((EntityLinkField) columnComponent).setOwner(WebAbstractTable.this);
+            }
+
             applyPermissions(columnComponent);
 
             return fieldImpl;

@@ -44,7 +44,11 @@ public abstract class AbstractFieldFactory implements FieldFactory {
             if (mpp.getRange().isDatatype()) {
                 Datatype datatype = mpp.getRange().asDatatype();
                 String typeName = datatype.getName();
-                if (typeName.equals(StringDatatype.NAME)) {
+
+                if (xmlDescriptor != null
+                        && "true".equalsIgnoreCase(xmlDescriptor.attributeValue("link"))) {
+                    return createDatatypeLinkField(datasource, property, xmlDescriptor);
+                } else if (typeName.equals(StringDatatype.NAME)) {
                     if (xmlDescriptor != null
                             && xmlDescriptor.attribute("mask") != null) {
                         return createMaskedField(datasource, property, xmlDescriptor);
@@ -67,6 +71,32 @@ public abstract class AbstractFieldFactory implements FieldFactory {
             }
         }
         return createUnsupportedField(mpp);
+    }
+
+    protected Component createDatatypeLinkField(Datasource datasource, String property, Element xmlDescriptor) {
+        EntityLinkField linkField = componentsFactory.createComponent(EntityLinkField.NAME);
+
+        linkField.setDatasource(datasource, property);
+
+        if (xmlDescriptor != null) {
+            String linkScreen = xmlDescriptor.attributeValue("linkScreen");
+            if (StringUtils.isNotEmpty(linkScreen)) {
+                linkField.setScreen(linkScreen);
+            }
+
+            final String invokeMethodName = xmlDescriptor.attributeValue("linkInvoke");
+            if (StringUtils.isNotEmpty(invokeMethodName)) {
+                linkField.setCustomClickHandler(new InvokeEntityLinkClickHandler(invokeMethodName));
+            }
+
+            String openTypeAttribute = xmlDescriptor.attributeValue("linkScreenOpenType");
+            if (StringUtils.isNotEmpty(openTypeAttribute)) {
+                OpenType openType = OpenType.valueOf(openTypeAttribute);
+                linkField.setScreenOpenType(openType);
+            }
+        }
+
+        return linkField;
     }
 
     protected Component createNumberField(Datasource datasource, String property) {
@@ -238,44 +268,7 @@ public abstract class AbstractFieldFactory implements FieldFactory {
 
                 final String invokeMethodName = xmlDescriptor.attributeValue("linkInvoke");
                 if (StringUtils.isNotEmpty(invokeMethodName)) {
-                    linkField.setCustomClickHandler(new EntityLinkClickHandler() {
-                        @Override
-                        public void onClick(EntityLinkField field) {
-                            Window frame = ComponentsHelper.getWindow(field);
-                            if (frame == null) {
-                                throw new IllegalStateException("Please specify Frame for EntityLinkField");
-                            }
-
-                            Object controller;
-                            if (frame instanceof WrappedFrame) {
-                                controller = ((WrappedFrame) frame).getWrapper();
-                            } else if (frame instanceof WrappedWindow) {
-                                controller = ((WrappedWindow) frame).getWrapper();
-                            } else {
-                                controller = frame;
-                            }
-                            Method method;
-                            try {
-                                method = controller.getClass().getMethod(invokeMethodName, EntityLinkField.class);
-                                try {
-                                    method.invoke(controller, field);
-                                } catch (Exception e) {
-                                    throw new RuntimeException(e);
-                                }
-                            } catch (NoSuchMethodException e) {
-                                try {
-                                    method = controller.getClass().getMethod(invokeMethodName);
-                                    try {
-                                        method.invoke(controller);
-                                    } catch (Exception e1) {
-                                        throw new RuntimeException(e1);
-                                    }
-                                } catch (NoSuchMethodException e1) {
-                                    throw new IllegalStateException("No suitable methods named " + invokeMethodName + " for invoke");
-                                }
-                            }
-                        }
-                    });
+                    linkField.setCustomClickHandler(new InvokeEntityLinkClickHandler(invokeMethodName));
                 }
 
                 String openTypeAttribute = xmlDescriptor.attributeValue("linkScreenOpenType");
@@ -304,4 +297,49 @@ public abstract class AbstractFieldFactory implements FieldFactory {
 
     @Nullable
     protected abstract CollectionDatasource getOptionsDatasource(Datasource datasource, String property);
+
+    protected static class InvokeEntityLinkClickHandler implements EntityLinkClickHandler {
+        protected final String invokeMethodName;
+
+        public InvokeEntityLinkClickHandler(String invokeMethodName) {
+            this.invokeMethodName = invokeMethodName;
+        }
+
+        @Override
+        public void onClick(EntityLinkField field) {
+            Window frame = ComponentsHelper.getWindow(field);
+            if (frame == null) {
+                throw new IllegalStateException("Please specify Frame for EntityLinkField");
+            }
+
+            Object controller;
+            if (frame instanceof WrappedFrame) {
+                controller = ((WrappedFrame) frame).getWrapper();
+            } else if (frame instanceof WrappedWindow) {
+                controller = ((WrappedWindow) frame).getWrapper();
+            } else {
+                controller = frame;
+            }
+            Method method;
+            try {
+                method = controller.getClass().getMethod(invokeMethodName, EntityLinkField.class);
+                try {
+                    method.invoke(controller, field);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            } catch (NoSuchMethodException e) {
+                try {
+                    method = controller.getClass().getMethod(invokeMethodName);
+                    try {
+                        method.invoke(controller);
+                    } catch (Exception e1) {
+                        throw new RuntimeException(e1);
+                    }
+                } catch (NoSuchMethodException e1) {
+                    throw new IllegalStateException("No suitable methods named " + invokeMethodName + " for invoke");
+                }
+            }
+        }
+    }
 }

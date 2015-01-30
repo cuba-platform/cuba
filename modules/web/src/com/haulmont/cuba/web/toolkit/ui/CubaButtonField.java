@@ -5,8 +5,7 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.haulmont.chile.core.model.Instance;
-import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.vaadin.data.util.converter.Converter;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
@@ -17,6 +16,8 @@ import com.vaadin.ui.themes.BaseTheme;
  * @version $Id$
  */
 public class CubaButtonField extends CustomField {
+
+    protected Converter captionFormatter;
 
     public CubaButtonField() {
         setPrimaryStyleName("cuba-buttonfield");
@@ -44,10 +45,21 @@ public class CubaButtonField extends CustomField {
         //noinspection unchecked
         super.setInternalValue(newValue);
 
-        if (newValue instanceof Instance) {
-            // todo support caption property
-            getContent().setCaption(InstanceUtils.getInstanceName((Instance) newValue));
+        if (captionFormatter == null) {
+            getContent().setCaption(newValue == null ? "" : newValue.toString());
+        } else {
+            //noinspection unchecked
+            String caption = (String) captionFormatter.convertToPresentation(newValue, String.class, getLocale());
+            getContent().setCaption(caption);
         }
+    }
+
+    public Converter getCaptionFormatter() {
+        return captionFormatter;
+    }
+
+    public void setCaptionFormatter(Converter captionFormatter) {
+        this.captionFormatter = captionFormatter;
     }
 
     public void addClickListener(Button.ClickListener listener) {

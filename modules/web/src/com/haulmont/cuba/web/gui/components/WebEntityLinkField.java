@@ -5,6 +5,9 @@
 
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
@@ -18,6 +21,7 @@ import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.EntityLinkField;
 import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.DataSupplier;
@@ -27,11 +31,13 @@ import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaButtonField;
 import com.vaadin.data.Property;
+import com.vaadin.data.util.converter.Converter;
 import com.vaadin.ui.Button;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -49,6 +55,7 @@ public class WebEntityLinkField extends WebAbstractField<CubaButtonField> implem
     protected Map<String, Object> screenParams;
 
     protected MetaClass metaClass;
+    protected ListComponent owner;
 
     public WebEntityLinkField() {
         component = new CubaButtonField();
@@ -63,6 +70,44 @@ public class WebEntityLinkField extends WebAbstractField<CubaButtonField> implem
             }
         });
         component.setInvalidCommitted(true);
+        component.setCaptionFormatter(new Converter() {
+            @Override
+            public Object convertToModel(Object value, Class targetType, Locale locale) throws ConversionException {
+                return null;
+            }
+
+            @Override
+            public Object convertToPresentation(Object value, Class targetType, Locale locale)
+                    throws ConversionException {
+                if (value == null) {
+                    return "";
+                }
+
+                if (value instanceof Instance) {
+                    return ((Instance) value).getInstanceName();
+                }
+
+                Datatype datatype = Datatypes.getNN(value.getClass());
+
+                if (locale != null) {
+                    //noinspection unchecked
+                    return datatype.format(value, locale);
+                }
+
+                //noinspection unchecked
+                return datatype.format(value);
+            }
+
+            @Override
+            public Class getModelType() {
+                return Object.class;
+            }
+
+            @Override
+            public Class getPresentationType() {
+                return String.class;
+            }
+        });
 
         attachListener(component);
     }
@@ -70,7 +115,7 @@ public class WebEntityLinkField extends WebAbstractField<CubaButtonField> implem
     @Override
     public MetaClass getMetaClass() {
         final Datasource ds = getDatasource();
-        if (ds != null) {
+        if (ds != null && metaProperty.getRange().isClass()) {
             return metaProperty.getRange().asClass();
         } else {
             return metaClass;
@@ -87,21 +132,34 @@ public class WebEntityLinkField extends WebAbstractField<CubaButtonField> implem
     }
 
     @Override
+    public ListComponent getOwner() {
+        return owner;
+    }
+
+    @Override
+    public void setOwner(ListComponent owner) {
+        this.owner = owner;
+    }
+
+    @Override
     public void setValue(Object value) {
         if (value != null) {
             if (datasource == null && metaClass == null) {
                 throw new IllegalStateException("Datasource or metaclass must be set for field");
             }
 
-            Class fieldClass = getMetaClass().getJavaClass();
-            Class<?> valueClass = value.getClass();
-            //noinspection unchecked
-            if (!fieldClass.isAssignableFrom(valueClass)) {
-                throw new IllegalArgumentException(
-                        String.format("Could not set value with class %s to field with class %s",
-                                fieldClass.getCanonicalName(),
-                                valueClass.getCanonicalName())
-                );
+            MetaClass fieldMetaClass = getMetaClass();
+            if (fieldMetaClass != null) {
+                Class fieldClass = fieldMetaClass.getJavaClass();
+                Class<?> valueClass = value.getClass();
+                //noinspection unchecked
+                if (!fieldClass.isAssignableFrom(valueClass)) {
+                    throw new IllegalArgumentException(
+                            String.format("Could not set value with class %s to field with class %s",
+                                    fieldClass.getCanonicalName(),
+                                    valueClass.getCanonicalName())
+                    );
+                }
             }
         }
 
@@ -181,7 +239,9 @@ public class WebEntityLinkField extends WebAbstractField<CubaButtonField> implem
         }
 
         this.metaProperty = metaPropertyPath.getMetaProperty();
-        this.metaClass = metaProperty.getRange().asClass();
+        if (metaProperty.getRange().isClass()) {
+            this.metaClass = metaProperty.getRange().asClass();
+        }
 
         final ItemWrapper wrapper = createDatasourceWrapper(datasource, Collections.singleton(metaPropertyPath));
         final Property itemProperty = wrapper.getItemProperty(metaPropertyPath);
@@ -223,7 +283,13 @@ public class WebEntityLinkField extends WebAbstractField<CubaButtonField> implem
     protected void openEntityEditor() {
         Object value = getValue();
 
-        Entity entity = (Entity) value;
+        Entity entity;
+        if (value instanceof Entity) {
+            entity = (Entity) value;
+        } else {
+            entity = datasource.getItem();
+        }
+
         if (entity == null) {
             return;
         }
@@ -231,7 +297,7 @@ public class WebEntityLinkField extends WebAbstractField<CubaButtonField> implem
         WindowManager wm;
         Window window = ComponentsHelper.getWindow(this);
         if (window == null) {
-           throw new IllegalStateException("Please specify Frame for EntityLinkField");
+            throw new IllegalStateException("Please specify Frame for EntityLinkField");
         } else {
             wm = window.getWindowManager();
         }
@@ -267,13 +333,13 @@ public class WebEntityLinkField extends WebAbstractField<CubaButtonField> implem
             editor.addListener(new Window.CloseListener() {
                 @Override
                 public void windowClosed(String actionId) {
+                    // move focus to component
+                    component.focus();
+
                     if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                         Entity item = editor.getItem();
                         afterCommitOpenedEntity(item);
                     }
-
-                    // move focus to owner
-                    component.focus();
 
                     if (screenCloseListener != null) {
                         screenCloseListener.windowClosed(editor, actionId);
@@ -284,14 +350,22 @@ public class WebEntityLinkField extends WebAbstractField<CubaButtonField> implem
     }
 
     protected void afterCommitOpenedEntity(Entity item) {
-        if (getDatasource() != null) {
-            boolean modified = getDatasource().isModified();
-            setValue(null);
-            setValue(item);
-            ((DatasourceImplementation) getDatasource()).setModified(modified);
-        } else {
-            setValue(null);
-            setValue(item);
+        if (metaProperty.getRange().isClass()) {
+            if (getDatasource() != null) {
+                boolean modified = getDatasource().isModified();
+                setValue(null);
+                setValue(item);
+                ((DatasourceImplementation) getDatasource()).setModified(modified);
+            } else {
+                setValue(null);
+                setValue(item);
+            }
+        } else if (owner != null && owner.getDatasource() != null) {
+            //noinspection unchecked
+            owner.getDatasource().updateItem(item);
+
+            // focus owner
+            owner.requestFocus();
         }
     }
 }
