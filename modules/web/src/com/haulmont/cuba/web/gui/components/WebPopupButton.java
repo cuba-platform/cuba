@@ -10,6 +10,7 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.gui.components.PopupButton;
 import com.haulmont.cuba.web.AppUI;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.StringUtils;
@@ -126,7 +127,7 @@ public class WebPopupButton extends WebAbstractComponent<org.vaadin.hene.popupbu
     @Override
     public void addAction(final Action action) {
         if (action != null && vPopupComponent instanceof com.vaadin.ui.Layout) {
-            WebButton button = new WebButton() {
+            WebButton button = new PopupButtonActionButton() {
                 @Override
                 protected void beforeActionPerformed() {
                     WebPopupButton.this.requestFocus();
@@ -173,12 +174,13 @@ public class WebPopupButton extends WebAbstractComponent<org.vaadin.hene.popupbu
     @Override
     public void removeAction(Action action) {
         if (vPopupComponent instanceof com.vaadin.ui.Layout && actionOrder.remove(action)) {
-            Component button = (Component) action.getOwner();
-            if (button instanceof WebButton) {
-                ((WebButton) button).setAction(null);
+            for (ActionOwner owner : new LinkedList<>(action.getOwners())) {
+                if (owner instanceof PopupButtonActionButton) {
+                    owner.setAction(null);
+                    Button vButton = WebComponentsHelper.unwrap((PopupButtonActionButton) owner);
+                    ((com.vaadin.ui.Layout) vPopupComponent).removeComponent(vButton);
+                }
             }
-
-            ((com.vaadin.ui.Layout) vPopupComponent).removeComponent(WebComponentsHelper.unwrap(button));
         }
     }
 
@@ -335,5 +337,9 @@ public class WebPopupButton extends WebAbstractComponent<org.vaadin.hene.popupbu
         public void refreshState() {
             action.refreshState();
         }
+    }
+
+    protected static class PopupButtonActionButton extends WebButton {
+
     }
 }
