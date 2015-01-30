@@ -306,7 +306,8 @@ public class DbUpdaterEngine implements DbUpdater {
                 try {
                     executeSql("select * from " + reqTable + " where 0=1");
                 } catch (SQLException e) {
-                    if (e.getMessage() != null && e.getMessage().toLowerCase().contains(reqTable)) {
+                    String mark = dbmsType.equals("oracle") ? "table or view does not exist" : reqTable;
+                    if (e.getMessage() != null && e.getMessage().toLowerCase().contains(mark)) {
                         // probably the required table does not exist
                         log.info("Required table for " + moduleName + " does not exist, running init scripts");
                         List<File> initScripts = getInitScripts(dirName);
