@@ -6,7 +6,7 @@
 // Version: $Id$
 
 @mixin halo-cuba-flowlayout($primary-stylename : cuba-flowlayout) {
-  @include base-csslayout($primary-stylename);
+  @include valo-csslayout($primary-stylename);
 
   .#{$primary-stylename} {
     overflow-y: auto;
