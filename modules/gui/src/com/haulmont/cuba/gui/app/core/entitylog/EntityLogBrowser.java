@@ -478,9 +478,6 @@ public class EntityLogBrowser extends AbstractWindow {
                         loggedAttrDs.removeItem(removeAtr);
                 }
             }
-
-            Boolean isModified = loggedEntityDs.isModified() || loggedAttrDs.isModified();
-
             if (loggedAttrDs.isModified())
                 loggedAttrDs.commit();
             else
@@ -491,18 +488,7 @@ public class EntityLogBrowser extends AbstractWindow {
             loggedEntityTable.setEnabled(true);
             loggedEntityTable.requestFocus();
 
-            if (isModified) {
-                showOptionDialog( messages.getMainMessage("dialogs.Confirmation"),
-                        messages.getMessage(getClass(), "reloadConfigurationDialog"),
-                        MessageType.CONFIRMATION, new Action[]{
-                        new DialogAction(DialogAction.Type.YES) {
-                            public void actionPerform(Component component) {
-                                logService.invalidateCache();
-                            }
-                        },
-                        new DialogAction(DialogAction.Type.NO)
-                });
-            }
+            logService.invalidateCache();
         }
     }
 
