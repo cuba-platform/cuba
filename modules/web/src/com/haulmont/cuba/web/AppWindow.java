@@ -336,27 +336,12 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
             foldersPane = createFoldersPane();
 
             if (foldersPane != null) {
-                foldersSplit = new CubaHorizontalSplitPanel();
-
-                if (webConfig.getUseLightHeader()) {
-                    foldersSplit.setDockable(true);
-                    foldersSplit.setImmediate(true);
-                    foldersPane.setVisible(true);
-                    foldersSplit.setDefaultPosition(webConfig.getFoldersPaneDefaultWidth() + "px");
-                }
-
-                foldersSplit.setSplitPosition(0, Unit.PIXELS);
-                foldersSplit.setMaxSplitPosition(50, Unit.PERCENTAGE);
-
-                if (!webConfig.getUseLightHeader()) {
-                    foldersSplit.setLocked(true);
-                }
-
-                foldersSplit.addComponent(foldersPane);
+                createFoldersSplit();
 
                 middleLayout.addComponent(foldersSplit);
                 middleLayout.setExpandRatio(foldersSplit, 1);
 
+                foldersSplit.addComponent(foldersPane);
                 foldersPane.init(foldersSplit);
             }
         }
@@ -498,6 +483,24 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
         } else {
             middleLayout.addComponent(mainLayout);
             middleLayout.setExpandRatio(mainLayout, 1);
+        }
+    }
+
+    protected void createFoldersSplit() {
+        foldersSplit = new CubaHorizontalSplitPanel();
+
+        if (webConfig.getUseLightHeader()) {
+            foldersSplit.setDockable(true);
+            foldersSplit.setImmediate(true);
+            foldersPane.setVisible(true);
+            foldersSplit.setDefaultPosition(webConfig.getFoldersPaneDefaultWidth() + "px");
+        }
+
+        foldersSplit.setSplitPosition(0, Unit.PIXELS);
+        foldersSplit.setMaxSplitPosition(50, Unit.PERCENTAGE);
+
+        if (!webConfig.getUseLightHeader()) {
+            foldersSplit.setLocked(true);
         }
     }
 
@@ -944,14 +947,30 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
         menuBarLayout.replaceComponent(menuBar, createMenuBar());
         placeMenuBar(menuBarLayout);
 
-        if (webConfig.getFoldersPaneEnabled() && foldersPane != null) {
-            foldersPane.savePosition();
+        if (webConfig.getFoldersPaneEnabled()) {
             FoldersPane oldFoldersPane = foldersPane;
             foldersPane = createFoldersPane();
-            if (foldersPane != null) {
-                foldersPane.init(foldersSplit);
+
+            if (foldersSplit != null) {
+                if (foldersPane != null) {
+                    if (oldFoldersPane != null)
+                        oldFoldersPane.savePosition();
+                    foldersPane.init(foldersSplit);
+                    foldersSplit.replaceComponent(oldFoldersPane, foldersPane);
+                } else {
+                    middleLayout.removeComponent(foldersSplit);
+                    foldersSplit = null;
+                }
+            } else {
+                if (foldersPane != null) {
+                    createFoldersSplit();
+                    middleLayout.removeComponent(mainLayout);
+                    middleLayout.addComponent(foldersSplit);
+                    middleLayout.setExpandRatio(foldersSplit, 1);
+                    foldersSplit.addComponent(foldersPane);
+                    foldersPane.init(foldersSplit);
+                }
             }
-            foldersSplit.replaceComponent(oldFoldersPane, foldersPane);
         }
         substUserSelect.select(connection.getSession().getCurrentOrSubstitutedUser());
 
