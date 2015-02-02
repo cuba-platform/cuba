@@ -13,6 +13,7 @@ import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.components.Tree;
 import com.haulmont.cuba.gui.components.filter.ConditionsTree;
 import com.haulmont.cuba.gui.components.filter.FilterHelper;
@@ -211,4 +212,17 @@ public class Web6FilterHelper implements FilterHelper {
         vTable.setItemDescriptionGenerator(null);
     }
 
+    @Override
+    public void setFieldReadOnlyFocusable(TextField textField, boolean readOnlyFocusable) {
+        com.haulmont.cuba.web.toolkit.ui.TextField vTextField = WebComponentsHelper.unwrap(textField);
+        vTextField.setAllowFocusReadonly(readOnlyFocusable);
+    }
+
+    @Override
+    public void setComponentFocusable(com.haulmont.cuba.gui.components.Component component, boolean focusable) {
+        com.vaadin.ui.Component vComponent = WebComponentsHelper.unwrap(component);
+        if (vComponent instanceof Component.Focusable) {
+            ((Component.Focusable) vComponent).setTabIndex(focusable ? 0 : -1);
+        }
+    }
 }

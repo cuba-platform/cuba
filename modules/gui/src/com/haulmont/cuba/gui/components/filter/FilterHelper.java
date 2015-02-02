@@ -9,6 +9,7 @@ import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.Folder;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.components.Tree;
 import com.haulmont.cuba.gui.presentations.Presentations;
 
@@ -49,4 +50,8 @@ public interface FilterHelper {
     void initTableFtsTooltips(Table table, Map<UUID, String> tooltips);
 
     void removeTableFtsTooltips(Table table);
+
+    void setFieldReadOnlyFocusable(TextField textField, boolean readOnlyFocusable);
+
+    void setComponentFocusable(com.haulmont.cuba.gui.components.Component component, boolean focusable);
 }

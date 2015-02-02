@@ -7,6 +7,7 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.Folder;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Tree;
@@ -19,10 +20,6 @@ import org.apache.commons.logging.LogFactory;
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellRenderer;
-import java.awt.*;
-import java.awt.event.MouseEvent;
 import java.util.Map;
 import java.util.UUID;
 
@@ -92,4 +89,14 @@ public class DesktopFilterHelper implements FilterHelper {
 
     }
 
+    @Override
+    public void setFieldReadOnlyFocusable(com.haulmont.cuba.gui.components.TextField textField, boolean readOnlyFocusable) {
+        //do nothing
+    }
+
+    @Override
+    public void setComponentFocusable(Component component, boolean focusable) {
+        JComponent dComponent = DesktopComponentsHelper.unwrap(component);
+        dComponent.setFocusable(focusable);
+    }
 }

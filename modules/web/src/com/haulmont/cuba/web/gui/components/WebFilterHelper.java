@@ -12,6 +12,7 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.components.Tree;
 import com.haulmont.cuba.gui.components.filter.ConditionsTree;
 import com.haulmont.cuba.gui.components.filter.FilterHelper;
@@ -23,6 +24,7 @@ import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.app.folders.AppFolderEditWindow;
 import com.haulmont.cuba.web.app.folders.FolderEditWindow;
 import com.haulmont.cuba.web.app.folders.FoldersPane;
+import com.haulmont.cuba.web.toolkit.ui.CubaTextField;
 import com.vaadin.event.Transferable;
 import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
@@ -206,6 +208,20 @@ public class WebFilterHelper implements FilterHelper {
     public void removeTableFtsTooltips(Table table) {
         com.vaadin.ui.Table vTable = WebComponentsHelper.unwrap(table);
         vTable.setItemDescriptionGenerator(null);
+    }
+
+    @Override
+    public void setFieldReadOnlyFocusable(TextField textField, boolean readOnlyFocusable) {
+        CubaTextField vTextField = WebComponentsHelper.unwrap(textField);
+        vTextField.setReadOnlyFocusable(readOnlyFocusable);
+    }
+
+    @Override
+    public void setComponentFocusable(com.haulmont.cuba.gui.components.Component component, boolean focusable) {
+        com.vaadin.ui.Component vComponent = WebComponentsHelper.unwrap(component);
+        if (vComponent instanceof Component.Focusable) {
+            ((Component.Focusable) vComponent).setTabIndex(focusable ? 0 : -1);
+        }
     }
 
 }

@@ -52,6 +52,8 @@ public class InListParamComponent {
         field = componentsFactory.createComponent(TextField.NAME);
         field.setEditable(false);
         field.setWidth("100%");
+        FilterHelper filterHelper = AppBeans.get(FilterHelper.class);
+        filterHelper.setFieldReadOnlyFocusable(field, true);
 
         pickerButton = componentsFactory.createComponent(Button.NAME);
         pickerButton.setAction(new AbstractAction("") {
@@ -79,6 +81,7 @@ public class InListParamComponent {
             }
         });
         pickerButton.setIcon("components/pickerfield/images/lookup-btn.png");
+        filterHelper.setComponentFocusable(pickerButton, false);
 
         clearButton = componentsFactory.createComponent(Button.NAME);
         clearButton.setAction(new AbstractAction("") {
@@ -92,6 +95,7 @@ public class InListParamComponent {
             }
         });
         clearButton.setIcon("components/pickerfield/images/clear-btn.png");
+        filterHelper.setComponentFocusable(clearButton, false);
 
         composition = componentsFactory.createComponent(BoxLayout.HBOX);
         composition.setWidth("100%");
