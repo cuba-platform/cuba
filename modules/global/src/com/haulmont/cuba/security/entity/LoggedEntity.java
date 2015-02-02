@@ -5,12 +5,11 @@
 package com.haulmont.cuba.security.entity;
 
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 import javax.persistence.*;
 import java.util.Set;
 
-import com.haulmont.cuba.core.entity.annotation.Listeners;
-import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 /**
  * Configuration element of <code>EntityLog</code> bean.
@@ -20,7 +19,6 @@ import com.haulmont.cuba.core.entity.annotation.SystemLevel;
  */
 @Entity(name = "sec$LoggedEntity")
 @Table(name = "SEC_LOGGED_ENTITY")
-@Listeners("cuba_LoggedEntityListener")
 @SystemLevel
 public class LoggedEntity extends BaseUuidEntity {
 

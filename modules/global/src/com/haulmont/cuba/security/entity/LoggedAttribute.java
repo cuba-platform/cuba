@@ -5,7 +5,6 @@
 package com.haulmont.cuba.security.entity;
 
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
-import com.haulmont.cuba.core.entity.annotation.Listeners;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 import javax.persistence.*;
@@ -19,7 +18,6 @@ import javax.persistence.Entity;
  */
 @Entity(name = "sec$LoggedAttribute")
 @Table(name = "SEC_LOGGED_ATTR")
-@Listeners("cuba_LoggedAttributeListener")
 @SystemLevel
 public class LoggedAttribute extends BaseUuidEntity {
 
