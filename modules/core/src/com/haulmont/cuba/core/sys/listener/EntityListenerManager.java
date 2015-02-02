@@ -91,6 +91,8 @@ public class EntityListenerManager {
                 dynamicListeners.put(entityClass, set);
             }
             set.add(listenerClass.getName());
+
+            cache.clear();
         } finally {
             lock.writeLock().unlock();
         }
@@ -111,6 +113,8 @@ public class EntityListenerManager {
                 dynamicListeners.put(entityClass, set);
             }
             set.add(listenerBeanName);
+
+            cache.clear();
         } finally {
             lock.writeLock().unlock();
         }
@@ -190,12 +194,17 @@ public class EntityListenerManager {
     protected List<?> getListener(Class<? extends BaseEntity> entityClass, EntityListenerType type) {
         Key key = new Key(entityClass, type);
 
-        if (!cache.containsKey(key)) {
-            List listeners = findListener(entityClass, type);
-            cache.put(key, listeners);
-            return listeners;
-        } else {
-            return cache.get(key);
+        lock.readLock().lock();
+        try {
+            if (!cache.containsKey(key)) {
+                List listeners = findListener(entityClass, type);
+                cache.put(key, listeners);
+                return listeners;
+            } else {
+                return cache.get(key);
+            }
+        } finally {
+            lock.readLock().unlock();
         }
     }
 
@@ -242,37 +251,32 @@ public class EntityListenerManager {
     }
 
     protected List<String> getDeclaredListeners(Class<? extends BaseEntity> entityClass) {
-        lock.readLock().lock();
-        try {
-            List<String> listeners = new ArrayList<>();
+        List<String> listeners = new ArrayList<>();
 
-            List<Class> superclasses = ClassUtils.getAllSuperclasses(entityClass);
-            Collections.reverse(superclasses);
-            for (Class superclass : superclasses) {
-                Set<String> set = dynamicListeners.get(superclass);
-                if (set != null) {
-                    listeners.addAll(set);
-                }
-
-                Listeners annotation = (Listeners) superclass.getAnnotation(Listeners.class);
-                if (annotation != null) {
-                    listeners.addAll(Arrays.asList(annotation.value()));
-                }
-            }
-
-            Set<String> set = dynamicListeners.get(entityClass);
+        List<Class> superclasses = ClassUtils.getAllSuperclasses(entityClass);
+        Collections.reverse(superclasses);
+        for (Class superclass : superclasses) {
+            Set<String> set = dynamicListeners.get(superclass);
             if (set != null) {
                 listeners.addAll(set);
             }
 
-            Listeners annotation = entityClass.getAnnotation(Listeners.class);
+            Listeners annotation = (Listeners) superclass.getAnnotation(Listeners.class);
             if (annotation != null) {
                 listeners.addAll(Arrays.asList(annotation.value()));
             }
-
-            return listeners;
-        } finally {
-            lock.readLock().unlock();
         }
+
+        Set<String> set = dynamicListeners.get(entityClass);
+        if (set != null) {
+            listeners.addAll(set);
+        }
+
+        Listeners annotation = entityClass.getAnnotation(Listeners.class);
+        if (annotation != null) {
+            listeners.addAll(Arrays.asList(annotation.value()));
+        }
+
+        return listeners;
     }
 }
