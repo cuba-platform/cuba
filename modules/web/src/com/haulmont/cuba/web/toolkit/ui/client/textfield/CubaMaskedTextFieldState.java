@@ -5,13 +5,11 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.textfield;
 
-import com.vaadin.shared.ui.textfield.AbstractTextFieldState;
-
 /**
  * @author artamonov
  * @version $Id$
  */
-public class CubaMaskedTextFieldState extends AbstractTextFieldState {
+public class CubaMaskedTextFieldState extends CubaTextFieldState {
     {
         primaryStyleName = "cuba-maskedfield";
     }

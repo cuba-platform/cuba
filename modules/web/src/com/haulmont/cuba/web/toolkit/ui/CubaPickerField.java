@@ -70,7 +70,8 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
     }
 
     protected void initTextField() {
-        field = new CubaPickerTextField();
+        field = new CubaTextField();
+        ((CubaTextField) field).setReadOnlyFocusable(true);
 
         field.setImmediate(true);
         field.setReadOnly(true);

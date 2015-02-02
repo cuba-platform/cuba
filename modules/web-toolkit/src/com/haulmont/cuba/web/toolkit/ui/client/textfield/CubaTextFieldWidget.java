@@ -22,6 +22,8 @@ public class CubaTextFieldWidget extends VTextField implements ShortcutActionHan
 
     protected ShortcutActionHandler shortcutHandler;
 
+    protected boolean readOnlyFocusable = false;
+
     public CubaTextFieldWidget() {
         // handle shortcuts
         DOM.sinkEvents(getElement(), Event.ONKEYDOWN);
@@ -63,5 +65,33 @@ public class CubaTextFieldWidget extends VTextField implements ShortcutActionHan
     @Override
     public boolean remove(Widget w) {
         return false;
+    }
+
+    /**
+     * If {@code readOnlyFocusable} property is set then component is focusable
+     * in readOnly mode
+     */
+    @Override
+    public void setReadOnly(boolean readOnly) {
+        if (!readOnlyFocusable) {
+            super.setReadOnly(readOnly);
+        } else {
+            setTabIndex(0);
+            getElement().setPropertyBoolean("readOnly", readOnly);
+            String readOnlyStyle = "readonly";
+            if (readOnly) {
+                addStyleDependentName(readOnlyStyle);
+            } else {
+                removeStyleDependentName(readOnlyStyle);
+            }
+        }
+    }
+
+    public boolean isReadOnlyFocusable() {
+        return readOnlyFocusable;
+    }
+
+    public void setReadOnlyFocusable(boolean readOnlyFocusable) {
+        this.readOnlyFocusable = readOnlyFocusable;
     }
 }
