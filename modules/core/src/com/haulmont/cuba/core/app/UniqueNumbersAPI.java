@@ -13,7 +13,7 @@ package com.haulmont.cuba.core.app;
 public interface UniqueNumbersAPI {
 
     String NAME = "cuba_UniqueNumbers";
-    
+
     /**
      * Returns the next sequence value.
      *
@@ -42,9 +42,9 @@ public interface UniqueNumbersAPI {
     void setCurrentNumber(String domain, long value);
 
     /**
-     * Removes database sequence with specified identifier
-     * Sequence exist check is not performed, so database can throw an exception
+     * Removes sequence with specified identifier
      * @param domain sequence identifier
+     * @throws java.lang.IllegalStateException if sequence does not exist
      */
-    void deleteDbSequence(String domain);
+    void deleteSequence(String domain);
 }

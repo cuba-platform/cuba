@@ -14,13 +14,15 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
 
 import javax.annotation.ManagedBean;
+import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Provides unique numbers based on database sequences.
@@ -32,11 +34,14 @@ import java.util.Set;
 public class UniqueNumbers implements UniqueNumbersAPI {
 
     @Inject
-    private Persistence persistence;
+    protected Persistence persistence;
 
-    private Set<String> existingSequences = Collections.synchronizedSet(new HashSet<String>());
+    protected ReadWriteLock lock = new ReentrantReadWriteLock();
 
-    private SequenceSupport sequenceSupport;
+    @GuardedBy("lock")
+    protected Set<String> existingSequences = new HashSet<>();
+
+    protected SequenceSupport sequenceSupport;
 
     @PostConstruct
     public void init() {
@@ -48,7 +53,12 @@ public class UniqueNumbers implements UniqueNumbersAPI {
         String seqName = getSequenceName(domain);
         String sqlScript = sequenceSupport.getNextValueSql(seqName);
 
-        return getResult(seqName, sqlScript);
+        try {
+            lock.readLock().lock();
+            return getResult(seqName, sqlScript);
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     @Override
@@ -56,7 +66,12 @@ public class UniqueNumbers implements UniqueNumbersAPI {
         String seqName = getSequenceName(domain);
         String sqlScript = sequenceSupport.getCurrentValueSql(seqName);
 
-        return getResult(seqName, sqlScript);
+        try {
+            lock.readLock().lock();
+            return getResult(seqName, sqlScript);
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     @Override
@@ -66,30 +81,44 @@ public class UniqueNumbers implements UniqueNumbersAPI {
 
         Transaction tx = persistence.getTransaction();
         try {
+            lock.readLock().lock();
             checkSequenceExists(seqName);
             executeScript(sqlScript);
             tx.commit();
         } finally {
+            lock.readLock().unlock();
             tx.end();
         }
     }
 
     @Override
-    public void deleteDbSequence(String domain) {
+    public void deleteSequence(String domain) {
         String seqName = getSequenceName(domain);
+
+        if (!containsSequence(seqName)) {
+            throw new IllegalStateException("Attempt to delete nonexistent sequence " + domain);
+        }
+        
         String sqlScript = sequenceSupport.deleteSequenceSql(seqName);
 
         Transaction tx = persistence.getTransaction();
         try {
+            lock.writeLock().lock();
+            if (!containsSequence(seqName)) {
+                tx.commit();
+                return;
+            }
+
             executeScript(sqlScript);
             tx.commit();
             existingSequences.remove(seqName);
         } finally {
+            lock.writeLock().unlock();
             tx.end();
         }
     }
 
-    private long getResult(String seqName, String sqlScript) {
+    protected long getResult(String seqName, String sqlScript) {
         Transaction tx = persistence.getTransaction();
         try {
             checkSequenceExists(seqName);
@@ -111,7 +140,7 @@ public class UniqueNumbers implements UniqueNumbersAPI {
         }
     }
 
-    private Object executeScript(String sqlScript) {
+    protected Object executeScript(String sqlScript) {
         EntityManager em = persistence.getEntityManager();
         StrTokenizer tokenizer = new StrTokenizer(sqlScript, SequenceSupport.SQL_DELIMITER);
         Object value = null;
@@ -126,18 +155,20 @@ public class UniqueNumbers implements UniqueNumbersAPI {
         return value;
     }
 
-    private boolean isSelectSql(String sql) {
+    protected boolean isSelectSql(String sql) {
         return sql.trim().toLowerCase().startsWith("select");
     }
 
-    private void checkSequenceExists(String seqName) {
-        if (existingSequences.contains(seqName))
-            return;
+    protected void checkSequenceExists(String seqName) {
+        if (containsSequence(seqName)) return;
 
         // Create sequence in separate transaction because it's name is cached and we want to be sure it is created
         // regardless of possible errors in the invoking code
         Transaction tx = persistence.createTransaction();
         try {
+            lock.readLock().unlock();
+            lock.writeLock().lock();
+
             EntityManager em = persistence.getEntityManager();
 
             Query query = em.createNativeQuery(sequenceSupport.sequenceExistsSql(seqName));
@@ -146,15 +177,25 @@ public class UniqueNumbers implements UniqueNumbersAPI {
                 query = em.createNativeQuery(sequenceSupport.createSequenceSql(seqName, 1, 1));
                 query.executeUpdate();
             }
-            existingSequences.add(seqName);
-
             tx.commit();
+            existingSequences.add(seqName);
         } finally {
+            lock.readLock().lock();
+            lock.writeLock().unlock();
             tx.end();
         }
     }
 
-    private String getSequenceName(String domain) {
+    protected boolean containsSequence(String name) {
+        try {
+            lock.readLock().lock();
+            return existingSequences.contains(name);
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    protected String getSequenceName(String domain) {
         if (StringUtils.isBlank(domain))
             throw new IllegalArgumentException("Sequence name can not be blank");
 
