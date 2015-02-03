@@ -23,6 +23,7 @@ import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.RandomStringUtils;
 
 import javax.inject.Inject;
 import java.util.*;
@@ -115,7 +116,9 @@ public class RuntimePropConditionFrame extends ConditionFrame<RuntimePropConditi
         CategoryAttribute attribute = attributeLookup.getValue();
 
         String alias = condition.getEntityAlias();
-        condition.setJoin("join " + alias + ".category.categoryAttrs ca, sys$CategoryAttributeValue cav ");
+        String caAlias = "ca" + RandomStringUtils.randomNumeric(5);
+        String cavAlias = "cav" + RandomStringUtils.randomNumeric(5);
+        condition.setJoin("join " + alias + ".category.categoryAttrs " + caAlias + ", sys$CategoryAttributeValue " + cavAlias + " ");
 
         String paramName;
         String operation = operationLookup.<Op>getValue().getText();
@@ -144,13 +147,13 @@ public class RuntimePropConditionFrame extends ConditionFrame<RuntimePropConditi
             if (Op.IN.equals(op) || Op.NOT_IN.equals(op))
                 paramStr = " ( ? ) ";
 
-        String where = "cav.entityId=" +
+        String where = cavAlias + ".entityId=" +
                 alias +
-                ".id and cav." +
+                ".id and " + cavAlias + "." +
                 valueFieldName +
                 " " +
                 operation +
-                (op.isUnary() ? " " : paramStr) + "and cav.categoryAttribute.id='" +
+                (op.isUnary() ? " " : paramStr) + "and " + cavAlias + ".categoryAttribute.id='" +
                 attributeLookup.<CategoryAttribute>getValue().getId() + "'";
         paramName = condition.createParamName();
         where = where.replace("?", ":" + paramName);
