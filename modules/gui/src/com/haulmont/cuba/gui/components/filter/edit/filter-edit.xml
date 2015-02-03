@@ -20,8 +20,8 @@
     </actions>
 
     <layout spacing="true" expand="mainLayout">
-        <hbox id="mainLayout" spacing="true" width="100%" expand="conditionPropertiesLayout">
-            <vbox id="leftPanel" height="100%" spacing="true" expand="conditionsTree" width="theme://cuba.gui.filterEditor.leftPanel.width">
+        <hbox id="mainLayout" spacing="true" width="100%" expand="leftPanel">
+            <vbox id="leftPanel" height="100%" spacing="true" expand="conditionsTree">
                 <grid spacing="true" width="100%">
                     <columns>
                         <column/>
@@ -67,7 +67,7 @@
                     <treechildren datasource="conditionsDs" captionProperty="locCaption"/>
                 </tree>
             </vbox>
-            <groupBox id="conditionPropertiesLayout" caption="msg://conditionProperties" height="100%">
+            <groupBox id="conditionPropertiesLayout" caption="msg://conditionProperties" height="100%" width="theme://cuba.gui.filterEditor.conditionProperties.width">
                 <iframe id="customConditionFrame" screen="customConditionFrame" visible="false"/>
                 <iframe id="runtimePropConditionFrame" screen="runtimePropConditionFrame" visible="false"/>
                 <iframe id="propertyConditionFrame" screen="propertyConditionFrame" visible="false"/>
