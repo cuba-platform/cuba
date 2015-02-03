@@ -74,7 +74,8 @@ public class ParamEditor implements AbstractCondition.Listener {
         paramEditComponent = condition.getParam().createEditComponent(Param.ValueProperty.VALUE);
         if (paramEditComponent instanceof Field) {
             ((Field) paramEditComponent).setRequired(condition.getRequired());
-            if (oldParam.getJavaClass().equals(newParam.getJavaClass())) {
+            if (oldParam.getJavaClass().equals(newParam.getJavaClass())
+                    && paramEditComponent.getClass().equals(oldParamEditComponent.getClass())) {
                 ((Field) paramEditComponent).setValue(((Field) oldParamEditComponent).getValue());
             }
         }
