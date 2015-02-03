@@ -106,6 +106,8 @@ public class WebFilterHelper implements FilterHelper {
                 Object sourceItemId = t.getData("itemId");
                 Object targetItemId = target.getItemIdOver();
 
+                if (targetItemId == null) return;
+
                 CollectionDatasource datasource = tree.getDatasource();
 
                 AbstractCondition sourceCondition = (AbstractCondition) datasource.getItem(sourceItemId);
@@ -113,6 +115,8 @@ public class WebFilterHelper implements FilterHelper {
 
                 Node<AbstractCondition> sourceNode = conditions.getNode(sourceCondition);
                 Node<AbstractCondition> targetNode = conditions.getNode(targetCondition);
+
+                boolean moveToTheSameParent = Objects.equals(sourceNode.getParent(), targetNode.getParent());
 
                 if (location == VerticalDropLocation.MIDDLE) {
                     if (sourceNode.getParent() == null) {
@@ -134,12 +138,18 @@ public class WebFilterHelper implements FilterHelper {
                     if (location == VerticalDropLocation.BOTTOM)
                         targetIndex++;
 
-
+                    int sourceNodeIndex;
                     if (sourceNode.getParent() == null) {
+                        sourceNodeIndex = conditions.getRootNodes().indexOf(sourceNode);
                         conditions.getRootNodes().remove(sourceNode);
                     } else {
+                        sourceNodeIndex = sourceNode.getParent().getChildren().indexOf(sourceNode);
                         sourceNode.getParent().getChildren().remove(sourceNode);
                     }
+
+                    //decrease drop position index if dragging from top to bottom inside the same parent node
+                    if (moveToTheSameParent && (sourceNodeIndex < targetIndex))
+                        targetIndex--;
 
                     if (targetNode.getParent() == null) {
                         sourceNode.parent = null;
