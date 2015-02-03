@@ -14,6 +14,7 @@ import com.haulmont.cuba.gui.autocomplete.JpqlSuggestionFactory;
 import com.haulmont.cuba.gui.autocomplete.Suggester;
 import com.haulmont.cuba.gui.autocomplete.Suggestion;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.filter.FilterHelper;
 import com.haulmont.cuba.gui.components.filter.Param;
 import com.haulmont.cuba.gui.components.filter.ParamType;
 import com.haulmont.cuba.gui.components.filter.condition.CustomCondition;
@@ -101,6 +102,8 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
                 fillEntitySelect(condition.getParam());
             }
         });
+        FilterHelper filterHelper = AppBeans.get(FilterHelper.class);
+        filterHelper.setLookupNullSelectionAllowed(typeSelect, false);
 
         joinField.setSuggester(new Suggester() {
             @Override
