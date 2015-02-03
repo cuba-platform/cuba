@@ -7,6 +7,7 @@ package com.haulmont.cuba.gui.components.filter.addcondition;
 
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.filter.descriptor.AbstractConditionDescriptor;
+import com.haulmont.cuba.gui.components.filter.descriptor.HeaderConditionDescriptor;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -80,6 +81,8 @@ public class AddConditionWindow extends AbstractWindow {
         AbstractConditionDescriptor item = conditionDescriptorsDs.getItem();
         if (item == null) {
             showNotification(getMessage("AddCondition.selectCondition"), NotificationType.WARNING);
+        } else if (item instanceof HeaderConditionDescriptor) {
+            showNotification(getMessage("AddCondition.youSelectedGroup"), NotificationType.WARNING);
         } else {
             close(COMMIT_ACTION_ID);
         }
