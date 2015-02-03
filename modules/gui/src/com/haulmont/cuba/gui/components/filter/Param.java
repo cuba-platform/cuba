@@ -160,6 +160,9 @@ public class Param {
 
     public void setDefaultValue(Object defaultValue) {
         this.defaultValue = defaultValue;
+        if (value == null) {
+            setValue(defaultValue, true);
+        }
     }
 
     public void parseValue(String text) {
@@ -492,7 +495,7 @@ public class Param {
             @Override
             public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
                 if (value == null || value instanceof Number)
-                    setValue(value);
+                    _setValue(value, valueProperty);
                 else if (value instanceof String && !StringUtils.isBlank((String) value)) {
                     UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
                     Messages messages = AppBeans.get(Messages.NAME);
