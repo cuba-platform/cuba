@@ -9,9 +9,7 @@ import com.google.common.base.Strings;
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MessageTools;
-import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.filter.operationedit.AbstractOperationEditor;
 import com.haulmont.cuba.gui.components.filter.Op;
 import com.haulmont.cuba.gui.components.filter.Param;
@@ -94,7 +92,11 @@ public class PropertyCondition extends AbstractCondition {
         sb.append(entityAlias).append(".").append(name);
 
         if (Param.Type.ENTITY == param.getType()) {
-            sb.append(".id");
+            Metadata metadata = AppBeans.get(Metadata.class);
+            com.haulmont.chile.core.model.MetaClass metaClass = metadata.getClassNN(param.getJavaClass());
+            String primaryKeyName = metadata.getTools().getPrimaryKeyName(metaClass);
+
+            sb.append("." + primaryKeyName);
         }
 
         if (operator != Op.NOT_EMPTY)
