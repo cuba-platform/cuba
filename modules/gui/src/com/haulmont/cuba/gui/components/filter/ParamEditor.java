@@ -9,6 +9,8 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
+import java.util.Date;
+
 /**
  * @author krivopustov
  * @version $Id$
@@ -45,8 +47,16 @@ public class ParamEditor implements AbstractCondition.Listener {
         paramEditComponent.setAlignment(Component.Alignment.MIDDLE_LEFT);
         if (paramEditComponent instanceof Field)
             ((Field) paramEditComponent).setRequired(condition.getRequired());
-        mainLayout.add(paramEditComponent);
-        mainLayout.expand(paramEditComponent);
+        if (Date.class.isAssignableFrom(condition.getParam().getJavaClass()) || Boolean.class.isAssignableFrom(condition.getParam().getJavaClass())) {
+            HBoxLayout componentEditLayout = componentsFactory.createComponent(HBoxLayout.class);
+            componentEditLayout.add(paramEditComponent);
+            paramEditComponent.setAlignment(Component.Alignment.MIDDLE_LEFT);
+            mainLayout.add(componentEditLayout);
+            mainLayout.expand(componentEditLayout);
+        } else {
+            mainLayout.add(paramEditComponent);
+            mainLayout.expand(paramEditComponent);
+        }
 
         removeButton = componentsFactory.createComponent(LinkButton.NAME);
         removeButton.setIcon("icons/item-remove.png");
