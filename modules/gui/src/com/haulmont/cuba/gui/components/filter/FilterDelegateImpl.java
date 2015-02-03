@@ -1075,16 +1075,6 @@ public class FilterDelegateImpl implements FilterDelegate {
     public boolean apply(boolean isNewWindow) {
         if (clientConfig.getGenericFilterChecking()) {
             if (filterEntity != null && conditions.getRoots().size() > 0) {
-
-                boolean haveRequiredConditions = haveFilledRequiredConditions();
-                if (!haveRequiredConditions) {
-                    if (!isNewWindow) {
-                        windowManager.showNotification(messages.getMainMessage("filter.emptyRequiredConditions"),
-                                IFrame.NotificationType.HUMANIZED);
-                    }
-                    return false;
-                }
-
                 boolean haveCorrectCondition = hasCorrectCondition();
                 if (!haveCorrectCondition) {
                     if (!isNewWindow) {
@@ -1094,6 +1084,15 @@ public class FilterDelegateImpl implements FilterDelegate {
                     return false;
                 }
             }
+        }
+
+        boolean haveRequiredConditions = haveFilledRequiredConditions();
+        if (!haveRequiredConditions) {
+            if (!isNewWindow) {
+                windowManager.showNotification(messages.getMainMessage("filter.emptyRequiredConditions"),
+                        IFrame.NotificationType.HUMANIZED);
+            }
+            return false;
         }
 
         applyDatasourceFilter();
