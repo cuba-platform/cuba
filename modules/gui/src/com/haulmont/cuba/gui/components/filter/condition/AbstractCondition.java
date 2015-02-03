@@ -43,7 +43,7 @@ public abstract class AbstractCondition extends AbstractNotPersistentEntity{
 
         void captionChanged();
 
-        void paramChanged();
+        void paramChanged(Param oldParam, Param newParam);
     }
 
     protected String name;
@@ -240,10 +240,11 @@ public abstract class AbstractCondition extends AbstractNotPersistentEntity{
     }
 
     public void setParam(Param param) {
+        Param oldParam = this.param;
         this.param = param;
 
         for (AbstractCondition.Listener listener : listeners) {
-            listener.paramChanged();
+            listener.paramChanged(oldParam, param);
         }
     }
 

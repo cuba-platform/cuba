@@ -403,7 +403,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                 public void captionChanged() {}
 
                 @Override
-                public void paramChanged() {
+                public void paramChanged(Param oldParam, Param newParam) {
                     updateFilterModifiedIndicator();
                 }
             });
@@ -1493,7 +1493,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                     }
 
                     @Override
-                    public void paramChanged() {
+                    public void paramChanged(Param oldParam, Param newParam) {
                         updateFilterModifiedIndicator();
                     }
                 });
