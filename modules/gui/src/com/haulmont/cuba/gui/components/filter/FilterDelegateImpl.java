@@ -1086,13 +1086,15 @@ public class FilterDelegateImpl implements FilterDelegate {
             }
         }
 
-        boolean haveRequiredConditions = haveFilledRequiredConditions();
-        if (!haveRequiredConditions) {
-            if (!isNewWindow) {
-                windowManager.showNotification(messages.getMainMessage("filter.emptyRequiredConditions"),
-                        IFrame.NotificationType.HUMANIZED);
+        if (filterEntity != null) {
+            boolean haveRequiredConditions = haveFilledRequiredConditions();
+            if (!haveRequiredConditions) {
+                if (!isNewWindow) {
+                    windowManager.showNotification(messages.getMainMessage("filter.emptyRequiredConditions"),
+                            IFrame.NotificationType.HUMANIZED);
+                }
+                return false;
             }
-            return false;
         }
 
         applyDatasourceFilter();
