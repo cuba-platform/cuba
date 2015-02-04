@@ -18,18 +18,22 @@ import java.util.Date;
 public class ParamEditor implements AbstractCondition.Listener {
 
     protected AbstractCondition condition;
+    private boolean removeButtonVisible;
     protected Component field;
     protected String fieldWidth = null;
     protected BoxLayout mainLayout;
     protected Label captionLbl;
     protected Component operationEditor;
     protected Component paramEditComponent;
-    protected final LinkButton removeButton;
+    protected BoxLayout paramEditComponentLayout;
+    protected LinkButton removeButton;
+    protected ComponentsFactory componentsFactory;
 
     public ParamEditor(final AbstractCondition condition, boolean removeButtonVisible) {
         this.condition = condition;
+        this.removeButtonVisible = removeButtonVisible;
 
-        ComponentsFactory componentsFactory = AppBeans.get(ComponentsFactory.class);
+        componentsFactory = AppBeans.get(ComponentsFactory.class);
         mainLayout = componentsFactory.createComponent(BoxLayout.HBOX);
         mainLayout.setWidth("100%");
         mainLayout.setSpacing(true);
@@ -43,35 +47,45 @@ public class ParamEditor implements AbstractCondition.Listener {
         operationEditor.setAlignment(Component.Alignment.MIDDLE_LEFT);
         mainLayout.add(operationEditor);
 
+        createParamEditLayout();
+
+        condition.addListener(this);
+    }
+
+    public void createParamEditLayout() {
+        paramEditComponentLayout = componentsFactory.createComponent(HBoxLayout.class);
+        paramEditComponentLayout.setSpacing(true);
+
         paramEditComponent = condition.getParam().createEditComponent(Param.ValueProperty.VALUE);
         paramEditComponent.setAlignment(Component.Alignment.MIDDLE_LEFT);
-        if (paramEditComponent instanceof Field)
+        if (paramEditComponent instanceof Field) {
             ((Field) paramEditComponent).setRequired(condition.getRequired());
-        if (Date.class.isAssignableFrom(condition.getParam().getJavaClass()) || Boolean.class.isAssignableFrom(condition.getParam().getJavaClass())) {
-            HBoxLayout componentEditLayout = componentsFactory.createComponent(HBoxLayout.class);
-            componentEditLayout.add(paramEditComponent);
-            paramEditComponent.setAlignment(Component.Alignment.MIDDLE_LEFT);
-            mainLayout.add(componentEditLayout);
-            mainLayout.expand(componentEditLayout);
-        } else {
-            mainLayout.add(paramEditComponent);
-            mainLayout.expand(paramEditComponent);
         }
+        paramEditComponentLayout.add(paramEditComponent);
 
         removeButton = componentsFactory.createComponent(LinkButton.NAME);
         removeButton.setIcon("icons/item-remove.png");
         removeButton.setAlignment(Component.Alignment.MIDDLE_LEFT);
         removeButton.setVisible(removeButtonVisible);
-        mainLayout.add(removeButton);
+        paramEditComponentLayout.add(removeButton);
 
-        condition.addListener(this);
+        if (paramEditComponentExpandRequired(condition.getParam())) {
+            paramEditComponentLayout.expand(paramEditComponent);
+        } else {
+            HBoxLayout spring = componentsFactory.createComponent(HBoxLayout.class);
+            paramEditComponentLayout.add(spring);
+            paramEditComponentLayout.expand(spring);
+        }
+
+        mainLayout.add(paramEditComponentLayout);
+        mainLayout.expand(paramEditComponentLayout);
     }
 
     @Override
     public void paramChanged(Param oldParam, Param newParam) {
         Component oldParamEditComponent = paramEditComponent;
-        mainLayout.remove(paramEditComponent);
-        paramEditComponent = condition.getParam().createEditComponent(Param.ValueProperty.VALUE);
+        mainLayout.remove(paramEditComponentLayout);
+        createParamEditLayout();
         if (paramEditComponent instanceof Field) {
             ((Field) paramEditComponent).setRequired(condition.getRequired());
             if (oldParam.getJavaClass().equals(newParam.getJavaClass())
@@ -79,9 +93,12 @@ public class ParamEditor implements AbstractCondition.Listener {
                 ((Field) paramEditComponent).setValue(((Field) oldParamEditComponent).getValue());
             }
         }
-        mainLayout.add(paramEditComponent, 2);
-        mainLayout.expand(paramEditComponent);
+    }
 
+    protected boolean paramEditComponentExpandRequired(Param param) {
+        Class paramJavaClass = param.getJavaClass();
+        return !(Date.class.isAssignableFrom(paramJavaClass)
+                || Boolean.class.isAssignableFrom(paramJavaClass));
     }
 
     @Override
