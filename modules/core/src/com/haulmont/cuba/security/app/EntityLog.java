@@ -46,6 +46,8 @@ public class EntityLog implements EntityLogAPI {
 
     private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
+    private ThreadLocal<Boolean> entityLogSwitchedOn = new ThreadLocal<Boolean>();
+
     @Inject
     protected TimeSource timeSource;
 
@@ -64,8 +66,12 @@ public class EntityLog implements EntityLogAPI {
     }
 
     @Override
+    public void processLoggingForCurrentThread(Boolean switched) {
+        entityLogSwitchedOn.set(switched);
+    }
+
     public synchronized boolean isEnabled() {
-        return config.getEnabled();
+        return !Boolean.FALSE.equals(entityLogSwitchedOn.get()) && config.getEnabled();
     }
 
     @Override

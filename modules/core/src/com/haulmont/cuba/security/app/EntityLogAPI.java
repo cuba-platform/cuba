@@ -40,4 +40,6 @@ public interface EntityLogAPI {
      * The configuration will be recreated from the database on next lifecycle event.
      */
     void invalidateCache();
+
+    void processLoggingForCurrentThread(Boolean switched);
 }
