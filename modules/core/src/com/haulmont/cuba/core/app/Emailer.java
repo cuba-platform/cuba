@@ -149,7 +149,7 @@ public class Emailer implements EmailerAPI {
             address = address.trim();
             if (StringUtils.isNotBlank(address)) {
                 SendingMessage sendingMessage = convertToSendingMessage(address, info.getFrom(), info.getCaption(),
-                        info.getBody(), info.getAttachments(), attemptsCount, deadline);
+                        info.getBody(), info.getHeaders(), info.getAttachments(), attemptsCount, deadline);
 
                 sendingMessageList.add(sendingMessage);
             }
@@ -537,7 +537,7 @@ public class Emailer implements EmailerAPI {
         }
     }
 
-    protected SendingMessage convertToSendingMessage(String address, String from, String caption, String body,
+    protected SendingMessage convertToSendingMessage(String address, String from, String caption, String body, @Nullable List<EmailHeader> headers,
                                                      @Nullable EmailAttachment[] attachments,
                                                      @Nullable Integer attemptsCount, @Nullable Date deadline) {
         SendingMessage sendingMessage = metadata.create(SendingMessage.class);
@@ -564,6 +564,16 @@ public class Emailer implements EmailerAPI {
             sendingMessage.setAttachmentsName(attachmentsName.toString());
         } else {
             sendingMessage.setAttachments(Collections.<SendingAttachment>emptyList());
+        }
+
+        if (headers != null && headers.size() > 0) {
+            StringBuilder headersLine = new StringBuilder();
+            for (EmailHeader header : headers) {
+                headersLine.append(header.toString()).append(SendingMessage.SEPARATOR);
+            }
+            sendingMessage.setHeaders(headersLine.toString());
+        } else {
+            sendingMessage.setHeaders(null);
         }
 
         replaceRecipientIfNecessary(sendingMessage);

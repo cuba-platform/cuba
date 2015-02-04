@@ -7,6 +7,8 @@ package com.haulmont.cuba.core.global;
 
 import javax.annotation.Nullable;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -30,6 +32,7 @@ public class EmailInfo implements Serializable {
     private Map<String, Serializable> templateParameters;
     private String body;
     private EmailAttachment[] attachments;
+    private List<EmailHeader> headers;
 
     public EmailInfo(String addresses, String caption, @Nullable String from, String templatePath,
                      Map<String, Serializable> templateParameters, EmailAttachment... attachments) {
@@ -113,5 +116,19 @@ public class EmailInfo implements Serializable {
 
     public void setFrom(String from) {
         this.from = from;
+    }
+
+    public List<EmailHeader> getHeaders() {
+        return headers;
+    }
+
+    public void setHeaders(List<EmailHeader> headers) {
+        this.headers = headers;
+    }
+
+    public void addHeader(String name, String value) {
+        if (this.headers == null)
+            this.headers = new ArrayList<>();
+        this.headers.add(new EmailHeader(name, value));
     }
 }

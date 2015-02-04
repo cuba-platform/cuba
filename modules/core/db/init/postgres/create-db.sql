@@ -589,6 +589,7 @@ create table SYS_SENDING_MESSAGE (
     ADDRESS_TO varchar(500),
     ADDRESS_FROM varchar(100),
     CAPTION varchar(500),
+    EMAIL_HEADERS varchar(500),
     CONTENT_TEXT text,
     CONTENT_TEXT_FILE_ID uuid,
     DEADLINE timestamp with time zone,

@@ -1,0 +1,4 @@
+-- $Id$
+-- Add SYS_SENDING_MESSAGE.EMAIL_HEADERS
+
+alter table SYS_SENDING_MESSAGE add EMAIL_HEADERS varchar(500)^

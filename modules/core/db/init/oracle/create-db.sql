@@ -281,6 +281,7 @@ create table SYS_SENDING_MESSAGE (
     ADDRESS_TO varchar2(500),
     ADDRESS_FROM varchar2(100),
     CAPTION varchar2(500),
+    EMAIL_HEADERS varchar2(500),
     CONTENT_TEXT clob,
     CONTENT_TEXT_FILE_ID varchar2(32),
     DEADLINE timestamp,

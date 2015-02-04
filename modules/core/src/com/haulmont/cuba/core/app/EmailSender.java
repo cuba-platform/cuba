@@ -7,6 +7,7 @@ package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.entity.SendingAttachment;
 import com.haulmont.cuba.core.entity.SendingMessage;
+import com.haulmont.cuba.core.global.EmailHeader;
 import com.haulmont.cuba.core.global.FileTypesHelper;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.sys.CubaMailSender;
@@ -68,6 +69,7 @@ public class EmailSender implements EmailSenderAPI {
         msg.setSentDate(timeSource.currentTimestamp());
 
         assignFromAddress(sendingMessage, msg);
+        addHeaders(sendingMessage, msg);
 
         MimeMultipart content = new MimeMultipart("mixed");
         MimeBodyPart textBodyPart = new MimeBodyPart();
@@ -126,6 +128,24 @@ public class EmailSender implements EmailSenderAPI {
             msg.setFrom(internetAddresses[0]);
         } else {
             msg.addFrom(internetAddresses);
+        }
+    }
+
+    private void addHeaders(SendingMessage sendingMessage, MimeMessage message) {
+        if (sendingMessage.getHeaders() == null)
+            return ;
+        String[] splitHeaders = sendingMessage.getHeaders().split(SendingMessage.SEPARATOR);
+        for (String header : splitHeaders) {
+            EmailHeader emailHeader = EmailHeader.parse(header);
+            if (emailHeader != null) {
+                try {
+                    message.addHeader(emailHeader.getName(), emailHeader.getValue());
+                } catch (MessagingException e) {
+                    log.warn("Can't add email header: '" + header + "'");
+                }
+            } else {
+                log.warn("Can't parse email header: '" + header + "'");
+            }
         }
     }
 

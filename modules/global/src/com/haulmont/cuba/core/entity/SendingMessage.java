@@ -28,6 +28,7 @@ public class SendingMessage extends StandardEntity {
     private static final long serialVersionUID = -8156998515878702538L;
 
     public static final int CAPTION_LENGTH = 500;
+    public static final String SEPARATOR = "\n";
 
     @Column(name = "ADDRESS_TO")
     protected String address;
@@ -68,6 +69,9 @@ public class SendingMessage extends StandardEntity {
 
     @OneToMany(mappedBy = "message", fetch = FetchType.LAZY)
     protected List<SendingAttachment> attachments;
+
+    @Column(name = "EMAIL_HEADERS")
+    protected String headers;
 
     public String getAddress() {
         return address;
@@ -163,5 +167,13 @@ public class SendingMessage extends StandardEntity {
 
     public void setContentTextFile(FileDescriptor contentTextFile) {
         this.contentTextFile = contentTextFile;
+    }
+
+    public String getHeaders() {
+        return headers;
+    }
+
+    public void setHeaders(String headers) {
+        this.headers = headers;
     }
 }
