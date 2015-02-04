@@ -145,7 +145,6 @@ public class BulkEditorWindow extends AbstractWindow {
         createEmbeddedFields(metaClass, instance, "");
 
         datasource.setItem(instance);
-        datasource.setAllowCommit(false);
 
         createDataComponents();
 
@@ -464,10 +463,12 @@ public class BulkEditorWindow extends AbstractWindow {
     }
 
     public void cancelChanges() {
+        datasource.setAllowCommit(true);
         close(CLOSE_ACTION_ID);
     }
 
     public void applyChanges() {
+        datasource.setAllowCommit(false);
         if (validateAll()) {
             StringBuilder sb = new StringBuilder();
             if (modelValidators != null) {
