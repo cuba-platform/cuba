@@ -566,10 +566,10 @@ public class Emailer implements EmailerAPI {
             sendingMessage.setAttachments(Collections.<SendingAttachment>emptyList());
         }
 
-        if (headers != null && headers.size() > 0) {
+        if (headers != null && !headers.isEmpty()) {
             StringBuilder headersLine = new StringBuilder();
             for (EmailHeader header : headers) {
-                headersLine.append(header.toString()).append(SendingMessage.SEPARATOR);
+                headersLine.append(header.toString()).append(SendingMessage.HEADERS_SEPARATOR);
             }
             sendingMessage.setHeaders(headersLine.toString());
         } else {

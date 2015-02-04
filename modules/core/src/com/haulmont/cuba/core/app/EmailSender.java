@@ -131,18 +131,14 @@ public class EmailSender implements EmailSenderAPI {
         }
     }
 
-    private void addHeaders(SendingMessage sendingMessage, MimeMessage message) {
+    private void addHeaders(SendingMessage sendingMessage, MimeMessage message) throws MessagingException {
         if (sendingMessage.getHeaders() == null)
-            return ;
-        String[] splitHeaders = sendingMessage.getHeaders().split(SendingMessage.SEPARATOR);
+            return;
+        String[] splitHeaders = sendingMessage.getHeaders().split(SendingMessage.HEADERS_SEPARATOR);
         for (String header : splitHeaders) {
             EmailHeader emailHeader = EmailHeader.parse(header);
             if (emailHeader != null) {
-                try {
-                    message.addHeader(emailHeader.getName(), emailHeader.getValue());
-                } catch (MessagingException e) {
-                    log.warn("Can't add email header: '" + header + "'");
-                }
+                message.addHeader(emailHeader.getName(), emailHeader.getValue());
             } else {
                 log.warn("Can't parse email header: '" + header + "'");
             }

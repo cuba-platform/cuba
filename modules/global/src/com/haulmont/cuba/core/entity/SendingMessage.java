@@ -28,7 +28,7 @@ public class SendingMessage extends StandardEntity {
     private static final long serialVersionUID = -8156998515878702538L;
 
     public static final int CAPTION_LENGTH = 500;
-    public static final String SEPARATOR = "\n";
+    public static final String HEADERS_SEPARATOR = "\n";
 
     @Column(name = "ADDRESS_TO")
     protected String address;

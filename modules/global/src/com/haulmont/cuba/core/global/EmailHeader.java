@@ -44,6 +44,7 @@ public class EmailHeader implements Serializable {
      * @param line EmailHeader name and value separated with ":" symbol.
      * @return Instance of EmailHeader object. Returns {@code null} if string has wrong format or {@code null} value.
      */
+    @Nullable
     public static EmailHeader parse(@Nullable String line) {
         if (line == null)
             return null;
