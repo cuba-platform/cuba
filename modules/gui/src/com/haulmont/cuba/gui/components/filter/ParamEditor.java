@@ -79,7 +79,7 @@ public class ParamEditor implements AbstractCondition.Listener {
                 ((Field) paramEditComponent).setValue(((Field) oldParamEditComponent).getValue());
             }
         }
-        mainLayout.add(paramEditComponent);
+        mainLayout.add(paramEditComponent, 2);
         mainLayout.expand(paramEditComponent);
 
     }
