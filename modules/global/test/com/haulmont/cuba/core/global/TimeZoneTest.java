@@ -24,7 +24,7 @@ public class TimeZoneTest {
     public void testTimeZoneConversion() throws Exception {
         Date serverDate, userDate;
 
-        TimeZones timeZones = AppBeans.get(TimeZones.NAME);
+        TimeZones timeZones = new TimeZones();
 
         serverDate = date("2015-01-15 16:30:10");
         userDate = timeZones.convert(serverDate, TimeZones.UTC, TimeZone.getTimeZone("GMT+04"));
