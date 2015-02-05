@@ -34,6 +34,7 @@ import com.vaadin.event.dd.acceptcriteria.Not;
 import com.vaadin.event.dd.acceptcriteria.Or;
 import com.vaadin.terminal.gwt.client.ui.dd.VerticalDropLocation;
 import com.vaadin.ui.AbstractSelect;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Select;
 
@@ -223,6 +224,14 @@ public class Web6FilterHelper implements FilterHelper {
         com.vaadin.ui.Component vComponent = WebComponentsHelper.unwrap(component);
         if (vComponent instanceof Component.Focusable) {
             ((Component.Focusable) vComponent).setTabIndex(focusable ? 0 : -1);
+        }
+    }
+
+    @Override
+    public void setLookupCaptions(LookupField lookupField, Map<Object, String> captions) {
+        ComboBox vLookupField = WebComponentsHelper.unwrap(lookupField);
+        for (Map.Entry<Object, String> entry : captions.entrySet()) {
+            vLookupField.setItemCaption(entry.getKey(), entry.getValue());
         }
     }
 }

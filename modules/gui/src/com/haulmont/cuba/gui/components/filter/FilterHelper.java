@@ -54,4 +54,6 @@ public interface FilterHelper {
     void setFieldReadOnlyFocusable(TextField textField, boolean readOnlyFocusable);
 
     void setComponentFocusable(com.haulmont.cuba.gui.components.Component component, boolean focusable);
+
+    void setLookupCaptions(LookupField lookupField, Map<Object, String> captions);
 }

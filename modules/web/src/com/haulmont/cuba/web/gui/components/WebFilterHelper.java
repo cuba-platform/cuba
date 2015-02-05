@@ -234,4 +234,12 @@ public class WebFilterHelper implements FilterHelper {
         }
     }
 
+    @Override
+    public void setLookupCaptions(LookupField lookupField, Map<Object, String> captions) {
+        ComboBox vLookupField = WebComponentsHelper.unwrap(lookupField);
+        vLookupField.setItemCaptionMode(AbstractSelect.ItemCaptionMode.EXPLICIT);
+        for (Map.Entry<Object, String> entry : captions.entrySet()) {
+            vLookupField.setItemCaption(entry.getKey(), entry.getValue());
+        }
+    }
 }

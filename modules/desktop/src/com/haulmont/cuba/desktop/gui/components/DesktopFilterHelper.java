@@ -14,6 +14,7 @@ import com.haulmont.cuba.gui.components.Tree;
 import com.haulmont.cuba.gui.components.filter.ConditionsTree;
 import com.haulmont.cuba.gui.components.filter.FilterHelper;
 import com.haulmont.cuba.gui.presentations.Presentations;
+import com.haulmont.cuba.security.entity.FilterEntity;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -98,5 +99,24 @@ public class DesktopFilterHelper implements FilterHelper {
     public void setComponentFocusable(Component component, boolean focusable) {
         JComponent dComponent = DesktopComponentsHelper.unwrap(component);
         dComponent.setFocusable(focusable);
+    }
+
+    @Override
+    public void setLookupCaptions(LookupField lookupField, Map<Object, String> captions) {
+        ((DesktopLookupField) lookupField).setCaptionFormatter(new FilterEntityCaptionFormatter(captions));
+    }
+
+    protected class FilterEntityCaptionFormatter implements DesktopAbstractOptionsField.CaptionFormatter<FilterEntity> {
+
+        protected Map<Object, String> captions;
+
+        public FilterEntityCaptionFormatter(Map<Object, String> captions) {
+            this.captions = captions;
+        }
+
+        @Override
+        public String formatValue(FilterEntity value) {
+            return captions.get(value);
+        }
     }
 }

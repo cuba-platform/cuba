@@ -58,6 +58,12 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
 
     protected Messages messages = AppBeans.get(Messages.NAME);
 
+    protected CaptionFormatter captionFormatter;
+
+    public interface CaptionFormatter<T> {
+        String formatValue(T value);
+    }
+
     @Override
     public CollectionDatasource getOptionsDatasource() {
         return optionsDatasource;
@@ -266,6 +272,15 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
         }
     }
 
+    /**
+     * Set custom caption formatter. This formatter is only used when options are explicitly
+     * set with {@link #setOptionsMap(java.util.Map)} or {@link #setOptionsList(java.util.List)}
+     * @param captionFormatter
+     */
+    public void setCaptionFormatter(CaptionFormatter captionFormatter) {
+        this.captionFormatter = captionFormatter;
+    }
+
     protected String getDisplayString(Entity entity) {
         if (entity == null)
             return "";
@@ -305,6 +320,9 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
 
         @Override
         public String toString() {
+            if (captionFormatter != null) {
+                return captionFormatter.formatValue(entity);
+            }
             return getDisplayString(entity);
         }
 
@@ -361,6 +379,10 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
 
         @Override
         public String toString() {
+            if (captionFormatter != null) {
+                return captionFormatter.formatValue(obj);
+            }
+
             if (obj == null)
                 return "";
 

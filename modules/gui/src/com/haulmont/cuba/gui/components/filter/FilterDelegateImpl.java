@@ -144,6 +144,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected FilterMode filterMode;
     protected boolean editActionEnabled;
     protected Integer columnsQty;
+    protected String initialWindowCaption;
 
     @PostConstruct
     public void init() {
@@ -366,8 +367,9 @@ public class FilterDelegateImpl implements FilterDelegate {
         initShortcutActions();
         initAdHocFilter();
         loadFilterEntities();
-        fillFiltersLookup();
         FilterEntity defaultFilter = getDefaultFilter(filterEntities);
+        //fill filter lookup after evaluating default filter because we need to mark default filter in lookup captions
+        fillFiltersLookup();
         if (defaultFilter == null) {
             defaultFilter = adHocFilter;
         }
@@ -449,6 +451,8 @@ public class FilterDelegateImpl implements FilterDelegate {
         for (Filter.FilterEntityChangeListener listener : filterEntityChangeListeners) {
             listener.filterEntityChanged(filterEntity);
         }
+
+        updateWindowCaption();
     }
 
     /**
@@ -891,16 +895,17 @@ public class FilterDelegateImpl implements FilterDelegate {
     }
 
     protected void fillFiltersLookup() {
-        Map<String, Object> optionsMap = new LinkedHashMap<>();
+        Map<Object, String> captionsMap = new LinkedHashMap<>();
         for (FilterEntity entity : filterEntities) {
             String caption = getFilterCaption(entity);
             if (entity.getIsDefault()) {
                 caption += " " + getMessage("Filter.default");
             }
-            optionsMap.put(caption, entity);
+            captionsMap.put(entity, caption);
         }
 
-        filtersLookup.setOptionsMap(optionsMap);
+        filtersLookup.setOptionsList(filterEntities);
+        filterHelper.setLookupCaptions(filtersLookup, captionsMap);
     }
 
     protected void initAdHocFilter() {
@@ -1519,36 +1524,33 @@ public class FilterDelegateImpl implements FilterDelegate {
         }
     }
 
-    protected class FiltersLookupChangeListener implements ValueListener {
+    protected void updateWindowCaption() {
+        Window window = ComponentsHelper.getWindow(filter);
+        String filterTitle;
+        if (filterEntity != null && filterEntity != adHocFilter) {
+            if (filterEntity.getCode() != null) {
+                filterTitle = messages.getMainMessage(filterEntity.getCode());
+            } else {
+                filterTitle = filterEntity.getName();
+            }
+        } else {
+            filterTitle = null;
+        }
+        window.setDescription(filterTitle);
 
-        protected String initialWindowCaption;
+        if (initialWindowCaption == null) {
+            initialWindowCaption = window.getCaption();
+        }
+
+        windowManager.setWindowCaption(window, initialWindowCaption, filterTitle);
+    }
+
+    protected class FiltersLookupChangeListener implements ValueListener {
 
         @Override
         public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
             if (!filtersLookupListenerEnabled) return;
             setFilterEntity((FilterEntity) value);
-            updateWindowCaption();
-        }
-
-        protected void updateWindowCaption() {
-            Window window = ComponentsHelper.getWindow(filter);
-            String filterTitle;
-            if (filterEntity != null && filterEntity != adHocFilter) {
-                if (filterEntity.getCode() != null) {
-                    filterTitle = messages.getMainMessage(filterEntity.getCode());
-                } else {
-                    filterTitle = filterEntity.getName();
-                }
-            } else {
-                filterTitle = null;
-            }
-            window.setDescription(filterTitle);
-
-            if (initialWindowCaption == null) {
-                initialWindowCaption = window.getCaption();
-            }
-
-            windowManager.setWindowCaption(window, initialWindowCaption, filterTitle);
         }
     }
 
@@ -1691,6 +1693,8 @@ public class FilterDelegateImpl implements FilterDelegate {
             }
             fillFiltersLookup();
             fillActions();
+            //focus request here to make desktop client refresh current filter caption
+            filtersLookup.requestFocus();
         }
 
     }
