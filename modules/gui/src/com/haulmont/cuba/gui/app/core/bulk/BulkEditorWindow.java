@@ -145,6 +145,7 @@ public class BulkEditorWindow extends AbstractWindow {
         createEmbeddedFields(metaClass, instance, "");
 
         datasource.setItem(instance);
+        datasource.setAllowCommit(false);
 
         createDataComponents();
 
@@ -463,12 +464,40 @@ public class BulkEditorWindow extends AbstractWindow {
     }
 
     public void cancelChanges() {
-        datasource.setAllowCommit(true);
-        close(CLOSE_ACTION_ID);
+        if (hasChanges()) {
+            showOptionDialog(messages.getMainMessage("closeUnsaved.caption"),
+                    messages.getMessage(getClass(), "closeUnsaved"),
+                    MessageType.CONFIRMATION, new Action[]{
+                            new DialogAction(DialogAction.Type.YES) {
+                                @Override
+                                public void actionPerform(Component component) {
+                                    close(CLOSE_ACTION_ID);
+                                }
+                            },
+                            new DialogAction(DialogAction.Type.NO) {
+
+                                @Override
+                                public void actionPerform(Component component) {
+
+                                }
+                            }
+                    });
+        } else {
+            close(CLOSE_ACTION_ID);
+        }
+    }
+
+    private boolean hasChanges() {
+        for (Map.Entry<String, Field> fieldEntry : dataFields.entrySet()) {
+            Field field = fieldEntry.getValue();
+            if (field.getValue() != null || !field.isEnabled()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void applyChanges() {
-        datasource.setAllowCommit(false);
         if (validateAll()) {
             StringBuilder sb = new StringBuilder();
             if (modelValidators != null) {
