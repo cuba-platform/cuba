@@ -34,6 +34,7 @@ public class UserSession implements Serializable {
     private List<String> roles = new ArrayList<>();
     private EnumSet<RoleType> roleTypes = EnumSet.noneOf(RoleType.class);
     protected Locale locale;
+    protected TimeZone timeZone;
     protected String address;
     protected String clientInfo;
     protected boolean system;
@@ -55,6 +56,8 @@ public class UserSession implements Serializable {
         }
 
         this.locale = locale;
+        if (user.getTimeZone() != null)
+            this.timeZone = TimeZone.getTimeZone(user.getTimeZone());
 
         //noinspection unchecked
         permissions = new Map[PermissionType.values().length];
@@ -79,6 +82,7 @@ public class UserSession implements Serializable {
         system = src.system;
         roles = src.roles;
         locale = src.locale;
+        timeZone = src.timeZone;
         permissions = src.permissions;
         constraints = src.constraints;
         attributes = src.attributes;
@@ -143,6 +147,18 @@ public class UserSession implements Serializable {
 
     public void setLocale(Locale locale) {
         this.locale = locale;
+    }
+
+    /**
+     * User time zone. Can be null.
+     */
+    @Nullable
+    public TimeZone getTimeZone() {
+        return timeZone;
+    }
+
+    public void setTimeZone(TimeZone timeZone) {
+        this.timeZone = timeZone;
     }
 
     /**

@@ -6,9 +6,11 @@ package com.haulmont.cuba.web.app.ui.core.settings;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.global.TimeZones;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.data.DataSupplier;
+import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.UserSession;
@@ -16,6 +18,7 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppWindow;
 import com.haulmont.cuba.web.app.UserSettingsTools;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
 
@@ -38,7 +41,13 @@ public class SettingsWindow extends AbstractWindow {
     protected Configuration configuration;
 
     @Inject
-    protected UserSessionSource userSessionSource;
+    protected UserSession userSession;
+
+    @Inject
+    protected DataSupplier dataSupplier;
+
+    @Inject
+    protected TimeZones timeZones;
 
     @Inject
     protected Button okBtn;
@@ -54,6 +63,12 @@ public class SettingsWindow extends AbstractWindow {
 
     @Inject
     protected LookupField appThemeField;
+
+    @Inject
+    protected LookupField timeZoneLookup;
+
+    @Inject
+    protected CheckBox timeZoneAutoField;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -81,8 +96,9 @@ public class SettingsWindow extends AbstractWindow {
 
         appThemeField.setEditable(changeThemeEnabled);
 
-        UserSession session = userSessionSource.getUserSession();
-        final User user = session.getUser();
+        initTimeZoneFields();
+
+        final User user = userSession.getUser();
         changePasswordBtn.setAction(
                 new AbstractAction("changePassw") {
                     @Override
@@ -99,8 +115,8 @@ public class SettingsWindow extends AbstractWindow {
                     }
                 }
         );
-        if (!user.equals(session.getCurrentOrSubstitutedUser())
-                || Boolean.TRUE.equals(session.getAttribute(ACTIVE_DIRECTORY_USER_SESSION_ATTRIBUTE))) {
+        if (!user.equals(userSession.getCurrentOrSubstitutedUser())
+                || Boolean.TRUE.equals(userSession.getAttribute(ACTIVE_DIRECTORY_USER_SESSION_ATTRIBUTE))) {
             changePasswordBtn.setEnabled(false);
         }
 
@@ -115,6 +131,7 @@ public class SettingsWindow extends AbstractWindow {
                         }
                         AppWindow.Mode m = modeOptions.getValue() == msgTabbed ? AppWindow.Mode.TABBED : AppWindow.Mode.SINGLE;
                         userSettingsTools.saveAppWindowMode(m);
+                        saveTimeZoneSettings();
                         showNotification(getMessage("modeChangeNotification"), IFrame.NotificationType.HUMANIZED);
                         close("ok");
                     }
@@ -129,5 +146,34 @@ public class SettingsWindow extends AbstractWindow {
                     }
                 }
         );
+    }
+
+    protected void initTimeZoneFields() {
+        Map<String, Object> options = new TreeMap<>();
+        for (String id : TimeZone.getAvailableIDs()) {
+            TimeZone timeZone = TimeZone.getTimeZone(id);
+            options.put(timeZones.getDisplayNameLong(timeZone), id);
+        }
+        timeZoneLookup.setOptionsMap(options);
+
+        timeZoneAutoField.setCaption(messages.getMainMessage("timeZone.auto"));
+        timeZoneAutoField.setDescription(messages.getMainMessage("timeZone.auto.descr"));
+        timeZoneAutoField.addListener(new ValueListener() {
+            @Override
+            public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
+                timeZoneLookup.setEnabled(!Boolean.TRUE.equals(value));
+            }
+        });
+
+        User user = dataSupplier.reload(userSession.getUser(), "user.timeZone");
+        timeZoneLookup.setValue(user.getTimeZone());
+        timeZoneAutoField.setValue(Boolean.TRUE.equals(user.getTimeZoneAuto()));
+    }
+
+    protected void saveTimeZoneSettings() {
+        User user = dataSupplier.reload(userSession.getUser(), "user.timeZone");
+        user.setTimeZone((String) timeZoneLookup.getValue());
+        user.setTimeZoneAuto((Boolean) timeZoneAutoField.getValue());
+        dataSupplier.commit(user);
     }
 }

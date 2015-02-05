@@ -229,6 +229,8 @@ create table SEC_USER (
     POSITION_ varchar(255),
     EMAIL varchar(100),
     LANGUAGE_ varchar(20),
+    TIME_ZONE varchar(50),
+    TIME_ZONE_AUTO tinyint,
     ACTIVE tinyint,
     GROUP_ID uniqueidentifier,
     IP_MASK varchar(200),

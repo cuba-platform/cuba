@@ -555,6 +555,8 @@ public class AppWindow extends FocusHandlerWindow implements UserSubstitutionLis
         if (webConfig.getUseLightHeader()){
             initUserIndicator(layout);
 
+            addTimeZoneIndicator(layout);
+
             addNewWindowButton(layout);
 
             addLogoutButton(layout);
@@ -697,6 +699,8 @@ public class AppWindow extends FocusHandlerWindow implements UserSubstitutionLis
 
         initUserIndicator(titleLayout);
 
+        addTimeZoneIndicator(titleLayout);
+
         addLogoutButton(titleLayout);
 
         addNewWindowButton(titleLayout);
@@ -711,6 +715,24 @@ public class AppWindow extends FocusHandlerWindow implements UserSubstitutionLis
 
         layout.addComponent(userLabel);
         layout.setComponentAlignment(userLabel, Alignment.MIDDLE_RIGHT);
+    }
+
+    protected void addTimeZoneIndicator(HorizontalLayout layout) {
+        UserSession session = connection.getSession();
+        if (session == null)
+            throw new RuntimeException("No user session found");
+
+        TimeZone timeZone = session.getTimeZone();
+        if (timeZone == null)
+            return;
+
+        TimeZones timeZones = AppBeans.get(TimeZones.NAME);
+        Label tzLabel = new Label(timeZones.getDisplayNameShort(timeZone));
+        tzLabel.setStyleName("user-timezone-label");
+        tzLabel.setSizeUndefined();
+
+        layout.addComponent(tzLabel);
+        layout.setComponentAlignment(tzLabel, Alignment.MIDDLE_RIGHT);
     }
 
     protected void addNewWindowButton(HorizontalLayout layout) {

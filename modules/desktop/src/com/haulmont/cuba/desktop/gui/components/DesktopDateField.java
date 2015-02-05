@@ -7,13 +7,16 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.impl.DateTimeDatatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.annotation.IgnoreUserTimeZone;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
+import com.haulmont.cuba.core.global.TimeZones;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
@@ -28,6 +31,7 @@ import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
+import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jdesktop.swingx.JXDatePicker;
@@ -40,6 +44,7 @@ import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
@@ -68,6 +73,10 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
     protected Object prevValue = null;
     protected boolean editable = true;
 
+    protected TimeZone timeZone;
+    protected UserSession userSession;
+    protected TimeZones timeZones = AppBeans.get(TimeZones.NAME);
+
     public DesktopDateField() {
         impl = new FocusableComposition();
 
@@ -75,7 +84,8 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
         setResolution(Resolution.MIN);
 
         UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
-        Locale locale = sessionSource.getLocale();
+        userSession = sessionSource.getUserSession();
+        Locale locale = userSession.getLocale();
         setDateFormat(Datatypes.getFormatStringsNN(locale).getDateTimeFormat());
         DesktopComponentsHelper.adjustDateFieldSize(impl);
     }
@@ -182,6 +192,23 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
     }
 
     @Override
+    public TimeZone getTimeZone() {
+        return timeZone;
+    }
+
+    @Override
+    public void setTimeZone(TimeZone timeZone) {
+        TimeZone prevTimeZone = this.timeZone;
+        Date value = getValue();
+        this.timeZone = timeZone;
+        if (value != null && !ObjectUtils.equals(prevTimeZone, timeZone)) {
+            Date newValue = timeZones.convert(value,
+                    TimeZone.getDefault(), timeZone != null ? timeZone : TimeZone.getDefault());
+            updateComponent(newValue);
+        }
+    }
+
+    @Override
     public boolean isRequired() {
         return required;
     }
@@ -211,9 +238,17 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
             Date targetDate = (Date) value;
 
             updateInstance(targetDate);
-            updateComponent(targetDate);
+            updateComponent(toUserDate((Date) value));
             fireChangeListeners(value);
         }
+    }
+
+    protected Date toUserDate(Date date) {
+        return timeZone == null ? date : timeZones.convert(date, TimeZone.getDefault(), timeZone);
+    }
+
+    protected Date toServerDate(Date date) {
+        return timeZone == null ? date : timeZones.convert(date, timeZone, TimeZone.getDefault());
     }
 
     @Override
@@ -259,6 +294,15 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
 
         metaProperty = metaPropertyPath.getMetaProperty();
 
+        if (metaProperty.getRange().isDatatype()
+                && metaProperty.getRange().asDatatype().getName().equals(DateTimeDatatype.NAME)
+                && timeZone == null) {
+            Object ignoreUserTimeZone = metaProperty.getAnnotations().get(IgnoreUserTimeZone.class.getName());
+            if (!Boolean.TRUE.equals(ignoreUserTimeZone)) {
+                timeZone = userSession.getTimeZone();
+            }
+        }
+
         datasource.addListener(
                 new DsListenerAdapter() {
                     @Override
@@ -267,7 +311,7 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
                             return;
                         }
                         Date value = getEntityValue(item);
-                        updateComponent(value);
+                        updateComponent(toUserDate(value));
                         fireChangeListeners(value);
                     }
 
@@ -277,7 +321,7 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
                             return;
                         }
                         if (property.equals(metaPropertyPath.toString())) {
-                            updateComponent((Date) value);
+                            updateComponent(toUserDate((Date) value));
                             fireChangeListeners(value);
                         }
                     }
@@ -287,7 +331,7 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
         if (datasource.getState() == Datasource.State.VALID && datasource.getItem() != null) {
             if (property.equals(metaPropertyPath.toString())) {
                 Date value = getEntityValue(datasource.getItem());
-                updateComponent(value);
+                updateComponent(toUserDate(value));
                 fireChangeListeners(value);
             }
         }
@@ -447,17 +491,15 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
         if (datePickerDate == null) {
             return null;
         }
-        UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
-        Locale locale = sessionSource.getLocale();
 
-        Calendar c = Calendar.getInstance(locale);
+        Calendar c = Calendar.getInstance(userSession.getLocale());
         c.setTime(datePickerDate);
         if (timeField.getValue() == null) {
             c.set(Calendar.HOUR_OF_DAY, 0);
             c.set(Calendar.MINUTE, 0);
             c.set(Calendar.SECOND, 0);
         } else {
-            Calendar c2 = Calendar.getInstance(locale);
+            Calendar c2 = Calendar.getInstance(userSession.getLocale());
             c2.setTime(timeField.<Date>getValue());
 
             c.set(Calendar.HOUR_OF_DAY, c2.get(Calendar.HOUR_OF_DAY));
@@ -466,8 +508,8 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
         }
 
         //noinspection UnnecessaryLocalVariable
-        Date time = c.getTime();
-        return time;
+        Date serverDate = toServerDate(c.getTime());
+        return serverDate;
     }
 
     protected boolean isHourUsed() {

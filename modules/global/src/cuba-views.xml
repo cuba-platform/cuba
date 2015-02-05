@@ -53,6 +53,11 @@
     <view class="com.haulmont.cuba.security.entity.User" name="user.resetPassword" extends="_local">
     </view>
 
+    <view class="com.haulmont.cuba.security.entity.User" name="user.timeZone">
+        <property name="timeZone"/>
+        <property name="timeZoneAuto"/>
+    </view>
+
     <view class="com.haulmont.cuba.security.entity.UserSubstitution" name="user.edit">
         <property name="substitutedUser">
             <property name="login"/>

@@ -41,6 +41,10 @@
                                 <field id="middleName"/>
                                 <field id="lastName"/>
                                 <field id="name"/>
+                                <field id="email">
+                                    <validator class="com.haulmont.cuba.gui.components.validators.EmailValidator"
+                                               message="msg://email.alert"/>
+                                </field>
                             </column>
                         </fieldGroup>
 
@@ -48,11 +52,8 @@
                             <column width="${width}">
                                 <field id="group" custom="true"/>
                                 <field id="position"/>
-                                <field id="email">
-                                    <validator class="com.haulmont.cuba.gui.components.validators.EmailValidator"
-                                               message="msg://email.alert"/>
-                                </field>
                                 <field id="language" custom="true"/>
+                                <field id="timeZone" custom="true"/>
                                 <field id="ipMask"/>
                                 <field id="active"/>
                             </column>

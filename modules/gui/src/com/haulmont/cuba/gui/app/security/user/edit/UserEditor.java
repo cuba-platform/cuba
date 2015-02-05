@@ -19,12 +19,14 @@ import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
+import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.StringUtils;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
 
@@ -64,6 +66,7 @@ public class UserEditor extends AbstractEditor<User> {
     protected PasswordField passwField;
     protected PasswordField confirmPasswField;
     protected LookupField languageLookup;
+    protected LookupField timeZoneLookup;
 
     @Inject
     protected UserSession userSession;
@@ -86,6 +89,9 @@ public class UserEditor extends AbstractEditor<User> {
     @Inject
     protected ThemeConstants themeConstants;
 
+    @Inject
+    protected TimeZones timeZones;
+
     public interface Companion {
         void initPasswordField(PasswordField passwordField);
         void refreshUserSubstitutions();
@@ -94,6 +100,14 @@ public class UserEditor extends AbstractEditor<User> {
     @Override
     public void init(Map<String, Object> params) {
         userDs.addListener(new NameBuilderListener<User>(userDs));
+        userDs.addListener(new DsListenerAdapter<User>() {
+            @Override
+            public void valueChanged(User source, String property, @Nullable Object prevValue, @Nullable Object value) {
+                if (property.equals("timeZoneAuto")) {
+                    timeZoneLookup.setEnabled(!Boolean.TRUE.equals(value));
+                }
+            }
+        });
 
         rolesTable.addAction(new AddRoleAction());
         rolesTable.addAction(new EditRoleAction());
@@ -134,6 +148,8 @@ public class UserEditor extends AbstractEditor<User> {
 
     @Override
     protected void postInit() {
+        timeZoneLookup.setEnabled(!Boolean.TRUE.equals(getItem().getTimeZoneAuto()));
+
         // Do not show roles which are not allowed by security constraints
         LoadContext lc = new LoadContext(Role.class);
         lc.setQueryString("select r from sec$Role r");
@@ -230,6 +246,40 @@ public class UserEditor extends AbstractEditor<User> {
                 }
                 languageLookup.setOptionsMap(options);
                 return languageLookup;
+            }
+        });
+
+        fieldGroupRight.addCustomField("timeZone", new FieldGroup.CustomFieldGenerator() {
+            @Override
+            public Component generateField(Datasource datasource, String propertyId) {
+                HBoxLayout hbox = factory.createComponent(HBoxLayout.NAME);
+                hbox.setSpacing(true);
+
+                timeZoneLookup = factory.createComponent(LookupField.NAME);
+
+                timeZoneLookup.setDatasource(datasource, propertyId);
+                timeZoneLookup.setRequired(false);
+
+                Map<String, Object> options = new TreeMap<>();
+                for (String id : TimeZone.getAvailableIDs()) {
+                    TimeZone timeZone = TimeZone.getTimeZone(id);
+                    options.put(timeZones.getDisplayNameLong(timeZone), id);
+                }
+                timeZoneLookup.setOptionsMap(options);
+
+                hbox.add(timeZoneLookup);
+
+                CheckBox autoDetectField = factory.createComponent(CheckBox.NAME);
+                autoDetectField.setDatasource(datasource, "timeZoneAuto");
+                autoDetectField.setCaption(messages.getMainMessage("timeZone.auto"));
+                autoDetectField.setDescription(messages.getMainMessage("timeZone.auto.descr"));
+                autoDetectField.setAlignment(Alignment.MIDDLE_RIGHT);
+
+                hbox.add(autoDetectField);
+
+                hbox.expand(timeZoneLookup);
+
+                return hbox;
             }
         });
 

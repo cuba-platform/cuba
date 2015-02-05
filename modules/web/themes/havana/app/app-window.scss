@@ -64,6 +64,16 @@
       text-shadow: black 1px 1px;
     }
 
+    .v-label.cuba-user-timezone-label {
+      color: #fff;
+      font-size: 12px;
+      font-weight: normal;
+      font-family: $cuba-havana-fonts;
+      text-shadow: black 1px 1px;
+      margin-left: 5px;
+      margin-right: 5px;
+    }
+
     .cuba-app-appname-label {
       color: #fff;
       font-size: 14px;
@@ -84,6 +94,16 @@
       font-weight: normal;
       font-family: $cuba-havana-fonts;
       text-shadow: black 1px 1px;
+    }
+
+    .v-label.cuba-user-timezone-label {
+      color: #fff;
+      font-size: 12px;
+      font-weight: normal;
+      font-family: $cuba-havana-fonts;
+      text-shadow: black 1px 1px;
+      margin-left: 5px;
+      margin-right: 5px;
     }
 
     .v-menubar-menuitem-more-item {

@@ -8,12 +8,14 @@ package com.haulmont.cuba.core.global;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.impl.DateTimeDatatype;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.*;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.Updatable;
 import com.haulmont.cuba.core.entity.Versioned;
+import com.haulmont.cuba.core.entity.annotation.IgnoreUserTimeZone;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import org.apache.commons.lang.StringUtils;
 
@@ -53,6 +55,9 @@ public class MetadataTools {
     @Inject
     protected UserSessionSource userSessionSource;
 
+    @Inject
+    protected DatatypeFormatter datatypeFormatter;
+
     protected volatile Collection<Class> enums;
 
     /**
@@ -75,6 +80,13 @@ public class MetadataTools {
         Range range = property.getRange();
         if (range.isDatatype()) {
             Datatype datatype = range.asDatatype();
+            if (value instanceof Date && datatype.getName().equals(DateTimeDatatype.NAME)) {
+                Object ignoreUserTimeZone = property.getAnnotations().get(IgnoreUserTimeZone.class.getName());
+                if (!Boolean.TRUE.equals(ignoreUserTimeZone)) {
+                    return datatypeFormatter.formatDateTime((Date) value);
+                }
+            }
+            //noinspection unchecked
             return datatype.format(value, userSessionSource.getLocale());
         } else if (range.isEnum()) {
             return messages.getMessage((Enum) value);

@@ -11,6 +11,7 @@ import com.haulmont.cuba.security.global.UserSession;
 
 import java.io.Serializable;
 import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * Client-side extension of {@link UserSession}.
@@ -40,6 +41,13 @@ public class ClientUserSession extends UserSession {
         super.setLocale(locale);
         UserSessionService uss = AppBeans.get(UserSessionService.NAME);
         uss.setSessionLocale(id, locale);
+    }
+
+    @Override
+    public void setTimeZone(TimeZone timeZone) {
+        super.setTimeZone(timeZone);
+        UserSessionService uss = AppBeans.get(UserSessionService.NAME);
+        uss.setSessionTimeZone(id, timeZone);
     }
 
     @Override

@@ -64,6 +64,12 @@ public class User extends StandardEntity {
     @Column(name = "LANGUAGE_", length = 20)
     protected String language;
 
+    @Column(name = "TIME_ZONE")
+    protected String timeZone;
+
+    @Column(name = "TIME_ZONE_AUTO")
+    protected Boolean timeZoneAuto;
+
     @Column(name = "ACTIVE")
     protected Boolean active = true;
 
@@ -155,6 +161,22 @@ public class User extends StandardEntity {
 
     public void setLanguage(String language) {
         this.language = language;
+    }
+
+    public String getTimeZone() {
+        return timeZone;
+    }
+
+    public void setTimeZone(String timeZone) {
+        this.timeZone = timeZone;
+    }
+
+    public Boolean getTimeZoneAuto() {
+        return timeZoneAuto;
+    }
+
+    public void setTimeZoneAuto(Boolean timeZoneAuto) {
+        this.timeZoneAuto = timeZoneAuto;
     }
 
     public String getFirstName() {

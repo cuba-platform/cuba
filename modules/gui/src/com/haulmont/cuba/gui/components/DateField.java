@@ -4,6 +4,8 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import java.util.TimeZone;
+
 /**
  * @author abramov
  * @version $Id$
@@ -27,4 +29,7 @@ public interface DateField extends Field {
 
     String getDateFormat();
     void setDateFormat(String dateFormat);
+
+    TimeZone getTimeZone();
+    void setTimeZone(TimeZone timeZone);
 }

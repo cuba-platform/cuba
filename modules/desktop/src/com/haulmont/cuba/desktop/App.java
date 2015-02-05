@@ -19,7 +19,7 @@ import com.haulmont.cuba.desktop.theme.DesktopThemeLoader;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
@@ -37,6 +37,7 @@ import org.springframework.remoting.RemoteAccessException;
 
 import javax.annotation.Nullable;
 import javax.swing.*;
+import javax.swing.BoxLayout;
 import javax.swing.plaf.InputMapUIResource;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -489,17 +490,38 @@ public class App implements ConnectionListener {
 
         panel.add(connectionStateLab, BorderLayout.WEST);
 
-        JLabel userInfoLabel = new JLabel();
+
+        JPanel rightPanel = new JPanel();
+        BoxLayout rightLayout = new BoxLayout(rightPanel, BoxLayout.LINE_AXIS);
+        rightPanel.setLayout(rightLayout);
+
         UserSession session = connection.getSession();
+
+        JLabel userInfoLabel = new JLabel();
         String userInfo = messages.formatMessage(AppConfig.getMessagesPack(), "statusBar.user",
                 session.getUser().getName(), session.getUser().getLogin());
         userInfoLabel.setText(userInfo);
 
-        panel.add(userInfoLabel, BorderLayout.EAST);
+        rightPanel.add(userInfoLabel);
+
+        JLabel timeZoneLabel = null;
+        if (session.getTimeZone() != null) {
+            timeZoneLabel = new JLabel();
+            String timeZone = messages.formatMessage(AppConfig.getMessagesPack(), "statusBar.timeZone",
+                    AppBeans.get(TimeZones.class).getDisplayNameShort(session.getTimeZone()));
+            timeZoneLabel.setText(timeZone);
+
+            rightPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+            rightPanel.add(timeZoneLabel);
+        }
+
+        panel.add(rightPanel, BorderLayout.EAST);
 
         if (isTestMode()) {
             panel.setName("bottomPane");
             userInfoLabel.setName("userInfoLabel");
+            if (timeZoneLabel != null)
+                timeZoneLabel.setName("timeZoneLabel");
             connectionStateLab.setName("connectionStateLab");
         }
 

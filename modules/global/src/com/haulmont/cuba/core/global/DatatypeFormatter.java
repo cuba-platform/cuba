@@ -14,6 +14,7 @@ import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * Convenience bean for locale-dependent conversion of some widely used data types to and from strings.
@@ -30,6 +31,9 @@ public class DatatypeFormatter {
 
     @Inject
     protected UserSessionSource uss;
+
+    @Inject
+    protected TimeZones timeZones;
 
     /**
      * Format Date (date without time) using {@code dateFormat} string specified in the main message pack.
@@ -51,9 +55,14 @@ public class DatatypeFormatter {
 
     /**
      * Format Date (date and time) using {@code dateTimeFormat} string specified in the main message pack.
+     * <p>Takes into account time zone if it is set for the current user session.</p>
      * @return string representation or empty string if the value is null
      */
     public String formatDateTime(@Nullable Date value) {
+        TimeZone tz = uss.getUserSession().getTimeZone();
+        if (tz != null)
+            value = timeZones.convert(value, TimeZone.getDefault(), tz);
+
         DateTimeDatatype datatype = Datatypes.get(DateTimeDatatype.NAME);
         return datatype.format(value, uss.getLocale());
     }
@@ -125,12 +134,19 @@ public class DatatypeFormatter {
 
     /**
      * Parse Date (date and time) using {@code dateTimeFormat} string specified in the main message pack.
+     * <p>Takes into account time zone if it is set for the current user session.</p>
      * @return Date value or null if a blank string is provided
      */
     @Nullable
     public Date parseDateTime(String str) throws ParseException {
         DateTimeDatatype datatype = Datatypes.get(DateTimeDatatype.NAME);
-        return datatype.parse(str, uss.getLocale());
+        Date date = datatype.parse(str, uss.getLocale());
+
+        TimeZone tz = uss.getUserSession().getTimeZone();
+        if (tz != null)
+            date = timeZones.convert(date, tz, TimeZone.getDefault());
+
+        return date;
     }
 
     /**

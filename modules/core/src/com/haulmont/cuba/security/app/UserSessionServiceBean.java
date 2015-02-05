@@ -67,6 +67,13 @@ public class UserSessionServiceBean implements UserSessionService {
     }
 
     @Override
+    public void setSessionTimeZone(UUID sessionId, TimeZone timeZone) {
+        UserSession userSession = userSessionManager.getSession(sessionId);
+        userSession.setTimeZone(timeZone);
+        userSessions.propagate(sessionId);
+    }
+
+    @Override
     public void setSessionAddress(UUID sessionId, String address) {
         UserSession userSession = userSessionManager.getSession(sessionId);
         userSession.setAddress(address);

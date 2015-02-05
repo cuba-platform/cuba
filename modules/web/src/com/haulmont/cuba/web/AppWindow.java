@@ -30,7 +30,6 @@ import com.haulmont.cuba.web.actions.ChangeSubstUserAction;
 import com.haulmont.cuba.web.actions.DoNotChangeSubstUserAction;
 import com.haulmont.cuba.web.app.UserSettingsTools;
 import com.haulmont.cuba.web.app.folders.FoldersPane;
-import com.haulmont.cuba.web.gui.WebComponentsFactory;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.sys.MenuBuilder;
 import com.haulmont.cuba.web.sys.WindowBreadCrumbs;
@@ -615,6 +614,8 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
         if (webConfig.getUseLightHeader()){
             initUserIndicator(layout);
 
+            addTimeZoneIndicator(layout);
+
             addNewWindowButton(layout);
 
             addLogoutButton(layout);
@@ -754,6 +755,8 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
 
         initUserIndicator(titleLayout);
 
+        addTimeZoneIndicator(titleLayout);
+
         addNewWindowButton(titleLayout);
 
         addLogoutButton(titleLayout);
@@ -768,6 +771,24 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
 
         layout.addComponent(userLabel);
         layout.setComponentAlignment(userLabel, Alignment.MIDDLE_RIGHT);
+    }
+
+    protected void addTimeZoneIndicator(HorizontalLayout layout) {
+        UserSession session = connection.getSession();
+        if (session == null)
+            throw new RuntimeException("No user session found");
+
+        TimeZone timeZone = session.getTimeZone();
+        if (timeZone == null)
+            return;
+
+        TimeZones timeZones = AppBeans.get(TimeZones.NAME);
+        Label tzLabel = new Label(timeZones.getDisplayNameShort(timeZone));
+        tzLabel.setStyleName("cuba-user-timezone-label");
+        tzLabel.setSizeUndefined();
+
+        layout.addComponent(tzLabel);
+        layout.setComponentAlignment(tzLabel, Alignment.MIDDLE_RIGHT);
     }
 
     protected void addNewWindowButton(HorizontalLayout layout) {

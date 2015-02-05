@@ -5,11 +5,14 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.impl.DateTimeDatatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.annotation.IgnoreUserTimeZone;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
+import com.haulmont.cuba.core.global.TimeZones;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.components.Field;
@@ -19,6 +22,7 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
+import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.toolkit.ui.DateFieldWrapper;
 import com.haulmont.cuba.web.toolkit.ui.MaskedTextField;
@@ -31,6 +35,7 @@ import java.sql.Time;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
@@ -56,6 +61,12 @@ public class WebDateField extends WebAbstractField<DateFieldWrapper> implements 
     protected String dateFormat;
     protected String timeFormat;
 
+    protected TimeZone timeZone;
+
+    protected UserSession userSession;
+
+    protected TimeZones timeZones = AppBeans.get(TimeZones.NAME);
+
     public WebDateField() {
         composition = new HorizontalLayout();
 
@@ -63,8 +74,9 @@ public class WebDateField extends WebAbstractField<DateFieldWrapper> implements 
         dateField = new com.haulmont.cuba.web.toolkit.ui.DateField();
 
         UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
-        Locale userLocale = sessionSource.getLocale();
-        dateField.setDateFormat(Datatypes.getFormatStringsNN(userLocale).getDateFormat());
+        userSession = sessionSource.getUserSession();
+
+        dateField.setDateFormat(Datatypes.getFormatStringsNN(userSession.getLocale()).getDateFormat());
 
         dateField.setResolution(com.haulmont.cuba.web.toolkit.ui.DateField.RESOLUTION_DAY);
         dateField.setWidth("100%");
@@ -150,6 +162,21 @@ public class WebDateField extends WebAbstractField<DateFieldWrapper> implements 
         return dateTimeFormat;
     }
 
+    public TimeZone getTimeZone() {
+        return timeZone;
+    }
+
+    public void setTimeZone(TimeZone timeZone) {
+        TimeZone prevTimeZone = this.timeZone;
+        Date value = getValue();
+        this.timeZone = timeZone;
+        if (value != null && !ObjectUtils.equals(prevTimeZone, timeZone)) {
+            Date newValue = timeZones.convert(value,
+                    TimeZone.getDefault(), timeZone != null ? timeZone : TimeZone.getDefault());
+            setValueToFields(newValue);
+        }
+    }
+
     public void updateLayout() {
         composition.removeAllComponents();
         composition.addComponent(dateField);
@@ -213,13 +240,26 @@ public class WebDateField extends WebAbstractField<DateFieldWrapper> implements 
 
     @Override
     public void setValue(Object value) {
+        setValueToFields(toUserDate((Date) value));
+        updateInstance();
+    }
+
+    protected Date toUserDate(Date date) {
+        return timeZone == null ? date : timeZones.convert(date, TimeZone.getDefault(), timeZone);
+    }
+
+    protected Date toServerDate(Date date) {
+        return timeZone == null ? date : timeZones.convert(date, timeZone, TimeZone.getDefault());
+    }
+
+    protected void setValueToFields(Object value) {
         if (!editable) {
             setEditableInternal(true);
         }
 
         updatingInstance = true;
         try {
-            dateField.setValue((Date) value);
+            dateField.setValue(value);
             timeField.setValue(value);
         } finally {
             updatingInstance = false;
@@ -228,23 +268,6 @@ public class WebDateField extends WebAbstractField<DateFieldWrapper> implements 
                 setEditableInternal(false);
             }
         }
-
-        updateInstance();
-    }
-
-    protected void setValueFromDs(Object value) {
-        boolean isEditable = editable;
-        if (!editable) {
-            setEditable(true);
-        }
-        updatingInstance = true;
-        try {
-            dateField.setValue(value);
-            timeField.setValueInternal(value);
-        } finally {
-            updatingInstance = false;
-        }
-        setEditable(isEditable);
     }
 
     protected boolean isHourUsed() {
@@ -295,6 +318,15 @@ public class WebDateField extends WebAbstractField<DateFieldWrapper> implements 
 
         metaProperty = metaPropertyPath.getMetaProperty();
 
+        if (metaProperty.getRange().isDatatype()
+                && metaProperty.getRange().asDatatype().getName().equals(DateTimeDatatype.NAME)
+                && timeZone == null) {
+            Object ignoreUserTimeZone = metaProperty.getAnnotations().get(IgnoreUserTimeZone.class.getName());
+            if (!Boolean.TRUE.equals(ignoreUserTimeZone)) {
+                timeZone = userSession.getTimeZone();
+            }
+        }
+
         datasource.addListener(
                 new DsListenerAdapter() {
                     @Override
@@ -302,7 +334,7 @@ public class WebDateField extends WebAbstractField<DateFieldWrapper> implements 
                         if (updatingInstance)
                             return;
                         Date value = getEntityValue(item);
-                        setValueFromDs(value);
+                        setValueToFields(toUserDate(value));
                         fireValueChanged(value);
                     }
 
@@ -311,7 +343,7 @@ public class WebDateField extends WebAbstractField<DateFieldWrapper> implements 
                         if (updatingInstance)
                             return;
                         if (property.equals(metaPropertyPath.toString())) {
-                            setValueFromDs(value);
+                            setValueToFields(toUserDate((Date) value));
                             fireValueChanged(value);
                         }
                     }
@@ -321,7 +353,7 @@ public class WebDateField extends WebAbstractField<DateFieldWrapper> implements 
         if (datasource.getState() == Datasource.State.VALID && datasource.getItem() != null) {
             if (property.equals(metaPropertyPath.toString())) {
                 Date value = getEntityValue(datasource.getItem());
-                setValueFromDs(value);
+                setValueToFields(toUserDate(value));
                 fireValueChanged(value);
             }
         }
@@ -359,10 +391,7 @@ public class WebDateField extends WebAbstractField<DateFieldWrapper> implements 
             return null;
         }
 
-        UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
-        Locale locale = sessionSource.getLocale();
-
-        Calendar c = Calendar.getInstance(locale);
+        Calendar c = Calendar.getInstance(userSession.getLocale());
         c.setTime(datePickerDate);
         if (timeField.getValue() == null) {
             c.set(Calendar.HOUR_OF_DAY, 0);
@@ -370,7 +399,7 @@ public class WebDateField extends WebAbstractField<DateFieldWrapper> implements 
             c.set(Calendar.SECOND, 0);
 
         } else {
-            Calendar c2 = Calendar.getInstance(locale);
+            Calendar c2 = Calendar.getInstance(userSession.getLocale());
             c2.setTime(timeField.<Date>getValue());
 
             c.set(Calendar.HOUR_OF_DAY, c2.get(Calendar.HOUR_OF_DAY));
@@ -378,16 +407,20 @@ public class WebDateField extends WebAbstractField<DateFieldWrapper> implements 
             c.set(Calendar.SECOND, c2.get(Calendar.SECOND));
         }
 
+        Date serverDate = toServerDate(c.getTime());
+
         if (metaProperty != null) {
             Class javaClass = metaProperty.getRange().asDatatype().getJavaClass();
-            if (javaClass.equals(java.sql.Date.class))
-                return new java.sql.Date(c.getTimeInMillis());
-            else if (javaClass.equals(Time.class))
-                return new Time(c.getTimeInMillis());
-            else
-                return c.getTime();
-        } else
-            return c.getTime();
+            if (javaClass.equals(java.sql.Date.class)) {
+                return new java.sql.Date(serverDate.getTime());
+            } else if (javaClass.equals(Time.class)) {
+                return new Time(serverDate.getTime());
+            } else {
+                return serverDate;
+            }
+        } else {
+            return serverDate;
+        }
     }
 
     @Override

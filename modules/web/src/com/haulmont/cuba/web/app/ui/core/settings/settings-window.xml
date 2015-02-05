@@ -13,9 +13,9 @@
 
     <layout expand="buttons">
         <groupBox>
-            <grid spacing="true">
+            <grid spacing="true" width="100%">
                 <columns>
-                    <column flex="1"/>
+                    <column flex="0"/>
                     <column flex="1"/>
                 </columns>
                 <rows>
@@ -27,6 +27,13 @@
                         <label value="msg://mainWindowTheme"/>
                         <lookupField id="appThemeField" required="true" width="theme://cuba.web.settings-window.appThemeField.width"
                                      requiredMessage="msg://mainWindowThemeMsg"/>
+                    </row>
+                    <row>
+                        <label value="msg://com.haulmont.cuba.security.entity/User.timeZone"/>
+                        <hbox spacing="true" width="100%" expand="timeZoneAutoField">
+                            <lookupField id="timeZoneLookup" width="theme://cuba.web.settings-window.timeZoneField.width"/>
+                            <checkBox id="timeZoneAutoField" align="MIDDLE_LEFT"/>
+                        </hbox>
                     </row>
                     <row>
                         <button id="changePasswordBtn" icon="icons/change-pass.png"/>

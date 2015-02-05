@@ -117,10 +117,30 @@
   text-shadow: black 1px 1px;
 }
 
+.v-horizontallayout-titlebar .v-label-user-timezone-label {
+  color: #fff;
+  font-size: 12px;
+  font-weight: normal;
+  font-family: Verdana, Arial, sans-serif;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.v-horizontallayout-menubar .v-label-user-timezone-label {
+  color: #fff;
+  font-size: 12px;
+  font-weight: normal;
+  font-family: Verdana, Arial, sans-serif;
+  text-shadow: black 1px 1px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
 .v-menubar .v-menubar-menuitem,
 .v-menubar-submenu menuitem,
 .v-button-white-border .v-button-caption,
-.v-horizontallayout-titlebar .v-label-select-label {
+.v-horizontallayout-titlebar .v-label-select-label,
+.v-horizontallayout-titlebar .v-label-user-timezone-label {
   text-shadow: black 1px 1px;
 }
 

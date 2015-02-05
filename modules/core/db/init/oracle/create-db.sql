@@ -527,6 +527,8 @@ create table SEC_USER (
     POSITION_ varchar2(255),
     EMAIL varchar2(100),
     LANGUAGE_ varchar2(20),
+    TIME_ZONE varchar2(50),
+    TIME_ZONE_AUTO char(1),
     ACTIVE char(1),
     GROUP_ID varchar2(32),
     IP_MASK varchar2(200),

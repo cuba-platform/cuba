@@ -13,6 +13,7 @@ import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.EnumerationImpl;
 import com.haulmont.chile.core.model.*;
 import com.haulmont.chile.core.model.impl.*;
+import com.haulmont.cuba.core.entity.annotation.IgnoreUserTimeZone;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -282,6 +283,11 @@ public class ChileAnnotationsLoader implements MetaClassLoader {
         SystemLevel systemLevel = annotatedElement.getAnnotation(SystemLevel.class);
         if (systemLevel != null) {
             metaProperty.getAnnotations().put(SystemLevel.class.getName(), systemLevel.value());
+        }
+
+        IgnoreUserTimeZone ignoreUserTimeZone = annotatedElement.getAnnotation(IgnoreUserTimeZone.class);
+        if (ignoreUserTimeZone != null) {
+            metaProperty.getAnnotations().put(IgnoreUserTimeZone.class.getName(), ignoreUserTimeZone.value());
         }
 
         com.haulmont.chile.core.annotations.MetaProperty metaPropertyAnnotation =

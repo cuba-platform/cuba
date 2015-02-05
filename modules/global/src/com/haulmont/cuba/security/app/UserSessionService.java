@@ -51,6 +51,15 @@ public interface UserSessionService {
     void setSessionLocale(UUID sessionId, Locale locale);
 
     /**
+     * Set user time zone into the session, propagating changes to the cluster.
+     * @param sessionId an active session identifier
+     * @param timeZone  user time zone
+     * @throws com.haulmont.cuba.security.global.NoUserSessionException in case of a session with the specified ID
+     * doesn't exist
+     */
+    void setSessionTimeZone(UUID sessionId, TimeZone timeZone);
+
+    /**
      * Set client's address into the session, propagating changes to the cluster.
      * @param sessionId an active session identifier
      * @param address   client's address

@@ -27,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 
 /**
  * Abstract class that encapsulates common connection behaviour for web-client.
@@ -112,6 +113,9 @@ public abstract class AbstractConnection implements Connection {
         String clientInfo = makeClientInfo();
         session.setClientInfo(clientInfo);
 
+        if (Boolean.TRUE.equals(session.getUser().getTimeZoneAuto()))
+            session.setTimeZone(detectTimeZone());
+
         fireConnectionListeners();
 
         if (log.isDebugEnabled()) {
@@ -131,6 +135,16 @@ public abstract class AbstractConnection implements Connection {
                 globalConfig.getWebContextName() + ") ";
 
         return serverInfo + browser.getBrowserApplication();
+    }
+
+    protected TimeZone detectTimeZone() {
+        WebBrowser webBrowser = ((WebApplicationContext) App.getInstance().getContext()).getBrowser();
+
+        int offset = webBrowser.getTimezoneOffset() / 1000 / 60;
+        String hours = StringUtils.leftPad(String.valueOf(offset / 60), 2, '0');
+        String mins = StringUtils.leftPad(String.valueOf(offset % 60), 2, '0');
+        char sign = offset >= 0 ? '+' : '-';
+        return TimeZone.getTimeZone("GMT" + sign + hours + mins);
     }
 
     @Override

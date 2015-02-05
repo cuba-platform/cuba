@@ -20,6 +20,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * @author krivopustov
@@ -56,6 +57,9 @@ public class Connection {
             log.warn("Unable to obtain local IP address", e);
         }
         session.setClientInfo(makeClientInfo());
+
+        if (Boolean.TRUE.equals(session.getUser().getTimeZoneAuto()))
+            session.setTimeZone(TimeZone.getDefault());
     }
 
     protected String makeClientInfo() {

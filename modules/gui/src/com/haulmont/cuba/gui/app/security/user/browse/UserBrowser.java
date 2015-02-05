@@ -19,6 +19,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.app.UserManagementService;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.UserSession;
@@ -76,6 +77,9 @@ public class UserBrowser extends AbstractLookup {
 
     @Inject
     protected UserManagementService userManagementService;
+
+    @Inject
+    private ComponentsFactory componentsFactory;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -137,6 +141,23 @@ public class UserBrowser extends AbstractLookup {
         if (WindowParams.MULTI_SELECT.getBool(getContext())) {
             usersTable.setMultiSelect(true);
         }
+
+        initTimeZoneColumn();
+    }
+
+    protected void initTimeZoneColumn() {
+        usersTable.addGeneratedColumn("timeZone", new Table.ColumnGenerator<User>() {
+            @Override
+            public Component generateCell(User entity) {
+                Label label = componentsFactory.createComponent(Label.NAME);
+                if (Boolean.TRUE.equals(entity.getTimeZoneAuto())) {
+                    label.setValue(messages.getMainMessage("timeZone.auto"));
+                } else if (entity.getTimeZone() != null) {
+                    label.setValue(entity.getTimeZone());
+                }
+                return label;
+            }
+        });
     }
 
     protected boolean isNotCurrentUserSelected(User item) {
