@@ -597,8 +597,9 @@ public class FilterDelegateImpl implements FilterDelegate {
             folder = (metadata.create(SearchFolder.class));
 
         if (filterEntity.getCode() == null) {
-            folder.setName(filterEntity.getName());
-            folder.setTabName(filterEntity.getName());
+            String folderName = filterEntity != adHocFilter ? filterEntity.getName() : "";
+            folder.setName(folderName);
+            folder.setTabName(folderName);
         } else {
             String name = messages.getMainMessage(filterEntity.getCode());
             folder.setName(name);
