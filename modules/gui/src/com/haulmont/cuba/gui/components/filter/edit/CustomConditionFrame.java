@@ -23,11 +23,10 @@ import com.haulmont.cuba.gui.data.ValueListener;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.math.BigDecimal;
-import java.sql.*;
 import java.util.*;
-import java.util.Date;
 import java.util.regex.Matcher;
 
 /**
@@ -74,6 +73,8 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
     @Inject
     private Label nameLab;
 
+    private boolean initializing;
+
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
@@ -99,9 +100,42 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
                 entityParamWhereField.setEnabled(isEntity);
                 paramViewLab.setEnabled(isEntity);
                 entityParamViewField.setEnabled(isEntity);
-                fillEntitySelect(condition.getParam());
+                Param param = condition.getParam();
+                fillEntitySelect(param);
+
+                //recreate default value component based on param type
+                if (!initializing && defaultValueLayout.isVisible()) {
+                    if ((isEntity || isEnum) && (entitySelect.getValue() == null)) {
+                        defaultValueLayout.remove(defaultValueComponent);
+                        param.setJavaClass(null);
+                    } else {
+                        Class paramJavaClass = getParamJavaClass((ParamType) value);
+                        param.setJavaClass(paramJavaClass);
+                        param.setDefaultValue(null);
+                        createDefaultValueComponent();
+                    }
+                }
             }
         });
+
+        entitySelect.addListener(new ValueListener() {
+            @Override
+            public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
+                if (initializing || !defaultValueLayout.isVisible()) {
+                    return;
+                }
+                if (value == null) {
+                    defaultValueLayout.remove(defaultValueComponent);
+                    return;
+                }
+                Param param = condition.getParam();
+                Class paramJavaClass = value instanceof Class ? (Class) value : ((MetaClass) value).getJavaClass();
+                param.setJavaClass(paramJavaClass);
+                param.setDefaultValue(null);
+                createDefaultValueComponent();
+            }
+        });
+
         FilterHelper filterHelper = AppBeans.get(FilterHelper.class);
         filterHelper.setLookupNullSelectionAllowed(typeSelect, false);
 
@@ -128,6 +162,7 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
     @Override
     public void setCondition(final CustomCondition condition) {
         super.setCondition(condition);
+        initializing = true;
 
         nameField.setValue(condition.getLocCaption());
         boolean isNameEditable = Strings.isNullOrEmpty(condition.getCaption()) || !condition.getCaption().startsWith("msg://");
@@ -142,6 +177,7 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
 
         fillTypeSelect(condition.getParam());
         fillEntitySelect(condition.getParam());
+        initializing = false;
     }
 
     protected void fillEntitySelect(Param param) {
@@ -301,11 +337,15 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
         Param param = new Param(
                 paramName, javaClass, entityParamWhere, entityParamView, condition.getDatasource(),
                 condition.getInExpr(), condition.getRequired());
+        if (defaultValueComponent != null && defaultValueComponent instanceof HasValue && defaultValueComponent.isVisible()) {
+            param.setDefaultValue(((HasValue) defaultValueComponent).getValue());
+        }
         condition.setParam(param);
 
         return true;
     }
 
+    @Nullable
     protected Class getParamJavaClass(ParamType type) {
         switch (type) {
             case STRING:
@@ -328,12 +368,16 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
                 return UUID.class;
             case ENTITY:
                 MetaClass entity = entitySelect.getValue();
+                if (entity == null)
+                    return null;
                 return entity.getJavaClass();
             case ENUM:
                 Class enumClass = entitySelect.getValue();
+                if (enumClass == null)
+                    return null;
                 return enumClass;
             case UNARY:
-                return null;
+                return Boolean.class;
         }
         return null;
     }

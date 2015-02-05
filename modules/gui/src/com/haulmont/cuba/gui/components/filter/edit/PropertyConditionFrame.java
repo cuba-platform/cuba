@@ -8,6 +8,8 @@ package com.haulmont.cuba.gui.components.filter.edit;
 import com.haulmont.cuba.gui.components.BoxLayout;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.TextField;
+import com.haulmont.cuba.gui.components.filter.Param;
+import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.condition.PropertyCondition;
 
 import javax.inject.Inject;
@@ -43,6 +45,24 @@ public class PropertyConditionFrame extends ConditionFrame<PropertyCondition> {
         operationLayout.add(operationComponent);
         caption.setValue(condition.getCaption());
         property.setValue(condition.getPropertyLocCaption());
+
+        condition.addListener(new AbstractCondition.Listener() {
+            @Override
+            public void captionChanged() {}
+
+            @Override
+            public void paramChanged(Param oldParam, Param newParam) {
+                Component oldDefaultValueComponent = defaultValueComponent;
+                createDefaultValueComponent();
+                if (defaultValueComponent != null && defaultValueComponent instanceof HasValue
+                        && oldDefaultValueComponent != null && oldDefaultValueComponent instanceof HasValue) {
+                    if (oldParam.getJavaClass().equals(newParam.getJavaClass())
+                            && defaultValueComponent.getClass().equals(oldDefaultValueComponent.getClass())) {
+                        ((HasValue) defaultValueComponent).setValue(((HasValue) oldDefaultValueComponent).getValue());
+                    }
+                }
+            }
+        });
     }
 
     @Override

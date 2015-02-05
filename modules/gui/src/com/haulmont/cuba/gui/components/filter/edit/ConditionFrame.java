@@ -33,6 +33,7 @@ public abstract class ConditionFrame<T extends AbstractCondition> extends Abstra
     protected CheckBox required;
     protected CheckBox hidden;
     protected LookupField width;
+    protected BoxLayout defaultValueLayout;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -75,7 +76,11 @@ public abstract class ConditionFrame<T extends AbstractCondition> extends Abstra
             width.setValue(condition.getWidth());
         }
 
-        BoxLayout defaultValueLayout = getComponent("defaultValueLayout");
+        createDefaultValueComponent();
+    }
+
+    protected void createDefaultValueComponent() {
+        defaultValueLayout = getComponent("defaultValueLayout");
         if (defaultValueLayout != null) {
             if (defaultValueComponent != null) {
                 defaultValueLayout.remove(defaultValueComponent);
@@ -89,7 +94,6 @@ public abstract class ConditionFrame<T extends AbstractCondition> extends Abstra
                 }
             }
         }
-
     }
 
     public boolean commit() {

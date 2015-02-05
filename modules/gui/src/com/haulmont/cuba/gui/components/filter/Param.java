@@ -98,6 +98,24 @@ public class Param {
     public Param(String name, Class javaClass, String entityWhere, String entityView, Datasource datasource,
                  MetaProperty property, boolean inExpr, boolean required) {
         this.name = name;
+        setJavaClass(javaClass);
+        this.entityWhere = entityWhere;
+        this.entityView = (entityView != null) ? entityView : View.MINIMAL;
+        this.datasource = datasource;
+        this.property = property;
+        this.inExpr = inExpr;
+        this.required = required;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public void setJavaClass(Class javaClass) {
         if (javaClass != null) {
             this.javaClass = javaClass;
             if (SetValueEntity.class.isAssignableFrom(javaClass)) {
@@ -113,20 +131,6 @@ public class Param {
             type = Type.UNARY;
             this.javaClass = Boolean.class;
         }
-        this.entityWhere = entityWhere;
-        this.entityView = (entityView != null) ? entityView : View.MINIMAL;
-        this.datasource = datasource;
-        this.property = property;
-        this.inExpr = inExpr;
-        this.required = required;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Type getType() {
-        return type;
     }
 
     public Class getJavaClass() {
