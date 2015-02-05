@@ -12,6 +12,11 @@ import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.App;
 import com.vaadin.ui.*;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.TextArea;
+import com.vaadin.ui.Window;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -19,6 +24,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.Nullable;
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.text.SimpleDateFormat;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -66,7 +74,9 @@ public class ExceptionDialog extends Window {
         }
 
         final String text = message != null ? message : getText(throwable);
-        final String stackTrace = getStackTrace(throwable);
+        Throwable exception = removeRemoteException(throwable);
+        final String stackTrace = getStackTrace(exception);
+        final String htmlStackTrace = convertToHtml(stackTrace);
 
         mainLayout = new VerticalLayout();
         mainLayout.setHeight(100, UNITS_PERCENTAGE);
@@ -109,12 +119,23 @@ public class ExceptionDialog extends Window {
         });
         leftButtonsLayout.addComponent(showStackTraceButton);
 
+        Button copyToClipboardButton = new Button((messages.getMessage(getClass(), "exceptionDialog.copyToClipboardBtn")));
+        copyToClipboardButton.addListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                StringSelection selection = new StringSelection(stackTrace);
+                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                clipboard.setContents(selection, null);
+            }
+        });
+        leftButtonsLayout.addComponent(copyToClipboardButton);
+
         if (!StringUtils.isBlank(clientConfig.getSupportEmail()) && userSessionSource.getUserSession() != null) {
             final Button reportButton = new Button(messages.getMessage(getClass(), "exceptionDialog.reportBtn"));
             reportButton.addListener(new Button.ClickListener() {
                 @Override
                 public void buttonClick(Button.ClickEvent event) {
-                    sendSupportEmail(text, stackTrace);
+                    sendSupportEmail(text, htmlStackTrace);
                     reportButton.setEnabled(false);
                 }
             });
@@ -133,7 +154,7 @@ public class ExceptionDialog extends Window {
         final Label stackTraceLabel = new Label();
         stackTraceLabel.setContentMode(Label.CONTENT_XHTML);
 
-        stackTraceLabel.setValue(stackTrace);
+        stackTraceLabel.setValue(htmlStackTrace);
         stackTraceLabel.setSizeUndefined();
         stackTraceLabel.setStyleName("cuba-log-content");
         scrollContent.addComponent(stackTraceLabel);
@@ -143,22 +164,28 @@ public class ExceptionDialog extends Window {
     }
 
     protected String getStackTrace(Throwable throwable) {
-        if (throwable instanceof RemoteException) {
-            RemoteException re = (RemoteException) throwable;
-            for (int i = re.getCauses().size() - 1; i >= 0; i--) {
-                if (re.getCauses().get(i).getThrowable() != null) {
-                    throwable = re.getCauses().get(i).getThrowable();
-                    break;
-                }
-            }
-        }
+        return ExceptionUtils.getStackTrace(throwable);
+    }
 
-        String html = StringEscapeUtils.escapeHtml(ExceptionUtils.getStackTrace(throwable));
+    protected String convertToHtml(String text) {
+        String html = StringEscapeUtils.escapeHtml(text);
         html = StringUtils.replace(html, "\n", "<br/>");
         html = StringUtils.replace(html, " ", "&nbsp;");
         html = StringUtils.replace(html, "\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
 
         return html;
+    }
+
+    private Throwable removeRemoteException(Throwable throwable) {
+        if (throwable instanceof RemoteException) {
+            RemoteException re = (RemoteException) throwable;
+            for (int i = re.getCauses().size() - 1; i >= 0; i--) {
+                if (re.getCauses().get(i).getThrowable() != null) {
+                    return re.getCauses().get(i).getThrowable();
+                }
+            }
+        }
+        return throwable;
     }
 
     protected String getText(Throwable rootCause) {
