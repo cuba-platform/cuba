@@ -118,7 +118,8 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected LinkedList<AppliedFilterHolder> appliedFilters = new LinkedList<>();
     protected List<Filter.FilterEntityChangeListener> filterEntityChangeListeners = new ArrayList<>();
 
-    protected GroupBoxLayout layout;
+    protected GroupBoxLayout groupBoxLayout;
+    protected BoxLayout layout;
     protected LookupField filtersLookup;
     protected Component.Container conditionsLayout;
     protected BoxLayout maxResultsLayout;
@@ -165,10 +166,13 @@ public class FilterDelegateImpl implements FilterDelegate {
 
     protected void createLayout() {
         if (layout == null) {
-            layout = componentsFactory.createComponent(GroupBoxLayout.NAME);
-            layout.setOrientation(GroupBoxLayout.Orientation.VERTICAL);
-            layout.setStyleName("cuba-generic-filter");
+            groupBoxLayout = componentsFactory.createComponent(GroupBoxLayout.NAME);
+            groupBoxLayout.setOrientation(GroupBoxLayout.Orientation.VERTICAL);
+            groupBoxLayout.setStyleName("cuba-generic-filter");
+            groupBoxLayout.setWidth("100%");
+            layout = componentsFactory.createComponent(VBoxLayout.NAME);
             layout.setWidth("100%");
+            groupBoxLayout.add(layout);
         } else {
             Collection<Component> components = layout.getComponents();
             for (Component component : components) {
@@ -178,7 +182,6 @@ public class FilterDelegateImpl implements FilterDelegate {
         layout.setSpacing(false);
 
         appliedFiltersLayout = componentsFactory.createComponent(BoxLayout.VBOX);
-        layout.add(appliedFiltersLayout);
 
         conditionsLayout = componentsFactory.createComponent(HBoxLayout.class);
         conditionsLayout.setWidth("100%");
@@ -926,6 +929,8 @@ public class FilterDelegateImpl implements FilterDelegate {
         if (!appliedFilters.isEmpty() && appliedFilters.getLast().filter.equals(lastAppliedFilter))
             return;
 
+        this.layout.add(appliedFiltersLayout, 0);
+
         BoxLayout layout = componentsFactory.createComponent(BoxLayout.HBOX);
         layout.setSpacing(true);
 
@@ -961,6 +966,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                 AppliedFilterHolder holder = appliedFilters.removeLast();
                 appliedFiltersLayout.remove(holder.layout);
                 ((CollectionDatasource.SupportsApplyToSelected) datasource).unpinAllQuery();
+                this.layout.remove(appliedFiltersLayout);
             } else {
 
                 windowManager.showOptionDialog(messages.getMainMessage("removeApplied.title"),
@@ -971,6 +977,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                                     public void actionPerform(Component component) {
                                         for (AppliedFilterHolder holder : appliedFilters) {
                                             appliedFiltersLayout.remove(holder.layout);
+                                            FilterDelegateImpl.this.layout.remove(appliedFiltersLayout);
                                         }
                                         appliedFilters.clear();
                                         ((CollectionDatasource.SupportsApplyToSelected) datasource).unpinAllQuery();
@@ -1013,7 +1020,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
     @Override
     public Component.Container getLayout() {
-        return layout;
+        return groupBoxLayout;
     }
 
     @Override
@@ -1238,7 +1245,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     @Override
     public void setCaption(String caption) {
         this.caption = caption;
-        layout.setCaption(caption);
+        groupBoxLayout.setCaption(caption);
     }
 
     @Override
