@@ -28,7 +28,23 @@ public class EntityLogTest extends CubaTestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
+
         Transaction tx = persistence.createTransaction();
+        try {
+            EntityManager em = persistence.getEntityManager();
+
+            Query q = em.createNativeQuery("delete from SEC_LOGGED_ATTR");
+            q.executeUpdate();
+
+            q = em.createNativeQuery("delete from SEC_LOGGED_ENTITY");
+            q.executeUpdate();
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+
+        tx = persistence.createTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
 
