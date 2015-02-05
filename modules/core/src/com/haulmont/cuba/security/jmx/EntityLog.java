@@ -36,9 +36,4 @@ public class EntityLog implements EntityLogMBean {
     public void invalidateCache() {
         entityLog.invalidateCache();
     }
-
-    @Override
-    public void processLoggingForCurrentThread(Boolean switched) {
-        entityLog.processLoggingForCurrentThread(switched);
-    }
 }

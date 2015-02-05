@@ -66,8 +66,8 @@ public class EntityLog implements EntityLogAPI {
     }
 
     @Override
-    public void processLoggingForCurrentThread(Boolean switched) {
-        entityLogSwitchedOn.set(switched);
+    public void processLoggingForCurrentThread(Boolean enabled) {
+        entityLogSwitchedOn.set(enabled);
     }
 
     public synchronized boolean isEnabled() {

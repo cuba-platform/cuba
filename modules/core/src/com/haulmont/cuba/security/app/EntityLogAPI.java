@@ -41,5 +41,11 @@ public interface EntityLogAPI {
      */
     void invalidateCache();
 
-    void processLoggingForCurrentThread(Boolean switched);
+    /**
+     * Disables/enables entity logging for current thread.
+     * Enabled by default.
+     *
+     * @param enabled entity logging disabled if false, enabled otherwise.
+     */
+    void processLoggingForCurrentThread(Boolean enabled);
 }
