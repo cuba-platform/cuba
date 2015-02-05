@@ -337,9 +337,9 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
         Param param = new Param(
                 paramName, javaClass, entityParamWhere, entityParamView, condition.getDatasource(),
                 condition.getInExpr(), condition.getRequired());
-        if (defaultValueComponent != null && defaultValueComponent instanceof HasValue && defaultValueComponent.isVisible()) {
-            param.setDefaultValue(((HasValue) defaultValueComponent).getValue());
-        }
+
+        param.setDefaultValue(condition.getParam().getDefaultValue());
+
         condition.setParam(param);
 
         return true;

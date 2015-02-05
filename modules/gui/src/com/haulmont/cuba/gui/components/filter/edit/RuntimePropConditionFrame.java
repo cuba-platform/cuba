@@ -176,6 +176,9 @@ public class RuntimePropConditionFrame extends ConditionFrame<RuntimePropConditi
                     condition.getInExpr(), condition.getRequired());
         }
 
+        Object defaultValue = condition.getParam().getDefaultValue();
+        param.setDefaultValue(defaultValue);
+
         condition.setParam(param);
         condition.setCategoryId(categoryLookup.<Category>getValue().getId());
         condition.setCategoryAttributeId(attributeLookup.<CategoryAttribute>getValue().getId());
