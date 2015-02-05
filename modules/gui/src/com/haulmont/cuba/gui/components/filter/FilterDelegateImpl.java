@@ -739,6 +739,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                         public void actionPerform(Component component) {
                             conditions.removeCondition(condition);
                             fillConditionsLayout(false);
+                            updateFilterModifiedIndicator();
                         }
                     };
                     removeConditionAction.setVisible(conditionsRemoveEnabled);
