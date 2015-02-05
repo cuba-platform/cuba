@@ -8,7 +8,7 @@
         messagesPack="com.haulmont.cuba.gui.components.filter.edit"
         focusComponent="nameField">
 
-    <layout spacing="true" expand="conditionGrid">
+    <layout spacing="true">
         <grid id="conditionGrid" spacing="true" width="100%">
             <columns>
                 <column/>
@@ -29,7 +29,7 @@
                 </row>
                 <row>
                     <label id="defaultValueLayoutLabel" htmlEnabled="true" value="msg://defaultValue" align="MIDDLE_LEFT"/>
-                    <hbox id="defaultValueLayout" align="MIDDLE_LEFT"/>
+                    <hbox id="defaultValueLayout" width="100%"/>
                 </row>
                 <row>
                     <label value="msg://CustomConditionFrame.hintLabel" htmlEnabled="true" colspan="2"/>

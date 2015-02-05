@@ -7,7 +7,7 @@
         class="com.haulmont.cuba.gui.components.filter.edit.GroupConditionFrame"
         messagesPack="com.haulmont.cuba.gui.components.filter.edit">
 
-    <layout spacing="true" expand="conditionGrid">
+    <layout spacing="true">
         <grid id="conditionGrid" spacing="true" width="100%">
             <columns>
                 <column/>

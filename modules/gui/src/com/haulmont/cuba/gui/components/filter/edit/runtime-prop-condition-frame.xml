@@ -8,7 +8,7 @@
         messagesPack="com.haulmont.cuba.gui.components.filter.edit">
 
     <layout spacing="true">
-        <grid spacing="true">
+        <grid spacing="true" width="100%">
             <columns>
                 <column/>
                 <column flex="1"/>
@@ -28,7 +28,7 @@
                 </row>
                 <row>
                     <label id="defaultValueLayoutLabel" htmlEnabled="true" value="msg://defaultValue" align="MIDDLE_LEFT"/>
-                    <hbox id="defaultValueLayout" align="MIDDLE_LEFT"/>
+                    <hbox id="defaultValueLayout" width="100%"/>
                 </row>
                 <row>
                     <label id="categoryLabel" value="msg://RuntimePropConditionFrame.category" align="MIDDLE_LEFT"/>
