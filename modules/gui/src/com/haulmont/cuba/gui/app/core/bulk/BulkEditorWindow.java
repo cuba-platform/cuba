@@ -463,27 +463,30 @@ public class BulkEditorWindow extends AbstractWindow {
         return managedFields;
     }
 
+    @Override
+    protected boolean preClose(String actionId) {
+        if (actionId.equals(CLOSE_ACTION_ID)) {
+            cancelChanges();
+            return false;
+        }
+        return super.preClose(actionId);
+    }
+
     public void cancelChanges() {
         if (hasChanges()) {
             showOptionDialog(messages.getMainMessage("closeUnsaved.caption"),
-                    messages.getMessage(getClass(), "closeUnsaved"),
+                    messages.getMainMessage("closeUnsaved"),
                     MessageType.CONFIRMATION, new Action[]{
                             new DialogAction(DialogAction.Type.YES) {
                                 @Override
                                 public void actionPerform(Component component) {
-                                    close(CLOSE_ACTION_ID);
+                                    close(CLOSE_ACTION_ID, true);
                                 }
                             },
-                            new DialogAction(DialogAction.Type.NO) {
-
-                                @Override
-                                public void actionPerform(Component component) {
-
-                                }
-                            }
+                            new DialogAction(DialogAction.Type.NO)
                     });
         } else {
-            close(CLOSE_ACTION_ID);
+            close(CLOSE_ACTION_ID, true);
         }
     }
 
