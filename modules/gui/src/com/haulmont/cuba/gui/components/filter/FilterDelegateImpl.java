@@ -768,6 +768,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                 grid.setRows(row + 1);
             }
 
+            cellContent.setAlignment(Component.Alignment.MIDDLE_LEFT);
             grid.add(cellContent, nextColumnStart, row, nextColumnEnd, row);
 
             nextColumnStart = nextColumnEnd + 1;
