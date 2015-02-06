@@ -378,7 +378,7 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
                     return null;
                 return enumClass;
             case UNARY:
-                return Boolean.class;
+                return null;
         }
         return null;
     }
