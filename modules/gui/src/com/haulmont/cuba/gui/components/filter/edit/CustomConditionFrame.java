@@ -96,6 +96,7 @@ public class CustomConditionFrame extends ConditionFrame<CustomCondition> {
                 boolean isEnum = ParamType.ENUM.equals(typeSelect.getValue());
                 entityLab.setEnabled(isEntity || isEnum);
                 entitySelect.setEnabled(isEntity || isEnum);
+                entitySelect.setRequired(entitySelect.isEnabled());
                 paramWhereLab.setEnabled(isEntity);
                 entityParamWhereField.setEnabled(isEntity);
                 paramViewLab.setEnabled(isEntity);

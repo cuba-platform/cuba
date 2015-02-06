@@ -56,6 +56,9 @@ public class CustomConditionEditor extends AbstractWindow {
     }
 
     public void commit() {
+        if (!validateAll()) {
+            return;
+        }
         if (customConditionFrame.commit()) {
             close(COMMIT_ACTION_ID);
         }

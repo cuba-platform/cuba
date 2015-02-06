@@ -36,7 +36,7 @@
                 </row>
                 <row>
                     <label id="nameLab" value="msg://CustomConditionFrame.name" align="MIDDLE_LEFT"/>
-                    <textField id="nameField" width="theme://cuba.gui.customConditionFrame.field.width"/>
+                    <textField id="nameField" width="theme://cuba.gui.customConditionFrame.field.width" required="true" requiredMessage="msg://CustomConditionFrame.fillName"/>
                 </row>
                 <row>
                     <label value="msg://CustomConditionFrame.join" align="MIDDLE_LEFT"/>
@@ -49,13 +49,13 @@
                 <row>
                     <label value="msg://CustomConditionFrame.type" align="MIDDLE_LEFT"/>
                     <hbox spacing="true" align="MIDDLE_LEFT" width="theme://cuba.gui.customConditionFrame.field.width" expand="typeSelect">
-                        <lookupField id="typeSelect"/>
+                        <lookupField id="typeSelect" required="true" requiredMessage="msg://CustomConditionFrame.fillType"/>
                         <checkBox id="inExprCb" caption="msg://CustomConditionFrame.inExpr" align="MIDDLE_LEFT"/>
                     </hbox>
                 </row>
                 <row>
                     <label id="entityLab" value="msg://CustomConditionFrame.entity" align="MIDDLE_LEFT"/>
-                    <lookupField id="entitySelect" width="theme://cuba.gui.customConditionFrame.field.width"/>
+                    <lookupField id="entitySelect" width="theme://cuba.gui.customConditionFrame.field.width" requiredMessage="msg://CustomConditionFrame.fillEntity"/>
                 </row>
                 <row>
                     <label id="paramWhereLab" value="msg://CustomConditionFrame.entityParamWhere" align="MIDDLE_LEFT"/>

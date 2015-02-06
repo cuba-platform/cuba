@@ -30,7 +30,7 @@
                     <rows>
                         <row>
                             <label value="msg://filterName" align="MIDDLE_LEFT"/>
-                            <textField id="filterName" width="100%"/>
+                            <textField id="filterName" width="100%" required="true" requiredMessage="msg://fillFilterName"/>
                         </row>
                         <row>
                             <label id="availableForAllLabel" value="msg://availableForAll" align="MIDDLE_LEFT"/>

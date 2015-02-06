@@ -95,6 +95,8 @@ public class FilterEditor extends AbstractWindow {
 
     protected ConditionFrame activeConditionFrame;
 
+    protected boolean treeItemChangeListenerEnabled = true;
+
     protected static Log log = LogFactory.getLog(FilterEditor.class);
 
     @Override
@@ -143,9 +145,20 @@ public class FilterEditor extends AbstractWindow {
         conditionsDs.addListener(new CollectionDsListenerAdapter<AbstractCondition>() {
             @Override
             public void itemChanged(Datasource<AbstractCondition> ds, @Nullable AbstractCondition prevItem, @Nullable AbstractCondition item) {
+                if (!treeItemChangeListenerEnabled)
+                    return;
+
                 //commit previously selected condition
-                if (activeConditionFrame != null)
-                    activeConditionFrame.commit();
+                if (activeConditionFrame != null) {
+                    if (validateAll()) {
+                        activeConditionFrame.commit();
+                    } else {
+                        treeItemChangeListenerEnabled = false;
+                        conditionsTree.setSelected(prevItem);
+                        treeItemChangeListenerEnabled = true;
+                        return;
+                    }
+                }
 
                 if (item == null) {
                     activeConditionFrame = null;
@@ -202,6 +215,7 @@ public class FilterEditor extends AbstractWindow {
     }
 
     public void commitAndClose() {
+        if (!validateAll()) return;
         if (activeConditionFrame != null)
             activeConditionFrame.commit();
         filterEntity.setName((String) filterName.getValue());
