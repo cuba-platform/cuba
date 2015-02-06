@@ -29,9 +29,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.Nullable;
-import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
 import java.text.SimpleDateFormat;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -123,17 +120,6 @@ public class ExceptionDialog extends Window {
         });
         leftButtonsLayout.addComponent(showStackTraceButton);
 
-        Button copyToClipboardButton = new CubaButton((messages.getMessage(getClass(), "exceptionDialog.copyToClipboardBtn")));
-        copyToClipboardButton.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                StringSelection selection = new StringSelection(stackTrace);
-                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-                clipboard.setContents(selection, null);
-            }
-        });
-        leftButtonsLayout.addComponent(copyToClipboardButton);
-
         if (!StringUtils.isBlank(clientConfig.getSupportEmail()) && userSessionSource.getUserSession() != null) {
             final Button reportButton = new CubaButton(messages.getMessage(getClass(), "exceptionDialog.reportBtn"));
             reportButton.addClickListener(new Button.ClickListener() {
@@ -180,7 +166,7 @@ public class ExceptionDialog extends Window {
         return html;
     }
 
-    private Throwable removeRemoteException(Throwable throwable) {
+    protected Throwable removeRemoteException(Throwable throwable) {
         if (throwable instanceof RemoteException) {
             RemoteException re = (RemoteException) throwable;
             for (int i = re.getCauses().size() - 1; i >= 0; i--) {
