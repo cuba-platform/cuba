@@ -124,7 +124,6 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected Component.Container conditionsLayout;
     protected BoxLayout maxResultsLayout;
     protected TextField maxResultsField;
-    protected CheckBox maxResultsCb;
     protected BoxLayout controlsLayout;
     protected Component.Container appliedFiltersLayout;
     protected LinkButton allowRemoveButton;
@@ -337,17 +336,10 @@ public class FilterDelegateImpl implements FilterDelegate {
         maxResultsLayout = componentsFactory.createComponent(BoxLayout.HBOX);
         maxResultsLayout.setSpacing(true);
         maxResultsLayout.setAlignment(Component.Alignment.MIDDLE_RIGHT);
-        maxResultsCb = componentsFactory.createComponent(CheckBox.NAME);
-        maxResultsCb.setCaption(messages.getMainMessage("filter.maxResults.label1"));
-        maxResultsCb.setAlignment(Component.Alignment.MIDDLE_RIGHT);
-        maxResultsCb.setValue(true);
-        maxResultsCb.addListener(new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
-                maxResultsField.setEnabled(BooleanUtils.isTrue((Boolean) maxResultsCb.getValue()));
-            }
-        });
-        maxResultsLayout.add(maxResultsCb);
+        Label maxResultsLabel1 = componentsFactory.createComponent(Label.class);
+        maxResultsLabel1.setValue(messages.getMainMessage("filter.maxResults.label1"));
+        maxResultsLabel1.setAlignment(Component.Alignment.MIDDLE_RIGHT);
+        maxResultsLayout.add(maxResultsLabel1);
 
         maxResultsField = componentsFactory.createComponent(TextField.NAME);
         maxResultsField.setAlignment(Component.Alignment.MIDDLE_RIGHT);
@@ -1164,15 +1156,11 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected void initDatasourceMaxResults() {
         if (useMaxResults) {
             int maxResults;
-            if (BooleanUtils.isTrue((Boolean) maxResultsCb.getValue())) {
-                Integer maxResultsFieldValue = maxResultsField.getValue();
-                if (maxResultsFieldValue != null) {
-                    maxResults = maxResultsFieldValue;
-                } else
-                    maxResults = persistenceManager.getMaxFetchUI(datasource.getMetaClass().getName());
-            } else {
+            Integer maxResultsFieldValue = maxResultsField.getValue();
+            if (maxResultsFieldValue != null) {
+                maxResults = maxResultsFieldValue;
+            } else
                 maxResults = persistenceManager.getMaxFetchUI(datasource.getMetaClass().getName());
-            }
             datasource.setMaxResults(maxResults);
         }
         if (datasource instanceof CollectionDatasource.SupportsPaging) {
