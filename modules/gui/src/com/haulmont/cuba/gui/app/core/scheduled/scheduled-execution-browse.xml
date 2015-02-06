@@ -30,13 +30,13 @@
 
     <layout expand="executionsTable" spacing="true">
         <groupBox id="filterBox" width="-1px" caption="msg://filter" orientation="horizontal" spacing="true">
-            <label value="msg://com.haulmont.cuba.core.entity/ScheduledExecution.server"/>
+            <label value="msg://com.haulmont.cuba.core.entity/ScheduledExecution.server" align="MIDDLE_LEFT"/>
             <textField id="serverField"/>
-            <label value="msg://startTimeFrom"/>
+            <label value="msg://startTimeFrom" align="MIDDLE_LEFT"/>
             <dateField id="startTimeField1"/>
-            <label value="msg://startTimeTill"/>
+            <label value="msg://startTimeTill" align="MIDDLE_LEFT"/>
             <dateField id="startTimeField2"/>
-            <checkBox id="finishedField" caption="msg://finished"/>
+            <checkBox id="finishedField" caption="msg://finished" align="MIDDLE_LEFT"/>
         </groupBox>
         <table id="executionsTable" width="100%">
             <buttonsPanel>

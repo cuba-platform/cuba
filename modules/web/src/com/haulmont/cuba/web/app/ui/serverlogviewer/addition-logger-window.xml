@@ -11,9 +11,9 @@
 
     <layout spacing="true">
         <hbox spacing="true" width="100%" expand="loggerNameField">
-            <label value="msg://logger.name"/>
+            <label value="msg://logger.name" align="MIDDLE_LEFT"/>
             <textField id="loggerNameField"/>
-            <label value="msg://logger.level"/>
+            <label value="msg://logger.level" align="MIDDLE_LEFT"/>
             <lookupField id="logLevelField" width="theme://cuba.web.addition-logger-window.logLevelField.width"/>
         </hbox>
 
