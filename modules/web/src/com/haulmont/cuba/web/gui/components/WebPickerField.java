@@ -282,11 +282,13 @@ public class WebPickerField extends WebAbstractField<CubaPickerField> implements
 
     @Override
     public void removeAction(Action action) {
-        actions.remove(action);
-        actionHandler.removeAction(action);
-        if (action.getOwner() != null && action.getOwner() instanceof WebButton) {
-            Button button = ((WebButton) action.getOwner()).getComponent();
-            component.removeButton(button);
+        if (action != null) {
+            actions.remove(action);
+            actionHandler.removeAction(action);
+            if (action.getOwner() != null && action.getOwner() instanceof WebButton) {
+                Button button = ((WebButton) action.getOwner()).getComponent();
+                component.removeButton(button);
+            }
         }
     }
 
