@@ -18,7 +18,7 @@ import javax.inject.Inject;
 public class FileStorageServiceBean implements FileStorageService {
 
     @Inject
-    FileStorageAPI fileStorageAPI;
+    protected FileStorageAPI fileStorageAPI;
 
     @Override
     public void saveFile(FileDescriptor fileDescr, byte[] data) throws FileStorageException {
