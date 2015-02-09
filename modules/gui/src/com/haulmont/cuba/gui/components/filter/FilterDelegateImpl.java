@@ -309,7 +309,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
     protected void createSwitchFilterModeButton() {
         ftsSwitch = componentsFactory.createComponent(CheckBox.NAME);
-        ftsSwitch.setCaption("Full-Text Search");
+        ftsSwitch.setCaption(getMessage("Filter.ftsSwitch"));
         ftsSwitch.setValue(filterMode == FilterMode.FTS_MODE);
         ftsSwitch.addListener(new ValueListener() {
             @Override
