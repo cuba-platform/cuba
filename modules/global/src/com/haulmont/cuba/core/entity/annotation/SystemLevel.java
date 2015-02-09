@@ -14,8 +14,6 @@ import java.lang.annotation.Target;
  * Indicates that annotated entity/field is low-level and should not be available for end-user in various entity/field lists.<br/>
  * For field indicates that attribute should not be available for dynamic filters in UI.
  *
- * <p/> It is not propagated down to subclasses.
- *
  * @author krivopustov
  * @version $Id$
  */
