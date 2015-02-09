@@ -39,10 +39,12 @@ public class TimeZones {
      * @param srcDate       date
      * @param srcTimeZone   source time zone
      * @param dstTimeZone   destination time zone
-     * @return              date in destination time zone
+     * @return              date in destination time zone, or null if the source date is null
      */
-    public Date convert(Date srcDate, TimeZone srcTimeZone, TimeZone dstTimeZone) {
-        Preconditions.checkNotNullArgument(srcDate, "srcDate is null");
+    @Nullable
+    public Date convert(@Nullable Date srcDate, TimeZone srcTimeZone, TimeZone dstTimeZone) {
+        if (srcDate == null)
+            return null;
         Preconditions.checkNotNullArgument(srcTimeZone, "srcTimeZone is null");
         Preconditions.checkNotNullArgument(dstTimeZone, "dstTimeZone is null");
         int srcOffset = srcTimeZone.getOffset(srcDate.getTime());
