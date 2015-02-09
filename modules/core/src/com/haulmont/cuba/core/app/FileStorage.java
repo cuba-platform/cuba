@@ -267,10 +267,6 @@ public class FileStorage implements FileStorageAPI {
         checkNotNull(fileDescr.getCreateDate(), "Empty creation date");
 
         File[] roots = getStorageRoots();
-        if (roots.length == 0) {
-            return false;
-        }
-
         for (File root : roots) {
             File dir = getStorageDir(root, fileDescr.getCreateDate());
             File file = new File(dir, getFileName(fileDescr));

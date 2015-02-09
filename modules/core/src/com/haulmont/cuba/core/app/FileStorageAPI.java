@@ -71,7 +71,7 @@ public interface FileStorageAPI {
     /**
      * Tests whether the file denoted by this file descriptor exists.
      * @param fileDescr file descriptor
-     * @return          <code>true</code> if and only if the file denoted by this file descriptor exists; <code>false</code> otherwise
+     * @return           true if the file denoted by this file descriptor exists
      */
     boolean fileExists(FileDescriptor fileDescr);
 }
