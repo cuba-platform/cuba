@@ -208,11 +208,12 @@ public class WebPickerField
         this.datasource = datasource;
 
         MetaClass metaClass = datasource.getMetaClass();
-        this.metaProperty = metaClass.getProperty(property);
-        if (metaProperty == null) {
+        metaPropertyPath = metaClass.getPropertyPath(property);
+        if (metaPropertyPath == null) {
             throw new RuntimeException(String.format("Property '%s' not found in class %s", property, metaClass));
         }
 
+        this.metaProperty = metaPropertyPath.getMetaProperty();
         this.metaClass = metaProperty.getRange().asClass();
 
         final MetaPropertyPath propertyPath = new MetaPropertyPath(metaClass, metaProperty);
@@ -437,8 +438,11 @@ public class WebPickerField
         @Override
         public void setReadOnly(boolean readOnly) {
             super.setReadOnly(readOnly);
-            if (readOnly)
-                field.setReadOnly(readOnly);
+
+            if (readOnly) {
+                field.setReadOnly(true);
+            }
+
             for (Action action : owner.getActions()) {
                 if (action instanceof StandardAction) {
                     ((StandardAction) action).setEditable(!readOnly);
