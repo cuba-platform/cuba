@@ -47,5 +47,5 @@ public interface EntityLogAPI {
      *
      * @param enabled entity logging disabled if false, enabled otherwise.
      */
-    void processLoggingForCurrentThread(Boolean enabled);
+    void processLoggingForCurrentThread(boolean enabled);
 }
