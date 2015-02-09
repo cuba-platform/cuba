@@ -7,6 +7,7 @@ package com.haulmont.chile.core.model;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Metadata object representing an entity.
@@ -14,7 +15,7 @@ import java.util.Collection;
  * @author abramov
  * @version $Id$
  */
-public interface MetaClass extends MetadataObject<MetaClass> {
+public interface MetaClass extends MetadataObject {
 
     /**
      * @return containing MetaModel instance. Null signifies a temporary metaclass, not associated with an entity class.
@@ -27,6 +28,22 @@ public interface MetaClass extends MetadataObject<MetaClass> {
      * @return corresponding Java class
      */
     Class getJavaClass();
+
+    /**
+     * Immediate ancestor of the object, or null if there is no one.
+     */
+    @Nullable
+    MetaClass getAncestor();
+
+    /**
+     * All ancestors of the metaclass, in order going up from the immediate ancestor.
+     */
+    List<MetaClass> getAncestors();
+
+    /**
+     * All descendants of the metaclass, recursively. Order is undefined.
+     */
+    Collection<MetaClass> getDescendants();
 
     /**
      * Get MetaProperty by its name.

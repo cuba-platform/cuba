@@ -13,7 +13,7 @@ import java.util.Collection;
  * @author abramov
  * @version $Id$
  */
-public interface MetaModel extends MetadataObject<MetaModel> {
+public interface MetaModel extends MetadataObject {
 
     /**
      * Get MetaClass by its unique name

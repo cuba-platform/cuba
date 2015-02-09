@@ -8,6 +8,7 @@ package com.haulmont.cuba.gui.data;
 import com.haulmont.chile.core.model.*;
 import com.haulmont.chile.core.model.impl.MetadataObjectImpl;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -15,9 +16,9 @@ import java.util.*;
  * @version $Id$
  */
 
-public class RuntimePropertiesMetaClass extends MetadataObjectImpl<MetaClass> implements MetaClass {
+public class RuntimePropertiesMetaClass extends MetadataObjectImpl implements MetaClass {
 
-    private Map<String, MetaProperty> properties = new LinkedHashMap<String, MetaProperty>();
+    private Map<String, MetaProperty> properties = new LinkedHashMap<>();
 
     public void addProperty(MetaProperty property) {
         properties.put(property.getName(), property);
@@ -27,6 +28,22 @@ public class RuntimePropertiesMetaClass extends MetadataObjectImpl<MetaClass> im
         for (MetaProperty property : properties) {
             this.properties.put(property.getName(), property);
         }
+    }
+
+    @Nullable
+    @Override
+    public MetaClass getAncestor() {
+        return null;
+    }
+
+    @Override
+    public List<MetaClass> getAncestors() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public Collection<MetaClass> getDescendants() {
+        return Collections.emptyList();
     }
 
     @Override

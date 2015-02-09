@@ -25,7 +25,7 @@ import java.lang.reflect.AnnotatedElement;
  * @author devyatkin
  * @version $Id$
  */
-public class RuntimePropertiesMetaProperty extends MetadataObjectImpl<MetaProperty> implements MetaProperty {
+public class RuntimePropertiesMetaProperty extends MetadataObjectImpl implements MetaProperty {
 
     private MetaClass metaClass;
     private Range range;

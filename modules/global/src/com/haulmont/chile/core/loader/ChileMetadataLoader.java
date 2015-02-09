@@ -8,6 +8,7 @@ package com.haulmont.chile.core.loader;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Session;
+import com.haulmont.chile.core.model.impl.MetaClassImpl;
 import org.apache.commons.collections.CollectionUtils;
 
 import java.util.Collection;
@@ -66,7 +67,7 @@ public class ChileMetadataLoader implements MetadataLoader {
 
         MetaClass ancestorMetaClass = metaClass.getAncestor();
         while (ancestorMetaClass != null) {
-            metaClass.getAncestors().add(ancestorMetaClass);
+            ((MetaClassImpl) metaClass).addAncestor(ancestorMetaClass);
             ancestorMetaClass = ancestorMetaClass.getAncestor();
         }
     }

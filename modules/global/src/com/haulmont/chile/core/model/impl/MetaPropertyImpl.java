@@ -18,7 +18,7 @@ import java.lang.reflect.Proxy;
  * @version $Id$
  */
 @SuppressWarnings({"TransientFieldNotInitialized"})
-public class MetaPropertyImpl extends MetadataObjectImpl<MetaProperty> implements MetaProperty {
+public class MetaPropertyImpl extends MetadataObjectImpl implements MetaProperty {
 
     private MetaClass domain;
     private transient final MetaModel model;

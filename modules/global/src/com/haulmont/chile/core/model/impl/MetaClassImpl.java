@@ -18,13 +18,16 @@ import java.util.*;
  * @version $Id$
  */
 @SuppressWarnings({"TransientFieldNotInitialized"})
-public class MetaClassImpl extends MetadataObjectImpl<MetaClass> implements MetaClass {
+public class MetaClassImpl extends MetadataObjectImpl implements MetaClass {
 
 	private transient Map<String, MetaProperty> propertyByName = new HashMap<>();
     private transient Map<String, MetaProperty> ownPropertyByName = new HashMap<>();
 
 	private transient final MetaModel model;
     private transient Class javaClass;
+
+    protected transient List<MetaClass> ancestors = new ArrayList<>(3);
+    protected transient Collection<MetaClass> descendants = new ArrayList<>(1);
 
     private static final long serialVersionUID = 7862691995170873154L;
 
@@ -48,6 +51,25 @@ public class MetaClassImpl extends MetadataObjectImpl<MetaClass> implements Meta
         } else {
             return session.getClass(name);
         }
+    }
+
+    @Override
+    public MetaClass getAncestor() {
+        if (ancestors.size() == 0) {
+            return null;
+        } else  {
+            return ancestors.get(0);
+        }
+    }
+
+    @Override
+    public List<MetaClass> getAncestors() {
+        return new ArrayList<>(ancestors);
+    }
+
+    @Override
+    public Collection<MetaClass> getDescendants() {
+        return new ArrayList<>(descendants);
     }
 
 	@Override
@@ -144,12 +166,15 @@ public class MetaClassImpl extends MetadataObjectImpl<MetaClass> implements Meta
         ((MetaModelImpl) model).registerClass(this);
     }
 
-    @Override
     public void addAncestor(MetaClass ancestorClass) {
-        super.addAncestor(ancestorClass);
-        for (MetaProperty metaProperty : ancestorClass.getProperties()) {
-            propertyByName.put(metaProperty.getName(), metaProperty);
+        if (!ancestors.contains(ancestorClass)) {
+            ancestors.add(ancestorClass);
+            for (MetaProperty metaProperty : ancestorClass.getProperties()) {
+                propertyByName.put(metaProperty.getName(), metaProperty);
+            }
         }
+        if (!((MetaClassImpl) ancestorClass).descendants.contains(this))
+            ((MetaClassImpl) ancestorClass).descendants.add(this);
     }
 
     public void registerProperty(MetaProperty metaProperty) {

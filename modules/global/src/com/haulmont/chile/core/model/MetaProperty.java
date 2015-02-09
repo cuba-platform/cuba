@@ -14,7 +14,7 @@ import java.lang.reflect.AnnotatedElement;
  * @author abramov
  * @version $Id$
  */
-public interface MetaProperty extends MetadataObject<MetaProperty> {
+public interface MetaProperty extends MetadataObject {
 
     /**
      * Property type

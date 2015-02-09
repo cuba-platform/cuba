@@ -5,20 +5,20 @@
 
 package com.haulmont.chile.core.model.impl;
 
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaModel;
+import com.haulmont.chile.core.model.Session;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaModel;
-import com.haulmont.chile.core.model.Session;
-
 /**
  * @author abramov
  * @version $Id$
  */
-public class MetaModelImpl extends MetadataObjectImpl<MetaModel> implements MetaModel {
+public class MetaModelImpl extends MetadataObjectImpl implements MetaModel {
 
     private static final long serialVersionUID = -2951212408198161458L;
 

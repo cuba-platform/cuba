@@ -5,7 +5,6 @@
 
 package com.haulmont.chile.core.model;
 
-import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -14,25 +13,10 @@ import java.util.Map;
  * @author krivopustov
  * @version $Id$
  */
-public interface MetadataObject<T extends MetadataObject> {
+public interface MetadataObject {
 
     /**
-     * Immediate ancestor of the object, or null if there is no one
-     */
-    T getAncestor();
-
-    /**
-     * All ancestors of the object, recursively. Order is undefined.
-     */
-    Collection<T> getAncestors();
-
-    /**
-     * All descendants of the object, recursively. Order is undefined.
-     */
-    Collection<T> getDescendants();
-
-    /**
-     * MetadataObject unique name
+     * MetadataObject unique name.
      */
     String getName();
 
