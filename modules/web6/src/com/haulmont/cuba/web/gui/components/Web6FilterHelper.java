@@ -229,7 +229,7 @@ public class Web6FilterHelper implements FilterHelper {
 
     @Override
     public void setLookupCaptions(LookupField lookupField, Map<Object, String> captions) {
-        ComboBox vLookupField = WebComponentsHelper.unwrap(lookupField);
+        FilterSelect vLookupField = WebComponentsHelper.unwrap(lookupField);
         for (Map.Entry<Object, String> entry : captions.entrySet()) {
             vLookupField.setItemCaption(entry.getKey(), entry.getValue());
         }
