@@ -353,6 +353,12 @@ public class VMaskedTextField extends VTextField {
         return pos;
     }
 
+    public void updateTextState() {
+        if (valueBeforeEdit == null || !getText().equals(valueBeforeEdit)) {
+            valueBeforeEdit = getText();
+        }
+    }
+
     public static interface Mask {
         boolean isValid(char c);
 

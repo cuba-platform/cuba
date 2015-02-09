@@ -61,9 +61,9 @@ public class CubaDateFieldWidget extends VPopupCalendar implements ShortcutActio
                     return true;
                 }
 
-                boolean validMask = super.validateText(text);
-                if (!validMask)
+                if (!super.validateText(text)) {
                     return false;
+                }
 
                 try {
                     getDateTimeService().parseDate(getText(), getFormatString(), lenient);
@@ -71,7 +71,7 @@ public class CubaDateFieldWidget extends VPopupCalendar implements ShortcutActio
                     return false;
                 }
 
-                return validMask;
+                return true;
             }
 
             @Override
@@ -115,5 +115,9 @@ public class CubaDateFieldWidget extends VPopupCalendar implements ShortcutActio
     @Override
     public ShortcutActionHandler getShortcutActionHandler() {
         return shortcutHandler;
+    }
+
+    public void updateTextState() {
+        getImpl().updateTextState();
     }
 }

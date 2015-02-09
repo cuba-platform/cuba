@@ -47,6 +47,8 @@ public class CubaDateFieldConnector extends PopupDateFieldConnector {
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
         super.updateFromUIDL(uidl, client);
 
+        getWidget().updateTextState();
+
         // We may have actions attached to this text field
         if (uidl.getChildCount() > 0) {
             final int cnt = uidl.getChildCount();

@@ -48,6 +48,7 @@ public class VMaskedPopupCalendar extends VPopupCalendar {
         debug("VMaskedTextField created");
     }
 
+    @Override
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
         debug("updateFromUIDL: " + uidl);
         if (!(uidl.getBooleanAttribute("readonly"))) {
@@ -55,9 +56,15 @@ public class VMaskedPopupCalendar extends VPopupCalendar {
             getImpl().setMask(maskParam == null ? "" : maskParam);
         }
         super.updateFromUIDL(uidl, client);
+
+        updateTextState();
     }
 
+    public void updateTextState() {
+        getImpl().updateTextState();
+    }
 
+    @Override
     public VMaskedTextField getImpl() {
         return (VMaskedTextField) super.getImpl();
     }
@@ -70,7 +77,7 @@ public class VMaskedPopupCalendar extends VPopupCalendar {
                 if (!prompting && newText != null
                         && !newText.equals(valueBeforeEdit)) {
                     if (validateText(newText)) {
-                        if (!newText.toString().equals(nullRepresentation)) {
+                        if (!newText.equals(nullRepresentation)) {
                             getElement().removeClassName(MASKED_FIELD_CLASS);
                         }
                         VMaskedPopupCalendar.this.onChange(null);

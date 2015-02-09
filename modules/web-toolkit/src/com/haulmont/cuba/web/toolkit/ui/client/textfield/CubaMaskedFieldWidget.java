@@ -299,6 +299,12 @@ public class CubaMaskedFieldWidget extends VTextField {
         }
     }
 
+    public void updateTextState() {
+        if (valueBeforeEdit == null || !getText().equals(valueBeforeEdit)) {
+            valueBeforeEdit = getText();
+        }
+    }
+
     protected native void addInputHandler(Element elementID)/*-{
         var temp = this;  // hack to hold on to 'this' reference
 
