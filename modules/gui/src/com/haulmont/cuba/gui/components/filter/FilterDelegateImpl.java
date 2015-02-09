@@ -69,8 +69,6 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected static final String GLOBAL_FILTER_PERMISSION = "cuba.gui.filter.global";
     protected static final String GLOBAL_APP_FOLDERS_PERMISSION = "cuba.gui.appFolder.global";
     protected static final String FILTER_EDIT_PERMISSION = "cuba.gui.filter.edit";
-    protected static final String FILTER_REMOVE_DISABLED_ICON = "icons/eye-plus.png";
-    protected static final String FILTER_REMOVE_ENABLED_ICON = "icons/eye-minus.png";
 
     protected static final Log log = LogFactory.getLog(FilterDelegateImpl.class);
 
@@ -126,13 +124,10 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected TextField maxResultsField;
     protected BoxLayout controlsLayout;
     protected Component.Container appliedFiltersLayout;
-    protected LinkButton allowRemoveButton;
     protected PopupButton settingsBtn;
     protected Component applyTo;
-    protected LinkButton filterModifiedIndicator;
     protected SaveAction saveAction;
     protected TextField ftsSearchCriteriaField;
-    protected LinkButton switchFilterModeButton;
     protected CheckBox ftsSwitch;
 
     protected String caption;
@@ -236,30 +231,6 @@ public class FilterDelegateImpl implements FilterDelegate {
             }
         });
 
-        allowRemoveButton = componentsFactory.createComponent(LinkButton.NAME);
-        controlsLayout.add(allowRemoveButton);
-        allowRemoveButton.setAlignment(Component.Alignment.MIDDLE_RIGHT);
-        allowRemoveButton.setAction(new AbstractAction("") {
-            @Override
-            public void actionPerform(Component component) {
-                conditionsRemoveEnabled = !conditionsRemoveEnabled;
-                allowRemoveButton.setIcon(conditionsRemoveEnabled ? FILTER_REMOVE_ENABLED_ICON : FILTER_REMOVE_DISABLED_ICON);
-                allowRemoveButton.setDescription(conditionsRemoveEnabled ? getMessage("Filter.forbidRemoveConditions") : getMessage("Filter.allowRemoveConditions"));
-
-                fillConditionsLayout(false);
-                updateFilterModifiedIndicator();
-            }
-        });
-        allowRemoveButton.setIcon(FILTER_REMOVE_DISABLED_ICON);
-        allowRemoveButton.setDescription(getMessage("Filter.allowRemoveConditions"));
-
-        filterModifiedIndicator = componentsFactory.createComponent(LinkButton.NAME);
-        filterModifiedIndicator.setIcon("icons/save.png");
-        filterModifiedIndicator.setDescription(getMessage("Filter.modified"));
-        filterModifiedIndicator.setEnabled(false);
-        filterModifiedIndicator.setAlignment(Component.Alignment.MIDDLE_RIGHT);
-        controlsLayout.add(filterModifiedIndicator);
-
         settingsBtn = componentsFactory.createComponent(PopupButton.NAME);
         settingsBtn.setIcon("icons/gear.png");
         searchBtn.setAlignment(Component.Alignment.MIDDLE_LEFT);
@@ -267,7 +238,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         createMaxResultsLayout();
         controlsLayout.add(maxResultsLayout);
 
-        createSwitchFilterModeButton();
+        createFtsSwitch();
         ftsSwitch.setAlignment(Component.Alignment.MIDDLE_RIGHT);
         controlsLayout.add(ftsSwitch);
     }
@@ -302,12 +273,12 @@ public class FilterDelegateImpl implements FilterDelegate {
         createMaxResultsLayout();
         controlsLayout.add(maxResultsLayout);
 
-        createSwitchFilterModeButton();
+        createFtsSwitch();
         ftsSwitch.setAlignment(Component.Alignment.MIDDLE_RIGHT);
         controlsLayout.add(ftsSwitch);
     }
 
-    protected void createSwitchFilterModeButton() {
+    protected void createFtsSwitch() {
         ftsSwitch = componentsFactory.createComponent(CheckBox.NAME);
         ftsSwitch.setCaption(getMessage("Filter.ftsSwitch"));
         ftsSwitch.setValue(filterMode == FilterMode.FTS_MODE);
@@ -431,10 +402,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         filtersLookup.setValue(filterEntity);
         filtersLookupListenerEnabled = true;
 
-        conditionsRemoveEnabled = false;
-        allowRemoveButton.setIcon(FILTER_REMOVE_DISABLED_ICON);
-        allowRemoveButton.setDescription(getMessage("Filter.allowRemoveConditions"));
-
+        conditionsRemoveEnabled = filterEntity == adHocFilter;
         fillActions();
         fillConditionsLayout(true);
         setConditionsLayoutVisible(true);
@@ -545,8 +513,6 @@ public class FilterDelegateImpl implements FilterDelegate {
         if (filterHelper.isTableActionsEnabled()) {
             fillTableActions();
         }
-        filterModifiedIndicator.setAction(saveAction);
-        filterModifiedIndicator.setCaption("");
     }
 
     protected boolean getUserCanEditGlobalFilter() {
@@ -1038,7 +1004,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         }
 
         if (!isFtsModeEnabled()) {
-            controlsLayout.remove(switchFilterModeButton);
+            controlsLayout.remove(ftsSwitch);
         }
     }
 
@@ -1580,6 +1546,9 @@ public class FilterDelegateImpl implements FilterDelegate {
                             filtersLookup.setValue(null);
                             filtersLookup.setValue(filterEntity);
                             filtersLookupListenerEnabled = true;
+                            conditionsRemoveEnabled = false;
+                            //recreate layout to remove delete conditions buttons
+                            fillConditionsLayout(false);
                         }
                     }
                 });
@@ -1609,6 +1578,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                 @Override
                 public void windowClosed(String actionId) {
                     if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                        boolean isNew = PersistenceHelper.isNew(filterEntity);
                         String filterName = window.getFilterName();
                         FilterEntity newFilterEntity = metadata.create(FilterEntity.class);
                         InstanceUtils.copy(filterEntity, newFilterEntity);
@@ -1622,8 +1592,14 @@ public class FilterDelegateImpl implements FilterDelegate {
                         filterEntity.setName(filterName);
                         filterEntity.setXml(FilterParser.getXml(conditions, Param.ValueProperty.DEFAULT_VALUE));
                         saveFilterEntity();
+                        filtersLookupListenerEnabled = false;
                         fillFiltersLookup();
                         filtersLookup.setValue(filterEntity);
+                        filtersLookupListenerEnabled = true;
+                        if (isNew) {
+                            //recreate layout to remove delete conditions buttons
+                            fillConditionsLayout(false);
+                        }
                     }
                 }
             });
