@@ -133,6 +133,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected SaveAction saveAction;
     protected TextField ftsSearchCriteriaField;
     protected LinkButton switchFilterModeButton;
+    protected CheckBox ftsSwitch;
 
     protected String caption;
     protected boolean useMaxResults;
@@ -267,8 +268,8 @@ public class FilterDelegateImpl implements FilterDelegate {
         controlsLayout.add(maxResultsLayout);
 
         createSwitchFilterModeButton();
-        switchFilterModeButton.setAlignment(Component.Alignment.MIDDLE_RIGHT);
-        controlsLayout.add(switchFilterModeButton);
+        ftsSwitch.setAlignment(Component.Alignment.MIDDLE_RIGHT);
+        controlsLayout.add(ftsSwitch);
     }
 
     protected void createControlsLayoutForFts() {
@@ -302,18 +303,18 @@ public class FilterDelegateImpl implements FilterDelegate {
         controlsLayout.add(maxResultsLayout);
 
         createSwitchFilterModeButton();
-        switchFilterModeButton.setAlignment(Component.Alignment.MIDDLE_RIGHT);
-        controlsLayout.add(switchFilterModeButton);
+        ftsSwitch.setAlignment(Component.Alignment.MIDDLE_RIGHT);
+        controlsLayout.add(ftsSwitch);
     }
 
     protected void createSwitchFilterModeButton() {
-        switchFilterModeButton = componentsFactory.createComponent(LinkButton.NAME);
-        String caption = filterMode == FilterMode.GENERIC_MODE ? getMessage("Filter.ftsSearch") : getMessage("Filter.generalSearch");
-        switchFilterModeButton.setCaption(caption);
-        switchFilterModeButton.setAction(new AbstractAction("switchFilterMode") {
+        ftsSwitch = componentsFactory.createComponent(CheckBox.NAME);
+        ftsSwitch.setCaption("Full-Text Search");
+        ftsSwitch.setValue(filterMode == FilterMode.FTS_MODE);
+        ftsSwitch.addListener(new ValueListener() {
             @Override
-            public void actionPerform(Component component) {
-                filterMode = (filterMode == FilterMode.GENERIC_MODE) ? FilterMode.FTS_MODE : FilterMode.GENERIC_MODE;
+            public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
+                filterMode = Boolean.TRUE.equals(value) ? FilterMode.FTS_MODE : FilterMode.GENERIC_MODE;
                 if (filterMode == FilterMode.FTS_MODE) {
                     prevConditions = conditions;
                 }
