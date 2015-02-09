@@ -25,4 +25,6 @@ public interface FileStorageService {
     void removeFile(FileDescriptor fileDescr) throws FileStorageException;
 
     byte[] loadFile(FileDescriptor fileDescr) throws FileStorageException;
+
+    boolean fileExists(FileDescriptor fileDescr);
 }

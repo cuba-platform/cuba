@@ -261,6 +261,26 @@ public class FileStorage implements FileStorageAPI {
         }
     }
 
+    @Override
+    public boolean fileExists(FileDescriptor fileDescr) {
+        checkNotNull(fileDescr, "No file descriptor");
+        checkNotNull(fileDescr.getCreateDate(), "Empty creation date");
+
+        File[] roots = getStorageRoots();
+        if (roots.length == 0) {
+            return false;
+        }
+
+        for (File root : roots) {
+            File dir = getStorageDir(root, fileDescr.getCreateDate());
+            File file = new File(dir, getFileName(fileDescr));
+            if (file.exists()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public File getStorageDir(File rootDir, Date createDate) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(createDate);

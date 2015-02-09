@@ -67,4 +67,11 @@ public interface FileStorageAPI {
      * @throws FileStorageException if something goes wrong
      */
     byte[] loadFile(FileDescriptor fileDescr) throws FileStorageException;
+
+    /**
+     * Tests whether the file denoted by this file descriptor exists.
+     * @param fileDescr file descriptor
+     * @return          <code>true</code> if and only if the file denoted by this file descriptor exists; <code>false</code> otherwise
+     */
+    boolean fileExists(FileDescriptor fileDescr);
 }

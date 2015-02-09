@@ -33,4 +33,10 @@ public class FileStorageServiceBean implements FileStorageService {
         FileStorageAPI mbean = Locator.lookup(FileStorageAPI.NAME);
         return mbean.loadFile(fileDescr);
     }
+
+    @Override
+    public boolean fileExists(FileDescriptor fileDescr) {
+        FileStorageAPI mbean = Locator.lookup(FileStorageAPI.NAME);
+        return mbean.fileExists(fileDescr);
+    }
 }
