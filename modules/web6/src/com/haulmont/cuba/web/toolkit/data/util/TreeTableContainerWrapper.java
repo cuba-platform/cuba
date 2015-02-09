@@ -142,7 +142,14 @@ public class TreeTableContainerWrapper
 
     @Override
     public int size() {
-        return inline.size();
+        int size = inline.size();
+
+        if (size == 0) {
+            // in Vaadin 6 TreeTable does not call rootItemIds on first painting #PL-4869
+            rootItemIds();
+        }
+
+        return size;
     }
 
     @Override
