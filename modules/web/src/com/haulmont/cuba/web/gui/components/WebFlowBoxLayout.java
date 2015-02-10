@@ -29,30 +29,51 @@ public class WebFlowBoxLayout extends WebAbstractComponent<CubaFlowLayout> imple
 
     @Override
     public void add(Component childComponent) {
-        final com.vaadin.ui.Component vComponent = WebComponentsHelper.getComposition(childComponent);
+        if (ownComponents.contains(childComponent)) {
+            remove(childComponent);
+        }
+
+        final com.vaadin.ui.Component vaadinComponent = WebComponentsHelper.getComposition(childComponent);
+
+        component.addComponent(vaadinComponent);
 
         if (childComponent.getId() != null) {
-            component.addComponent(vComponent);
             componentByIds.put(childComponent.getId(), childComponent);
             if (frame != null) {
                 frame.registerComponent(childComponent);
             }
-        } else {
-            component.addComponent(vComponent);
         }
-
         ownComponents.add(childComponent);
     }
 
     @Override
-    public void remove(Component childComponent) {
-        com.vaadin.ui.Component childComposition = WebComponentsHelper.getComposition(childComponent);
+    public void add(Component childComponent, int index) {
+        if (ownComponents.contains(childComponent)) {
+            remove(childComponent);
+        }
+
+        com.vaadin.ui.Component vComponent = WebComponentsHelper.getComposition(childComponent);
+        component.addComponent(vComponent, index);
 
         if (childComponent.getId() != null) {
-            component.removeComponent(childComposition);
+            componentByIds.put(childComponent.getId(), childComponent);
+            if (frame != null) {
+                frame.registerComponent(childComponent);
+            }
+        }
+
+        List<Component> componentsTempList = new ArrayList<>(ownComponents);
+        componentsTempList.add(index, childComponent);
+
+        ownComponents.clear();
+        ownComponents.addAll(componentsTempList);
+    }
+
+    @Override
+    public void remove(Component childComponent) {
+        component.removeComponent(WebComponentsHelper.getComposition(childComponent));
+        if (childComponent.getId() != null) {
             componentByIds.remove(childComponent.getId());
-        } else {
-            component.removeComponent(childComposition);
         }
         ownComponents.remove(childComponent);
     }

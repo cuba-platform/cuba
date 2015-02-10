@@ -13,4 +13,6 @@ public interface FlowBoxLayout extends Component.Container, Component.BelongToFr
                                        Component.Margin, Component.Spacing {
 
     String NAME = "flowBox";
+
+    void add(Component childComponent, int index);
 }
