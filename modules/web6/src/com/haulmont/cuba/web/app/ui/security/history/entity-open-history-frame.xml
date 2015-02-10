@@ -6,6 +6,7 @@
 <window
         xmlns="http://schemas.haulmont.com/cuba/5.3/window.xsd"
         messagesPack="com.haulmont.cuba.web.app.ui.security.history"
+        class="com.haulmont.cuba.web.app.ui.security.history.EntityOpenHistoryFrame"
         >
 
     <dsContext>
@@ -22,7 +23,6 @@
         <vbox height="100%" margin="true" spacing="true">
             <table id="historyTable" editable="false" sortable="true" multiselect="true" height="100%" width="100%">
                 <columns>
-                    <column id="user" caption="msg://entityOpenHistoryFrame.user"/>
                     <column id="createTs" caption="msg://entityOpenHistoryFrame.createTs"/>
                 </columns>
                 <rows datasource="openHistoryDs"/>

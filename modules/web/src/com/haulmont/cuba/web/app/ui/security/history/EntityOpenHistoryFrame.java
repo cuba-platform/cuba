@@ -5,14 +5,15 @@
 
 package com.haulmont.cuba.web.app.ui.security.history;
 
-import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.PersistenceHelper;
-import com.haulmont.cuba.gui.WindowParams;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.AbstractFrame;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Label;
+import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.security.entity.ScreenHistoryEntity;
+import com.haulmont.cuba.security.entity.User;
 
-import java.util.Collections;
+import javax.inject.Inject;
 import java.util.Map;
 
 /**
@@ -21,23 +22,24 @@ import java.util.Map;
  */
 public class EntityOpenHistoryFrame extends AbstractFrame {
 
-    CollectionDatasourceImpl openHistoryDs;
+    @Inject
+    Table historyTable;
 
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
-//        String entityDsName = (String) params.get("entityDs");
-//        if (StringUtils.isBlank(entityDsName)) {
-//            throw new IllegalArgumentException("entityDs attribute is not set");
-//        }
-//        if (openHistoryDs == null) {
-//            throw new IllegalArgumentException("datasource with name " + entityDsName + " not found in DsContext");
-//        }
-        Entity item = WindowParams.ITEM.getEntity(params);
-        if (!PersistenceHelper.isNew(item)) {
-            openHistoryDs = getDsContext().get("openHistoryDs");
-            openHistoryDs.setRefreshMode(CollectionDatasource.RefreshMode.ALWAYS);
-            openHistoryDs.refresh(Collections.<String, Object>singletonMap("entityId", item.getId()));
-        }
+        historyTable.addGeneratedColumn(getMessage("entityOpenHistoryFrame.user"), new Table.ColumnGenerator<ScreenHistoryEntity>() {
+            @Override
+            public Component generateCell(final ScreenHistoryEntity entity) {
+                Label user = AppConfig.getFactory().createComponent(Label.NAME);
+                User substituteUser = entity.getSubstitutedUser();
+                if (substituteUser == null) {
+                    user.setValue(entity.getUser().getCaption());
+                } else {
+                    user.setValue(String.format(getMessage("userMessage"),entity.getUser().getCaption(),substituteUser.getCaption()));
+                }
+                return user;
+            }
+        });
     }
 }

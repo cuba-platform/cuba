@@ -28,6 +28,10 @@ public class ScreenHistoryEntity extends BaseUuidEntity {
     @JoinColumn(name = "USER_ID")
     protected User user;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "SUBSTITUTED_USER_ID")
+    protected User substitutedUser;
+
     @Column(name = "CAPTION", length = 255)
     protected String caption;
 
@@ -68,5 +72,13 @@ public class ScreenHistoryEntity extends BaseUuidEntity {
 
     public void setEntityId(UUID entityId) {
         this.entityId = entityId;
+    }
+
+    public User getSubstitutedUser() {
+        return substitutedUser;
+    }
+
+    public void setSubstitutedUser(User substitutedUser) {
+        this.substitutedUser = substitutedUser;
     }
 }

@@ -474,9 +474,11 @@ create table SEC_SCREEN_HISTORY (
     CAPTION varchar2(255),
     URL clob,
     ENTITY_ID varchar2(32),
+    SUBSTITUTED_USER_ID varchar2(32),
     primary key(ID)
 )^
 create index IDX_SEC_SCREEN_HISTORY_USER on SEC_SCREEN_HISTORY(USER_ID)^
+create index IDX_SEC_SCREEN_HISTORY_SUBSTITUTED_USER on SEC_SCREEN_HISTORY(SUBSTITUTED_USER_ID)^
 
 create table SEC_SEARCH_FOLDER (
     FOLDER_ID varchar2(32) not null,

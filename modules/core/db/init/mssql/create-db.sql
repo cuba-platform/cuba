@@ -592,9 +592,11 @@ create table SEC_SCREEN_HISTORY (
     CAPTION varchar(255),
     URL varchar(max),
     ENTITY_ID uniqueidentifier,
+    SUBSTITUTED_USER_ID uniqueidentifier,
       --
     primary key nonclustered (ID),
     constraint FK_SEC_HISTORY_USER foreign key (USER_ID) references SEC_USER (ID)
+    constraint FK_SEC_HISTORY_SUBSTITUTED_USER foreign key (SUBSTITUTED_USER_ID) references SEC_USER (ID)
 )^
 
 create index IDX_SEC_SCREEN_HISTORY_USER on SEC_SCREEN_HISTORY (USER_ID)^
