@@ -769,6 +769,9 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                 if (focusManager != null && scrollRowIndex >= 0) {
                     focusManager.scrollToSelectedRow(scrollRowIndex);
                 }
+
+                // reassign identifiers for auto created columns
+                setColumnIdentifiers();
             }
 
             @SuppressWarnings("unchecked")
@@ -1873,9 +1876,11 @@ public abstract class DesktopAbstractTable<C extends JXTable>
             TableColumn tableColumn = getColumn(column);
             if (tableColumn != null) {
                 DesktopTableCellEditor cellEditor = (DesktopTableCellEditor) tableColumn.getCellEditor();
-                boolean inline = cellEditor.isInline();
-                if (!inline) {
-                    return false;
+                if (cellEditor != null) {
+                    boolean inline = cellEditor.isInline();
+                    if (!inline) {
+                        return false;
+                    }
                 }
             }
         }
