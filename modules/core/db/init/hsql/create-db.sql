@@ -556,7 +556,7 @@ create table SEC_SCREEN_HISTORY (
     SUBSTITUTED_USER_ID varchar(36),
     --
     primary key (ID),
-    constraint FK_SEC_HISTORY_USER foreign key (USER_ID) references SEC_USER (ID)
+    constraint FK_SEC_HISTORY_USER foreign key (USER_ID) references SEC_USER (ID),
     constraint FK_SEC_HISTORY_SUBSTITUTED_USER foreign key (SUBSTITUTED_USER_ID) references SEC_USER (ID)
 )^
 
