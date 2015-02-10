@@ -334,6 +334,14 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
             }
             return super.equals(obj);
         }
+
+        @Override
+        public int hashCode() {
+            if (entity != null) {
+                return entity.hashCode();
+            }
+            return 0;
+        }
     }
 
     public class MapKeyWrapper implements ValueWrapper<Object> {
@@ -361,6 +369,14 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
                 return StringUtils.equals(this.key, other.key);
             }
             return false;
+        }
+
+        @Override
+        public int hashCode() {
+            if (key != null) {
+                return key.hashCode();
+            }
+            return 0;
         }
     }
 
@@ -402,6 +418,14 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
                 return ObjectUtils.equals(this.obj, anotherWrapper.obj);
             }
             return false;
+        }
+
+        @Override
+        public int hashCode() {
+            if (obj != null) {
+                return obj.hashCode();
+            }
+            return 0;
         }
     }
 }
