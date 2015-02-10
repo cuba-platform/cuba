@@ -6,8 +6,12 @@ package com.haulmont.cuba.security.entity;
 
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.security.global.UserSession;
 import org.apache.openjpa.persistence.Persistent;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.*;
 import java.util.UUID;
 
@@ -23,6 +27,13 @@ import java.util.UUID;
 public class ScreenHistoryEntity extends BaseUuidEntity {
 
     private static final long serialVersionUID = 1L;
+
+    @PostConstruct
+    protected void init() {
+        UserSession userSession = AppBeans.get(UserSessionSource.class).getUserSession();
+        setUser(userSession.getUser());
+        setSubstitutedUser(userSession.getSubstitutedUser());
+    }
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID")

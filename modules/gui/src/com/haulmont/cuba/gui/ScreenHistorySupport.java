@@ -84,8 +84,6 @@ public class ScreenHistorySupport {
             }
             ScreenHistoryEntity screenHistoryEntity = metadata.create(ScreenHistoryEntity.class);
             screenHistoryEntity.setCaption(StringUtils.abbreviate(caption, 255));
-            screenHistoryEntity.setUser(uss.getUserSession().getUser());
-            screenHistoryEntity.setSubstitutedUser(uss.getUserSession().getSubstitutedUser());
             screenHistoryEntity.setUrl(makeLink(window));
             screenHistoryEntity.setEntityId(entityId);
             addAdditionalFields(screenHistoryEntity, entity);

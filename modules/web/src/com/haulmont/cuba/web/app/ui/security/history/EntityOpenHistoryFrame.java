@@ -23,7 +23,7 @@ import java.util.Map;
 public class EntityOpenHistoryFrame extends AbstractFrame {
 
     @Inject
-    Table historyTable;
+    protected Table historyTable;
 
     @Override
     public void init(Map<String, Object> params) {
