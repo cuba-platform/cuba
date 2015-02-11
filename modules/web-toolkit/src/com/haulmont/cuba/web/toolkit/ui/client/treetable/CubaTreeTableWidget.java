@@ -595,18 +595,6 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
                     container.addClassName(WIDGET_CELL_CLASSNAME);
                 }
             }
-
-            @Override
-            public void updateSelectionStartIfNeeded(VScrollTableRow startRow) {
-                // Support select first N rows by Shift+Click
-                selectionRangeStart = startRow;
-            }
-
-            @Override
-            protected boolean isNeedToSetRowFocus() {
-                // Support select first N rows by Shift+Click
-                return focusedRow != null;
-            }
         }
     }
 
