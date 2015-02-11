@@ -21,6 +21,7 @@
 
 package com.haulmont.cuba.portal.restapi;
 
+import com.google.common.base.Strings;
 import com.haulmont.chile.core.datatypes.impl.StringDatatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -40,6 +41,7 @@ import org.w3c.dom.ls.LSParserFilter;
 import org.w3c.dom.traversal.NodeFilter;
 
 import javax.activation.MimeType;
+import javax.annotation.Nullable;
 import javax.persistence.Embedded;
 import javax.persistence.Id;
 import javax.persistence.Version;
@@ -69,6 +71,7 @@ public class XMLConvertor implements Convertor {
     public static final String MIME_STR = "text/xml;charset=UTF-8";
 
     public static final String ELEMENT_INSTANCE = "instance";
+    public static final String ELEMENT_RESULT = "result";
     public static final String ELEMENT_URI = "uri";
     public static final String ELEMENT_REF = "ref";
     public static final String ELEMENT_NULL_REF = "null";
@@ -157,6 +160,48 @@ public class XMLConvertor implements Convertor {
             decorate(doc, requestURI);
             return doc;
         }
+    }
+
+    @Override
+    public Object processServiceMethodResult(@Nullable Object result, String requestURI, String viewName)
+            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        Element root = newDocument(ELEMENT_RESULT);
+        if (result instanceof Entity) {
+            Entity entity = (Entity) result;
+            if (Strings.isNullOrEmpty(viewName)) viewName = View.LOCAL;
+            ViewRepository viewRepository = AppBeans.get(ViewRepository.class);
+            View view = viewRepository.getView(entity.getMetaClass(), viewName);
+            Document convertedEntity = process(entity, entity.getMetaClass(), requestURI, view);
+            Node importedNode = root.getOwnerDocument().importNode(convertedEntity.getDocumentElement(), true);
+            root.appendChild(importedNode);
+        } else if (result instanceof Collection) {
+            if (!checkCollectionItemTypes((Collection) result, Entity.class))
+                throw new IllegalArgumentException("Items that are not instances of Entity class found in service method result");
+            ArrayList list = new ArrayList((Collection) result);
+            MetaClass metaClass;
+            if (!list.isEmpty())
+                metaClass = ((Entity) list.get(0)).getMetaClass();
+            else
+                metaClass = AppBeans.get(Metadata.class).getClasses().iterator().next();
+
+            ViewRepository viewRepository = AppBeans.get(ViewRepository.class);
+            if (Strings.isNullOrEmpty(viewName)) viewName = View.LOCAL;
+            View view = viewRepository.getView(metaClass, viewName);
+            Document processed = process(list, metaClass, requestURI, view);
+            Node importedNode = root.getOwnerDocument().importNode(processed.getDocumentElement(), true);
+            root.appendChild(importedNode);
+        } else {
+            root.setTextContent(result != null ? result.toString() : NULL_VALUE);
+        }
+        return root.getOwnerDocument();
+    }
+
+    protected boolean checkCollectionItemTypes(Collection collection, Class<?> itemClass) {
+        for (Object collectionItem : collection) {
+            if (!itemClass.isAssignableFrom(collectionItem.getClass()))
+                return false;
+        }
+        return true;
     }
 
     @Override
@@ -421,14 +466,14 @@ public class XMLConvertor implements Convertor {
         Document doc = builder.newDocument();
         Element root = doc.createElement(rootTag);
         doc.appendChild(root);
-        String[] nvpairs = new String[]{
-                "xmlns:xsi", XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI,
-//                "xsi:noNamespaceSchemaLocation", INSTANCE_XSD,
-                ATTR_VERSION, "1.0",
-        };
-        for (int i = 0; i < nvpairs.length; i += 2) {
-            root.setAttribute(nvpairs[i], nvpairs[i + 1]);
-        }
+//        String[] nvpairs = new String[]{
+//                "xmlns:xsi", XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI,
+////                "xsi:noNamespaceSchemaLocation", INSTANCE_XSD,
+//                ATTR_VERSION, "1.0",
+//        };
+//        for (int i = 0; i < nvpairs.length; i += 2) {
+//            root.setAttribute(nvpairs[i], nvpairs[i + 1]);
+//        }
         return root;
     }
 

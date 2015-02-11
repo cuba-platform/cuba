@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
 
 import javax.activation.MimeType;
+import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -32,6 +33,9 @@ public interface Convertor {
 
     Object process(Set<Entity> entities, String requestURI)
             throws InvocationTargetException, NoSuchMethodException, IllegalAccessException;
+
+    Object processServiceMethodResult(Object result, String requestURI, @Nullable String viewName)
+            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException;
 
     CommitRequest parseCommitRequest(String content);
 

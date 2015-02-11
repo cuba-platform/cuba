@@ -21,6 +21,8 @@
 
 package com.haulmont.cuba.portal.restapi;
 
+import com.google.common.base.Strings;
+
 import java.io.PrintWriter;
 import java.util.*;
 
@@ -33,8 +35,12 @@ public class MyJSONObject implements MyJSON {
     private final boolean _ref;
     private final Map<String, Object> _values;
 
+    public MyJSONObject() {
+        this(null, false);
+    }
+
     public MyJSONObject(Object id, boolean ref) {
-        _id   = id.toString();
+        _id   = id != null ? id.toString() : null;
         _ref  = ref;
         _values = new LinkedHashMap<String, Object>();
     }
@@ -52,14 +58,19 @@ public class MyJSONObject implements MyJSON {
 
     public StringBuilder asString(int indent) {
         StringBuilder buf = new StringBuilder().append(OBJECT_START);
-        buf.append(encodeField(_ref ? REF_MARKER : ID_MARKER, ior(), 0));
+        if (!Strings.isNullOrEmpty(_id)) {
+            buf.append(encodeField(_ref ? REF_MARKER : ID_MARKER, ior(), 0));
+            buf.append(FIELD_SEPARATOR).append(NEWLINE);
+        }
         if (_ref) {
             return buf.append(OBJECT_END);
         }
         StringBuilder tab = newIndent(indent+1);
+        int i = 0;
         for (Map.Entry<String, Object> e : _values.entrySet()) {
-            buf.append(FIELD_SEPARATOR).append(NEWLINE);
             buf.append(tab).append(encodeField(e.getKey(), e.getValue(), indent+1));
+            if (i++ < _values.entrySet().size() - 1)
+                buf.append(FIELD_SEPARATOR).append(NEWLINE);
         }
         buf.append(NEWLINE)
            .append(newIndent(indent))

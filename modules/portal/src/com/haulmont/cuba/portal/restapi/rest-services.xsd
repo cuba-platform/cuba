@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2008-2015 Haulmont. All rights reserved.
+  ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+  -->
+
+<xs:schema
+        targetNamespace="http://schemas.haulmont.com/cuba/5.3/rest-services.xsd"
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        xmlns="http://schemas.haulmont.com/cuba/5.3/rest-services.xsd"
+        elementFormDefault="qualified"
+        attributeFormDefault="unqualified"
+        >
+
+    <xs:element name="services" type="servicesType"/>
+
+    <xs:complexType name="servicesType">
+        <xs:sequence>
+            <xs:element name="service" type="serviceType"  maxOccurs="unbounded" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="serviceType">
+        <xs:sequence>
+            <xs:element name="method" type="methodType"  maxOccurs="unbounded" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="methodType">
+        <xs:attribute name="name" type="xs:string" use="required"/>
+    </xs:complexType>
+</xs:schema>

@@ -21,6 +21,7 @@
 
 package com.haulmont.cuba.portal.restapi;
 
+import com.google.common.base.Strings;
 import com.haulmont.chile.core.datatypes.impl.StringDatatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -36,6 +37,8 @@ import org.json.JSONObject;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
+import javax.annotation.Nullable;
+import javax.persistence.Id;
 import javax.servlet.http.HttpServletResponse;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
@@ -114,6 +117,48 @@ public class JSONConvertor implements Convertor {
 
         }
         return result;
+    }
+
+    @Override
+    public Object processServiceMethodResult(Object result, String requestURI, @Nullable String viewName)
+            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        MyJSONObject root = new MyJSONObject();
+        if (result instanceof Entity) {
+            Entity entity = (Entity) result;
+            ViewRepository viewRepository = AppBeans.get(ViewRepository.class);
+            if (Strings.isNullOrEmpty(viewName)) viewName = View.LOCAL;
+            View view = viewRepository.getView(entity.getMetaClass(), viewName);
+            MyJSONObject entityObject = process(entity, entity.getMetaClass(), "", view);
+            root.set("result", entityObject);
+        } else if (result instanceof Collection) {
+            if (!checkCollectionItemTypes((Collection) result, Entity.class))
+                throw new IllegalArgumentException("Items that are not instances of Entity found in service method result");
+            ArrayList list = new ArrayList((Collection) result);
+            MetaClass metaClass;
+            if (!list.isEmpty())
+                metaClass = ((Entity) list.get(0)).getMetaClass();
+            else
+                metaClass = AppBeans.get(Metadata.class).getClasses().iterator().next();
+            ViewRepository viewRepository = AppBeans.get(ViewRepository.class);
+            if (Strings.isNullOrEmpty(viewName)) viewName = View.LOCAL;
+            View view = viewRepository.getView(metaClass, viewName);
+            MyJSONObject.Array processed = process(list, metaClass, requestURI, view);
+            root.set("result", processed);
+        } else {
+            root.set("result", result);
+        }
+        return root;
+    }
+
+    /**
+     * Checks that all collection items are instances of given class
+     */
+    protected boolean checkCollectionItemTypes(Collection collection, Class<?> itemClass) {
+        for (Object collectionItem : collection) {
+            if (!itemClass.isAssignableFrom(collectionItem.getClass()))
+                return false;
+        }
+        return true;
     }
 
     private MetaClass getMetaClass(Entity entity) {

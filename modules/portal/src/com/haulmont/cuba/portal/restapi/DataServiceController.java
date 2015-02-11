@@ -11,7 +11,6 @@ import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.app.DomainDescriptionService;
-import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AbstractViewRepository;
@@ -22,15 +21,18 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.ClassUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.activation.MimeType;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.util.*;
 
@@ -66,6 +68,9 @@ public class DataServiceController {
 
     @Inject
     protected Authentication authentication;
+
+    @Inject
+    protected RestServicePermissions restServicePermissions;
 
     @RequestMapping(value = "/api/find.{type}", method = RequestMethod.GET)
     public void find(@PathVariable String type,
@@ -304,6 +309,115 @@ public class DataServiceController {
         } finally {
             authentication.end();
         }
+    }
+
+    @RequestMapping(value = "/api/service.{type}", method = RequestMethod.GET)
+    public void serviceByGet(@PathVariable(value = "type") String type,
+                             @RequestParam(value = "s") String sessionId,
+                             @RequestParam(value = "service") String serviceName,
+                             @RequestParam(value = "method") String methodName,
+                             @RequestParam(value = "view", required = false) String view,
+                             HttpServletRequest request,
+                             HttpServletResponse response) throws IOException {
+        if (!authentication.begin(sessionId)) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+        if (!restServicePermissions.isPermitted(serviceName, methodName)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+        try {
+            response.addHeader("Access-Control-Allow-Origin", "*");
+
+            Map<String, String[]> parameterMap = request.getParameterMap();
+            List<String> paramValuesString = new ArrayList<>();
+            List<Class<?>> paramTypes = new ArrayList<>();
+
+            int idx = 0;
+            while (true) {
+                String[] _values = parameterMap.get("param" + idx);
+                if (_values == null) break;
+                if (_values.length > 1) {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Multiple values for param" + idx);
+                    return;
+                }
+                paramValuesString.add(_values[0]);
+
+                String[] _types = parameterMap.get("param" + idx + "_type");
+                if (_types != null) {
+                    if (_types.length > 1) {
+                        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Multiple values for param" + idx + "_type");
+                        return;
+                    }
+                    paramTypes.add(idx, ClassUtils.forName(_types[0], null));
+                } else if (!paramTypes.isEmpty()) {
+                    //types should be defined for all parameters or for none of them
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Parameter type for param" + idx +" is not defined");
+                    return;
+                }
+                idx++;
+            }
+
+            Object service = AppBeans.get(serviceName);
+            Method serviceMethod;
+            if (paramTypes.isEmpty()) {
+                //trying to guess which method to invoke
+                Method[] methods = service.getClass().getMethods();
+                List<Method> appropriateMethods = new ArrayList<>();
+                for (Method method : methods) {
+                    if (methodName.equals(method.getName()) && method.getParameterTypes().length == paramValuesString.size()) {
+                        appropriateMethods.add(method);
+                    }
+                }
+                if (appropriateMethods.size() == 1) {
+                    serviceMethod = appropriateMethods.get(0);
+                } else if (appropriateMethods.size() > 1) {
+                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "There are multiple methods with given argument numbers. Please define parameter types in request");
+                    return;
+                } else {
+                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Method not found");
+                    return;
+                }
+            } else {
+                try {
+                    serviceMethod = service.getClass().getMethod(methodName, paramTypes.toArray(new Class[paramTypes.size()]));
+                } catch (NoSuchMethodException e) {
+                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Method not found");
+                    return;
+                }
+            }
+
+            List<Object> paramValues = new ArrayList<>();
+            Class<?>[] types = serviceMethod.getParameterTypes();
+            for (int i = 0; i < types.length; i++) {
+                Class<?> aClass = types[i];
+                paramValues.add(toObject(aClass, paramValuesString.get(i)));
+            }
+
+            Object result = serviceMethod.invoke(service, paramValues.toArray());
+
+            Convertor convertor = conversionFactory.getConvertor(type);
+            Object converted = convertor.processServiceMethodResult(result, request.getRequestURI(), view);
+            convertor.write(response, converted);
+        } catch (Throwable e) {
+            sendError(request, response, e);
+        } finally {
+            authentication.end();
+        }
+    }
+
+    private Object toObject(Class clazz, String value) {
+        if (Boolean.class == clazz || Boolean.TYPE == clazz) return Boolean.parseBoolean(value);
+        if (Byte.class == clazz || Byte.TYPE == clazz) return Byte.parseByte(value);
+        if (Short.class == clazz || Short.TYPE == clazz) return Short.parseShort(value);
+        if (Integer.class == clazz || Integer.TYPE == clazz) return Integer.parseInt(value);
+        if (Long.class == clazz || Long.TYPE == clazz) return Long.parseLong(value);
+        if (Float.class == clazz || Float.TYPE == clazz) return Float.parseFloat(value);
+        if (Double.class == clazz || Double.TYPE == clazz) return Double.parseDouble(value);
+        if (UUID.class == clazz) return UUID.fromString(value);
+        if (String.class == clazz) return value;
+        throw new IllegalArgumentException("Parameters of type " + clazz.getName() + " are not supported");
     }
 
     private void sendError(HttpServletRequest request, HttpServletResponse response, Throwable e) throws IOException {
