@@ -1631,6 +1631,7 @@
                                 <xs:element name="runtimePropsDatasource" type="runtimePropsDatasourceType"/>
                             </xs:choice>
                         </xs:sequence>
+                        <xs:attribute name="class" type="xs:string"/>
                     </xs:complexType>
                 </xs:element>
                 <xs:element name="timers" minOccurs="0">
