@@ -602,18 +602,6 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
                     client.sendPendingVariableChanges();
                 }
             }
-
-            @Override
-            public void updateSelectionStartIfNeeded(VScrollTableRow startRow) {
-                // Support select first N rows by Shift+Click #PL-3267
-                selectionRangeStart = startRow;
-            }
-
-            @Override
-            protected boolean isNeedToSetRowFocus() {
-                // Support select first N rows by Shift+Click #PL-3267
-                return focusedRow != null;
-            }
         }
     }
 
