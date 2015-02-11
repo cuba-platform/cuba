@@ -1045,6 +1045,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                     String width = colElem.attributeValue("width");
                     if (width != null) {
                         component.setColumnWidth(column, Integer.parseInt(width));
+                    } else {
+                        component.setColumnWidth(column, -1);
                     }
 
                     String visible = colElem.attributeValue("visible");
