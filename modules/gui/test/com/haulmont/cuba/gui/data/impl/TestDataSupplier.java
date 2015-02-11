@@ -9,12 +9,14 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.NotDetachedCommitContext;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.data.DataSupplier;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
 * @author krivopustov
@@ -42,11 +44,6 @@ public class TestDataSupplier implements DataSupplier {
             result.add(entity);
         }
         return result;
-    }
-
-    @Override
-    public Map<Entity, Entity> commitNotDetached(NotDetachedCommitContext context) {
-        return null;
     }
 
     @Override
