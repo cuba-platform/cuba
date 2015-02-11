@@ -16,20 +16,20 @@ import java.util.*;
  * @author krivopustov
  * @version $Id$
  */
+@SuppressWarnings("unchecked")
 public class CommitContext implements Serializable {
 
     private static final long serialVersionUID = 2510011302544968537L;
 
-    protected Collection commitInstances = new HashSet();
-    protected Collection removeInstances = new HashSet();
+    protected Collection<Entity> commitInstances = new HashSet<>();
+    protected Collection<Entity> removeInstances = new HashSet<>();
 
     protected Map<Object, View> views = new HashMap<>();
 
     protected boolean softDeletion = true;
     protected Map<String, Object> dbHints = new HashMap<>();
 
-    @SafeVarargs
-    public <T extends Entity> CommitContext(T... commitInstances) {
+    public CommitContext(Entity... commitInstances) {
         this.commitInstances.addAll(Arrays.asList(commitInstances));
     }
 
@@ -53,7 +53,7 @@ public class CommitContext implements Serializable {
      * @return direct reference to collection of changed entities that will be committed to the database.
      * The collection is modifiable.
      */
-    public <E extends Entity> Collection<E> getCommitInstances() {
+    public Collection<Entity> getCommitInstances() {
         return commitInstances;
     }
 
@@ -68,7 +68,7 @@ public class CommitContext implements Serializable {
      * @return direct reference to collection of entities that will be removed from the database.
      * The collection is modifiable.
      */
-    public <E extends Entity> Collection<E> getRemoveInstances() {
+    public Collection<Entity> getRemoveInstances() {
         return removeInstances;
     }
 
