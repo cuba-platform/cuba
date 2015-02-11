@@ -27,6 +27,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.portal.config.RestConfig;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 import org.json.JSONArray;
@@ -35,7 +36,6 @@ import org.json.JSONObject;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
-import javax.persistence.Id;
 import javax.servlet.http.HttpServletResponse;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
@@ -50,6 +50,7 @@ import java.util.*;
  * @version $Id$
  */
 public class JSONConvertor implements Convertor {
+
     public static final String MIME_STR = "application/json;charset=UTF-8";
     public static final MimeType MIME_TYPE_JSON;
 
@@ -61,7 +62,15 @@ public class JSONConvertor implements Convertor {
         }
     }
 
+    protected final Metadata metadata;
+
+    protected final RestConfig restConfig;
+
     public JSONConvertor() {
+        metadata = AppBeans.get(Metadata.NAME);
+
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        restConfig = configuration.getConfig(RestConfig.class);
     }
 
     @Override
@@ -87,26 +96,28 @@ public class JSONConvertor implements Convertor {
     }
 
     @Override
-    public MyJSONObject.Array process(Map<Entity, Entity> entityMap, String requestURI)
+    public MyJSONObject.Array process(Set<Entity> entities, String requestURI)
             throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         MyJSONObject.Array result = new MyJSONObject.Array();
-        for (Map.Entry<Entity, Entity> entry : entityMap.entrySet()) {
-            Entity key = entry.getKey();
-            Entity value = entry.getValue();
-            MyJSONObject keyJson = encodeInstance(key, new HashSet<Entity>(), getMetaClass(key), null);
-            MyJSONObject valueJson = encodeInstance(value, new HashSet<Entity>(), getMetaClass(value), null);
+        for (Entity entity : entities) {
+            MyJSONObject entityJson = encodeInstance(entity, new HashSet<Entity>(), getMetaClass(entity), null);
 
-            MyJSONObject.Array mapping = new MyJSONObject.Array();
-            mapping.add(keyJson);
-            mapping.add(valueJson);
-            result.add(mapping);
+            if (restConfig.getRestApiCommitReturnsMaps()) {
+                MyJSONObject valueJson = encodeInstance(entity, new HashSet<Entity>(), getMetaClass(entity), null);
+                MyJSONObject.Array mapping = new MyJSONObject.Array();
+                mapping.add(entityJson);
+                mapping.add(valueJson);
+                result.add(mapping);
+            } else {
+                result.add(entityJson);
+            }
+
         }
         return result;
     }
 
     private MetaClass getMetaClass(Entity entity) {
-        Metadata metadata = AppBeans.get(Metadata.NAME);
-        return metadata.getSession().getClass(entity.getClass());
+        return metadata.getSession().getClassNN(entity.getClass());
     }
 
     @Override

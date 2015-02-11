@@ -4,18 +4,15 @@
  */
 package com.haulmont.cuba.core.app;
 
-import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.CommitContext;
+import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.NotDetachedCommitContext;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -26,30 +23,21 @@ import java.util.Set;
 public class DataServiceBean implements DataService {
 
     @Inject
-    protected DataWorker dataWorker;
-
-    @Inject
-    private Persistence persistence;
+    protected DataManager dataManager;
 
     @Override
     public Set<Entity> commit(CommitContext context) {
-        return dataWorker.commit(context);
-    }
-
-    @Override
-    public Map<Entity, Entity> commitNotDetached(NotDetachedCommitContext context) {
-        return dataWorker.commitNotDetached(context);
+        return dataManager.commit(context);
     }
 
     @Override
     @Nullable
     public <A extends Entity> A load(LoadContext context) {
-        return dataWorker.load(context);
+        return dataManager.load(context);
     }
 
     @Override
-    @Nonnull
     public <A extends Entity> List<A> loadList(LoadContext context) {
-        return dataWorker.loadList(context);
+        return dataManager.loadList(context);
     }
 }

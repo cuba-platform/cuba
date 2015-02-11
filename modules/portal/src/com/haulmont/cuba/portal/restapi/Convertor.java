@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author krivopustov
@@ -29,7 +30,7 @@ public interface Convertor {
     Object process(List<Entity> entities, MetaClass metaClass, String requestURI, View view)
             throws InvocationTargetException, NoSuchMethodException, IllegalAccessException;
 
-    Object process(Map<Entity, Entity> entityMap, String requestURI)
+    Object process(Set<Entity> entities, String requestURI)
             throws InvocationTargetException, NoSuchMethodException, IllegalAccessException;
 
     CommitRequest parseCommitRequest(String content);

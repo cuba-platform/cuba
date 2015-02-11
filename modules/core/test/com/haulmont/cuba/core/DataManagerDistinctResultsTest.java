@@ -7,9 +7,10 @@ package com.haulmont.cuba.core;
 
 import com.google.common.collect.Iterables;
 import com.haulmont.bali.db.QueryRunner;
-import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.app.ServerConfig;
-import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.Role;
@@ -26,7 +27,7 @@ import java.util.UUID;
  * @author krivopustov
  * @version $Id$
  */
-public class DataServiceDistinctResultsTest extends CubaTestCase {
+public class DataManagerDistinctResultsTest extends CubaTestCase {
 
     public static final int QTY = 17;
 
@@ -44,9 +45,9 @@ public class DataServiceDistinctResultsTest extends CubaTestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        Transaction tx = PersistenceProvider.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
 
             Group group = new Group();
             groupId = group.getId();
@@ -89,9 +90,9 @@ public class DataServiceDistinctResultsTest extends CubaTestCase {
 
     @Override
     protected void tearDown() throws Exception {
-        Transaction tx = PersistenceProvider.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            QueryRunner runner = new QueryRunner(Locator.getDataSource());
+            QueryRunner runner = new QueryRunner(persistence.getDataSource());
             try {
                 String sql = "delete from SEC_USER_ROLE where ROLE_ID = '" + role1Id.toString() + "'";
                 runner.update(sql);
@@ -126,7 +127,7 @@ public class DataServiceDistinctResultsTest extends CubaTestCase {
 
         LinkedHashSet<User> set;
 
-        ConfigProvider.getConfig(ServerConfig.class).setInMemoryDistinct(false);
+        AppBeans.get(Configuration.class).getConfig(ServerConfig.class).setInMemoryDistinct(false);
 
         set = load(0, 10, QUERY);
         assertEquals(5, set.size());
@@ -138,7 +139,7 @@ public class DataServiceDistinctResultsTest extends CubaTestCase {
         assertEquals("user00", Iterables.getFirst(set, null).getLoginLowerCase());
         assertEquals("user09", Iterables.getLast(set, null).getLoginLowerCase());
 
-        ConfigProvider.getConfig(ServerConfig.class).setInMemoryDistinct(true);
+        AppBeans.get(Configuration.class).getConfig(ServerConfig.class).setInMemoryDistinct(true);
 
         set = load(0, 10, QUERY);
         assertEquals(5, set.size());
@@ -178,7 +179,7 @@ public class DataServiceDistinctResultsTest extends CubaTestCase {
     }
 
     private LinkedHashSet<User> load(int firstResult, int maxResults, String queryString) {
-        DataService ds = Locator.lookup(DataService.NAME);
+        DataManager ds = AppBeans.get(DataManager.NAME);
         LoadContext lc = new LoadContext(User.class);
         LoadContext.Query q = lc.setQueryString(queryString);
         q.setParameter("groupId", groupId);
@@ -189,9 +190,9 @@ public class DataServiceDistinctResultsTest extends CubaTestCase {
     }
 
     private void checkSetup() {
-        Transaction tx = PersistenceProvider.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             Query query = em.createQuery("select u from sec$User u left join u.userRoles r where u.group.id = ?1");
             query.setParameter(1, groupId);
             List list = query.getResultList();

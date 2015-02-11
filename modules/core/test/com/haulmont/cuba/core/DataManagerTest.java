@@ -5,26 +5,22 @@
 package com.haulmont.cuba.core;
 
 import com.haulmont.bali.db.QueryRunner;
-import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.Server;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.CommitContext;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.Group;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-public class DataServiceTest extends CubaTestCase {
+public class DataManagerTest extends CubaTestCase {
     
-    protected DataService dataService;
+    protected DataManager dataManager;
 
     public void setUp() throws Exception {
         super.setUp();
-        dataService = AppBeans.get(DataService.class);
+        dataManager = AppBeans.get(DataManager.class);
 
         QueryRunner runner = new QueryRunner(persistence.getDataSource());
         runner.update("delete from SYS_SERVER");
@@ -36,16 +32,16 @@ public class DataServiceTest extends CubaTestCase {
         server.setName("localhost");
         server.setRunning(true);
 
-        dataService.commit(new CommitContext(Collections.<Entity>singleton(server)));
+        dataManager.commit(new CommitContext(Collections.<Entity>singleton(server)));
 
         final LoadContext loadContext = new LoadContext(Server.class);
         loadContext.setId(id);
 
-        server = dataService.load(loadContext);
+        server = dataManager.load(loadContext);
         assertEquals("localhost", server.getName());
 
         server.setName("krivopustov");
-        dataService.commit(new CommitContext(Collections.<Entity>singleton(server)));
+        dataManager.commit(new CommitContext(Collections.<Entity>singleton(server)));
     }
 
     public void testLoad() {
@@ -54,12 +50,12 @@ public class DataServiceTest extends CubaTestCase {
         server.setName("localhost");
         server.setRunning(true);
 
-        dataService.commit(new CommitContext(Collections.<Entity>singleton(server)));
+        dataManager.commit(new CommitContext(Collections.<Entity>singleton(server)));
 
         final LoadContext loadContext = new LoadContext(Server.class);
         loadContext.setId(id);
 
-        server = dataService.load(loadContext);
+        server = dataManager.load(loadContext);
         assertEquals("localhost", server.getName());
     }
 
@@ -68,13 +64,13 @@ public class DataServiceTest extends CubaTestCase {
         server.setName("localhost");
         server.setRunning(true);
 
-        dataService.commit(new CommitContext(Collections.<Entity>singleton(server)));
+        dataManager.commit(new CommitContext(Collections.<Entity>singleton(server)));
 
         final LoadContext loadContext =
                 new LoadContext(Server.class);
         loadContext.setQueryString("select s from " + PersistenceHelper.getEntityName(Server.class) + " s");
         
-        List<Server> list = dataService.loadList(loadContext);
+        List<Server> list = dataManager.loadList(loadContext);
         assertTrue(list.size() > 0);
     }
 
@@ -84,12 +80,12 @@ public class DataServiceTest extends CubaTestCase {
         server.setName("localhost");
         server.setRunning(true);
 
-        dataService.commit(new CommitContext(Collections.<Entity>singleton(server)));
+        dataManager.commit(new CommitContext(Collections.<Entity>singleton(server)));
 
         LoadContext loadContext = new LoadContext(Server.class);
         loadContext.setId(id);
 
-        List<Server> list = dataService.loadList(loadContext);
+        List<Server> list = dataManager.loadList(loadContext);
         assertTrue(list.size() == 1);
     }
 
@@ -98,7 +94,7 @@ public class DataServiceTest extends CubaTestCase {
         loadContext.setQueryString("select u.group from sec$User u where u.id = :userId")
                 .setParameter("userId", UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"));
 
-        List<Server> list = dataService.loadList(loadContext);
+        List<Server> list = dataManager.loadList(loadContext);
         assertTrue(list.size() == 1);
     }
 
@@ -107,14 +103,14 @@ public class DataServiceTest extends CubaTestCase {
         server.setName("LocalHost");
         server.setRunning(true);
 
-        dataService.commit(new CommitContext(Collections.<Entity>singleton(server)));
+        dataManager.commit(new CommitContext(Collections.<Entity>singleton(server)));
 
         final LoadContext loadContext =
                 new LoadContext(Server.class);
         loadContext.setQueryString("select s from sys$Server s where s.name like :name")
                 .setParameter("name", "(?i)%loc%host%");
 
-        List<Server> list = dataService.loadList(loadContext);
+        List<Server> list = dataManager.loadList(loadContext);
         assertTrue(list.size() > 0);
     }
 
@@ -124,7 +120,7 @@ public class DataServiceTest extends CubaTestCase {
                 .setParameter("name", "admin");
 
         try {
-            dataService.loadList(loadContext);
+            dataManager.loadList(loadContext);
             fail("DataService must throw exception for nonexistent parameters");
         } catch (Exception e) {
             // ok
@@ -133,7 +129,7 @@ public class DataServiceTest extends CubaTestCase {
         loadContext = new LoadContext(Server.class);
         loadContext.setQueryString("select u from sec$User u where u.login = :login")
                 .setParameter("login", "admin");
-        List<Entity> list = dataService.loadList(loadContext);
+        List<Entity> list = dataManager.loadList(loadContext);
         assertEquals(1, list.size());
     }
 }

@@ -13,6 +13,9 @@ import java.sql.Connection;
 /**
  * Interface used to interact with the persistence context.
  *
+ * <p>Mostly mimics the {@code javax.persistence.EntityManager} interface and adds methods for working with views and
+ * soft deletion.</p>
+ *
  * @author krivopustov
  * @version $Id$
  */

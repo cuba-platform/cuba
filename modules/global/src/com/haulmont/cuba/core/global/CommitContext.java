@@ -28,9 +28,6 @@ public class CommitContext implements Serializable {
     protected boolean softDeletion = true;
     protected Map<String, Object> dbHints = new HashMap<>();
 
-    public CommitContext() {
-    }
-
     @SafeVarargs
     public <T extends Entity> CommitContext(T... commitInstances) {
         this.commitInstances.addAll(Arrays.asList(commitInstances));

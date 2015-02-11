@@ -8,7 +8,6 @@ package com.haulmont.cuba.gui.categories;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
-import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
@@ -24,10 +23,7 @@ import com.haulmont.cuba.gui.components.validators.DoubleValidator;
 import com.haulmont.cuba.gui.components.validators.IntegerValidator;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.RuntimePropsDatasource;
-import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -55,7 +51,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     protected LookupField dataTypeField;
     protected CategoryAttribute attribute;
     protected boolean dataTypeFieldInited = false;
-    protected DataService dataService;
+    protected DataSupplier dataSupplier;
 
     @Inject
     protected Datasource attributeDs;
@@ -86,7 +82,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
 
         fieldWidth = themeConstants.get("cuba.gui.AttributeEditor.field.width");
 
-        dataService = getDsContext().getDataSupplier();
+        dataSupplier = getDsContext().getDataSupplier();
         fieldsContainer = getComponent("attributeProperties");
 
         nameField = factory.createComponent(TextField.NAME);
@@ -459,7 +455,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         LoadContext entitiesContext = new LoadContext(clazz);
         entitiesContext.setQueryString("select a from " + entityClassName + " a");
         entitiesContext.setView("_minimal");
-        List<BaseUuidEntity> list = dataService.loadList(entitiesContext);
+        List<BaseUuidEntity> list = dataSupplier.loadList(entitiesContext);
         for (BaseUuidEntity entity : list) {
             entitiesMap.put(InstanceUtils.getInstanceName(entity), entity);
         }
@@ -471,7 +467,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             query2.setParameter("e", attribute.getDefaultEntityId());
             entityContext.setView("_minimal");
 
-            BaseUuidEntity entity = dataService.load(entityContext);
+            BaseUuidEntity entity = dataSupplier.load(entityContext);
             if (entity != null) {
                 entityField.setValue(entity);
             } else {

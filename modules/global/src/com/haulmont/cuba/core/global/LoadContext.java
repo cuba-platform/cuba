@@ -11,7 +11,7 @@ import java.util.*;
 
 /**
  * Class that defines parameters for loading entities from the database.
- * <p/> Used by {@link com.haulmont.cuba.core.app.DataService}
+ * <p>Used by {@link DataManager}.</p>
  *
  * @author krivopustov
  * @version $Id$

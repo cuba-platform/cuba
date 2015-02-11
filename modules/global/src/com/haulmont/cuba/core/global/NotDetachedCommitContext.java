@@ -4,31 +4,20 @@
  */
 package com.haulmont.cuba.core.global;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 public class NotDetachedCommitContext extends CommitContext {
 
     private static final long serialVersionUID = -1449219610134606045L;
 
-    protected Collection newInstanceIds = new ArrayList();
+    protected Set<String> newInstanceIds = new HashSet<>();
 
-    public NotDetachedCommitContext() {
-    }
-
-    public NotDetachedCommitContext(Collection commitInstances) {
-        this.commitInstances.addAll(commitInstances);
-    }
-
-    public NotDetachedCommitContext(Collection commitInstances, Collection removeInstances) {
-        this.commitInstances.addAll(commitInstances);
-        this.removeInstances.addAll(removeInstances);
-    }
-
-    public Collection getNewInstanceIds() {
+    public Set<String> getNewInstanceIds() {
         return newInstanceIds;
     }
 
-    public void setNewInstanceIds(Collection newInstanceIds) {
+    public void setNewInstanceIds(Set<String> newInstanceIds) {
         this.newInstanceIds = newInstanceIds;
     }
 }

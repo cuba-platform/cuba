@@ -21,4 +21,8 @@ public interface RestConfig extends Config {
     @Property("cuba.rest.productionMode")
     @DefaultBoolean(false)
     boolean getProductionMode();
+
+    @Property("cuba.rest.commitReturnsMaps")
+    @DefaultBoolean(false)
+    boolean getRestApiCommitReturnsMaps();
 }

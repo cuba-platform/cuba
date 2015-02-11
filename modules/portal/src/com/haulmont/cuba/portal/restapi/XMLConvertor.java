@@ -27,6 +27,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.portal.config.RestConfig;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 import org.apache.commons.lang.StringUtils;
@@ -96,6 +97,17 @@ public class XMLConvertor implements Convertor {
         }
     }
 
+    protected final Metadata metadata;
+
+    protected final RestConfig restConfig;
+
+    public XMLConvertor() {
+        metadata = AppBeans.get(Metadata.NAME);
+
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        restConfig = configuration.getConfig(RestConfig.class);
+    }
+
     @Override
     public MimeType getMimeType() {
         return MIME_TYPE_XML;
@@ -124,27 +136,27 @@ public class XMLConvertor implements Convertor {
     }
 
     @Override
-    public Object process(Map<Entity, Entity> entityMap, String requestURI)
+    public Object process(Set<Entity> entities, String requestURI)
             throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-        Element root = newDocument(MAPPING_ROOT_ELEMENT_INSTANCE);
-        Document doc = root.getOwnerDocument();
-        for (Map.Entry<Entity, Entity> entry : entityMap.entrySet()) {
-            Element pair = doc.createElement(PAIR_ELEMENT);
-            root.appendChild(pair);
-            encodeEntityInstance(
-                    new HashSet<Entity>(), entry.getKey(),
-                    pair, false,
-                    getMetaClass(entry.getKey()),
-                    null
-            );
-            encodeEntityInstance(
-                    new HashSet<Entity>(), entry.getValue(),
-                    pair, false,
-                    getMetaClass(entry.getValue()),
-                    null
-            );
+        if (restConfig.getRestApiCommitReturnsMaps()) {
+            Element root = newDocument(MAPPING_ROOT_ELEMENT_INSTANCE);
+            Document doc = root.getOwnerDocument();
+            for (Entity entity : entities) {
+                Element pair = doc.createElement(PAIR_ELEMENT);
+                root.appendChild(pair);
+                encodeEntityInstance(new HashSet<Entity>(), entity, pair, false, getMetaClass(entity), null);
+                encodeEntityInstance(new HashSet<Entity>(), entity, pair, false, getMetaClass(entity), null);
+            }
+            return doc;
+        } else {
+            Element root = newDocument(ROOT_ELEMENT_INSTANCE);
+            for (Entity entity : entities) {
+                encodeEntityInstance(new HashSet<Entity>(), entity, root, false, getMetaClass(entity), null);
+            }
+            Document doc = root.getOwnerDocument();
+            decorate(doc, requestURI);
+            return doc;
         }
-        return doc;
     }
 
     @Override

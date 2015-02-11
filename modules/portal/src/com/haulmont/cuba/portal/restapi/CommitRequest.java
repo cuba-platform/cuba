@@ -21,7 +21,7 @@ public class CommitRequest {
     private Collection commitInstances;
     private Collection removeInstances;
     private boolean softDeletion = true;
-    private HashSet<String> newInstanceIds = new HashSet<>();
+    private Set<String> newInstanceIds = new HashSet<>();
     private Map<String, InstanceRef> instanceRefs = new HashMap<>();
     private Set<String> commitIds = new HashSet<>();
 
@@ -49,7 +49,7 @@ public class CommitRequest {
         this.softDeletion = softDeletion;
     }
 
-    public Collection getNewInstanceIds() {
+    public Set<String> getNewInstanceIds() {
         return Collections.unmodifiableSet(newInstanceIds);
     }
 
@@ -89,7 +89,7 @@ public class CommitRequest {
         }
 
         if (loadInfo.isNewEntity())
-            newInstanceIds.add(loadInfo.getMetaClass().getName() + "-" + loadInfo.getId().toString());
+            newInstanceIds.add(loadInfo.toString());
 
         InstanceRef result = new InstanceRef(loadInfo);
         instanceRefs.put(loadInfo.getMetaClass().getName() + "-" + loadInfo.getId().toString(), result);

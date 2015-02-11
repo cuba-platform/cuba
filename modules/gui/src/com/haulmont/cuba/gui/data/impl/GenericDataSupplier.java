@@ -5,14 +5,14 @@
 package com.haulmont.cuba.gui.data.impl;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.data.DataSupplier;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author abramov
@@ -22,7 +22,7 @@ public class GenericDataSupplier implements DataSupplier {
 
     protected Metadata metadata = AppBeans.get(Metadata.NAME, Metadata.class);
 
-    protected DataService dataService = AppBeans.get(DataService.NAME, DataService.class);
+    protected DataManager dataManager = AppBeans.get(DataManager.NAME);
 
     @SuppressWarnings("unchecked")
     @Override
@@ -32,85 +32,53 @@ public class GenericDataSupplier implements DataSupplier {
 
     @Override
     public <A extends Entity> A reload(A entity, String viewName) {
-        Objects.requireNonNull(viewName, "viewName is null");
-
-        return reload(entity, metadata.getViewRepository().getView(entity.getClass(), viewName));
+        return dataManager.reload(entity, viewName);
     }
 
     @Override
     public <A extends Entity> A reload(A entity, View view) {
-        return reload(entity, view, null);
+        return dataManager.reload(entity, view);
     }
 
     @Override
     public <A extends Entity> A reload(A entity, View view, @Nullable MetaClass metaClass) {
-        return reload(entity, view, metaClass, true);
+        return dataManager.reload(entity, view, metaClass);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public <A extends Entity> A reload(A entity, View view, @Nullable MetaClass metaClass, boolean useSecurityConstraints) {
-        if (metaClass == null) {
-            metaClass = metadata.getSession().getClass(entity.getClass());
-        }
-        final LoadContext context = new LoadContext(metaClass);
-        context.setUseSecurityConstraints(useSecurityConstraints);
-        context.setId(entity.getId());
-        context.setView(view);
-
-        return (A) load(context);
+        return dataManager.reload(entity, view, metaClass, useSecurityConstraints);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public <A extends Entity> A commit(A instance, @Nullable View view) {
-        final CommitContext context = new CommitContext(
-                        Collections.singleton((Entity) instance),
-                        Collections.<Entity>emptyList());
-        if (view != null)
-            context.getViews().put(instance, view);
-
-        final Set<Entity> res = commit(context);
-
-        for (Entity entity : res) {
-            if (entity.equals(instance))
-                return (A) entity;
-        }
-        return null;
+        return dataManager.commit(instance, view);
     }
 
     @Override
     public <A extends Entity> A commit(A instance) {
-        return commit(instance, null);
+        return dataManager.commit(instance);
     }
 
     @Override
     public void remove(Entity entity) {
-        final CommitContext context = new CommitContext(
-                        Collections.<Entity>emptyList(),
-                        Collections.singleton(entity));
-        commit(context);
+        dataManager.remove(entity);
     }
 
     @Override
     public Set<Entity> commit(CommitContext context) {
-        return dataService.commit(context);
-    }
-
-    @Override
-    public Map<Entity, Entity> commitNotDetached(NotDetachedCommitContext context) {
-        return dataService.commitNotDetached(context);
+        return dataManager.commit(context);
     }
 
     @Override
     @Nullable
     public <A extends Entity> A load(LoadContext context) {
-        return dataService.load(context);
+        return dataManager.load(context);
     }
 
     @Override
     @Nonnull
     public <A extends Entity> List<A> loadList(LoadContext context) {
-        return dataService.loadList(context);
+        return dataManager.loadList(context);
     }
 }

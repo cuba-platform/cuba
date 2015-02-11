@@ -213,7 +213,7 @@ public class DataServiceController {
 
             CommitRequest commitRequest = convertor.parseCommitRequest(requestContent);
             Collection commitInstances = commitRequest.getCommitInstances();
-            Collection newInstanceIds = commitRequest.getNewInstanceIds();
+            Set<String> newInstanceIds = commitRequest.getNewInstanceIds();
 
             assignUuidToNewInstances(commitInstances, newInstanceIds);
 
@@ -235,7 +235,7 @@ public class DataServiceController {
             commitContext.setRemoveInstances(removeInstances);
             commitContext.setSoftDeletion(commitRequest.isSoftDeletion());
             commitContext.setNewInstanceIds(newInstanceIds);
-            Map<Entity, Entity> result = dataService.commitNotDetached(commitContext);
+            Set<Entity> result = dataService.commit(commitContext);
 
             Object converted = convertor.process(result, request.getRequestURI());
             convertor.write(response, converted);
