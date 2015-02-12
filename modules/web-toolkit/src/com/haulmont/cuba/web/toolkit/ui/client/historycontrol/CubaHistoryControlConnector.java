@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.historycontrol;
 
+import com.google.gwt.user.client.History;
 import com.haulmont.cuba.web.toolkit.ui.CubaHistoryControl;
 import com.vaadin.client.ServerConnector;
 import com.vaadin.client.extensions.AbstractExtensionConnector;
@@ -20,13 +21,12 @@ import com.vaadin.shared.ui.Connect;
 public class CubaHistoryControlConnector extends AbstractExtensionConnector {
 
     protected ServerConnector target;
-
-    protected HistoryJsApi historyApi;
+    protected HistoryGwtApi historyApi;
 
     @Override
     protected void extend(ServerConnector target) {
         this.target = target;
-        this.historyApi = new HistoryJsApi() {
+        this.historyApi = new HistoryGwtApi() {
             @Override
             protected void onHistoryBackPerformed() {
                 handleHistoryBackAction();

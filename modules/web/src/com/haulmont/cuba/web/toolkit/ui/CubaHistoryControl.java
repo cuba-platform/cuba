@@ -6,7 +6,6 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.web.toolkit.ui.client.historycontrol.CubaHistoryControlServerRpc;
-import com.vaadin.annotations.JavaScript;
 import com.vaadin.server.AbstractClientConnector;
 import com.vaadin.server.AbstractExtension;
 import com.vaadin.server.ClientConnector;
@@ -16,7 +15,6 @@ import com.vaadin.ui.Layout;
  * @author artamonov
  * @version $Id$
  */
-@JavaScript("resources/history/jquery.history.min.js")
 public class CubaHistoryControl extends AbstractExtension {
 
     protected HistoryBackHandler handler;
