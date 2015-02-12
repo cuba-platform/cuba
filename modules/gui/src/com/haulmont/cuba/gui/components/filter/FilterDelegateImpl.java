@@ -319,11 +319,6 @@ public class FilterDelegateImpl implements FilterDelegate {
         maxResultsField.setWidth(theme.get("cuba.gui.Filter.maxResults.width"));
         maxResultsField.setDatatype(Datatypes.get("int"));
         maxResultsLayout.add(maxResultsField);
-
-        Label maxResultsLabel2 = componentsFactory.createComponent(Label.NAME);
-        maxResultsLabel2.setAlignment(Component.Alignment.MIDDLE_RIGHT);
-        maxResultsLabel2.setValue(messages.getMainMessage("filter.maxResults.label2"));
-        maxResultsLayout.add(maxResultsLabel2);
     }
 
     /**
