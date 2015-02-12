@@ -18,6 +18,7 @@ import com.haulmont.cuba.gui.security.entity.AttributeTarget;
 import com.haulmont.cuba.gui.security.entity.BasicPermissionTarget;
 import com.haulmont.cuba.gui.security.entity.MultiplePermissionTarget;
 import com.haulmont.cuba.gui.security.entity.OperationPermissionTarget;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -236,10 +237,24 @@ public class PermissionConfig {
                 String id = elem.attributeValue("id");
                 String caption = getMessage("permission-config." + id);
                 if ("category".equals(elem.getName())) {
-                    Node<BasicPermissionTarget> n = new Node<>(
-                            new BasicPermissionTarget("category:" + id, caption, null));
-                    node.addChild(n);
-                    walkSpecific(elem, n);
+                    Node<BasicPermissionTarget> existingCategory = null;
+                    String categoryPermissionId = "category:" + id;
+                    for (Node<BasicPermissionTarget> subNode : node.getChildren()) {
+                        if (categoryPermissionId.equals(subNode.getData().getId())) {
+                            existingCategory = subNode;
+                            break;
+                        }
+                    }
+
+                    Node<BasicPermissionTarget> categoryNode;
+                    if (existingCategory == null) {
+                        categoryNode = new Node<>(new BasicPermissionTarget(categoryPermissionId, caption, null));
+                        node.addChild(categoryNode);
+                    } else {
+                        categoryNode = existingCategory;
+                    }
+
+                    walkSpecific(elem, categoryNode);
                 } else if ("permission".equals(elem.getName())) {
                     Node<BasicPermissionTarget> n = new Node<>(
                             new BasicPermissionTarget("permission:" + id, caption, id));
