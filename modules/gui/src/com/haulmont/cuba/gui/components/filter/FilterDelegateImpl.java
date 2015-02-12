@@ -863,7 +863,10 @@ public class FilterDelegateImpl implements FilterDelegate {
             }
             captionsMap.put(entity, caption);
         }
-
+        filtersLookupListenerEnabled = false;
+        //set null to remove previous value from lookup options list
+        filtersLookup.setValue(null);
+        filtersLookupListenerEnabled = true;
         filtersLookup.setOptionsList(filterEntities);
         filterHelper.setLookupCaptions(filtersLookup, captionsMap);
     }
