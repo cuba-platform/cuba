@@ -270,10 +270,18 @@ public class WebFieldGroup
                 }
 
                 // some components (e.g. LookupPickerField) have width from the creation, so I commented out this check
-                if (/*f.getWidth() == -1f &&*/ fieldConfig.getWidth() != null) {
-                    fieldComponent.setWidth(fieldConfig.getWidth());
+                if (fieldComponent instanceof Field) {
+                    if (/*f.getWidth() == -1f &&*/ fieldConfig.getWidth() != null) {
+                        fieldComponent.setWidth(fieldConfig.getWidth());
+                    } else {
+                        fieldComponent.setWidth(DEFAULT_FIELD_WIDTH);
+                    }
                 } else {
-                    fieldComponent.setWidth(DEFAULT_FIELD_WIDTH);
+                    if (fieldConfig.getWidth() != null) {
+                        fieldImpl.setWidth(fieldConfig.getWidth());
+                    } else {
+                        fieldImpl.setWidth(DEFAULT_FIELD_WIDTH);
+                    }
                 }
 
                 applyPermissions(fieldComponent);

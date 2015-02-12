@@ -276,12 +276,21 @@ public class WebFieldGroup
                     }
                 }
 
-                // some components (e.g. LookupPickerField) have width from the creation, so I commented out this check
-                if (/*f.getWidth() == -1f &&*/ fieldConfig.getWidth() != null) {
-                    fieldComponent.setWidth(fieldConfig.getWidth());
+                if (fieldComponent instanceof Field) {
+                    // some components (e.g. LookupPickerField) have width from the creation, so I commented out this check
+                    if (/*f.getWidth() == -1f &&*/ fieldConfig.getWidth() != null) {
+                        fieldComponent.setWidth(fieldConfig.getWidth());
+                    } else {
+                        ThemeConstants theme = App.getInstance().getThemeConstants();
+                        fieldComponent.setWidth(theme.get("cuba.web.WebFieldGroup.defaultFieldWidth"));
+                    }
                 } else {
-                    ThemeConstants theme = App.getInstance().getThemeConstants();
-                    fieldComponent.setWidth(theme.get("cuba.web.WebFieldGroup.defaultFieldWidth"));
+                    if (fieldConfig.getWidth() != null) {
+                        fieldImpl.setWidth(fieldConfig.getWidth());
+                    } else {
+                        ThemeConstants theme = App.getInstance().getThemeConstants();
+                        fieldImpl.setWidth(theme.get("cuba.web.WebFieldGroup.defaultFieldWidth"));
+                    }
                 }
 
                 applyPermissions(fieldComponent);

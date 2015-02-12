@@ -50,4 +50,30 @@ public class CubaFieldWrapper extends CustomField {
         }
         return super.isReadOnly();
     }
+
+    @Override
+    public void setWidth(float width, Unit unit) {
+        super.setWidth(width, unit);
+
+        if (component != null) {
+            if (width < 0) {
+                component.setWidth(Component.AUTO_SIZE);
+            } else {
+                component.setWidth("100%");
+            }
+        }
+    }
+
+    @Override
+    public void setHeight(float height, Unit unit) {
+        super.setHeight(height, unit);
+
+        if (component != null) {
+            if (height < 0) {
+                component.setHeight(Component.AUTO_SIZE);
+            } else {
+                component.setHeight("100%");
+            }
+        }
+    }
 }
