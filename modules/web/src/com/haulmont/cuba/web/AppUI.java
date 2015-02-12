@@ -9,8 +9,10 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageTools;
-import com.haulmont.cuba.web.sys.LinkHandler;
 import com.haulmont.cuba.gui.TestIdManager;
+import com.haulmont.cuba.security.app.UserSessionService;
+import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.web.sys.LinkHandler;
 import com.haulmont.cuba.web.toolkit.ui.client.appui.AppUIClientRpc;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.server.*;
@@ -158,6 +160,27 @@ public class AppUI extends UI implements ErrorHandler {
         app.initView(this);
 
         processExternalLink(request);
+    }
+
+    @Override
+    protected void refresh(VaadinRequest request) {
+        super.refresh(request);
+
+        // handle page refresh
+        if (app.getConnection().isConnected()) {
+            // Ping middleware session if connected
+            log.debug("Check middleware session");
+
+            try {
+                UserSessionService service = AppBeans.get(UserSessionService.NAME);
+                UserSession session = app.getConnection().getSession();
+                if (session != null) {
+                    service.getUserSession(session.getId());
+                }
+            } catch (Exception e) {
+                app.exceptionHandlers.handle(new com.vaadin.server.ErrorEvent(e));
+            }
+        }
     }
 
     @Override

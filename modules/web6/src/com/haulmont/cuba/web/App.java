@@ -13,6 +13,7 @@ import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.auth.ActiveDirectoryHelper;
+import com.haulmont.cuba.web.auth.RequestContext;
 import com.haulmont.cuba.web.auth.WebAuthConfig;
 import com.haulmont.cuba.web.exception.ExceptionHandlers;
 import com.haulmont.cuba.web.log.AppLog;
@@ -26,6 +27,8 @@ import com.vaadin.Application;
 import com.vaadin.service.ApplicationContext;
 import com.vaadin.terminal.Terminal;
 import com.vaadin.terminal.gwt.server.AbstractApplicationServlet;
+import com.vaadin.terminal.gwt.server.AbstractCommunicationManager;
+import com.vaadin.terminal.gwt.server.Constants;
 import com.vaadin.terminal.gwt.server.HttpServletRequestListener;
 import com.vaadin.ui.Window;
 import org.apache.commons.lang.StringUtils;
@@ -462,6 +465,25 @@ public abstract class App extends Application
             }
 
             processExternalLink(request, requestURI);
+
+            if (isUIDLRequest(request) && isRepaintAll(request) && App.isBound()) {
+                // user pressed F5
+                // handle page refresh
+                if (getConnection().isConnected()) {
+                    // Ping middleware session if connected
+                    log.debug("Check middleware session");
+
+                    try {
+                        UserSessionService service = AppBeans.get(UserSessionService.NAME);
+                        UserSession session = getConnection().getSession();
+                        if (session != null) {
+                            service.getUserSession(session.getId());
+                        }
+                    } catch (Exception e) {
+                        terminalError(new ApplicationError(e));
+                    }
+                }
+            }
         } catch (final Exception ex) {
             getErrorHandler().terminalError(new Terminal.ErrorEvent() {
                 public Throwable getThrowable() {
@@ -469,6 +491,23 @@ public abstract class App extends Application
                 }
             });
         }
+    }
+
+    private boolean isRepaintAll(HttpServletRequest request) {
+        return (request.getParameter(Constants.URL_PARAMETER_REPAINT_ALL) != null)
+                && (request.getParameter(Constants.URL_PARAMETER_REPAINT_ALL).equals("1"));
+    }
+
+    private boolean isUIDLRequest(HttpServletRequest request) {
+        String pathInfo = request.getPathInfo();
+
+        if (pathInfo == null) {
+            return false;
+        }
+
+        String compare = Constants.AJAX_UIDL_URI;
+
+        return pathInfo.startsWith(compare + "/") || pathInfo.endsWith(compare);
     }
 
     protected void setClientAddress(HttpServletRequest request) {

@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.web.exception;
 
+import com.google.common.collect.Iterables;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.Action;
@@ -16,10 +17,12 @@ import com.haulmont.cuba.web.Connection;
 import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.controllers.ControllerUtils;
 import com.vaadin.server.Page;
+import com.vaadin.ui.Window;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.Locale;
 
 /**
@@ -34,6 +37,8 @@ public class NoUserSessionHandler extends AbstractExceptionHandler {
 
     private Locale locale;
 
+    private Window noUserSessionDialog;
+
     public NoUserSessionHandler() {
         super(NoUserSessionException.class.getName());
 
@@ -45,6 +50,12 @@ public class NoUserSessionHandler extends AbstractExceptionHandler {
     @Override
     protected void doHandle(App app, String className, String message, @Nullable Throwable throwable) {
         try {
+            // we may show two or more dialogs if user pressed F5 and we have no valid user session
+            // just remove previous dialog and show new
+            if (noUserSessionDialog != null) {
+                app.getAppUI().removeWindow(noUserSessionDialog);
+            }
+
             Messages messages = AppBeans.get(Messages.NAME);
 
             WebWindowManager wm = app.getWindowManager();
@@ -54,6 +65,11 @@ public class NoUserSessionHandler extends AbstractExceptionHandler {
                     IFrame.MessageType.CONFIRMATION,
                     new Action[]{new LoginAction()}
             );
+
+            Collection<Window> windows = app.getAppUI().getWindows();
+            if (!windows.isEmpty()) {
+                noUserSessionDialog = Iterables.getLast(windows);
+            }
         } catch (Throwable th) {
             log.error("Unable to handle NoUserSessionException", throwable);
             log.error("Exception in NoUserSessionHandler", th);

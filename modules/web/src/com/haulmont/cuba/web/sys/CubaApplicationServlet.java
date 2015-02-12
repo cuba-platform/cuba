@@ -77,7 +77,7 @@ public class CubaApplicationServlet extends VaadinServlet {
 
         if (sessionPingPeriod > 0) {
             // configure Vaadin heartbeat according to web config
-            initParameters.setProperty("heartbeatInterval", String.valueOf(sessionPingPeriod));
+            initParameters.setProperty(Constants.SERVLET_PARAMETER_HEARTBEAT_INTERVAL, String.valueOf(sessionPingPeriod));
         }
 
         return super.createDeploymentConfiguration(initParameters);

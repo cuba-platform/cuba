@@ -14,6 +14,7 @@ import com.haulmont.cuba.gui.settings.SettingsClient;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
 import com.haulmont.cuba.security.app.UserSessionService;
+import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.web.auth.ActiveDirectoryHelper;
 import com.haulmont.cuba.web.auth.RequestContext;
 import com.haulmont.cuba.web.auth.WebAuthConfig;
@@ -227,11 +228,17 @@ public abstract class App {
             // Ping middleware session if connected and show messages
             log.debug("Ping session");
 
-            UserSessionService service = AppBeans.get(UserSessionService.NAME);
-            String message = service.getMessages();
-            if (message != null) {
-                message = message.replace("\n", "<br/>");
-                getWindowManager().showNotification(message, IFrame.NotificationType.ERROR_HTML);
+            try {
+                UserSessionService service = AppBeans.get(UserSessionService.NAME);
+                String message = service.getMessages();
+                if (message != null) {
+                    message = message.replace("\n", "<br/>");
+                    getWindowManager().showNotification(message, IFrame.NotificationType.ERROR_HTML);
+                }
+            } catch (NoUserSessionException ignored) {
+                // ignore no user session exception
+            } catch (Exception e) {
+                log.warn("Exception while ping session", e);
             }
         }
     }
