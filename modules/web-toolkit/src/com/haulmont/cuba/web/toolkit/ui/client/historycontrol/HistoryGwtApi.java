@@ -20,13 +20,15 @@ import com.vaadin.client.BrowserInfo;
  * @version $Id$
  */
 public abstract class HistoryGwtApi {
+    private static final String TOP_HISTORY_TOKEN = "!";
+    private static final String PREVIOUS_HISTORY_TOKEN = "_";
+
     protected ClientLogger logger = ClientLoggerFactory.getLogger("HistoryGwtApi");
-    private static String TOP_HISTORY_TOKEN = "!";
-    private static String PREVIOUS_HISTORY_TOKEN = "_";
-    private String previousHistoryToken;
-    private boolean isForward;
+
     private HandlerRegistration handlerRegistration;
-    private boolean isFireHistoryState;
+    private String previousHistoryToken = TOP_HISTORY_TOKEN;
+    private boolean isForward = false;
+    private boolean isFireHistoryState = false;
 
     public HistoryGwtApi() {
         logger.log(">>> INIT <<<");
@@ -35,9 +37,6 @@ public abstract class HistoryGwtApi {
     }
 
     protected void initStartState() {
-        isForward = false;
-        isFireHistoryState = false;
-        previousHistoryToken = TOP_HISTORY_TOKEN;
         // we need to add new history tokens BEFORE ValueChangeHandler will added
         if (urlHasToken(TOP_HISTORY_TOKEN)) {
             History.newItem(PREVIOUS_HISTORY_TOKEN);
