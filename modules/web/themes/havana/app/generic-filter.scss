@@ -20,14 +20,21 @@
     border: 0;
   }
 
-  .cuba-generic-filter .filter-control-with-border {
+  .cuba-generic-filter .filter-control-with-top-border {
     border-top: solid 1px #a5c4e0;
     padding-top: 5px;
+  }
+
+  .cuba-generic-filter .filter-control-with-bottom-border {
+    border-bottom: solid 1px #a5c4e0;
+    padding-bottom: 5px;
   }
 
   .cuba-generic-filter .filter-control-no-border {
     border-top: none;
     padding-top: 0px;
+    border-bottom: none;
+    padding-bottom: 0px;
   }
 
   .cuba-generic-filter .filter-conditions .v-gridlayout-spacing-on {

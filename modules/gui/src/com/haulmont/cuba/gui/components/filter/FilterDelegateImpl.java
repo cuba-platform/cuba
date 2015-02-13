@@ -69,6 +69,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected static final String GLOBAL_FILTER_PERMISSION = "cuba.gui.filter.global";
     protected static final String GLOBAL_APP_FOLDERS_PERMISSION = "cuba.gui.appFolder.global";
     protected static final String FILTER_EDIT_PERMISSION = "cuba.gui.filter.edit";
+    protected static final String CONDITIONS_LOCATION_TOP = "top";
 
     protected static final Log log = LogFactory.getLog(FilterDelegateImpl.class);
 
@@ -141,6 +142,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected boolean editActionEnabled;
     protected Integer columnsQty;
     protected String initialWindowCaption;
+    protected String conditionsLocation;
 
     @PostConstruct
     public void init() {
@@ -156,6 +158,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         }
         filterMode = FilterMode.GENERIC_MODE;
 
+        conditionsLocation = clientConfig.getGenericFilterConditionsLocation();
         createLayout();
     }
 
@@ -181,7 +184,6 @@ public class FilterDelegateImpl implements FilterDelegate {
         conditionsLayout = componentsFactory.createComponent(HBoxLayout.class);
         conditionsLayout.setWidth("100%");
         conditionsLayout.setStyleName("filter-conditions");
-        layout.add(conditionsLayout);
 
         if (filterMode == FilterMode.GENERIC_MODE) {
             createControlsLayoutForGeneric();
@@ -189,7 +191,13 @@ public class FilterDelegateImpl implements FilterDelegate {
             createControlsLayoutForFts();
         }
 
-        layout.add(controlsLayout);
+        if (CONDITIONS_LOCATION_TOP.equals(conditionsLocation)) {
+            layout.add(conditionsLayout);
+            layout.add(controlsLayout);
+        } else {
+            layout.add(controlsLayout);
+            layout.add(conditionsLayout);
+        }
     }
 
     protected void createControlsLayoutForGeneric() {
@@ -430,11 +438,7 @@ public class FilterDelegateImpl implements FilterDelegate {
      */
     protected void setConditionsLayoutVisible(boolean visible) {
         conditionsLayout.setVisible(visible);
-        if (!visible) {
-            controlsLayout.setStyleName("filter-control-no-border");
-        } else if (!conditionsLayout.getComponents().isEmpty()) {
-            controlsLayout.setStyleName("filter-control-with-border");
-        }
+        controlsLayout.setStyleName(getControlsLayoutStyleName());
     }
 
     /**
@@ -669,9 +673,6 @@ public class FilterDelegateImpl implements FilterDelegate {
         grid.setSpacing(true);
         grid.setWidth("100%");
 
-        if (level == 0)
-            controlsLayout.setStyleName("filter-control-with-border");
-
         boolean focusSet = false;
 
         for (int i = 0; i < visibleConditionNodes.size(); i++) {
@@ -751,6 +752,9 @@ public class FilterDelegateImpl implements FilterDelegate {
         if (parentContainer != null) {
             parentContainer.add(grid);
         }
+
+        if (level == 0)
+            controlsLayout.setStyleName(getControlsLayoutStyleName());
     }
 
     /**
@@ -763,6 +767,15 @@ public class FilterDelegateImpl implements FilterDelegate {
             gap.setWidth("100%");
             grid.add(gap, i, row);
         }
+    }
+
+    protected String getControlsLayoutStyleName() {
+        String styleName = "filter-control-no-border";
+        if (conditionsLayout.isVisible() && !conditionsLayout.getComponents().isEmpty()) {
+            styleName = CONDITIONS_LOCATION_TOP.equals(conditionsLocation) ? "filter-control-with-top-border"
+                    : "filter-control-with-bottom-border";
+        }
+        return styleName;
     }
 
     protected boolean isFilterModified() {
@@ -887,7 +900,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         if (!appliedFilters.isEmpty() && appliedFilters.getLast().filter.equals(lastAppliedFilter))
             return;
 
-        this.layout.add(appliedFiltersLayout, 0);
+        this.layout.add(appliedFiltersLayout, CONDITIONS_LOCATION_TOP.equals(conditionsLocation) ? 0 : 1);
 
         BoxLayout layout = componentsFactory.createComponent(BoxLayout.HBOX);
         layout.setSpacing(true);

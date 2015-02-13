@@ -9,6 +9,7 @@ import com.haulmont.cuba.core.config.Config;
 import com.haulmont.cuba.core.config.Property;
 import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
+import com.haulmont.cuba.core.config.defaults.Default;
 import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
 import com.haulmont.cuba.core.config.defaults.DefaultInt;
 import com.haulmont.cuba.core.config.defaults.DefaultString;
@@ -123,11 +124,20 @@ public interface ClientConfig extends Config {
     boolean getGenericFilterTrimParamValues();
 
     /**
-     * @return Number of columns with conditions in generic filter UI component
+     * @return Number of columns with conditions in generic filter UI component.
      */
     @Property("cuba.gui.genericFilterColumnsQty")
     @DefaultInt(3)
     int getGenericFilterColumnsQty();
+
+    /**
+     * @return location of panel with conditions in generic filter component.
+     * If {@code top} then conditions will be placed above filter control elements
+     * or below them if {@code bottom}.
+     */
+    @Property("cuba.gui.genericFilterConditionsLocation")
+    @Default("top")
+    String getGenericFilterConditionsLocation();
 
     /**
      * Support e-mail. Exception reports and feedback emails are sent to this address.
