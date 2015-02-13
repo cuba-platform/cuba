@@ -916,7 +916,6 @@ public class FilterDelegateImpl implements FilterDelegate {
         label.setAlignment(Component.Alignment.MIDDLE_LEFT);
 
         LinkButton button = componentsFactory.createComponent(LinkButton.NAME);
-        button.setStyleName("remove-applied-filter");
         button.setIcon("icons/item-remove.png");
         button.setAction(new AbstractAction("") {
             @Override

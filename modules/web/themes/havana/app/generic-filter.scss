@@ -6,19 +6,6 @@
 // Version: $Id$
 
 @mixin cuba-generic-filter {
-  .cuba-generic-filter .remove-applied-filter,
-  .filter-param-list-edit-del {
-    height: auto;
-    border: 0;
-  }
-
-  .v-button.v-button-link.remove-applied-filter .v-icon {
-    border: 0;
-  }
-
-  .v-button.v-button-link.filter-param-list-edit-del:focus {
-    border: 0;
-  }
 
   .cuba-generic-filter .filter-control-with-top-border {
     border-top: solid 1px #a5c4e0;
