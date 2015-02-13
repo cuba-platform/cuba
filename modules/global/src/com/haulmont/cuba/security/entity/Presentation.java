@@ -30,8 +30,7 @@ public class Presentation extends BaseUuidEntity implements Updatable {
     @Column(name = "NAME", length = 255)
     private String name;
 
-    @Column(name = "XML")
-    @Lob
+    @Column(name = "XML", length = 4000)
     private String xml;
 
     @ManyToOne(fetch = FetchType.LAZY)
