@@ -13,6 +13,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.actions.ExcelAction;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.RefreshAction;
@@ -20,6 +21,7 @@ import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -27,6 +29,7 @@ import com.haulmont.cuba.security.entity.EntityOp;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import javax.persistence.*;
 import java.util.*;
 
 /**
@@ -70,7 +73,9 @@ public class EntityInspectorBrowse extends AbstractLookup {
     @Inject
     protected ThemeConstants themeConstants;
 
-    protected LookupField entities;
+    @Inject
+    protected LookupField entitiesLookup;
+
     protected Button showButton;
     protected Table entitiesTable;
 
@@ -98,31 +103,13 @@ public class EntityInspectorBrowse extends AbstractLookup {
             }
             lookupBox.setVisible(false);
         } else {
-            entities = componentsFactory.createComponent(LookupField.NAME);
-            entities.setWidth(themeConstants.get("cuba.gui.EntityInspectorBrowse.entitiesSelect.width"));
-            entities.setOptionsMap(getEntitiesLookupFieldOptions());
-            entities.setId("entitiesLookup");
-            entities.setFrame(frame);
-
-            showButton = componentsFactory.createComponent(Button.NAME);
-            showButton.setIcon("icons/refresh.png");
-            Action showEntitiesAction = new ShowEntitiesAction("applyFilter",
-                    configuration.getConfig(ClientConfig.class).getFilterApplyShortcut());
-            showButton.setAction(showEntitiesAction);
-            showButton.setCaption(messages.getMessage(EntityInspectorBrowse.class, "show"));
-            showButton.setId("showButton");
-            showButton.setFrame(frame);
-
-            //rewrite standard filter action
-            IFrame frame = getFrame();
-            Action applyFilterAction = frame.getAction("applyFilter");
-            if (applyFilterAction != null) {
-                frame.removeAction(applyFilterAction);
-            }
-            frame.addAction(showEntitiesAction);
-
-            lookupBox.add(entities);
-            lookupBox.add(showButton);
+            entitiesLookup.setOptionsMap(getEntitiesLookupFieldOptions());
+            entitiesLookup.addListener(new ValueListener() {
+                @Override
+                public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
+                    showEntities();
+                }
+            });
         }
     }
 
@@ -141,19 +128,8 @@ public class EntityInspectorBrowse extends AbstractLookup {
         return options;
     }
 
-    protected class ShowEntitiesAction extends AbstractAction {
-        protected ShowEntitiesAction(String id, @Nullable String shortcut) {
-            super(id, shortcut);
-        }
-
-        @Override
-        public void actionPerform(Component component) {
-            showEntities();
-        }
-    }
-
     private void showEntities() {
-        selectedMeta = entities.getValue();
+        selectedMeta = entitiesLookup.getValue();
         if (selectedMeta != null) {
             createEntitiesTable(selectedMeta);
 

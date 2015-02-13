@@ -12,7 +12,10 @@
     </companions>
 
     <layout expand="tableBox" spacing="true">
-        <hbox id="lookupBox" spacing="true"/>
+        <hbox id="lookupBox" spacing="true">
+            <label value="msg://entityType" align="MIDDLE_LEFT"/>
+            <lookupField id="entitiesLookup" width="theme://cuba.gui.EntityInspectorBrowse.entitiesSelect.width"/>
+        </hbox>
         <vbox id="filterBox" spacing="true">
             <filter id="filter" visible="false" manualApplyRequired="true">
                 <properties include=".*"/>
