@@ -179,16 +179,6 @@ public interface WebConfig extends Config {
     String getResourcesRoot();
 
     /**
-     * List of entity ids which can be restored by means of the restore screen.
-     * @deprecated Recommended way to specify this information is entity annotations
-     * in <code>*-metadata.xml</code></p>
-     * @return comma-separated list of entity ids
-     */
-    @Property("cuba.restoreScreenEntityIds")
-    @Deprecated
-    String getRestoreEntityId();
-
-    /**
      * Timeout for check changes from browser <br/>
      * Used by BackgroundWorker for timers
      *

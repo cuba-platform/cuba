@@ -37,10 +37,6 @@ import java.util.*;
  */
 public class EntityRestore extends AbstractWindow {
 
-    public static interface Companion {
-        List<String> getClientSpecificRestoreEntities();
-    }
-
     @Inject
     protected LookupField entities;
 
@@ -278,18 +274,10 @@ public class EntityRestore extends AbstractWindow {
     }
 
     protected Map<String, Object> getEntitiesLookupFieldOptions() {
-        List<String> restoreEntities = new ArrayList<>();
-
-        EntityRestore.Companion companion = getCompanion();
-        if (companion != null) {
-            restoreEntities.addAll(companion.getClientSpecificRestoreEntities());
-        }
-
         Map<String, Object> options = new TreeMap<>();
-
         for (MetaClass metaClass : metadataTools.getAllPersistentMetaClasses()) {
             Boolean enableRestore = (Boolean) metaClass.getAnnotations().get(EnableRestore.class.getName());
-            if (BooleanUtils.isTrue(enableRestore) || restoreEntities.contains(metaClass.getName())) {
+            if (BooleanUtils.isTrue(enableRestore)) {
                 options.put(messageTools.getEntityCaption(metaClass) + " (" + metaClass.getName() + ")", metaClass);
             }
         }
