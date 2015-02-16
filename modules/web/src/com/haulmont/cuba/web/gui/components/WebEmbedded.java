@@ -16,8 +16,11 @@ import com.vaadin.server.ConnectorResource;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.StreamResource;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -29,14 +32,12 @@ import java.util.Map;
  * @author gorodnov
  * @version $Id$
  */
-public class WebEmbedded
-        extends WebAbstractComponent<com.vaadin.ui.Embedded>
-        implements Embedded, Component.Disposable
-{
-    private Map<String, String> parameters = null;
-    private Type type = Type.OBJECT;
-    private ConnectorResource resource;
-    private boolean disposed;
+public class WebEmbedded extends WebAbstractComponent<com.vaadin.ui.Embedded> implements Embedded, Component.Disposable {
+
+    protected Map<String, String> parameters = null;
+    protected Type type = Type.OBJECT;
+    protected ConnectorResource resource;
+    protected boolean disposed;
 
     public WebEmbedded() {
         component = new com.vaadin.ui.Embedded();
@@ -77,10 +78,15 @@ public class WebEmbedded
 
     @Override
     public void setSource(String fileName, final InputStream src) {
-
         final StreamResource.StreamSource source = new StreamResource.StreamSource() {
             @Override
             public InputStream getStream() {
+                try {
+                    src.reset();
+                } catch (IOException e) {
+                    Log log = LogFactory.getLog(WebEmbedded.this.getClass());
+                    log.debug("Ignored IOException on stream reset", e);
+                }
                 return src;
             }
         };
