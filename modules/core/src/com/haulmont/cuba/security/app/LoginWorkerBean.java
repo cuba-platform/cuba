@@ -167,13 +167,13 @@ public class LoginWorkerBean implements LoginWorker {
         RemoteClientInfo remoteClientInfo = RemoteClientInfo.get();
         if (remoteClientInfo != null) {
             // reject request from not permitted client ip
-            if (!trustedLoginHandler.trustedAddress(remoteClientInfo.getAddress())) {
+            if (!trustedLoginHandler.checkAddress(remoteClientInfo.getAddress())) {
                 log.warn("Attempt of trusted login from not permitted IP address: " + remoteClientInfo.getAddress());
                 throw new LoginException(getInvalidCredentialsMessage(login, locale));
             }
         }
 
-        if (!trustedLoginHandler.trustedPassword(password))
+        if (!trustedLoginHandler.checkPassword(password))
             throw new LoginException(getInvalidCredentialsMessage(login, locale));
 
         Transaction tx = persistence.createTransaction();

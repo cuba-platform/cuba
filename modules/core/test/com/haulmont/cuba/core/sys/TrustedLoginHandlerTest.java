@@ -24,41 +24,41 @@ public class TrustedLoginHandlerTest extends CubaTestCase {
     }
 
     private boolean matches(String address) {
-        return trustedLoginHandler.trustedAddress(address);
+        return trustedLoginHandler.checkAddress(address);
     }
 
     public void testFullMatch() {
         boolean isMatch = matches("127.0.0.1");
-        assertEquals(true, isMatch);
+        assertTrue(isMatch);
     }
 
     public void testPermittedIp() {
         boolean isMatch = matches("10.17.8.3");
-        assertEquals(true, isMatch);
+        assertTrue(isMatch);
     }
 
     public void testNotPermittedIp() {
         boolean isMatch = matches("127.10.0.1");
-        assertEquals(false, isMatch);
+        assertFalse(isMatch);
     }
 
     public void testNotANumber() {
         boolean isMatch = matches("10.17.8.a");
-        assertEquals(false, isMatch);
+        assertFalse(isMatch);
     }
 
     public void testClippedIp() {
         boolean isMatch = matches("10.17.8");
-        assertEquals(false, isMatch);
+        assertFalse(isMatch);
     }
 
     public void testOver255() {
         boolean isMatch = matches("10.17.8.999");
-        assertEquals(false, isMatch);
+        assertFalse(isMatch);
     }
 
     public void testWrongSeparator() {
         boolean isMatch = matches("10_17_8_3");
-        assertEquals(false, isMatch);
+        assertFalse(isMatch);
     }
 }

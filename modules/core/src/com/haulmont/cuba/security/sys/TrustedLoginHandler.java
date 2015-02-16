@@ -6,7 +6,6 @@
 package com.haulmont.cuba.security.sys;
 
 import com.haulmont.cuba.core.app.ServerConfig;
-import com.haulmont.cuba.core.global.Configuration;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.ManagedBean;
@@ -22,7 +21,7 @@ public class TrustedLoginHandler {
     public static final String NAME = "cuba_TrustedLoginHandler";
 
     @Inject
-    protected Configuration configuration;
+    protected ServerConfig serverConfig;
 
     protected Pattern permittedIpMaskPattern;
 
@@ -30,12 +29,12 @@ public class TrustedLoginHandler {
      * @param address   ip-address
      * @return          true if address in trusted list
      */
-    public boolean trustedAddress(String address) {
+    public boolean checkAddress(String address) {
         if (permittedIpMaskPattern == null) {
-            String permittedIpList = configuration.getConfig(ServerConfig.class).getTrustedClientPermittedIpList();
+            String permittedIpList = serverConfig.getTrustedClientPermittedIpList();
             permittedIpList = convertToRegex(permittedIpList);
             if (StringUtils.isEmpty(permittedIpList)) {
-                permittedIpList = configuration.getConfig(ServerConfig.class).getTrustedClientPermittedIpMask();
+                permittedIpList = serverConfig.getTrustedClientPermittedIpMask();
             }
             permittedIpMaskPattern = Pattern.compile(permittedIpList);
         }
@@ -55,8 +54,8 @@ public class TrustedLoginHandler {
      * @param password  password to check
      * @return          true if password is trusted
      */
-    public boolean trustedPassword(String password) {
-        String trustedClientPassword = configuration.getConfig(ServerConfig.class).getTrustedClientPassword();
+    public boolean checkPassword(String password) {
+        String trustedClientPassword = serverConfig.getTrustedClientPassword();
         return (StringUtils.isNotBlank(trustedClientPassword) && trustedClientPassword.equals(password));
     }
 }
