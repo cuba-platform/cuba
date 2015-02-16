@@ -37,8 +37,12 @@ public interface ServerConfig extends Config {
     String getTrustedClientPassword();
 
     @Property("cuba.trustedClientPermittedIpMask")
+    @Deprecated
     @DefaultString("127\\.0\\.0\\.1")
     String getTrustedClientPermittedIpMask();
+
+    @Property("cuba.trustedClientPermittedIpList")
+    String getTrustedClientPermittedIpList();
 
     @Property("cuba.security.resetPasswordTemplateBody")
     @Default("/com/haulmont/cuba/security/app/email/reset-password-body.gsp")
