@@ -9,10 +9,6 @@
         caption="msg://entityRestore.caption"
         focusComponent="entities">
 
-    <companions>
-        <web class="com.haulmont.cuba.web.app.ui.core.restore.EntityRestoreCompanion"/>
-    </companions>
-
     <layout spacing="true" expand="tablePanel">
         <hbox spacing="true">
             <lookupField id="entities" width="theme://cuba.gui.entity-restore.entities.width"/>
