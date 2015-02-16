@@ -292,6 +292,16 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
     }
 
     @Override
+    public String getInputPrompt() {
+        return component.getInputPrompt();
+    }
+
+    @Override
+    public void setInputPrompt(String inputPrompt) {
+        component.setInputPrompt(inputPrompt);
+    }
+
+    @Override
     public void setDescriptionProperty(String descriptionProperty) {
         super.setDescriptionProperty(descriptionProperty);
 //        vaadin7

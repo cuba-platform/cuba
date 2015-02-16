@@ -69,6 +69,7 @@ public class DesktopLookupField
 
     protected DefaultValueFormatter valueFormatter;
     protected boolean enabled = true;
+    protected String inputPrompt;
 
     public DesktopLookupField() {
         composition = new JPanel();
@@ -324,6 +325,16 @@ public class DesktopLookupField
     @Override
     public void setNewOptionHandler(NewOptionHandler newOptionHandler) {
         this.newOptionHandler = newOptionHandler;
+    }
+
+    @Override
+    public String getInputPrompt() {
+        return inputPrompt;
+    }
+
+    @Override
+    public void setInputPrompt(String inputPrompt) {
+        this.inputPrompt = inputPrompt;
     }
 
     @Override

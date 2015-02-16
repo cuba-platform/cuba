@@ -47,6 +47,11 @@ public class LookupFieldLoader extends AbstractFieldLoader {
 
         loadFilterMode(component, element);
         loadNewOptionHandler(component, element);
+
+        String inputPrompt = element.attributeValue("inputPrompt");
+        if (StringUtils.isNotBlank(inputPrompt)) {
+            component.setInputPrompt(loadResourceString(inputPrompt));
+        }
     }
 
     protected void loadNewOptionHandler(final LookupField component, Element element) {

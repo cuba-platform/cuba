@@ -25,4 +25,8 @@
     background: transparent;
     border: $cuba-field-readonly-border-color 1px solid;
   }
+
+  .v-ui input.#{$primary-stylename}-prompt {
+    color: #999;
+  }
 }

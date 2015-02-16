@@ -555,6 +555,7 @@
 
                 <xs:attribute name="maxLength" type="xs:int"/>
                 <xs:attribute name="trim" type="xs:boolean"/>
+                <xs:attribute name="inputPrompt" type="xs:string"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -659,6 +660,7 @@
 
                 <xs:attribute name="newOptionAllowed" type="xs:boolean"/>
                 <xs:attribute name="newOptionHandler" type="xs:string"/>
+                <xs:attribute name="inputPrompt" type="xs:string"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>

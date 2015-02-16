@@ -82,6 +82,7 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
             App.getInstance().getMainFrame().showNotification(message, defaultNotificationType);
         }
     };
+    protected String inputPrompt;
 
     public DesktopSearchField() {
         composition = new JPanel();
@@ -414,6 +415,16 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
 
     @Override
     public void setNewOptionHandler(NewOptionHandler newOptionHandler) {
+    }
+
+    @Override
+    public String getInputPrompt() {
+        return inputPrompt;
+    }
+
+    @Override
+    public void setInputPrompt(String inputPrompt) {
+        this.inputPrompt = inputPrompt;
     }
 
     @Override

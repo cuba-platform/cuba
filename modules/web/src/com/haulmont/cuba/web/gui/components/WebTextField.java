@@ -81,4 +81,14 @@ public class WebTextField extends WebAbstractTextField<CubaTextField> implements
     public void setTrimming(boolean trimming) {
         this.trimming = trimming;
     }
+
+    @Override
+    public String getInputPrompt() {
+        return component.getInputPrompt();
+    }
+
+    @Override
+    public void setInputPrompt(String inputPrompt) {
+        component.setInputPrompt(inputPrompt);
+    }
 }

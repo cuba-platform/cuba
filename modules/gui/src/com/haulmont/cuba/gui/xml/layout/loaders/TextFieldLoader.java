@@ -51,5 +51,10 @@ public class TextFieldLoader extends AbstractTextFieldLoader {
         }
 
         component.setFormatter(loadFormatter(element));
+
+        String inputPrompt = element.attributeValue("inputPrompt");
+        if (StringUtils.isNotBlank(inputPrompt)) {
+            component.setInputPrompt(loadResourceString(inputPrompt));
+        }
     }
 }

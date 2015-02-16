@@ -16,6 +16,8 @@ import com.haulmont.cuba.web.toolkit.ui.CubaMaskedTextField;
  */
 public class WebMaskedField extends WebAbstractTextField<CubaMaskedTextField> implements MaskedField {
 
+    protected String inputPrompt;
+
     @Override
     public void setMask(String mask) {
         component.setMask(mask);
@@ -78,5 +80,15 @@ public class WebMaskedField extends WebAbstractTextField<CubaMaskedTextField> im
     @Override
     public void setTrimming(boolean trimming) {
         //do nothing
+    }
+
+    @Override
+    public String getInputPrompt() {
+        return inputPrompt;
+    }
+
+    @Override
+    public void setInputPrompt(String inputPrompt) {
+        this.inputPrompt = inputPrompt;
     }
 }

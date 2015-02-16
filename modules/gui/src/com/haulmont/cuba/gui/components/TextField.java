@@ -21,4 +21,16 @@ public interface TextField
 
     Datatype getDatatype();
     void setDatatype(Datatype datatype);
+
+    /**
+     * @return current input prompt.
+     */
+    String getInputPrompt();
+    /**
+     * Sets the input prompt - a textual prompt that is displayed when the field
+     * would otherwise be empty, to prompt the user for input.
+     *
+     * @param inputPrompt input prompt
+     */
+    void setInputPrompt(String inputPrompt);
 }

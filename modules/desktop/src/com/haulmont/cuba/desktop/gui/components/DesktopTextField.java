@@ -20,6 +20,8 @@ import java.awt.*;
  */
 public class DesktopTextField extends DesktopAbstractTextField<JTextComponent> implements TextField {
 
+    protected String inputPrompt;
+
     @Override
     protected JTextField createTextComponentImpl() {
         JTextField field = new FlushableTextField();
@@ -68,6 +70,16 @@ public class DesktopTextField extends DesktopAbstractTextField<JTextComponent> i
     @Override
     public void setFormatter(Formatter formatter) {
         valueFormatter.setFormatter(formatter);
+    }
+
+    @Override
+    public String getInputPrompt() {
+        return inputPrompt;
+    }
+
+    @Override
+    public void setInputPrompt(String inputPrompt) {
+        this.inputPrompt = inputPrompt;
     }
 
     private class FlushableTextField extends JTextField implements Flushable {

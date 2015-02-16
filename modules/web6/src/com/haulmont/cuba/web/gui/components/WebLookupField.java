@@ -43,6 +43,7 @@ public class WebLookupField
     protected ComponentErrorHandler componentErrorHandler;
 
     protected Messages messages = AppBeans.get(Messages.NAME);
+    protected String inputPrompt;
 
     public WebLookupField() {
         createComponent();
@@ -325,6 +326,16 @@ public class WebLookupField
         if (optionsDatasource != null) {
             component.setItemDescriptionPropertyId(optionsDatasource.getMetaClass().getProperty(descriptionProperty));
         }
+    }
+
+    @Override
+    public String getInputPrompt() {
+        return inputPrompt;
+    }
+
+    @Override
+    public void setInputPrompt(String inputPrompt) {
+        this.inputPrompt = inputPrompt;
     }
 
     @Deprecated

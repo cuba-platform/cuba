@@ -22,6 +22,7 @@ public class WebTextField
         TextField {
 
     protected Datatype datatype;
+    protected String inputPrompt;
 
     @Override
     protected com.haulmont.cuba.web.toolkit.ui.TextField createTextFieldImpl() {
@@ -78,5 +79,15 @@ public class WebTextField
     @Override
     public void setDatatype(Datatype datatype) {
         this.datatype = datatype;
+    }
+
+    @Override
+    public String getInputPrompt() {
+        return inputPrompt;
+    }
+
+    @Override
+    public void setInputPrompt(String inputPrompt) {
+        this.inputPrompt = inputPrompt;
     }
 }
