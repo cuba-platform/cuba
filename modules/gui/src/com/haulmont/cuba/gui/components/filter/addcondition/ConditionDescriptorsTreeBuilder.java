@@ -41,6 +41,8 @@ public class ConditionDescriptorsTreeBuilder {
     protected int hierarchyDepth;
     protected Security security;
     protected String filterComponentName;
+    protected MessageTools messageTools;
+    protected MetadataTools metadataTools;
 
     /**
      * @param filter
@@ -50,6 +52,8 @@ public class ConditionDescriptorsTreeBuilder {
         this.filter = filter;
         this.hierarchyDepth = hierarchyDepth;
         security = AppBeans.get(Security.class);
+        messageTools = AppBeans.get(MessageTools.NAME);
+        metadataTools = AppBeans.get(MetadataTools.NAME);
         filterComponentName = getFilterComponentName();
     }
 
@@ -90,11 +94,14 @@ public class ConditionDescriptorsTreeBuilder {
         int currentDepth = 0;
 
         for (AbstractConditionDescriptor propertyDescriptor : propertyDescriptors) {
-            Node<AbstractConditionDescriptor> node = new Node<>(propertyDescriptor);
-            propertyHeaderNode.addChild(node);
+            MetaProperty metaProperty = propertyDescriptor.getDatasourceMetaClass().getProperty(propertyDescriptor.getName());
+            if (isPropertyAllowed(metaProperty)) {
+                Node<AbstractConditionDescriptor> node = new Node<>(propertyDescriptor);
+                propertyHeaderNode.addChild(node);
 
-            if (currentDepth < hierarchyDepth) {
-                recursivelyFillPropertyDescriptors(node, currentDepth);
+                if (currentDepth < hierarchyDepth) {
+                    recursivelyFillPropertyDescriptors(node, currentDepth);
+                }
             }
         }
 
@@ -193,9 +200,6 @@ public class ConditionDescriptorsTreeBuilder {
     }
 
     private boolean isPropertyAllowed(MetaProperty property) {
-        Security security = AppBeans.get(Security.NAME);
-        MessageTools messageTools = AppBeans.get(MessageTools.NAME);
-        MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
         return security.isEntityAttrPermitted(property.getDomain(), property.getName(), EntityAttrAccess.VIEW)
                 && !metadataTools.isSystemLevel(property)           // exclude system level attributes
                 && metadataTools.isPersistent(property)             // exclude transient properties
