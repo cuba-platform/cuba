@@ -74,13 +74,6 @@ public interface WebConfig extends Config {
     int getMaxTabCount();
 
     /**
-     * @return Whether to use native HTML buttons
-     */
-    @Property("cuba.web.useNativeButtons")
-    @DefaultBoolean(false)
-    boolean getUseNativeButtons();
-
-    /**
      * @return Request execution time in seconds, after which a message log will be logged.
      */
     @Property("cuba.web.logLongRequestsThresholdSec")

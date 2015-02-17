@@ -4,13 +4,9 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Button;
-import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.toolkit.ui.CubaButton;
-import com.vaadin.ui.NativeButton;
 import org.apache.commons.lang.StringUtils;
 
 import java.beans.PropertyChangeEvent;
@@ -20,7 +16,7 @@ import java.beans.PropertyChangeListener;
  * @author abramov
  * @version $Id$
  */
-public class WebButton extends WebAbstractComponent<com.vaadin.ui.Button> implements Button {
+public class WebButton extends WebAbstractComponent<CubaButton> implements Button {
 
     public static final String ICON_STYLE = "icon";
 
@@ -29,12 +25,7 @@ public class WebButton extends WebAbstractComponent<com.vaadin.ui.Button> implem
     protected PropertyChangeListener actionPropertyChangeListener;
 
     public WebButton() {
-        Configuration configuration = AppBeans.get(Configuration.NAME);
-        if (configuration.getConfig(WebConfig.class).getUseNativeButtons()) {
-            component = new NativeButton();
-        } else {
-            component = new CubaButton();
-        }
+        component = new CubaButton();
         component.addClickListener(new com.vaadin.ui.Button.ClickListener() {
             @Override
             public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
