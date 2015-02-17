@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.web.app.ui.jmxcontrol.util;
 
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.web.App;
@@ -15,6 +16,8 @@ import com.haulmont.cuba.web.gui.components.WebVBoxLayout;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
+import java.util.Date;
+
 /**
  * @author budarov
  * @version $Id$
@@ -23,6 +26,7 @@ public class AttributeEditor {
 
     protected CheckBox checkBox;
     protected TextField textField;
+    protected DateField dateField;
     protected BoxLayout layout;
     protected String type;
 
@@ -45,6 +49,13 @@ public class AttributeEditor {
         } else if (AttributeHelper.isArray(type)) {
             layout = new WebVBoxLayout();
             layout.setSpacing(true);
+        } else if (AttributeHelper.isDate(type)) {
+            dateField = AppConfig.getFactory().createComponent(DateField.NAME);
+            dateField.setWidth("500px");
+            dateField.setFrame(frame);
+            if (value != null) {
+                dateField.setValue(value.toString());
+            }
         } else {
             textField = new WebTextField();
 
@@ -65,6 +76,9 @@ public class AttributeEditor {
         if (checkBox != null) {
             return checkBox;
         }
+        if (dateField != null) {
+            return dateField;
+        }
         if (textField != null) {
             return textField;
         }
@@ -75,6 +89,9 @@ public class AttributeEditor {
         if (checkBox != null) {
             Boolean value = checkBox.getValue();
             return BooleanUtils.isTrue(value);
+        } else if (dateField != null) {
+            Date date = dateField.getValue();
+            return date;
         } else if (textField != null) {
             String strValue = textField.getValue();
             if (allowNull && StringUtils.isBlank(strValue)) {

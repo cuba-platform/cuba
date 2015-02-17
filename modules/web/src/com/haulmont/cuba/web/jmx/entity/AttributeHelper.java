@@ -59,6 +59,10 @@ public class AttributeHelper {
         return type != null && (type.startsWith("[L") || type.endsWith("[]"));
     }
 
+    public static boolean isDate(String type) {
+        return type != null && Date.class.getName().endsWith(type);
+    }
+
     public static String convertToString(Object value) {
         if (value == null) {
             return null;
