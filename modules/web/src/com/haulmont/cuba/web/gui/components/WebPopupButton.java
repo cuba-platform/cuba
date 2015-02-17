@@ -10,6 +10,7 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.gui.components.PopupButton;
 import com.haulmont.cuba.web.AppUI;
+import com.haulmont.cuba.web.toolkit.ui.CubaPopupButton;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
@@ -22,7 +23,7 @@ import java.util.*;
  * @author pavlov
  * @version $Id$
  */
-public class WebPopupButton extends WebAbstractComponent<org.vaadin.hene.popupbutton.PopupButton> implements PopupButton {
+public class WebPopupButton extends WebAbstractComponent<CubaPopupButton> implements PopupButton {
 
     protected Component popupComponent;
     protected com.vaadin.ui.Component vPopupComponent;
@@ -31,7 +32,7 @@ public class WebPopupButton extends WebAbstractComponent<org.vaadin.hene.popupbu
     protected List<Action> actionOrder = new LinkedList<>();
 
     public WebPopupButton() {
-        component = new org.vaadin.hene.popupbutton.PopupButton();
+        component = new CubaPopupButton();
         component.setImmediate(true);
 
         vPopupComponent = new VerticalLayout();
@@ -113,15 +114,12 @@ public class WebPopupButton extends WebAbstractComponent<org.vaadin.hene.popupbu
 
     @Override
     public boolean isAutoClose() {
-        return false;
-//        vaadin7
-//        return component.isAutoClose();
+        return component.isAutoClose();
     }
 
     @Override
     public void setAutoClose(boolean autoClose) {
-//        vaadin7
-//        component.setAutoClose(autoClose);
+        component.setAutoClose(autoClose);
     }
 
     @Override
