@@ -4,9 +4,11 @@
  */
 package com.haulmont.cuba.security.entity;
 
+import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.UserFormatTools;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.openjpa.persistence.Persistent;
@@ -91,5 +93,11 @@ public class ScreenHistoryEntity extends BaseUuidEntity {
 
     public void setSubstitutedUser(User substitutedUser) {
         this.substitutedUser = substitutedUser;
+    }
+
+    @MetaProperty
+    public String getDisplayUser() {
+        UserFormatTools formatTools = AppBeans.get(UserFormatTools.NAME);
+        return formatTools.formatUser(user, substitutedUser);
     }
 }

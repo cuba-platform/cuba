@@ -26,25 +26,7 @@ public class EntityOpenHistoryFrame extends AbstractFrame {
     @Inject
     protected Table historyTable;
 
-    @Inject
-    protected ComponentsFactory componentFactory;
-
     @Override
     public void init(Map<String, Object> params) {
-        super.init(params);
-        historyTable.addGeneratedColumn(getMessage("entityOpenHistoryFrame.user"), new Table.ColumnGenerator<ScreenHistoryEntity>() {
-            @Override
-            public Component generateCell(final ScreenHistoryEntity entity) {
-                Label user = componentFactory.createComponent(Label.NAME);
-                User substituteUser = entity.getSubstitutedUser();
-                if (substituteUser == null) {
-                    user.setValue(entity.getUser().getCaption());
-                } else {
-                    user.setValue(String.format(getMessage("userMessage"), entity.getUser().getCaption(),
-                            substituteUser.getCaption()));
-                }
-                return user;
-            }
-        });
     }
 }

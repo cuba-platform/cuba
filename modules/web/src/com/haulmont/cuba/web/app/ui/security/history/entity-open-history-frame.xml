@@ -23,6 +23,7 @@
         <table id="historyTable" editable="false" sortable="true" multiselect="true" width="100%">
             <columns>
                 <column id="createTs" caption="msg://entityOpenHistoryFrame.createTs"/>
+                <column id="displayUser" caption="msg://entityOpenHistoryFrame.user"/>
             </columns>
             <rows datasource="openHistoryDs"/>
         </table>
