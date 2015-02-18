@@ -155,12 +155,12 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
 
             if (col >= spanMatrix.length) {
                 Map<String, Object> params = new HashMap<>();
-                params.put("gridId", component.getId());
+                params.put("Grid ID", component.getId());
                 String rowId = element.attributeValue("id");
                 if (StringUtils.isNotEmpty(rowId)) {
-                    params.put("rowId", rowId);
+                    params.put("Row ID", rowId);
                 } else {
-                    params.put("rowIndex", row);
+                    params.put("Row Index", row);
                 }
                 throw new GuiDevelopmentException("Grid column count is less than number of components in grid row", context.getFullFrameId(), params);
             }
