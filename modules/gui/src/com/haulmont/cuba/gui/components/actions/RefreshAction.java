@@ -4,7 +4,6 @@
  */
 package com.haulmont.cuba.gui.components.actions;
 
-import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -19,7 +18,7 @@ import java.util.Map;
  * @author krivopustov
  * @version $Id$
  */
-public class RefreshAction extends AbstractAction {
+public class RefreshAction extends BaseAction {
 
     public static final String ACTION_ID = ListActionType.REFRESH.getId();
 

@@ -35,15 +35,12 @@ public class RemoveAction extends ItemTrackingAction {
 
     public static final String ACTION_ID = ListActionType.REMOVE.getId();
 
-    protected final ListComponent owner;
     protected boolean autocommit;
 
     protected String confirmationMessage;
     protected String confirmationTitle;
 
-    protected boolean permissionFlag = false;
-
-    protected Security security;
+    protected Security security = AppBeans.get(Security.NAME);
 
     /**
      * The simplest constructor. The action has default name and autocommit=true.
@@ -69,54 +66,28 @@ public class RemoveAction extends ItemTrackingAction {
      * @param id            action's identifier
      */
     public RemoveAction(ListComponent owner, boolean autocommit, String id) {
-        super(id);
-        this.owner = owner;
+        super(owner, id);
+
         this.autocommit = autocommit;
         this.caption = messages.getMainMessage("actions.Remove");
         this.icon = "icons/remove.png";
 
-        this.security = AppBeans.get(Security.NAME);
-
         Configuration configuration = AppBeans.get(Configuration.NAME);
         ClientConfig config = configuration.getConfig(ClientConfig.class);
         setShortcut(config.getTableRemoveShortcut());
-
-        refreshState();
     }
 
     @Override
-    public void setEnabled(boolean enabled) {
-        super.setEnabled(permissionFlag && enabled);
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return permissionFlag && super.isEnabled();
-    }
-
-    protected void setEnabledInternal(boolean enabled) {
-        super.setEnabled(enabled);
-    }
-
-    @Override
-    public void refreshState() {
-        permissionFlag = isPermitted();
-
-        setEnabledInternal(permissionFlag);
-
-        CollectionDatasource ds = owner.getDatasource();
-
-        if (permissionFlag && ds != null) {
-            updateApplicableTo(isApplicableTo(ds.getState(),
-                    ds.getState() == Datasource.State.VALID ? ds.getItem() : null));
-        }
+    protected boolean isApplicable() {
+        return !getTargetSelection().isEmpty();
     }
 
     /**
      * Check permissions for Action
      */
+    @Override
     protected boolean isPermitted() {
-        CollectionDatasource ds = owner.getDatasource();
+        CollectionDatasource ds = getTargetDatasource();
 
         boolean removePermitted;
         if (ds == null) {
@@ -147,9 +118,11 @@ public class RemoveAction extends ItemTrackingAction {
      */
     @Override
     public void actionPerform(Component component) {
-        if (!isEnabled())
+        if (!isEnabled()) {
             return;
-        Set selected = owner.getSelected();
+        }
+
+        Set selected = getTargetSelection();
         if (!selected.isEmpty()) {
             confirmAndRemove(selected);
         }
@@ -157,7 +130,7 @@ public class RemoveAction extends ItemTrackingAction {
 
     protected void confirmAndRemove(final Set selected) {
         final String messagesPackage = AppConfig.getMessagesPack();
-        owner.getFrame().showOptionDialog(
+        target.getFrame().showOptionDialog(
                 getConfirmationTitle(messagesPackage),
                 getConfirmationMessage(messagesPackage),
                 IFrame.MessageType.CONFIRMATION,
@@ -168,7 +141,7 @@ public class RemoveAction extends ItemTrackingAction {
                                 doRemove(selected, autocommit);
 
                                 // move focus to owner
-                                owner.requestFocus();
+                                target.requestFocus();
 
                                 afterRemove(selected);
                             }
@@ -177,7 +150,7 @@ public class RemoveAction extends ItemTrackingAction {
                             @Override
                             public void actionPerform(Component component) {
                                 // move focus to owner
-                                owner.requestFocus();
+                                target.requestFocus();
                             }
                         }
                 }
@@ -237,7 +210,7 @@ public class RemoveAction extends ItemTrackingAction {
     }
 
     protected void doRemove(Set selected, boolean autocommit) {
-        CollectionDatasource datasource = owner.getDatasource();
+        CollectionDatasource datasource = getTargetDatasourceNN();
         for (Object item : selected) {
             datasource.removeItem((Entity) item);
         }

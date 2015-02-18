@@ -58,26 +58,28 @@ public class DesktopPopupButton extends DesktopAbstractActionsHolderComponent<JB
 
     protected void showPopup() {
         popup.removeAll();
+
         for (final Action action : actionList) {
-            final JMenuItem menuItem = new JMenuItem(action.getCaption());
-            menuItem.addActionListener(
-                    new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            action.actionPerform((Component) action.getOwner());
+            if (action.isVisible()) {
+                final JMenuItem menuItem = new JMenuItem(action.getCaption());
+                menuItem.addActionListener(
+                        new ActionListener() {
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                action.actionPerform((Component) action.getOwner());
+                            }
                         }
-                    }
-            );
-            menuItem.setEnabled(action.isEnabled());
-            menuItem.setVisible(action.isVisible());
-            menuItem.setName(action.getId());
+                );
+                menuItem.setEnabled(action.isEnabled());
+                menuItem.setName(action.getId());
 
-            initAction(action, menuItem);
+                initAction(action, menuItem);
 
-            popup.add(menuItem);
+                popup.add(menuItem);
+            }
         }
 
-        int popupHeight = actionList.size() * 25;
+        int popupHeight = popup.getComponentCount() * 25;
 
         Point pt = new Point();
         SwingUtilities.convertPointToScreen(pt, impl);
@@ -89,7 +91,10 @@ public class DesktopPopupButton extends DesktopAbstractActionsHolderComponent<JB
             y = -popupHeight;
         }
 
-        popup.show(impl, 0, y);
+        // do not show ugly empty popup
+        if (popup.getComponentCount() > 0) {
+            popup.show(impl, 0, y);
+        }
     }
 
     protected void initAction(final Action action, final JMenuItem menuItem) {

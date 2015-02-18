@@ -67,7 +67,7 @@ public class CategoryAttrsFrame extends AbstractFrame {
         super.init(params);
         categoryAttrsTable.addAction(new CategoryAttributeCreateAction());
         categoryAttrsTable.addAction(new CategoryAttributeEditAction());
-        categoryAttrsTable.addAction(new RemoveAction(categoryAttrsTable,false));
+        categoryAttrsTable.addAction(new RemoveAction(categoryAttrsTable, false));
         categoryAttrsTable.addAction(new RefreshAction(categoryAttrsTable));
 
         categoryAttrsDs.addListener(new DsListenerAdapter<CategoryAttribute>() {

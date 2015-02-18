@@ -6,11 +6,9 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.web.App;
 
@@ -18,7 +16,7 @@ import com.haulmont.cuba.web.App;
  * @author novikov
  * @version $Id$
  */
-public class ShowLinkAction extends AbstractAction {
+public class ShowLinkAction extends BaseAction {
 
     public static final String ACTION_ID = "showLink";
 

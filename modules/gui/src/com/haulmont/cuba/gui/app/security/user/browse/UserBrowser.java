@@ -6,7 +6,6 @@
 package com.haulmont.cuba.gui.app.security.user.browse;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.WindowManager;
@@ -128,8 +127,11 @@ public class UserBrowser extends AbstractLookup {
 
         usersTable.addAction(new RemoveAction(usersTable) {
             @Override
-            public boolean isApplicableTo(Datasource.State state, Entity item) {
-                return super.isApplicableTo(state, item) && isNotCurrentUserSelected((User) item);
+            public boolean isApplicable() {
+                return super.isApplicable()
+                        && !(getTargetSelection().contains(userSession.getUser())
+                            || userSession.getCurrentOrSubstitutedUser().equals(getTargetSingleSelected()));
+
             }
         });
 
@@ -158,11 +160,6 @@ public class UserBrowser extends AbstractLookup {
                 return label;
             }
         });
-    }
-
-    protected boolean isNotCurrentUserSelected(User item) {
-        return !(usersTable.getSelected().contains(userSession.getUser()) ||
-                userSession.getCurrentOrSubstitutedUser().equals(item));
     }
 
     public void copy() {

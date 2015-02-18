@@ -30,18 +30,15 @@ import java.util.Map;
  * @author krivopustov
  * @version $Id$
  */
-public class CreateAction extends AbstractAction implements Action.HasOpenType {
+public class CreateAction extends BaseAction implements Action.HasOpenType {
 
     public static final String ACTION_ID = ListActionType.CREATE.getId();
 
-    protected final ListComponent owner;
     protected WindowManager.OpenType openType;
 
     protected String windowId;
     protected Map<String, Object> windowParams;
     protected Map<String, Object> initialValues;
-
-    protected boolean permissionFlag = false;
 
     protected Metadata metadata;
 
@@ -69,8 +66,8 @@ public class CreateAction extends AbstractAction implements Action.HasOpenType {
      * @param id        action name
      */
     public CreateAction(ListComponent owner, WindowManager.OpenType openType, String id) {
-        super(id);
-        this.owner = owner;
+        super(owner, id, null);
+
         this.openType = openType;
         this.caption = messages.getMainMessage("actions.Create");
         this.icon = "icons/create.png";
@@ -78,53 +75,31 @@ public class CreateAction extends AbstractAction implements Action.HasOpenType {
         Configuration configuration = AppBeans.get(Configuration.NAME);
         ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
         setShortcut(clientConfig.getTableInsertShortcut());
-
-        refreshState();
-    }
-
-    @Override
-    public void setEnabled(boolean enabled) {
-        super.setEnabled(permissionFlag && enabled);
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return permissionFlag && super.isEnabled();
-    }
-
-    protected void setEnabledInternal(boolean enabled) {
-        super.setEnabled(enabled);
-    }
-
-    @Override
-    public void refreshState() {
-        permissionFlag = isPermitted();
-
-        super.setEnabled(permissionFlag);
     }
 
     /**
      * Check permissions for Action
      */
+    @Override
     protected boolean isPermitted() {
         boolean createPermitted;
 
-        if (owner.getDatasource() == null) {
-            createPermitted = false;
-        } else {
-            Security security = AppBeans.get(Security.NAME);
+        CollectionDatasource ownerDatasource = getTargetDatasource();
+        if (ownerDatasource == null) {
+            return false;
+        }
 
-            MetaClass metaClass = owner.getDatasource().getMetaClass();
-            createPermitted = security.isEntityOpPermitted(metaClass, EntityOp.CREATE);
+        Security security = AppBeans.get(Security.NAME);
+        MetaClass metaClass = ownerDatasource.getMetaClass();
+        createPermitted = security.isEntityOpPermitted(metaClass, EntityOp.CREATE);
 
-            if (createPermitted && owner.getDatasource() instanceof PropertyDatasource) {
-                PropertyDatasource propertyDatasource = (PropertyDatasource) owner.getDatasource();
+        if (createPermitted && ownerDatasource instanceof PropertyDatasource) {
+            PropertyDatasource propertyDatasource = (PropertyDatasource) target.getDatasource();
 
-                MetaClass parentMetaClass = propertyDatasource.getMaster().getMetaClass();
-                MetaProperty metaProperty = propertyDatasource.getProperty();
+            MetaClass parentMetaClass = propertyDatasource.getMaster().getMetaClass();
+            MetaProperty metaProperty = propertyDatasource.getProperty();
 
-                createPermitted = security.isEntityAttrPermitted(parentMetaClass, metaProperty.getName(), EntityAttrAccess.MODIFY);
-            }
+            createPermitted = security.isEntityAttrPermitted(parentMetaClass, metaProperty.getName(), EntityAttrAccess.MODIFY);
         }
 
         return createPermitted;
@@ -138,7 +113,7 @@ public class CreateAction extends AbstractAction implements Action.HasOpenType {
      */
     @Override
     public void actionPerform(Component component) {
-        final CollectionDatasource datasource = owner.getDatasource();
+        final CollectionDatasource datasource = getTargetDatasourceNN();
         final DataSupplier dataservice = datasource.getDataSupplier();
 
         final Entity item = dataservice.newInstance(datasource.getMetaClass());
@@ -154,8 +129,8 @@ public class CreateAction extends AbstractAction implements Action.HasOpenType {
             }
         }
 
-        if (owner instanceof Tree) {
-            String hierarchyProperty = ((Tree) owner).getHierarchyProperty();
+        if (target instanceof Tree) {
+            String hierarchyProperty = ((Tree) target).getHierarchyProperty();
 
             Entity parentItem = datasource.getItem();
             // datasource.getItem() may contain deleted item
@@ -216,7 +191,7 @@ public class CreateAction extends AbstractAction implements Action.HasOpenType {
         if (params == null)
             params = new HashMap<>();
 
-        final Window window = owner.getFrame().openEditor(getWindowId(), item, openType, params, parentDs);
+        final Window window = target.getFrame().openEditor(getWindowId(), item, openType, params, parentDs);
 
         window.addListener(new Window.CloseListener() {
             @Override
@@ -229,13 +204,13 @@ public class CreateAction extends AbstractAction implements Action.HasOpenType {
                             datasource.addItem(item);
                             ((DatasourceImplementation) datasource).setModified(modified);
                         }
-                        owner.setSelected(item);
+                        target.setSelected(item);
                         afterCommit(item);
                     }
                 }
 
                 // move focus to owner
-                owner.requestFocus();
+                target.requestFocus();
 
                 afterWindowClosed(window);
             }
@@ -265,7 +240,7 @@ public class CreateAction extends AbstractAction implements Action.HasOpenType {
         if (windowId != null) {
             return windowId;
         } else {
-            MetaClass metaClass = owner.getDatasource().getMetaClass();
+            MetaClass metaClass = target.getDatasource().getMetaClass();
             WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
             return windowConfig.getEditorScreenId(metaClass);
         }

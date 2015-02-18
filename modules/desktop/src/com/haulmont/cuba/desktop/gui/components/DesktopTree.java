@@ -380,6 +380,15 @@ public class DesktopTree extends DesktopAbstractActionsHolderComponent<JTree> im
         this.editable = editable;
     }
 
+    @Override
+    public void addAction(Action action) {
+        super.addAction(action);
+
+        if (action instanceof Action.HasTarget) {
+            ((Action.HasTarget) action).setTarget(this);
+        }
+    }
+
     protected class SelectionListener implements TreeSelectionListener {
 
         @Override
@@ -406,7 +415,8 @@ public class DesktopTree extends DesktopAbstractActionsHolderComponent<JTree> im
         JPopupMenu popup = new JPopupMenu();
         JMenuItem menuItem;
         for (final com.haulmont.cuba.gui.components.Action action : actionList) {
-            if (StringUtils.isNotBlank(action.getCaption())) {
+            if (StringUtils.isNotBlank(action.getCaption())
+                    && action.isVisible()) {
                 menuItem = new JMenuItem(action.getCaption());
                 if (action.getIcon() != null) {
                     menuItem.setIcon(App.getInstance().getResources().getIcon(action.getIcon()));
@@ -415,7 +425,6 @@ public class DesktopTree extends DesktopAbstractActionsHolderComponent<JTree> im
                     menuItem.setAccelerator(DesktopComponentsHelper.convertKeyCombination(action.getShortcut()));
                 }
                 menuItem.setEnabled(action.isEnabled());
-                menuItem.setVisible(action.isVisible());
                 menuItem.addActionListener(
                         new ActionListener() {
                             @Override

@@ -1178,7 +1178,25 @@ public class VTree extends FocusElementPanel implements Paintable, VHasDropHandl
                 if (actionKeys != null) {
                     client.getContextMenu().showAt(this, left, top);
                 } else if (customContextMenuPopup != null) {
-                    customContextMenuPopup.showAt(left, top);
+                    boolean showMenu = true;
+                    if (customContextMenuPopup.getWidget() instanceof VVerticalLayout) {
+                        VVerticalLayout layout = (VVerticalLayout) customContextMenuPopup.getWidget();
+                        boolean hasVisibleChild = false;
+                        for (Widget widget : layout) {
+                            if (widget.isVisible()) {
+                                hasVisibleChild = true;
+                                break;
+                            }
+                        }
+
+                        if (!hasVisibleChild) {
+                            showMenu = false;
+                        }
+                    }
+
+                    if (showMenu) {
+                        customContextMenuPopup.showAt(left, top);
+                    }
                 }
 
                 if (!isSelected()) {

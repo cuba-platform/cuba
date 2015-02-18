@@ -8,6 +8,7 @@ import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
@@ -47,7 +48,7 @@ public class FileBrowser extends AbstractWindow {
             }
         });
 
-        uploadBtn.setAction(new AbstractAction("multiupload") {
+        uploadBtn.setAction(new BaseAction("multiupload") {
             @Override
             public void actionPerform(Component component) {
                 Map<String, Object> params = Collections.emptyMap();

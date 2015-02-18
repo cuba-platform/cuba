@@ -228,6 +228,11 @@ public interface Component {
         Action getAction(String id);
     }
 
+    interface SecuredActionsHolder extends ActionsHolder {
+
+        ActionsPermissions getActionsPermissions();
+    }
+
     /**
      * Component supporting "editable" state.
      * Editable means not read-only, so user can view a value but can not edit it. Not editable value can be copied to

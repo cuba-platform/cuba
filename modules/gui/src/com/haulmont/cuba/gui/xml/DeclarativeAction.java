@@ -6,6 +6,7 @@
 package com.haulmont.cuba.gui.xml;
 
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.BaseAction;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
@@ -15,7 +16,7 @@ import java.lang.reflect.Method;
  * @author krivopustov
  * @version $Id$
  */
-public class DeclarativeAction extends AbstractAction {
+public class DeclarativeAction extends BaseAction {
 
     private IFrame frame;
     private String methodName;
@@ -41,6 +42,7 @@ public class DeclarativeAction extends AbstractAction {
     public DeclarativeAction(String id, String caption, String description, String icon, boolean enabled, boolean visible,
                              String methodName, Component.ActionsHolder holder) {
         super(id);
+
         this.caption = caption;
         this.description = description;
         this.icon = icon;

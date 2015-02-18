@@ -5,15 +5,13 @@
 
 package com.haulmont.cuba.gui.components.actions;
 
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,16 +21,14 @@ import java.util.Map;
  */
 public class BulkEditAction extends ItemTrackingAction {
 
-    protected ListComponent owner;
     protected WindowManager.OpenType openType = WindowManager.OpenType.DIALOG;
     protected String exclude;
     protected Map<String, Field.Validator> fieldValidators;
     protected List<Field.Validator> modelValidators;
 
     public BulkEditAction(ListComponent owner) {
-        super("bulkEdit");
+        super(owner, "bulkEdit");
 
-        this.owner = owner;
         this.icon = "icons/bulk-edit.png";
         this.caption = messages.getMessage(getClass(), "actions.BulkEdit");
 
@@ -75,53 +71,44 @@ public class BulkEditAction extends ItemTrackingAction {
     }
 
     @Override
-    public void refreshState() {
-        super.refreshState();
-
-        CollectionDatasource ds = owner.getDatasource();
-        if (ds != null) {
-            updateApplicableTo(isApplicableTo(ds.getState(), ds.getState() == Datasource.State.VALID ? ds.getItem() : null));
-        }
-    }
-
-    @Override
     public void actionPerform(Component component) {
         if (!userSession.isSpecificPermitted(BulkEditor.PERMISSION)) {
-            owner.getFrame().showNotification(messages.getMainMessage("accessDenied.message"), IFrame.NotificationType.ERROR);
+            target.getFrame().showNotification(messages.getMainMessage("accessDenied.message"), IFrame.NotificationType.ERROR);
             return;
         }
 
-        if (owner.getSelected().isEmpty()) {
-            owner.getFrame().showNotification(messages.getMainMessage("actions.BulkEdit.emptySelection"),
+        if (target.getSelected().isEmpty()) {
+            target.getFrame().showNotification(messages.getMainMessage("actions.BulkEdit.emptySelection"),
                     IFrame.NotificationType.HUMANIZED);
             return;
         }
-
-        Map<String, Object> params = new HashMap<>();
-        params.put("metaClass", owner.getDatasource().getMetaClass());
-        params.put("selected", owner.getSelected());
-        params.put("exclude", exclude);
-        params.put("fieldValidators", fieldValidators);
-        params.put("modelValidators", modelValidators);
 
         if (openType == WindowManager.OpenType.DIALOG) {
             ThemeConstantsManager themeManager = AppBeans.get(ThemeConstantsManager.NAME);
             ThemeConstants theme = themeManager.getConstants();
 
-            owner.getFrame().getDialogParams()
+            target.getFrame().getDialogParams()
                     .setWidth(theme.getInt("cuba.gui.BulkEditAction.editorDialog.width"))
                     .setHeight(theme.getInt("cuba.gui.BulkEditAction.editorDialog.height"))
                     .setResizable(true);
         }
 
-        Window bulkEditor = owner.getFrame().openWindow("bulkEditor", openType, params);
+        Map<String, Object> params = ParamsMap.of(
+                "metaClass", target.getDatasource().getMetaClass(),
+                "selected", target.getSelected(),
+                "exclude", exclude,
+                "fieldValidators", fieldValidators,
+                "modelValidators", modelValidators
+        );
+
+        Window bulkEditor = target.getFrame().openWindow("bulkEditor", openType, params);
         bulkEditor.addListener(new Window.CloseListener() {
             @Override
             public void windowClosed(String actionId) {
                 if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                    owner.getDatasource().refresh();
+                    target.getDatasource().refresh();
                 }
-                owner.requestFocus();
+                target.requestFocus();
             }
         });
     }

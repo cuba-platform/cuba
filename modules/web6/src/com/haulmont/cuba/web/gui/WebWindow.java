@@ -46,7 +46,8 @@ import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.convertAl
  * @author krivopustov
  * @version $Id$
  */
-public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDescriptor, WrappedWindow {
+public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDescriptor, WrappedWindow,
+                                  Component.SecuredActionsHolder {
 
     protected Log log = LogFactory.getLog(getClass());
 
@@ -83,6 +84,7 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
     protected WindowDelegate delegate;
 
     protected WebFrameActionsHolder actionsHolder = new WebFrameActionsHolder();
+    protected final ActionsPermissions actionsPermissions = new ActionsPermissions(this);
 
     protected Configuration configuration = AppBeans.get(Configuration.NAME);
     protected Messages messages = AppBeans.get(Messages.NAME);
@@ -178,6 +180,7 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
     @Override
     public void addAction(final com.haulmont.cuba.gui.components.Action action) {
         actionsHolder.addAction(action);
+        actionsPermissions.apply(action);
     }
 
     @Override
@@ -524,8 +527,7 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
 
     @Override
     public void addTimer(Timer timer) {
-        com.haulmont.cuba.web.toolkit.Timer vTimer =
-                (com.haulmont.cuba.web.toolkit.Timer) WebComponentsHelper.unwrap(timer);
+        com.haulmont.cuba.web.toolkit.Timer vTimer = WebComponentsHelper.unwrap(timer);
         App.getInstance().addTimer(vTimer, this);
     }
 
@@ -941,6 +943,11 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
         return delegate.getWrapper();
     }
 
+    @Override
+    public ActionsPermissions getActionsPermissions() {
+        return actionsPermissions;
+    }
+
     public static class Editor extends WebWindow implements Window.Editor {
 
         @Override
@@ -1093,8 +1100,7 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
                 });
             } else if (lookupComponent instanceof Tree) {
                 final Tree tree = (Tree) lookupComponent;
-                final com.haulmont.cuba.web.toolkit.ui.Tree treeComponent =
-                        (com.haulmont.cuba.web.toolkit.ui.Tree) WebComponentsHelper.unwrap(tree);
+                final com.haulmont.cuba.web.toolkit.ui.Tree treeComponent = WebComponentsHelper.unwrap(tree);
                 treeComponent.setDoubleClickMode(true);
                 treeComponent.addListener(new ItemClickEvent.ItemClickListener() {
                     @Override
@@ -1224,8 +1230,6 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
         @Override
         public void setId(String id) {
             super.setId(id);
-
-            Configuration configuration = AppBeans.get(Configuration.NAME);
 
             if (App.getInstance().isTestModeRequest()) {
                 WebWindowManager windowManager = getWindowManager();

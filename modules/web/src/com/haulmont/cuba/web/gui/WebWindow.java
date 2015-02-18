@@ -53,7 +53,8 @@ import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.convertAl
  * @version $Id$
  */
 public class WebWindow implements Window, Component.Wrapper,
-                                  Component.HasXmlDescriptor, WrappedWindow, Component.Disposable {
+                                  Component.HasXmlDescriptor, WrappedWindow, Component.Disposable,
+                                  Component.SecuredActionsHolder {
 
     protected Log log = LogFactory.getLog(getClass());
 
@@ -92,6 +93,7 @@ public class WebWindow implements Window, Component.Wrapper,
     protected WindowDelegate delegate;
 
     protected WebFrameActionsHolder actionsHolder = new WebFrameActionsHolder();
+    protected final ActionsPermissions actionsPermissions = new ActionsPermissions(this);
 
     protected Configuration configuration = AppBeans.get(Configuration.NAME);
     protected Messages messages = AppBeans.get(Messages.NAME);
@@ -191,6 +193,7 @@ public class WebWindow implements Window, Component.Wrapper,
     @Override
     public void addAction(final com.haulmont.cuba.gui.components.Action action) {
         actionsHolder.addAction(action);
+        actionsPermissions.apply(action);
     }
 
     @Override
@@ -980,6 +983,11 @@ public class WebWindow implements Window, Component.Wrapper,
     @Override
     public boolean isDisposed() {
         return disposed;
+    }
+
+    @Override
+    public ActionsPermissions getActionsPermissions() {
+        return actionsPermissions;
     }
 
     public static class Editor extends WebWindow implements Window.Editor {

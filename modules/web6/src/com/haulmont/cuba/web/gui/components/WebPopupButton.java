@@ -5,6 +5,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.ActionsPermissions;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.vaadin.ui.VerticalLayout;
@@ -18,18 +19,28 @@ import java.util.*;
  * @author pavlov
  * @version $Id$
  */
-public class WebPopupButton
-        extends WebAbstractComponent<PopupButton>
-        implements com.haulmont.cuba.gui.components.PopupButton {
+public class WebPopupButton extends WebAbstractComponent<PopupButton>
+        implements com.haulmont.cuba.gui.components.PopupButton, Component.SecuredActionsHolder {
 
     protected Component popupComponent;
     protected com.vaadin.ui.Component vPopupComponent;
     protected String icon;
 
     protected List<Action> actionOrder = new LinkedList<>();
+    protected final ActionsPermissions actionsPermissions = new ActionsPermissions(this);
 
     public WebPopupButton() {
-        component = new PopupButton("");
+        component = new PopupButton("") {
+            @Override
+            public void setPopupVisible(boolean popupVisible) {
+                if (vPopupComponent instanceof VerticalLayout
+                        && popupVisible && !hasVisibleActions()) {
+                    return;
+                }
+
+                super.setPopupVisible(popupVisible);
+            }
+        };
         component.setImmediate(true);
 
         vPopupComponent = new VerticalLayout();
@@ -37,6 +48,15 @@ public class WebPopupButton
         ((VerticalLayout) vPopupComponent).setMargin(false);
         vPopupComponent.setSizeUndefined();
         component.setComponent(vPopupComponent);
+    }
+
+    protected boolean hasVisibleActions() {
+        for (Action action : actionOrder) {
+            if (action.isVisible()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -146,6 +166,8 @@ public class WebPopupButton
             if (getId() != null) {
                 button.setId(action.getId());
             }
+
+            actionsPermissions.apply(action);
         }
     }
 
@@ -188,5 +210,10 @@ public class WebPopupButton
     @Override
     public Collection<Action> getActions() {
         return Collections.unmodifiableCollection(actionOrder);
+    }
+
+    @Override
+    public ActionsPermissions getActionsPermissions() {
+        return actionsPermissions;
     }
 }

@@ -65,7 +65,7 @@ public class MbeansDisplayWindow extends AbstractWindow {
         Action inspectAction = new ItemTrackingAction("inspect") {
             @Override
             public void actionPerform(Component component) {
-                Set<ManagedBeanInfo> selected = mbeansTable.getSelected();
+                Set<ManagedBeanInfo> selected = getTargetSelection();
                 if (!selected.isEmpty()) {
                     ManagedBeanInfo mbi = selected.iterator().next();
                     if (mbi.getObjectName() != null) { // otherwise it's a fake root node
@@ -73,11 +73,11 @@ public class MbeansDisplayWindow extends AbstractWindow {
                         editor.addListener(new CloseListener() {
                             @Override
                             public void windowClosed(String actionId) {
-                                mbeansTable.requestFocus();
+                                target.requestFocus();
                             }
                         });
                     } else { // expand / collapse fake root node
-                        TreeTable treeTable = mbeansTable;
+                        TreeTable treeTable = (TreeTable) target;
                         UUID itemId = mbi.getId();
                         if (treeTable.isExpanded(itemId))
                             treeTable.collapse(itemId);

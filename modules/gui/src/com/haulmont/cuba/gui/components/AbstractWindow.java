@@ -19,7 +19,7 @@ import java.util.List;
  * @version $Id$
  */
 public class AbstractWindow extends AbstractFrame 
-        implements Window, Component.HasXmlDescriptor, Window.Wrapper {
+        implements Window, Component.HasXmlDescriptor, Window.Wrapper, Component.SecuredActionsHolder {
 
     public AbstractWindow() {
     }
@@ -227,5 +227,14 @@ public class AbstractWindow extends AbstractFrame
     @Override
     public void closeAndRun(String actionId, Runnable runnable) {
         ((Window) frame).closeAndRun(actionId, runnable);
+    }
+
+    @Override
+    public ActionsPermissions getActionsPermissions() {
+        if (frame instanceof SecuredActionsHolder) {
+            return ((SecuredActionsHolder) frame).getActionsPermissions();
+        } else {
+            throw new UnsupportedOperationException();
+        }
     }
 }

@@ -6,6 +6,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.ActionsPermissions;
 import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.gui.components.ShortcutsDelegate;
 import com.vaadin.event.ShortcutListener;
@@ -27,7 +28,7 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
  * @version $Id$
  */
 public abstract class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.Component & com.vaadin.event.Action.ShortcutNotifier>
-        extends WebAbstractComponent<T> {
+        extends WebAbstractComponent<T> implements com.haulmont.cuba.gui.components.Component.SecuredActionsHolder {
 
     protected final List<Action> actionList = new ArrayList<>();
 
@@ -35,6 +36,7 @@ public abstract class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.
     protected final List<ContextMenuButton> contextMenuButtons = new LinkedList<>();
 
     protected final ShortcutsDelegate<ShortcutListener> shortcutsDelegate;
+    protected final ActionsPermissions actionsPermissions = new ActionsPermissions(this);
 
     protected WebAbstractActionsHolderComponent() {
         contextMenuPopup = new VerticalLayout();
@@ -74,6 +76,7 @@ public abstract class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.
         };
     }
 
+    @Override
     public void addAction(final Action action) {
         checkNotNullArgument(action, "action must be non null");
 
@@ -91,7 +94,6 @@ public abstract class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.
         if (!added) {
             actionList.add(action);
         }
-        action.refreshState();
 
         Component oldButton = null;
 
@@ -133,10 +135,15 @@ public abstract class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.
         }
 
         shortcutsDelegate.addAction(oldAction, action);
+
+        action.refreshState();
+
+        actionsPermissions.apply(action);
     }
 
     protected abstract ContextMenuButton createContextMenuButton();
 
+    @Override
     public void removeAction(Action action) {
         if (action == null) {
             return;
@@ -162,6 +169,7 @@ public abstract class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.
         shortcutsDelegate.removeAction(action);
     }
 
+    @Override
     public void removeAction(String id) {
         Action action = getAction(id);
         if (action != null) {
@@ -169,16 +177,19 @@ public abstract class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.
         }
     }
 
+    @Override
     public void removeAllActions() {
         for (Action action : new ArrayList<>(actionList)) {
             removeAction(action);
         }
     }
 
+    @Override
     public Collection<Action> getActions() {
         return Collections.unmodifiableCollection(actionList);
     }
 
+    @Override
     @Nullable
     public Action getAction(String id) {
         for (Action action : getActions()) {
@@ -187,5 +198,10 @@ public abstract class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.
             }
         }
         return null;
+    }
+
+    @Override
+    public ActionsPermissions getActionsPermissions() {
+        return actionsPermissions;
     }
 }

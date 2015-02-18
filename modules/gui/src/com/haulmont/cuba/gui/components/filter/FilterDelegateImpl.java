@@ -23,6 +23,7 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowManagerProvider;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.condition.CustomCondition;
@@ -1779,15 +1780,8 @@ public class FilterDelegateImpl implements FilterDelegate {
     }
 
     protected class AddToSetAction extends ItemTrackingAction {
-        protected Table table;
-
         protected AddToSetAction(Table table) {
-            super("addToSet");
-            this.table = table;
-
-            if (table.getSelected().isEmpty()) {
-                updateApplicableTo(false);
-            }
+            super(table, "addToSet");
         }
 
         @Override
@@ -1797,11 +1791,13 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         @Override
         public void actionPerform(Component component) {
-            if (!table.getSelected().isEmpty()) {
-                String entityType = table.getDatasource().getMetaClass().getName();
+            Set<Entity> ownerSelection = getTargetSelection();
+
+            if (!ownerSelection.isEmpty()) {
+                String entityType = getTargetDatasourceNN().getMetaClass().getName();
                 Map<String, Object> params = new HashMap<>();
                 params.put("entityType", entityType);
-                params.put("items", table.getSelected());
+                params.put("items", ownerSelection);
                 params.put("componentPath", ComponentsHelper.getFilterComponentPath(filter));
                 String[] strings = ValuePathHelper.parse(ComponentsHelper.getFilterComponentPath(filter));
                 String componentId = ValuePathHelper.format(Arrays.copyOfRange(strings, 1, strings.length));
@@ -1817,15 +1813,8 @@ public class FilterDelegateImpl implements FilterDelegate {
     }
 
     protected class RemoveFromSetAction extends ItemTrackingAction {
-        protected Table table;
-
         protected RemoveFromSetAction(Table table) {
-            super("removeFromCurSet");
-            this.table = table;
-
-            if (table.getSelected().isEmpty()) {
-                updateApplicableTo(false);
-            }
+            super(table, "removeFromCurSet");
         }
 
         @Override
@@ -1839,12 +1828,12 @@ public class FilterDelegateImpl implements FilterDelegate {
                 // todo add notification 'Filter not selected'
                 return;
             }
-            Set selected = table.getSelected();
+            Set selected = getTargetSelection();
             if (selected.isEmpty()) {
                 return;
             }
 
-            if (table.getDatasource().getItemIds().size() == 1) {
+            if (getTargetDatasourceNN().getItemIds().size() == 1) {
                 filterHelper.removeFolderFromFoldersPane(filterEntity.getFolder());
                 removeFilterEntity();
 
@@ -1860,7 +1849,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         }
     }
 
-    protected class AddToCurrSetAction extends AbstractAction {
+    protected class AddToCurrSetAction extends BaseAction {
 
         protected AddToCurrSetAction() {
             super("addToCurSet");

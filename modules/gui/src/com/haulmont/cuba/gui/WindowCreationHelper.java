@@ -36,7 +36,10 @@ import java.util.regex.Pattern;
  */
 public final class WindowCreationHelper {
 
-    private static Log log = LogFactory.getLog(WindowCreationHelper.class);
+    private static final Pattern INNER_COMPONENT_PATTERN = Pattern.compile("(.+?)\\[(.+?)\\]");
+    private static final Pattern COMPONENT_ACTION_PATTERN = Pattern.compile("(.+?)<(.+?)>");
+
+    private static final Log log = LogFactory.getLog(WindowCreationHelper.class);
 
     private WindowCreationHelper() {
     }
@@ -62,10 +65,12 @@ public final class WindowCreationHelper {
             String target = permissionEntry.getKey();
             String targetComponentId = getTargetComponentId(target, screenId);
             if (targetComponentId != null) {
-                if (!targetComponentId.contains("[")) {
-                    applyComponentPermission(window, screenId, permissionEntry.getValue(), targetComponentId);
-                } else {
+                if (targetComponentId.contains("[")) {
                     applyCompositeComponentPermission(window, screenId, permissionEntry.getValue(), targetComponentId);
+                } else if (targetComponentId.contains(">")) {
+                    applyComponentActionPermission(window, screenId, permissionEntry.getValue(), targetComponentId);
+                } else {
+                    applyComponentPermission(window, screenId, permissionEntry.getValue(), targetComponentId);
                 }
             }
         }
@@ -107,8 +112,7 @@ public final class WindowCreationHelper {
     // custom process for tabsheet & fieldgroup
     private static void applyCompositeComponentPermission(Window window, String screenId,
                                                           Integer permissionValue, String componentId) {
-        final Pattern pattern = Pattern.compile("(.+?)\\[(.+?)\\]");
-        final Matcher matcher = pattern.matcher(componentId);
+        final Matcher matcher = INNER_COMPONENT_PATTERN.matcher(componentId);
         if (matcher.find()) {
             final String customComponentId = matcher.group(1);
             final String subComponentId = matcher.group(2);
@@ -118,9 +122,9 @@ public final class WindowCreationHelper {
                     final TabSheet tabsheet = (TabSheet) compositeComponent;
                     final TabSheet.Tab tab = tabsheet.getTab(subComponentId);
                     if (tab != null) {
-                        if (permissionValue == UiPermissionValue.HIDE.getValue())
+                        if (permissionValue == UiPermissionValue.HIDE.getValue()) {
                             tab.setVisible(false);
-                        else if (permissionValue == UiPermissionValue.READ_ONLY.getValue()) {
+                        } else if (permissionValue == UiPermissionValue.READ_ONLY.getValue()) {
                             tab.setEnabled(false);
                         }
                     }
@@ -142,8 +146,52 @@ public final class WindowCreationHelper {
     }
 
     /**
+     * Process permissions for actions in action holder
+     *
+     * @param window          Window
+     * @param screenId        Screen Id
+     * @param permissionValue Permission value
+     * @param componentId     Component Id
+     * @return If permission is applied
+     */
+    private static boolean applyComponentActionPermission(Window window, String screenId,
+                                                          Integer permissionValue, String componentId) {
+        boolean applied = false;
+
+        final Matcher matcher = COMPONENT_ACTION_PATTERN.matcher(componentId);
+        if (matcher.find()) {
+            final String customComponentId = matcher.group(1);
+            final String actionId = matcher.group(2);
+            final Component actionHolderComponent = window.getComponent(customComponentId);
+            if (actionHolderComponent != null) {
+                if (actionHolderComponent instanceof Component.SecuredActionsHolder) {
+                    ActionsPermissions permissions =
+                            ((Component.SecuredActionsHolder) actionHolderComponent).getActionsPermissions();
+                    if (permissionValue == UiPermissionValue.HIDE.getValue()) {
+                        permissions.addHiddenActionPermission(actionId);
+                    } else if (permissionValue == UiPermissionValue.READ_ONLY.getValue()) {
+                        permissions.addDisabledActionPermission(actionId);
+                    }
+
+                    applied = true;
+                } else {
+                    log.warn(String.format("Couldn't apply permission on action %s for component %s in window %s",
+                            actionId, customComponentId, screenId));
+                }
+            } else {
+                log.info(String.format("Couldn't find component %s in window %s", componentId, screenId));
+            }
+        } else {
+            log.warn(String.format("Incorrect permission definition for component %s in window %s", componentId, screenId));
+        }
+
+        return applied;
+    }
+
+    /**
      * Deploy views defined in <code>metadataContext</code> of a frame.
-     * @param rootElement  root element of a frame XML
+     *
+     * @param rootElement root element of a frame XML
      */
     public static void deployViews(Element rootElement) {
         Element metadataContextEl = rootElement.element("metadataContext");
@@ -153,8 +201,9 @@ public final class WindowCreationHelper {
                 String resource = fileEl.attributeValue("name");
                 Resources resources = AppBeans.get(Resources.NAME);
                 InputStream resourceInputStream = resources.getResourceAsStream(resource);
-                if (resourceInputStream == null)
+                if (resourceInputStream == null) {
                     throw new RuntimeException("View resource not found: " + resource);
+                }
 
                 try {
                     viewRepository.deployViews(resourceInputStream);

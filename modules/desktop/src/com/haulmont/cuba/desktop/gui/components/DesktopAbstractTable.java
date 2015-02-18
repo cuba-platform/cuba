@@ -21,8 +21,8 @@ import com.haulmont.cuba.desktop.sys.vcl.FocusableTable;
 import com.haulmont.cuba.desktop.sys.vcl.TableFocusManager;
 import com.haulmont.cuba.desktop.theme.DesktopTheme;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -53,7 +53,10 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.*;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.Component;
 import java.awt.event.*;
@@ -62,6 +65,7 @@ import java.util.List;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+import static com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper.convertKeyCombination;
 
 /**
  * @author krivopustov
@@ -183,7 +187,10 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                             }
 
                             // show popup menu
-                            createPopupMenu().show(e.getComponent(), e.getX(), e.getY());
+                            JPopupMenu popupMenu = createPopupMenu();
+                            if (popupMenu.getComponentCount() > 0) {
+                                popupMenu.show(e.getComponent(), e.getX(), e.getY());
+                            }
                         }
                     }
                 }
@@ -1692,6 +1699,15 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         }
     }
 
+    @Override
+    public void addAction(Action action) {
+        super.addAction(action);
+
+        if (action instanceof Action.HasTarget) {
+            ((Action.HasTarget) action).setTarget(this);
+        }
+    }
+
     protected void applySelectionIndexes(List<Integer> indexes) {
         Collections.sort(indexes);
         ListSelectionModel model = impl.getSelectionModel();
@@ -1760,16 +1776,16 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         JPopupMenu popup = new JPopupMenu();
         JMenuItem menuItem;
         for (final Action action : actionList) {
-            if (StringUtils.isNotBlank(action.getCaption())) {
+            if (StringUtils.isNotBlank(action.getCaption())
+                    && action.isVisible()) {
                 menuItem = new JMenuItem(action.getCaption());
                 if (action.getIcon() != null) {
                     menuItem.setIcon(App.getInstance().getResources().getIcon(action.getIcon()));
                 }
                 if (action.getShortcut() != null) {
-                    menuItem.setAccelerator(DesktopComponentsHelper.convertKeyCombination(action.getShortcut()));
+                    menuItem.setAccelerator(convertKeyCombination(action.getShortcut()));
                 }
                 menuItem.setEnabled(action.isEnabled());
-                menuItem.setVisible(action.isVisible());
                 menuItem.addActionListener(
                         new ActionListener() {
                             @Override

@@ -31,18 +31,15 @@ import java.util.Map;
  * @author krivopustov
  * @version $Id$
  */
-public class AddAction extends AbstractAction implements Action.HasOpenType {
+public class AddAction extends BaseAction implements Action.HasOpenType {
 
     public static final String ACTION_ID = ListActionType.ADD.getId();
 
-    protected final ListComponent owner;
     protected Window.Lookup.Handler handler;
     protected WindowManager.OpenType openType;
 
     protected String windowId;
     protected Map<String, Object> windowParams;
-
-    protected boolean permissionFlag = false;
 
     /**
      * The simplest constructor. The action has default name and opens the lookup screen in THIS tab.
@@ -81,45 +78,34 @@ public class AddAction extends AbstractAction implements Action.HasOpenType {
      * @param openType  how to open the editor screen
      * @param id        action's name
      */
-    public AddAction(ListComponent owner, @Nullable Window.Lookup.Handler handler, WindowManager.OpenType openType, String id) {
-        super(id);
-        this.owner = owner;
+    public AddAction(ListComponent owner, @Nullable Window.Lookup.Handler handler,
+                     WindowManager.OpenType openType, String id) {
+        super(owner, id, null);
+
         this.handler = handler;
         this.openType = openType;
         this.caption = messages.getMainMessage("actions.Add");
         this.icon = "icons/add.png";
+
         Configuration configuration = AppBeans.get(Configuration.NAME);
         ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
         setShortcut(clientConfig.getTableAddShortcut());
-
-        refreshState();
     }
 
     @Override
-    public void setEnabled(boolean enabled) {
-        super.setEnabled(permissionFlag && enabled);
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return permissionFlag && super.isEnabled();
-    }
-
-    @Override
-    public void refreshState() {
-        permissionFlag = true;
-
-        if (owner.getDatasource() instanceof PropertyDatasource) {
-            PropertyDatasource datasource = (PropertyDatasource) owner.getDatasource();
+    protected boolean isPermitted() {
+        CollectionDatasource ownerDs = getTargetDatasource();
+        if (ownerDs instanceof PropertyDatasource) {
+            PropertyDatasource datasource = (PropertyDatasource)ownerDs;
 
             MetaClass parentMetaClass = datasource.getMaster().getMetaClass();
             MetaProperty metaProperty = datasource.getProperty();
 
             Security security = AppBeans.get(Security.NAME);
-            permissionFlag = security.isEntityAttrPermitted(parentMetaClass, metaProperty.getName(), EntityAttrAccess.MODIFY);
+            return security.isEntityAttrPermitted(parentMetaClass, metaProperty.getName(), EntityAttrAccess.MODIFY);
         }
 
-        super.setEnabled(permissionFlag);
+        return true;
     }
 
     /**
@@ -135,12 +121,12 @@ public class AddAction extends AbstractAction implements Action.HasOpenType {
 
         Window.Lookup.Handler itemsHandler = handler != null ? handler : new DefaultHandler();
 
-        Window lookupWindow = owner.getFrame().openLookup(getWindowId(), itemsHandler, openType, params);
+        Window lookupWindow = target.getFrame().openLookup(getWindowId(), itemsHandler, openType, params);
         lookupWindow.addListener(new Window.CloseListener() {
             @Override
             public void windowClosed(String actionId) {
                 // move focus to owner
-                owner.requestFocus();
+                target.requestFocus();
             }
         });
     }
@@ -184,7 +170,7 @@ public class AddAction extends AbstractAction implements Action.HasOpenType {
             return windowId;
         } else {
             WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
-            MetaClass metaClass = owner.getDatasource().getMetaClass();
+            MetaClass metaClass = target.getDatasource().getMetaClass();
 
             return windowConfig.getAvailableLookupScreenId(metaClass);
         }
@@ -226,7 +212,7 @@ public class AddAction extends AbstractAction implements Action.HasOpenType {
                 return;
             }
 
-            final CollectionDatasource ds = owner.getDatasource();
+            final CollectionDatasource ds = getTargetDatasource();
             if (ds == null) {
                 return;
             }

@@ -5,25 +5,21 @@
 
 package com.haulmont.cuba.gui.components.actions;
 
-import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
-import com.haulmont.cuba.gui.data.Datasource;
-
-import java.util.List;
+import com.haulmont.cuba.gui.components.ListComponent;
 
 /**
  * @author artamonov
  * @version $Id$
  */
-public class ItemTrackingAction extends AbstractAction implements CollectionDatasourceListener<Entity> {
+public class ItemTrackingAction extends BaseAction {
 
-    protected boolean enabledFlag = true;
+    public ItemTrackingAction(String id) {
+        this(null, id);
+    }
 
-    protected ItemTrackingAction(String id) {
-        super(id);
+    protected ItemTrackingAction(ListComponent owner, String id) {
+        super(owner, id, null);
     }
 
     @Override
@@ -31,43 +27,7 @@ public class ItemTrackingAction extends AbstractAction implements CollectionData
     }
 
     @Override
-    public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
-        super.setEnabled(enabledFlag
-                && isApplicableTo(ds.getState(), ds.getState() == Datasource.State.VALID ? ds.getItem() : null));
-    }
-
-    @Override
-    public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
-        super.setEnabled(enabledFlag && isApplicableTo(ds.getState(), item));
-    }
-
-    public boolean isApplicableTo(Datasource.State state, Entity item) {
-        return Datasource.State.VALID.equals(state) && item != null;
-    }
-
-    public void updateApplicableTo(boolean applicableTo) {
-        super.setEnabled(enabledFlag && applicableTo);
-    }
-
-    @Override
-    public void setEnabled(boolean enabled) {
-        this.enabledFlag = enabled;
-        super.setEnabled(enabled);
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return this.enabledFlag && super.isEnabled();
-    }
-
-    @Override
-    public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
-        super.setEnabled(this.enabledFlag
-                && isApplicableTo(ds.getState(), ds.getState() == Datasource.State.VALID ? ds.getItem() : null));
-    }
-
-    @Override
-    public void valueChanged(Entity source, String property, Object prevValue, Object value) {
-        super.setEnabled(enabledFlag && isApplicableTo(Datasource.State.VALID, source));
+    protected boolean isApplicable() {
+        return !getTargetSelection().isEmpty();
     }
 }

@@ -8,6 +8,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
 import java.util.HashMap;
@@ -17,7 +18,7 @@ import java.util.Map;
  * @author krivopustov
  * @version $Id$
  */
-public class ShowInfoAction extends AbstractAction {
+public class ShowInfoAction extends BaseAction {
 
     public static final String ACTION_ID = "showSystemInfo";
     public static final String ACTION_PERMISSION = "cuba.gui.showInfo";

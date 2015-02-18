@@ -5,10 +5,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.TestIdManager;
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.KeyCombination;
-import com.haulmont.cuba.gui.components.PopupButton;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.toolkit.ui.CubaPopupButton;
 import com.vaadin.ui.Button;
@@ -23,16 +20,28 @@ import java.util.*;
  * @author pavlov
  * @version $Id$
  */
-public class WebPopupButton extends WebAbstractComponent<CubaPopupButton> implements PopupButton {
+public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
+        implements PopupButton, Component.SecuredActionsHolder {
 
     protected Component popupComponent;
     protected com.vaadin.ui.Component vPopupComponent;
     protected String icon;
 
     protected List<Action> actionOrder = new LinkedList<>();
+    protected final ActionsPermissions actionsPermissions = new ActionsPermissions(this);
 
     public WebPopupButton() {
-        component = new CubaPopupButton();
+        component = new CubaPopupButton() {
+            @Override
+            public void setPopupVisible(boolean popupVisible) {
+                if (vPopupComponent instanceof VerticalLayout
+                    && popupVisible && !hasVisibleActions()) {
+                    return;
+                }
+
+                super.setPopupVisible(popupVisible);
+            }
+        };
         component.setImmediate(true);
 
         vPopupComponent = new VerticalLayout();
@@ -40,6 +49,15 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton> implem
         ((VerticalLayout) vPopupComponent).setMargin(false);
         vPopupComponent.setSizeUndefined();
         component.setContent(vPopupComponent);
+    }
+
+    protected boolean hasVisibleActions() {
+        for (Action action : actionOrder) {
+            if (action.isVisible()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -150,6 +168,8 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton> implem
                 }
                 button.setId(action.getId());
             }
+
+            actionsPermissions.apply(action);
         }
     }
 
@@ -212,6 +232,11 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton> implem
     @Override
     public Collection<Action> getActions() {
         return Collections.unmodifiableCollection(actionOrder);
+    }
+
+    @Override
+    public ActionsPermissions getActionsPermissions() {
+        return actionsPermissions;
     }
 
     private class PopupActionWrapper implements Action {

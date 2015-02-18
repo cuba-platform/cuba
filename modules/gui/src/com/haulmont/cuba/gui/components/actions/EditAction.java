@@ -40,13 +40,10 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
 
     public static final String ACTION_ID = ListActionType.EDIT.getId();
 
-    protected final ListComponent owner;
     protected WindowManager.OpenType openType;
 
     protected String windowId;
     protected Map<String, Object> windowParams;
-
-    protected boolean permissionFlag = false;
 
     // Set default caption only once
     protected boolean captionInitialized = false;
@@ -75,29 +72,14 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
      * @param id        action name
      */
     public EditAction(ListComponent owner, WindowManager.OpenType openType, String id) {
-        super(id);
-        this.owner = owner;
+        super(owner, id);
+
         this.openType = openType;
         this.icon = "icons/edit.png";
+
         Configuration configuration = AppBeans.get(Configuration.NAME);
         ClientConfig config = configuration.getConfig(ClientConfig.class);
         setShortcut(config.getTableEditShortcut());
-
-        refreshState();
-    }
-
-    @Override
-    public void setEnabled(boolean enabled) {
-        super.setEnabled(permissionFlag && enabled);
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return permissionFlag && super.isEnabled();
-    }
-
-    protected void setEnabledInternal(boolean enabled) {
-        super.setEnabled(enabled);
     }
 
     @Override
@@ -109,11 +91,9 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
 
     @Override
     public void refreshState() {
-        permissionFlag = isPermitted();
+        super.refreshState();
 
-        setEnabledInternal(permissionFlag);
-
-        CollectionDatasource ds = owner.getDatasource();
+        CollectionDatasource ds = getTargetDatasource();
 
         if (ds != null && !captionInitialized) {
             Security security = AppBeans.get(Security.NAME);
@@ -124,26 +104,23 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
                 setCaption(messages.getMessage(messagesPackage, "actions.View"));
             }
         }
-
-        if (permissionFlag && ds != null) {
-            updateApplicableTo(isApplicableTo(ds.getState(),
-                    ds.getState() == Datasource.State.VALID ? ds.getItem() : null));
-        }
     }
 
     /**
      * Check permissions for Action
      */
+    @Override
     protected boolean isPermitted() {
         Security security = AppBeans.get(Security.NAME);
 
-        return owner.getDatasource() != null &&
-                security.isEntityOpPermitted(owner.getDatasource().getMetaClass(), EntityOp.READ);
+        CollectionDatasource ownerDatasource = getTargetDatasource();
+        return ownerDatasource != null &&
+                security.isEntityOpPermitted(ownerDatasource.getMetaClass(), EntityOp.READ);
     }
 
     @Override
-    public boolean isApplicableTo(Datasource.State state, Entity item) {
-        return super.isApplicableTo(state, item) && owner.getSelected().size() < 2;
+    public boolean isApplicable() {
+        return getTargetSelection().size() == 1;
     }
 
     /**
@@ -153,12 +130,12 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
      */
     @Override
     public void actionPerform(Component component) {
-        final Set selected = owner.getSelected();
+        final Set selected = getTargetSelection();
         if (selected.size() == 1) {
             String windowID = getWindowId();
 
             Datasource parentDs = null;
-            final CollectionDatasource datasource = owner.getDatasource();
+            final CollectionDatasource datasource = target.getDatasource();
             if (datasource instanceof PropertyDatasource) {
                 MetaProperty metaProperty = ((PropertyDatasource) datasource).getProperty();
                 if (metaProperty.getType().equals(MetaProperty.Type.COMPOSITION)) {
@@ -171,7 +148,7 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
             if (params == null)
                 params = new HashMap<>();
 
-            final Window window = owner.getFrame().openEditor(windowID, datasource.getItem(), openType, params, parentDs);
+            final Window window = target.getFrame().openEditor(windowID, datasource.getItem(), openType, params, parentDs);
 
             window.addListener(new Window.CloseListener() {
                 @Override
@@ -188,7 +165,7 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
                     }
 
                     // move focus to owner
-                    owner.requestFocus();
+                    target.requestFocus();
 
                     afterWindowClosed(window);
                 }
@@ -219,7 +196,7 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
         if (windowId != null) {
             return windowId;
         } else {
-            MetaClass metaClass = owner.getDatasource().getMetaClass();
+            MetaClass metaClass = target.getDatasource().getMetaClass();
             WindowConfig windowConfig = AppBeans.get(WindowConfig.NAME);
             return windowConfig.getEditorScreenId(metaClass);
         }

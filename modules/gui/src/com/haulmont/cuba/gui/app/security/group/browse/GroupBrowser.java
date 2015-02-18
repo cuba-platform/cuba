@@ -104,17 +104,18 @@ public class GroupBrowser extends AbstractWindow {
 
         groupsTree.addAction(new RemoveAction(groupsTree) {
             @Override
-            public boolean isApplicableTo(Datasource.State state, Entity item) {
-                return super.isApplicableTo(state, item)
-                        && groupsDs.getChildren((UUID) item.getId()).isEmpty();
+            protected boolean isApplicable() {
+                if (super.isApplicable()) {
+                    @SuppressWarnings("unchecked")
+                    HierarchicalDatasource<Group, UUID> ds = (HierarchicalDatasource<Group, UUID>) getTargetDatasource();
+                    return ds != null && ds.getChildren((UUID) getTargetSingleSelected().getId()).isEmpty();
+                }
+
+                return false;
             }
         });
         usersTable.addAction(userCreateAction);
         usersTable.addAction(new ItemTrackingAction("moveToGroup") {
-            {
-                refreshState();
-            }
-
             @Override
             public String getIcon() {
                 return "icons/move.png";
@@ -153,9 +154,9 @@ public class GroupBrowser extends AbstractWindow {
             }
 
             @Override
-            public void refreshState() {
+            protected boolean isPermitted() {
                 MetaClass userMetaClass = metadata.getSession().getClass(User.class);
-                setEnabled(security.isEntityOpPermitted(userMetaClass, EntityOp.UPDATE));
+                return security.isEntityOpPermitted(userMetaClass, EntityOp.UPDATE);
             }
         });
 

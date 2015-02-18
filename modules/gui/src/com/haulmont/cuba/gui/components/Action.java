@@ -132,4 +132,19 @@ public interface Action {
         WindowManager.OpenType getOpenType();
         void setOpenType(WindowManager.OpenType openType);
     }
+
+    public interface UiPermissionAware extends Action {
+
+        boolean isUiPermissionEnabled();
+        void setUiPermissionEnabled(boolean uiPermissionEnabled);
+
+        boolean isUiPermissionVisible();
+        void setUiPermissionVisible(boolean uiPermissionVisible);
+    }
+
+    public interface HasTarget extends Action {
+        ListComponent getTarget();
+
+        void setTarget(ListComponent target);
+    }
 }

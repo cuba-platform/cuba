@@ -53,7 +53,7 @@ import java.util.*;
  * @version $Id$
  */
 public class DesktopWindow implements Window, Component.Disposable,
-        Component.Wrapper, Component.HasXmlDescriptor, WrappedWindow, DesktopContainer {
+        Component.Wrapper, Component.HasXmlDescriptor, Component.SecuredActionsHolder, WrappedWindow, DesktopContainer {
 
     protected Log log = LogFactory.getLog(getClass());
 
@@ -83,6 +83,7 @@ public class DesktopWindow implements Window, Component.Disposable,
     protected WindowDelegate delegate;
 
     protected DesktopFrameActionsHolder actionsHolder;
+    protected final ActionsPermissions actionsPermissions = new ActionsPermissions(this);
 
     protected List<CloseListener> listeners = new ArrayList<>();
 
@@ -361,6 +362,7 @@ public class DesktopWindow implements Window, Component.Disposable,
     @Override
     public void addAction(final Action action) {
         actionsHolder.addAction(action);
+        actionsPermissions.apply(action);
     }
 
     @Override
@@ -1060,6 +1062,11 @@ public class DesktopWindow implements Window, Component.Disposable,
                 buffer.toString(),
                 NotificationType.HUMANIZED
         );
+    }
+
+    @Override
+    public ActionsPermissions getActionsPermissions() {
+        return actionsPermissions;
     }
 
     public static class Editor extends DesktopWindow implements Window.Editor {

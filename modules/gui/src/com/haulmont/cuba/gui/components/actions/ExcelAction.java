@@ -19,7 +19,7 @@ import static com.haulmont.cuba.gui.export.ExcelExporter.ExportMode;
  * @author krivopustov
  * @version $Id$
  */
-public class ExcelAction extends AbstractAction {
+public class ExcelAction extends BaseAction {
 
     public static final String ACTION_ID = ListActionType.EXCEL.getId();
 

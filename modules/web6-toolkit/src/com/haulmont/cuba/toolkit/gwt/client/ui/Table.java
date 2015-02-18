@@ -3279,12 +3279,33 @@ public abstract class Table
                     left += Window.getScrollLeft();
 
                     if (customContextMenuPopup != null) {
-                        customContextMenuPopup.showAt(left, top);
+                        VConsole.log(">> " + customContextMenuPopup.getWidget().getElement().getClassName());
+
+                        boolean showMenu = true;
+                        if (customContextMenuPopup.getWidget() instanceof VVerticalLayout) {
+                            VVerticalLayout layout = (VVerticalLayout) customContextMenuPopup.getWidget();
+                            boolean hasVisibleChild = false;
+                            for (Widget widget : layout) {
+                                if (widget.isVisible()) {
+                                    hasVisibleChild = true;
+                                    break;
+                                }
+                            }
+
+                            if (!hasVisibleChild) {
+                                showMenu = false;
+                            }
+                        }
+
+                        if (showMenu) {
+                            customContextMenuPopup.showAt(left, top);
+                        }
                     } else if (actionKeys != null && actionKeys.length > 0) {
                         client.getContextMenu().removeStyleName("v-tableColumnSelector");
                         client.getContextMenu().showAt(this, left, top);
                     }
                 }
+
                 event.stopPropagation();
                 event.preventDefault();
             }

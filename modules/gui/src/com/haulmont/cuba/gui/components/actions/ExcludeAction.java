@@ -61,18 +61,17 @@ public class ExcludeAction extends RemoveAction {
      */
     public ExcludeAction(ListComponent owner, boolean autocommit, boolean confirm, String id) {
         super(owner, autocommit, id);
+
         this.confirm = confirm;
         this.caption = messages.getMainMessage("actions.Exclude");
         this.metadata = AppBeans.get(Metadata.NAME);
-
-        refreshState();
     }
 
     @Override
     protected boolean isPermitted() {
         boolean removePermitted = true;
 
-        CollectionDatasource ds = owner.getDatasource();
+        CollectionDatasource ds = getTargetDatasource();
         if (ds instanceof PropertyDatasource) {
             PropertyDatasource propertyDatasource = (PropertyDatasource) ds;
 
@@ -89,7 +88,8 @@ public class ExcludeAction extends RemoveAction {
     public void actionPerform(Component component) {
         if (!isEnabled())
             return;
-        Set selected = owner.getSelected();
+
+        Set selected = getTargetSelection();
         if (!selected.isEmpty()) {
             if (confirm) {
                 confirmAndRemove(selected);
@@ -104,8 +104,7 @@ public class ExcludeAction extends RemoveAction {
     @Override
     protected void doRemove(Set selected, boolean autocommit) {
         @SuppressWarnings({"unchecked"})
-        CollectionDatasource ds = owner.getDatasource();
-
+        CollectionDatasource ds = getTargetDatasourceNN();
         if (ds instanceof NestedDatasource) {
             // Clear reference to master entity
             Datasource masterDs = ((NestedDatasource) ds).getMaster();

@@ -6,6 +6,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.vaadin.ui.AbstractSelect;
@@ -111,5 +112,14 @@ public abstract class WebAbstractList<T extends AbstractSelect>
     @Override
     public CollectionDatasource getDatasource() {
         return datasource;
+    }
+
+    @Override
+    public void addAction(Action action) {
+        super.addAction(action);
+
+        if (action instanceof Action.HasTarget) {
+            ((Action.HasTarget) action).setTarget(this);
+        }
     }
 }

@@ -16,14 +16,11 @@ import javax.swing.tree.TreeCellRenderer;
 import java.util.EventObject;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
-public class DesktopWidgetsTree
-    extends DesktopTree
-    implements WidgetsTree
-{
+public class DesktopWidgetsTree extends DesktopTree implements WidgetsTree {
+
     @Override
     public void setWidgetBuilder(final WidgetBuilder widgetBuilder) {
         if (widgetBuilder == null)
@@ -43,7 +40,8 @@ public class DesktopWidgetsTree
         }
 
         @Override
-        public java.awt.Component getTreeCellEditorComponent(JTree tree, Object value, boolean isSelected, boolean expanded, boolean leaf, int row) {
+        public java.awt.Component getTreeCellEditorComponent(JTree tree, Object value, boolean isSelected,
+                                                             boolean expanded, boolean leaf, int row) {
             Component component = widgetBuilder.build(
                     datasource,
                     ((TreeModelAdapter.Node) value).getEntity().getId(),
