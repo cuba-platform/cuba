@@ -20,6 +20,11 @@ import java.util.List;
 import java.util.Set;
 
 /**
+ * Action that supports user defined permissions and UI permissions for actions.
+ * It reacts on context and will be enabled only if it is permitted and allowed for current context.
+ * Descendants may override {@link #isPermitted()} and {@link #isApplicable()} methods to define constraints in which
+ * action will be enabled.
+ *
  * @author artamonov
  * @version $Id$
  */
