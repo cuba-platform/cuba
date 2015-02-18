@@ -260,6 +260,10 @@ public class UserEditor extends AbstractEditor<User> {
                 timeZoneLookup.setDatasource(datasource, propertyId);
                 timeZoneLookup.setRequired(false);
 
+                MetaClass userMetaClass = userDs.getMetaClass();
+                timeZoneLookup.setEditable(fieldGroupRight.isEditable()
+                        && security.isEntityAttrUpdatePermitted(userMetaClass, propertyId));
+
                 Map<String, Object> options = new TreeMap<>();
                 for (String id : TimeZone.getAvailableIDs()) {
                     TimeZone timeZone = TimeZone.getTimeZone(id);
@@ -274,6 +278,9 @@ public class UserEditor extends AbstractEditor<User> {
                 autoDetectField.setCaption(messages.getMainMessage("timeZone.auto"));
                 autoDetectField.setDescription(messages.getMainMessage("timeZone.auto.descr"));
                 autoDetectField.setAlignment(Alignment.MIDDLE_RIGHT);
+
+                autoDetectField.setEditable(fieldGroupRight.isEditable()
+                        && security.isEntityAttrUpdatePermitted(userMetaClass, "timeZoneAuto"));
 
                 hbox.add(autoDetectField);
 
