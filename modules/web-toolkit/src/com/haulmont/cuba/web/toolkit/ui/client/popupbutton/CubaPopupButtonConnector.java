@@ -8,8 +8,10 @@ package com.haulmont.cuba.web.toolkit.ui.client.popupbutton;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Event;
 import com.haulmont.cuba.web.toolkit.ui.CubaPopupButton;
+import com.vaadin.client.communication.RpcProxy;
 import com.vaadin.shared.ui.Connect;
 import org.vaadin.hene.popupbutton.widgetset.client.ui.PopupButtonConnector;
+import org.vaadin.hene.popupbutton.widgetset.client.ui.PopupButtonServerRpc;
 
 /**
  * @author artamonov
@@ -17,6 +19,8 @@ import org.vaadin.hene.popupbutton.widgetset.client.ui.PopupButtonConnector;
  */
 @Connect(CubaPopupButton.class)
 public class CubaPopupButtonConnector extends PopupButtonConnector {
+
+    private PopupButtonServerRpc rpc = RpcProxy.create(PopupButtonServerRpc.class, this);
 
     @Override
     public CubaPopupButtonState getState() {
@@ -33,6 +37,9 @@ public class CubaPopupButtonConnector extends PopupButtonConnector {
                 case Event.ONCLICK:
                     if (getWidget().isOrHasChildOfPopup(target)) {
                         getWidget().setPopupInvisible();
+
+                        // update state on server
+                        rpc.setPopupVisible(false);
                     }
                     break;
             }
