@@ -399,6 +399,8 @@ configure(webModule) {
         metadataXml = "$webModule.projectDir/src/cuba-web-metadata.xml"
     }
 
+    compileJava.options.compilerArgs << '-implicit:none'
+
     jar {
         from sourceSets.main.allJava
     }
