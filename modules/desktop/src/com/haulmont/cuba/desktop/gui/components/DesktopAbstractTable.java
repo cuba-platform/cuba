@@ -566,7 +566,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
         // Major change in table columns behavior #PL-4853
         // We need not to recreate all columns on each table change after initTableModel
-        impl.setAutoCreateColumnsFromModel(false);
+//        impl.setAutoCreateColumnsFromModel(false);
 
         if (isSortable()) {
             impl.setRowSorter(new RowSorterImpl(tableModel));
