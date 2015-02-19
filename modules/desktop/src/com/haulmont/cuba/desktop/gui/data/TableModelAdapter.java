@@ -66,7 +66,9 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
                                 fireBeforeChangeListeners(true);
                                 for (Entity e : items) {
                                     int rowIndex = getRowIndex(e);
-                                    fireTableRowsInserted(rowIndex, rowIndex);
+                                    if (rowIndex >= 0) {
+                                        fireTableRowsInserted(rowIndex, rowIndex);
+                                    }
                                 }
                                 fireAfterChangeListeners(true);
                                 break;
@@ -75,7 +77,9 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
                                 fireBeforeChangeListeners(false);
                                 for (Entity e : items) {
                                     int rowIndex = getRowIndex(e);
-                                    fireTableRowsUpdated(rowIndex, rowIndex);
+                                    if (rowIndex >= 0) {
+                                        fireTableRowsUpdated(rowIndex, rowIndex);
+                                    }
                                 }
                                 fireAfterChangeListeners(false);
                                 break;
@@ -94,9 +98,11 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
                     public void valueChanged(Entity source, String property, Object prevValue, Object value) {
                         int rowIndex = getRowIndex(source);
 
-                        fireBeforeChangeListeners(false);
-                        fireTableRowsUpdated(rowIndex, rowIndex);
-                        fireAfterChangeListeners(false);
+                        if (rowIndex >= 0) {
+                            fireBeforeChangeListeners(false);
+                            fireTableRowsUpdated(rowIndex, rowIndex);
+                            fireAfterChangeListeners(false);
+                        }
                     }
                 }
         );
