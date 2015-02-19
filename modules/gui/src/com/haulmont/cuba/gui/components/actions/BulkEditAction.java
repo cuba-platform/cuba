@@ -26,8 +26,8 @@ public class BulkEditAction extends ItemTrackingAction {
     protected Map<String, Field.Validator> fieldValidators;
     protected List<Field.Validator> modelValidators;
 
-    public BulkEditAction(ListComponent owner) {
-        super(owner, "bulkEdit");
+    public BulkEditAction(ListComponent target) {
+        super(target, "bulkEdit");
 
         this.icon = "icons/bulk-edit.png";
         this.caption = messages.getMessage(getClass(), "actions.BulkEdit");

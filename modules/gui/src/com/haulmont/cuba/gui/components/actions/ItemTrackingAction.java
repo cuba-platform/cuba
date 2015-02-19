@@ -5,25 +5,20 @@
 
 package com.haulmont.cuba.gui.components.actions;
 
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ListComponent;
 
 /**
  * @author artamonov
  * @version $Id$
  */
-public class ItemTrackingAction extends BaseAction {
+public abstract class ItemTrackingAction extends BaseAction {
 
     public ItemTrackingAction(String id) {
         this(null, id);
     }
 
-    protected ItemTrackingAction(ListComponent owner, String id) {
-        super(owner, id, null);
-    }
-
-    @Override
-    public void actionPerform(Component component) {
+    protected ItemTrackingAction(ListComponent target, String id) {
+        super(target, id, null);
     }
 
     @Override

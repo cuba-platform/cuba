@@ -36,31 +36,31 @@ public class ExcludeAction extends RemoveAction {
 
     /**
      * The simplest constructor. Autocommit and Confirm properties are set to false, the action has default name.
-     * @param owner     component containing this action
+     * @param target     component containing this action
      */
-    public ExcludeAction(ListComponent owner) {
-        this(owner, false, false, ACTION_ID);
+    public ExcludeAction(ListComponent target) {
+        this(target, false, false, ACTION_ID);
     }
 
     /**
      * Constructor that allows to specify autocommit and confirm value. The action has default name.
-     * @param owner         component containing this action
+     * @param target         component containing this action
      * @param autocommit    whether to commit datasource immediately
      * @param confirm       whether to show the confirmation dialog to user
      */
-    public ExcludeAction(ListComponent owner, boolean autocommit, boolean confirm) {
-        this(owner, autocommit, confirm, ACTION_ID);
+    public ExcludeAction(ListComponent target, boolean autocommit, boolean confirm) {
+        this(target, autocommit, confirm, ACTION_ID);
     }
 
     /**
      * Constructor that allows to specify all parameters.
-     * @param owner         component containing this action
+     * @param target         component containing this action
      * @param autocommit    whether to commit datasource immediately
      * @param confirm       whether to show the confirmation dialog to user
      * @param id            action's name
      */
-    public ExcludeAction(ListComponent owner, boolean autocommit, boolean confirm, String id) {
-        super(owner, autocommit, id);
+    public ExcludeAction(ListComponent target, boolean autocommit, boolean confirm, String id) {
+        super(target, autocommit, id);
 
         this.confirm = confirm;
         this.caption = messages.getMainMessage("actions.Exclude");

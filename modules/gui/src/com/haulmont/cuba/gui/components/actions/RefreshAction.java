@@ -28,20 +28,20 @@ public class RefreshAction extends BaseAction {
 
     /**
      * The simplest constructor. The action has default name.
-     * @param owner    component containing this action
+     * @param target    component containing this action
      */
-    public RefreshAction(ListComponent owner) {
-        this(owner, ACTION_ID);
+    public RefreshAction(ListComponent target) {
+        this(target, ACTION_ID);
     }
 
     /**
      * Constructor that allows to specify action's name.
-     * @param owner        component containing this action
+     * @param target        component containing this action
      * @param id            action's identifier
      */
-    public RefreshAction(ListComponent owner, String id) {
+    public RefreshAction(ListComponent target, String id) {
         super(id);
-        this.owner = owner;
+        this.owner = target;
         this.caption = messages.getMainMessage("actions.Refresh");
         this.icon = "icons/refresh.png";
     }

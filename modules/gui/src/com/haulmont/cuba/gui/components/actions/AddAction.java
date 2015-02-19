@@ -46,41 +46,41 @@ public class AddAction extends BaseAction implements Action.HasOpenType {
      * Lookup handler can be set by subsequent call to {@link #setHandler(com.haulmont.cuba.gui.components.Window.Lookup.Handler)}.
      * If it is not set, an instance of {@link DefaultHandler} will be used.
      *
-     * @param owner    component containing this action
+     * @param target    component containing this action
      */
-    public AddAction(ListComponent owner) {
-        this(owner, null, WindowManager.OpenType.THIS_TAB, ACTION_ID);
+    public AddAction(ListComponent target) {
+        this(target, null, WindowManager.OpenType.THIS_TAB, ACTION_ID);
     }
 
     /**
      * The simplest constructor. The action has default name and opens the lookup screen in THIS tab.
-     * @param owner    component containing this action
+     * @param target    component containing this action
      * @param handler   lookup handler. If null, an instance of {@link DefaultHandler} will be used.
      */
-    public AddAction(ListComponent owner, @Nullable Window.Lookup.Handler handler) {
-        this(owner, handler, WindowManager.OpenType.THIS_TAB, ACTION_ID);
+    public AddAction(ListComponent target, @Nullable Window.Lookup.Handler handler) {
+        this(target, handler, WindowManager.OpenType.THIS_TAB, ACTION_ID);
     }
 
     /**
      * Constructor that allows to specify how the lookup screen opens. The action has default name.
-     * @param owner    component containing this action
+     * @param target    component containing this action
      * @param handler   lookup handler. If null, an instance of {@link DefaultHandler} will be used.
      * @param openType  how to open the editor screen
      */
-    public AddAction(ListComponent owner, @Nullable Window.Lookup.Handler handler, WindowManager.OpenType openType) {
-        this(owner, handler, openType, ACTION_ID);
+    public AddAction(ListComponent target, @Nullable Window.Lookup.Handler handler, WindowManager.OpenType openType) {
+        this(target, handler, openType, ACTION_ID);
     }
 
     /**
      * Constructor that allows to specify the action name and how the lookup screen opens.
-     * @param owner    component containing this action
+     * @param target    component containing this action
      * @param handler   lookup handler. If null, an instance of {@link DefaultHandler} will be used.
      * @param openType  how to open the editor screen
      * @param id        action's name
      */
-    public AddAction(ListComponent owner, @Nullable Window.Lookup.Handler handler,
+    public AddAction(ListComponent target, @Nullable Window.Lookup.Handler handler,
                      WindowManager.OpenType openType, String id) {
-        super(owner, id, null);
+        super(target, id, null);
 
         this.handler = handler;
         this.openType = openType;

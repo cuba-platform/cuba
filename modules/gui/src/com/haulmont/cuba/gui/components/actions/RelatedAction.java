@@ -41,7 +41,7 @@ public class RelatedAction extends AbstractAction {
 
     public static final String ACTION_ID = "related";
 
-    protected final ListComponent owner;
+    protected final ListComponent target;
     protected final MetaProperty metaProperty;
     protected final MetaClass metaClass;
 
@@ -53,10 +53,10 @@ public class RelatedAction extends AbstractAction {
     protected ExtendedEntities extendedEntities = AppBeans.get(ExtendedEntities.NAME);
     protected RelatedEntitiesService relatedEntitiesService = AppBeans.get(RelatedEntitiesService.NAME);
 
-    public RelatedAction(String id, ListComponent owner, MetaClass metaClass, MetaProperty metaProperty) {
+    public RelatedAction(String id, ListComponent target, MetaClass metaClass, MetaProperty metaProperty) {
         super(id);
 
-        this.owner = owner;
+        this.target = target;
         this.metaClass = metaClass;
         this.metaProperty = metaProperty;
 
@@ -90,9 +90,9 @@ public class RelatedAction extends AbstractAction {
 
     @Override
     public void actionPerform(Component component) {
-        final Set<Entity> selected = owner.getSelected();
+        final Set<Entity> selected = target.getSelected();
         if (!selected.isEmpty()) {
-            Window window = owner.getFrame().openWindow(getScreen(), openType);
+            Window window = target.getFrame().openWindow(getScreen(), openType);
 
             boolean found = ComponentsHelper.walkComponents(window, new ComponentFinder() {
                 @Override
@@ -111,10 +111,10 @@ public class RelatedAction extends AbstractAction {
                 }
             });
             if (!found) {
-                owner.getFrame().showNotification(messages.getMainMessage("actions.Related.FilterNotFound"), IFrame.NotificationType.WARNING);
+                target.getFrame().showNotification(messages.getMainMessage("actions.Related.FilterNotFound"), IFrame.NotificationType.WARNING);
             }
         } else {
-            owner.getFrame().showNotification(messages.getMainMessage("actions.Related.NotSelected"), IFrame.NotificationType.HUMANIZED);
+            target.getFrame().showNotification(messages.getMainMessage("actions.Related.NotSelected"), IFrame.NotificationType.HUMANIZED);
         }
     }
 

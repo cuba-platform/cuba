@@ -31,11 +31,11 @@ import java.util.Set;
 public abstract class BaseAction extends AbstractAction
         implements Action.HasTarget, Action.UiPermissionAware, CollectionDatasourceListener<Entity> {
 
-    private boolean uiPermissionEnabled = true;
-    private boolean uiPermissionVisible = true;
+    private boolean enabledByUiPermissions = true;
+    private boolean visibleByUiPermissions = true;
 
-    private boolean userDefinedEnabled = true;
-    private boolean userDefinedVisible = true;
+    private boolean enabledExplicitly = true;
+    private boolean visibleExplicitly = true;
 
     protected ListComponent target;
 
@@ -47,10 +47,10 @@ public abstract class BaseAction extends AbstractAction
         this(null, id, shortcut);
     }
 
-    protected BaseAction(ListComponent owner, String id, @Nullable String shortcut) {
+    protected BaseAction(ListComponent target, String id, @Nullable String shortcut) {
         super(id, shortcut);
 
-        this.target = owner;
+        this.target = target;
     }
 
     protected boolean isPermitted() {
@@ -63,8 +63,8 @@ public abstract class BaseAction extends AbstractAction
 
     @Override
     public void setVisible(boolean visible) {
-        if (this.userDefinedVisible != visible) {
-            this.userDefinedVisible = visible;
+        if (this.visibleExplicitly != visible) {
+            this.visibleExplicitly = visible;
 
             refreshState();
         }
@@ -72,8 +72,8 @@ public abstract class BaseAction extends AbstractAction
 
     @Override
     public void setEnabled(boolean enabled) {
-        if (this.userDefinedEnabled != enabled) {
-            this.userDefinedEnabled = enabled;
+        if (this.enabledExplicitly != enabled) {
+            this.enabledExplicitly = enabled;
 
             refreshState();
         }
@@ -91,10 +91,10 @@ public abstract class BaseAction extends AbstractAction
     public void refreshState() {
         super.refreshState();
 
-        setVisibleInternal(userDefinedVisible && uiPermissionVisible);
+        setVisibleInternal(visibleExplicitly && visibleByUiPermissions);
 
-        setEnabledInternal(userDefinedEnabled && isPermitted() && isApplicable()
-                && uiPermissionEnabled && uiPermissionVisible);
+        setEnabledInternal(enabledExplicitly && isPermitted() && isApplicable()
+                && enabledByUiPermissions && visibleByUiPermissions);
     }
 
     protected <T extends Entity> T getTargetSingleSelected() {
@@ -166,28 +166,28 @@ public abstract class BaseAction extends AbstractAction
     }
 
     @Override
-    public boolean isUiPermissionEnabled() {
-        return uiPermissionEnabled;
+    public boolean isEnabledByUiPermissions() {
+        return enabledByUiPermissions;
     }
 
     @Override
-    public void setUiPermissionEnabled(boolean uiPermissionEnabled) {
-        if (this.uiPermissionEnabled != uiPermissionEnabled) {
-            this.uiPermissionEnabled = uiPermissionEnabled;
+    public void setEnabledByUiPermissions(boolean enabledByUiPermissions) {
+        if (this.enabledByUiPermissions != enabledByUiPermissions) {
+            this.enabledByUiPermissions = enabledByUiPermissions;
 
             refreshState();
         }
     }
 
     @Override
-    public boolean isUiPermissionVisible() {
-        return uiPermissionVisible;
+    public boolean isVisibleByUiPermissions() {
+        return visibleByUiPermissions;
     }
 
     @Override
-    public void setUiPermissionVisible(boolean uiPermissionVisible) {
-        if (this.uiPermissionVisible != uiPermissionVisible) {
-            this.uiPermissionVisible = uiPermissionVisible;
+    public void setVisibleByUiPermissions(boolean visibleByUiPermissions) {
+        if (this.visibleByUiPermissions != visibleByUiPermissions) {
+            this.visibleByUiPermissions = visibleByUiPermissions;
 
             refreshState();
         }

@@ -44,29 +44,29 @@ public class RemoveAction extends ItemTrackingAction {
 
     /**
      * The simplest constructor. The action has default name and autocommit=true.
-     * @param owner    component containing this action
+     * @param target    component containing this action
      */
-    public RemoveAction(ListComponent owner) {
-        this(owner, true, ACTION_ID);
+    public RemoveAction(ListComponent target) {
+        this(target, true, ACTION_ID);
     }
 
     /**
      * Constructor that allows to specify autocommit value. The action has default name.
-     * @param owner        component containing this action
+     * @param target        component containing this action
      * @param autocommit    whether to commit datasource immediately
      */
-    public RemoveAction(ListComponent owner, boolean autocommit) {
-        this(owner, autocommit, ACTION_ID);
+    public RemoveAction(ListComponent target, boolean autocommit) {
+        this(target, autocommit, ACTION_ID);
     }
 
     /**
      * Constructor that allows to specify action's identifier and autocommit value.
-     * @param owner        component containing this action
+     * @param target        component containing this action
      * @param autocommit    whether to commit datasource immediately
      * @param id            action's identifier
      */
-    public RemoveAction(ListComponent owner, boolean autocommit, String id) {
-        super(owner, id);
+    public RemoveAction(ListComponent target, boolean autocommit, String id) {
+        super(target, id);
 
         this.autocommit = autocommit;
         this.caption = messages.getMainMessage("actions.Remove");

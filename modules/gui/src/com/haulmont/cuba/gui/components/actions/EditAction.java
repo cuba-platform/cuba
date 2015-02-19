@@ -50,29 +50,29 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
 
     /**
      * The simplest constructor. The action has default name and opens the editor screen in THIS tab.
-     * @param owner    component containing this action
+     * @param target    component containing this action
      */
-    public EditAction(ListComponent owner) {
-        this(owner, WindowManager.OpenType.THIS_TAB, ACTION_ID);
+    public EditAction(ListComponent target) {
+        this(target, WindowManager.OpenType.THIS_TAB, ACTION_ID);
     }
 
     /**
      * Constructor that allows to specify how the editor screen opens. The action has default name.
-     * @param owner    component containing this action
+     * @param target    component containing this action
      * @param openType  how to open the editor screen
      */
-    public EditAction(ListComponent owner, WindowManager.OpenType openType) {
-        this(owner, openType, ACTION_ID);
+    public EditAction(ListComponent target, WindowManager.OpenType openType) {
+        this(target, openType, ACTION_ID);
     }
 
     /**
      * Constructor that allows to specify the action name and how the editor screen opens.
-     * @param owner    component containing this action
+     * @param target    component containing this action
      * @param openType  how to open the editor screen
      * @param id        action name
      */
-    public EditAction(ListComponent owner, WindowManager.OpenType openType, String id) {
-        super(owner, id);
+    public EditAction(ListComponent target, WindowManager.OpenType openType, String id) {
+        super(target, id);
 
         this.openType = openType;
         this.icon = "icons/edit.png";

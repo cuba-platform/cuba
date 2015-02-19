@@ -30,7 +30,7 @@ public class ActionsPermissions {
 
         Action action = actionsHolder.getAction(actionId);
         if (action instanceof Action.UiPermissionAware) {
-            ((Action.UiPermissionAware) action).setUiPermissionEnabled(false);
+            ((Action.UiPermissionAware) action).setEnabledByUiPermissions(false);
         }
     }
 
@@ -42,7 +42,7 @@ public class ActionsPermissions {
         hiddenActionsIds.add(actionId);
         Action action = actionsHolder.getAction(actionId);
         if (action instanceof Action.UiPermissionAware) {
-            ((Action.UiPermissionAware) action).setUiPermissionVisible(false);
+            ((Action.UiPermissionAware) action).setVisibleByUiPermissions(false);
         }
     }
 
@@ -63,10 +63,10 @@ public class ActionsPermissions {
     public void apply(Action action) {
         if (action instanceof Action.UiPermissionAware) {
             if (isHiddenAction(action.getId())) {
-                ((Action.UiPermissionAware) action).setUiPermissionVisible(false);
+                ((Action.UiPermissionAware) action).setVisibleByUiPermissions(false);
             }
             if (isDisabledAction(action.getId())) {
-                ((Action.UiPermissionAware) action).setUiPermissionEnabled(false);
+                ((Action.UiPermissionAware) action).setEnabledByUiPermissions(false);
             }
         }
     }

@@ -135,11 +135,11 @@ public interface Action {
 
     public interface UiPermissionAware extends Action {
 
-        boolean isUiPermissionEnabled();
-        void setUiPermissionEnabled(boolean uiPermissionEnabled);
+        boolean isEnabledByUiPermissions();
+        void setEnabledByUiPermissions(boolean enabledByUiPermissions);
 
-        boolean isUiPermissionVisible();
-        void setUiPermissionVisible(boolean uiPermissionVisible);
+        boolean isVisibleByUiPermissions();
+        void setVisibleByUiPermissions(boolean visibleByUiPermissions);
     }
 
     public interface HasTarget extends Action {
