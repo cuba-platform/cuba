@@ -4,12 +4,8 @@
  */
 package com.haulmont.cuba.gui.app.security.role.browse;
 
-import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.CommitContext;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.Security;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.AbstractLookup;
@@ -41,7 +37,7 @@ public class RoleBrowser extends AbstractLookup {
     protected Metadata metadata;
 
     @Inject
-    protected DataService dataService;
+    protected DataManager dataManager;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -68,7 +64,7 @@ public class RoleBrowser extends AbstractLookup {
                             LoadContext ctx = new LoadContext(UserRole.class).setView("user.edit");
                             LoadContext.Query query = ctx.setQueryString("select ur from sec$UserRole ur where ur.user.id = :user");
                             query.setParameter("user", user);
-                            List<UserRole> userRoles = dataService.loadList(ctx);
+                            List<UserRole> userRoles = dataManager.loadList(ctx);
 
                             boolean roleExist = false;
                             for (UserRole userRole : userRoles) {
@@ -86,7 +82,7 @@ public class RoleBrowser extends AbstractLookup {
                         }
 
                         if (!toCommit.isEmpty()) {
-                            dataService.commit(new CommitContext(toCommit));
+                            dataManager.commit(new CommitContext(toCommit));
                         }
 
                         showNotification(getMessage("rolesAssigned.msg"), NotificationType.HUMANIZED);
