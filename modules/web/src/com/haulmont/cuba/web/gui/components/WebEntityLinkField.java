@@ -24,8 +24,11 @@ import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
+import com.haulmont.cuba.gui.data.impl.DatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
@@ -352,10 +355,29 @@ public class WebEntityLinkField extends WebAbstractField<CubaButtonField> implem
     protected void afterCommitOpenedEntity(Entity item) {
         if (metaProperty.getRange().isClass()) {
             if (getDatasource() != null) {
+                boolean ownerDsModified = false;
+                boolean nonModifiedInTable = false;
+                if (owner != null && owner.getDatasource() != null) {
+                    DatasourceImpl ownerDs = ((DatasourceImpl) owner.getDatasource());
+                    nonModifiedInTable = !ownerDs.getItemsToUpdate().contains(getDatasource().getItem());
+
+                    ownerDsModified = ownerDs.isModified();
+                }
+
                 boolean modified = getDatasource().isModified();
                 setValue(null);
                 setValue(item);
                 ((DatasourceImplementation) getDatasource()).setModified(modified);
+
+                // restore modified for owner datasource
+                // remove from items to update if it was not modified before setValue
+                if (owner != null && owner.getDatasource() != null) {
+                    DatasourceImpl ownerDs = ((DatasourceImpl) owner.getDatasource());
+                    if (nonModifiedInTable) {
+                        ownerDs.getItemsToUpdate().remove(getDatasource().getItem());
+                    }
+                    ownerDs.setModified(ownerDsModified);
+                }
             } else {
                 setValue(null);
                 setValue(item);
