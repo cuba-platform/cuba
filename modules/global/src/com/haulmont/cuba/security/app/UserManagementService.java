@@ -82,4 +82,15 @@ public interface UserManagementService {
      * @return token string
      */
     String generateRememberMeToken(UUID userId);
+
+    /**
+     * Load current user's time zone settings.
+     */
+    UserTimeZone loadOwnTimeZone();
+
+    /**
+     * Save current user's time zone settings.
+     */
+    void saveOwnTimeZone(UserTimeZone timeZone);
+
 }

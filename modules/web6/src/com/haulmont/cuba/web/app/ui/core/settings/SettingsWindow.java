@@ -9,9 +9,10 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.TimeZones;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.theme.ThemeConstantsRepository;
+import com.haulmont.cuba.security.app.UserManagementService;
+import com.haulmont.cuba.security.app.UserTimeZone;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
@@ -44,7 +45,7 @@ public class SettingsWindow extends AbstractWindow {
     protected UserSession userSession;
 
     @Inject
-    private DataSupplier dataSupplier;
+    protected UserManagementService userManagementService;
 
     @Inject
     protected TimeZones timeZones;
@@ -164,15 +165,14 @@ public class SettingsWindow extends AbstractWindow {
             }
         });
 
-        User user = dataSupplier.reload(userSession.getUser(), "user.timeZone");
-        timeZoneLookup.setValue(user.getTimeZone());
-        timeZoneAutoField.setValue(Boolean.TRUE.equals(user.getTimeZoneAuto()));
+        UserTimeZone userTimeZone = userManagementService.loadOwnTimeZone();
+        timeZoneLookup.setValue(userTimeZone.name);
+        timeZoneAutoField.setValue(userTimeZone.auto);
     }
 
     protected void saveTimeZoneSettings() {
-        User user = dataSupplier.reload(userSession.getUser(), "user.timeZone");
-        user.setTimeZone((String) timeZoneLookup.getValue());
-        user.setTimeZoneAuto((Boolean) timeZoneAutoField.getValue());
-        dataSupplier.commit(user);
+        UserTimeZone userTimeZone = new UserTimeZone(
+                (String) timeZoneLookup.getValue(), (Boolean) timeZoneAutoField.getValue());
+        userManagementService.saveOwnTimeZone(userTimeZone);
     }
 }

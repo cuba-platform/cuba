@@ -279,6 +279,38 @@ public class UserManagementServiceBean implements UserManagementService {
         return token;
     }
 
+    @Override
+    public UserTimeZone loadOwnTimeZone() {
+        Transaction tx = persistence.createTransaction();
+        try {
+            EntityManager em = persistence.getEntityManager();
+            User user = em.find(User.class, userSessionSource.getUserSession().getUser().getId(), "user.timeZone");
+            if (user == null)
+                throw new EntityAccessException();
+            tx.commit();
+            return new UserTimeZone(user.getTimeZone(), user.getTimeZoneAuto());
+        } finally {
+            tx.end();
+        }
+    }
+
+    @Override
+    public void saveOwnTimeZone(UserTimeZone timeZone) {
+        log.debug("Saving user's time zone settings: " + timeZone);
+        Transaction tx = persistence.createTransaction();
+        try {
+            EntityManager em = persistence.getEntityManager();
+            User user = em.find(User.class, userSessionSource.getUserSession().getUser().getId(), "user.timeZone");
+            if (user == null)
+                throw new EntityAccessException();
+            user.setTimeZone(timeZone.name);
+            user.setTimeZoneAuto(timeZone.auto);
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+    }
+
     protected EmailTemplate getResetPasswordTemplate(User user,
                                                    SimpleTemplateEngine templateEngine,
                                                    String resetPasswordSubjectTemplate,
