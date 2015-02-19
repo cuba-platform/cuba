@@ -5,7 +5,6 @@
 package com.haulmont.cuba.gui.app.security.user.changepassw;
 
 import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.PasswordEncryption;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -64,6 +63,8 @@ public class UserChangePassw extends AbstractEditor {
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
+
+        getDialogParams().setWidthAuto();
 
         Boolean cancelEnabled = (Boolean) params.get("cancelEnabled");
         if (Boolean.FALSE.equals(cancelEnabled)) {

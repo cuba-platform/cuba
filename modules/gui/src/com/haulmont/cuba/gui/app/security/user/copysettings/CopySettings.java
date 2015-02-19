@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.gui.app.security.user.copysettings;
 
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.*;
@@ -34,9 +35,14 @@ public class CopySettings extends AbstractWindow {
     @WindowParam(required = true)
     protected Set<User> users;
 
+    @Inject
+    protected ClientConfig clientConfig;
+
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
+
+        getDialogParams().setWidthAuto();
 
         copyBtn.setAction(new AbstractAction("deployBtn") {
             @Override
@@ -51,6 +57,7 @@ public class CopySettings extends AbstractWindow {
                             MessageType.CONFIRMATION,
                             new Action[]{
                                     new DialogAction(DialogAction.Type.YES) {
+                                        @Override
                                         public void actionPerform(Component component) {
                                             copySettings();
                                         }

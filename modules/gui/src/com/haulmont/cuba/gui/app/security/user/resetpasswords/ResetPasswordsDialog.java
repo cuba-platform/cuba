@@ -29,7 +29,7 @@ public class ResetPasswordsDialog extends AbstractWindow {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        getDialogParams().setResizable(false);
+        getDialogParams().setResizable(false).setWidthAuto();
 
         generatePasswordsCheckBox.addListener(new ValueListener<CheckBox>() {
             @Override
