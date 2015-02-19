@@ -288,7 +288,7 @@ public class UserManagementServiceBean implements UserManagementService {
             if (user == null)
                 throw new EntityAccessException();
             tx.commit();
-            return new UserTimeZone(user.getTimeZone(), user.getTimeZoneAuto());
+            return new UserTimeZone(user.getTimeZone(), Boolean.TRUE.equals(user.getTimeZoneAuto()));
         } finally {
             tx.end();
         }
