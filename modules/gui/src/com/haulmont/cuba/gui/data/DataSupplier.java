@@ -10,12 +10,24 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.DataManager;
 
 /**
- * Interface defining operations with entities on GUI level.
+ * Interface for CRUD operations on screen level.
+ *
+ * <p>The standard implementation simply delegates to {@link DataManager}. A screen can define its implementation of
+ * the DataSupplier in {@code dataSupplier} attribute of the {@code window} element.</p>
+ *
+ * <p>DataSupplier implementation can be injected to the screen controller by defining a field of {@code DataSupplier}
+ * type annotated with {@code @Inject}.</p>
  *
  * @author abramov
  * @version $Id$
  */
 public interface DataSupplier extends DataManager, DataService /* for backward compatibility */ {
+
+    /**
+     * Do not try to obtain DataSupplier through {@code AppBeans.get()} or by injection to regular Spring beans.
+     * Only injection to screens works.
+     */
+    public static final String NAME = "ERROR: DataSupplier is not a Spring bean";
 
     /**
      * Create a new entity instance
