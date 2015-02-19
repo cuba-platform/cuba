@@ -613,8 +613,7 @@ public class CubaScrollTableWidget extends VScrollTable implements ShortcutActio
             }
         }
 
-        customContextMenuPopup = new VOverlay();
-        customContextMenuPopup.setStyleName("cuba-context-menu");
+        customContextMenuPopup = Tools.createCubaContextMenu();
         customContextMenuPopup.setOwner(this);
         customContextMenuPopup.setWidget(customContextMenu);
 

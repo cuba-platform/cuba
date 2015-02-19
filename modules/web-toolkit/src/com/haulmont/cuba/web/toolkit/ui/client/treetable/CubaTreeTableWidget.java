@@ -606,8 +606,7 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
             }
         }
 
-        customContextMenuPopup = new VOverlay();
-        customContextMenuPopup.setStyleName("cuba-context-menu");
+        customContextMenuPopup = Tools.createCubaContextMenu();
         customContextMenuPopup.setOwner(this);
         customContextMenuPopup.setWidget(customContextMenu);
 

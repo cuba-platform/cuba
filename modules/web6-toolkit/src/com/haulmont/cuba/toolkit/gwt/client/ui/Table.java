@@ -5,7 +5,6 @@
 package com.haulmont.cuba.toolkit.gwt.client.ui;
 
 import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.*;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
@@ -588,9 +587,7 @@ public abstract class Table
                 tHead.updatePresentationsPopup(c);
             } else if (c.getTag().equals("cm")) {
                 if (customContextMenuPopup == null) {
-                    customContextMenuPopup = new PopupContainer();
-                    // Do not use default style, it is suitable only for presentation popup
-                    customContextMenuPopup.setStylePrimaryName("cuba-context-menu");
+                    customContextMenuPopup = Tools.createCubaContextMenu();
                 }
                 customContextMenuPopup.updateFromUIDL(c, client);
             }

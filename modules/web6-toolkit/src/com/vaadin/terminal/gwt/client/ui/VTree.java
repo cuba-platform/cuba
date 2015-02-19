@@ -26,6 +26,7 @@ import com.google.gwt.user.client.*;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.haulmont.cuba.toolkit.gwt.client.TextSelectionManager;
+import com.haulmont.cuba.toolkit.gwt.client.Tools;
 import com.haulmont.cuba.toolkit.gwt.client.ui.IScrollablePanel;
 import com.haulmont.cuba.toolkit.gwt.client.ui.PopupContainer;
 import com.vaadin.terminal.gwt.client.*;
@@ -249,9 +250,7 @@ public class VTree extends FocusElementPanel implements Paintable, VHasDropHandl
                 continue;
             } else if ("cm".equals(childUidl.getTag())) {
                 if (customContextMenuPopup == null) {
-                    customContextMenuPopup = new PopupContainer();
-                    // Do not use default style, it is suitable only for presentation popup
-                    customContextMenuPopup.setStylePrimaryName("cuba-context-menu");
+                    customContextMenuPopup = Tools.createCubaContextMenu();
                 }
                 customContextMenuPopup.updateFromUIDL(childUidl, client);
                 continue;

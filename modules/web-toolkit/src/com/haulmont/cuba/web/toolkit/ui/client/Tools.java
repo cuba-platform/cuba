@@ -6,7 +6,9 @@
 package com.haulmont.cuba.web.toolkit.ui.client;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.haulmont.cuba.web.toolkit.ui.client.sys.ToolsImpl;
 import com.vaadin.client.BrowserInfo;
@@ -94,6 +96,34 @@ public class Tools {
             impl.fixFlashTitleIEJS();
         }
     }
+
+    public static VOverlay createCubaContextMenu() {
+        final VOverlay customContextMenuPopup = new VOverlay() {
+            @Override
+            protected void onPreviewNativeEvent(Event.NativePreviewEvent event) {
+                super.onPreviewNativeEvent(event);
+
+                switch (event.getTypeInt()) {
+                    case Event.ONCLICK:
+                        Element target = Element.as(event.getNativeEvent().getEventTarget());
+                        if (getElement().isOrHasChild(target)) {
+                            Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+                                @Override
+                                public void execute() {
+                                    hide();
+                                }
+                            });
+                        }
+                        break;
+                }
+            }
+        };
+
+        customContextMenuPopup.setStyleName("cuba-context-menu");
+
+        return customContextMenuPopup;
+    }
+
     public static void showContextPopup(VOverlay customContextMenuPopup, int left, int top) {
         customContextMenuPopup.setAutoHideEnabled(true);
         customContextMenuPopup.setVisible(false);

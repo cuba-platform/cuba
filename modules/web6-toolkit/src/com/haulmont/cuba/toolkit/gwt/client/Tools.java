@@ -4,9 +4,12 @@
  */
 package com.haulmont.cuba.toolkit.gwt.client;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Event;
 import com.haulmont.cuba.toolkit.gwt.client.impl.ToolsImpl;
+import com.haulmont.cuba.toolkit.gwt.client.ui.PopupContainer;
 import com.vaadin.terminal.gwt.client.BrowserInfo;
 import com.vaadin.terminal.gwt.client.RenderInformation;
 
@@ -150,5 +153,32 @@ public class Tools {
         if (BrowserInfo.get().isIE()) {
             impl.fixFlashTitleIEJS();
         }
+    }
+
+    public static PopupContainer createCubaContextMenu() {
+        PopupContainer customContextMenuPopup = new PopupContainer() {
+            @Override
+            protected void onPreviewNativeEvent(Event.NativePreviewEvent event) {
+                super.onPreviewNativeEvent(event);
+
+                switch (event.getTypeInt()) {
+                    case Event.ONCLICK:
+                        com.google.gwt.dom.client.Element target =
+                                com.google.gwt.dom.client.Element.as(event.getNativeEvent().getEventTarget());
+                        if (getElement().isOrHasChild(target)) {
+                            Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+                                @Override
+                                public void execute() {
+                                    hide();
+                                }
+                            });
+                        }
+                        break;
+                }
+            }
+        };
+        // Do not use default style, it is suitable only for presentation popup
+        customContextMenuPopup.setStylePrimaryName("cuba-context-menu");
+        return customContextMenuPopup;
     }
 }
