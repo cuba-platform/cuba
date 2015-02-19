@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.web.app.ui.core.settings;
 
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.TimeZones;
@@ -46,6 +47,9 @@ public class SettingsWindow extends AbstractWindow {
 
     @Inject
     protected UserManagementService userManagementService;
+
+    @Inject
+    protected ClientConfig clientConfig;
 
     @Inject
     protected TimeZones timeZones;
@@ -121,23 +125,25 @@ public class SettingsWindow extends AbstractWindow {
             changePasswordBtn.setEnabled(false);
         }
 
-        okBtn.setAction(
-                new AbstractAction("ok") {
-                    @Override
-                    public void actionPerform(Component component) {
-                        if (changeThemeEnabled) {
-                            String selectedTheme = appThemeField.getValue();
-                            userSettingsTools.saveAppWindowTheme(selectedTheme);
-                            App.getInstance().setUserAppTheme(selectedTheme);
-                        }
-                        AppWindow.Mode m = modeOptions.getValue() == msgTabbed ? AppWindow.Mode.TABBED : AppWindow.Mode.SINGLE;
-                        userSettingsTools.saveAppWindowMode(m);
-                        saveTimeZoneSettings();
-                        showNotification(getMessage("modeChangeNotification"), IFrame.NotificationType.HUMANIZED);
-                        close("ok");
-                    }
+        AbstractAction commitAction = new AbstractAction("ok", clientConfig.getCommitShortcut()) {
+            @Override
+            public void actionPerform(Component component) {
+                if (changeThemeEnabled) {
+                    String selectedTheme = appThemeField.getValue();
+                    userSettingsTools.saveAppWindowTheme(selectedTheme);
+                    App.getInstance().setUserAppTheme(selectedTheme);
                 }
-        );
+                AppWindow.Mode m = modeOptions.getValue() == msgTabbed ? AppWindow.Mode.TABBED : AppWindow.Mode.SINGLE;
+                userSettingsTools.saveAppWindowMode(m);
+                saveTimeZoneSettings();
+                showNotification(getMessage("modeChangeNotification"), NotificationType.HUMANIZED);
+
+                close("ok");
+            }
+        };
+        
+        addAction(commitAction);
+        okBtn.setAction(commitAction);
 
         cancelBtn.setAction(
                 new AbstractAction("cancel") {
