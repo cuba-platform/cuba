@@ -21,7 +21,6 @@
 
 package com.haulmont.cuba.portal.restapi;
 
-import com.google.common.base.Strings;
 import com.haulmont.chile.core.datatypes.impl.StringDatatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -58,6 +57,7 @@ import javax.xml.transform.stream.StreamResult;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
 import java.util.*;
@@ -69,9 +69,9 @@ import java.util.*;
 public class XMLConvertor implements Convertor {
     public static final MimeType MIME_TYPE_XML;
     public static final String MIME_STR = "text/xml;charset=UTF-8";
+    public static final String TYPE_XML = "xml";
 
     public static final String ELEMENT_INSTANCE = "instance";
-    public static final String ELEMENT_RESULT = "result";
     public static final String ELEMENT_URI = "uri";
     public static final String ELEMENT_REF = "ref";
     public static final String ELEMENT_NULL_REF = "null";
@@ -117,110 +117,42 @@ public class XMLConvertor implements Convertor {
     }
 
     @Override
-    public Document process(Entity entity, MetaClass metaclass, String requestURI, View view)
+    public String getType() {
+        return TYPE_XML;
+    }
+
+    @Override
+    public String process(Entity entity, MetaClass metaclass, View view)
             throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         Element root = newDocument(ROOT_ELEMENT_INSTANCE);
         encodeEntityInstance(new HashSet<Entity>(), entity, root, false, metaclass, view);
         Document doc = root.getOwnerDocument();
-        decorate(doc, requestURI);
-        return doc;
+        return documentToString(doc);
     }
 
     @Override
-    public Document process(List<Entity> entities, MetaClass metaClass, String requestURI, View view)
+    public String process(List<Entity> entities, MetaClass metaClass, View view)
             throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         Element root = newDocument(ROOT_ELEMENT_INSTANCE);
         for (Entity entity : entities) {
             encodeEntityInstance(new HashSet<Entity>(), entity, root, false, metaClass, view);
         }
         Document doc = root.getOwnerDocument();
-        decorate(doc, requestURI);
-        return doc;
+        return documentToString(doc);
     }
 
     @Override
-    public Object process(Set<Entity> entities, String requestURI)
+    public String process(Set<Entity> entities)
             throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-        if (restConfig.getRestApiCommitReturnsMaps()) {
-            Element root = newDocument(MAPPING_ROOT_ELEMENT_INSTANCE);
-            Document doc = root.getOwnerDocument();
-            for (Entity entity : entities) {
-                Element pair = doc.createElement(PAIR_ELEMENT);
-                root.appendChild(pair);
-                encodeEntityInstance(new HashSet<Entity>(), entity, pair, false, getMetaClass(entity), null);
-                encodeEntityInstance(new HashSet<Entity>(), entity, pair, false, getMetaClass(entity), null);
-            }
-            return doc;
-        } else {
-            Element root = newDocument(ROOT_ELEMENT_INSTANCE);
-            for (Entity entity : entities) {
-                encodeEntityInstance(new HashSet<Entity>(), entity, root, false, getMetaClass(entity), null);
-            }
-            Document doc = root.getOwnerDocument();
-            decorate(doc, requestURI);
-            return doc;
+        Element root = newDocument(MAPPING_ROOT_ELEMENT_INSTANCE);
+        Document doc = root.getOwnerDocument();
+        for (Entity entity : entities) {
+            Element pair = doc.createElement(PAIR_ELEMENT);
+            root.appendChild(pair);
+            encodeEntityInstance(new HashSet<Entity>(), entity, pair, false, getMetaClass(entity), null);
+            encodeEntityInstance(new HashSet<Entity>(), entity, pair, false, getMetaClass(entity), null);
         }
-    }
-
-    @Override
-    public Object processServiceMethodResult(@Nullable Object result, String requestURI, String viewName)
-            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        Element root = newDocument(ELEMENT_RESULT);
-        if (result instanceof Entity) {
-            Entity entity = (Entity) result;
-            if (Strings.isNullOrEmpty(viewName)) viewName = View.LOCAL;
-            ViewRepository viewRepository = AppBeans.get(ViewRepository.class);
-            View view = viewRepository.getView(entity.getMetaClass(), viewName);
-            Document convertedEntity = process(entity, entity.getMetaClass(), requestURI, view);
-            Node importedNode = root.getOwnerDocument().importNode(convertedEntity.getDocumentElement(), true);
-            root.appendChild(importedNode);
-        } else if (result instanceof Collection) {
-            if (!checkCollectionItemTypes((Collection) result, Entity.class))
-                throw new IllegalArgumentException("Items that are not instances of Entity class found in service method result");
-            ArrayList list = new ArrayList((Collection) result);
-            MetaClass metaClass;
-            if (!list.isEmpty())
-                metaClass = ((Entity) list.get(0)).getMetaClass();
-            else
-                metaClass = AppBeans.get(Metadata.class).getClasses().iterator().next();
-
-            ViewRepository viewRepository = AppBeans.get(ViewRepository.class);
-            if (Strings.isNullOrEmpty(viewName)) viewName = View.LOCAL;
-            View view = viewRepository.getView(metaClass, viewName);
-            Document processed = process(list, metaClass, requestURI, view);
-            Node importedNode = root.getOwnerDocument().importNode(processed.getDocumentElement(), true);
-            root.appendChild(importedNode);
-        } else {
-            root.setTextContent(result != null ? result.toString() : NULL_VALUE);
-        }
-        return root.getOwnerDocument();
-    }
-
-    protected boolean checkCollectionItemTypes(Collection collection, Class<?> itemClass) {
-        for (Object collectionItem : collection) {
-            if (!itemClass.isAssignableFrom(collectionItem.getClass()))
-                return false;
-        }
-        return true;
-    }
-
-    @Override
-    public void write(HttpServletResponse response, Object o) throws IOException {
-        Document doc = (Document) o;
-        response.setContentType(MIME_STR);
-        try {
-            Transformer transformer = TransformerFactory.newInstance().newTransformer();
-            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-            transformer.setOutputProperty(OutputKeys.STANDALONE, "no");
-            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
-            transformer.setOutputProperty(OutputKeys.INDENT, "no");
-            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-
-            transformer.transform(new DOMSource(doc), new StreamResult(response.getOutputStream()));
-        } catch (Exception e) {
-            throw new IOException(e);
-        }
+        return documentToString(doc);
     }
 
     @Override
@@ -466,14 +398,14 @@ public class XMLConvertor implements Convertor {
         Document doc = builder.newDocument();
         Element root = doc.createElement(rootTag);
         doc.appendChild(root);
-//        String[] nvpairs = new String[]{
-//                "xmlns:xsi", XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI,
-////                "xsi:noNamespaceSchemaLocation", INSTANCE_XSD,
-//                ATTR_VERSION, "1.0",
-//        };
-//        for (int i = 0; i < nvpairs.length; i += 2) {
-//            root.setAttribute(nvpairs[i], nvpairs[i + 1]);
-//        }
+        String[] nvpairs = new String[]{
+                "xmlns:xsi", XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI,
+//                "xsi:noNamespaceSchemaLocation", INSTANCE_XSD,
+                ATTR_VERSION, "1.0",
+        };
+        for (int i = 0; i < nvpairs.length; i += 2) {
+            root.setAttribute(nvpairs[i], nvpairs[i + 1]);
+        }
         return root;
     }
 
@@ -725,5 +657,48 @@ public class XMLConvertor implements Convertor {
     protected boolean entityOpPermitted(MetaClass metaClass, EntityOp entityOp) {
         Security security = AppBeans.get(Security.NAME);
         return security.isEntityOpPermitted(metaClass, entityOp);
+    }
+
+    @Override
+    public String processServiceMethodResult(Object result, @Nullable String viewName) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ServiceRequest parseServiceRequest(String content) throws Exception {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Entity parseEntity(String content) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Collection parseEntitiesCollection(String content, Class<? extends Collection> collectionClass) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<Integer> getApiVersions() {
+        return Arrays.asList(1);
+    }
+
+    protected String documentToString(Document document) {
+        try {
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+            transformer.setOutputProperty(OutputKeys.STANDALONE, "no");
+            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+            transformer.setOutputProperty(OutputKeys.INDENT, "no");
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+
+            StringWriter sw = new StringWriter();
+            transformer.transform(new DOMSource(document), new StreamResult(sw));
+            return sw.toString();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

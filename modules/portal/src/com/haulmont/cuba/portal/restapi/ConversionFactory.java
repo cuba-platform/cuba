@@ -5,39 +5,46 @@
 
 package com.haulmont.cuba.portal.restapi;
 
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.portal.config.RestConfig;
+
 import javax.activation.MimeType;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author chevelev
  * @version $Id$
  */
 public class ConversionFactory {
-    private Map<String, Convertor> convertors = new HashMap<>();
+    private List<Convertor> convertors = new ArrayList<>();
+    protected final int restApiVersion;
 
     public ConversionFactory() {
-        convertors.put("xml", new XMLConvertor());
-        convertors.put("json", new JSONConvertor());
+        convertors.add(new JSONConvertor());
+        convertors.add(new XMLConvertor());
+        convertors.add(new XMLConvertor2());
+
+        RestConfig restConfig = AppBeans.get(Configuration.class).getConfig(RestConfig.class);
+        restApiVersion = restConfig.getRestApiVersion();
     }
 
     public Convertor getConvertor(MimeType requestedForm) {
-        if (requestedForm == null) {
-            return convertors.values().iterator().next();
-        }
-
-        for (Convertor convertor : convertors.values()) {
-            if (requestedForm.match(convertor.getMimeType())) {
-                return convertor;
+        if (requestedForm != null) {
+            for (Convertor convertor : convertors) {
+                if (requestedForm.match(convertor.getMimeType()) && convertor.getApiVersions().contains(restApiVersion))
+                    return convertor;
             }
         }
-        return convertors.values().iterator().next();
+        throw new RuntimeException("Convertor not found");
     }
 
     public Convertor getConvertor(String type) {
-        Convertor convertor = convertors.get(type);
-        if (convertor == null)
-            convertors.values().iterator().next();
-        return convertor;
+        for (Convertor convertor : convertors) {
+            if (convertor.getType().equals(type) && convertor.getApiVersions().contains(restApiVersion))
+                return convertor;
+        }
+        throw new RuntimeException("Convertor not found");
     }
 }

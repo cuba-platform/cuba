@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema
+        targetNamespace="http://schemas.haulmont.com/cuba/5.3/restapi-commit-v2.xsd"
+        xmlns="http://schemas.haulmont.com/cuba/5.3/restapi-commit-v2.xsd"
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+            attributeFormDefault="unqualified"
+            elementFormDefault="qualified">
+
+    <xs:include schemaLocation="restapi-instance-v2.xsd"/>
+
+    <xs:annotation>
+        <xs:documentation><![CDATA[
+         Describes CommitRequest structure.
+         ]]>
+        </xs:documentation>
+    </xs:annotation>
+
+    <xs:element name="CommitRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="commitInstances" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="instance" minOccurs="0" maxOccurs="unbounded" type="instanceType"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="removeInstances" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="instance" minOccurs="0" maxOccurs="unbounded" type="instanceType"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="softDeletion" type="xs:boolean" maxOccurs="1" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://schemas.haulmont.com/cuba/5.3/restapi-service-v2.xsd"
+           xmlns="http://schemas.haulmont.com/cuba/5.3/restapi-service-v2.xsd"
+           attributeFormDefault="unqualified"
+           elementFormDefault="qualified">
+
+    <xs:include schemaLocation="http://schemas.haulmont.com/cuba/5.3/restapi-instance-v2.xsd"/>
+
+    <xs:annotation>
+        <xs:documentation><![CDATA[
+         Describes ServiceRequest and result of service invocation
+         ]]>
+        </xs:documentation>
+    </xs:annotation>
+
+    <xs:element name="ServiceRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="service" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="method" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="view" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="params">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="param" type="paramType"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="paramType" mixed="true">
+        <xs:choice>
+            <xs:element name="instance" type="instanceType" maxOccurs="1"/>
+            <xs:element name="instances" type="instancesType"/>
+        </xs:choice>
+        <xs:attribute name="name" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:element name="result">
+        <xs:complexType mixed="true">
+            <xs:choice>
+                <xs:element name="instance" type="instanceType"/>
+                <xs:element name="instances" type="instancesType"/>
+            </xs:choice>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

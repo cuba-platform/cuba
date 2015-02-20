@@ -34,11 +34,11 @@ import com.haulmont.cuba.security.entity.EntityOp;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.util.ClassUtils;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
 import javax.annotation.Nullable;
-import javax.persistence.Id;
 import javax.servlet.http.HttpServletResponse;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
@@ -55,6 +55,7 @@ import java.util.*;
 public class JSONConvertor implements Convertor {
 
     public static final String MIME_STR = "application/json;charset=UTF-8";
+    public static final String TYPE_JSON = "json";
     public static final MimeType MIME_TYPE_JSON;
 
     static {
@@ -82,14 +83,28 @@ public class JSONConvertor implements Convertor {
     }
 
     @Override
-    public MyJSONObject process(Entity entity, MetaClass metaclass, String requestURI, View view)
-            throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-        return encodeInstance(entity, new HashSet<Entity>(), metaclass, view);
+    public String getType() {
+        return TYPE_JSON;
     }
 
     @Override
-    public MyJSONObject.Array process(List<Entity> entities, MetaClass metaClass, String requestURI, View view)
-            throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    public String process(Entity entity, MetaClass metaclass, View view) throws Exception {
+        MyJSONObject jsonObject = encodeInstance(entity, new HashSet<Entity>(), metaclass, view);
+        return jsonObject.toString();
+    }
+
+    protected MyJSONObject _process(Entity entity, View view) throws Exception {
+        return encodeInstance(entity, new HashSet<Entity>(), entity.getMetaClass(), view);
+    }
+
+
+    @Override
+    public String process(List<Entity> entities, MetaClass metaClass, View view)  throws Exception {
+        MyJSONObject.Array array = _process(entities, metaClass, view);
+        return array.toString();
+    }
+
+    protected MyJSONObject.Array _process(List<Entity> entities, MetaClass metaClass, View view) throws Exception {
         MyJSONObject.Array result = new MyJSONObject.Array();
         for (Entity entity : entities) {
             MyJSON item = encodeInstance(entity, new HashSet<Entity>(), metaClass, view);
@@ -99,13 +114,13 @@ public class JSONConvertor implements Convertor {
     }
 
     @Override
-    public MyJSONObject.Array process(Set<Entity> entities, String requestURI)
-            throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    public String process(Set<Entity> entities) throws Exception {
         MyJSONObject.Array result = new MyJSONObject.Array();
         for (Entity entity : entities) {
             MyJSONObject entityJson = encodeInstance(entity, new HashSet<Entity>(), getMetaClass(entity), null);
 
-            if (restConfig.getRestApiCommitReturnsMaps()) {
+            if (restConfig.getRestApiVersion() == 1) {
+                //return map for old version of rest api
                 MyJSONObject valueJson = encodeInstance(entity, new HashSet<Entity>(), getMetaClass(entity), null);
                 MyJSONObject.Array mapping = new MyJSONObject.Array();
                 mapping.add(entityJson);
@@ -116,19 +131,18 @@ public class JSONConvertor implements Convertor {
             }
 
         }
-        return result;
+        return result.toString();
     }
 
     @Override
-    public Object processServiceMethodResult(Object result, String requestURI, @Nullable String viewName)
-            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public String processServiceMethodResult(Object result, @Nullable String viewName) throws Exception {
         MyJSONObject root = new MyJSONObject();
         if (result instanceof Entity) {
             Entity entity = (Entity) result;
             ViewRepository viewRepository = AppBeans.get(ViewRepository.class);
             if (Strings.isNullOrEmpty(viewName)) viewName = View.LOCAL;
             View view = viewRepository.getView(entity.getMetaClass(), viewName);
-            MyJSONObject entityObject = process(entity, entity.getMetaClass(), "", view);
+            MyJSONObject entityObject = _process(entity, view);
             root.set("result", entityObject);
         } else if (result instanceof Collection) {
             if (!checkCollectionItemTypes((Collection) result, Entity.class))
@@ -142,12 +156,12 @@ public class JSONConvertor implements Convertor {
             ViewRepository viewRepository = AppBeans.get(ViewRepository.class);
             if (Strings.isNullOrEmpty(viewName)) viewName = View.LOCAL;
             View view = viewRepository.getView(metaClass, viewName);
-            MyJSONObject.Array processed = process(list, metaClass, requestURI, view);
+            MyJSONObject.Array processed = _process(list, metaClass, view);
             root.set("result", processed);
         } else {
             root.set("result", result);
         }
-        return root;
+        return root.toString();
     }
 
     /**
@@ -163,18 +177,6 @@ public class JSONConvertor implements Convertor {
 
     private MetaClass getMetaClass(Entity entity) {
         return metadata.getSession().getClassNN(entity.getClass());
-    }
-
-    @Override
-    public void write(HttpServletResponse response, Object o) {
-        response.setContentType(MIME_STR);
-        try {
-            PrintWriter writer = response.getWriter();
-            writer.write(o.toString());
-            writer.flush();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Override
@@ -255,9 +257,7 @@ public class JSONConvertor implements Convertor {
             switch (property.getType()) {
                 case DATATYPE:
                     String value = json.getString(key);
-                    String typeName = property.getRange().asDatatype().getName();
-                    if (json.isNull(key) || (!StringDatatype.NAME.equals(typeName) && "null".equals(value)))
-                            value = null;
+                    if (json.isNull(key)) value = null;
                     setField(bean, key, property.getRange().asDatatype().parse(value));
                     break;
                 case ENUM:
@@ -331,9 +331,170 @@ public class JSONConvertor implements Convertor {
         }
     }
 
+    @Override
+    public ServiceRequest parseServiceRequest(String content) throws Exception {
+        JSONObject jsonObject = new JSONObject(content);
+        String serviceName = jsonObject.getString("service");
+        String methodName = jsonObject.getString("method");
+        String viewName = jsonObject.optString("view");
+
+        ServiceRequest serviceRequest = new ServiceRequest(serviceName, methodName, this);
+        serviceRequest.setViewName(viewName);
+
+        JSONObject params = jsonObject.optJSONObject("params");
+        if (params != null) {
+            int idx = 0;
+            while (true) {
+                if (!params.has("param" + idx)) break;
+
+                String param = params.getString("param" + idx);
+                serviceRequest.getParamValuesString().add(param);
+
+                if (params.has("param" + idx + "_type")) {
+                    String type = params.optString("param" + idx + "_type");
+                    serviceRequest.getParamTypes().add(ClassUtils.forName(type, null));
+                } else {
+                    if (!serviceRequest.getParamTypes().isEmpty()) {
+                        //types should be defined for all parameters or for none of them
+                        throw new RestServiceException("Parameter type for param" + idx + " is not defined");
+                    }
+                }
+                idx++;
+            }
+        }
+
+        return serviceRequest;
+    }
+
+    @Override
+    public Entity parseEntity(String content) {
+        try {
+            JSONObject json = new JSONObject(content);
+            return _parseEntity(json);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected Entity _parseEntity(JSONObject json) {
+        try {
+            String id = json.getString("id");
+            EntityLoadInfo loadInfo = EntityLoadInfo.parse(id);
+
+            if (loadInfo == null)
+                throw new IllegalArgumentException("JSON description of entity doesn't contain valid 'id' attribute");
+
+            Entity instance = createEmptyInstance(loadInfo);
+            setField(instance, "id", loadInfo.getId());
+
+            MetaClass metaClass = loadInfo.getMetaClass();
+            Iterator iter = json.keys();
+            while (iter.hasNext()) {
+                String key = (String) iter.next();
+                if ("id".equals(key)) {
+                    // id was parsed already
+                    continue;
+                }
+
+                MetaProperty property = metaClass.getPropertyNN(key);
+                switch (property.getType()) {
+                    case DATATYPE:
+                        String value = json.getString(key);
+                        if (json.isNull(key)) value = null;
+                        setField(instance, key, property.getRange().asDatatype().parse(value));
+                        break;
+                    case ENUM:
+                        setField(instance, key, property.getRange().asEnumeration().parse(json.getString(key)));
+                        break;
+                    case COMPOSITION:
+                    case ASSOCIATION:
+                        if ("null".equals(json.getString(key))) {
+                            setField(instance, key, null);
+                            break;
+                        }
+
+                        if (!property.getRange().getCardinality().isMany()) {
+                            JSONObject jsonChild = json.getJSONObject(key);
+                            Object childInstance = _parseEntity(jsonChild);
+                            setField(instance, key, childInstance);
+                        } else {
+                            JSONArray jsonArray = json.getJSONArray(key);
+                            Class<?> propertyJavaType = property.getJavaType();
+                            Collection<Object> coll;
+                            if (List.class.isAssignableFrom(propertyJavaType))
+                                coll = new ArrayList<>();
+                            else if (Set.class.isAssignableFrom(propertyJavaType))
+                                coll = new HashSet<>();
+                            else
+                                throw new RuntimeException("Datatype " + propertyJavaType.getName() + " of "
+                                        + metaClass.getName() + "#" + property.getName() + " is not supported");
+                            setField(instance, key, coll);
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                Object arrayValue = jsonArray.get(i);
+                                if (arrayValue == null)
+                                    coll.add(null);
+                                else {
+                                    //assuming no simple type here
+                                    JSONObject jsonChild = (JSONObject) arrayValue;
+                                    Object child = _parseEntity(jsonChild);
+                                    coll.add(child);
+                                }
+                            }
+                        }
+                        break;
+                    default:
+                        throw new IllegalStateException("Unknown property type");
+                }
+            }
+
+            return instance;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Creates new entity instance from {@link com.haulmont.cuba.core.global.EntityLoadInfo}
+     * and reset fields values
+     */
+    protected Entity createEmptyInstance(EntityLoadInfo loadInfo) throws IllegalAccessException, InstantiationException {
+        MetaClass metaClass = loadInfo.getMetaClass();
+        Entity instance = metaClass.createInstance();
+        for (MetaProperty metaProperty : metaClass.getProperties()) {
+            instance.setValue(metaProperty.getName(), null);
+        }
+        return instance;
+    }
+
     protected void setField(Object bean, String field, Object value)
             throws IllegalAccessException, InvocationTargetException, IntrospectionException {
         new PropertyDescriptor(field, bean.getClass()).getWriteMethod().invoke(bean, value);
+    }
+
+    @Override
+    public Collection<? extends Entity> parseEntitiesCollection(String content, Class<? extends Collection> collectionClass) {
+        try {
+            Collection collection = newCollectionInstance(collectionClass);
+            JSONArray jsonArray = new JSONArray(content);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject instanceObj = jsonArray.getJSONObject(i);
+                Entity entity = _parseEntity(instanceObj);
+                collection.add(entity);
+            }
+            return collection;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected Collection newCollectionInstance(Class<? extends Collection> clazz) throws IllegalAccessException, InstantiationException {
+        if (!clazz.isInterface()) {
+            return clazz.newInstance();
+        } else {
+            if (List.class.isAssignableFrom(clazz)) return new ArrayList();
+            if (Set.class.isAssignableFrom(clazz)) return new HashSet();
+        }
+        throw new IllegalArgumentException("Collections of type" + clazz.getName() + " not supported");
     }
 
     /**
@@ -484,5 +645,10 @@ public class JSONConvertor implements Convertor {
 
     protected MetaClass propertyMetaClass(MetaProperty property) {
         return property.getRange().asClass();
+    }
+
+    @Override
+    public List<Integer> getApiVersions() {
+        return Arrays.asList(1, 2);
     }
 }

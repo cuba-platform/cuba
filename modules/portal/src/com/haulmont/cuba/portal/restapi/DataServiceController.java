@@ -20,19 +20,19 @@ import freemarker.template.TemplateException;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONException;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.activation.MimeType;
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.util.*;
 
@@ -113,8 +113,8 @@ public class DataServiceController {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             } else {
                 Convertor convertor = conversionFactory.getConvertor(type);
-                Object result = convertor.process(entity, metaClass, request.getRequestURI(), loadCtx.getView());
-                convertor.write(response, result);
+                String result = convertor.process(entity, metaClass, loadCtx.getView());
+                writeResponse(response, result, convertor.getMimeType());
             }
         } catch (Throwable e) {
             sendError(request, response, e);
@@ -190,8 +190,8 @@ public class DataServiceController {
             }
             List<Entity> entities = dataService.loadList(loadCtx);
             Convertor convertor = conversionFactory.getConvertor(type);
-            Object result = convertor.process(entities, metaClass, request.getRequestURI(), loadCtx.getView());
-            convertor.write(response, result);
+            String result = convertor.process(entities, metaClass, loadCtx.getView());
+            writeResponse(response, result, convertor.getMimeType());
         } catch (Throwable e) {
             sendError(request, response, e);
         } finally {
@@ -242,8 +242,8 @@ public class DataServiceController {
             commitContext.setNewInstanceIds(newInstanceIds);
             Set<Entity> result = dataService.commit(commitContext);
 
-            Object converted = convertor.process(result, request.getRequestURI());
-            convertor.write(response, converted);
+            String converted = convertor.process(result);
+            writeResponse(response, converted, convertor.getMimeType());
         } catch (Throwable e) {
             sendError(request, response, e);
         } finally {
@@ -332,7 +332,7 @@ public class DataServiceController {
 
             Map<String, String[]> parameterMap = request.getParameterMap();
             List<String> paramValuesString = new ArrayList<>();
-            List<Class<?>> paramTypes = new ArrayList<>();
+            List<Class> paramTypes = new ArrayList<>();
 
             int idx = 0;
             while (true) {
@@ -359,47 +359,15 @@ public class DataServiceController {
                 idx++;
             }
 
-            Object service = AppBeans.get(serviceName);
-            Method serviceMethod;
-            if (paramTypes.isEmpty()) {
-                //trying to guess which method to invoke
-                Method[] methods = service.getClass().getMethods();
-                List<Method> appropriateMethods = new ArrayList<>();
-                for (Method method : methods) {
-                    if (methodName.equals(method.getName()) && method.getParameterTypes().length == paramValuesString.size()) {
-                        appropriateMethods.add(method);
-                    }
-                }
-                if (appropriateMethods.size() == 1) {
-                    serviceMethod = appropriateMethods.get(0);
-                } else if (appropriateMethods.size() > 1) {
-                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "There are multiple methods with given argument numbers. Please define parameter types in request");
-                    return;
-                } else {
-                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Method not found");
-                    return;
-                }
-            } else {
-                try {
-                    serviceMethod = service.getClass().getMethod(methodName, paramTypes.toArray(new Class[paramTypes.size()]));
-                } catch (NoSuchMethodException e) {
-                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Method not found");
-                    return;
-                }
-            }
-
-            List<Object> paramValues = new ArrayList<>();
-            Class<?>[] types = serviceMethod.getParameterTypes();
-            for (int i = 0; i < types.length; i++) {
-                Class<?> aClass = types[i];
-                paramValues.add(toObject(aClass, paramValuesString.get(i)));
-            }
-
-            Object result = serviceMethod.invoke(service, paramValues.toArray());
-
             Convertor convertor = conversionFactory.getConvertor(type);
-            Object converted = convertor.processServiceMethodResult(result, request.getRequestURI(), view);
-            convertor.write(response, converted);
+            ServiceRequest serviceRequest = new ServiceRequest(serviceName, methodName, convertor);
+            serviceRequest.setParamTypes(paramTypes);
+            serviceRequest.setParamValuesString(paramValuesString);
+
+            Object result = serviceRequest.invokeMethod();
+
+            String converted = convertor.processServiceMethodResult(result, view);
+            writeResponse(response, converted, convertor.getMimeType());
         } catch (Throwable e) {
             sendError(request, response, e);
         } finally {
@@ -407,17 +375,47 @@ public class DataServiceController {
         }
     }
 
-    private Object toObject(Class clazz, String value) {
-        if (Boolean.class == clazz || Boolean.TYPE == clazz) return Boolean.parseBoolean(value);
-        if (Byte.class == clazz || Byte.TYPE == clazz) return Byte.parseByte(value);
-        if (Short.class == clazz || Short.TYPE == clazz) return Short.parseShort(value);
-        if (Integer.class == clazz || Integer.TYPE == clazz) return Integer.parseInt(value);
-        if (Long.class == clazz || Long.TYPE == clazz) return Long.parseLong(value);
-        if (Float.class == clazz || Float.TYPE == clazz) return Float.parseFloat(value);
-        if (Double.class == clazz || Double.TYPE == clazz) return Double.parseDouble(value);
-        if (UUID.class == clazz) return UUID.fromString(value);
-        if (String.class == clazz) return value;
-        throw new IllegalArgumentException("Parameters of type " + clazz.getName() + " are not supported");
+    @RequestMapping(value = "/api/service", method = RequestMethod.POST)
+    public void serviceByPost(@RequestParam(value = "s") String sessionId,
+                             @RequestHeader(value = "Content-Type") MimeType contentType,
+                             @RequestBody String requestContent,
+                             HttpServletRequest request,
+                             HttpServletResponse response) throws IOException, JSONException {
+
+        if (!authentication.begin(sessionId)) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+
+        try {
+            response.addHeader("Access-Control-Allow-Origin", "*");
+
+            Convertor convertor = conversionFactory.getConvertor(contentType);
+            ServiceRequest serviceRequest = convertor.parseServiceRequest(requestContent);
+
+            if (!restServicePermissions.isPermitted(serviceRequest.getServiceName(), serviceRequest.getMethodName())) {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                return;
+            }
+
+            Object result = serviceRequest.invokeMethod();
+            String converted = convertor.processServiceMethodResult(result, serviceRequest.getViewName());
+            writeResponse(response, converted, convertor.getMimeType());
+        } catch (RestServiceException e) {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            log.error("Error processing request: " + request.getRequestURI() + "?" + request.getQueryString(), e);
+        } catch (Throwable e) {
+            sendError(request, response, e);
+        } finally {
+            authentication.end();
+        }
+    }
+
+    private void  writeResponse(HttpServletResponse response, String result, MimeType mimeType) throws IOException {
+        response.setContentType(mimeType.toString());
+        PrintWriter writer = response.getWriter();
+        writer.write(result);
+        writer.flush();
     }
 
     private void sendError(HttpServletRequest request, HttpServletResponse response, Throwable e) throws IOException {

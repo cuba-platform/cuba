@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.config.Property;
 import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
+import com.haulmont.cuba.core.config.defaults.DefaultInt;
 
 /**
  * @author zlatoverov
@@ -22,7 +23,7 @@ public interface RestConfig extends Config {
     @DefaultBoolean(false)
     boolean getProductionMode();
 
-    @Property("cuba.rest.commitReturnsMaps")
-    @DefaultBoolean(false)
-    boolean getRestApiCommitReturnsMaps();
+    @Property("cuba.rest.apiVersion")
+    @DefaultInt(2)
+    int getRestApiVersion();
 }
