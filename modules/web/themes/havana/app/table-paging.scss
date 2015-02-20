@@ -8,15 +8,13 @@
 @mixin cuba-table-paging {
   .cuba-paging {
     .v-label {
-      line-height: 17px;
-      margin-top: 8px;
+      line-height: 18px;
       border: 0;
     }
   }
 
   .v-button.cuba-paging-change-page {
-    height: 17px;
-    margin-top: 8px;
+    height: auto;
 
     .v-button-wrap {
       margin-top: 0;
@@ -30,8 +28,7 @@
 
   .v-button.v-button-link.cuba-paging-count {
     border: 0;
-    height: 17px;
-    margin-top: 8px;
+    height: auto;
 
     .v-button-wrap {
       line-height: 12px;
