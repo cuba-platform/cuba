@@ -428,10 +428,6 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
     }
 
     @Override
-    public void disablePaging() {
-    }
-
-    @Override
     public boolean isMultiSelect() {
         return false;
     }

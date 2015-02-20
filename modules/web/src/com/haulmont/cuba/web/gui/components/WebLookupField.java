@@ -311,13 +311,6 @@ public class WebLookupField extends WebAbstractOptionsField<CubaComboBox> implem
 //        }
     }
 
-    @Deprecated
-    @Override
-    public void disablePaging() {
-//        vaadin7
-//        component.disablePaging();
-    }
-
     protected class LookupOptionsDsWrapper extends OptionsDsWrapper {
 
         public LookupOptionsDsWrapper(CollectionDatasource datasource, boolean autoRefresh) {

@@ -68,7 +68,4 @@ public interface LookupField extends OptionsField {
          */
         void addNewOption(String caption);
     }
-
-    @Deprecated
-    void disablePaging();
 }

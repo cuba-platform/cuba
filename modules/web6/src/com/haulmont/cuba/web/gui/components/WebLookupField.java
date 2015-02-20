@@ -25,15 +25,16 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
 
 /**
  * @author abramov
  * @version $Id$
  */
-public class WebLookupField
-        extends WebAbstractOptionsField<FilterSelect>
-        implements LookupField {
+public class WebLookupField extends WebAbstractOptionsField<FilterSelect> implements LookupField {
 
     protected Object nullOption;
     protected Entity nullEntity;
@@ -336,12 +337,6 @@ public class WebLookupField
     @Override
     public void setInputPrompt(String inputPrompt) {
         this.inputPrompt = inputPrompt;
-    }
-
-    @Deprecated
-    @Override
-    public void disablePaging() {
-        component.disablePaging();
     }
 
     @Override

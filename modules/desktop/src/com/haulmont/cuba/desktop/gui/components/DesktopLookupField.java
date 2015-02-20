@@ -40,9 +40,7 @@ import java.util.Map;
  * @author krivopustov
  * @version $Id$
  */
-public class DesktopLookupField
-        extends DesktopAbstractOptionsField<JComponent>
-        implements LookupField {
+public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> implements LookupField {
 
     protected static final FilterMode DEFAULT_FILTER_MODE = FilterMode.CONTAINS;
 
@@ -335,10 +333,6 @@ public class DesktopLookupField
     @Override
     public void setInputPrompt(String inputPrompt) {
         this.inputPrompt = inputPrompt;
-    }
-
-    @Override
-    public void disablePaging() {
     }
 
     @Override
