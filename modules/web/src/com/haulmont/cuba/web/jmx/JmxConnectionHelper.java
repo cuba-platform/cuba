@@ -19,6 +19,7 @@ import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
+import java.util.Collection;
 import java.util.Properties;
 import java.util.Set;
 
@@ -55,6 +56,52 @@ public final class JmxConnectionHelper {
                 return StringUtils.equals(objectClass.getName(), info.getClassName());
             }
         });
+    }
+
+    protected static ObjectName getObjectName(final MBeanServerConnection connection, final String remoteContext,
+                                              final Class objectClass) throws IOException {
+        Set<ObjectName> names = connection.queryNames(null, null);
+        return (ObjectName) CollectionUtils.find(names, new Predicate() {
+            @Override
+            public boolean evaluate(Object o) {
+                ObjectName objectName = (ObjectName) o;
+
+                if (StringUtils.equals(remoteContext, objectName.getDomain())) {
+                    return false;
+                }
+
+                MBeanInfo info;
+                try {
+                    info = connection.getMBeanInfo(objectName);
+                } catch (Exception e) {
+                    throw new JmxControlException(e);
+                }
+                return StringUtils.equals(objectClass.getName(), info.getClassName());
+            }
+        });
+    }
+
+    protected static Collection<ObjectName> getSuitableObjectNames(final MBeanServerConnection connection,
+                                                                   final Class objectClass) throws IOException {
+        Set<ObjectName> names = connection.queryNames(null, null);
+
+        // find all suitable beans
+        @SuppressWarnings("unchecked")
+        Collection<ObjectName> suitableNames = CollectionUtils.select(names, new Predicate() {
+            @Override
+            public boolean evaluate(Object o) {
+                ObjectName objectName = (ObjectName) o;
+                MBeanInfo info;
+                try {
+                    info = connection.getMBeanInfo(objectName);
+                } catch (Exception e) {
+                    throw new JmxControlException(e);
+                }
+                return StringUtils.equals(objectClass.getName(), info.getClassName());
+            }
+        });
+
+        return suitableNames;
     }
 
     protected static <T> T getProxy(MBeanServerConnection connection, ObjectName objectName, final Class<T> objectClass) {

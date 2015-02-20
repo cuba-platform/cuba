@@ -53,16 +53,21 @@ public class LogDataProvider implements ExportDataProvider {
 
     protected JmxInstance jmxInstance;
 
+    protected String remoteContext;
     protected boolean downloadFullLog = false;
 
     public LogDataProvider(JmxInstance jmxInstance, String logFileName) {
-        this.logFileName = logFileName;
-        this.jmxInstance = jmxInstance;
+        this(jmxInstance, logFileName, null, false);
     }
 
     public LogDataProvider(JmxInstance jmxInstance, String logFileName, boolean downloadFullLog) {
+        this(jmxInstance, logFileName, null, downloadFullLog);
+    }
+
+    public LogDataProvider(JmxInstance jmxInstance, String logFileName, String remoteContext, boolean downloadFullLog) {
         this.logFileName = logFileName;
         this.jmxInstance = jmxInstance;
+        this.remoteContext = remoteContext;
         this.downloadFullLog = downloadFullLog;
     }
 
@@ -73,7 +78,7 @@ public class LogDataProvider implements ExportDataProvider {
 
         String url;
         try {
-            url = jmxRemoteLoggingAPI.getLogFileLink(jmxInstance, logFileName);
+            url = jmxRemoteLoggingAPI.getLogFileLink(jmxInstance, remoteContext, logFileName);
         } catch (Exception e) {
             log.error("Unable to get log file link from JMX interface");
 

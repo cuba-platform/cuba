@@ -16,6 +16,8 @@ import javax.annotation.ManagedBean;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -58,6 +60,18 @@ public class JmxRemoteLoggingBean implements JmxRemoteLoggingAPI {
             @Override
             public String perform(JmxInstance jmx, MBeanServerConnection connection) throws Exception {
                 JmxLogControlMBean logControlMBean = getRemoteLogControl(connection);
+                return logControlMBean.getLogFileLink(fileName);
+            }
+        });
+    }
+
+    @Override
+    public String getLogFileLink(JmxInstance instance, final String remoteContext,
+                                 final String fileName) throws LogControlException {
+        return withConnection(instance, new JmxAction<String>() {
+            @Override
+            public String perform(JmxInstance jmx, MBeanServerConnection connection) throws Exception {
+                JmxLogControlMBean logControlMBean = getRemoteLogControl(connection, remoteContext);
                 return logControlMBean.getLogFileLink(fileName);
             }
         });
@@ -192,10 +206,41 @@ public class JmxRemoteLoggingBean implements JmxRemoteLoggingAPI {
         });
     }
 
+    @Override
+    public List<String> getAvailableContexts(JmxInstance instance) {
+        return withConnection(instance, new JmxAction<List<String>>() {
+            @Override
+            public List<String> perform(JmxInstance jmx, MBeanServerConnection connection) throws Exception {
+                Collection<ObjectName> objectNames =
+                        JmxConnectionHelper.getSuitableObjectNames(connection, JmxLogControl.class);
+                List<String> contexts = new ArrayList<>();
+                for (ObjectName objectName : objectNames) {
+                    contexts.add(objectName.getDomain());
+                }
+                return contexts;
+            }
+        });
+    }
+
     protected JmxLogControlMBean getRemoteLogControl(MBeanServerConnection connection) {
         ObjectName objectName;
         try {
             objectName = JmxConnectionHelper.getObjectName(connection, JmxLogControl.class);
+        } catch (IOException e) {
+            throw new JmxControlException(e);
+        }
+
+        if (objectName == null) {
+            throw new JmxControlException("Could not find JmxLogControl implementation");
+        }
+
+        return JmxConnectionHelper.getProxy(connection, objectName, JmxLogControlMBean.class);
+    }
+
+    protected JmxLogControlMBean getRemoteLogControl(MBeanServerConnection connection, String remoteContext) {
+        ObjectName objectName;
+        try {
+            objectName = JmxConnectionHelper.getObjectName(connection, remoteContext, JmxLogControl.class);
         } catch (IOException e) {
             throw new JmxControlException(e);
         }

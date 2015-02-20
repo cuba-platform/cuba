@@ -50,6 +50,9 @@
     <screen id="serverLogLoggerControlDialog"
             template="/com/haulmont/cuba/web/app/ui/serverlogviewer/control-logger-window.xml" multipleOpen="true"/>
 
+    <screen id="serverLogDownloadOptionsDialog"
+            template="com/haulmont/cuba/web/app/ui/serverlogviewer/log-download-options.xml"/>
+
     <screen id="printDomain"
             class="com.haulmont.cuba.web.app.domain.DomainProvider"/>
 </screen-config>

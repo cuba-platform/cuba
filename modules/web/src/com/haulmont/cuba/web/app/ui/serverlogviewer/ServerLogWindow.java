@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.web.app.ui.serverlogviewer;
 
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.entity.JmxInstance;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
@@ -14,13 +15,10 @@ import com.haulmont.cuba.core.sys.logging.LoggingHelper;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Button;
-import com.haulmont.cuba.gui.components.CheckBox;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.app.ui.jmxinstance.edit.JmxInstanceEditor;
 import com.haulmont.cuba.web.export.LogDataProvider;
@@ -31,7 +29,8 @@ import com.haulmont.cuba.web.jmx.JmxRemoteLoggingAPI;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.*;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Panel;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -52,8 +51,6 @@ import java.util.*;
 public class ServerLogWindow extends AbstractWindow {
 
     private final Log log = LogFactory.getLog(getClass());
-
-    private static final int BYTES_IN_MB = (1024 * 1024);
 
     @Inject
     protected CollectionDatasource<JmxInstance, UUID> jmxInstancesDs;
@@ -413,34 +410,22 @@ public class ServerLogWindow extends AbstractWindow {
         if (fileName != null) {
             try {
                 final JmxInstance selectedConnection = getSelectedConnection();
+                // check if we have many suitable JmxControlBean instances
+                // show dialog with context select and size options if needed
+                List<String> availableContexts = jmxRemoteLoggingAPI.getAvailableContexts(selectedConnection);
+
                 long size = jmxRemoteLoggingAPI.getLogFileSize(selectedConnection, fileName);
 
-                if (size <= LogArchiver.LOG_TAIL_FOR_PACKING_SIZE) {
-                    exportFile(new LogDataProvider(selectedConnection, fileName), fileName);
+                if (size <= LogArchiver.LOG_TAIL_FOR_PACKING_SIZE && availableContexts.size() == 1) {
+                    ExportDisplay exportDisplay = AppConfig.createExportDisplay(this);
+                    exportDisplay.show(new LogDataProvider(selectedConnection, fileName), fileName + ".zip");
                 } else {
-                    long sizeMb = size / BYTES_IN_MB;
-
-                    showOptionDialog(getMessage("log.downloadOption"), formatMessage("log.selectDownloadOption", sizeMb),
-                            MessageType.CONFIRMATION,
-                            new Action[]{
-                                    new AbstractAction("log.downloadTail") {
-                                        @Override
-                                        public void actionPerform(Component component) {
-                                            exportFile(new LogDataProvider(selectedConnection, fileName), fileName);
-                                        }
-                                    },
-                                    new AbstractAction("log.downloadFull") {
-                                        @Override
-                                        public void actionPerform(Component component) {
-                                            exportFile(new LogDataProvider(selectedConnection, fileName, true), fileName);
-                                        }
-                                    },
-                                    new AbstractAction("actions.Cancel") {
-                                        @Override
-                                        public void actionPerform(Component component) {
-                                        }
-                                    }
-                            });
+                    openWindow("serverLogDownloadOptionsDialog",
+                               WindowManager.OpenType.DIALOG,
+                               ParamsMap.of("logFileName", fileName,
+                                            "connection", selectedConnection,
+                                            "logFileSize", size,
+                                            "remoteContextList", availableContexts));
                 }
             } catch (RuntimeException | LogControlException e) {
                 showNotification(getMessage("exception.logControl"), NotificationType.ERROR);
@@ -449,10 +434,6 @@ public class ServerLogWindow extends AbstractWindow {
         } else {
             showNotification(getMessage("log.notSelected"), NotificationType.HUMANIZED);
         }
-    }
-
-    protected void exportFile(LogDataProvider logDataProvider, String fileName) {
-        AppConfig.createExportDisplay(this).show(logDataProvider, fileName + ".zip");
     }
 
     public void updateLogTail(@SuppressWarnings("unused") Timer timer) {

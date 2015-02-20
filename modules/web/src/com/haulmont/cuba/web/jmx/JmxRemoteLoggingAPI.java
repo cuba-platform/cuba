@@ -47,6 +47,16 @@ public interface JmxRemoteLoggingAPI {
     String getLogFileLink(JmxInstance instance, String fileName) throws LogControlException;
 
     /**
+     * Get URL for log file downloading.
+     *
+     * @param instance jmx connection
+     * @param remoteContext remote web context
+     * @param fileName name of a log file
+     * @return URL
+     */
+    String getLogFileLink(JmxInstance instance, String remoteContext, String fileName) throws LogControlException;
+
+    /**
      * Get size for log file downloading.
      *
      * @param instance jmx connection
@@ -120,6 +130,12 @@ public interface JmxRemoteLoggingAPI {
      * @return host info
      */
     LoggingHostInfo getHostInfo(JmxInstance instance);
+
+    /**
+     * @param instance jmx connection
+     * @return list of available web contexts on this instance
+     */
+    List<String> getAvailableContexts(JmxInstance instance);
 
     public class LoggingHostInfo {
         private List<String> loggerNames;

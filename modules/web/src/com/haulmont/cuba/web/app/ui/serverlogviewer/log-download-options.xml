@@ -1,0 +1,24 @@
+<!--
+  ~ Copyright (c) 2008-2015 Haulmont. All rights reserved.
+  ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+  -->
+
+<window xmlns="http://schemas.haulmont.com/cuba/5.3/window.xsd"
+        class="com.haulmont.cuba.web.app.ui.serverlogviewer.LogDownloadOptionsWindow"
+        messagesPack="com.haulmont.cuba.web.app.ui.serverlogviewer"
+        caption="msg://log.download.options">
+    <layout spacing="true">
+        <hbox spacing="true" id="remoteContextBox">
+            <label value="msg://log.remoteContext" align="MIDDLE_CENTER"/>
+            <lookupField id="remoteContextField" required="true" width="200px"/>
+        </hbox>
+
+        <label id="sizeNotificationLabel"/>
+
+        <hbox spacing="true" align="MIDDLE_RIGHT">
+            <button id="downloadTailBtn" caption="msg://log.downloadTail" invoke="downloadTail"/>
+            <button id="downloadFullBtn" caption="msg://log.downloadFull" invoke="downloadFull"/>
+            <button caption="msg://actions.Cancel" invoke="cancel" icon="icons/cancel.png"/>
+        </hbox>
+    </layout>
+</window>
