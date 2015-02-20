@@ -1,1 +1,0 @@
-﻿<timeField id="timeField1" caption="msg://name1" datasource="orderDs" property="date"/>

@@ -1,7 +1,0 @@
-﻿<collectionDatasource id="coloursDs" class="com.haulmont.refapp.core.entity.Colour" view="_local">
-   <query>
-      <![CDATA[
-         select c from ref$Colour c where c.name like :(?i)custom$searchString
-      ]]>
-   </query>
-</collectionDatasource>

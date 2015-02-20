@@ -1,4 +1,0 @@
--- begin SALES_ORDER
-alter table SALES_ORDER add constraint FK_SALES_ORDER_CUSTOMER_ID foreign key (CUSTOMER_ID) references SALES_CUSTOMER(ID)^
-create index IDX_SALES_ORDER_CUSTOMER on SALES_ORDER (CUSTOMER_ID)^
--- end SALES_ORDER

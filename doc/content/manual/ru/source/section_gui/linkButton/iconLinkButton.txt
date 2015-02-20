@@ -1,1 +1,0 @@
-﻿<linkButton id="linkButton" caption="" icon="icons/save.png"/>

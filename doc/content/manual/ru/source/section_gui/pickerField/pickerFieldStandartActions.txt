@@ -1,7 +1,0 @@
-﻿<pickerField id="pickerField1" datasource="orderDs" property="customer">
-    <actions>
-        <action id="clear"/>
-        <action id="lookup"/>
-        <action id="open"/>
-    </actions>
-</pickerField>

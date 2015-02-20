@@ -1,4 +1,0 @@
-@Named("coloursTable.excel")
-protected Action excelAction;
-...
-excelAction.setEnabled(false);

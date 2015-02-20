@@ -1,1 +1,0 @@
-﻿<label id="label1" value="msg://orders"/>

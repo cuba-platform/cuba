@@ -1,1 +1,0 @@
-﻿<lookupPickerField id="lookupPickerField1" datasource="orderDs" property="customer" optionsDatasource="customersDs">

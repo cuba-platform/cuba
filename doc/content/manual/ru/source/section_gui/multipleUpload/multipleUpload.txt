@@ -1,2 +1,0 @@
-﻿<multiupload id="uploadTemplateAttachment"/>
-<textField id="textFieldInfo" width="500" rows="10" caption="Uploaded files:"/>

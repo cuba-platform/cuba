@@ -1,4 +1,0 @@
-﻿<dsContext>
-   <datasource id="customerDs" class="com.sample.sales.entity.Customer" view="_local"/>
-</dsContext>
-<label id="label1" datasource="customerDs" property="name"/>

@@ -1,1 +1,0 @@
-﻿<button id="textButton" caption="msg://someAction" description="Press me"/>

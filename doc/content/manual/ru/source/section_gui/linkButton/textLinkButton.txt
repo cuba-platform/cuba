@@ -1,1 +1,0 @@
-﻿<linkButton id="linkButton" caption="msg://linkButton" description="Press me"/>

@@ -1,7 +1,0 @@
-﻿<layout>
-   <groupBox spacing="true" stylename="edit-area" caption="IFrame:" 
-             orientation="vertical" collapsable="true">
-      <iframe src="com/haulmont/refapp/gui/app/sample/containers/gridlayout-window-sample.xml"
-              id="allocations"/>
-   </groupBox>
-</layout>

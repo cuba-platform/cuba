@@ -1,3 +1,0 @@
-﻿<searchPickerField id="searchField" optionsDatasource="customersDss"
-                   datasource="orderDs" property="customer"
-                   minSearchStringLength="2"/>
