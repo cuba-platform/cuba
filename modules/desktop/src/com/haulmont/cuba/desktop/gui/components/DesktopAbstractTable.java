@@ -843,8 +843,10 @@ public abstract class DesktopAbstractTable<C extends JXTable>
             if (tableModel.isGeneratedColumn(column)) {
                 TableColumn tableColumn = getColumn(column);
                 if (tableColumn != null) {
-                    DesktopTableCellEditor cellEditor = (DesktopTableCellEditor) tableColumn.getCellEditor();
-                    cellEditor.clearCache();
+                    TableCellEditor tableCellEditor = tableColumn.getCellEditor();
+                    if (tableCellEditor instanceof DesktopTableCellEditor) {
+                        ((DesktopTableCellEditor) tableCellEditor).clearCache();
+                    }
                 }
             }
         }
