@@ -7,6 +7,7 @@ package com.haulmont.cuba.core.global;
 
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.security.entity.User;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.ManagedBean;
@@ -44,7 +45,7 @@ public class UserFormatToolsImpl implements UserFormatTools {
 
     @Override
     public String formatUser(@Nonnull User user, @Nullable User substitutedUser) {
-        if (substitutedUser != null) {
+        if (substitutedUser != null && !ObjectUtils.equals(user, substitutedUser)) {
             return formatSubstitution(user, substitutedUser);
         } else {
             return formatOfficial(user);
