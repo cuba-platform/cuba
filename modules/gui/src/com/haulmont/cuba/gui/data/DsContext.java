@@ -46,6 +46,17 @@ public interface DsContext {
     <T extends Datasource> T get(String name);
 
     /**
+     * Get datasource by name. Name may contain path to a datasource in nested frame
+     * e.g. {@code someFrameId.someDatasourceId}.
+     * <p>Never returns null.</p>
+     *
+     * @param name  datasource name
+     * @return      datasource instance
+     * @throws java.lang.IllegalArgumentException if not found
+     */
+    <T extends Datasource> Datasource getNN(String name);
+
+    /**
      * @return all datasources contained in this context
      */
     Collection<Datasource> getAll();
