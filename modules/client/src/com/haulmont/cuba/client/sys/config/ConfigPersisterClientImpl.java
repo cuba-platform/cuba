@@ -27,6 +27,11 @@ public class ConfigPersisterClientImpl implements ConfigPersister {
     private volatile boolean cacheLoaded;
 
     private final Log log = LogFactory.getLog(ConfigPersisterClientImpl.class);
+    private boolean caching;
+
+    public ConfigPersisterClientImpl(boolean caching) {
+        this.caching = caching;
+    }
 
     @Override
     public String getProperty(SourceType sourceType, String name) {
@@ -42,8 +47,12 @@ public class ConfigPersisterClientImpl implements ConfigPersister {
             case DATABASE:
                 value = AppContext.getProperty(name);
                 if (StringUtils.isEmpty(value)) {
-                    loadCache();
-                    value = cache.get(name);
+                    if (caching) {
+                        loadCache();
+                        value = cache.get(name);
+                    } else {
+                        return getConfigStorage().getDbProperty(name);
+                    }
                 }
                 break;
             default:

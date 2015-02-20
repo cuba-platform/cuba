@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.gui;
 
+import com.haulmont.cuba.client.ClientConfiguration;
 import com.haulmont.cuba.core.config.Config;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
@@ -181,8 +182,8 @@ public class CompanionDependencyInjector {
 
         } else if (Config.class.isAssignableFrom(type)) {
             //noinspection unchecked
-            Configuration configuration = AppBeans.get(Configuration.NAME);
-            return configuration.getConfig((Class<? extends Config>) type);
+            ClientConfiguration configuration = AppBeans.get(Configuration.NAME);
+            return configuration.getConfigCached((Class<? extends Config>) type);
 
         } else {
             Object instance;

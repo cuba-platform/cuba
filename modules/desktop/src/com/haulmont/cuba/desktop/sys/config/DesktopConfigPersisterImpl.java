@@ -18,7 +18,8 @@ import com.haulmont.cuba.core.app.ConfigStorageService;
 public class DesktopConfigPersisterImpl extends ConfigPersisterClientImpl {
     private DesktopConfigStorageCache configStorageCache;
 
-    public DesktopConfigPersisterImpl(DesktopConfigStorageCache configStorageCache) {
+    public DesktopConfigPersisterImpl(DesktopConfigStorageCache configStorageCache, boolean caching) {
+        super(caching);
         this.configStorageCache = configStorageCache;
     }
 
