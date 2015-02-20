@@ -175,6 +175,4 @@
     <screen id="groupConditionFrame"
             template="/com/haulmont/cuba/gui/components/filter/edit/group-condition-frame.xml"/>
 
-    <screen id="testCategorizedEntityBrowser" template="com/haulmont/cuba/gui/testcategorizedentity/test-categorized-entity-browse.xml"/>
-    <screen id="sys$TestCategorizedEntity.edit" template="com/haulmont/cuba/gui/testcategorizedentity/test-categorized-entity-edit.xml"/>
 </screen-config>

@@ -11,18 +11,14 @@ import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.MessageTools;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.MetadataTools;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.ScreensHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.validators.DateValidator;
 import com.haulmont.cuba.gui.components.validators.DoubleValidator;
 import com.haulmont.cuba.gui.components.validators.IntegerValidator;
+import com.haulmont.cuba.gui.config.ScreenWorker;
 import com.haulmont.cuba.gui.config.WindowConfig;
-import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
@@ -41,7 +37,6 @@ import java.util.*;
  * @version $Id$
  */
 public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
-
     protected Container fieldsContainer;
     protected TextField nameField;
     protected TextField codeField;
@@ -396,15 +391,6 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         entityField.setFrame(frame);
         fieldsContainer.add(entityField);
 
-        entityTypeField.addListener(new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                attribute.setDataType(((MetaClass) value).getJavaClass().getName());
-                fillEntities(entityField, ((MetaClass) value).getJavaClass());
-            }
-        });
-        entityTypeField.setValue(entityType);
-
         screenField = factory.createComponent(LookupField.NAME);
         screenField.setId("screenField");
         screenField.setCaption(getMessage("screen"));
@@ -426,27 +412,30 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             }
         });
 
-        List<WindowInfo> windowInfoCollection =  new ArrayList<>(windowConfig.getWindows());
-        ScreensHelper.sortWindowInfos(windowInfoCollection);
-
-        List<String> screensList = new ArrayList<>();
-        for (WindowInfo windowInfo : windowInfoCollection) {
-            String windowId = windowInfo.getId();
-            if (!windowId.contains(".")
-                    || windowId.contains(Window.BROWSE_WINDOW_SUFFIX)
-                    || windowId.contains(Window.LOOKUP_WINDOW_SUFFIX)) {
-                screensList.add(windowId);
-            }
-        }
-        screenField.setOptionsList(screensList);
-
         screenField.addListener(new ValueListener() {
             @Override
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
                 attribute.setScreen(value != null ? value.toString() : null);
             }
         });
-        screenField.setValue(attribute.getScreen());
+
+        entityTypeField.addListener(new ValueListener() {
+            @Override
+            public void valueChanged(Object source, String property, Object prevValue, Object value) {
+                attribute.setDataType(((MetaClass) value).getJavaClass().getName());
+                fillEntities(entityField, ((MetaClass) value).getJavaClass());
+                fillScreens(((MetaClass) value).getJavaClass());
+            }
+        });
+        entityTypeField.setValue(entityType);
+    }
+
+    protected void fillScreens(Class entityClass) {
+        Map<String, Object> screensMap = AppBeans.get(ScreenWorker.class).getAvailableScreensMap(entityClass);
+        screenField.setValue(null);             // While #PL-4731 unfixed
+        screenField.setOptionsMap(screensMap);
+        String value = attribute.getScreen();
+        screenField.setValue(screensMap.containsValue(value) ? value : null);
     }
 
     protected void fillEntities(LookupField entityField, Class clazz) {
@@ -459,6 +448,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         for (BaseUuidEntity entity : list) {
             entitiesMap.put(InstanceUtils.getInstanceName(entity), entity);
         }
+        entityField.setValue(null);                 // While #PL-4731 unfixed
         entityField.setOptionsMap(entitiesMap);
 
         if (attribute.getDefaultEntityId() != null) {
