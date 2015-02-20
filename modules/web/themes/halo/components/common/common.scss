@@ -32,6 +32,10 @@
   .v-calendar {
     font-size: $v-font-size;
   }
+
+  .v-caption {
+    padding-bottom: round($v-unit-size/10);
+  }
 }
 
 @mixin box-defaults {
