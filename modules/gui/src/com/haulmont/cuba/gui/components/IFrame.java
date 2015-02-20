@@ -285,7 +285,7 @@ public interface IFrame
 
     /**
      * Show notification. <br/>
-     * Supports line breaks (<code>\n</code>).
+     * Supports line breaks (<code>\n</code>) for non HTML type.
      *
      * @param caption notification text
      * @param type    defines how to display the notification.
@@ -295,7 +295,7 @@ public interface IFrame
 
     /**
      * Show notification with caption and description. <br/>
-     * Supports line breaks (<code>\n</code>).
+     * Supports line breaks (<code>\n</code>) for non HTML type.
      *
      * @param caption     notification text
      * @param description notification description

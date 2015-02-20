@@ -767,7 +767,7 @@ public abstract class WindowManager {
 
     /**
      * Show message dialog with title and message. <br/>
-     * Supports line breaks (<code>\n</code>).
+     * Supports line breaks (<code>\n</code>) for non HTML messageType.
      *
      * @param title       dialog title
      * @param message     text
@@ -778,7 +778,7 @@ public abstract class WindowManager {
 
     /**
      * Show options dialog with title and message. <br/>
-     * Supports line breaks (<code>\n</code>).
+     * Supports line breaks (<code>\n</code>) for non HTML messageType.
      *
      * @param title       dialog title
      * @param message     text
