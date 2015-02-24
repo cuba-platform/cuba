@@ -302,6 +302,13 @@ public class MetadataTools {
     }
 
     /**
+     * Determine whether the given class is persistent, that is stored in the database.
+     */
+    public boolean isPersistent(Class aClass) {
+        return aClass.isAnnotationPresent(javax.persistence.Entity.class);
+    }
+
+    /**
      * Determine whether the given metaclass is embeddable.
      */
     public boolean isEmbeddable(MetaClass metaClass) {

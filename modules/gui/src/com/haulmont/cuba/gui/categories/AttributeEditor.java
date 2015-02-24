@@ -13,11 +13,11 @@ import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.ScreensHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.validators.DateValidator;
 import com.haulmont.cuba.gui.components.validators.DoubleValidator;
 import com.haulmont.cuba.gui.components.validators.IntegerValidator;
-import com.haulmont.cuba.gui.config.ScreenWorker;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
@@ -68,6 +68,9 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
 
     @Inject
     protected ThemeConstants themeConstants;
+
+    @Inject
+    protected ScreensHelper screensHelper;
 
     protected String fieldWidth;
 
@@ -126,7 +129,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         fieldsContainer.add(requiredField);
 
         dataTypeField = factory.createComponent(LookupField.NAME);
-        Map<String, Object> options = new HashMap<>();
+        Map<String, Object> options = new TreeMap<>();
         RuntimePropsDatasource.PropertyType[] types = RuntimePropsDatasource.PropertyType.values();
         for (RuntimePropsDatasource.PropertyType propertyType : types) {
             options.put(getMessage(propertyType.toString()), propertyType);
@@ -431,7 +434,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     }
 
     protected void fillScreens(Class entityClass) {
-        Map<String, Object> screensMap = AppBeans.get(ScreenWorker.class).getAvailableScreensMap(entityClass);
+        Map<String, Object> screensMap = screensHelper.getAvailableScreensMap(entityClass);
         screenField.setValue(null);             // While #PL-4731 unfixed
         screenField.setOptionsMap(screensMap);
         String value = attribute.getScreen();
@@ -439,7 +442,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     }
 
     protected void fillEntities(LookupField entityField, Class clazz) {
-        Map<String, Object> entitiesMap = new HashMap<>();
+        Map<String, Object> entitiesMap = new TreeMap<>();
         String entityClassName = metadata.getClass(clazz).getName();
         LoadContext entitiesContext = new LoadContext(clazz);
         entitiesContext.setQueryString("select a from " + entityClassName + " a");
