@@ -39,8 +39,10 @@ public class WebRelatedEntities extends WebPopupButton implements RelatedEntitie
     protected Map<String, PropertyOption> propertyOptions = new HashMap<>();
 
     protected String excludeRegex;
+    protected ScreensHelper screensHelper;
 
     public WebRelatedEntities() {
+        screensHelper = AppBeans.get(ScreensHelper.NAME);
         Messages messages = AppBeans.get(Messages.NAME);
         setCaption(messages.getMainMessage("actions.Related"));
     }
@@ -137,7 +139,7 @@ public class WebRelatedEntities extends WebPopupButton implements RelatedEntitie
         // check if browse screen available
         PropertyOption propertyOption = propertyOptions.get(metaProperty.getName());
 
-        WindowInfo defaultScreen = AppBeans.get(ScreensHelper.class).getAvailableBrowseScreen(metaProperty.getRange().asClass());
+        WindowInfo defaultScreen = screensHelper.getAvailableBrowseScreen(metaProperty.getRange().asClass());
         if (defaultScreen != null
                 || (propertyOption != null && StringUtils.isNotEmpty(propertyOption.getScreen()))) {
             RelatedAction relatedAction = new RelatedAction("related" + actionOrder.size(), listComponent, metaClass, metaProperty);

@@ -17,7 +17,6 @@ import com.haulmont.cuba.gui.config.WindowInfo;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
-import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -30,16 +29,15 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
  */
 public class DesktopRelatedEntities extends DesktopPopupButton implements RelatedEntities {
 
-    @Inject
-    protected ScreensHelper screensHelper;
-
     protected ListComponent listComponent;
     protected WindowManager.OpenType openType = WindowManager.OpenType.THIS_TAB;
     protected Map<String, PropertyOption> propertyOptions = new HashMap<>();
 
     protected String excludeRegex;
+    protected ScreensHelper screensHelper;
 
     public DesktopRelatedEntities() {
+        screensHelper = AppBeans.get(ScreensHelper.NAME);
         Messages messages = AppBeans.get(Messages.NAME);
         setCaption(messages.getMainMessage("actions.Related"));
     }
