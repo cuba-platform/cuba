@@ -103,12 +103,6 @@ public class WebScrollBoxLayout extends WebAbstractComponent<ScrollablePanel> im
 
     @Override
     public void requestFocus() {
-        if (component.getComponentIterator().hasNext()) {
-            com.vaadin.ui.Component vComponent = component.getComponentIterator().next();
-            if (vComponent instanceof com.vaadin.ui.Component.Focusable) {
-                ((com.vaadin.ui.Component.Focusable) vComponent).focus();
-            }
-        }
     }
 
     @SuppressWarnings("unchecked")
