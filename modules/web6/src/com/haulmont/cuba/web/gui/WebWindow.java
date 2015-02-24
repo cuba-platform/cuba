@@ -573,8 +573,15 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
 
         if (childComponent.getId() != null) {
             componentByIds.put(childComponent.getId(), childComponent);
+        }
+
+        if (childComponent instanceof BelongToFrame
+                && ((BelongToFrame) childComponent).getFrame() == null) {
+            ((BelongToFrame) childComponent).setFrame(this);
+        } else {
             registerComponent(childComponent);
         }
+
         ownComponents.add(childComponent);
     }
 
@@ -593,6 +600,12 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
 
         if (childComponent.getId() != null) {
             componentByIds.put(childComponent.getId(), childComponent);
+        }
+
+        if (childComponent instanceof BelongToFrame
+                && ((BelongToFrame) childComponent).getFrame() == null) {
+            ((BelongToFrame) childComponent).setFrame(this);
+        } else {
             registerComponent(childComponent);
         }
 

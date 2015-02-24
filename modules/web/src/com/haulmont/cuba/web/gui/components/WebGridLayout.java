@@ -7,12 +7,15 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.GridLayout;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.web.toolkit.ui.CubaGridLayout;
 import com.vaadin.shared.ui.MarginInfo;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
+
+import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.convertAlignment;
 
 /**
  * @author abramov
@@ -34,14 +37,21 @@ public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implemen
         final com.vaadin.ui.Component vComponent = WebComponentsHelper.getComposition(childComponent);
 
         component.addComponent(vComponent);
-        component.setComponentAlignment(vComponent, WebComponentsHelper.convertAlignment(childComponent.getAlignment()));
+        component.setComponentAlignment(vComponent, convertAlignment(childComponent.getAlignment()));
 
         if (component.getId() != null) {
             componentByIds.put(childComponent.getId(), childComponent);
-            if (frame != null) {
+        }
+
+        if (frame != null) {
+            if (childComponent instanceof BelongToFrame
+                    && ((BelongToFrame) childComponent).getFrame() == null) {
+                ((BelongToFrame) childComponent).setFrame(frame);
+            } else {
                 frame.registerComponent(childComponent);
             }
         }
+
         ownComponents.add(childComponent);
     }
 
@@ -75,14 +85,21 @@ public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implemen
         final com.vaadin.ui.Component itmillComponent = WebComponentsHelper.getComposition(childComponent);
 
         component.addComponent(itmillComponent, col, row, col2, row2);
-        component.setComponentAlignment(itmillComponent, WebComponentsHelper.convertAlignment(childComponent.getAlignment()));
+        component.setComponentAlignment(itmillComponent, convertAlignment(childComponent.getAlignment()));
 
         if (childComponent.getId() != null) {
             componentByIds.put(childComponent.getId(), childComponent);
-            if (frame != null) {
+        }
+
+        if (frame != null) {
+            if (childComponent instanceof BelongToFrame
+                    && ((BelongToFrame) childComponent).getFrame() == null) {
+                ((BelongToFrame) childComponent).setFrame(frame);
+            } else {
                 frame.registerComponent(childComponent);
             }
         }
+
         ownComponents.add(childComponent);
     }
 
@@ -115,6 +132,21 @@ public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implemen
         ownComponents.remove(childComponent);
     }
 
+    @Override
+    public void setFrame(IFrame frame) {
+        super.setFrame(frame);
+
+        if (frame != null) {
+            for (Component childComponent : ownComponents) {
+                if (childComponent instanceof BelongToFrame
+                        && ((BelongToFrame) childComponent).getFrame() == null) {
+                    ((BelongToFrame) childComponent).setFrame(frame);
+                }
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends Component> T getOwnComponent(String id) {
         return (T) componentByIds.get(id);

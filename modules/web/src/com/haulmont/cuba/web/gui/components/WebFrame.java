@@ -86,11 +86,6 @@ public class WebFrame extends WebVBoxLayout implements IFrame, WrappedFrame {
         return wrapper;
     }
 
-    @Override
-    public <T extends com.haulmont.cuba.gui.components.Component> T getOwnComponent(String id) {
-        return (T) componentByIds.get(id);
-    }
-
     @Nullable
     @Override
     public <T extends com.haulmont.cuba.gui.components.Component> T getComponent(String id) {

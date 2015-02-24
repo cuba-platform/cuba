@@ -6,6 +6,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.SplitPanel;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
@@ -64,10 +65,17 @@ public class WebSplitPanel extends WebAbstractComponent<com.vaadin.ui.SplitPanel
 
         if (childComponent.getId() != null) {
             componentByIds.put(childComponent.getId(), childComponent);
-            if (frame != null) {
+        }
+
+        if (frame != null) {
+            if (childComponent instanceof BelongToFrame
+                    && ((BelongToFrame) childComponent).getFrame() == null) {
+                ((BelongToFrame) childComponent).setFrame(frame);
+            } else {
                 frame.registerComponent(childComponent);
             }
         }
+
         ownComponents.add(childComponent);
     }
 
@@ -80,6 +88,21 @@ public class WebSplitPanel extends WebAbstractComponent<com.vaadin.ui.SplitPanel
         ownComponents.remove(childComponent);
     }
 
+    @Override
+    public void setFrame(IFrame frame) {
+        super.setFrame(frame);
+
+        if (frame != null) {
+            for (Component childComponent : ownComponents) {
+                if (childComponent instanceof BelongToFrame
+                        && ((BelongToFrame) childComponent).getFrame() == null) {
+                    ((BelongToFrame) childComponent).setFrame(frame);
+                }
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends Component> T getOwnComponent(String id) {
         return (T) componentByIds.get(id);

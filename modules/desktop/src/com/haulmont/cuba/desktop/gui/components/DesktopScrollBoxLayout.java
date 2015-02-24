@@ -6,6 +6,7 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.ScrollBoxLayout;
 import org.apache.commons.lang.ObjectUtils;
 
@@ -128,12 +129,35 @@ public class DesktopScrollBoxLayout extends DesktopAbstractComponent<JScrollPane
 
         content.add(component);
 
+        if (frame != null) {
+            if (component instanceof BelongToFrame
+                    && ((BelongToFrame) component).getFrame() == null) {
+                ((BelongToFrame) component).setFrame(frame);
+            } else {
+                frame.registerComponent(component);
+            }
+        }
+
         adjustViewPreferredSize();
     }
 
     @Override
     public void remove(Component component) {
         content.remove(component);
+    }
+
+    @Override
+    public void setFrame(IFrame frame) {
+        super.setFrame(frame);
+
+        if (frame != null) {
+            for (Component childComponent : content.getOwnComponents()) {
+                if (childComponent instanceof BelongToFrame
+                        && ((BelongToFrame) childComponent).getFrame() == null) {
+                    ((BelongToFrame) childComponent).setFrame(frame);
+                }
+            }
+        }
     }
 
     @Override

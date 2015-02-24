@@ -10,6 +10,7 @@ import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.GroupBoxLayout;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.web.toolkit.ui.CubaGroupBox;
 import com.haulmont.cuba.web.toolkit.ui.CubaHorizontalActionsLayout;
 import com.haulmont.cuba.web.toolkit.ui.CubaOrderedActionsLayout;
@@ -23,13 +24,17 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
+import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.convertAlignment;
+
 /**
  * @author abramov
  * @version $Id$
  */
 public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements GroupBoxLayout, CubaGroupBox.ExpandChangeHandler {
 
-    protected List<Component> components = new ArrayList<>();
+    protected Collection<Component> ownComponents = new LinkedHashSet<>();
+    protected Map<String, Component> componentByIds = new HashMap<>();
+
     protected Orientation orientation = Orientation.VERTICAL;
 
     protected List<ExpandListener> expandListeners = null;
@@ -86,28 +91,57 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
             newContent.setSpacing(((CubaOrderedActionsLayout) component.getContent()).isSpacing());
         }
 
-        getComponentContent().addComponent(WebComponentsHelper.getComposition(childComponent));
-        components.add(childComponent);
+        com.vaadin.ui.Component vComponent = WebComponentsHelper.getComposition(childComponent);
+        getComponentContent().addComponent(vComponent);
+        getComponentContent().setComponentAlignment(vComponent, convertAlignment(childComponent.getAlignment()));
+
+        if (childComponent.getId() != null) {
+            componentByIds.put(childComponent.getId(), childComponent);
+        }
+
+        if (frame != null) {
+            if (childComponent instanceof BelongToFrame
+                    && ((BelongToFrame) childComponent).getFrame() == null) {
+                ((BelongToFrame) childComponent).setFrame(frame);
+            } else {
+                frame.registerComponent(childComponent);
+            }
+        }
+
+        ownComponents.add(childComponent);
     }
 
     @Override
     public void remove(Component childComponent) {
         getComponentContent().removeComponent(WebComponentsHelper.getComposition(childComponent));
-        components.remove(childComponent);
-    }
-
-    private AbstractOrderedLayout getComponentContent() {
-        return ((AbstractOrderedLayout) component.getContent());
+        if (childComponent.getId() != null) {
+            componentByIds.remove(childComponent.getId());
+        }
+        ownComponents.remove(childComponent);
     }
 
     @Override
-    public <T extends Component> T getOwnComponent(String id) {
-        for (Component component : components) {
-            if (ObjectUtils.equals(component.getId(), id)) {
-                return (T) component;
+    public void setFrame(IFrame frame) {
+        super.setFrame(frame);
+
+        if (frame != null) {
+            for (Component childComponent : ownComponents) {
+                if (childComponent instanceof BelongToFrame
+                        && ((BelongToFrame) childComponent).getFrame() == null) {
+                    ((BelongToFrame) childComponent).setFrame(frame);
+                }
             }
         }
-        return null;
+    }
+
+    protected AbstractOrderedLayout getComponentContent() {
+        return ((AbstractOrderedLayout) component.getContent());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T extends Component> T getOwnComponent(String id) {
+        return (T) componentByIds.get(id);
     }
 
     @Nullable
@@ -128,7 +162,7 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
 
     @Override
     public Collection<Component> getOwnComponents() {
-        return Collections.unmodifiableCollection(components);
+        return Collections.unmodifiableCollection(ownComponents);
     }
 
     @Override
@@ -149,7 +183,7 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
 
     @Override
     public boolean isExpanded(Component component) {
-        return components.contains(component) && WebComponentsHelper.isComponentExpanded(component);
+        return ownComponents.contains(component) && WebComponentsHelper.isComponentExpanded(component);
     }
 
     @Override
@@ -323,7 +357,7 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
     @Override
     public void setOrientation(Orientation orientation) {
         if (!ObjectUtils.equals(orientation, this.orientation)) {
-            if (!components.isEmpty()) {
+            if (!ownComponents.isEmpty()) {
                 throw new IllegalStateException("Unable to change groupBox orientation after adding components to it");
             }
 

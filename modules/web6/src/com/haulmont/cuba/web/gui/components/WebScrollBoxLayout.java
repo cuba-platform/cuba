@@ -6,20 +6,21 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.ScrollBoxLayout;
 import com.haulmont.cuba.web.toolkit.ui.ScrollablePanel;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Layout;
 import com.vaadin.ui.VerticalLayout;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+
+import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.convertAlignment;
 
 /**
  * @author abramov
@@ -27,7 +28,8 @@ import java.util.List;
  */
 public class WebScrollBoxLayout extends WebAbstractComponent<ScrollablePanel> implements ScrollBoxLayout {
 
-    protected List<Component> components = new ArrayList<>();
+    protected Collection<Component> ownComponents = new LinkedHashSet<>();
+    protected Map<String, Component> componentByIds = new HashMap<>();
 
     protected Orientation orientation = Orientation.VERTICAL;
     protected ScrollBarPolicy scrollBarPolicy = ScrollBarPolicy.VERTICAL;
@@ -55,14 +57,48 @@ public class WebScrollBoxLayout extends WebAbstractComponent<ScrollablePanel> im
             applyScrollBarsPolicy(scrollBarPolicy);
         }
 
-        component.getContent().addComponent(WebComponentsHelper.getComposition(childComponent));
-        components.add(childComponent);
+        com.vaadin.ui.Component vComponent = WebComponentsHelper.getComposition(childComponent);
+        component.getContent().addComponent(vComponent);
+        ((Layout.AlignmentHandler)component.getContent()).setComponentAlignment(vComponent,
+                convertAlignment(childComponent.getAlignment()));
+
+        if (childComponent.getId() != null) {
+            componentByIds.put(childComponent.getId(), childComponent);
+        }
+
+        if (frame != null) {
+            if (childComponent instanceof BelongToFrame
+                    && ((BelongToFrame) childComponent).getFrame() == null) {
+                ((BelongToFrame) childComponent).setFrame(frame);
+            } else {
+                frame.registerComponent(childComponent);
+            }
+        }
+
+        ownComponents.add(childComponent);
     }
 
     @Override
     public void remove(Component childComponent) {
         component.getContent().removeComponent(WebComponentsHelper.getComposition(childComponent));
-        components.remove(childComponent);
+        if (childComponent.getId() != null) {
+            componentByIds.remove(childComponent.getId());
+        }
+        ownComponents.remove(childComponent);
+    }
+
+    @Override
+    public void setFrame(IFrame frame) {
+        super.setFrame(frame);
+
+        if (frame != null) {
+            for (Component childComponent : ownComponents) {
+                if (childComponent instanceof BelongToFrame
+                        && ((BelongToFrame) childComponent).getFrame() == null) {
+                    ((BelongToFrame) childComponent).setFrame(frame);
+                }
+            }
+        }
     }
 
     @Override
@@ -75,13 +111,10 @@ public class WebScrollBoxLayout extends WebAbstractComponent<ScrollablePanel> im
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends Component> T getOwnComponent(String id) {
-        for (Component component : components) {
-            if (ObjectUtils.equals(component.getId(), id))
-                return (T) component;
-        }
-        return null;
+        return (T) componentByIds.get(id);
     }
 
     @Nullable
@@ -102,7 +135,7 @@ public class WebScrollBoxLayout extends WebAbstractComponent<ScrollablePanel> im
 
     @Override
     public Collection<Component> getOwnComponents() {
-        return Collections.unmodifiableCollection(components);
+        return Collections.unmodifiableCollection(ownComponents);
     }
 
     @Override
@@ -118,7 +151,7 @@ public class WebScrollBoxLayout extends WebAbstractComponent<ScrollablePanel> im
     @Override
     public void setOrientation(Orientation orientation) {
         if (!ObjectUtils.equals(orientation, this.orientation)) {
-            if (!components.isEmpty())
+            if (!ownComponents.isEmpty())
                 throw new IllegalStateException("Unable to change scrollBox orientation after adding components to it");
 
             this.orientation = orientation;

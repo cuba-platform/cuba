@@ -29,6 +29,7 @@ public class WebAbstractComponent<T extends com.vaadin.ui.Component>
 
     protected boolean expandable = true;
 
+    @SuppressWarnings("unchecked")
     @Override
     public <A extends com.haulmont.cuba.gui.components.IFrame> A getFrame() {
         return (A) frame;
@@ -37,7 +38,9 @@ public class WebAbstractComponent<T extends com.vaadin.ui.Component>
     @Override
     public void setFrame(IFrame frame) {
         this.frame = frame;
-        frame.registerComponent(this);
+        if (frame != null) {
+            frame.registerComponent(this);
+        }
 
         assignAutoDebugId();
     }

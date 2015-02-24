@@ -12,6 +12,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
+import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.convertAlignment;
+
 /**
  * @author abramov
  * @version $Id$
@@ -30,14 +32,21 @@ public class WebGridLayout extends WebAbstractComponent<com.vaadin.ui.GridLayout
         final com.vaadin.ui.Component itmillComponent = WebComponentsHelper.getComposition(childComponent);
 
         component.addComponent(itmillComponent);
-        component.setComponentAlignment(itmillComponent, WebComponentsHelper.convertAlignment(childComponent.getAlignment()));
+        component.setComponentAlignment(itmillComponent, convertAlignment(childComponent.getAlignment()));
 
         if (childComponent.getId() != null) {
             componentByIds.put(childComponent.getId(), childComponent);
-            if (frame != null) {
+        }
+
+        if (frame != null) {
+            if (childComponent instanceof BelongToFrame
+                    && ((BelongToFrame) childComponent).getFrame() == null) {
+                ((BelongToFrame) childComponent).setFrame(frame);
+            } else {
                 frame.registerComponent(childComponent);
             }
         }
+
         ownComponents.add(childComponent);
     }
 
@@ -68,17 +77,24 @@ public class WebGridLayout extends WebAbstractComponent<com.vaadin.ui.GridLayout
 
     @Override
     public void add(Component childComponent, int col, int row, int col2, int row2) {
-        final com.vaadin.ui.Component itmillComponent = WebComponentsHelper.getComposition(childComponent);
+        final com.vaadin.ui.Component vComponent = WebComponentsHelper.getComposition(childComponent);
 
-        component.addComponent(itmillComponent, col, row, col2, row2);
-        component.setComponentAlignment(itmillComponent, WebComponentsHelper.convertAlignment(childComponent.getAlignment()));
+        component.addComponent(vComponent, col, row, col2, row2);
+        component.setComponentAlignment(vComponent, convertAlignment(childComponent.getAlignment()));
 
         if (childComponent.getId() != null) {
             componentByIds.put(childComponent.getId(), childComponent);
-            if (frame != null) {
+        }
+
+        if (frame != null) {
+            if (childComponent instanceof BelongToFrame
+                    && ((BelongToFrame) childComponent).getFrame() == null) {
+                ((BelongToFrame) childComponent).setFrame(frame);
+            } else {
                 frame.registerComponent(childComponent);
             }
         }
+
         ownComponents.add(childComponent);
     }
 
@@ -111,6 +127,7 @@ public class WebGridLayout extends WebAbstractComponent<com.vaadin.ui.GridLayout
         ownComponents.remove(childComponent);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends Component> T getOwnComponent(String id) {
         return (T) componentByIds.get(id);

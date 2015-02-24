@@ -19,7 +19,6 @@ import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.AppWindow;
 import com.haulmont.cuba.web.toolkit.ui.CubaTabSheet;
 import com.vaadin.ui.Layout;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
@@ -37,19 +36,19 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
     protected boolean componentTabChangeListenerInitialized;
 
     protected ComponentLoader.Context context;
+    protected Map<String, Tab> tabs = new HashMap<>();
+
+    protected Map<com.vaadin.ui.Component, ComponentDescriptor> tabMapping = new LinkedHashMap<>();
+    protected Map<String, Component> componentByIds = new HashMap<>();
+
+    protected Set<com.vaadin.ui.Component> lazyTabs = new HashSet<>();
+
+    protected Set<TabChangeListener> listeners = new HashSet<>();
 
     public WebTabSheet() {
         component = new CubaTabSheet();
         component.setCloseHandler(new DefaultCloseHandler());
     }
-
-    protected Map<String, Tab> tabs = new HashMap<>();
-
-    protected Map<com.vaadin.ui.Component, ComponentDescriptor> components = new LinkedHashMap<>();
-
-    protected Set<com.vaadin.ui.Component> lazyTabs = new HashSet<>();
-
-    protected Set<TabChangeListener> listeners = new HashSet<>();
 
     @Override
     public void add(Component component) {
@@ -61,20 +60,10 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
         throw new UnsupportedOperationException();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends Component> T getOwnComponent(String id) {
-        for (Tab tab : tabs.values()) {
-            //noinspection SuspiciousMethodCalls
-            ComponentDescriptor componentDescriptor = components.get(tab.getComponent());
-            Component tabComponent = componentDescriptor.getComponent();
-
-            if (StringUtils.equals(id, tabComponent.getId())) {
-                //noinspection unchecked
-                return (T) tabComponent;
-            }
-        }
-
-        return null;
+        return (T) componentByIds.get(id);
     }
 
     @Nullable
@@ -96,7 +85,7 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
     @Override
     public Collection<Component> getOwnComponents() {
         List<Component> componentList = new ArrayList<>();
-        for (ComponentDescriptor cd : components.values()) {
+        for (ComponentDescriptor cd : tabMapping.values()) {
             componentList.add(cd.component);
         }
         return componentList;
@@ -220,7 +209,7 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
         final com.vaadin.ui.Component tabComponent = WebComponentsHelper.unwrap(childComponent);
         tabComponent.setSizeFull();
 
-        this.components.put(tabComponent, new ComponentDescriptor(name, childComponent));
+        tabMapping.put(tabComponent, new ComponentDescriptor(name, childComponent));
         com.vaadin.ui.TabSheet.Tab tabControl = this.component.addTab(tabComponent);
 
         if (getDebugId() != null) {
@@ -229,6 +218,19 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
         }
         if (AppUI.getCurrent().isTestMode()) {
             this.component.setCubaId(tabControl, name);
+        }
+
+        if (childComponent.getId() != null) {
+            componentByIds.put(childComponent.getId(), childComponent);
+        }
+
+        if (frame != null) {
+            if (childComponent instanceof BelongToFrame
+                    && ((BelongToFrame) childComponent).getFrame() == null) {
+                ((BelongToFrame) childComponent).setFrame(frame);
+            } else {
+                frame.registerComponent(childComponent);
+            }
         }
 
         return tab;
@@ -242,9 +244,9 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
         if (debugId != null) {
             TestIdManager testIdManager = AppUI.getCurrent().getTestIdManager();
 
-            for (com.vaadin.ui.Component tabComponent : components.keySet()) {
+            for (com.vaadin.ui.Component tabComponent : tabMapping.keySet()) {
                 com.vaadin.ui.TabSheet.Tab tab = component.getTab(tabComponent);
-                ComponentDescriptor componentDescriptor = components.get(tabComponent);
+                ComponentDescriptor componentDescriptor = tabMapping.get(tabComponent);
                 String name = componentDescriptor.name;
 
                 component.setTestId(tab, testIdManager.getTestId(debugId + "." + name));
@@ -268,7 +270,7 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
         final com.vaadin.ui.Component tabComponent = WebComponentsHelper.unwrap(tabContent);
         tabComponent.setSizeFull();
 
-        this.components.put(tabComponent, new ComponentDescriptor(name, tabContent));
+        tabMapping.put(tabComponent, new ComponentDescriptor(name, tabContent));
         com.vaadin.ui.TabSheet.Tab tabControl = this.component.addTab(tabComponent);
         lazyTabs.add(tabComponent);
 
@@ -304,12 +306,31 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
         if (tab == null) {
             throw new IllegalStateException(String.format("Can't find tab '%s'", name));
         }
-
         tabs.remove(name);
 
-        com.vaadin.ui.Component vComponent = WebComponentsHelper.unwrap(tab.getComponent());
-        this.components.remove(vComponent);
+        Component childComponent = tab.getComponent();
+        com.vaadin.ui.Component vComponent = WebComponentsHelper.unwrap(childComponent);
         this.component.removeComponent(vComponent);
+
+        if (childComponent.getId() != null) {
+            componentByIds.remove(childComponent.getId());
+        }
+        tabMapping.remove(vComponent);
+    }
+
+    @Override
+    public void setFrame(IFrame frame) {
+        super.setFrame(frame);
+
+        if (frame != null) {
+            for (ComponentDescriptor descriptor : tabMapping.values()) {
+                Component childComponent = descriptor.getComponent();
+                if (childComponent instanceof BelongToFrame
+                        && ((BelongToFrame) childComponent).getFrame() == null) {
+                    ((BelongToFrame) childComponent).setFrame(frame);
+                }
+            }
+        }
     }
 
     @Override
@@ -319,7 +340,7 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
             return null;
         }
 
-        final String name = components.get(component).getName();
+        final String name = tabMapping.get(component).getName();
         return tabs.get(name);
     }
 
@@ -484,7 +505,7 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
             }
         }
 
-        private void doHandleCloseTab(Tab tab) {
+        protected void doHandleCloseTab(Tab tab) {
             if (tab.getCloseHandler() != null) {
                 tab.getCloseHandler().onTabClose(tab);
             } else {

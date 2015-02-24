@@ -40,7 +40,8 @@ public class WebTabSheet extends WebAbstractComponent<com.vaadin.ui.TabSheet> im
 
     protected Map<String, Tab> tabs = new HashMap<>();
 
-    protected Map<com.vaadin.ui.Component, ComponentDescriptor> components = new LinkedHashMap<>();
+    protected Map<com.vaadin.ui.Component, ComponentDescriptor> tabMapping = new LinkedHashMap<>();
+    protected Map<String, Component> componentByIds = new HashMap<>();
 
     protected Set<com.vaadin.ui.Component> lazyTabs = new HashSet<>();
 
@@ -60,7 +61,7 @@ public class WebTabSheet extends WebAbstractComponent<com.vaadin.ui.TabSheet> im
     public <T extends Component> T getOwnComponent(String id) {
         for (Tab tab : tabs.values()) {
             //noinspection SuspiciousMethodCalls
-            ComponentDescriptor componentDescriptor = components.get(tab.getComponent());
+            ComponentDescriptor componentDescriptor = tabMapping.get(tab.getComponent());
             Component tabComponent = componentDescriptor.getComponent();
 
             if (StringUtils.equals(id, tabComponent.getId())) {
@@ -90,7 +91,7 @@ public class WebTabSheet extends WebAbstractComponent<com.vaadin.ui.TabSheet> im
     @Override
     public Collection<Component> getOwnComponents() {
         List<Component> componentList = new ArrayList<>();
-        for (ComponentDescriptor cd : components.values()) {
+        for (ComponentDescriptor cd : tabMapping.values()) {
             componentList.add(cd.component);
         }
         return componentList;
@@ -206,16 +207,29 @@ public class WebTabSheet extends WebAbstractComponent<com.vaadin.ui.TabSheet> im
     }
 
     @Override
-    public TabSheet.Tab addTab(String name, Component component) {
-        final Tab tab = new Tab(name, component);
+    public TabSheet.Tab addTab(String name, Component childComponent) {
+        final Tab tab = new Tab(name, childComponent);
 
         this.tabs.put(name, tab);
 
-        final com.vaadin.ui.Component tabComponent = WebComponentsHelper.unwrap(component);
+        final com.vaadin.ui.Component tabComponent = WebComponentsHelper.unwrap(childComponent);
         tabComponent.setSizeFull();
 
-        this.components.put(tabComponent, new ComponentDescriptor(name, component));
+        tabMapping.put(tabComponent, new ComponentDescriptor(name, childComponent));
         this.component.addTab(tabComponent);
+
+        if (childComponent.getId() != null) {
+            componentByIds.put(childComponent.getId(), childComponent);
+        }
+
+        if (frame != null) {
+            if (childComponent instanceof BelongToFrame
+                    && ((BelongToFrame) childComponent).getFrame() == null) {
+                ((BelongToFrame) childComponent).setFrame(frame);
+            } else {
+                frame.registerComponent(childComponent);
+            }
+        }
 
         return tab;
     }
@@ -236,7 +250,7 @@ public class WebTabSheet extends WebAbstractComponent<com.vaadin.ui.TabSheet> im
         final com.vaadin.ui.Component tabComponent = WebComponentsHelper.unwrap(tabContent);
         tabComponent.setSizeFull();
 
-        this.components.put(tabComponent, new ComponentDescriptor(name, tabContent));
+        tabMapping.put(tabComponent, new ComponentDescriptor(name, tabContent));
         this.component.addTab(tabComponent);
         lazyTabs.add(tabComponent);
 
@@ -265,9 +279,29 @@ public class WebTabSheet extends WebAbstractComponent<com.vaadin.ui.TabSheet> im
 
         tabs.remove(name);
 
-        com.vaadin.ui.Component vComponent = WebComponentsHelper.unwrap(tab.getComponent());
-        this.components.remove(vComponent);
+        Component childComponent = tab.getComponent();
+        com.vaadin.ui.Component vComponent = WebComponentsHelper.unwrap(childComponent);
         this.component.removeComponent(vComponent);
+
+        if (childComponent.getId() != null) {
+            componentByIds.remove(childComponent.getId());
+        }
+        tabMapping.remove(vComponent);
+    }
+
+    @Override
+    public void setFrame(IFrame frame) {
+        super.setFrame(frame);
+
+        if (frame != null) {
+            for (ComponentDescriptor descriptor : tabMapping.values()) {
+                Component childComponent = descriptor.getComponent();
+                if (childComponent instanceof BelongToFrame
+                        && ((BelongToFrame) childComponent).getFrame() == null) {
+                    ((BelongToFrame) childComponent).setFrame(frame);
+                }
+            }
+        }
     }
 
     @Override
@@ -277,7 +311,7 @@ public class WebTabSheet extends WebAbstractComponent<com.vaadin.ui.TabSheet> im
             return null;
         }
 
-        final String name = components.get(component).getName();
+        final String name = tabMapping.get(component).getName();
         return tabs.get(name);
     }
 

@@ -123,9 +123,32 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> imple
         tabContents.put(comp, tab);
         setTabComponent(tab, tabIndex);
 
+        if (frame != null) {
+            if (component instanceof BelongToFrame
+                    && ((BelongToFrame) component).getFrame() == null) {
+                ((BelongToFrame) component).setFrame(frame);
+            } else {
+                frame.registerComponent(component);
+            }
+        }
+
         adjustTabSize(component);
 
         return tab;
+    }
+
+    @Override
+    public void setFrame(IFrame frame) {
+        super.setFrame(frame);
+
+        if (frame != null) {
+            for (Component childComponent : components.keySet()) {
+                if (childComponent instanceof BelongToFrame
+                        && ((BelongToFrame) childComponent).getFrame() == null) {
+                    ((BelongToFrame) childComponent).setFrame(frame);
+                }
+            }
+        }
     }
 
     @Override
@@ -620,6 +643,9 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> imple
                 }
                 break;
             }
+        }
+        if (tabAtIndex == null) {
+            throw new IllegalStateException("Unable to find tab to detach");
         }
         final TabImpl tabToDetach = tabAtIndex;
         final ButtonTabComponent tabComponent = tabToDetach.getButtonTabComponent();

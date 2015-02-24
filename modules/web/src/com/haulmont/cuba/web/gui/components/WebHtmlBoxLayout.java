@@ -7,6 +7,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.HtmlBoxLayout;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.vaadin.ui.CustomLayout;
 
 import javax.annotation.Nonnull;
@@ -43,11 +44,17 @@ public class WebHtmlBoxLayout extends WebAbstractComponent<CustomLayout> impleme
         if (childComponent.getId() != null) {
             component.addComponent(vComponent, childComponent.getId());
             componentByIds.put(childComponent.getId(), childComponent);
-            if (frame != null) {
-                frame.registerComponent(childComponent);
-            }
         } else {
             component.addComponent(vComponent);
+        }
+
+        if (frame != null) {
+            if (childComponent instanceof BelongToFrame
+                    && ((BelongToFrame) childComponent).getFrame() == null) {
+                ((BelongToFrame) childComponent).setFrame(frame);
+            } else {
+                frame.registerComponent(childComponent);
+            }
         }
 
         ownComponents.add(childComponent);
@@ -62,6 +69,20 @@ public class WebHtmlBoxLayout extends WebAbstractComponent<CustomLayout> impleme
             component.removeComponent(WebComponentsHelper.getComposition(childComponent));
         }
         ownComponents.remove(childComponent);
+    }
+
+    @Override
+    public void setFrame(IFrame frame) {
+        super.setFrame(frame);
+
+        if (frame != null) {
+            for (Component childComponent : ownComponents) {
+                if (childComponent instanceof BelongToFrame
+                        && ((BelongToFrame) childComponent).getFrame() == null) {
+                    ((BelongToFrame) childComponent).setFrame(frame);
+                }
+            }
+        }
     }
 
     @Nullable

@@ -7,12 +7,15 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.BoxLayout;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.AbstractOrderedLayout;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
+
+import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.convertAlignment;
 
 /**
  * @author abramov
@@ -32,14 +35,21 @@ public abstract class WebAbstractBox extends WebAbstractComponent<AbstractOrdere
         final com.vaadin.ui.Component vaadinComponent = WebComponentsHelper.getComposition(childComponent);
 
         component.addComponent(vaadinComponent);
-        component.setComponentAlignment(vaadinComponent, WebComponentsHelper.convertAlignment(childComponent.getAlignment()));
+        component.setComponentAlignment(vaadinComponent, convertAlignment(childComponent.getAlignment()));
 
         if (childComponent.getId() != null) {
             componentByIds.put(childComponent.getId(), childComponent);
-            if (frame != null) {
+        }
+
+        if (frame != null) {
+            if (childComponent instanceof BelongToFrame
+                    && ((BelongToFrame) childComponent).getFrame() == null) {
+                ((BelongToFrame) childComponent).setFrame(frame);
+            } else {
                 frame.registerComponent(childComponent);
             }
         }
+
         ownComponents.add(childComponent);
     }
 
@@ -51,11 +61,17 @@ public abstract class WebAbstractBox extends WebAbstractComponent<AbstractOrdere
 
         com.vaadin.ui.Component vComponent = WebComponentsHelper.getComposition(childComponent);
         component.addComponent(vComponent, index);
-        component.setComponentAlignment(vComponent, WebComponentsHelper.convertAlignment(childComponent.getAlignment()));
+        component.setComponentAlignment(vComponent, convertAlignment(childComponent.getAlignment()));
 
         if (childComponent.getId() != null) {
             componentByIds.put(childComponent.getId(), childComponent);
-            if (frame != null) {
+        }
+
+        if (frame != null) {
+            if (childComponent instanceof BelongToFrame
+                    && ((BelongToFrame) childComponent).getFrame() == null) {
+                ((BelongToFrame) childComponent).setFrame(frame);
+            } else {
                 frame.registerComponent(childComponent);
             }
         }
@@ -76,6 +92,21 @@ public abstract class WebAbstractBox extends WebAbstractComponent<AbstractOrdere
         ownComponents.remove(childComponent);
     }
 
+    @Override
+    public void setFrame(IFrame frame) {
+        super.setFrame(frame);
+
+        if (frame != null) {
+            for (Component childComponent : ownComponents) {
+                if (childComponent instanceof BelongToFrame
+                        && ((BelongToFrame) childComponent).getFrame() == null) {
+                    ((BelongToFrame) childComponent).setFrame(frame);
+                }
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends Component> T getOwnComponent(String id) {
         return (T) componentByIds.get(id);

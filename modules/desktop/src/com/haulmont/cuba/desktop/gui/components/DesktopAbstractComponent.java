@@ -59,6 +59,7 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
         return swingPropertyId;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <A extends IFrame> A getFrame() {
         return (A) frame;
@@ -67,7 +68,9 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
     @Override
     public void setFrame(IFrame frame) {
         this.frame = frame;
-        frame.registerComponent(this);
+        if (frame != null) {
+            frame.registerComponent(this);
+        }
 
         assignAutoDebugId();
     }
@@ -232,6 +235,7 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
         xmlDescriptor = element;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T getComponent() {
         return (T) impl;

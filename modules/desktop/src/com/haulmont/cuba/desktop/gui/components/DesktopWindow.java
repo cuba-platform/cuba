@@ -557,6 +557,7 @@ public class DesktopWindow implements Window, Component.Disposable,
         getWindowManager().showWebPage(url, params);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <A extends IFrame> A getFrame() {
         return (A) this;
@@ -658,8 +659,15 @@ public class DesktopWindow implements Window, Component.Disposable,
         }
         if (component.getId() != null) {
             componentByIds.put(component.getId(), component);
+        }
+
+        if (component instanceof BelongToFrame
+                && ((BelongToFrame) component).getFrame() == null) {
+            ((BelongToFrame) component).setFrame(this);
+        } else {
             registerComponent(component);
         }
+
         ownComponents.add(component);
 
         DesktopContainerHelper.assignContainer(component, this);
@@ -703,6 +711,12 @@ public class DesktopWindow implements Window, Component.Disposable,
         }
         if (component.getId() != null) {
             componentByIds.put(component.getId(), component);
+        }
+
+        if (component instanceof BelongToFrame
+                && ((BelongToFrame) component).getFrame() == null) {
+            ((BelongToFrame) component).setFrame(this);
+        } else {
             registerComponent(component);
         }
 
@@ -774,6 +788,7 @@ public class DesktopWindow implements Window, Component.Disposable,
         return ComponentsHelper.getComponents(this);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T getComponent() {
         return (T) panel;

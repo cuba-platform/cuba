@@ -10,6 +10,7 @@ import com.haulmont.cuba.desktop.gui.data.DesktopContainerHelper;
 import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.IFrame;
 import net.miginfocom.layout.CC;
 import org.apache.commons.lang.StringUtils;
 
@@ -78,10 +79,17 @@ public abstract class DesktopAbstractBox
 
         if (component.getId() != null) {
             componentByIds.put(component.getId(), component);
-            if (frame != null) {
+        }
+
+        if (frame != null) {
+            if (component instanceof BelongToFrame
+                    && ((BelongToFrame) component).getFrame() == null) {
+                ((BelongToFrame) component).setFrame(frame);
+            } else {
                 frame.registerComponent(component);
             }
         }
+
         ownComponents.add(component);
 
         DesktopContainerHelper.assignContainer(component, this);
@@ -127,7 +135,13 @@ public abstract class DesktopAbstractBox
 
         if (component.getId() != null) {
             componentByIds.put(component.getId(), component);
-            if (frame != null) {
+        }
+
+        if (frame != null) {
+            if (component instanceof BelongToFrame
+                    && ((BelongToFrame) component).getFrame() == null) {
+                ((BelongToFrame) component).setFrame(frame);
+            } else {
                 frame.registerComponent(component);
             }
         }
@@ -170,6 +184,20 @@ public abstract class DesktopAbstractBox
         requestRepaint();
     }
 
+    @Override
+    public void setFrame(IFrame frame) {
+        super.setFrame(frame);
+
+        if (frame != null) {
+            for (Component childComponent : ownComponents) {
+                if (childComponent instanceof BelongToFrame
+                        && ((BelongToFrame) childComponent).getFrame() == null) {
+                    ((BelongToFrame) childComponent).setFrame(frame);
+                }
+            }
+        }
+    }
+
     protected void requestRepaint() {
         if (!scheduledRepaint) {
             SwingUtilities.invokeLater(new Runnable() {
@@ -210,6 +238,7 @@ public abstract class DesktopAbstractBox
         requestContainerUpdate();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends Component> T getOwnComponent(String id) {
         return (T) componentByIds.get(id);

@@ -7,6 +7,7 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.SplitPanel;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -123,10 +124,17 @@ public class DesktopSplitPanel extends DesktopAbstractComponent<JSplitPane> impl
 
         if (component.getId() != null) {
             componentByIds.put(component.getId(), component);
-            if (frame != null) {
+        }
+
+        if (frame != null) {
+            if (component instanceof BelongToFrame
+                    && ((BelongToFrame) component).getFrame() == null) {
+                ((BelongToFrame) component).setFrame(frame);
+            } else {
                 frame.registerComponent(component);
             }
         }
+
         ownComponents.add(component);
     }
 
@@ -141,6 +149,21 @@ public class DesktopSplitPanel extends DesktopAbstractComponent<JSplitPane> impl
         ownComponents.remove(component);
     }
 
+    @Override
+    public void setFrame(IFrame frame) {
+        super.setFrame(frame);
+
+        if (frame != null) {
+            for (Component childComponent : ownComponents) {
+                if (childComponent instanceof BelongToFrame
+                        && ((BelongToFrame) childComponent).getFrame() == null) {
+                    ((BelongToFrame) childComponent).setFrame(frame);
+                }
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends Component> T getOwnComponent(String id) {
         return (T) componentByIds.get(id);

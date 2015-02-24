@@ -12,6 +12,7 @@ import com.haulmont.cuba.desktop.sys.layout.GridLayoutAdapter;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.GridLayout;
+import com.haulmont.cuba.gui.components.IFrame;
 import net.miginfocom.layout.CC;
 
 import javax.annotation.Nonnull;
@@ -99,15 +100,36 @@ public class DesktopGridLayout extends DesktopAbstractComponent<JPanel> implemen
 
         if (component.getId() != null) {
             componentByIds.put(component.getId(), component);
-            if (frame != null) {
+        }
+
+        if (frame != null) {
+            if (component instanceof BelongToFrame
+                    && ((BelongToFrame) component).getFrame() == null) {
+                ((BelongToFrame) component).setFrame(frame);
+            } else {
                 frame.registerComponent(component);
             }
         }
+
         ownComponents.add(component);
 
         DesktopContainerHelper.assignContainer(component, this);
 
         requestRepaint();
+    }
+
+    @Override
+    public void setFrame(IFrame frame) {
+        super.setFrame(frame);
+
+        if (frame != null) {
+            for (Component childComponent : ownComponents) {
+                if (childComponent instanceof BelongToFrame
+                        && ((BelongToFrame) childComponent).getFrame() == null) {
+                    ((BelongToFrame) childComponent).setFrame(frame);
+                }
+            }
+        }
     }
 
     @Override
@@ -139,10 +161,17 @@ public class DesktopGridLayout extends DesktopAbstractComponent<JPanel> implemen
 
         if (component.getId() != null) {
             componentByIds.put(component.getId(), component);
-            if (frame != null) {
+        }
+
+        if (frame != null) {
+            if (component instanceof BelongToFrame
+                    && ((BelongToFrame) component).getFrame() == null) {
+                ((BelongToFrame) component).setFrame(frame);
+            } else {
                 frame.registerComponent(component);
             }
         }
+
         ownComponents.add(component);
 
         DesktopContainerHelper.assignContainer(component, this);
@@ -189,6 +218,7 @@ public class DesktopGridLayout extends DesktopAbstractComponent<JPanel> implemen
         requestRepaint();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends Component> T getOwnComponent(String id) {
         return (T) componentByIds.get(id);

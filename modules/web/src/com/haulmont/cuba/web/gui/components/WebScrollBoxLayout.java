@@ -6,6 +6,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.ScrollBoxLayout;
 import com.haulmont.cuba.web.toolkit.ui.CubaHorizontalActionsLayout;
 import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
@@ -19,6 +20,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
+import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.convertAlignment;
+
 /**
  * @author abramov
  * @version $Id$
@@ -27,7 +30,9 @@ public class WebScrollBoxLayout extends WebAbstractComponent<Panel> implements S
 
     public static final String CUBA_SCROLLBOX_CONTENT_STYLE = "cuba-scrollbox-content";
 
-    protected List<Component> components = new ArrayList<>();
+    protected Collection<Component> ownComponents = new LinkedHashSet<>();
+    protected Map<String, Component> componentByIds = new HashMap<>();
+
     protected Orientation orientation = Orientation.VERTICAL;
     protected ScrollBarPolicy scrollBarPolicy = ScrollBarPolicy.VERTICAL;
 
@@ -73,8 +78,24 @@ public class WebScrollBoxLayout extends WebAbstractComponent<Panel> implements S
             applyScrollBarsPolicy(scrollBarPolicy);
         }
 
-        getContent().addComponent(WebComponentsHelper.getComposition(childComponent));
-        components.add(childComponent);
+        com.vaadin.ui.Component vComponent = WebComponentsHelper.getComposition(childComponent);
+        getContent().addComponent(vComponent);
+        getContent().setComponentAlignment(vComponent, convertAlignment(childComponent.getAlignment()));
+
+        if (childComponent.getId() != null) {
+            componentByIds.put(childComponent.getId(), childComponent);
+        }
+
+        if (frame != null) {
+            if (childComponent instanceof BelongToFrame
+                    && ((BelongToFrame) childComponent).getFrame() == null) {
+                ((BelongToFrame) childComponent).setFrame(frame);
+            } else {
+                frame.registerComponent(childComponent);
+            }
+        }
+
+        ownComponents.add(childComponent);
     }
 
     @Override
@@ -96,9 +117,26 @@ public class WebScrollBoxLayout extends WebAbstractComponent<Panel> implements S
     }
 
     @Override
-    public void remove(Component component) {
-        getContent().removeComponent(WebComponentsHelper.getComposition(component));
-        components.remove(component);
+    public void remove(Component childComponent) {
+        getContent().removeComponent(WebComponentsHelper.getComposition(childComponent));
+        if (childComponent.getId() != null) {
+            componentByIds.remove(childComponent.getId());
+        }
+        ownComponents.remove(childComponent);
+    }
+
+    @Override
+    public void setFrame(IFrame frame) {
+        super.setFrame(frame);
+
+        if (frame != null) {
+            for (Component childComponent : ownComponents) {
+                if (childComponent instanceof BelongToFrame
+                        && ((BelongToFrame) childComponent).getFrame() == null) {
+                    ((BelongToFrame) childComponent).setFrame(frame);
+                }
+            }
+        }
     }
 
     @Override
@@ -112,14 +150,10 @@ public class WebScrollBoxLayout extends WebAbstractComponent<Panel> implements S
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends Component> T getOwnComponent(String id) {
-        for (Component component : components) {
-            if (ObjectUtils.equals(component.getId(), id)) {
-                return (T) component;
-            }
-        }
-        return null;
+        return (T) componentByIds.get(id);
     }
 
     @Nullable
@@ -140,7 +174,7 @@ public class WebScrollBoxLayout extends WebAbstractComponent<Panel> implements S
 
     @Override
     public Collection<Component> getOwnComponents() {
-        return Collections.unmodifiableCollection(components);
+        return Collections.unmodifiableCollection(ownComponents);
     }
 
     @Override
@@ -156,7 +190,7 @@ public class WebScrollBoxLayout extends WebAbstractComponent<Panel> implements S
     @Override
     public void setOrientation(Orientation orientation) {
         if (!ObjectUtils.equals(orientation, this.orientation)) {
-            if (!components.isEmpty()) {
+            if (!ownComponents.isEmpty()) {
                 throw new IllegalStateException("Unable to change scrollBox orientation after adding components to it");
             }
 
