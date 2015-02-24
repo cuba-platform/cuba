@@ -22,7 +22,6 @@ import com.vaadin.ui.Label;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
-import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -34,9 +33,6 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
  * @version $Id$
  */
 public class WebRelatedEntities extends WebPopupButton implements RelatedEntities {
-
-    @Inject
-    protected ScreensHelper screensHelper;
 
     protected ListComponent listComponent;
     protected WindowManager.OpenType openType = WindowManager.OpenType.THIS_TAB;
@@ -141,7 +137,7 @@ public class WebRelatedEntities extends WebPopupButton implements RelatedEntitie
         // check if browse screen available
         PropertyOption propertyOption = propertyOptions.get(metaProperty.getName());
 
-        WindowInfo defaultScreen = screensHelper.getAvailableBrowseScreen(metaProperty.getRange().asClass());
+        WindowInfo defaultScreen = AppBeans.get(ScreensHelper.class).getAvailableBrowseScreen(metaProperty.getRange().asClass());
         if (defaultScreen != null
                 || (propertyOption != null && StringUtils.isNotEmpty(propertyOption.getScreen()))) {
             RelatedAction relatedAction = new RelatedAction("related" + actionOrder.size(), listComponent, metaClass, metaProperty);
