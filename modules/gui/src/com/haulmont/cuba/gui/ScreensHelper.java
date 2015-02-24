@@ -11,6 +11,7 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.gui.xml.XmlInheritanceProcessor;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,6 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ScreensHelper {
     public static final String NAME = "cuba_ScreensHelper";
     private static final String EMPTY_SCREEN_CAPTION = "";
+    private static final Map<String, Object> EMPTY_MAP = new HashMap<>();
 
     private Log logger = LogFactory.getLog(ScreensHelper.class);
 
@@ -119,7 +121,7 @@ public class ScreensHelper {
                         screensMap.put(windowId, windowId);
                     }
                 } catch (FileNotFoundException e) {
-                    logger.error("File not found: " + src);
+                    logger.error(e.getMessage());
                 }
             }
         }
@@ -191,15 +193,17 @@ public class ScreensHelper {
         if (StringUtils.isNotEmpty(text)) {
             try {
                 Document document = Dom4j.readDocument(text);
-                Element root = document.getRootElement();
+                XmlInheritanceProcessor processor = new XmlInheritanceProcessor(document, EMPTY_MAP);
+                Element root = processor.getResultRoot();
                 if (root.getName().equals(Window.NAME))
                     return root;
             } catch (RuntimeException e) {
                 logger.error("Can't parse screen file: " + src);
-                return null;
             }
+        } else {
+            throw new FileNotFoundException("File doesn't exist or empty: " + src);
         }
-        throw new FileNotFoundException("File doesn't exist or empty");
+        return null;
     }
 
     @Nullable
