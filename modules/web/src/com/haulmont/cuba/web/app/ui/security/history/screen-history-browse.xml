@@ -10,10 +10,11 @@
         datasource="historyDs">
 
     <dsContext>                                           
-        <collectionDatasource id="historyDs" class="com.haulmont.cuba.security.entity.ScreenHistoryEntity" view="browse">
+        <collectionDatasource id="historyDs" class="com.haulmont.cuba.security.entity.ScreenHistoryEntity" view="browse"
+                datasourceClass="com.haulmont.cuba.web.app.ui.security.history.ScreenHistoryDatasource">
             <query>
-                <![CDATA[select h from sec$ScreenHistory h where h.user.id = :session$userId
-                order by h.createTs desc]]>
+                <![CDATA[select h from sec$ScreenHistory h where (h.user.id = :param$userId
+                and h.substitutedUser.id is null or h.substitutedUser.id = :param$userId) order by h.createTs desc]]>
             </query>
         </collectionDatasource>
     </dsContext>
