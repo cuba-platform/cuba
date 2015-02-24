@@ -424,6 +424,7 @@ public class DesktopPickerField extends DesktopAbstractField<Picker> implements 
         }
 
         final DesktopButton dButton = new DesktopButton();
+        dButton.setShouldBeFocused(false);
         dButton.setAction(action);
         dButton.getImpl().setFocusable(false);
         dButton.getImpl().setText("");

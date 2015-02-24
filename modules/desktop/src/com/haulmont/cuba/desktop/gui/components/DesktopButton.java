@@ -27,6 +27,7 @@ public class DesktopButton extends DesktopAbstractComponent<JButton> implements 
     protected String icon;
 
     protected long responseEndTs = 0;
+    protected boolean shouldBeFocused = true;
 
     public DesktopButton() {
         impl = createImplementation();
@@ -34,7 +35,7 @@ public class DesktopButton extends DesktopAbstractComponent<JButton> implements 
             @Override
             public void actionPerformedAfterValidation(ActionEvent e) {
                 if (action != null) {
-                    if (!impl.isFocusOwner()) {
+                    if (shouldBeFocused && !impl.isFocusOwner()) {
                         return;
                     }
 
@@ -140,6 +141,14 @@ public class DesktopButton extends DesktopAbstractComponent<JButton> implements 
             impl.setIcon(App.getInstance().getResources().getIcon(icon));
         else
             impl.setIcon(null);
+    }
+
+    public boolean isShouldBeFocused() {
+        return shouldBeFocused;
+    }
+
+    public void setShouldBeFocused(boolean shouldBeFocused) {
+        this.shouldBeFocused = shouldBeFocused;
     }
 
     @Override
