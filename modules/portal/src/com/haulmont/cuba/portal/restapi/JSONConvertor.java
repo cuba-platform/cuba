@@ -21,10 +21,8 @@
 
 package com.haulmont.cuba.portal.restapi;
 
-import com.google.common.base.Strings;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.datatypes.impl.StringDatatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
@@ -40,12 +38,8 @@ import org.springframework.util.ClassUtils;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
-import javax.annotation.Nullable;
-import javax.servlet.http.HttpServletResponse;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
 import java.util.*;
@@ -95,10 +89,9 @@ public class JSONConvertor implements Convertor {
         return jsonObject.toString();
     }
 
-    protected MyJSONObject _process(Entity entity, View view) throws Exception {
-        return encodeInstance(entity, new HashSet<Entity>(), entity.getMetaClass(), view);
+    protected MyJSONObject _process(Entity entity) throws Exception {
+        return encodeInstance(entity, new HashSet<Entity>(), entity.getMetaClass(), null);
     }
-
 
     @Override
     public String process(List<Entity> entities, MetaClass metaClass, View view)  throws Exception {
@@ -137,14 +130,11 @@ public class JSONConvertor implements Convertor {
     }
 
     @Override
-    public String processServiceMethodResult(Object result, Class resultType, @Nullable String viewName) throws Exception {
+    public String processServiceMethodResult(Object result, Class resultType) throws Exception {
         MyJSONObject root = new MyJSONObject();
         if (result instanceof Entity) {
             Entity entity = (Entity) result;
-            ViewRepository viewRepository = AppBeans.get(ViewRepository.class);
-            if (Strings.isNullOrEmpty(viewName)) viewName = View.LOCAL;
-            View view = viewRepository.getView(entity.getMetaClass(), viewName);
-            MyJSONObject entityObject = _process(entity, view);
+            MyJSONObject entityObject = _process(entity);
             root.set("result", entityObject);
         } else if (result instanceof Collection) {
             if (!checkCollectionItemTypes((Collection) result, Entity.class))
@@ -155,10 +145,7 @@ public class JSONConvertor implements Convertor {
                 metaClass = ((Entity) list.get(0)).getMetaClass();
             else
                 metaClass = AppBeans.get(Metadata.class).getClasses().iterator().next();
-            ViewRepository viewRepository = AppBeans.get(ViewRepository.class);
-            if (Strings.isNullOrEmpty(viewName)) viewName = View.LOCAL;
-            View view = viewRepository.getView(metaClass, viewName);
-            MyJSONObject.Array processed = _process(list, metaClass, view);
+            MyJSONObject.Array processed = _process(list, metaClass, null);
             root.set("result", processed);
         } else {
             if (result != null && resultType != Void.TYPE) {
@@ -351,10 +338,8 @@ public class JSONConvertor implements Convertor {
         JSONObject jsonObject = new JSONObject(content);
         String serviceName = jsonObject.getString("service");
         String methodName = jsonObject.getString("method");
-        String viewName = jsonObject.optString("view");
 
         ServiceRequest serviceRequest = new ServiceRequest(serviceName, methodName, this);
-        serviceRequest.setViewName(viewName);
 
         JSONObject params = jsonObject.optJSONObject("params");
         if (params != null) {
@@ -531,7 +516,7 @@ public class JSONConvertor implements Convertor {
 
         boolean ref = !visited.add(entity);
 
-        MyJSONObject root = new MyJSONObject(idof(entity), ref);
+        MyJSONObject root = new MyJSONObject(idof(entity), false);
 
         if (ref) {
             return root;

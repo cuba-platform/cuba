@@ -5,7 +5,6 @@
 
 package com.haulmont.cuba.portal.restapi;
 
-import com.google.common.base.Strings;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
@@ -84,10 +83,10 @@ public class XMLConvertor2 implements Convertor {
     }
 
 
-    protected Document _process(Entity entity,  View view) throws Exception {
+    protected Document _process(Entity entity, View view) throws Exception {
         Document document = DocumentHelper.createDocument();
         Element rootEl = document.addElement("instances");
-        encodeEntity(entity, view, rootEl);
+        encodeEntity(entity, new HashSet<Entity>(), view, rootEl);
         return document;
     }
 
@@ -101,7 +100,7 @@ public class XMLConvertor2 implements Convertor {
         Document document = DocumentHelper.createDocument();
         Element rootEl = document.addElement("instances");
         for (Entity entity : entities) {
-            encodeEntity(entity, view, rootEl);
+            encodeEntity(entity, new HashSet<Entity>(), view, rootEl);
         }
         return document;
     }
@@ -111,22 +110,19 @@ public class XMLConvertor2 implements Convertor {
         Document document = DocumentHelper.createDocument();
         Element rootEl = document.addElement("instances");
         for (Entity entity : entities) {
-            encodeEntity(entity, null, rootEl);
+            encodeEntity(entity, new HashSet<Entity>(), null, rootEl);
         }
         return documentToString(document);
     }
 
     @Override
     @Nonnull
-    public String processServiceMethodResult(Object result, Class resultType, @Nullable String viewName) throws Exception {
+    public String processServiceMethodResult(Object result, Class resultType) throws Exception {
         Document document = DocumentHelper.createDocument();
         Element resultEl = document.addElement("result");
         if (result instanceof Entity) {
             Entity entity = (Entity) result;
-            if (Strings.isNullOrEmpty(viewName)) viewName = View.LOCAL;
-            ViewRepository viewRepository = AppBeans.get(ViewRepository.class);
-            View view = viewRepository.getView(entity.getMetaClass(), viewName);
-            Document convertedEntity = _process(entity, view);
+            Document convertedEntity = _process(entity, null);
             resultEl.add(convertedEntity.getRootElement());
         } else if (result instanceof Collection) {
             if (!checkCollectionItemTypes((Collection) result, Entity.class))
@@ -136,13 +132,7 @@ public class XMLConvertor2 implements Convertor {
             if (!list.isEmpty())
                 metaClass = ((Entity) list.get(0)).getMetaClass();
 
-            View view = null;
-            if (metaClass != null) {
-                ViewRepository viewRepository = AppBeans.get(ViewRepository.class);
-                if (Strings.isNullOrEmpty(viewName)) viewName = View.LOCAL;
-                view = viewRepository.getView(metaClass, viewName);
-            }
-            Document processed = _process(list, metaClass, view);
+            Document processed = _process(list, metaClass, null);
             resultEl.add(processed.getRootElement());
         } else {
             if (result != null && resultType != Void.TYPE) {
@@ -252,7 +242,6 @@ public class XMLConvertor2 implements Convertor {
             viewName = viewEl.getTextTrim();
 
         ServiceRequest serviceRequest = new ServiceRequest(serviceName, methodName, this);
-        serviceRequest.setViewName(viewName);
 
         Element paramsEl = rootElement.element("params");
         if (paramsEl != null) {
@@ -460,7 +449,7 @@ public class XMLConvertor2 implements Convertor {
         return instance;
     }
 
-    protected void encodeEntity(Entity entity, View view, Element parentEl) throws Exception {
+    protected void encodeEntity(Entity entity, HashSet<Entity> visited, View view, Element parentEl) throws Exception {
             if (entity == null) {
                 parentEl.addAttribute("null", "true");
                 return;
@@ -472,7 +461,12 @@ public class XMLConvertor2 implements Convertor {
             Element instanceEl = parentEl.addElement("instance");
             instanceEl.addAttribute("id", EntityLoadInfo.create(entity).toString());
 
-            MetaClass metaClass = entity.getMetaClass();
+        boolean entityAlreadyVisited = !visited.add(entity);
+        if (entityAlreadyVisited) {
+            return;
+        }
+
+        MetaClass metaClass = entity.getMetaClass();
             List<MetaProperty> orderedProperties = ConvertorHelper.getOrderedProperties(metaClass);
             for (MetaProperty property : orderedProperties) {
                 if (!attrViewPermitted(metaClass, property.getName()))
@@ -525,7 +519,7 @@ public class XMLConvertor2 implements Convertor {
                         if (!property.getRange().getCardinality().isMany()) {
                             Element referenceEl = instanceEl.addElement("reference");
                             referenceEl.addAttribute("name", property.getName());
-                            encodeEntity((Entity) value, propertyView, referenceEl);
+                            encodeEntity((Entity) value, visited, propertyView, referenceEl);
                         } else {
                             Element collectionEl = instanceEl.addElement("collection");
                             collectionEl.addAttribute("name", property.getName());
@@ -536,7 +530,7 @@ public class XMLConvertor2 implements Convertor {
                             }
 
                             for (Object childEntity : (Collection) value) {
-                                encodeEntity((Entity) childEntity, propertyView, collectionEl);
+                                encodeEntity((Entity) childEntity, visited, propertyView, collectionEl);
                             }
                         }
                         break;

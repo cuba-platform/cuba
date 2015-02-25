@@ -26,7 +26,6 @@ import java.util.*;
 public class ServiceRequest {
     protected String serviceName;
     protected String methodName;
-    protected String viewName;
     protected List<String> paramValuesString = new ArrayList<>();
     protected List<Class> paramTypes = new ArrayList<>();
     protected Convertor convertor;
@@ -138,14 +137,6 @@ public class ServiceRequest {
 
     public void setParamTypes(List<Class> paramTypes) {
         this.paramTypes = paramTypes;
-    }
-
-    public String getViewName() {
-        return viewName;
-    }
-
-    public void setViewName(String viewName) {
-        this.viewName = viewName;
     }
 
     public Class getMethodReturnType() {

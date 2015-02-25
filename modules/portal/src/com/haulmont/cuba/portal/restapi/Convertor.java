@@ -46,7 +46,7 @@ public interface Convertor {
      * Converts an object (simple datatype, entity or collection of entities) to string representation
      * of method invocation result in a format of current {@code convertor} (xml, json, etc.)
      */
-    String processServiceMethodResult(Object result, Class resultType, @Nullable String viewName) throws Exception;
+    String processServiceMethodResult(Object result, Class resultType) throws Exception;
 
     /**
      * Converts a string representation of {@code CommitContext} to {@code CommitRequest}

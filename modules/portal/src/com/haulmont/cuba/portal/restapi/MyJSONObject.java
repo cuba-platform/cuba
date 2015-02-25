@@ -60,7 +60,8 @@ public class MyJSONObject implements MyJSON {
         StringBuilder buf = new StringBuilder().append(OBJECT_START);
         if (!Strings.isNullOrEmpty(_id)) {
             buf.append(encodeField(_ref ? REF_MARKER : ID_MARKER, ior(), 0));
-            buf.append(FIELD_SEPARATOR).append(NEWLINE);
+            if (_values.entrySet().size() > 0)
+                buf.append(FIELD_SEPARATOR).append(NEWLINE);
         }
         if (_ref) {
             return buf.append(OBJECT_END);
