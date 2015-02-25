@@ -51,7 +51,7 @@
             <actions>
                 <action id="refresh" caption="msg://refresh" invoke="refresh" shortcut="SHIFT-ENTER"/>
                 <action id="message" caption="msg://message" invoke="message"/>
-                <action id="kill" caption="msg://kill" invoke="kill"/>
+                <action id="kill" caption="msg://kill" invoke="kill" trackSelection="true"/>
             </actions>
             <buttonsPanel>
                 <button action="sessionsTable.refresh"/>
