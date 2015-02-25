@@ -304,7 +304,14 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
                 Object datatypeValue = datatype.parse(rawValue, locale);
 
                 //noinspection unchecked
-                return datatype.parse(datatype.format(datatypeValue));
+                String formattedValue;
+                if (valueFormatter.getFormatter() == null) {
+                    formattedValue = datatype.format(datatypeValue);
+                } else {
+                    formattedValue = valueFormatter.getFormatter().format(datatypeValue);
+                }
+
+                return datatype.parse(formattedValue, locale);
             } catch (ParseException ignored) {
                 showValidationMessage();
                 return prevValue;
