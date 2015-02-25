@@ -275,7 +275,9 @@ public class EntityLogBrowser extends AbstractWindow {
             if (metadata.getExtendedEntities().getExtendedClass(metaClass) == null) {
                 MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalMetaClass(metaClass);
                 String originalName = originalMetaClass == null ? metaClass.getName() : originalMetaClass.getName();
-                options.put(metaClass.getName(), originalName);
+                Class javaClass = metaClass.getJavaClass();
+                String caption = messages.getMessage(javaClass, javaClass.getSimpleName()) + " (" + metaClass.getName() + ")";
+                options.put(caption, originalName);
             }
         }
         return options;
