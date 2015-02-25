@@ -180,13 +180,13 @@ public class DesktopFrame
     @Override
     public <T extends IFrame> T openFrame(Component parent, String windowAlias) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return getWindowManager().openFrame((Window) wrapper, parent, windowInfo);
+        return getWindowManager().openFrame(wrapper, parent, windowInfo);
     }
 
     @Override
     public <T extends IFrame> T openFrame(Component parent, String windowAlias, Map<String, Object> params) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return getWindowManager().openFrame((Window) wrapper, parent, windowInfo, params);
+        return getWindowManager().openFrame(wrapper, parent, windowInfo, params);
     }
 
     @Override

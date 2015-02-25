@@ -17,7 +17,6 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
-import org.dom4j.Element;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
@@ -227,13 +226,13 @@ public class WebFrame extends WebAbstractBox implements IFrame, WrappedFrame {
     @Override
     public <T extends IFrame> T openFrame(Component parent, String windowAlias) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return App.getInstance().getWindowManager().openFrame((Window) wrapper, parent, windowInfo);
+        return App.getInstance().getWindowManager().openFrame(wrapper, parent, windowInfo);
     }
 
     @Override
     public <T extends IFrame> T openFrame(Component parent, String windowAlias, Map<String, Object> params) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return App.getInstance().getWindowManager().openFrame((Window) wrapper, parent, windowInfo, params);
+        return App.getInstance().getWindowManager().openFrame(wrapper, parent, windowInfo, params);
     }
 
     @Override

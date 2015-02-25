@@ -20,7 +20,10 @@ import com.haulmont.cuba.web.toolkit.ui.CubaOrderedActionsLayout;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author abramov
@@ -212,13 +215,13 @@ public class WebFrame extends WebVBoxLayout implements IFrame, WrappedFrame {
     @Override
     public <T extends IFrame> T openFrame(Component parent, String windowAlias) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return App.getInstance().getWindowManager().openFrame((Window) wrapper, parent, windowInfo);
+        return App.getInstance().getWindowManager().openFrame(wrapper, parent, windowInfo);
     }
 
     @Override
     public <T extends IFrame> T openFrame(Component parent, String windowAlias, Map<String, Object> params) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return App.getInstance().getWindowManager().openFrame((Window) wrapper, parent, windowInfo, params);
+        return App.getInstance().getWindowManager().openFrame(wrapper, parent, windowInfo, params);
     }
 
     @Override

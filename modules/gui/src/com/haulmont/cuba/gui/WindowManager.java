@@ -515,20 +515,12 @@ public abstract class WindowManager {
         return (T) window;
     }
 
-    public <T extends IFrame> T openFrame(
-            Window window,
-            Component parent,
-            WindowInfo windowInfo
-    ) {
-        return openFrame(window, parent, windowInfo, Collections.<String, Object>emptyMap());
+    public <T extends IFrame> T openFrame(IFrame parentFrame, Component parent, WindowInfo windowInfo) {
+        return openFrame(parentFrame, parent, windowInfo, Collections.<String, Object>emptyMap());
     }
 
-    public <T extends IFrame> T openFrame(
-            Window window,
-            Component parent,
-            WindowInfo windowInfo,
-            Map<String, Object> params
-    ) {
+    public <T extends IFrame> T openFrame(IFrame parentFrame, Component parent, WindowInfo windowInfo,
+                                          Map<String, Object> params) {
         if (params == null) {
             params = Collections.emptyMap();
         }
@@ -538,13 +530,13 @@ public abstract class WindowManager {
 
         String src = windowInfo.getTemplate();
 
-        ComponentLoaderContext context = new ComponentLoaderContext(window.getDsContext(), params);
+        ComponentLoaderContext context = new ComponentLoaderContext(parentFrame.getDsContext(), params);
         context.setFullFrameId(windowInfo.getId());
 
         final LayoutLoader loader =
                 new LayoutLoader(context, AppConfig.getFactory(), LayoutLoaderConfig.getFrameLoaders());
         loader.setLocale(getLocale());
-        loader.setMessagesPack(window.getMessagesPack());
+        loader.setMessagesPack(parentFrame.getMessagesPack());
 
         InputStream stream = resources.getResourceAsStream(src);
         if (stream == null) {
@@ -563,10 +555,10 @@ public abstract class WindowManager {
             IOUtils.closeQuietly(stream);
         }
         if (component.getMessagesPack() == null) {
-            component.setMessagesPack(window.getMessagesPack());
+            component.setMessagesPack(parentFrame.getMessagesPack());
         }
 
-        component.setFrame(window);
+        component.setFrame(parentFrame);
         context.setFrame(component);
         context.executePostInitTasks();
 
