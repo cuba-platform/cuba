@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.security.listener;
 
+import com.google.common.collect.Ordering;
 import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.bali.db.ResultSetHandler;
 import com.haulmont.cuba.core.EntityManager;
@@ -51,7 +52,7 @@ public class EntityLogItemDetachListener implements BeforeDetachEntityListener<E
 
     private void fillAttributesFromChangesField(EntityLogItem item) {
         log.trace("fillAttributesFromChangesField for " + item);
-        Set<EntityLogAttr> attributes = new HashSet<>();
+        List<EntityLogAttr> attributes = new ArrayList<>();
 
         StringReader reader = new StringReader(item.getChanges());
         Properties properties = new Properties();
@@ -82,7 +83,14 @@ public class EntityLogItemDetachListener implements BeforeDetachEntityListener<E
             log.error("Unable to fill EntityLog attributes for " + item, e);
         }
 
-        item.setAttributes(attributes);
+        Collections.sort(attributes, new Comparator<EntityLogAttr>() {
+            @Override
+            public int compare(EntityLogAttr o1, EntityLogAttr o2) {
+                return Ordering.natural().compare(o1.getName(), o2.getName());
+            }
+        });
+
+        item.setAttributes(new LinkedHashSet<>(attributes));
     }
 
     private void fillAttributesFromTable(EntityLogItem item, EntityManager entityManager) {
@@ -96,17 +104,26 @@ public class EntityLogItemDetachListener implements BeforeDetachEntityListener<E
                     new Object[] {converter.getSqlObject(item.getId())},
                     new AttributesResultSetHandler(item, converter)
             );
-            item.setAttributes(attributes);
+
+            List<EntityLogAttr> attributesList = new ArrayList<>(attributes);
+            Collections.sort(attributesList, new Comparator<EntityLogAttr>() {
+                @Override
+                public int compare(EntityLogAttr o1, EntityLogAttr o2) {
+                    return Ordering.natural().compare(o1.getName(), o2.getName());
+                }
+            });
+
+            item.setAttributes(new LinkedHashSet<>(attributes));
         } catch (SQLException e) {
             log.error("Unable to load EntityLog attributes for " + item, e);
         }
     }
 
-    private static class AttributesResultSetHandler implements ResultSetHandler<Set<EntityLogAttr>> {
+    protected static class AttributesResultSetHandler implements ResultSetHandler<Set<EntityLogAttr>> {
 
-        private EntityLogItem item;
+        protected EntityLogItem item;
 
-        private DbTypeConverter converter;
+        protected DbTypeConverter converter;
 
         public AttributesResultSetHandler(EntityLogItem item, DbTypeConverter converter) {
             this.item = item;
