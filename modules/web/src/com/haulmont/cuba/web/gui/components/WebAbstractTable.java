@@ -327,7 +327,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
     @Override
     public void setSortable(boolean sortable) {
-        component.setSortEnabled(sortable);
+        component.setSortEnabled(sortable && canBeSorted(datasource));
     }
 
     @Override
@@ -812,7 +812,16 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             action.refreshState();
         }
 
+        if (!canBeSorted(datasource))
+            setSortable(false);
+
         assignAutoDebugId();
+    }
+
+    protected boolean canBeSorted(CollectionDatasource datasource) {
+        //noinspection SimplifiableConditionalExpression
+        return datasource instanceof PropertyDatasource ?
+                ((PropertyDatasource) datasource).getProperty().getRange().isOrdered() : true;
     }
 
     @Override

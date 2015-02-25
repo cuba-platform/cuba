@@ -24,10 +24,7 @@ import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.DsBuilder;
-import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
@@ -704,6 +701,15 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         for (Action action : getActions()) {
             action.refreshState();
         }
+
+        if (!canBeSorted(datasource))
+            setSortable(false);
+    }
+
+    protected boolean canBeSorted(CollectionDatasource datasource) {
+        //noinspection SimplifiableConditionalExpression
+        return datasource instanceof PropertyDatasource ?
+                ((PropertyDatasource) datasource).getProperty().getRange().isOrdered() : true;
     }
 
     protected String getColumnCaption(Object columnId) {
@@ -1116,8 +1122,8 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
     @Override
     public void setSortable(boolean sortable) {
-        this.sortable = sortable;
-        if (sortable) {
+        this.sortable = sortable && canBeSorted(datasource);
+        if (this.sortable) {
             if (tableModel != null && impl.getRowSorter() == null) {
                 impl.setRowSorter(new RowSorterImpl(tableModel));
             }

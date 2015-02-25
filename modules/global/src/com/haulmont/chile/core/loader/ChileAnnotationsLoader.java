@@ -563,7 +563,7 @@ public class ChileAnnotationsLoader implements MetaClassLoader {
 
     protected boolean isOrdered(Field field) {
         Class<?> type = field.getType();
-        return List.class.isAssignableFrom(type) || Set.class.isAssignableFrom(type);
+        return List.class.isAssignableFrom(type) || LinkedHashSet.class.isAssignableFrom(type);
     }
 
     protected MetaClassImpl createClass(Class<?> clazz, String packageName, String className) {

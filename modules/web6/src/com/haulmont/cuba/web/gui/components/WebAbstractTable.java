@@ -347,7 +347,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
     @Override
     public void setSortable(boolean sortable) {
-        component.setSortDisabled(!sortable);
+        component.setSortDisabled(!sortable || !canBeSorted(datasource));
     }
 
     @Override
@@ -847,7 +847,16 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             action.refreshState();
         }
 
+        if (!canBeSorted(datasource))
+            setSortable(false);
+
         assignAutoDebugId();
+    }
+
+    protected boolean canBeSorted(CollectionDatasource datasource) {
+        //noinspection SimplifiableConditionalExpression
+        return datasource instanceof PropertyDatasource ?
+                ((PropertyDatasource) datasource).getProperty().getRange().isOrdered() : true;
     }
 
     protected String getColumnCaption(Object columnId) {
