@@ -68,19 +68,28 @@ public class ExcelAction extends BaseAction {
         if (table.getSelected().size() > 0) {
             String title = messages.getMainMessage("actions.exportSelectedTitle");
             String caption = messages.getMainMessage("actions.exportSelectedCaption");
-            Action[] actions = new Action[]{
-                    new DialogAction(DialogAction.Type.YES) {
+            Action[] actions = new Action[] {
+                    new AbstractAction("actions.export.SELECTED_ROWS") {
+                        {
+                            setCaption(messages.getMainMessage(getId()));
+                        }
+
                         @Override
                         public void actionPerform(Component component) {
                             export(ExportMode.SELECTED_ROWS);
                         }
                     },
-                    new DialogAction(DialogAction.Type.NO) {
+                    new AbstractAction("actions.export.ALL_ROWS") {
+                        {
+                            setCaption(messages.getMainMessage(getId()));
+                        }
+
                         @Override
                         public void actionPerform(Component component) {
                             export(ExportMode.ALL_ROWS);
                         }
-                    }
+                    },
+                    new DialogAction(DialogAction.Type.CANCEL)
             };
             IFrame frame = table.getFrame();
             frame.showOptionDialog(title, caption, IFrame.MessageType.CONFIRMATION, actions);
