@@ -660,7 +660,7 @@ public class XMLConvertor implements Convertor {
     }
 
     @Override
-    public String processServiceMethodResult(Object result, @Nullable String viewName) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public String processServiceMethodResult(Object result, Class resultType, @Nullable String viewName) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         throw new UnsupportedOperationException();
     }
 

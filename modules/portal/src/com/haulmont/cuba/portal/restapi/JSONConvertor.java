@@ -22,6 +22,8 @@
 package com.haulmont.cuba.portal.restapi;
 
 import com.google.common.base.Strings;
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.StringDatatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -135,7 +137,7 @@ public class JSONConvertor implements Convertor {
     }
 
     @Override
-    public String processServiceMethodResult(Object result, @Nullable String viewName) throws Exception {
+    public String processServiceMethodResult(Object result, Class resultType, @Nullable String viewName) throws Exception {
         MyJSONObject root = new MyJSONObject();
         if (result instanceof Entity) {
             Entity entity = (Entity) result;
@@ -159,9 +161,22 @@ public class JSONConvertor implements Convertor {
             MyJSONObject.Array processed = _process(list, metaClass, view);
             root.set("result", processed);
         } else {
-            root.set("result", result);
+            if (result != null && resultType != Void.TYPE) {
+                Datatype datatype = getDatatype(resultType);
+                root.set("result", datatype != null ? datatype.format(result) : result.toString());
+            } else {
+                root.set("result", null);
+            }
         }
         return root.toString();
+    }
+
+    protected Datatype getDatatype(Class clazz) {
+        if (clazz == Integer.TYPE  || clazz == Byte.TYPE || clazz == Short.TYPE) return Datatypes.get(Integer.class);
+        if (clazz == Long.TYPE) return Datatypes.get(Long.class);
+        if (clazz == Boolean.TYPE) return Datatypes.get(Boolean.class);
+
+        return Datatypes.get(clazz);
     }
 
     /**

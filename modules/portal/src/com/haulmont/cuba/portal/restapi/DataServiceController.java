@@ -366,7 +366,7 @@ public class DataServiceController {
 
             Object result = serviceRequest.invokeMethod();
 
-            String converted = convertor.processServiceMethodResult(result, view);
+            String converted = convertor.processServiceMethodResult(result, serviceRequest.getMethodReturnType(), view);
             writeResponse(response, converted, convertor.getMimeType());
         } catch (Throwable e) {
             sendError(request, response, e);
@@ -399,7 +399,7 @@ public class DataServiceController {
             }
 
             Object result = serviceRequest.invokeMethod();
-            String converted = convertor.processServiceMethodResult(result, serviceRequest.getViewName());
+            String converted = convertor.processServiceMethodResult(result, serviceRequest.getMethodReturnType(), serviceRequest.getViewName());
             writeResponse(response, converted, convertor.getMimeType());
         } catch (RestServiceException e) {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());

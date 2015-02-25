@@ -24,7 +24,7 @@
                 <xs:element name="params">
                     <xs:complexType>
                         <xs:sequence>
-                            <xs:element name="param" type="paramType"/>
+                            <xs:element name="param" type="paramType" minOccurs="0" maxOccurs="unbounded"/>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>

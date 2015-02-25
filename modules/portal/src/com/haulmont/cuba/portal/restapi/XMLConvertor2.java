@@ -7,6 +7,8 @@ package com.haulmont.cuba.portal.restapi;
 
 import com.google.common.base.Strings;
 import com.haulmont.bali.util.Dom4j;
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
@@ -116,7 +118,7 @@ public class XMLConvertor2 implements Convertor {
 
     @Override
     @Nonnull
-    public String processServiceMethodResult(Object result, @Nullable String viewName) throws Exception {
+    public String processServiceMethodResult(Object result, Class resultType, @Nullable String viewName) throws Exception {
         Document document = DocumentHelper.createDocument();
         Element resultEl = document.addElement("result");
         if (result instanceof Entity) {
@@ -143,13 +145,22 @@ public class XMLConvertor2 implements Convertor {
             Document processed = _process(list, metaClass, view);
             resultEl.add(processed.getRootElement());
         } else {
-            if (result != null) {
-                resultEl.setText(result.toString());
+            if (result != null && resultType != Void.TYPE) {
+                Datatype datatype = getDatatype(resultType);
+                resultEl.setText(datatype != null ? datatype.format(result) : result.toString());
             } else {
                 encodeNull(resultEl);
             }
         }
         return documentToString(document);
+    }
+
+    protected Datatype getDatatype(Class clazz) {
+        if (clazz == Integer.TYPE  || clazz == Byte.TYPE || clazz == Short.TYPE) return Datatypes.get(Integer.class);
+        if (clazz == Long.TYPE) return Datatypes.get(Long.class);
+        if (clazz == Boolean.TYPE) return Datatypes.get(Boolean.class);
+
+        return Datatypes.get(clazz);
     }
 
     protected boolean checkCollectionItemTypes(Collection collection, Class<?> itemClass) {
