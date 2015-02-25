@@ -4,7 +4,7 @@
   -->
 
 <window
-        xmlns="http://schemas.haulmont.com/cuba/5.3/window.xsd"
+        xmlns="http://schemas.haulmont.com/cuba/5.4/window.xsd"
         class="com.haulmont.cuba.web.app.ui.frame.FileFrameController"
         messagesPack="com.haulmont.cuba.web.app.ui.frame">
     <layout expandLayout="true">

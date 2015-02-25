@@ -4,7 +4,7 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<services xmlns="http://schemas.haulmont.com/cuba/5.3/rest-services.xsd">
+<services xmlns="http://schemas.haulmont.com/cuba/5.4/rest-services.xsd">
     <!--<service name="cuba_SampleService">-->
         <!--<method name="doSmth"/>-->
         <!--<method name="doSmthElse"/>-->

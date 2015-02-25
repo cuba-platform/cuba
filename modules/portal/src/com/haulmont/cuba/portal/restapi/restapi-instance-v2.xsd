@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           targetNamespace="http://schemas.haulmont.com/cuba/5.3/restapi-instance-v2.xsd"
-           xmlns="http://schemas.haulmont.com/cuba/5.3/restapi-instance-v2.xsd"
+           targetNamespace="http://schemas.haulmont.com/cuba/5.4/restapi-instance-v2.xsd"
+           xmlns="http://schemas.haulmont.com/cuba/5.4/restapi-instance-v2.xsd"
 	attributeFormDefault="unqualified" elementFormDefault="qualified">
 
 	<xs:complexType name="instanceType">

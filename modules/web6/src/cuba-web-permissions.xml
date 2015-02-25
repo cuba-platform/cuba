@@ -4,7 +4,7 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<permission-config xmlns="http://schemas.haulmont.com/cuba/5.3/permissions.xsd">
+<permission-config xmlns="http://schemas.haulmont.com/cuba/5.4/permissions.xsd">
 
     <include file="/com/haulmont/cuba/gui/cuba-permissions.xml"/>
 
