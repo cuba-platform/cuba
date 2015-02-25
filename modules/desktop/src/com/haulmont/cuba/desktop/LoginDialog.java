@@ -34,6 +34,7 @@ public class LoginDialog extends JDialog {
     protected Log log = LogFactory.getLog(getClass());
 
     protected Connection connection;
+    protected Locale resolvedLocale;
     protected Map<String,Locale> locales;
     protected Messages messages = AppBeans.get(Messages.NAME);
     protected PasswordEncryption passwordEncryption = AppBeans.get(PasswordEncryption.NAME);
@@ -50,7 +51,7 @@ public class LoginDialog extends JDialog {
         this.loginProperties = new LoginProperties();
         Configuration configuration = AppBeans.get(Configuration.NAME);
         this.locales = configuration.getConfig(GlobalConfig.class).getAvailableLocales();
-
+        resolvedLocale = resolveLocale();
         addWindowListener(
                 new WindowAdapter() {
                     @Override
@@ -60,7 +61,7 @@ public class LoginDialog extends JDialog {
                 }
         );
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setTitle(messages.getMainMessage("loginWindow.caption", Locale.getDefault()));
+        setTitle(messages.getMainMessage("loginWindow.caption", resolvedLocale));
         setContentPane(createContentPane());
         setResizable(false);
         pack();
@@ -70,7 +71,7 @@ public class LoginDialog extends JDialog {
         MigLayout layout = new MigLayout("fillx, insets dialog", "[right][]");
         JPanel panel = new JPanel(layout);
 
-        panel.add(new JLabel(messages.getMainMessage("loginWindow.loginField", Locale.getDefault())));
+        panel.add(new JLabel(messages.getMainMessage("loginWindow.loginField", resolvedLocale)));
 
         nameField = new JTextField();
         passwordField = new JPasswordField();
@@ -89,7 +90,7 @@ public class LoginDialog extends JDialog {
             nameField.setText(defaultName);
         panel.add(nameField, "width 150!, wrap");
 
-        panel.add(new JLabel(messages.getMainMessage("loginWindow.passwordField", Locale.getDefault())));
+        panel.add(new JLabel(messages.getMainMessage("loginWindow.passwordField", resolvedLocale)));
         String defaultPassword = AppContext.getProperty("cuba.desktop.loginDialogDefaultPassword");
         if (!StringUtils.isBlank(defaultPassword))
             passwordField.setText(defaultPassword);
@@ -104,7 +105,7 @@ public class LoginDialog extends JDialog {
             panel.add(localeCombo, "width 150!, wrap");
         }
 
-        loginBtn = new JButton(messages.getMainMessage("loginWindow.okButton", Locale.getDefault()));
+        loginBtn = new JButton(messages.getMainMessage("loginWindow.okButton", resolvedLocale));
         loginBtn.setIcon(App.getInstance().getResources().getIcon("icons/ok.png"));
         loginBtn.addActionListener(
                 new ActionListener() {
@@ -154,7 +155,7 @@ public class LoginDialog extends JDialog {
     protected void initLocales(JComboBox<String> localeCombo) {
         String currLocale = loginProperties.loadLastLocale();
         if (StringUtils.isBlank(currLocale)) {
-            currLocale = messages.getTools().localeToString(Locale.getDefault());
+            currLocale = messages.getTools().localeToString(resolvedLocale);
         }
         String selected = null;
         for (Map.Entry<String, Locale> entry : locales.entrySet()) {
@@ -171,5 +172,38 @@ public class LoginDialog extends JDialog {
     public void open() {
         DesktopComponentsHelper.getTopLevelFrame(this).deactivate(null);
         setVisible(true);
+    }
+
+    protected Locale resolveLocale() {
+        Locale appLocale;
+        String lastLocale = this.loginProperties.loadLastLocale();
+        if (StringUtils.isNotEmpty(lastLocale)) {
+            String[] locParts = lastLocale.split("_");
+            if (locParts.length == 1)
+                appLocale = new Locale(locParts[0]);
+            else
+                appLocale = new Locale(locParts[0], locParts[1]);
+        } else {
+            appLocale = Locale.getDefault();
+        }
+
+        for (Locale locale : locales.values()) {
+            if (locale.equals(appLocale)) {
+                return locale;
+            }
+        }
+
+        // if not found and application locale contains country, try to match by language only
+        if (StringUtils.isNotEmpty(appLocale.getCountry())) {
+            Locale languageTagLocale = Locale.forLanguageTag(appLocale.getLanguage());
+            for (Locale locale : locales.values()) {
+                if (Locale.forLanguageTag(locale.getLanguage()).equals(languageTagLocale)) {
+                    return locale;
+                }
+            }
+        }
+
+        // return first locale set in the cuba.availableLocales app property
+        return locales.values().iterator().next();
     }
 }
