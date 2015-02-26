@@ -53,7 +53,7 @@ public class WebDateField extends WebAbstractField<DateFieldWrapper> implements 
     protected com.haulmont.cuba.web.toolkit.ui.DateField dateField;
     protected WebTimeField timeField;
 
-    protected HorizontalLayout composition;
+    protected HorizontalLayout innerLayout;
 
     protected boolean closeWhenDateSelected = false;
 
@@ -68,21 +68,20 @@ public class WebDateField extends WebAbstractField<DateFieldWrapper> implements 
     protected TimeZones timeZones = AppBeans.get(TimeZones.NAME);
 
     public WebDateField() {
-        composition = new HorizontalLayout();
+        innerLayout = new HorizontalLayout();
+        innerLayout.setSpacing(true);
 
-        composition.setSpacing(true);
         dateField = new com.haulmont.cuba.web.toolkit.ui.DateField();
+        dateField.setImmediate(true);
+        dateField.setInvalidCommitted(true);
 
         UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
         userSession = sessionSource.getUserSession();
 
-        dateField.setDateFormat(Datatypes.getFormatStringsNN(userSession.getLocale()).getDateFormat());
-
+        Locale locale = userSession.getLocale();
+        dateField.setDateFormat(Datatypes.getFormatStringsNN(locale).getDateFormat());
         dateField.setResolution(com.haulmont.cuba.web.toolkit.ui.DateField.RESOLUTION_DAY);
-        dateField.setWidth("100%");
 
-        dateField.setImmediate(true);
-        dateField.setInvalidAllowed(true);
         dateField.addValidator(new com.vaadin.data.Validator() {
             @Override
             public void validate(Object value) throws InvalidValueException {
@@ -102,11 +101,10 @@ public class WebDateField extends WebAbstractField<DateFieldWrapper> implements 
 
         timeField = new WebTimeField();
 
-        dateField.setImmediate(true);
-        dateField.setInvalidCommitted(true);
-        timeField.<MaskedTextField>getComponent().setImmediate(true);
-        timeField.<MaskedTextField>getComponent().setInvalidAllowed(false);
-        timeField.<MaskedTextField>getComponent().setInvalidCommitted(true);
+        MaskedTextField vTimeField = timeField.getComponent();
+        vTimeField.setImmediate(true);
+        vTimeField.setInvalidAllowed(false);
+        vTimeField.setInvalidCommitted(true);
 
         dateField.addListener(new Property.ValueChangeListener() {
             @Override
@@ -124,7 +122,7 @@ public class WebDateField extends WebAbstractField<DateFieldWrapper> implements 
         setResolution(Resolution.MIN);
         setCloseWhenDateSelected(true);
 
-        component = new DateFieldWrapper(this, composition);
+        component = new DateFieldWrapper(this, innerLayout);
     }
 
     public com.haulmont.cuba.web.toolkit.ui.DateField getDateField() {
@@ -162,10 +160,12 @@ public class WebDateField extends WebAbstractField<DateFieldWrapper> implements 
         return dateTimeFormat;
     }
 
+    @Override
     public TimeZone getTimeZone() {
         return timeZone;
     }
 
+    @Override
     public void setTimeZone(TimeZone timeZone) {
         TimeZone prevTimeZone = this.timeZone;
         Date value = getValue();
@@ -178,14 +178,14 @@ public class WebDateField extends WebAbstractField<DateFieldWrapper> implements 
     }
 
     public void updateLayout() {
-        composition.removeAllComponents();
-        composition.addComponent(dateField);
-        composition.setExpandRatio(dateField, 1.0f);
+        innerLayout.removeAllComponents();
+        innerLayout.addComponent(dateField);
+        innerLayout.setExpandRatio(dateField, 1.0f);
         if (resolution.ordinal() < Resolution.DAY.ordinal()) {
-            composition.setSpacing(true);
-            composition.addComponent(timeField.<com.vaadin.ui.Component>getComponent());
+            innerLayout.setSpacing(true);
+            innerLayout.addComponent(timeField.<com.vaadin.ui.Component>getComponent());
         } else {
-            composition.setSpacing(false);
+            innerLayout.setSpacing(false);
         }
     }
 
@@ -233,6 +233,7 @@ public class WebDateField extends WebAbstractField<DateFieldWrapper> implements 
         dateField.setCloseWhenDateSelected(autoClose);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T getValue() {
         return (T) constructDate();

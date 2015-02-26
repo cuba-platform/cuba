@@ -36,6 +36,7 @@ import org.apache.commons.lang.StringUtils;
 import java.sql.Time;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
@@ -57,7 +58,7 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
     protected CubaDateField dateField;
     protected WebTimeField timeField;
 
-    protected HorizontalLayout composition;
+    protected HorizontalLayout innerLayout;
 
     protected String dateTimeFormat;
     protected String dateFormat;
@@ -70,21 +71,19 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
     protected TimeZones timeZones = AppBeans.get(TimeZones.NAME);
 
     public WebDateField() {
-        composition = new HorizontalLayout();
+        innerLayout = new HorizontalLayout();
+        innerLayout.setSpacing(true);
 
-        composition.setSpacing(true);
         dateField = new CubaDateField();
+        dateField.setImmediate(true);
+        dateField.setInvalidAllowed(true);
 
         UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
         userSession = sessionSource.getUserSession();
 
-        dateField.setDateFormat(Datatypes.getFormatStringsNN(userSession.getLocale()).getDateFormat());
-
+        Locale locale = userSession.getLocale();
+        dateField.setDateFormat(Datatypes.getFormatStringsNN(locale).getDateFormat());
         dateField.setResolution(com.vaadin.shared.ui.datefield.Resolution.DAY);
-        dateField.setWidth("100%");
-
-        dateField.setImmediate(true);
-        dateField.setInvalidAllowed(true);
 
         timeField = new WebTimeField();
 
@@ -113,7 +112,7 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
         });
         setResolution(Resolution.MIN);
 
-        component = new CubaDateFieldWrapper(this, composition);
+        component = new CubaDateFieldWrapper(this, innerLayout);
     }
 
     public CubaDateField getDateField() {
@@ -141,10 +140,12 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
         return dateTimeFormat;
     }
 
+    @Override
     public TimeZone getTimeZone() {
         return timeZone;
     }
 
+    @Override
     public void setTimeZone(TimeZone timeZone) {
         TimeZone prevTimeZone = this.timeZone;
         Date value = getValue();
@@ -157,14 +158,14 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
     }
 
     public void updateLayout() {
-        composition.removeAllComponents();
-        composition.addComponent(dateField);
-        composition.setExpandRatio(dateField, 1.0f);
+        innerLayout.removeAllComponents();
+        innerLayout.addComponent(dateField);
+        innerLayout.setExpandRatio(dateField, 1.0f);
         if (resolution.ordinal() < Resolution.DAY.ordinal()) {
-            composition.setSpacing(true);
-            composition.addComponent(timeField.<com.vaadin.ui.Component>getComponent());
+            innerLayout.setSpacing(true);
+            innerLayout.addComponent(timeField.<com.vaadin.ui.Component>getComponent());
         } else {
-            composition.setSpacing(false);
+            innerLayout.setSpacing(false);
         }
     }
 
@@ -204,6 +205,7 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T getValue() {
         return (T) constructDate();

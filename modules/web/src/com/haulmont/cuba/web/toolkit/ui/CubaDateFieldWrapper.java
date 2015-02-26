@@ -5,6 +5,8 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.haulmont.cuba.gui.theme.ThemeConstants;
+import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.components.WebDateField;
 import com.haulmont.cuba.web.toolkit.ui.converters.ObjectToObjectConverter;
 import com.vaadin.data.util.converter.Converter;
@@ -23,13 +25,17 @@ import java.util.Date;
 public class CubaDateFieldWrapper extends com.vaadin.ui.CustomField {
 
     protected final Layout composition;
-    protected WebDateField dateField;
+    protected final WebDateField dateField;
+
+    protected ThemeConstants theme;
 
     public CubaDateFieldWrapper(WebDateField dateField, Layout composition) {
         this.dateField = dateField;
         this.composition = composition;
 
-        this.composition.setSizeUndefined();
+        if (App.isBound()) {
+            theme = App.getInstance().getThemeConstants();
+        }
 
         setSizeUndefined();
         setConverter(new ObjectToObjectConverter());
@@ -80,8 +86,14 @@ public class CubaDateFieldWrapper extends com.vaadin.ui.CustomField {
         if (composition != null) {
             if (width < 0) {
                 composition.setWidth(-1, Unit.PIXELS);
+                String defaultDateFieldWidth = "-1px";
+                if (theme != null) {
+                    defaultDateFieldWidth = theme.get("cuba.web.WebDateField.defaultDateWidth");
+                }
+                dateField.getDateField().setWidth(defaultDateFieldWidth);
             } else {
                 composition.setWidth(100, Unit.PERCENTAGE);
+                dateField.getDateField().setWidth("100%");
             }
         }
     }

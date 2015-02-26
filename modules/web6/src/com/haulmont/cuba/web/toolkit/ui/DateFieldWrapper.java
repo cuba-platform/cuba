@@ -16,7 +16,9 @@ import java.util.Date;
  */
 public class DateFieldWrapper extends CustomField {
 
-    protected WebDateField dateField;
+    private static final String DEFAULT_DATE_WIDTH = "100px";
+
+    protected final WebDateField dateField;
     protected final Layout composition;
 
     public DateFieldWrapper(WebDateField dateField, Layout composition) {
@@ -60,8 +62,10 @@ public class DateFieldWrapper extends CustomField {
         if (composition != null) {
             if (width < 0) {
                 composition.setWidth(-1, UNITS_PIXELS);
+                dateField.getDateField().setWidth(DEFAULT_DATE_WIDTH);
             } else {
                 composition.setWidth(100, UNITS_PERCENTAGE);
+                dateField.getDateField().setWidth("100%");
             }
         }
     }

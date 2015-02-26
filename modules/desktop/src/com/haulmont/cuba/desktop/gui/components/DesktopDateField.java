@@ -99,7 +99,7 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
 
         datePicker = new FlushableDatePicker();
 
-        Dimension size = new Dimension(100, DesktopComponentsHelper.FIELD_HEIGHT);
+        Dimension size = new Dimension(110, DesktopComponentsHelper.FIELD_HEIGHT);
         datePicker.setPreferredSize(size);
         datePicker.setMinimumSize(size);
 

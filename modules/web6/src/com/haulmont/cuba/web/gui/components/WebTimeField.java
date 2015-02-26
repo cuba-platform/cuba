@@ -81,7 +81,6 @@ public class WebTimeField extends WebAbstractField<MaskedTextField> implements T
 
         component.setPropertyDataSource(
                 new PropertyFormatter(p) {
-
                     @Override
                     public String format(Object value) {
                         if (value != null) {
@@ -102,7 +101,7 @@ public class WebTimeField extends WebAbstractField<MaskedTextField> implements T
                                     component.setComponentError(null);
                                 return date;
                             } catch (Exception e) {
-                                log.warn("Unable to parse value of component " + getId() + "\n" + e.getMessage());
+                                log.debug("Unable to parse value of component " + getId() + "\n" + e.getMessage());
                                 component.setComponentError(new com.vaadin.data.Validator.InvalidValueException("Invalid value"));
                                 return null;
                             }
