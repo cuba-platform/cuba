@@ -560,6 +560,8 @@ create table SEC_SCREEN_HISTORY (
     constraint FK_SEC_HISTORY_SUBSTITUTED_USER foreign key (SUBSTITUTED_USER_ID) references SEC_USER (ID)
 )^
 
+create index IDX_SEC_SCREEN_HIST_SUB_USER on SEC_SCREEN_HISTORY (SUBSTITUTED_USER_ID)^
+
 ------------------------------------------------------------------------------------------------------------
 
 create table SYS_SENDING_MESSAGE (

@@ -1,0 +1,4 @@
+-- $Id$
+-- Description:
+
+create index IDX_SEC_SCREEN_HIST_SUB_USER on SEC_SCREEN_HISTORY (SUBSTITUTED_USER_ID);

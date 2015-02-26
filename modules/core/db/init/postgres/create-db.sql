@@ -577,6 +577,8 @@ create table SEC_SCREEN_HISTORY (
 )^
 
 create index IDX_SEC_SCREEN_HISTORY_USER on SEC_SCREEN_HISTORY (USER_ID)^
+create index IDX_SEC_SCREEN_HIST_SUB_USER on SEC_SCREEN_HISTORY (SUBSTITUTED_USER_ID)^
+
 
 ------------------------------------------------------------------------------------------------------------
 
