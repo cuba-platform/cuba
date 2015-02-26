@@ -973,6 +973,7 @@
         <xs:attributeGroup ref="hasStyle"/>
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasEnableProp"/>
+        <xs:attributeGroup ref="hasWidthProp"/>
 
         <xs:attribute name="margin" type="xs:string"/>
 
