@@ -160,7 +160,7 @@ public class PermissionConfig {
                         }
 
                         String entityCaption = messages.getMessage(metaClass.getJavaClass(), className, locale);
-                        String caption = name + " ( " + entityCaption + " )";
+                        String caption = entityCaption + " (" + name + ")";
 
                         // Entity target
                         entities.add(new OperationPermissionTarget(metaClass.getJavaClass(),

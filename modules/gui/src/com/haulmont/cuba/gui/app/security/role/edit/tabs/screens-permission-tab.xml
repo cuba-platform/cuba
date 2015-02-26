@@ -30,22 +30,26 @@
 
     <layout margin="true">
         <split width="100%" height="100%" pos="80" orientation="horizontal">
-            <treeTable id="screenPermissionsTree" width="100%" height="100%" multiselect="true">
-                <columns>
-                    <column id="caption" caption="msg://target"/>
-                    <column id="permissionVariant" caption="msg://value"/>
-                </columns>
-                <rows datasource="screenPermissionsTreeDs"/>
-            </treeTable>
+            <vbox height="100%" margin="false;true;false;false">
+                <treeTable id="screenPermissionsTree" width="100%" height="100%" multiselect="true">
+                    <columns>
+                        <column id="caption" caption="msg://target"/>
+                        <column id="permissionVariant" caption="msg://value"/>
+                    </columns>
+                    <rows datasource="screenPermissionsTreeDs"/>
+                </treeTable>
+            </vbox>
 
-            <groupBox height="100%" caption="msg://permissions">
-                <vbox id="selectedScreenPanel" width="100%" visible="false" spacing="true">
-                    <label property="caption" datasource="screenPermissionsTreeDs" stylename="h2" align="MIDDLE_CENTER"/>
+            <vbox margin="false;false;false;true">
+                <groupBox height="100%" caption="msg://permissions">
+                    <vbox id="selectedScreenPanel" width="100%" visible="false" spacing="true">
+                        <label property="caption" datasource="screenPermissionsTreeDs" stylename="h2" align="MIDDLE_CENTER"/>
 
-                    <checkBox id="allowCheckBox" caption="msg://checkbox.allow"/>
-                    <checkBox id="disallowCheckBox" caption="msg://checkbox.deny"/>
-                </vbox>
-            </groupBox>
+                        <checkBox id="allowCheckBox" caption="msg://checkbox.allow"/>
+                        <checkBox id="disallowCheckBox" caption="msg://checkbox.deny"/>
+                    </vbox>
+                </groupBox>
+            </vbox>
         </split>
     </layout>
 </window>

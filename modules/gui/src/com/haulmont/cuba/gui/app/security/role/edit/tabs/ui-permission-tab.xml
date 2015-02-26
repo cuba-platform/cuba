@@ -27,7 +27,7 @@
                          datasourceClass="com.haulmont.cuba.gui.security.UiPermissionsDatasource">
         </groupDatasource>
     </dsContext>
-    
+
     <assign name="filterFieldWidth" value="theme://cuba.gui.ui-permission-tab.filterFieldWidth.width"/>
 
     <layout expand="contentPane">
@@ -48,30 +48,34 @@
         <hbox id="contentPane" spacing="true" margin="false,true,true,true" width="100%">
             <split id="contentSplit" width="100%" height="100%" orientation="horizontal" pos="80">
                 <!-- Table -->
-                <groupTable id="uiPermissionsTable" height="100%" width="100%">
-                    <columns>
-                        <group>
-                            <column id="screen"/>
-                        </group>
-                        <column id="component"/>
-                        <column id="permissionVariant"/>
-                    </columns>
-                    <rows datasource="uiPermissionTargetsDs"/>
-                </groupTable>
+                <vbox height="100%" margin="false;true;false;false">
+                    <groupTable id="uiPermissionsTable" height="100%" width="100%">
+                        <columns>
+                            <group>
+                                <column id="screen"/>
+                            </group>
+                            <column id="component"/>
+                            <column id="permissionVariant"/>
+                        </columns>
+                        <rows datasource="uiPermissionTargetsDs"/>
+                    </groupTable>
+                </vbox>
                 <!-- Edit pane -->
-                <groupBox id="editPane" width="100%" height="100%" caption="msg://permissions">
-                    <vbox id="selectedComponentPanel" expand="panelSpacer" spacing="true" width="100%" height="100%"
-                          visible="false">
-                        <label id="selectedTargetCaption" stylename="h2" align="MIDDLE_CENTER"
-                               property="component" datasource="uiPermissionTargetsDs"/>
+                <vbox margin="false;false;false;true">
+                    <groupBox id="editPane" width="100%" height="100%" caption="msg://permissions">
+                        <vbox id="selectedComponentPanel" expand="panelSpacer" spacing="true" width="100%" height="100%"
+                              visible="false">
+                            <label id="selectedTargetCaption" stylename="h2" align="MIDDLE_CENTER"
+                                   property="component" datasource="uiPermissionTargetsDs"/>
 
-                        <checkBox id="readOnlyCheckBox" caption="msg://checkbox.readOnly"/>
-                        <checkBox id="hideCheckBox" caption="msg://checkbox.hide"/>
-                        <checkBox id="showCheckBox" caption="msg://checkbox.show"/>
+                            <checkBox id="readOnlyCheckBox" caption="msg://checkbox.readOnly"/>
+                            <checkBox id="hideCheckBox" caption="msg://checkbox.hide"/>
+                            <checkBox id="showCheckBox" caption="msg://checkbox.show"/>
 
-                        <label id="panelSpacer"/>
-                    </vbox>
-                </groupBox>
+                            <label id="panelSpacer"/>
+                        </vbox>
+                    </groupBox>
+                </vbox>
             </split>
         </hbox>
     </layout>

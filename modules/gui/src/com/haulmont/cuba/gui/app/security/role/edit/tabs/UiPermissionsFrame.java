@@ -100,7 +100,7 @@ public class UiPermissionsFrame extends AbstractFrame {
             String id = windowInfo.getId();
             String menuId = "menu-config." + id;
             String localeMsg = messages.getMessage(AppConfig.getMessagesPack(), menuId);
-            String title = menuId.equals(localeMsg) ? id : id + " ( " + localeMsg + " )";
+            String title = menuId.equals(localeMsg) ? id : localeMsg + " (" + id + ")";
             screens.put(title, id);
         }
         screenFilter.setOptionsMap(screens);
