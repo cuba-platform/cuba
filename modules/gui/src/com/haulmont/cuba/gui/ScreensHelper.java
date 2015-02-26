@@ -110,11 +110,7 @@ public class ScreensHelper {
                     if (windowElement != null) {
                         if (isEntityAvailable(windowElement, entityClass)) {
                             String caption = getScreenCaption(windowElement, src);
-                            if (StringUtils.isNotEmpty(caption)) {
-                                caption = caption + " (" + windowId + ")";
-                            } else {
-                                caption = windowId;
-                            }
+                            caption = StringUtils.isNotEmpty(caption) ? caption + " (" + windowId + ")" : windowId;
                             screensMap.put(caption, windowId);
                         }
                     } else {
