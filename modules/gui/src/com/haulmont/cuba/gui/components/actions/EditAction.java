@@ -36,7 +36,7 @@ import java.util.Set;
  * @author krivopustov
  * @version $Id$
  */
-public class EditAction extends ItemTrackingAction implements Action.HasOpenType {
+public class EditAction extends BaseAction implements Action.HasOpenType {
 
     public static final String ACTION_ID = ListActionType.EDIT.getId();
 
@@ -72,8 +72,9 @@ public class EditAction extends ItemTrackingAction implements Action.HasOpenType
      * @param id        action name
      */
     public EditAction(ListComponent target, WindowManager.OpenType openType, String id) {
-        super(target, id);
+        super(id);
 
+        this.target = target;
         this.openType = openType;
         this.icon = "icons/edit.png";
 
