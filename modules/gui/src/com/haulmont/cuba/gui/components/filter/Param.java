@@ -543,8 +543,10 @@ public class Param {
 
     private Component createBooleanField(final ValueProperty valueProperty) {
         Messages messages = AppBeans.get(Messages.NAME);
+        ThemeConstants theme = AppBeans.get(ThemeConstantsManager.class).getConstants();
 
         LookupField field = componentsFactory.createComponent(LookupField.NAME);
+        field.setWidth(theme.get("cuba.gui.filter.Param.booleanLookup.width"));
 
         Map<String, Object> values = new HashMap<>();
         values.put(messages.getMessage(Param.class, "Boolean.TRUE"), Boolean.TRUE);

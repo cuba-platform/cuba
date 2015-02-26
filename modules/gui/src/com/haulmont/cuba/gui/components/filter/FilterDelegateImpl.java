@@ -43,10 +43,7 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.security.entity.SearchFolder;
 import com.haulmont.cuba.security.entity.User;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Attribute;
@@ -260,6 +257,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         ftsSearchCriteriaField = componentsFactory.createComponent(TextField.NAME);
         ftsSearchCriteriaField.setAlignment(Component.Alignment.MIDDLE_LEFT);
         ftsSearchCriteriaField.setWidth(theme.get("cuba.gui.filter.ftsSearchCriteriaField.width"));
+        ftsSearchCriteriaField.setInputPrompt(getMessage("Filter.enterSearchPhrase"));
         ftsSearchCriteriaField.requestFocus();
         controlsLayout.add(ftsSearchCriteriaField);
 
@@ -662,13 +660,15 @@ public class FilterDelegateImpl implements FilterDelegate {
             return;
         }
 
-        int columnsQty = getColumnsQty();
+        //note that this is not grid columns qty, but qty of conditions (label cell + value cell) in one row
+        int conditionsQty = getColumnsQty();
         int row = 0;
         int nextColumnStart = 0;
         GridLayout grid = componentsFactory.createComponent(GridLayout.NAME);
-        grid.setColumns(columnsQty);
-        for (int i = 0; i < columnsQty; i++) {
-            grid.setColumnExpandRatio(i, 1);
+        grid.setColumns(conditionsQty * 2);
+        //set expand ratio only for cells with param edit components
+        for (int i = 0; i < conditionsQty; i++) {
+            grid.setColumnExpandRatio(i * 2 + 1, 1);
         }
         grid.setRows(1);
         grid.setSpacing(true);
@@ -679,7 +679,9 @@ public class FilterDelegateImpl implements FilterDelegate {
         for (int i = 0; i < visibleConditionNodes.size(); i++) {
             Node<AbstractCondition> node = visibleConditionNodes.get(i);
             final AbstractCondition condition = node.getData();
-            Component cellContent;
+            BoxLayout labelAndOperationCellContent = null;
+            Component paramEditComponentCellContent = null;
+            Component groupCellContent = null;
             if (condition.isGroup()) {
                 GroupBoxLayout groupBox = componentsFactory.createComponent(GroupBoxLayout.NAME);
                 groupBox.setWidth("100%");
@@ -689,7 +691,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                     recursivelyCreateConditionsLayout(
                             focusOnConditions && !focusSet, node.getChildren(), groupBox, level++);
                 }
-                cellContent = groupBox;
+                groupCellContent = groupBox;
             } else {
                 if (condition.getParam().getJavaClass() != null) {
                     ParamEditor paramEditor = new ParamEditor(condition, conditionsRemoveEnabled);
@@ -709,20 +711,21 @@ public class FilterDelegateImpl implements FilterDelegate {
                         focusSet = true;
                     }
 
-                    cellContent = paramEditor.getComponent();
+                    labelAndOperationCellContent = paramEditor.getLabelAndOperationLayout();
+                    paramEditComponentCellContent = paramEditor.getParamEditComponentLayout();
                 } else {
                     BoxLayout paramLayout = componentsFactory.createComponent(BoxLayout.HBOX);
                     paramLayout.setSpacing(true);
                     paramLayout.setMargin(false);
 
-                    cellContent = paramLayout;
+                    labelAndOperationCellContent = paramLayout;
                 }
             }
 
             //groupBox for group conditions must occupy the whole line in conditions grid
-            Integer conditionWidth = condition.isGroup() ? columnsQty : condition.getWidth();
+            Integer conditionWidth = condition.isGroup() ? conditionsQty : condition.getWidth();
             int nextColumnEnd = nextColumnStart + conditionWidth - 1;
-            if (nextColumnEnd >= columnsQty) {
+            if (nextColumnEnd >= conditionsQty) {
                 //complete current row in grid with gaps if next cell will be on next row
                 completeGridRowWithGaps(grid, row, nextColumnStart);
                 //place cell to next row in grid
@@ -732,14 +735,23 @@ public class FilterDelegateImpl implements FilterDelegate {
                 grid.setRows(row + 1);
             }
 
-            cellContent.setAlignment(Component.Alignment.MIDDLE_LEFT);
-            grid.add(cellContent, nextColumnStart, row, nextColumnEnd, row);
+            if (groupCellContent != null) {
+                grid.add(groupCellContent, nextColumnStart * 2, row, nextColumnEnd * 2 + 1, row);
+            }
+            if (labelAndOperationCellContent != null) {
+                grid.add(labelAndOperationCellContent, nextColumnStart * 2, row, nextColumnStart * 2, row);
+                if (nextColumnStart != 0)
+                    labelAndOperationCellContent.setMargin(false, false, false, true);
+            }
+            if (paramEditComponentCellContent != null) {
+                grid.add(paramEditComponentCellContent, nextColumnStart * 2 + 1, row, nextColumnEnd * 2 + 1, row);
+            }
 
             nextColumnStart = nextColumnEnd + 1;
 
             //add next row if necessary
             if (i < visibleConditionNodes.size() - 1) {
-                if (nextColumnStart >= columnsQty) {
+                if (nextColumnStart >= conditionsQty) {
                     nextColumnStart = 0;
                     row++;
                     grid.setRows(row + 1);
@@ -763,7 +775,7 @@ public class FilterDelegateImpl implements FilterDelegate {
      * this element will occupy 100% of grid width, but expected behaviour is to occupy 1/3 of grid width
      */
     protected void completeGridRowWithGaps(GridLayout grid, int row, int startColumn) {
-        for (int i = startColumn; i < grid.getColumns(); i++) {
+        for (int i = startColumn * 2; i < grid.getColumns(); i++) {
             Component gap = componentsFactory.createComponent(BoxLayout.HBOX);
             gap.setWidth("100%");
             grid.add(gap, i, row);

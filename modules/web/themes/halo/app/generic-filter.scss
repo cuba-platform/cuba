@@ -24,7 +24,11 @@
     padding-bottom: 0px;
   }
 
-  .cuba-generic-filter .filter-conditions .v-gridlayout-spacing-on {
-    padding-left: 20px;
+  .cuba-generic-filter .filter-conditions .v-popupbutton .v-popup-indicator {
+    display: none;
+  }
+
+  .cuba-generic-filter .filter-conditions .v-popupbutton {
+    background: transparent;
   }
 }

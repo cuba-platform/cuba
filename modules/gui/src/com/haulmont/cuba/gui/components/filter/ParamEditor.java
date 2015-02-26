@@ -21,11 +21,11 @@ public class ParamEditor implements AbstractCondition.Listener {
     private boolean removeButtonVisible;
     protected Component field;
     protected String fieldWidth = null;
-    protected BoxLayout mainLayout;
     protected Label captionLbl;
     protected Component operationEditor;
     protected Component paramEditComponent;
     protected BoxLayout paramEditComponentLayout;
+    protected BoxLayout labelAndOperationLayout;
     protected LinkButton removeButton;
     protected ComponentsFactory componentsFactory;
 
@@ -34,18 +34,18 @@ public class ParamEditor implements AbstractCondition.Listener {
         this.removeButtonVisible = removeButtonVisible;
 
         componentsFactory = AppBeans.get(ComponentsFactory.class);
-        mainLayout = componentsFactory.createComponent(BoxLayout.HBOX);
-        mainLayout.setWidth("100%");
-        mainLayout.setSpacing(true);
+        labelAndOperationLayout = componentsFactory.createComponent(HBoxLayout.class);
+        labelAndOperationLayout.setSpacing(true);
+        labelAndOperationLayout.setAlignment(Component.Alignment.MIDDLE_RIGHT);
 
         captionLbl = componentsFactory.createComponent(Label.NAME);
-        captionLbl.setAlignment(Component.Alignment.MIDDLE_LEFT);
+        captionLbl.setAlignment(Component.Alignment.MIDDLE_RIGHT);
         captionLbl.setValue(condition.getLocCaption());
-        mainLayout.add(captionLbl);
+        labelAndOperationLayout.add(captionLbl);
 
         operationEditor = condition.createOperationEditor().getComponent();
-        operationEditor.setAlignment(Component.Alignment.MIDDLE_LEFT);
-        mainLayout.add(operationEditor);
+        operationEditor.setAlignment(Component.Alignment.MIDDLE_RIGHT);
+        labelAndOperationLayout.add(operationEditor);
 
         createParamEditLayout();
 
@@ -53,8 +53,11 @@ public class ParamEditor implements AbstractCondition.Listener {
     }
 
     public void createParamEditLayout() {
-        paramEditComponentLayout = componentsFactory.createComponent(HBoxLayout.class);
-        paramEditComponentLayout.setSpacing(true);
+        if (paramEditComponentLayout == null){
+            paramEditComponentLayout = componentsFactory.createComponent(HBoxLayout.class);
+            paramEditComponentLayout.setSpacing(true);
+            paramEditComponentLayout.setWidth("100%");
+        }
 
         paramEditComponent = condition.getParam().createEditComponent(Param.ValueProperty.VALUE);
         paramEditComponent.setAlignment(Component.Alignment.MIDDLE_LEFT);
@@ -69,22 +72,21 @@ public class ParamEditor implements AbstractCondition.Listener {
         removeButton.setVisible(removeButtonVisible);
         paramEditComponentLayout.add(removeButton);
 
-        if (paramEditComponentExpandRequired(condition.getParam())) {
+        if (paramEditComponentExpandRequired(condition)) {
             paramEditComponentLayout.expand(paramEditComponent);
         } else {
             HBoxLayout spring = componentsFactory.createComponent(HBoxLayout.class);
             paramEditComponentLayout.add(spring);
             paramEditComponentLayout.expand(spring);
         }
-
-        mainLayout.add(paramEditComponentLayout);
-        mainLayout.expand(paramEditComponentLayout);
     }
 
     @Override
     public void paramChanged(Param oldParam, Param newParam) {
         Component oldParamEditComponent = paramEditComponent;
-        mainLayout.remove(paramEditComponentLayout);
+        for (Component component : paramEditComponentLayout.getComponents()) {
+            paramEditComponentLayout.remove(component);
+        }
         createParamEditLayout();
         if (paramEditComponent instanceof Field) {
             ((Field) paramEditComponent).setRequired(condition.getRequired());
@@ -95,10 +97,10 @@ public class ParamEditor implements AbstractCondition.Listener {
         }
     }
 
-    protected boolean paramEditComponentExpandRequired(Param param) {
-        Class paramJavaClass = param.getJavaClass();
+    protected boolean paramEditComponentExpandRequired(AbstractCondition condition) {
+        Class paramJavaClass = condition.getParam().getJavaClass();
         return !(Date.class.isAssignableFrom(paramJavaClass)
-                || Boolean.class.isAssignableFrom(paramJavaClass));
+                || Boolean.class.isAssignableFrom(paramJavaClass)) || condition.getInExpr();
     }
 
     @Override
@@ -110,8 +112,12 @@ public class ParamEditor implements AbstractCondition.Listener {
         return condition;
     }
 
-    public Component getComponent() {
-        return mainLayout;
+    public BoxLayout getParamEditComponentLayout() {
+        return paramEditComponentLayout;
+    }
+
+    public BoxLayout getLabelAndOperationLayout() {
+        return labelAndOperationLayout;
     }
 
     public LinkButton getRemoveButton() {
