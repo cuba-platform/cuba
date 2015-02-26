@@ -37,8 +37,7 @@ public class ScreenHistoryBean implements ScreenHistory {
         log.debug("Cleanup screen history");
         Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
-            Query q = em.createQuery("select h.user.id, count(h.id) " +
+            Query q = persistence.getEntityManager().createQuery("select h.user.id, count(h.id) " +
                     "from sec$ScreenHistory h group by h.user.id having count(h.id) > ?1");
             q.setParameter(1, MAX_RECORDS);
             List<Object[]> userList = q.getResultList();
@@ -47,7 +46,7 @@ public class ScreenHistoryBean implements ScreenHistory {
             for (Object[] row : userList) {
                 UUID userId = (UUID) row[0];
 
-                TypedQuery<UUID> idQuery = em.createQuery(
+                TypedQuery<UUID> idQuery = persistence.getEntityManager().createQuery(
                         "select h.id from sec$ScreenHistory h where h.user.id = ?1 order by h.createTs desc", UUID.class);
                 idQuery.setParameter(1, userId);
                 List<UUID> list = idQuery.getResultList();
@@ -57,7 +56,8 @@ public class ScreenHistoryBean implements ScreenHistory {
                 while (start < list.size()) {
                     List<UUID> toDelete = list.subList(start, end);
 
-                    Query deleteQuery = em.createQuery("delete from sec$ScreenHistory h where h.id in (?1)");
+                    Query deleteQuery = persistence.getEntityManager().createQuery(
+                            "delete from sec$ScreenHistory h where h.id in (?1)");
                     deleteQuery.setParameter(1, toDelete);
                     deleteQuery.executeUpdate();
                     tx.commitRetaining();
