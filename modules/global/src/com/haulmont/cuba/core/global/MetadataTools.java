@@ -452,7 +452,7 @@ public class MetadataTools {
      * @return collection of all persistent entities
      */
     public Collection<MetaClass> getAllPersistentMetaClasses() {
-        List<MetaClass> result = new ArrayList<>();
+        Set<MetaClass> result = new LinkedHashSet<>();
         for (MetaClass metaClass : metadata.getSession().getClasses()) {
             if (isPersistent(metaClass)) {
                 result.add(metaClass);

@@ -8,7 +8,6 @@ package com.haulmont.cuba.core.sys;
 import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.annotations.NamePattern;
-import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.loader.MetadataLoader;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaModel;
