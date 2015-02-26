@@ -24,7 +24,7 @@
                        requiredMessage="msg://nameRequired" caption="msg://name"/>
             <lookupField width="${fieldWidth}" id="entityType" caption="msg://entityType" required="true"
                          requiredMessage="msg://entityTypeRequired"/>
-            <checkBox id="isDefault" caption="msg://isDefault"/>
+            <checkBox id="isDefault" caption="msg://isDefault" align="MIDDLE_LEFT"/>
         </hbox>
         <label value="msg://attributes" stylename="h2"/>
 
