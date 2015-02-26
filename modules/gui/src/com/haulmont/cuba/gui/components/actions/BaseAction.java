@@ -91,6 +91,7 @@ public abstract class BaseAction extends AbstractAction
                 && enabledByUiPermissions && visibleByUiPermissions);
     }
 
+    @Nullable
     protected <T extends Entity> T getTargetSingleSelected() {
         if (target != null) {
             return target.getSingleSelected();
