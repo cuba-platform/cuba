@@ -25,6 +25,7 @@ import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Table;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.LogFactory;
@@ -345,6 +346,14 @@ public class WebComponentsHelper {
      * @return component visibility
      */
     public static boolean isComponentVisible(Component child) {
+        if (child.getParent() instanceof TabSheet) {
+            TabSheet tabSheet = (TabSheet) child.getParent();
+            TabSheet.Tab tab = tabSheet.getTab(child);
+            if (!tab.isVisible()) {
+                return false;
+            }
+        }
+
         return child.isVisible() && (child.getParent() == null || isComponentVisible(child.getParent()));
     }
 
@@ -355,6 +364,14 @@ public class WebComponentsHelper {
      * @return component enabled state
      */
     public static boolean isComponentEnabled(Component child) {
+        if (child.getParent() instanceof TabSheet) {
+            TabSheet tabSheet = (TabSheet) child.getParent();
+            TabSheet.Tab tab = tabSheet.getTab(child);
+            if (!tab.isEnabled()) {
+                return false;
+            }
+        }
+
         return child.isEnabled() && (child.getParent() == null || isComponentEnabled(child.getParent())) &&
                 isComponentVisible(child);
     }

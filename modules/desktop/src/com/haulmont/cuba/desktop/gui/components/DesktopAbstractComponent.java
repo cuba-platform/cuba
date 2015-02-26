@@ -143,10 +143,7 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
 
     @Override
     public boolean isVisible() {
-        if (container != null)
-            return visible && container.isVisible();
-        else
-            return visible;
+        return DesktopComponentsHelper.isRecursivelyVisible(getComposition());
     }
 
     @Override

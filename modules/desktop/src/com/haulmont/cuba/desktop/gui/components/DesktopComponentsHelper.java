@@ -284,6 +284,22 @@ public class DesktopComponentsHelper {
      * @return true if the component and all of its ancestors are visible
      */
     public static boolean isRecursivelyVisible(java.awt.Component component) {
+        if (component.getParent() instanceof JTabbedPane) {
+            JTabbedPane jTabbedPane = (JTabbedPane) component.getParent();
+
+            boolean tabVisible = false;
+            for (java.awt.Component childComponent : jTabbedPane.getComponents()) {
+                if (childComponent == component) {
+                    tabVisible = true;
+                    break;
+                }
+            }
+
+            if (!tabVisible) {
+                return false;
+            }
+        }
+
         return component.isVisible() && (component.getParent() == null || isRecursivelyVisible(component.getParent()));
     }
 

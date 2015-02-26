@@ -6,7 +6,6 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Formatter;
-import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
@@ -20,6 +19,7 @@ import com.vaadin.terminal.Resource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.TabSheet;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
@@ -126,6 +126,43 @@ public class WebComponentsHelper {
     public static boolean isHorizontalLayout(AbstractOrderedLayout layout) {
         return (layout instanceof HorizontalLayout)
                 || (layout instanceof HorizontalActionsLayout);
+    }
+
+    /**
+     * Tests if component visible and its container visible.
+     *
+     * @param child component
+     * @return component visibility
+     */
+    public static boolean isComponentVisible(Component child) {
+        if (child.getParent() instanceof TabSheet) {
+            TabSheet tabSheet = (TabSheet) child.getParent();
+            TabSheet.Tab tab = tabSheet.getTab(child);
+            if (!tab.isVisible()) {
+                return false;
+            }
+        }
+
+        return ((AbstractComponent)child).isComponentVisible() && (child.getParent() == null || isComponentVisible(child.getParent()));
+    }
+
+    /**
+     * Tests if component enabled and visible and its container enabled.
+     *
+     * @param child component
+     * @return component enabled state
+     */
+    public static boolean isComponentEnabled(Component child) {
+        if (child.getParent() instanceof TabSheet) {
+            TabSheet tabSheet = (TabSheet) child.getParent();
+            TabSheet.Tab tab = tabSheet.getTab(child);
+            if (!tab.isEnabled()) {
+                return false;
+            }
+        }
+
+        return ((AbstractComponent)child).isComponentEnabled() && (child.getParent() == null || isComponentEnabled(child.getParent())) &&
+                isComponentVisible(child);
     }
 
     public static Alignment convertAlignment(com.haulmont.cuba.gui.components.Component.Alignment alignment) {
