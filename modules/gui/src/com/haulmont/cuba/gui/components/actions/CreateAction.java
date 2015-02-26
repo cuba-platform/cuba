@@ -66,8 +66,9 @@ public class CreateAction extends BaseAction implements Action.HasOpenType {
      * @param id        action name
      */
     public CreateAction(ListComponent target, WindowManager.OpenType openType, String id) {
-        super(target, id, null);
+        super(id, null);
 
+        this.target = target;
         this.openType = openType;
         this.caption = messages.getMainMessage("actions.Create");
         this.icon = "icons/create.png";

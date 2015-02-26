@@ -44,13 +44,7 @@ public abstract class BaseAction extends AbstractAction
     }
 
     protected BaseAction(String id, @Nullable String shortcut) {
-        this(null, id, shortcut);
-    }
-
-    protected BaseAction(ListComponent target, String id, @Nullable String shortcut) {
         super(id, shortcut);
-
-        this.target = target;
     }
 
     protected boolean isPermitted() {

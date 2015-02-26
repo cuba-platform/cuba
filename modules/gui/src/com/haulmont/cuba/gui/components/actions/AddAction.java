@@ -80,8 +80,9 @@ public class AddAction extends BaseAction implements Action.HasOpenType {
      */
     public AddAction(ListComponent target, @Nullable Window.Lookup.Handler handler,
                      WindowManager.OpenType openType, String id) {
-        super(target, id, null);
+        super(id, null);
 
+        this.target = target;
         this.handler = handler;
         this.openType = openType;
         this.caption = messages.getMainMessage("actions.Add");

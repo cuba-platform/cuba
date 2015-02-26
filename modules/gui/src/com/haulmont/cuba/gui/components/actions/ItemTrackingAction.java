@@ -18,7 +18,9 @@ public abstract class ItemTrackingAction extends BaseAction {
     }
 
     protected ItemTrackingAction(ListComponent target, String id) {
-        super(target, id, null);
+        super(id, null);
+
+        this.target = target;
     }
 
     @Override
