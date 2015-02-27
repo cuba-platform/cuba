@@ -247,4 +247,20 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     public int getColumnsQty() {
         return delegate.getColumnsQty();
     }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        enableComponents(impl, enabled);
+    }
+
+    protected void enableComponents(java.awt.Container container, boolean enable) {
+        java.awt.Component[] components = container.getComponents();
+        for (java.awt.Component component : components) {
+            component.setEnabled(enable);
+            if (component instanceof java.awt.Container) {
+                enableComponents((java.awt.Container)component, enable);
+            }
+        }
+    }
+
 }
