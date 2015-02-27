@@ -19,6 +19,8 @@ public class ExtendedComboBox extends JComboBox<Object> {
     private boolean layingOut = false;
     private int widestLength = 0;
 
+    private boolean hideButton = false;
+
     public ExtendedComboBox() {
     }
 
@@ -78,13 +80,12 @@ public class ExtendedComboBox extends JComboBox<Object> {
 
     @Override
     public void setEnabled(boolean b) {
-        if (b == isEnabled()) return;
-        for (Component child : getComponents()) {
-            if (child instanceof JButton) {
-                child.setVisible(b);
-                break;
-            }
+        if (b == isEnabled()) {
+            return;
         }
+
+        setButtonVisible(hideButton);
+
         super.setEnabled(b);
     }
 
@@ -128,5 +129,13 @@ public class ExtendedComboBox extends JComboBox<Object> {
         if (getEditor() != null && getEditor().getEditorComponent() != null) {
             getEditor().getEditorComponent().setBackground(bg);
         }
+    }
+
+    public boolean isHideButton() {
+        return hideButton;
+    }
+
+    public void setHideButton(boolean hideButton) {
+        this.hideButton = hideButton;
     }
 }

@@ -40,6 +40,7 @@ public class SearchComboBox extends ExtendedComboBox {
             }
         });
         setButtonVisible(false);
+        setHideButton(true);
     }
 
     public void showSearchPopup() {
