@@ -116,6 +116,10 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> imple
 
         DesktopContainerHelper.assignContainer(component, this);
 
+        if (component instanceof DesktopAbstractComponent && !isEnabledWithParent()) {
+            ((DesktopAbstractComponent) component).setParentEnabled(false);
+        }
+
         JComponent comp = DesktopComponentsHelper.getComposition(component);
 
         impl.addTab("", comp);
@@ -204,6 +208,10 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> imple
 
         DesktopContainerHelper.assignContainer(tabContent, this);
 
+        if (!isEnabledWithParent()) {
+            tabContent.setParentEnabled(false);
+        }
+
         final JComponent comp = DesktopComponentsHelper.getComposition(tabContent);
 
         impl.addTab("", comp);
@@ -256,8 +264,14 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> imple
     @Override
     public void removeTab(String name) {
         TabImpl tab = getTabImpl(name);
-        components.remove(tab.getComponent());
-        impl.remove(DesktopComponentsHelper.getComposition(tab.getComponent()));
+        Component component = tab.getComponent();
+        components.remove(component);
+        impl.remove(DesktopComponentsHelper.getComposition(component));
+
+        DesktopContainerHelper.assignContainer(component, null);
+        if (component instanceof DesktopAbstractComponent && !isEnabledWithParent()) {
+            ((DesktopAbstractComponent) component).setParentEnabled(true);
+        }
     }
 
     protected TabImpl getTabImpl(String name) {
@@ -363,6 +377,10 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> imple
         comp.setWidth("100%");
         lti.tabContent.add(comp);
         lti.tabContent.expand(comp, "", "");
+
+        if (comp instanceof DesktopAbstractComponent && !isEnabledWithParent()) {
+            ((DesktopAbstractComponent) comp).setParentEnabled(false);
+        }
 
         final Window window = ComponentsHelper.getWindow(DesktopTabSheet.this);
         if (window != null) {
@@ -503,8 +521,10 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> imple
                 if (impl.getSelectedIndex() == tabIndex && isLazy() && enabled) {
                     initLazyTab(DesktopComponentsHelper.getComposition(component));
                 }
-            } else {
-                component.setVisible(enabled);
+            }
+
+            if (component instanceof DesktopAbstractComponent) {
+                ((DesktopAbstractComponent) component).setParentEnabled(enabled);
             }
         }
 
@@ -712,6 +732,27 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> imple
             int tabIndex = tab.getTabIndex();
             if (tabIndex >= 0) {
                 impl.setEnabledAt(tab.getTabIndex(), tab.isEnabled());
+            }
+        }
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        if (isEnabled() != enabled) {
+            super.setEnabled(enabled);
+        }
+    }
+
+    @Override
+    public void updateEnabled() {
+        super.updateEnabled();
+
+        for (Component component : components.keySet()) {
+            if (component instanceof DesktopAbstractComponent) {
+                JComponent composition = DesktopComponentsHelper.getComposition(component);
+                TabImpl tab = tabContents.get(composition);
+
+                ((DesktopAbstractComponent) component).setParentEnabled(tab.isEnabled() && isEnabledWithParent());
             }
         }
     }

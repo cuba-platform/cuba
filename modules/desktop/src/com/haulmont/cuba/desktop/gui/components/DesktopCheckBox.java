@@ -37,7 +37,6 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
     protected Object prevValue;
 
     protected boolean editable = true;
-    protected boolean enabled = true;
 
     public DesktopCheckBox() {
         impl = new JCheckBox();
@@ -181,18 +180,13 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
     @Override
     public void setEditable(boolean editable) {
         this.editable = editable;
-        impl.setEnabled(editable && enabled);
+
+        updateEnabled();
     }
 
     @Override
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-        impl.setEnabled(editable && enabled);
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return enabled;
+    public void updateEnabled() {
+        impl.setEnabled(editable && isEnabledWithParent());
     }
 
     protected void updateInstance() {

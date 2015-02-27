@@ -44,8 +44,9 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     protected Datasource datasource;
     protected int rows;
     protected int cols = 1;
+
     protected boolean editable = true;
-    protected boolean enabled = true;
+
     protected boolean borderVisible = false;
 
     protected Map<String, FieldConfig> fields = new LinkedHashMap<>();
@@ -258,7 +259,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
             ((Editable) component).setEditable(editable);
         }
         if (fieldLabels.containsKey(field)) {
-            fieldLabels.get(field).setEnabled(editable);
+            fieldLabels.get(field).setEnabled(editable && isEnabledWithParent());
         }
     }
 
@@ -299,6 +300,16 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
             component.setEnabled(enabled);
         }
         if (fieldLabels.containsKey(field)) {
+            fieldLabels.get(field).setEnabled(enabled && isEnabledWithParent());
+        }
+    }
+
+    protected void doSetParentEnabled(FieldConfig field, boolean enabled) {
+        Component component = fieldComponents.get(field);
+        if (component instanceof DesktopAbstractComponent) {
+            ((DesktopAbstractComponent) component).setParentEnabled(enabled);
+        }
+        if (fieldLabels.containsKey(field)) {
             fieldLabels.get(field).setEnabled(enabled);
         }
     }
@@ -319,16 +330,18 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
     @Override
     public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-
-        for (FieldConfig field : fields.values()) {
-            doSetEnabled(field, enabled && !disabledFields.contains(field));
+        if (isEnabled() != enabled) {
+            super.setEnabled(enabled);
         }
     }
 
     @Override
-    public boolean isEnabled() {
-        return enabled;
+    public void updateEnabled() {
+        super.updateEnabled();
+
+        for (FieldConfig field : fields.values()) {
+            doSetParentEnabled(field, parentEnabled && enabled && !disabledFields.contains(field));
+        }
     }
 
     @Override
@@ -691,6 +704,11 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
         jComponent.putClientProperty(getSwingPropertyId(), fieldConfig.getId());
         impl.add(jComponent, cell);
+
+        if (fieldComponent instanceof DesktopAbstractComponent && !isEnabledWithParent()) {
+            ((DesktopAbstractComponent) fieldComponent).setParentEnabled(false);
+            label.setEnabled(false);
+        }
 
         if (repaintRequired) {
             impl.validate();

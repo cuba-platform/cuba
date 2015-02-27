@@ -383,14 +383,11 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
     }
 
     @Override
-    public boolean isEnabled() {
-        return datePicker.isEnabled();
-    }
+    public void updateEnabled() {
+        super.updateEnabled();
 
-    @Override
-    public void setEnabled(boolean enabled) {
-        datePicker.setEnabled(enabled);
-        timeField.setEnabled(enabled);
+        datePicker.setEnabled(isEnabledWithParent());
+        timeField.setEnabled(isEnabledWithParent());
     }
 
     @Override

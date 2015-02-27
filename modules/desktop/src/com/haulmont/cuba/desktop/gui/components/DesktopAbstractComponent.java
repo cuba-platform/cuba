@@ -30,6 +30,9 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
         implements
             DesktopComponent, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame {
 
+    public static final String SWING_PROPERTY_CLASS = "cubaClass";
+    public static final String SWING_PROPERTY_ID = "cubaId";
+
     protected C impl;
 
     protected DesktopContainer container;
@@ -45,18 +48,19 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
 
     protected Log log = LogFactory.getLog(getClass());
 
-    protected static final String swingPropertyId = "cubaId";
-    public static final String swingPropertyClass = "cubaClass";
+    protected boolean visible = true;
+    protected boolean enabled = true;
 
-    public boolean visible = true;
-    private String debugId;
+    protected boolean parentEnabled = true;
+
+    protected String debugId;
 
     protected C getImpl() {
         return impl;
     }
 
     protected String getSwingPropertyId() {
-        return swingPropertyId;
+        return SWING_PROPERTY_ID;
     }
 
     @SuppressWarnings("unchecked")
@@ -116,7 +120,7 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
     }
 
     protected void assignClassDebugProperty(JComponent c) {
-        c.putClientProperty(swingPropertyClass, getClass().getSimpleName());
+        c.putClientProperty(SWING_PROPERTY_CLASS, getClass().getSimpleName());
     }
 
     @Override
@@ -131,14 +135,24 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
 
     @Override
     public boolean isEnabled() {
-        return impl.isEnabled();
+        return DesktopComponentsHelper.isRecursivelyEnabled(getComposition());
     }
 
     @Override
     public void setEnabled(boolean enabled) {
-        getComposition().setEnabled(enabled);
+        this.enabled = enabled;
+
+        updateEnabled();
+    }
+
+    protected void updateEnabled() {
+        getComposition().setEnabled(isEnabledWithParent());
 
         requestContainerUpdate();
+    }
+
+    protected boolean isEnabledWithParent() {
+        return enabled && parentEnabled;
     }
 
     @Override
@@ -256,6 +270,16 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
 
     @Override
     public void setExpanded(boolean expanded) {
+    }
+
+    public boolean isParentEnabled() {
+        return parentEnabled;
+    }
+
+    public void setParentEnabled(boolean parentEnabled) {
+        this.parentEnabled = parentEnabled;
+
+        updateEnabled();
     }
 
     /**

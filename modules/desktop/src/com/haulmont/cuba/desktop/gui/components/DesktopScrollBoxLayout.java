@@ -138,12 +138,23 @@ public class DesktopScrollBoxLayout extends DesktopAbstractComponent<JScrollPane
             }
         }
 
+        if (component instanceof DesktopAbstractComponent && !isEnabledWithParent()) {
+            ((DesktopAbstractComponent) component).setParentEnabled(false);
+        }
+
         adjustViewPreferredSize();
     }
 
     @Override
     public void remove(Component component) {
+        components.remove(component);
         content.remove(component);
+
+        if (component instanceof DesktopAbstractComponent && !isEnabledWithParent()) {
+            ((DesktopAbstractComponent) component).setParentEnabled(true);
+        }
+
+        adjustViewPreferredSize();
     }
 
     @Override
@@ -283,5 +294,24 @@ public class DesktopScrollBoxLayout extends DesktopAbstractComponent<JScrollPane
     @Override
     public void updateComponent(Component child) {
         adjustViewPreferredSize();
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        if (isEnabled() != enabled) {
+            super.setEnabled(enabled);
+        }
+    }
+
+    @Override
+    public void updateEnabled() {
+        super.updateEnabled();
+
+        boolean resultEnabled = isEnabledWithParent();
+        for (Component component : components) {
+            if (component instanceof DesktopAbstractComponent) {
+                ((DesktopAbstractComponent) component).setParentEnabled(resultEnabled);
+            }
+        }
     }
 }

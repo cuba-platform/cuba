@@ -52,7 +52,6 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
     protected MetaPropertyPath metaPropertyPath;
 
     protected boolean editable = true;
-    protected boolean enabled = true;
 
     protected int maxLength;
     protected boolean trimming = true;
@@ -112,17 +111,12 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
     }
 
     @Override
-    public boolean isEnabled() {
-        return enabled;
-    }
+    public void updateEnabled() {
+        super.updateEnabled();
 
-    @Override
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
         if (impl != null) {
-            impl.setEnabled(enabled);
+            impl.setEnabled(isEnabledWithParent());
         }
-        requestContainerUpdate();
     }
 
     @Override

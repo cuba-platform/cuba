@@ -1569,9 +1569,19 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
     @Override
     public void setEnabled(boolean enabled) {
-        impl.setEnabled(enabled);
+        if (isEnabled() != enabled) {
+            super.setEnabled(enabled);
+        }
+    }
+
+    @Override
+    public void updateEnabled() {
+        super.updateEnabled();
+
+        impl.setEnabled(isEnabledWithParent());
+
         if (buttonsPanel != null) {
-            buttonsPanel.setEnabled(enabled);
+            ((DesktopButtonsPanel)buttonsPanel).setParentEnabled(isEnabledWithParent());
         }
     }
 

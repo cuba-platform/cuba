@@ -425,6 +425,18 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
         impl.refreshComponent();
     }
 
+    @Override
+    protected void updateEnabled() {
+        super.updateEnabled();
+
+        if (lookupPickerField != null) {
+            lookupPickerField.setParentEnabled(isEnabledWithParent());
+        }
+        if (addButton != null) {
+            addButton.setParentEnabled(isEnabledWithParent());
+        }
+    }
+
     protected String instanceCaption(Instance instance) {
         if (instance == null) {
             return "";

@@ -135,6 +135,10 @@ public class DesktopSplitPanel extends DesktopAbstractComponent<JSplitPane> impl
             }
         }
 
+        if (component instanceof DesktopAbstractComponent && !isEnabledWithParent()) {
+            ((DesktopAbstractComponent) component).setParentEnabled(false);
+        }
+
         ownComponents.add(component);
     }
 
@@ -142,6 +146,10 @@ public class DesktopSplitPanel extends DesktopAbstractComponent<JSplitPane> impl
     public void remove(Component component) {
         JComponent jComponent = DesktopComponentsHelper.getComposition(component);
         impl.remove(jComponent);
+
+        if (component instanceof DesktopAbstractComponent && !isEnabledWithParent()) {
+            ((DesktopAbstractComponent) component).setParentEnabled(true);
+        }
 
         if (component.getId() != null) {
             componentByIds.remove(component.getId());
@@ -224,5 +232,24 @@ public class DesktopSplitPanel extends DesktopAbstractComponent<JSplitPane> impl
         }
         e.addAttribute("value", String.valueOf(location));
         return true;
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        if (isEnabled() != enabled) {
+            super.setEnabled(enabled);
+        }
+    }
+
+    @Override
+    public void updateEnabled() {
+        super.updateEnabled();
+
+        boolean resultEnabled = isEnabledWithParent();
+        for (Component component : ownComponents) {
+            if (component instanceof DesktopAbstractComponent) {
+                ((DesktopAbstractComponent) component).setParentEnabled(resultEnabled);
+            }
+        }
     }
 }

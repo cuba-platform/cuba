@@ -130,9 +130,10 @@ public class DesktopLookupPickerField extends DesktopLookupField implements Look
     }
 
     @Override
-    public void setEnabled(boolean enabled){
-        super.setEnabled(enabled);
-        pickerField.setEnabled(enabled);
+    public void updateEnabled() {
+        super.updateEnabled();
+
+        pickerField.setParentEnabled(isEnabledWithParent());
     }
 
     private class Picker extends com.haulmont.cuba.desktop.sys.vcl.Picker {

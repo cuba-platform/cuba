@@ -52,6 +52,7 @@ public class DesktopPickerField extends DesktopAbstractField<Picker> implements 
     protected boolean editable = true;
 
     protected java.util.List<Action> actionsOrder = new LinkedList<>();
+    protected java.util.Set<DesktopButton> buttons = new HashSet<>();
 
     protected int modifiersMask;
     protected Map<Action, List<KeyStroke>> keyStrokesMap = new HashMap<>();
@@ -388,20 +389,19 @@ public class DesktopPickerField extends DesktopAbstractField<Picker> implements 
         }
         updateMissingValueState();
     }
-    
-    @Override
-    public void setEnabled(boolean enabled) {
-        super.setEnabled(enabled);
 
-        for (Action action : actionsOrder) {
-            if (action instanceof StandardAction) {
-                action.setEnabled(isEnabled());
-            }
+    @Override
+    public void updateEnabled() {
+        super.updateEnabled();
+
+        boolean resultEnabled = isEnabledWithParent();
+        for (DesktopButton button : buttons) {
+            button.setParentEnabled(resultEnabled);
         }
 
         if (impl.getEditor() instanceof JTextComponent) {
             JTextComponent editor = (JTextComponent) impl.getEditor();
-            editor.setFocusable(enabled);
+            editor.setFocusable(resultEnabled);
         }
     }
 
@@ -411,8 +411,9 @@ public class DesktopPickerField extends DesktopAbstractField<Picker> implements 
 
         // get button for old action
         JButton oldButton = null;
+        DesktopButton oldActionButton = null;
         if (oldAction != null && oldAction.getOwner() != null && oldAction.getOwner() instanceof DesktopButton) {
-            DesktopButton oldActionButton = (DesktopButton) oldAction.getOwner();
+            oldActionButton = (DesktopButton) oldAction.getOwner();
             oldButton = oldActionButton.getImpl();
         }
 
@@ -424,6 +425,7 @@ public class DesktopPickerField extends DesktopAbstractField<Picker> implements 
         }
 
         final DesktopButton dButton = new DesktopButton();
+        dButton.setParentEnabled(isEnabledWithParent());
         dButton.setShouldBeFocused(false);
         dButton.setAction(action);
         dButton.getImpl().setFocusable(false);
@@ -431,8 +433,11 @@ public class DesktopPickerField extends DesktopAbstractField<Picker> implements 
 
         if (oldButton == null) {
             impl.addButton(dButton.getImpl());
+            buttons.add(dButton);
         } else {
             impl.replaceButton(oldButton, dButton.getImpl());
+            buttons.remove(oldActionButton);
+            buttons.add(dButton);
         }
 
         // apply Editable after action owner is set

@@ -49,7 +49,6 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
     protected boolean disableActionListener = false;
 
     protected boolean editable = true;
-    protected boolean enabled = true;
 
     protected Mode mode = Mode.CASE_SENSITIVE;
 
@@ -581,20 +580,18 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
     }
 
     @Override
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-        comboBox.setEnabled(enabled);
-        textField.setEnabled(enabled);
+    public void updateEnabled() {
+        super.updateEnabled();
 
-        comboBox.setFocusable(enabled);
-        textField.setFocusable(enabled);
+        boolean resultEnabled = isEnabledWithParent();
+
+        comboBox.setEnabled(resultEnabled);
+        textField.setEnabled(resultEnabled);
+
+        comboBox.setFocusable(resultEnabled);
+        textField.setFocusable(resultEnabled);
 
         updateMissingValueState();
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return enabled;
     }
 
     @Override

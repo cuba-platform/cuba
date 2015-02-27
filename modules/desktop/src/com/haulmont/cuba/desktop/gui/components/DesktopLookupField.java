@@ -66,7 +66,6 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
     protected JPanel composition;
 
     protected DefaultValueFormatter valueFormatter;
-    protected boolean enabled = true;
     protected String inputPrompt;
 
     public DesktopLookupField() {
@@ -489,20 +488,18 @@ public class DesktopLookupField extends DesktopAbstractOptionsField<JComponent> 
     }
 
     @Override
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-        comboBox.setEnabled(enabled);
-        textField.setEnabled(enabled);
+    public void updateEnabled() {
+        super.updateEnabled();
 
-        comboBox.setFocusable(enabled);
-        textField.setFocusable(enabled);
+        boolean resultEnabled = isEnabledWithParent();
+
+        comboBox.setEnabled(resultEnabled);
+        textField.setEnabled(resultEnabled);
+
+        comboBox.setFocusable(resultEnabled);
+        textField.setFocusable(resultEnabled);
 
         updateMissingValueState();
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return enabled;
     }
 
     @Override

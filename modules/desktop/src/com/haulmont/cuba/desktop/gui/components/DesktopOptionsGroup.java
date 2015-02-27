@@ -342,14 +342,11 @@ public class DesktopOptionsGroup
     }
 
     @Override
-    public boolean isEnabled() {
-        return enabled;
-    }
+    public void updateEnabled() {
+        super.updateEnabled();
 
-    @Override
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-        for (JToggleButton button : items.values())
-            button.setEnabled(enabled && editable);
+        for (JToggleButton button : items.values()) {
+            button.setEnabled(enabled && editable && parentEnabled);
+        }
     }
 }

@@ -672,6 +672,10 @@ public class DesktopWindow implements Window, Component.Disposable,
 
         DesktopContainerHelper.assignContainer(component, this);
 
+        if (component instanceof DesktopAbstractComponent && !isEnabled()) {
+            ((DesktopAbstractComponent) component).setParentEnabled(false);
+        }
+
         requestRepaint();
     }
 
@@ -728,6 +732,10 @@ public class DesktopWindow implements Window, Component.Disposable,
 
         DesktopContainerHelper.assignContainer(component, this);
 
+        if (component instanceof DesktopAbstractComponent && !isEnabled()) {
+            ((DesktopAbstractComponent) component).setParentEnabled(false);
+        }
+
         requestRepaint();
     }
 
@@ -750,6 +758,11 @@ public class DesktopWindow implements Window, Component.Disposable,
         ownComponents.remove(component);
 
         DesktopContainerHelper.assignContainer(component, null);
+
+        if (component instanceof DesktopAbstractComponent && !isEnabled()) {
+            ((DesktopAbstractComponent) component).setParentEnabled(true);
+        }
+
         if (expandedComponent == component) {
             expandedComponent = null;
         }
@@ -825,9 +838,20 @@ public class DesktopWindow implements Window, Component.Disposable,
 
     @Override
     public void setEnabled(boolean enabled) {
-        panel.setEnabled(enabled);
+        if (isEnabled() != enabled) {
+            panel.setEnabled(enabled);
+
+            updateEnabled();
+        }
     }
 
+    public void updateEnabled() {
+        for (Component component : ownComponents) {
+            if (component instanceof DesktopAbstractComponent) {
+                ((DesktopAbstractComponent) component).setParentEnabled(isEnabled());
+            }
+        }
+    }
     @Override
     public boolean isVisible() {
         return true;

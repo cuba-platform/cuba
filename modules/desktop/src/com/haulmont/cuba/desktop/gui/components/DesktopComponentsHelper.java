@@ -304,6 +304,32 @@ public class DesktopComponentsHelper {
     }
 
     /**
+     * Determines whether component will be displayed on the screen.
+     *
+     * @param component component
+     * @return true if the component and all of its ancestors are visible
+     */
+    public static boolean isRecursivelyEnabled(java.awt.Component component) {
+        if (component.getParent() instanceof JTabbedPane) {
+            JTabbedPane jTabbedPane = (JTabbedPane) component.getParent();
+
+            boolean tabVisible = false;
+            for (java.awt.Component childComponent : jTabbedPane.getComponents()) {
+                if (childComponent == component) {
+                    tabVisible = true;
+                    break;
+                }
+            }
+
+            if (!tabVisible) {
+                return false;
+            }
+        }
+
+        return component.isEnabled() && (component.getParent() == null || isRecursivelyEnabled(component.getParent()));
+    }
+
+    /**
      * Determines real size of HTML label with text on screen.
      *
      * @param html text with html markup

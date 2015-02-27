@@ -94,6 +94,10 @@ public abstract class DesktopAbstractBox
 
         DesktopContainerHelper.assignContainer(component, this);
 
+        if (component instanceof DesktopAbstractComponent && !isEnabledWithParent()) {
+            ((DesktopAbstractComponent) component).setParentEnabled(false);
+        }
+
         requestRepaint();
     }
 
@@ -154,6 +158,10 @@ public abstract class DesktopAbstractBox
 
         DesktopContainerHelper.assignContainer(component, this);
 
+        if (component instanceof DesktopAbstractComponent && !isEnabledWithParent()) {
+            ((DesktopAbstractComponent) component).setParentEnabled(false);
+        }
+
         requestRepaint();
     }
 
@@ -179,6 +187,10 @@ public abstract class DesktopAbstractBox
         DesktopContainerHelper.assignContainer(component, null);
         if (expandedComponent == component) {
             expandedComponent = null;
+        }
+
+        if (component instanceof DesktopAbstractComponent && !isEnabledWithParent()) {
+            ((DesktopAbstractComponent) component).setParentEnabled(true);
         }
 
         requestRepaint();
@@ -325,5 +337,24 @@ public abstract class DesktopAbstractBox
     @Override
     public void setExpanded(boolean expanded) {
         layoutAdapter.setExpandLayout(expanded);
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        if (isEnabled() != enabled) {
+            super.setEnabled(enabled);
+        }
+    }
+
+    @Override
+    public void updateEnabled() {
+        super.updateEnabled();
+
+        boolean resultEnabled = isEnabledWithParent();
+        for (Component component : ownComponents) {
+            if (component instanceof DesktopAbstractComponent) {
+                ((DesktopAbstractComponent) component).setParentEnabled(resultEnabled);
+            }
+        }
     }
 }
