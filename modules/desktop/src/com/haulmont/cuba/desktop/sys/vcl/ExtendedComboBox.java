@@ -84,7 +84,7 @@ public class ExtendedComboBox extends JComboBox<Object> {
             return;
         }
 
-        setButtonVisible(hideButton);
+        setButtonVisible(!hideButton);
 
         super.setEnabled(b);
     }
