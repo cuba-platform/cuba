@@ -31,7 +31,7 @@ public class CustomConditionDescriptor extends AbstractConditionDescriptor {
                                      CollectionDatasource datasource) {
         super(element.attributeValue("name"), filterComponentName, datasource);
         this.element = element;
-
+        this.messagesPack = messagesPack;
         this.caption = element.attributeValue("caption");
         if (this.caption != null) {
             MessageTools messageTools = AppBeans.get(MessageTools.NAME);

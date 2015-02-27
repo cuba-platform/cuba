@@ -5,9 +5,13 @@
 
 package com.haulmont.cuba.gui.components.filter.addcondition;
 
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.filter.descriptor.AbstractConditionDescriptor;
 import com.haulmont.cuba.gui.components.filter.descriptor.HeaderConditionDescriptor;
+import com.haulmont.cuba.gui.components.filter.descriptor.PropertyConditionDescriptor;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -46,6 +50,9 @@ public class AddConditionWindow extends AbstractWindow {
     @Inject
     protected ThemeConstantsManager themeConstantsManager;
 
+    @Inject
+    protected Metadata metadata;
+
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
@@ -83,9 +90,21 @@ public class AddConditionWindow extends AbstractWindow {
             showNotification(getMessage("AddCondition.selectCondition"), NotificationType.WARNING);
         } else if (item instanceof HeaderConditionDescriptor) {
             showNotification(getMessage("AddCondition.youSelectedGroup"), NotificationType.WARNING);
+        } else if (isEmbeddedProperty(item)) {
+            showNotification(getMessage("AddCondition.youSelectedEmbedded"), NotificationType.WARNING);
         } else {
             close(COMMIT_ACTION_ID);
         }
+    }
+
+    protected boolean isEmbeddedProperty(AbstractConditionDescriptor item) {
+        if (item instanceof PropertyConditionDescriptor) {
+            MetaProperty metaProperty = ((PropertyConditionDescriptor) item).getMetaProperty();
+            if (metaProperty != null && metadata.getTools().isEmbedded(metaProperty)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void cancel() {

@@ -40,7 +40,7 @@ public class PropertyConditionDescriptor extends AbstractConditionDescriptor {
                                        CollectionDatasource datasource) {
         super(name, filterComponentName, datasource);
         this.caption = caption;
-
+        this.messagesPack = messagesPack;
         Messages messages = AppBeans.get(Messages.NAME);
 
         if (!isBlank(caption)) {
@@ -95,5 +95,12 @@ public class PropertyConditionDescriptor extends AbstractConditionDescriptor {
         MessageTools messageTools = AppBeans.get(MessageTools.class);
         MetaPropertyPath mpp = datasourceMetaClass.getPropertyPath(name);
         return mpp != null ? messageTools.getPropertyCaption(mpp.getMetaProperty()) : name;
+    }
+
+    @Nullable
+    public MetaProperty getMetaProperty() {
+        MetaPropertyPath propertyPath = datasourceMetaClass.getPropertyPath(name);
+        if (propertyPath == null) return null;
+        return propertyPath.getMetaProperty();
     }
 }

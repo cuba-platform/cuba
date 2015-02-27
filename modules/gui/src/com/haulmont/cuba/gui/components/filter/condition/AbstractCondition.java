@@ -171,6 +171,7 @@ public abstract class AbstractCondition extends AbstractNotPersistentEntity{
         entityParamWhere = descriptor.getEntityParamWhere();
         entityParamView = descriptor.getEntityParamView();
         datasource = descriptor.getDatasource();
+        messagesPack = descriptor.getMessagesPack();
         param = createParam();
         String operatorType = descriptor.getOperatorType();
         if (operatorType != null) {

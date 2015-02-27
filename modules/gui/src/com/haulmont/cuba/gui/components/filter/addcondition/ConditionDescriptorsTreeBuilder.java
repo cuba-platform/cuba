@@ -20,6 +20,8 @@ import com.haulmont.cuba.gui.components.filter.descriptor.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
 import java.util.*;
@@ -36,6 +38,8 @@ public class ConditionDescriptorsTreeBuilder {
 
     protected static final List<String> defaultExcludedProps = Collections.unmodifiableList(Arrays.asList("version"));
     protected static final String CUSTOM_CONDITIONS_PERMISSION = "cuba.gui.filter.customConditions";
+
+    protected static Log log = LogFactory.getLog(ConditionDescriptorsTreeBuilder.class);
 
     protected Filter filter;
     protected int hierarchyDepth;
@@ -94,7 +98,12 @@ public class ConditionDescriptorsTreeBuilder {
         int currentDepth = 0;
 
         for (AbstractConditionDescriptor propertyDescriptor : propertyDescriptors) {
-            MetaProperty metaProperty = propertyDescriptor.getDatasourceMetaClass().getProperty(propertyDescriptor.getName());
+            MetaPropertyPath propertyPath = propertyDescriptor.getDatasourceMetaClass().getPropertyPath(propertyDescriptor.getName());
+            if (propertyPath == null) {
+                log.error("Property path for " + propertyDescriptor.getName() + " of metaClass" + propertyDescriptor.getDatasourceMetaClass().getName() + " not found");
+                continue;
+            }
+            MetaProperty metaProperty = propertyPath.getMetaProperty();
             if (isPropertyAllowed(metaProperty)) {
                 Node<AbstractConditionDescriptor> node = new Node<>(propertyDescriptor);
                 propertyHeaderNode.addChild(node);

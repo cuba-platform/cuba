@@ -35,6 +35,7 @@ public abstract class AbstractConditionDescriptor extends AbstractNotPersistentE
     protected String entityAlias;
     protected Boolean inExpr = false;
     protected Boolean showImmediately = false;
+    protected String messagesPack;
 
     public AbstractConditionDescriptor(String name, String filterComponentName, CollectionDatasource datasource) {
         this.name = name;
@@ -58,6 +59,10 @@ public abstract class AbstractConditionDescriptor extends AbstractNotPersistentE
     @MetaProperty
     public String getLocCaption() {
         return locCaption;
+    }
+
+    public String getMessagesPack() {
+        return messagesPack;
     }
 
     public String getFilterComponentName() {
