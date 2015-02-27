@@ -317,10 +317,10 @@ public class EntityPermissionsFrame extends AbstractFrame {
                 String name;
                 String localName;
 
-                int delimiterIndex = caption.indexOf(" ");
+                int delimiterIndex = caption.lastIndexOf(" ");
                 if (delimiterIndex >= 0) {
-                    name = caption.substring(0, delimiterIndex);
-                    localName = caption.substring(delimiterIndex + 1);
+                    localName = caption.substring(0, delimiterIndex);
+                    name = caption.substring(delimiterIndex + 1);
                 } else {
                     name = caption;
                     localName = "";
