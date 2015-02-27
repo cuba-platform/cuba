@@ -18,7 +18,7 @@
         <action id="cancel" invoke="cancel" shortcut="ESCAPE" icon="icons/cancel.png" caption="msg://actions.Cancel"/>
     </actions>
     <layout spacing="true" expand="filterEntitiesTable">
-        <table id="filterEntitiesTable" width="100%">
+        <table id="filterEntitiesTable" width="100%" columnControlVisible="false">
             <columns>
                 <column id="name"/>
             </columns>
