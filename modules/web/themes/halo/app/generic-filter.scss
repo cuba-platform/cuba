@@ -48,9 +48,9 @@
       border-top-left-radius: 0;
     }
 
-    .v-button.v-popupbutton .v-popup-indicator:after {
-      position: relative;
-      left: -12px;
+    .v-button.v-popupbutton .v-popup-indicator {
+        padding-left: 0;
+        margin-left: -4px;
     }
   }
 }
