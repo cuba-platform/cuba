@@ -31,4 +31,25 @@
   .cuba-generic-filter .filter-conditions .v-popupbutton {
     background: transparent;
   }
+
+  .cuba-generic-filter .filter-search-button {
+    .v-button {
+      border-right: none;
+    }
+
+    .v-button.v-popupbutton,
+    .v-disabled.v-button.v-popupbutton:focus {
+      border-right: 1px solid #9bb3d3;
+    }
+
+    .v-button:focus,
+    .v-button.v-popupbutton:focus {
+      border-right: 1px solid #4d7ab2;
+    }
+
+    .v-button.v-popupbutton .v-popup-indicator {
+      background-position: -2px 1px;
+    }
+  }
+
 }

@@ -1,0 +1,31 @@
+<!--
+  ~ Copyright (c) 2008-2015 Haulmont. All rights reserved.
+  ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+  -->
+
+<window xmlns="http://schemas.haulmont.com/cuba/5.4/window.xsd"
+        caption="msg://FilterSelect.caption"
+        class="com.haulmont.cuba.gui.components.filter.filterselect.FilterSelectWindow"
+        messagesPack="com.haulmont.cuba.gui.components.filter.filterselect">
+    <dsContext>
+        <collectionDatasource
+                id="filterEntitiesDs"
+                class="com.haulmont.cuba.security.entity.FilterEntity"
+                refreshMode="NEVER"/>
+    </dsContext>
+    <actions>
+        <action id="select" invoke="select" shortcut="CTRL-ENTER" icon="icons/ok.png" caption="msg://actions.Select"/>
+        <action id="cancel" invoke="cancel" shortcut="ESCAPE" icon="icons/cancel.png" caption="msg://actions.Cancel"/>
+    </actions>
+    <layout spacing="true" expand="filterEntitiesTable">
+        <table id="filterEntitiesTable" width="100%">
+            <columns>
+                <column id="name"/>
+            </columns>
+            <rows datasource="filterEntitiesDs"/>
+        </table>
+        <hbox spacing="true">
+            <button id="selectBtn" action="select"/>
+            <button id="cancelBtn" action="cancel"/>
+        </hbox>
+    </layout></window>

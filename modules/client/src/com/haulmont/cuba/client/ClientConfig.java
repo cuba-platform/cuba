@@ -108,14 +108,6 @@ public interface ClientConfig extends Config {
     boolean getGenericFilterChecking();
 
     /**
-     * @return  If true, enable adding conditions through tree-like structure of properties, groups, etc.<br/>
-     * If false, switch to adding conditions through plain dropdown list (old style).
-     */
-    @Property("cuba.gui.genericFilterTreeConditionSelect")
-    @DefaultBoolean(true)
-    boolean getGenericFilterTreeConditionSelect();
-
-    /**
      * @return If true, all generic text filters will trim value.<br/>
      * If false, the text filter will not be trim value.
      */
@@ -138,6 +130,15 @@ public interface ClientConfig extends Config {
     @Property("cuba.gui.genericFilterConditionsLocation")
     @Default("top")
     String getGenericFilterConditionsLocation();
+
+    /**
+     * Returns a number of items to be displayed in pupup list near the 'Search' button. If number of filter
+     * entities exceeds this value then 'Show more..' action is added to the popup list. The action
+     * will show new dialog window with all possible filter entities for selecting a desired one.
+     */
+    @Property("cuba.gui.genericFilterPopupListSize")
+    @DefaultInt(10)
+    int getGenericFilterPopupListSize();
 
     /**
      * Support e-mail. Exception reports and feedback emails are sent to this address.

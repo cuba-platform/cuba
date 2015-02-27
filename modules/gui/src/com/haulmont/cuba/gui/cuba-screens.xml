@@ -175,4 +175,7 @@
     <screen id="groupConditionFrame"
             template="/com/haulmont/cuba/gui/components/filter/edit/group-condition-frame.xml"/>
 
+    <screen id="filterSelect"
+            template="/com/haulmont/cuba/gui/components/filter/filterselect/filter-select.xml"/>
+
 </screen-config>

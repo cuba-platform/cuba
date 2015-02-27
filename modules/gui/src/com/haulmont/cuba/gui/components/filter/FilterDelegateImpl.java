@@ -28,6 +28,7 @@ import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.condition.CustomCondition;
 import com.haulmont.cuba.gui.components.filter.edit.FilterEditor;
+import com.haulmont.cuba.gui.components.filter.filterselect.FilterSelectWindow;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -117,7 +118,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
     protected GroupBoxLayout groupBoxLayout;
     protected BoxLayout layout;
-    protected LookupField filtersLookup;
+    protected PopupButton filtersPopupButton;
     protected Component.Container conditionsLayout;
     protected BoxLayout maxResultsLayout;
     protected TextField maxResultsField;
@@ -133,7 +134,6 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected boolean useMaxResults;
     protected Boolean manualApplyRequired;
     protected boolean folderActionsEnabled = true;
-    protected boolean filtersLookupListenerEnabled = true;
     protected boolean conditionsRemoveEnabled = false;
     protected boolean editable;
     protected FilterMode filterMode;
@@ -169,6 +169,8 @@ public class FilterDelegateImpl implements FilterDelegate {
             layout = componentsFactory.createComponent(VBoxLayout.NAME);
             layout.setWidth("100%");
             groupBoxLayout.add(layout);
+            if (caption == null)
+                setCaption(getMessage("Filter.groupBoxCaption"));
         } else {
             Collection<Component> components = layout.getComponents();
             for (Component component : components) {
@@ -203,15 +205,12 @@ public class FilterDelegateImpl implements FilterDelegate {
         controlsLayout.setSpacing(true);
         controlsLayout.setWidth("100%");
 
-        filtersLookup = componentsFactory.createComponent(LookupField.NAME);
-        controlsLayout.add(filtersLookup);
-        filtersLookup.setWidth(theme.get("cuba.gui.filter.select.width"));
-        filtersLookup.addListener(new FiltersLookupChangeListener());
-        filterHelper.setLookupNullSelectionAllowed(filtersLookup, false);
-        filterHelper.setLookupTextInputAllowed(filtersLookup, false);
+        HBoxLayout searchHBox = componentsFactory.createComponent(HBoxLayout.class);
+        controlsLayout.add(searchHBox);
+        searchHBox.setStyleName("filter-search-button");
 
         Button searchBtn = componentsFactory.createComponent(Button.NAME);
-        controlsLayout.add(searchBtn);
+        searchHBox.add(searchBtn);
         searchBtn.setCaption(getMessage("Filter.search"));
         searchBtn.setIcon("icons/search.png");
         searchBtn.setAction(new AbstractAction("search") {
@@ -222,9 +221,8 @@ public class FilterDelegateImpl implements FilterDelegate {
         });
         searchBtn.setAlignment(Component.Alignment.MIDDLE_LEFT);
 
-        Component gap = componentsFactory.createComponent(BoxLayout.HBOX);
-        controlsLayout.add(gap);
-        controlsLayout.expand(gap);
+        filtersPopupButton = componentsFactory.createComponent(PopupButton.class);
+        searchHBox.add(filtersPopupButton);
 
         LinkButton addConditionBtn = componentsFactory.createComponent(LinkButton.NAME);
         controlsLayout.add(addConditionBtn);
@@ -236,6 +234,10 @@ public class FilterDelegateImpl implements FilterDelegate {
                 addConditionHelper.addCondition();
             }
         });
+
+        Component gap = componentsFactory.createComponent(BoxLayout.HBOX);
+        controlsLayout.add(gap);
+        controlsLayout.expand(gap);
 
         settingsBtn = componentsFactory.createComponent(PopupButton.NAME);
         settingsBtn.setIcon("icons/gear.png");
@@ -300,13 +302,11 @@ public class FilterDelegateImpl implements FilterDelegate {
                 createLayout();
                 initMaxResults();
                 if (filterMode == FilterMode.GENERIC_MODE) {
-                    fillFiltersLookup();
-                    filtersLookupListenerEnabled = false;
-                    filtersLookup.setValue(filterEntity);
-                    filtersLookupListenerEnabled = true;
                     fillConditionsLayout(true);
                     fillActions();
+                    initFiltersPopupButton();
                 }
+                updateWindowCaption();
             }
         });
     }
@@ -337,12 +337,12 @@ public class FilterDelegateImpl implements FilterDelegate {
         initAdHocFilter();
         loadFilterEntities();
         FilterEntity defaultFilter = getDefaultFilter(filterEntities);
-        //fill filter lookup after evaluating default filter because we need to mark default filter in lookup captions
-        fillFiltersLookup();
+        initFiltersPopupButton();
+
         if (defaultFilter == null) {
             defaultFilter = adHocFilter;
         }
-        filtersLookup.setValue(defaultFilter);
+        setFilterEntity(defaultFilter);
 
         if (defaultFilter != adHocFilter) {
             Window window = ComponentsHelper.getWindow(filter);
@@ -394,15 +394,6 @@ public class FilterDelegateImpl implements FilterDelegate {
         }
 
         saveInitialFilterState();
-
-        if (!filterEntities.contains(filterEntity)) {
-            filterEntities.add(filterEntity);
-            fillFiltersLookup();
-        }
-
-        filtersLookupListenerEnabled = false;
-        filtersLookup.setValue(filterEntity);
-        filtersLookupListenerEnabled = true;
 
         conditionsRemoveEnabled = filterEntity == adHocFilter;
         fillActions();
@@ -592,7 +583,6 @@ public class FilterDelegateImpl implements FilterDelegate {
                 public void run() {
                     AbstractSearchFolder savedFolder = saveFolder(folder);
                     filterEntity.setFolder(savedFolder);
-                    fillFiltersLookup();
                 }
             };
         } else {
@@ -601,7 +591,6 @@ public class FilterDelegateImpl implements FilterDelegate {
                 public void run() {
                     AbstractSearchFolder savedFolder = saveFolder(folder);
                     filterEntity.setFolder(savedFolder);
-                    fillFiltersLookup();
                 }
             };
         }
@@ -880,21 +869,53 @@ public class FilterDelegateImpl implements FilterDelegate {
         return null;
     }
 
-    protected void fillFiltersLookup() {
-        Map<Object, String> captionsMap = new LinkedHashMap<>();
-        for (FilterEntity entity : filterEntities) {
-            String caption = getFilterCaption(entity);
-            if (entity.getIsDefault()) {
-                caption += " " + getMessage("Filter.default");
-            }
-            captionsMap.put(entity, caption);
+    protected void initFiltersPopupButton() {
+        filtersPopupButton.removeAllActions();
+
+        Iterator<FilterEntity> it = filterEntities.iterator();
+        int addedEntitiesCount = 0;
+
+        while (it.hasNext() && addedEntitiesCount < clientConfig.getGenericFilterPopupListSize()) {
+            final FilterEntity fe = it.next();
+            filtersPopupButton.addAction(new AbstractAction("setEntity" + fe.getId()) {
+                @Override
+                public void actionPerform(Component component) {
+                    if (fe != filterEntity)
+                        setFilterEntity(fe);
+                }
+
+                @Override
+                public String getCaption() {
+                    return getFilterCaption(fe);
+                }
+            });
+            addedEntitiesCount++;
         }
-        filtersLookupListenerEnabled = false;
-        //set null to remove previous value from lookup options list
-        filtersLookup.setValue(null);
-        filtersLookupListenerEnabled = true;
-        filtersLookup.setOptionsList(filterEntities);
-        filterHelper.setLookupCaptions(filtersLookup, captionsMap);
+
+        if (filterEntities.size() > clientConfig.getGenericFilterPopupListSize()) {
+            filtersPopupButton.addAction(new AbstractAction("showMoreFilterEntities") {
+                @Override
+                public void actionPerform(Component component) {
+                    WindowInfo windowInfo = windowConfig.getWindowInfo("filterSelect");
+                    final FilterSelectWindow window = windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG,
+                            Collections.<String, Object>singletonMap("filterEntities", filterEntities));
+                    window.addListener(new Window.CloseListener() {
+                        @Override
+                        public void windowClosed(String actionId) {
+                            if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                                FilterEntity selectedEntity = window.getFilterEntity();
+                                setFilterEntity(selectedEntity);
+                            }
+                        }
+                    });
+                }
+
+                @Override
+                public String getCaption() {
+                    return formatMessage("Filter.showMore", filterEntities.size());
+                }
+            });
+        }
     }
 
     protected void initAdHocFilter() {
@@ -999,6 +1020,10 @@ public class FilterDelegateImpl implements FilterDelegate {
 
     protected String getMessage(String key) {
         return messages.getMessage(FilterDelegateImpl.class, key);
+    }
+
+    protected String formatMessage(String key, Object... params) {
+        return messages.formatMessage(FilterDelegateImpl.class, key, params);
     }
 
     @Override
@@ -1515,12 +1540,8 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected void updateWindowCaption() {
         Window window = ComponentsHelper.getWindow(filter);
         String filterTitle;
-        if (filterEntity != null && filterEntity != adHocFilter) {
-            if (filterEntity.getCode() != null) {
-                filterTitle = messages.getMainMessage(filterEntity.getCode());
-            } else {
-                filterTitle = filterEntity.getName();
-            }
+        if (filterMode == FilterMode.GENERIC_MODE && filterEntity != null && filterEntity != adHocFilter) {
+            filterTitle = getFilterCaption(filterEntity);
         } else {
             filterTitle = null;
         }
@@ -1531,16 +1552,10 @@ public class FilterDelegateImpl implements FilterDelegate {
         }
 
         windowManager.setWindowCaption(window, initialWindowCaption, filterTitle);
+
+        groupBoxLayout.setCaption(Strings.isNullOrEmpty(filterTitle) ? caption : caption + ": " + filterTitle);
     }
 
-    protected class FiltersLookupChangeListener implements ValueListener {
-
-        @Override
-        public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
-            if (!filtersLookupListenerEnabled) return;
-            setFilterEntity((FilterEntity) value);
-        }
-    }
 
     protected class SaveAction extends AbstractAction {
 
@@ -1562,15 +1577,12 @@ public class FilterDelegateImpl implements FilterDelegate {
                             filterEntity.setXml(FilterParser.getXml(conditions, Param.ValueProperty.DEFAULT_VALUE));
                             saveFilterEntity();
                             initAdHocFilter();
-                            filtersLookupListenerEnabled = false;
                             filterEntities.add(0, adHocFilter);
-                            fillFiltersLookup();
-                            //set null value to force updating the current item caption in filtersSelect
-                            filtersLookup.setValue(null);
-                            filtersLookup.setValue(filterEntity);
-                            filtersLookupListenerEnabled = true;
-                            conditionsRemoveEnabled = false;
+                            initFiltersPopupButton();
+                            updateWindowCaption();
+
                             //recreate layout to remove delete conditions buttons
+                            conditionsRemoveEnabled = false;
                             fillConditionsLayout(false);
                         }
                     }
@@ -1615,10 +1627,9 @@ public class FilterDelegateImpl implements FilterDelegate {
                         filterEntity.setName(filterName);
                         filterEntity.setXml(FilterParser.getXml(conditions, Param.ValueProperty.DEFAULT_VALUE));
                         saveFilterEntity();
-                        filtersLookupListenerEnabled = false;
-                        fillFiltersLookup();
-                        filtersLookup.setValue(filterEntity);
-                        filtersLookupListenerEnabled = true;
+                        filterEntities.add(filterEntity);
+                        initFiltersPopupButton();
+                        updateWindowCaption();
                         if (isNew) {
                             //recreate layout to remove delete conditions buttons
                             fillConditionsLayout(false);
@@ -1653,7 +1664,8 @@ public class FilterDelegateImpl implements FilterDelegate {
                 public void windowClosed(String actionId) {
                     if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                         conditions = window.getConditions();
-                        fillFiltersLookup();
+                        initFiltersPopupButton();
+                        updateWindowCaption();
                         fillConditionsLayout(true);
                         updateFilterModifiedIndicator();
                     }
@@ -1689,10 +1701,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                     }
                 }
             }
-            fillFiltersLookup();
             fillActions();
-            //focus request here to make desktop client refresh current filter caption
-            filtersLookup.requestFocus();
         }
 
     }
@@ -1730,8 +1739,9 @@ public class FilterDelegateImpl implements FilterDelegate {
         CommitContext ctx = new CommitContext(Collections.emptyList(), Collections.singletonList(filterEntity));
         dataService.commit(ctx);
         filterEntities.remove(filterEntity);
-        filtersLookup.setValue(filterEntities.get(0));
-        fillFiltersLookup();
+        initFiltersPopupButton();
+        setFilterEntity(adHocFilter);
+        updateWindowCaption();
     }
 
     protected class PinAppliedAction extends AbstractAction {
