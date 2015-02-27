@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.popupbutton;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Event;
 import com.haulmont.cuba.web.toolkit.ui.CubaPopupButton;
@@ -36,10 +37,15 @@ public class CubaPopupButtonConnector extends PopupButtonConnector {
             switch (event.getTypeInt()) {
                 case Event.ONCLICK:
                     if (getWidget().isOrHasChildOfPopup(target)) {
-                        getWidget().setPopupInvisible();
+                        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+                            @Override
+                            public void execute() {
+                                getWidget().hidePopup();
 
-                        // update state on server
-                        rpc.setPopupVisible(false);
+                                // update state on server
+                                rpc.setPopupVisible(false);
+                            }
+                        });
                     }
                     break;
             }
