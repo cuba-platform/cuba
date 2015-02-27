@@ -820,8 +820,6 @@ public class FilterDelegateImpl implements FilterDelegate {
                     }
                 }
         );
-
-        filterEntities.add(0, adHocFilter);
     }
 
     protected FilterEntity getDefaultFilter(List<FilterEntity> filters) {
@@ -875,13 +873,27 @@ public class FilterDelegateImpl implements FilterDelegate {
         Iterator<FilterEntity> it = filterEntities.iterator();
         int addedEntitiesCount = 0;
 
+        filtersPopupButton.addAction(new AbstractAction("resetFilter") {
+            @Override
+            public void actionPerform(Component component) {
+                conditions = new ConditionsTree();
+                setFilterEntity(adHocFilter);
+            }
+
+            @Override
+            public String getCaption() {
+                return getMessage("Filter.resetFilter");
+            }
+        });
+
         while (it.hasNext() && addedEntitiesCount < clientConfig.getGenericFilterPopupListSize()) {
             final FilterEntity fe = it.next();
             filtersPopupButton.addAction(new AbstractAction("setEntity" + fe.getId()) {
                 @Override
                 public void actionPerform(Component component) {
-                    if (fe != filterEntity)
+                    if (fe != filterEntity) {
                         setFilterEntity(fe);
+                    }
                 }
 
                 @Override
@@ -1577,7 +1589,6 @@ public class FilterDelegateImpl implements FilterDelegate {
                             filterEntity.setXml(FilterParser.getXml(conditions, Param.ValueProperty.DEFAULT_VALUE));
                             saveFilterEntity();
                             initAdHocFilter();
-                            filterEntities.add(0, adHocFilter);
                             initFiltersPopupButton();
                             updateWindowCaption();
 
