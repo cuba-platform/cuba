@@ -207,10 +207,11 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         HBoxLayout searchHBox = componentsFactory.createComponent(HBoxLayout.class);
         controlsLayout.add(searchHBox);
-        searchHBox.setStyleName("filter-search-button");
+        searchHBox.setStyleName("filter-search-button-layout");
 
         Button searchBtn = componentsFactory.createComponent(Button.NAME);
         searchHBox.add(searchBtn);
+        searchBtn.setStyleName("filter-search-button");
         searchBtn.setCaption(getMessage("Filter.search"));
         searchBtn.setIcon("icons/search.png");
         searchBtn.setAction(new AbstractAction("search") {
