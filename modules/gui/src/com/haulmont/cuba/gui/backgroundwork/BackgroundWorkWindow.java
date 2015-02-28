@@ -53,6 +53,7 @@ public class BackgroundWorkWindow<T, V> extends AbstractWindow {
     protected ThemeConstants themeConstants;
 
     protected BackgroundTaskHandler<V> taskHandler;
+    protected boolean cancelAllowed = false;
 
     /**
      * Show modal window with message which will last until task completes.
@@ -67,8 +68,9 @@ public class BackgroundWorkWindow<T, V> extends AbstractWindow {
      */
     public static <T, V> void show(BackgroundTask<T, V> task, @Nullable String title, @Nullable String message,
                                    boolean cancelAllowed) {
-        if (task.getOwnerFrame() == null)
+        if (task.getOwnerFrame() == null) {
             throw new IllegalArgumentException("Task without owner cannot be run");
+        }
 
         Map<String, Object> params = new HashMap<>();
         params.put("task", task);
@@ -122,6 +124,7 @@ public class BackgroundWorkWindow<T, V> extends AbstractWindow {
     public void init(Map<String, Object> params) {
         getDialogParams().setWidth(themeConstants.getInt("cuba.gui.BackgroundWorkWindow.width"));
 
+        @SuppressWarnings("unchecked")
         BackgroundTask<T, V> task = (BackgroundTask<T, V>) params.get("task");
         String title = (String) params.get("title");
         if (title != null) {
@@ -134,7 +137,7 @@ public class BackgroundWorkWindow<T, V> extends AbstractWindow {
         }
 
         Boolean cancelAllowedNullable = (Boolean) params.get("cancelAllowed");
-        boolean cancelAllowed = BooleanUtils.isTrue(cancelAllowedNullable);
+        cancelAllowed = BooleanUtils.isTrue(cancelAllowedNullable);
         cancelButton.setVisible(cancelAllowed);
         getDialogParams().setCloseable(cancelAllowed);
 
@@ -145,7 +148,13 @@ public class BackgroundWorkWindow<T, V> extends AbstractWindow {
     }
 
     public void cancel() {
-        if (!taskHandler.cancel())
+        if (!taskHandler.cancel()) {
             close(Window.CLOSE_ACTION_ID);
+        }
+    }
+
+    @Override
+    protected boolean preClose(String actionId) {
+        return cancelAllowed;
     }
 }

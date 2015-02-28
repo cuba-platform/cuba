@@ -35,7 +35,6 @@ import java.util.Map;
  *
  * @param <T> measure unit which shows progress of task
  * @param <V> result type
- *
  * @author ovchinnikov
  * @version $Id$
  */
@@ -56,6 +55,7 @@ public class BackgroundWorkProgressWindow<T extends Number, V> extends AbstractW
     protected ThemeConstants themeConstants;
 
     protected BackgroundTaskHandler<V> taskHandler;
+    protected boolean cancelAllowed = false;
 
     /**
      * Show modal window with message which will last until task completes.
@@ -71,8 +71,9 @@ public class BackgroundWorkProgressWindow<T extends Number, V> extends AbstractW
      */
     public static <T extends Number, V> void show(BackgroundTask<T, V> task, @Nullable String title, @Nullable String message,
                                                   Number total, boolean cancelAllowed, boolean percentProgress) {
-        if (task.getOwnerFrame() == null)
+        if (task.getOwnerFrame() == null) {
             throw new IllegalArgumentException("Task without owner cannot be run");
+        }
 
         Map<String, Object> params = new HashMap<>();
         params.put("task", task);
@@ -157,7 +158,7 @@ public class BackgroundWorkProgressWindow<T extends Number, V> extends AbstractW
         }
 
         Boolean cancelAllowedNullable = (Boolean) params.get("cancelAllowed");
-        boolean cancelAllowed = BooleanUtils.isTrue(cancelAllowedNullable);
+        cancelAllowed = BooleanUtils.isTrue(cancelAllowedNullable);
 
         Boolean percentProgressNullable = (Boolean) params.get("percentProgress");
         boolean percentProgress = BooleanUtils.isTrue(percentProgressNullable);
@@ -170,18 +171,24 @@ public class BackgroundWorkProgressWindow<T extends Number, V> extends AbstractW
 
         taskProgress.setValue(0.0f);
 
-        WrapperTask<T, V> wrapperTask = new WrapperTask<>(task, total, percentProgress);
+        WrapperTask wrapperTask = new WrapperTask(task, total, percentProgress);
 
         taskHandler = backgroundWorker.handle(wrapperTask);
         taskHandler.execute();
     }
 
     public void cancel() {
-        if (!taskHandler.cancel())
+        if (!taskHandler.cancel()) {
             close(Window.CLOSE_ACTION_ID);
+        }
     }
 
-    protected class WrapperTask<T extends Number, V> extends LocalizedTaskWrapper<T, V> {
+    @Override
+    protected boolean preClose(String actionId) {
+        return cancelAllowed;
+    }
+
+    protected class WrapperTask extends LocalizedTaskWrapper<T, V> {
 
         protected Number total;
         protected boolean percentProgress = false;
@@ -195,10 +202,10 @@ public class BackgroundWorkProgressWindow<T extends Number, V> extends AbstractW
         }
 
         protected void showProgressText(Number last, float progressValue) {
-            if (!percentProgress)
+            if (!percentProgress) {
                 progressText.setValue(formatMessage("backgroundWorkProgress.progressTextFormat", last, total));
-            else {
-                int percentValue = (int)Math.ceil(progressValue * 100);
+            } else {
+                int percentValue = (int) Math.ceil(progressValue * 100);
                 progressText.setValue(formatMessage("backgroundWorkProgress.progressPercentFormat", percentValue));
             }
         }
