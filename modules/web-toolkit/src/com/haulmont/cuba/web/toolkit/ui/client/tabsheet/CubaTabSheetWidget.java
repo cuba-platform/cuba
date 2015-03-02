@@ -6,6 +6,7 @@
 package com.haulmont.cuba.web.toolkit.ui.client.tabsheet;
 
 import com.google.gwt.event.dom.client.*;
+import com.vaadin.client.VConsole;
 import com.vaadin.client.ui.VTabsheet;
 
 /**
@@ -36,39 +37,6 @@ public class CubaTabSheetWidget extends VTabsheet {
 
         public CubaTabBar(VTabsheet tabsheet) {
             super(tabsheet);
-        }
-
-        @Override
-        protected Tab createTab() {
-            return new CubaTab(this);
-        }
-    }
-
-    public static class CubaTab extends Tab {
-        protected boolean focused = false;
-
-        public CubaTab(TabBar tabBar) {
-            super(tabBar);
-
-            addFocusHandler(new FocusHandler() {
-                @Override
-                public void onFocus(FocusEvent event) {
-                    focused = true;
-                }
-            });
-            addBlurHandler(new BlurHandler() {
-                @Override
-                public void onBlur(BlurEvent event) {
-                    focused = false;
-                }
-            });
-        }
-
-        @Override
-        public void onClose() {
-            if (focused) {
-                super.onClose();
-            }
         }
     }
 }
