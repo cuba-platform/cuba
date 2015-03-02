@@ -31,6 +31,7 @@ public class LayoutAnalyzer {
         inspections.add(new ComponentRelativeSizeInsideUndefinedSizedContainer());
         inspections.add(new AlignInsideUndefinedSizedContainer());
         inspections.add(new ExpandOfSingleComponent());
+        inspections.add(new ExpandedComponentOverlapsAnother());
     }
 
     protected List<Inspection> rootInspections = new ArrayList<>();
@@ -38,6 +39,7 @@ public class LayoutAnalyzer {
         rootInspections.add(new RelativeHeightComponentInsideUndefinedHeightDialog());
         rootInspections.add(new RelativeWidthComponentInsideUndefinedWidthDialog());
         rootInspections.add(new ExpandOfSingleComponent());
+        rootInspections.add(new ExpandedComponentOverlapsAnother());
     }
 
     public List<LayoutTip> analyze(Window window) {
@@ -284,6 +286,80 @@ public class LayoutAnalyzer {
                 return Collections.emptyList();
             }
             return Collections.emptyList();
+        }
+    }
+
+    public static class ExpandedComponentOverlapsAnother implements Inspection {
+
+        @Nonnull
+        @Override
+        public List<LayoutTip> analyze(Component component, String path) {
+            if (component instanceof ExpandingLayout) {
+                ExpandingLayout container = (ExpandingLayout) component;
+                List<LayoutTip> tips = null;
+                Collection<Component> components = container.getOwnComponents();
+                Component expanded = getExpandedComponent(container);
+                if (components.size() > 1 && expanded != null) {
+                    tips = new ArrayList<>();
+                    String expandedId = expanded.getId() != null ?
+                            expanded.getId() : expanded.getClass().getSimpleName();
+                    for (Component innerComponent : components) {
+                        if (innerComponent != expanded && isSizeIgnored(container, innerComponent, path.equals(Window.NAME))) {
+                            String id = innerComponent.getId() != null ?
+                                    innerComponent.getId() : innerComponent.getClass().getSimpleName();
+                            tips.add(warn("Container '" + path + "', nested component '" + id + "'",
+                                    "Size of nested component was ignored because of '%s' expanded inside container", expandedId));
+                        }
+                    }
+
+                }
+                return tips != null ? tips : Collections.<LayoutTip>emptyList();
+            }
+            return Collections.emptyList();
+        }
+
+        private Component getExpandedComponent(ExpandingLayout container) {
+            Collection<Component> components = container.getOwnComponents();
+            for (Component innerComponent : components) {
+                if (container.isExpanded(innerComponent)) {
+                    return innerComponent;
+                }
+            }
+            return null;
+        }
+
+        private boolean isSizeIgnored(ExpandingLayout container, Component component, boolean isWindow) {
+            Orientation orientation = Orientation.NONE;
+            if (isWindow) {     // it means container is root layout element
+                orientation = Orientation.VERTICAL;
+            } else if (container instanceof HBoxLayout) {
+                orientation = Orientation.HORIZONTAL;
+            } else if (container instanceof VBoxLayout) {
+                orientation = Orientation.VERTICAL;
+            } else if (container instanceof GroupBoxLayout) {
+                GroupBoxLayout layout = (GroupBoxLayout)container;
+                if (layout.getOrientation() == GroupBoxLayout.Orientation.HORIZONTAL) {
+                    orientation = Orientation.HORIZONTAL;
+                }
+                if (layout.getOrientation() == GroupBoxLayout.Orientation.VERTICAL) {
+                    orientation = Orientation.VERTICAL;
+                }
+            } else if (container instanceof TabSheet.Tab) {
+                orientation = Orientation.VERTICAL;
+            }
+
+            return orientation == Orientation.HORIZONTAL
+                    && component.getWidthUnits() == Component.UNITS_PERCENTAGE
+                    && component.getWidth() > 0
+                    || orientation == Orientation.VERTICAL
+                    && component.getHeightUnits() == Component.UNITS_PERCENTAGE
+                    && component.getHeight() > 0;
+        }
+
+        enum Orientation {
+            NONE,
+            VERTICAL,
+            HORIZONTAL
         }
     }
 }
