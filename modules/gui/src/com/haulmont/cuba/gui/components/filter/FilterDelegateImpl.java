@@ -472,7 +472,8 @@ public class FilterDelegateImpl implements FilterDelegate {
                 ((isGlobal && userCanEditGlobalFilter) || (!isGlobal && createdByCurrentUser)) &&
                 !isAdHocFilter;
         boolean makeDefaultActionEnabled = !isDefault && !isFolder && !isSet && !isAdHocFilter;
-        boolean pinAppliedActionEnabled = lastAppliedFilter != null;
+        boolean pinAppliedActionEnabled = lastAppliedFilter != null
+                && !(lastAppliedFilter.getFilterEntity() == adHocFilter && lastAppliedFilter.getConditions().getRoots().size() == 0);
         boolean saveAsSearchFolderActionEnabled = !isFolder && !hasCode;
         boolean saveAsAppFolderActionEnabled = !isFolder && !hasCode;
         boolean hideConditionsActionEnabled = !isSet && !isFolder;

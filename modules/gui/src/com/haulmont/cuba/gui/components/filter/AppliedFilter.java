@@ -144,4 +144,12 @@ public class AppliedFilter {
         result = 31 * result + conditions.hashCode();
         return result;
     }
+
+    public FilterEntity getFilterEntity() {
+        return filterEntity;
+    }
+
+    public ConditionsTree getConditions() {
+        return conditions;
+    }
 }
