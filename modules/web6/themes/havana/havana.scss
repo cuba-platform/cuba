@@ -910,7 +910,11 @@
 
 .cuba-generic-filter .filter-search-button-layout {
   .v-button.filter-search-button {
-    border-right: 1px solid transparent;
+    border-right-color: transparent;
+  }
+
+  .v-button:focus.filter-search-button {
+    border-right-color: #4d7ab2;
   }
 
   .v-button.v-popupbutton .v-popup-indicator {

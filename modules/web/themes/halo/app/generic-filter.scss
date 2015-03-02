@@ -8,12 +8,12 @@
 @mixin cuba-generic-filter {
 
   .cuba-generic-filter .filter-control-with-top-border {
-    border-top: solid 1px #c5c5c5;
+    border-top: valo-border();
     padding-top: 5px;
   }
 
   .cuba-generic-filter .filter-control-with-bottom-border {
-    border-bottom: solid 1px #c5c5c5;
+    border-bottom: valo-border();
     padding-bottom: 5px;
   }
 
