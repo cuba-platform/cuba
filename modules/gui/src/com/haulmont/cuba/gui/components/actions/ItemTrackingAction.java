@@ -25,6 +25,6 @@ public abstract class ItemTrackingAction extends BaseAction {
 
     @Override
     protected boolean isApplicable() {
-        return !getTargetSelection().isEmpty();
+        return target != null && !target.getSelected().isEmpty();
     }
 }

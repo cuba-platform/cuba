@@ -13,11 +13,8 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
 import com.haulmont.cuba.gui.data.Datasource;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Action that supports user defined permissions and UI permissions for actions.
@@ -89,41 +86,6 @@ public abstract class BaseAction extends AbstractAction
 
         setEnabledInternal(enabledExplicitly && isPermitted() && isApplicable()
                 && enabledByUiPermissions && visibleByUiPermissions);
-    }
-
-    @Nullable
-    protected <T extends Entity> T getTargetSingleSelected() {
-        if (target != null) {
-            return target.getSingleSelected();
-        } else {
-            return null;
-        }
-    }
-
-    protected <T extends Entity> Set<T> getTargetSelection() {
-        if (target != null) {
-            return target.getSelected();
-        } else {
-            return Collections.emptySet();
-        }
-    }
-
-    @Nullable
-    protected CollectionDatasource getTargetDatasource() {
-        if (target != null) {
-            return target.getDatasource();
-        } else {
-            return null;
-        }
-    }
-
-    @Nonnull
-    protected CollectionDatasource getTargetDatasourceNN() {
-        CollectionDatasource ownerDatasource = getTargetDatasource();
-        if (ownerDatasource == null) {
-            throw new IllegalStateException("Null owner datasource");
-        }
-        return ownerDatasource;
     }
 
     @Override

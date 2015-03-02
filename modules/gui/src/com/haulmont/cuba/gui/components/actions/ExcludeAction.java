@@ -69,19 +69,21 @@ public class ExcludeAction extends RemoveAction {
 
     @Override
     protected boolean isPermitted() {
-        boolean removePermitted = true;
+        if (target == null || target.getDatasource() == null) {
+            return false;
+        }
 
-        CollectionDatasource ds = getTargetDatasource();
+        CollectionDatasource ds = target.getDatasource();
         if (ds instanceof PropertyDatasource) {
             PropertyDatasource propertyDatasource = (PropertyDatasource) ds;
 
             MetaClass parentMetaClass = propertyDatasource.getMaster().getMetaClass();
             MetaProperty metaProperty = propertyDatasource.getProperty();
 
-            removePermitted = security.isEntityAttrPermitted(parentMetaClass, metaProperty.getName(), EntityAttrAccess.MODIFY);
+            return security.isEntityAttrPermitted(parentMetaClass, metaProperty.getName(), EntityAttrAccess.MODIFY);
         }
 
-        return removePermitted;
+        return true;
     }
 
     @Override
@@ -89,7 +91,7 @@ public class ExcludeAction extends RemoveAction {
         if (!isEnabled())
             return;
 
-        Set selected = getTargetSelection();
+        Set selected = target.getSelected();
         if (!selected.isEmpty()) {
             if (confirm) {
                 confirmAndRemove(selected);
@@ -104,7 +106,7 @@ public class ExcludeAction extends RemoveAction {
     @Override
     protected void doRemove(Set selected, boolean autocommit) {
         @SuppressWarnings({"unchecked"})
-        CollectionDatasource ds = getTargetDatasourceNN();
+        CollectionDatasource ds = target.getDatasource();
         if (ds instanceof NestedDatasource) {
             // Clear reference to master entity
             Datasource masterDs = ((NestedDatasource) ds).getMaster();

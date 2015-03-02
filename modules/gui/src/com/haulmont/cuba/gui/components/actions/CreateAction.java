@@ -83,16 +83,14 @@ public class CreateAction extends BaseAction implements Action.HasOpenType {
      */
     @Override
     protected boolean isPermitted() {
-        boolean createPermitted;
-
-        CollectionDatasource ownerDatasource = getTargetDatasource();
-        if (ownerDatasource == null) {
+        if (target == null || target.getDatasource() == null) {
             return false;
         }
 
-        Security security = AppBeans.get(Security.NAME);
+        CollectionDatasource ownerDatasource = target.getDatasource();
         MetaClass metaClass = ownerDatasource.getMetaClass();
-        createPermitted = security.isEntityOpPermitted(metaClass, EntityOp.CREATE);
+        Security security = AppBeans.get(Security.NAME);
+        boolean createPermitted = security.isEntityOpPermitted(metaClass, EntityOp.CREATE);
 
         if (createPermitted && ownerDatasource instanceof PropertyDatasource) {
             PropertyDatasource propertyDatasource = (PropertyDatasource) target.getDatasource();
@@ -114,7 +112,7 @@ public class CreateAction extends BaseAction implements Action.HasOpenType {
      */
     @Override
     public void actionPerform(Component component) {
-        final CollectionDatasource datasource = getTargetDatasourceNN();
+        final CollectionDatasource datasource = target.getDatasource();
         final DataSupplier dataservice = datasource.getDataSupplier();
 
         final Entity item = dataservice.newInstance(datasource.getMetaClass());

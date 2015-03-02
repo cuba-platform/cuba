@@ -1722,12 +1722,12 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     }
 
     @Override
-    public void addAction(Action action) {
-        super.addAction(action);
-
+    protected void attachAction(Action action) {
         if (action instanceof Action.HasTarget) {
             ((Action.HasTarget) action).setTarget(this);
         }
+
+        super.attachAction(action);
     }
 
     protected void applySelectionIndexes(List<Integer> indexes) {

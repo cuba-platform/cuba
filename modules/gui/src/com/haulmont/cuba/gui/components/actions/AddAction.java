@@ -95,18 +95,22 @@ public class AddAction extends BaseAction implements Action.HasOpenType {
 
     @Override
     protected boolean isPermitted() {
-        CollectionDatasource ownerDs = getTargetDatasource();
+        if (target == null || target.getDatasource() == null) {
+            return false;
+        }
+
+        CollectionDatasource ownerDs = target.getDatasource();
         if (ownerDs instanceof PropertyDatasource) {
-            PropertyDatasource datasource = (PropertyDatasource)ownerDs;
+            PropertyDatasource datasource = (PropertyDatasource) ownerDs;
 
             MetaClass parentMetaClass = datasource.getMaster().getMetaClass();
             MetaProperty metaProperty = datasource.getProperty();
 
             Security security = AppBeans.get(Security.NAME);
             return security.isEntityAttrPermitted(parentMetaClass, metaProperty.getName(), EntityAttrAccess.MODIFY);
+        } else {
+            return true;
         }
-
-        return true;
     }
 
     /**
@@ -213,7 +217,7 @@ public class AddAction extends BaseAction implements Action.HasOpenType {
                 return;
             }
 
-            final CollectionDatasource ds = getTargetDatasource();
+            final CollectionDatasource ds = target.getDatasource();
             if (ds == null) {
                 return;
             }

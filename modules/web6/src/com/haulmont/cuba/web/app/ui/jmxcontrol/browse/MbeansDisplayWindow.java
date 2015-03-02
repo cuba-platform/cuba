@@ -65,7 +65,7 @@ public class MbeansDisplayWindow extends AbstractWindow {
         Action inspectAction = new ItemTrackingAction("inspect") {
             @Override
             public void actionPerform(Component component) {
-                Set<ManagedBeanInfo> selected = getTargetSelection();
+                Set<ManagedBeanInfo> selected = target.getSelected();
                 if (!selected.isEmpty()) {
                     ManagedBeanInfo mbi = selected.iterator().next();
                     if (mbi.getObjectName() != null) { // otherwise it's a fake root node

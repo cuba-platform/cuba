@@ -78,9 +78,13 @@ public class DesktopAbstractActionsHolderComponent<C extends JComponent> extends
 
         shortcutsDelegate.addAction(oldAction, action);
 
-        action.refreshState();
+        attachAction(action);
 
         actionsPermissions.apply(action);
+    }
+
+    protected void attachAction(Action action) {
+        action.refreshState();
     }
 
     @Override

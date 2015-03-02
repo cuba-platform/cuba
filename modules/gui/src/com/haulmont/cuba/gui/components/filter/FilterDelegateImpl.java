@@ -1825,10 +1825,10 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         @Override
         public void actionPerform(Component component) {
-            Set<Entity> ownerSelection = getTargetSelection();
+            Set<Entity> ownerSelection = target.getSelected();
 
             if (!ownerSelection.isEmpty()) {
-                String entityType = getTargetDatasourceNN().getMetaClass().getName();
+                String entityType = target.getDatasource().getMetaClass().getName();
                 Map<String, Object> params = new HashMap<>();
                 params.put("entityType", entityType);
                 params.put("items", ownerSelection);
@@ -1862,12 +1862,12 @@ public class FilterDelegateImpl implements FilterDelegate {
                 // todo add notification 'Filter not selected'
                 return;
             }
-            Set selected = getTargetSelection();
+            Set selected = target.getSelected();
             if (selected.isEmpty()) {
                 return;
             }
 
-            if (getTargetDatasourceNN().getItemIds().size() == 1) {
+            if (target.getDatasource().getItemIds().size() == 1) {
                 filterHelper.removeFolderFromFoldersPane(filterEntity.getFolder());
                 removeFilterEntity();
 

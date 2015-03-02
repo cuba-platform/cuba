@@ -94,15 +94,17 @@ public class EditAction extends BaseAction implements Action.HasOpenType {
     public void refreshState() {
         super.refreshState();
 
-        CollectionDatasource ds = getTargetDatasource();
+        if (target != null) {
+            CollectionDatasource ds = target.getDatasource();
 
-        if (ds != null && !captionInitialized) {
-            Security security = AppBeans.get(Security.NAME);
-            final String messagesPackage = AppConfig.getMessagesPack();
-            if (security.isEntityOpPermitted(ds.getMetaClass(), EntityOp.UPDATE)) {
-                setCaption(messages.getMessage(messagesPackage, "actions.Edit"));
-            } else {
-                setCaption(messages.getMessage(messagesPackage, "actions.View"));
+            if (ds != null && !captionInitialized) {
+                Security security = AppBeans.get(Security.NAME);
+                final String messagesPackage = AppConfig.getMessagesPack();
+                if (security.isEntityOpPermitted(ds.getMetaClass(), EntityOp.UPDATE)) {
+                    setCaption(messages.getMessage(messagesPackage, "actions.Edit"));
+                } else {
+                    setCaption(messages.getMessage(messagesPackage, "actions.View"));
+                }
             }
         }
     }
@@ -112,16 +114,18 @@ public class EditAction extends BaseAction implements Action.HasOpenType {
      */
     @Override
     protected boolean isPermitted() {
-        Security security = AppBeans.get(Security.NAME);
+        if (target == null || target.getDatasource() == null) {
+            return false;
+        }
 
-        CollectionDatasource ownerDatasource = getTargetDatasource();
-        return ownerDatasource != null &&
-                security.isEntityOpPermitted(ownerDatasource.getMetaClass(), EntityOp.READ);
+        CollectionDatasource ownerDatasource = target.getDatasource();
+        Security security = AppBeans.get(Security.NAME);
+        return security.isEntityOpPermitted(ownerDatasource.getMetaClass(), EntityOp.READ);
     }
 
     @Override
     public boolean isApplicable() {
-        return getTargetSelection().size() == 1;
+        return target != null && target.getSelected().size() == 1;
     }
 
     /**
@@ -131,7 +135,7 @@ public class EditAction extends BaseAction implements Action.HasOpenType {
      */
     @Override
     public void actionPerform(Component component) {
-        final Set selected = getTargetSelection();
+        final Set selected = target.getSelected();
         if (selected.size() == 1) {
             String windowID = getWindowId();
 

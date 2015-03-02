@@ -105,10 +105,11 @@ public class GroupBrowser extends AbstractWindow {
         groupsTree.addAction(new RemoveAction(groupsTree) {
             @Override
             protected boolean isApplicable() {
-                if (super.isApplicable()) {
+                if (target != null && target.getDatasource() != null && target.getSingleSelected() != null) {
                     @SuppressWarnings("unchecked")
-                    HierarchicalDatasource<Group, UUID> ds = (HierarchicalDatasource<Group, UUID>) getTargetDatasource();
-                    return ds != null && ds.getChildren((UUID) getTargetSingleSelected().getId()).isEmpty();
+                    HierarchicalDatasource<Group, UUID> ds = (HierarchicalDatasource<Group, UUID>) target.getDatasource();
+                    UUID selectedItemId = (UUID) target.getSingleSelected().getId();
+                    return ds.getChildren(selectedItemId).isEmpty();
                 }
 
                 return false;

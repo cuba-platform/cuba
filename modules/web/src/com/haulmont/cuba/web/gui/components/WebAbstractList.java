@@ -115,11 +115,11 @@ public abstract class WebAbstractList<T extends AbstractSelect>
     }
 
     @Override
-    public void addAction(Action action) {
-        super.addAction(action);
-
+    protected void attachAction(Action action) {
         if (action instanceof Action.HasTarget) {
             ((Action.HasTarget) action).setTarget(this);
         }
+
+        super.attachAction(action);
     }
 }

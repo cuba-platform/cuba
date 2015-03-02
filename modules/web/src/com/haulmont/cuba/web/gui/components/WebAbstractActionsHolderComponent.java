@@ -136,9 +136,13 @@ public abstract class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.
 
         shortcutsDelegate.addAction(oldAction, action);
 
-        action.refreshState();
+        attachAction(action);
 
         actionsPermissions.apply(action);
+    }
+
+    protected void attachAction(Action action) {
+        action.refreshState();
     }
 
     protected abstract ContextMenuButton createContextMenuButton();

@@ -66,8 +66,9 @@ public class RemoveAction extends ItemTrackingAction {
      * @param id            action's identifier
      */
     public RemoveAction(ListComponent target, boolean autocommit, String id) {
-        super(target, id);
+        super(id);
 
+        this.target = target;
         this.autocommit = autocommit;
         this.caption = messages.getMainMessage("actions.Remove");
         this.icon = "icons/remove.png";
@@ -77,37 +78,31 @@ public class RemoveAction extends ItemTrackingAction {
         setShortcut(config.getTableRemoveShortcut());
     }
 
-    @Override
-    protected boolean isApplicable() {
-        return !getTargetSelection().isEmpty();
-    }
-
     /**
      * Check permissions for Action
      */
     @Override
     protected boolean isPermitted() {
-        CollectionDatasource ds = getTargetDatasource();
+        if (target == null || target.getDatasource() == null) {
+            return false;
+        }
 
-        boolean removePermitted;
-        if (ds == null) {
-            removePermitted = false;
-        } else if (ds instanceof PropertyDatasource) {
+        CollectionDatasource ds = target.getDatasource();
+        if (ds instanceof PropertyDatasource) {
             PropertyDatasource propertyDatasource = (PropertyDatasource) ds;
 
             MetaClass parentMetaClass = propertyDatasource.getMaster().getMetaClass();
             MetaProperty metaProperty = propertyDatasource.getProperty();
 
-            removePermitted = security.isEntityAttrPermitted(parentMetaClass, metaProperty.getName(), EntityAttrAccess.MODIFY);
+            boolean removePermitted = security.isEntityAttrPermitted(parentMetaClass, metaProperty.getName(), EntityAttrAccess.MODIFY);
 
             if (metaProperty.getRange().getCardinality() != Range.Cardinality.MANY_TO_MANY) {
                 removePermitted = removePermitted && security.isEntityOpPermitted(ds.getMetaClass(), EntityOp.DELETE);
             }
+            return removePermitted;
         } else {
-            removePermitted = security.isEntityOpPermitted(ds.getMetaClass(), EntityOp.DELETE);
+            return security.isEntityOpPermitted(ds.getMetaClass(), EntityOp.DELETE);
         }
-
-        return removePermitted;
     }
 
     /**
@@ -122,7 +117,7 @@ public class RemoveAction extends ItemTrackingAction {
             return;
         }
 
-        Set selected = getTargetSelection();
+        Set selected = target.getSelected();
         if (!selected.isEmpty()) {
             confirmAndRemove(selected);
         }
@@ -210,7 +205,7 @@ public class RemoveAction extends ItemTrackingAction {
     }
 
     protected void doRemove(Set selected, boolean autocommit) {
-        CollectionDatasource datasource = getTargetDatasourceNN();
+        CollectionDatasource datasource = target.getDatasource();
         for (Object item : selected) {
             datasource.removeItem((Entity) item);
         }
