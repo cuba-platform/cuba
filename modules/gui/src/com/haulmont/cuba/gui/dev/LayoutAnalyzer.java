@@ -304,7 +304,9 @@ public class LayoutAnalyzer {
                     String expandedId = expanded.getId() != null ?
                             expanded.getId() : expanded.getClass().getSimpleName();
                     for (Component innerComponent : components) {
-                        if (innerComponent != expanded && isSizeIgnored(container, innerComponent, path.equals(Window.NAME))) {
+                        if (innerComponent != expanded
+                                && innerComponent.isVisible()
+                                && isSizeIgnored(container, innerComponent, path.equals(Window.NAME))) {
                             String id = innerComponent.getId() != null ?
                                     innerComponent.getId() : innerComponent.getClass().getSimpleName();
                             tips.add(warn("Container '" + path + "', nested component '" + id + "'",
