@@ -50,7 +50,7 @@ public class EntityLogItemDetachListener implements BeforeDetachEntityListener<E
         }
     }
 
-    private void fillAttributesFromChangesField(EntityLogItem item) {
+    protected void fillAttributesFromChangesField(EntityLogItem item) {
         log.trace("fillAttributesFromChangesField for " + item);
         List<EntityLogAttr> attributes = new ArrayList<>();
 
@@ -93,7 +93,7 @@ public class EntityLogItemDetachListener implements BeforeDetachEntityListener<E
         item.setAttributes(new LinkedHashSet<>(attributes));
     }
 
-    private void fillAttributesFromTable(EntityLogItem item, EntityManager entityManager) {
+    protected void fillAttributesFromTable(EntityLogItem item, EntityManager entityManager) {
         log.trace("fillAttributesFromTable for " + item);
         DbTypeConverter converter = persistence.getDbTypeConverter();
         QueryRunner queryRunner = new QueryRunner();

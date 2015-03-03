@@ -264,7 +264,7 @@ public class EntityLog implements EntityLogAPI {
         return changes;
     }
 
-    private void writeAttribute(Properties properties, BaseEntity entity, String attr) {
+    protected void writeAttribute(Properties properties, BaseEntity entity, String attr) {
         Object value = entity.getValue(attr);
         properties.setProperty(attr, stringify(value));
 
