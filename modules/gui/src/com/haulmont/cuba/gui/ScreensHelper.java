@@ -94,7 +94,7 @@ public class ScreensHelper {
     }
 
     public Map<String, Object> getAvailableScreensMap(Class entityClass) {
-        String key = getScreensKey(entityClass.getName(), getUserLocale());
+        String key = getScreensCacheKey(entityClass.getName(), getUserLocale());
         Map<String, Object> screensMap = availableScreensCache.get(key);
         if (screensMap != null)
             return screensMap;
@@ -110,7 +110,7 @@ public class ScreensHelper {
                     if (windowElement != null) {
                         if (isEntityAvailable(windowElement, entityClass)) {
                             String caption = getScreenCaption(windowElement, src);
-                            caption = StringUtils.isNotEmpty(caption) ? caption + " (" + windowId + ")" : windowId;
+                            caption = getDetailedScreenCaption(caption, windowId);
                             screensMap.put(caption, windowId);
                         }
                     } else {
@@ -260,6 +260,19 @@ public class ScreensHelper {
         return caption;
     }
 
+    public String getDetailedScreenCaption(WindowInfo windowInfo) throws FileNotFoundException {
+        return getDetailedScreenCaption(windowInfo, getUserLocale());
+    }
+
+    public String getDetailedScreenCaption(WindowInfo windowInfo, Locale locale) throws FileNotFoundException {
+        String caption = getScreenCaption(windowInfo, locale);
+        return getDetailedScreenCaption(caption, windowInfo.getId());
+    }
+
+    protected String getDetailedScreenCaption(String caption, String windowId) {
+        return StringUtils.isNotEmpty(caption) ? caption + " (" + windowId + ")" : windowId;
+    }
+
     @Nullable
     protected String packageFromFilePath(String path) {
         String screenPackage = null;
@@ -292,7 +305,7 @@ public class ScreensHelper {
         return src + locale.toString();
     }
 
-    protected String getScreensKey(String className, Locale locale) {
+    protected String getScreensCacheKey(String className, Locale locale) {
         return className + locale.toString();
     }
 
