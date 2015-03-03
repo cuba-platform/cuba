@@ -14,6 +14,7 @@ import org.apache.commons.logging.LogFactory;
 
 import javax.inject.Inject;
 import java.util.*;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
@@ -32,6 +33,7 @@ public class ObjectsCache implements ObjectsCacheInstance, ObjectsCacheControlle
     private static Log log = LogFactory.getLog(ObjectsCache.class);
 
     private ReentrantReadWriteLock cacheLock = new ReentrantReadWriteLock();
+    private ReentrantLock updateDataLock = new ReentrantLock();
 
     private Date lastUpdateTime;
     private long lastUpdateDuration;
@@ -209,35 +211,42 @@ public class ObjectsCache implements ObjectsCacheInstance, ObjectsCacheControlle
     @Override
     public void updateCache(Map<String, Object> params) {
         if (isValidState()) {
-            // Modify cache copy
-            CacheSet temporaryCacheSet;
-            try {
-                cacheLock.readLock().lock();
+            // do not allow parallel update, but do not block reading
+            updateDataLock.lock();
 
-                temporaryCacheSet = (CacheSet) cacheSet.clone();
-            } catch (CloneNotSupportedException e) {
-                log.error(String.format("Update data for cache %s failed", name), e);
-                this.cacheSet = new CacheSet(Collections.emptyList());
-                return;
+            try {
+                // Modify cache copy
+                CacheSet temporaryCacheSet;
+                try {
+                    cacheLock.readLock().lock();
+
+                    temporaryCacheSet = (CacheSet) cacheSet.clone();
+                } catch (CloneNotSupportedException e) {
+                    log.error(String.format("Update data for cache %s failed", name), e);
+                    this.cacheSet = new CacheSet(Collections.emptyList());
+                    return;
+                } finally {
+                    cacheLock.readLock().unlock();
+                }
+
+                try {
+                    loader.updateData(temporaryCacheSet, params);
+                } catch (CacheException e) {
+                    log.error(String.format("Update data for cache %s failed", name), e);
+                    this.cacheSet = new CacheSet(Collections.emptyList());
+                    return;
+                }
+
+                cacheLock.writeLock().lock();
+
+                try {
+                    // Modify cache set
+                    this.cacheSet = temporaryCacheSet;
+                } finally {
+                    cacheLock.writeLock().unlock();
+                }
             } finally {
-                cacheLock.readLock().unlock();
-            }
-
-            try {
-                loader.updateData(temporaryCacheSet, params);
-            } catch (CacheException e) {
-                log.error(String.format("Update data for cache %s failed", name), e);
-                this.cacheSet = new CacheSet(Collections.emptyList());
-                return;
-            }
-
-            cacheLock.writeLock().lock();
-
-            try {
-                // Modify cache set
-                this.cacheSet = temporaryCacheSet;
-            } finally {
-                cacheLock.writeLock().unlock();
+                updateDataLock.unlock();
             }
         }
     }
