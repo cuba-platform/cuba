@@ -36,7 +36,7 @@ public class CubaPopupButtonConnector extends PopupButtonConnector {
             Element target = Element.as(event.getNativeEvent().getEventTarget());
             switch (event.getTypeInt()) {
                 case Event.ONCLICK:
-                    if (getWidget().isOrHasChildOfPopup(target)) {
+                    if (getWidget().popupHasChild(target)) {
                         Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
                             @Override
                             public void execute() {
