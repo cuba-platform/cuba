@@ -82,7 +82,7 @@
                 </grid>
 
                 <split id="split1" orientation="horizontal" pos="70" width="100%">
-                    <vbox width="100%" height="100%" margin="false;true;true;true" spacing="true">
+                    <vbox id="entityLogTableBox" width="100%" height="100%" margin="false;true;true;true" spacing="true">
                         <table id="entityLogTable" width="100%" height="100%">
                             <buttonsPanel id="logTablePanel">
                                 <button visible="false"/>
@@ -98,7 +98,7 @@
                             <rowsCount/>
                         </table>
                     </vbox>
-                    <vbox width="100%" height="100%" margin="true" spacing="true">
+                    <vbox id="entityLogAttrTableBox" width="100%" height="100%" margin="true" spacing="true">
                         <table id="entityLogAttrTable" width="100%" height="100%">
                             <columns>
                                 <column id="name" caption="msg://attribute"/>
@@ -111,7 +111,7 @@
             </tab>
             <tab id="setup" spacing="true"  expand="split2" margin="true"  caption="msg://setup">
                 <split id="split2" orientation="horizontal" pos="70" width="100%">
-                    <vbox width="100%" height="100%" margin="false;true;false;false" spacing="true">
+                    <vbox id="loggedEntityTableBox" width="100%" height="100%" margin="false;true;false;false" spacing="true">
                         <groupTable id="loggedEntityTable" width="100%" height="100%">
                             <actions>
                                 <action id="create" invoke="create" />
@@ -131,8 +131,7 @@
                             <rows datasource="loggedEntityDs"/>
                         </groupTable>
                     </vbox>
-
-                    <vbox expand="expandableLabel" height="100%" width="100%" margin="false;false;false;true" spacing="true">
+                    <vbox id="loggedEntityMiscBox" expand="expandableLabel" height="100%" width="100%" margin="false;false;false;true" spacing="true">
                         <label value="msg://name"/>
                         <lookupField width="100%" datasource="loggedEntityDs" id="entityNameField" property="name"/>
                         <hbox width="100%">
