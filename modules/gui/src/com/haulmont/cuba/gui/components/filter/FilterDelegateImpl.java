@@ -127,6 +127,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected PopupButton settingsBtn;
     protected Component applyTo;
     protected SaveAction saveAction;
+    protected HideConditionsAction hideConditionsAction;
     protected TextField ftsSearchCriteriaField;
     protected CheckBox ftsSwitch;
 
@@ -446,7 +447,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         MakeDefaultAction makeDefaultAction = new MakeDefaultAction();
         RemoveAction removeAction = new RemoveAction();
         PinAppliedAction pinAppliedAction = new PinAppliedAction();
-        HideConditionsAction hideConditionsAction = new HideConditionsAction();
+        hideConditionsAction = new HideConditionsAction();
         SaveAsFolderAction saveAsAppFolderAction = new SaveAsFolderAction(true);
         SaveAsFolderAction saveAsSearchFolderAction = new SaveAsFolderAction(false);
 
@@ -476,7 +477,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                 && !(lastAppliedFilter.getFilterEntity() == adHocFilter && lastAppliedFilter.getConditions().getRoots().size() == 0);
         boolean saveAsSearchFolderActionEnabled = !isFolder && !hasCode;
         boolean saveAsAppFolderActionEnabled = !isFolder && !hasCode;
-        boolean hideConditionsActionEnabled = !isSet && !isFolder;
+        boolean hideConditionsActionEnabled = isHideConditionsActionEnabled();
 
         saveAction.setEnabled(saveActionEnabled);
         saveAsAction.setEnabled(saveAsActionEnabled);
@@ -504,6 +505,17 @@ public class FilterDelegateImpl implements FilterDelegate {
         if (filterHelper.isTableActionsEnabled()) {
             fillTableActions();
         }
+    }
+
+    protected boolean isHideConditionsActionEnabled() {
+        boolean visibleConditionsExist = false;
+        for (AbstractCondition condition : conditions.toConditionsList()) {
+            if (!condition.getHidden()) {
+                visibleConditionsExist = true;
+                break;
+            }
+        }
+        return !filterEntity.getIsSet() && filterEntity.getFolder() == null && conditions != null && visibleConditionsExist;
     }
 
     protected boolean getUserCanEditGlobalFilter() {
@@ -631,6 +643,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         }
 
         if (!conditionsLayout.getComponents().isEmpty()) layout.setSpacing(true);
+        hideConditionsAction.setEnabled(isHideConditionsActionEnabled());
     }
 
     protected void recursivelyCreateConditionsLayout(boolean focusOnConditions,
