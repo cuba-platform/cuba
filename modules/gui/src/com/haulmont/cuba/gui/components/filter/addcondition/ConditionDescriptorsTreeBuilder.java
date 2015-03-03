@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.gui.components.filter.addcondition;
 
+import com.google.common.base.Strings;
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.datastruct.Tree;
 import com.haulmont.bali.util.Dom4j;
@@ -70,19 +71,28 @@ public class ConditionDescriptorsTreeBuilder {
         List<AbstractConditionDescriptor> propertyDescriptors = new ArrayList<>();
         List<AbstractConditionDescriptor> customDescriptors = new ArrayList<>();
 
+        boolean propertiesExplicitlyDefined = false;
         for (Element element : Dom4j.elements(filter.getXmlDescriptor())) {
             AbstractConditionDescriptor conditionDescriptor;
             if ("properties".equals(element.getName())) {
                 addMultiplePropertyDescriptors(element, propertyDescriptors, filter);
+                propertiesExplicitlyDefined = true;
             } else if ("property".equals(element.getName())) {
                 conditionDescriptor = new PropertyConditionDescriptor(element, messagesPack, filterComponentName, datasource);
                 propertyDescriptors.add(conditionDescriptor);
+                propertiesExplicitlyDefined = true;
             } else if ("custom".equals(element.getName())) {
                 conditionDescriptor = new CustomConditionDescriptor(element, messagesPack, filterComponentName, datasource);
                 customDescriptors.add(conditionDescriptor);
+                propertiesExplicitlyDefined = true;
             } else {
                 throw new UnsupportedOperationException("Element not supported: " + element.getName());
             }
+
+        }
+
+        if (!propertiesExplicitlyDefined) {
+            addMultiplePropertyDescriptors(".*", "", propertyDescriptors, filter);
         }
 
         Collections.sort(propertyDescriptors, new ConditionDescriptorComparator());
@@ -170,13 +180,18 @@ public class ConditionDescriptorsTreeBuilder {
     }
 
     private void addMultiplePropertyDescriptors(Element element, List<AbstractConditionDescriptor> descriptors, Filter filter) {
+        String includeRe = element.attributeValue("include");
+        String excludeRe = element.attributeValue("exclude");
+        addMultiplePropertyDescriptors(includeRe, excludeRe, descriptors, filter);
+    }
+
+    private void addMultiplePropertyDescriptors(String includeRe, String excludeRe, List<AbstractConditionDescriptor> descriptors, Filter filter) {
         Metadata metadata = AppBeans.get(Metadata.class);
         Messages messages = AppBeans.get(Messages.class);
 
         List<String> includedProps = new ArrayList<>();
 
-        String inclRe = element.attributeValue("include");
-        Pattern inclPattern = Pattern.compile(inclRe);
+        Pattern inclPattern = Pattern.compile(includeRe);
 
         for (MetaProperty property : filter.getDatasource().getMetaClass().getProperties()) {
             if (metadata.getTools().isTransient(property))
@@ -193,10 +208,9 @@ public class ConditionDescriptorsTreeBuilder {
             }
         }
 
-        String exclRe = element.attributeValue("exclude");
         Pattern exclPattern = null;
-        if (!StringUtils.isBlank(exclRe)) {
-            exclPattern = Pattern.compile(exclRe.replaceAll(" ", ""));
+        if (!StringUtils.isBlank(excludeRe)) {
+            exclPattern = Pattern.compile(excludeRe.replaceAll(" ", ""));
         }
 
         for (String prop : includedProps) {
