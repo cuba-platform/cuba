@@ -99,12 +99,36 @@ public class MessageTools {
      * @return a localized name of an entity. Messages pack must be located in the same package as entity.
      */
     public String getEntityCaption(MetaClass metaClass) {
+        return getEntityCaption(metaClass, null);
+    }
+
+    /**
+     * @return a localized name of an entity with given locale or default if null. Messages pack must be located in the same package as entity.
+     */
+    public String getEntityCaption(MetaClass metaClass, @Nullable Locale locale) {
         String className = metaClass.getJavaClass().getName();
         int i = className.lastIndexOf('.');
         if (i > -1)
             className = className.substring(i + 1);
 
+        if (locale != null) {
+            return messages.getMessage(metaClass.getJavaClass(), className, locale);
+        }
         return messages.getMessage(metaClass.getJavaClass(), className);
+    }
+
+    /**
+     * @return a detailed localized name of an entity. Messages pack must be located in the same package as entity.
+     */
+    public String getDetailedEntityCaption(MetaClass metaClass) {
+        return getDetailedEntityCaption(metaClass, null);
+    }
+
+    /**
+     * @return a detailed localized name of an entity with given locale or default if null. Messages pack must be located in the same package as entity.
+     */
+    public String getDetailedEntityCaption(MetaClass metaClass, @Nullable Locale locale) {
+        return getEntityCaption(metaClass, locale) + " (" + metaClass.getName() + ")";
     }
 
     /**
