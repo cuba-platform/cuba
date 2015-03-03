@@ -153,14 +153,7 @@ public class PermissionConfig {
                         MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalMetaClass(metaClass);
                         String entityName = originalMetaClass == null ? name : originalMetaClass.getName();
 
-                        String className = metaClass.getJavaClass().getName();
-                        int i = className.lastIndexOf('.');
-                        if (i > -1) {
-                            className = className.substring(i + 1);
-                        }
-
-                        String entityCaption = messages.getMessage(metaClass.getJavaClass(), className, locale);
-                        String caption = entityCaption + " (" + name + ")";
+                        String caption = messages.getTools().getDetailedEntityCaption(metaClass, locale);
 
                         // Entity target
                         entities.add(new OperationPermissionTarget(metaClass.getJavaClass(),

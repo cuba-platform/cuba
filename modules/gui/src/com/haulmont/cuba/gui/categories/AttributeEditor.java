@@ -376,7 +376,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         MetaClass entityType = null;
         for (MetaClass metaClass : metadataTools.getAllPersistentMetaClasses()) {
             if (!metadataTools.isSystemLevel(metaClass)) {
-                options.put(messageTools.getEntityCaption(metaClass) + " (" + metaClass.getName() + ")", metaClass);
+                options.put(messageTools.getDetailedEntityCaption(metaClass), metaClass);
                 if (hasValue && metaClass.getJavaClass().getName().equals(attribute.getDataType())) {
                     entityType = metaClass;
                 }

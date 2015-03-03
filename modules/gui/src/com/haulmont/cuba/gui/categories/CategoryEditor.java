@@ -61,7 +61,7 @@ public class CategoryEditor extends AbstractEditor<Category> {
         MetaClass entityType = null;
         for (MetaClass metaClass : metadataTools.getAllPersistentMetaClasses()) {
             if (CategorizedEntity.class.isAssignableFrom(metaClass.getJavaClass())) {
-                options.put(messageTools.getEntityCaption(metaClass) + " (" + metaClass.getName() + ")", metaClass);
+                options.put(messageTools.getDetailedEntityCaption(metaClass), metaClass);
                 if (hasValue && metaClass.getName().equals(category.getEntityType())) {
                     entityType = metaClass;
                 }
