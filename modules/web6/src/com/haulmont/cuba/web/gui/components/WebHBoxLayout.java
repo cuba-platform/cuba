@@ -16,4 +16,9 @@ public class WebHBoxLayout extends WebAbstractBox implements HBoxLayout {
     public WebHBoxLayout() {
         component = new HorizontalLayout();
     }
+
+    @Override
+    public ExpandDirection getExpandDirection() {
+        return ExpandDirection.HORIZONTAL;
+    }
 }

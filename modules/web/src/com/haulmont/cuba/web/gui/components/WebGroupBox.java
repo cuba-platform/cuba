@@ -192,6 +192,11 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
     }
 
     @Override
+    public ExpandDirection getExpandDirection() {
+        return orientation == Orientation.HORIZONTAL ? ExpandDirection.HORIZONTAL : ExpandDirection.VERTICAL;
+    }
+
+    @Override
     public void setExpanded(boolean expanded) {
         component.setExpanded(expanded);
     }

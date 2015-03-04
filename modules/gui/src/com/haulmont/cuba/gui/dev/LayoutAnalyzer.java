@@ -306,11 +306,11 @@ public class LayoutAnalyzer {
                     for (Component innerComponent : components) {
                         if (innerComponent != expanded
                                 && innerComponent.isVisible()
-                                && isSizeIgnored(container, innerComponent, path.equals(Window.NAME))) {
+                                && isSizeIgnored(container, innerComponent)) {
                             String id = innerComponent.getId() != null ?
                                     innerComponent.getId() : innerComponent.getClass().getSimpleName();
                             tips.add(warn("Container '" + path + "', nested component '" + id + "'",
-                                    "Size of nested component was ignored because of '%s' expanded inside container", expandedId));
+                                    "Relative size of nested component was ignored because of '%s' expanded inside container", expandedId));
                         }
                     }
 
@@ -330,38 +330,13 @@ public class LayoutAnalyzer {
             return null;
         }
 
-        private boolean isSizeIgnored(ExpandingLayout container, Component component, boolean isWindow) {
-            Orientation orientation = Orientation.NONE;
-            if (isWindow) {     // it means container is root layout element
-                orientation = Orientation.VERTICAL;
-            } else if (container instanceof HBoxLayout) {
-                orientation = Orientation.HORIZONTAL;
-            } else if (container instanceof VBoxLayout) {
-                orientation = Orientation.VERTICAL;
-            } else if (container instanceof GroupBoxLayout) {
-                GroupBoxLayout layout = (GroupBoxLayout)container;
-                if (layout.getOrientation() == GroupBoxLayout.Orientation.HORIZONTAL) {
-                    orientation = Orientation.HORIZONTAL;
-                }
-                if (layout.getOrientation() == GroupBoxLayout.Orientation.VERTICAL) {
-                    orientation = Orientation.VERTICAL;
-                }
-            } else if (container instanceof TabSheet.Tab) {
-                orientation = Orientation.VERTICAL;
-            }
-
-            return orientation == Orientation.HORIZONTAL
+        private boolean isSizeIgnored(ExpandingLayout container, Component component) {
+            return container.getExpandDirection() == ExpandingLayout.ExpandDirection.HORIZONTAL
                     && component.getWidthUnits() == Component.UNITS_PERCENTAGE
                     && component.getWidth() > 0
-                    || orientation == Orientation.VERTICAL
+                    || container.getExpandDirection() == ExpandingLayout.ExpandDirection.VERTICAL
                     && component.getHeightUnits() == Component.UNITS_PERCENTAGE
                     && component.getHeight() > 0;
-        }
-
-        enum Orientation {
-            NONE,
-            VERTICAL,
-            HORIZONTAL
         }
     }
 }

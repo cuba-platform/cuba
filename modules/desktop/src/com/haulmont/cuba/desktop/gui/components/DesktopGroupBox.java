@@ -52,6 +52,11 @@ public class DesktopGroupBox extends DesktopAbstractBox implements GroupBoxLayou
     }
 
     @Override
+    public ExpandDirection getExpandDirection() {
+        return orientation == Orientation.HORIZONTAL ? ExpandDirection.HORIZONTAL : ExpandDirection.VERTICAL;
+    }
+
+    @Override
     public void setExpanded(boolean expanded) {
         collapsiblePanel.setExpanded(expanded);
     }

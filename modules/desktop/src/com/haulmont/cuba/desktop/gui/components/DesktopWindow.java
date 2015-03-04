@@ -599,6 +599,11 @@ public class DesktopWindow implements Window, Component.Disposable,
         return expandedComponent == component;
     }
 
+    @Override
+    public ExpandDirection getExpandDirection() {
+        return ExpandDirection.VERTICAL;
+    }
+
     protected void requestRepaint() {
         if (!scheduledRepaint) {
             SwingUtilities.invokeLater(new Runnable() {

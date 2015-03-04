@@ -774,6 +774,11 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
     }
 
     @Override
+    public ExpandDirection getExpandDirection() {
+        return ExpandDirection.VERTICAL;
+    }
+
+    @Override
     public <T> T getComponent() {
         //noinspection unchecked
         return (T) component;

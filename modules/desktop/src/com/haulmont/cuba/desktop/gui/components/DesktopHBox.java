@@ -35,4 +35,9 @@ public class DesktopHBox extends DesktopAbstractBox implements AutoExpanding, HB
         super.setWidth(width);
         layoutAdapter.setExpandLayout(!widthSize.isOwnSize()); // expand layout if width not -1
     }
+
+    @Override
+    public ExpandDirection getExpandDirection() {
+        return ExpandDirection.HORIZONTAL;
+    }
 }

@@ -206,6 +206,11 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
     }
 
     @Override
+    public ExpandDirection getExpandDirection() {
+        return ExpandDirection.VERTICAL;
+    }
+
+    @Override
     public FrameContext getContext() {
         return frame.getContext();
     }

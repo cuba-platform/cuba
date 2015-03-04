@@ -804,6 +804,11 @@ public class WebWindow implements Window, Component.Wrapper,
     }
 
     @Override
+    public ExpandDirection getExpandDirection() {
+        return ExpandDirection.VERTICAL;
+    }
+
+    @Override
     public <T> T getComponent() {
         //noinspection unchecked
         return (T) component;

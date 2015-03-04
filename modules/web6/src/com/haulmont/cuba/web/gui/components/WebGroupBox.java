@@ -7,10 +7,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.GroupBoxLayout;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.web.toolkit.ui.GroupBox;
 import com.haulmont.cuba.web.toolkit.ui.HorizontalActionsLayout;
 import com.haulmont.cuba.web.toolkit.ui.OrderedActionsLayout;
@@ -190,6 +187,11 @@ public class WebGroupBox extends WebAbstractComponent<GroupBox> implements Group
     @Override
     public boolean isExpanded() {
         return component.isExpanded();
+    }
+
+    @Override
+    public ExpandDirection getExpandDirection() {
+        return orientation == Orientation.HORIZONTAL ? ExpandDirection.HORIZONTAL : ExpandDirection.VERTICAL;
     }
 
     @Override

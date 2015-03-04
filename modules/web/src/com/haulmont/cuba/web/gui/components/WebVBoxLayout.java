@@ -17,4 +17,9 @@ public class WebVBoxLayout extends WebAbstractBox implements VBoxLayout {
         component = new CubaVerticalActionsLayout();
         component.setWidth(100, Sizeable.Unit.PERCENTAGE);
     }
+
+    @Override
+    public ExpandDirection getExpandDirection() {
+        return ExpandDirection.VERTICAL;
+    }
 }

@@ -34,4 +34,9 @@ public class DesktopVBox extends DesktopAbstractBox implements AutoExpanding, VB
         super.setHeight(height);
         layoutAdapter.setExpandLayout(!heightSize.isOwnSize());
     }
+
+    @Override
+    public ExpandDirection getExpandDirection() {
+        return ExpandDirection.VERTICAL;
+    }
 }
