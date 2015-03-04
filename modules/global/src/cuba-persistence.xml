@@ -71,7 +71,7 @@
 
             <property name="openjpa.jdbc.SubclassFetchMode" value="none"/>
 
-            <property name="openjpa.Compatibility" value="SuperclassDiscriminatorStrategyByDefault=false"/>
+            <property name="openjpa.Compatibility" value="SuperclassDiscriminatorStrategyByDefault=false, IgnoreDetachedStateFieldForProxySerialization=true"/>
 
             <!-- OpenJPA-2.1.1: have to switch it off because these caches don't work properly with FetchPlans -->
             <property name="openjpa.jdbc.QuerySQLCache"
