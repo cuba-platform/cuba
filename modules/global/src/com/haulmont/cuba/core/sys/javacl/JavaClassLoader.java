@@ -18,11 +18,13 @@ import org.perf4j.log4j.Log4JStopWatch;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
@@ -33,6 +35,7 @@ import javax.tools.DiagnosticCollector;
 import javax.tools.JavaFileObject;
 import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -196,6 +199,11 @@ public class JavaClassLoader extends URLClassLoader implements BeanFactoryAware,
                 if (StringUtils.isNotBlank(beanName)) {
                     GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
                     beanDefinition.setBeanClass(clazz);
+                    Scope scope = (Scope) clazz.getAnnotation(Scope.class);
+                    if (scope != null) {
+                       beanDefinition.setScope(scope.value());
+                    }
+
                     beanFactory.registerBeanDefinition(beanName, beanDefinition);
                 }
 
