@@ -19,7 +19,7 @@
 
     <assign name="fieldWidth" value="theme://cuba.gui.lock-edit.field.width"/>
 
-    <layout spacing="true" expand="windowActions">
+    <layout spacing="true">
         <grid spacing="true">
             <columns count="2"/>
             <rows>
