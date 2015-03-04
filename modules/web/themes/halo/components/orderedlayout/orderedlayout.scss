@@ -13,6 +13,7 @@
   }
 
   .v-slot {
+    overflow: hidden;
     @include box-defaults;
   }
 }
