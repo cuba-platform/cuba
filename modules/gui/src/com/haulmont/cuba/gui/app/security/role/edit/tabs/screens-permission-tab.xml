@@ -40,7 +40,7 @@
                 </treeTable>
             </vbox>
 
-            <vbox margin="false;false;false;true">
+            <vbox margin="false;false;false;true" height="100%">
                 <groupBox height="100%" caption="msg://permissions">
                     <vbox id="selectedScreenPanel" width="100%" visible="false" spacing="true">
                         <label property="caption" datasource="screenPermissionsTreeDs" stylename="h2" align="MIDDLE_CENTER"/>

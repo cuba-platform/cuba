@@ -61,7 +61,7 @@
                     </groupTable>
                 </vbox>
                 <!-- Edit pane -->
-                <vbox margin="false;false;false;true">
+                <vbox margin="false;false;false;true" height="100%">
                     <groupBox id="editPane" width="100%" height="100%" caption="msg://permissions">
                         <vbox id="selectedComponentPanel" expand="panelSpacer" spacing="true" width="100%" height="100%"
                               visible="false">

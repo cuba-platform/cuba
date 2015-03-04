@@ -40,7 +40,7 @@
                 </treeTable>
             </vbox>
 
-            <vbox margin="false;false;false;true">
+            <vbox margin="false;false;false;true" height="100%">
                 <groupBox width="100%" height="100%" caption="msg://permissions">
                     <vbox id="selectedPermissionPanel" width="100%" visible="false" spacing="true">
                         <label property="caption" datasource="specificPermissionsTreeDs" stylename="h2"
