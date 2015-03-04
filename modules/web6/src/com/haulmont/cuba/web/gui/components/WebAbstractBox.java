@@ -168,6 +168,11 @@ public abstract class WebAbstractBox extends WebAbstractComponent<AbstractOrdere
     }
 
     @Override
+    public ExpandDirection getExpandDirection() {
+        return ExpandDirection.VERTICAL;
+    }
+
+    @Override
     public void setMargin(boolean enable) {
         component.setMargin(enable);
     }
