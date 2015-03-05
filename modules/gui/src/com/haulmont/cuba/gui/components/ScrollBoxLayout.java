@@ -30,4 +30,6 @@ public interface ScrollBoxLayout
 
     ScrollBarPolicy getScrollBarPolicy();
     void setScrollBarPolicy(ScrollBarPolicy scrollBarPolicy);
+
+    void add(Component childComponent, int index);
 }

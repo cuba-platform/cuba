@@ -112,6 +112,46 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
     }
 
     @Override
+    public void add(Component childComponent, int index) {
+        AbstractOrderedLayout newContent = null;
+        if (orientation == Orientation.VERTICAL && !(component.getContent() instanceof CubaVerticalActionsLayout)) {
+            newContent = new CubaVerticalActionsLayout();
+        } else if (orientation == Orientation.HORIZONTAL && !(component.getContent() instanceof CubaHorizontalActionsLayout)) {
+            newContent = new CubaHorizontalActionsLayout();
+        }
+
+        if (newContent != null) {
+            initContainer(newContent);
+
+            newContent.setMargin(((CubaOrderedActionsLayout) component.getContent()).getMargin());
+            newContent.setSpacing(((CubaOrderedActionsLayout) component.getContent()).isSpacing());
+        }
+
+        com.vaadin.ui.Component vComponent = WebComponentsHelper.getComposition(childComponent);
+        getComponentContent().addComponent(vComponent, index);
+        getComponentContent().setComponentAlignment(vComponent, convertAlignment(childComponent.getAlignment()));
+
+        if (childComponent.getId() != null) {
+            componentByIds.put(childComponent.getId(), childComponent);
+        }
+
+        if (frame != null) {
+            if (childComponent instanceof BelongToFrame
+                    && ((BelongToFrame) childComponent).getFrame() == null) {
+                ((BelongToFrame) childComponent).setFrame(frame);
+            } else {
+                frame.registerComponent(childComponent);
+            }
+        }
+
+        List<Component> componentsTempList = new ArrayList<>(ownComponents);
+        componentsTempList.add(index, childComponent);
+
+        ownComponents.clear();
+        ownComponents.addAll(componentsTempList);
+    }
+
+    @Override
     public void remove(Component childComponent) {
         getComponentContent().removeComponent(WebComponentsHelper.getComposition(childComponent));
         if (childComponent.getId() != null) {

@@ -146,6 +146,45 @@ public class DesktopScrollBoxLayout extends DesktopAbstractComponent<JScrollPane
     }
 
     @Override
+    public void add(Component component, int index) {
+        DesktopAbstractBox newContent = null;
+        if (orientation == Orientation.VERTICAL && !(content instanceof DesktopVBox)) {
+            newContent = new DesktopVBox();
+        } else if (orientation == Orientation.HORIZONTAL && !(content instanceof DesktopHBox)) {
+            newContent = new DesktopHBox();
+        }
+
+        if (newContent != null) {
+            content = newContent;
+
+            DesktopVBox contentPane = new DesktopVBox();
+            contentPane.add(content);
+            contentPane.setContainer(this);
+
+            impl.setViewportView(DesktopComponentsHelper.getComposition(contentPane));
+
+            applyScrollBarPolicy(scrollBarPolicy);
+        }
+
+        content.add(component, index);
+
+        if (frame != null) {
+            if (component instanceof BelongToFrame
+                    && ((BelongToFrame) component).getFrame() == null) {
+                ((BelongToFrame) component).setFrame(frame);
+            } else {
+                frame.registerComponent(component);
+            }
+        }
+
+        if (component instanceof DesktopAbstractComponent && !isEnabledWithParent()) {
+            ((DesktopAbstractComponent) component).setParentEnabled(false);
+        }
+
+        adjustViewPreferredSize();
+    }
+
+    @Override
     public void remove(Component component) {
         components.remove(component);
         content.remove(component);

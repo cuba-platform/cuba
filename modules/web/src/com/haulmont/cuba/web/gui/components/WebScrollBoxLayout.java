@@ -99,6 +99,54 @@ public class WebScrollBoxLayout extends WebAbstractComponent<Panel> implements S
     }
 
     @Override
+    public void add(Component childComponent, int index) {
+        AbstractOrderedLayout newContent = null;
+        if (orientation == Orientation.VERTICAL && !(getContent() instanceof CubaVerticalActionsLayout)) {
+            newContent = new CubaVerticalActionsLayout();
+            newContent.setWidth("100%");
+        } else if (orientation == Orientation.HORIZONTAL && !(getContent() instanceof CubaHorizontalActionsLayout)) {
+            newContent = new CubaHorizontalActionsLayout();
+        }
+
+        if (newContent != null) {
+            newContent.setMargin((getContent()).getMargin());
+            newContent.setSpacing((getContent()).isSpacing());
+            newContent.setStyleName(CUBA_SCROLLBOX_CONTENT_STYLE);
+
+            com.vaadin.ui.Component oldContent = component.getContent();
+            newContent.setWidth(oldContent.getWidth(), oldContent.getWidthUnits());
+            newContent.setHeight(oldContent.getHeight(), oldContent.getHeightUnits());
+
+            component.setContent(newContent);
+
+            applyScrollBarsPolicy(scrollBarPolicy);
+        }
+
+        com.vaadin.ui.Component vComponent = WebComponentsHelper.getComposition(childComponent);
+        getContent().addComponent(vComponent, index);
+        getContent().setComponentAlignment(vComponent, convertAlignment(childComponent.getAlignment()));
+
+        if (childComponent.getId() != null) {
+            componentByIds.put(childComponent.getId(), childComponent);
+        }
+
+        if (frame != null) {
+            if (childComponent instanceof BelongToFrame
+                    && ((BelongToFrame) childComponent).getFrame() == null) {
+                ((BelongToFrame) childComponent).setFrame(frame);
+            } else {
+                frame.registerComponent(childComponent);
+            }
+        }
+
+        List<Component> componentsTempList = new ArrayList<>(ownComponents);
+        componentsTempList.add(index, childComponent);
+
+        ownComponents.clear();
+        ownComponents.addAll(componentsTempList);
+    }
+
+    @Override
     public void setStyleName(String styleName) {
         if (StringUtils.isNotEmpty(this.styleName)) {
             getComposition().removeStyleName(this.styleName);

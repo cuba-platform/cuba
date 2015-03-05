@@ -22,4 +22,6 @@ public interface GroupBoxLayout
 
     Orientation getOrientation();
     void setOrientation(Orientation orientation);
+
+    void add(Component childComponent, int index);
 }
