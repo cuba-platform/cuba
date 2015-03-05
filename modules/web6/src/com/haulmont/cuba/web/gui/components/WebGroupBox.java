@@ -79,38 +79,7 @@ public class WebGroupBox extends WebAbstractComponent<GroupBox> implements Group
 
     @Override
     public void add(Component childComponent) {
-        AbstractOrderedLayout newContent = null;
-        if (orientation == Orientation.VERTICAL && !(component.getContent() instanceof VerticalActionsLayout)) {
-            newContent = new VerticalActionsLayout();
-        } else if (orientation == Orientation.HORIZONTAL && !(component.getContent() instanceof HorizontalActionsLayout)) {
-            newContent = new HorizontalActionsLayout();
-        }
-
-        if (newContent != null) {
-            initContainer(newContent);
-
-            newContent.setMargin(((OrderedActionsLayout) component.getContent()).getMargin());
-            newContent.setSpacing(((OrderedActionsLayout) component.getContent()).isSpacing());
-        }
-
-        com.vaadin.ui.Component vComponent = WebComponentsHelper.getComposition(childComponent);
-        getComponentContent().addComponent(vComponent);
-        getComponentContent().setComponentAlignment(vComponent, convertAlignment(childComponent.getAlignment()));
-
-        if (childComponent.getId() != null) {
-            componentByIds.put(childComponent.getId(), childComponent);
-        }
-
-        if (frame != null) {
-            if (childComponent instanceof BelongToFrame
-                    && ((BelongToFrame) childComponent).getFrame() == null) {
-                ((BelongToFrame) childComponent).setFrame(frame);
-            } else {
-                frame.registerComponent(childComponent);
-            }
-        }
-
-        ownComponents.add(childComponent);
+        add(childComponent, ownComponents.size());
     }
 
     @Override
@@ -146,11 +115,15 @@ public class WebGroupBox extends WebAbstractComponent<GroupBox> implements Group
             }
         }
 
-        List<Component> componentsTempList = new ArrayList<>(ownComponents);
-        componentsTempList.add(index, childComponent);
+        if (index == ownComponents.size()) {
+            ownComponents.add(childComponent);
+        } else {
+            List<Component> componentsTempList = new ArrayList<>(ownComponents);
+            componentsTempList.add(index, childComponent);
 
-        ownComponents.clear();
-        ownComponents.addAll(componentsTempList);
+            ownComponents.clear();
+            ownComponents.addAll(componentsTempList);
+        }
     }
 
     @Override

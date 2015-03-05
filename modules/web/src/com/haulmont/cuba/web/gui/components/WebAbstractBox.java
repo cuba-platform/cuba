@@ -28,29 +28,7 @@ public abstract class WebAbstractBox extends WebAbstractComponent<AbstractOrdere
 
     @Override
     public void add(Component childComponent) {
-        if (ownComponents.contains(childComponent)) {
-            remove(childComponent);
-        }
-
-        final com.vaadin.ui.Component vaadinComponent = WebComponentsHelper.getComposition(childComponent);
-
-        component.addComponent(vaadinComponent);
-        component.setComponentAlignment(vaadinComponent, convertAlignment(childComponent.getAlignment()));
-
-        if (childComponent.getId() != null) {
-            componentByIds.put(childComponent.getId(), childComponent);
-        }
-
-        if (frame != null) {
-            if (childComponent instanceof BelongToFrame
-                    && ((BelongToFrame) childComponent).getFrame() == null) {
-                ((BelongToFrame) childComponent).setFrame(frame);
-            } else {
-                frame.registerComponent(childComponent);
-            }
-        }
-
-        ownComponents.add(childComponent);
+        add(childComponent, ownComponents.size());
     }
 
     @Override
@@ -76,11 +54,15 @@ public abstract class WebAbstractBox extends WebAbstractComponent<AbstractOrdere
             }
         }
 
-        List<Component> componentsTempList = new ArrayList<>(ownComponents);
-        componentsTempList.add(index, childComponent);
+        if (index == ownComponents.size()) {
+            ownComponents.add(childComponent);
+        } else {
+            List<Component> componentsTempList = new ArrayList<>(ownComponents);
+            componentsTempList.add(index, childComponent);
 
-        ownComponents.clear();
-        ownComponents.addAll(componentsTempList);
+            ownComponents.clear();
+            ownComponents.addAll(componentsTempList);
+        }
     }
 
     @Override

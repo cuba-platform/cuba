@@ -43,39 +43,7 @@ public class WebScrollBoxLayout extends WebAbstractComponent<ScrollablePanel> im
 
     @Override
     public void add(Component childComponent) {
-        AbstractOrderedLayout newContent = null;
-        if (orientation == Orientation.VERTICAL && !(component.getContent() instanceof VerticalLayout))
-            newContent = new VerticalLayout();
-        else if (orientation == Orientation.HORIZONTAL && !(component.getContent() instanceof HorizontalLayout))
-            newContent = new HorizontalLayout();
-
-        if (newContent != null) {
-            newContent.setMargin(((AbstractOrderedLayout) component.getContent()).getMargin());
-            newContent.setSpacing(((AbstractOrderedLayout) component.getContent()).isSpacing());
-            component.setContent(newContent);
-
-            applyScrollBarsPolicy(scrollBarPolicy);
-        }
-
-        com.vaadin.ui.Component vComponent = WebComponentsHelper.getComposition(childComponent);
-        component.getContent().addComponent(vComponent);
-        ((Layout.AlignmentHandler)component.getContent()).setComponentAlignment(vComponent,
-                convertAlignment(childComponent.getAlignment()));
-
-        if (childComponent.getId() != null) {
-            componentByIds.put(childComponent.getId(), childComponent);
-        }
-
-        if (frame != null) {
-            if (childComponent instanceof BelongToFrame
-                    && ((BelongToFrame) childComponent).getFrame() == null) {
-                ((BelongToFrame) childComponent).setFrame(frame);
-            } else {
-                frame.registerComponent(childComponent);
-            }
-        }
-
-        ownComponents.add(childComponent);
+        add(childComponent, ownComponents.size());
     }
 
     @Override
@@ -112,11 +80,15 @@ public class WebScrollBoxLayout extends WebAbstractComponent<ScrollablePanel> im
             }
         }
 
-        List<Component> componentsTempList = new ArrayList<>(ownComponents);
-        componentsTempList.add(index, childComponent);
+        if (index == ownComponents.size()) {
+            ownComponents.add(childComponent);
+        } else {
+            List<Component> componentsTempList = new ArrayList<>(ownComponents);
+            componentsTempList.add(index, childComponent);
 
-        ownComponents.clear();
-        ownComponents.addAll(componentsTempList);
+            ownComponents.clear();
+            ownComponents.addAll(componentsTempList);
+        }
     }
 
     @Override

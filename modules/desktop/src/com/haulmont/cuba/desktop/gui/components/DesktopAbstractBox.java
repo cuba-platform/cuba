@@ -47,58 +47,7 @@ public abstract class DesktopAbstractBox
 
     @Override
     public void add(Component component) {
-        // add caption first
-        ComponentCaption caption = null;
-        boolean haveDescription = false;
-        if (DesktopContainerHelper.hasExternalCaption(component)) {
-            caption = new ComponentCaption(component);
-            captions.put(component, caption);
-            impl.add(caption, layoutAdapter.getCaptionConstraints(component));
-        } else if (DesktopContainerHelper.hasExternalDescription(component)) {
-            caption = new ComponentCaption(component);
-            captions.put(component, caption);
-            haveDescription = true;
-        }
-
-        JComponent composition = DesktopComponentsHelper.getComposition(component);
-        //if component have description without caption, we need to wrap
-        // component to view Description button horizontally after component
-        if (haveDescription) {
-            JPanel wrapper = new JPanel();
-            BoxLayoutAdapter adapter = BoxLayoutAdapter.create(wrapper);
-            adapter.setExpandLayout(true);
-            adapter.setSpacing(false);
-            adapter.setMargin(false);
-            wrapper.add(composition);
-            wrapper.add(caption,new CC().alignY("top"));
-            impl.add(wrapper, layoutAdapter.getConstraints(component));
-            wrappers.put(component, new Pair<>(wrapper, adapter));
-        } else {
-            impl.add(composition, layoutAdapter.getConstraints(component));
-        }
-
-        if (component.getId() != null) {
-            componentByIds.put(component.getId(), component);
-        }
-
-        if (frame != null) {
-            if (component instanceof BelongToFrame
-                    && ((BelongToFrame) component).getFrame() == null) {
-                ((BelongToFrame) component).setFrame(frame);
-            } else {
-                frame.registerComponent(component);
-            }
-        }
-
-        ownComponents.add(component);
-
-        DesktopContainerHelper.assignContainer(component, this);
-
-        if (component instanceof DesktopAbstractComponent && !isEnabledWithParent()) {
-            ((DesktopAbstractComponent) component).setParentEnabled(false);
-        }
-
-        requestRepaint();
+        add(component, ownComponents.size());
     }
 
     @Override
@@ -150,11 +99,15 @@ public abstract class DesktopAbstractBox
             }
         }
 
-        List<Component> componentsTempList = new ArrayList<>(ownComponents);
-        componentsTempList.add(index, component);
+        if (index == ownComponents.size()) {
+            ownComponents.add(component);
+        } else {
+            List<Component> componentsTempList = new ArrayList<>(ownComponents);
+            componentsTempList.add(index, component);
 
-        ownComponents.clear();
-        ownComponents.addAll(componentsTempList);
+            ownComponents.clear();
+            ownComponents.addAll(componentsTempList);
+        }
 
         DesktopContainerHelper.assignContainer(component, this);
 
