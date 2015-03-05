@@ -42,6 +42,9 @@ public final class ControllerUtils {
             if (location.getQuery() != null) {
                 baseUrl.delete(baseUrl.indexOf("?" + location.getQuery()), baseUrl.length());
             }
+            if (location.getFragment() != null) {
+                baseUrl.delete(baseUrl.indexOf("#" + location.getFragment()), baseUrl.length());
+            }
             return baseUrl.toString();
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);

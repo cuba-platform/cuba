@@ -6,12 +6,10 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
 import com.haulmont.cuba.gui.autocomplete.AutoCompleteSupport;
-import com.haulmont.cuba.web.controllers.ControllerUtils;
 import com.vaadin.server.AbstractErrorMessage;
 import com.vaadin.server.CompositeErrorMessage;
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.ui.AbstractTextField;
-import org.apache.commons.lang.StringUtils;
 import org.vaadin.aceeditor.AceEditor;
 
 /**
@@ -21,12 +19,7 @@ import org.vaadin.aceeditor.AceEditor;
 public class CubaSourceCodeEditor extends AceEditor implements AutoCompleteSupport {
 
     public CubaSourceCodeEditor() {
-        String location = ControllerUtils.getLocationWithoutParams();
-        if (!StringUtils.endsWith(location, "/")) {
-            location += "/";
-        }
-
-        String aceLocation = location + "VAADIN/resources/ace";
+        String aceLocation = "VAADIN/resources/ace";
 
         setBasePath(aceLocation);
         setThemePath(aceLocation);
