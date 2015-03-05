@@ -37,7 +37,8 @@ public class ButtonsPanelLoader extends ContainerLoader {
         assignXmlDescriptor(component, element);
         loadId(component, element);
         loadVisible(component, element);
-
+        loadEnable(component, element);
+        
         loadStyleName(component, element);
         loadAlign(component, element);
 
