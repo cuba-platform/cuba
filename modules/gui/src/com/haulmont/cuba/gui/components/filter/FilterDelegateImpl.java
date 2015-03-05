@@ -529,10 +529,11 @@ public class FilterDelegateImpl implements FilterDelegate {
         if (filterEntity.getFolder() == null) {
             CommitContext ctx = new CommitContext(Collections.singletonList(filterEntity));
             Set<Entity> result = dataService.commit(ctx);
-            for (Entity entity : result) {
-                if (entity.equals(filterEntity)) {
-                    filterEntities.remove(filterEntity);
-                    filterEntity = (FilterEntity) entity;
+            FilterEntity entity = (FilterEntity) result.iterator().next();
+            for (FilterEntity _filterEntity : filterEntities) {
+                if (entity.equals(_filterEntity)) {
+                    filterEntities.remove(_filterEntity);
+                    filterEntity = entity;
                     filterEntities.add(filterEntity);
                     break;
                 }
@@ -826,16 +827,6 @@ public class FilterDelegateImpl implements FilterDelegate {
                 .setParameter("userId", user.getId());
 
         filterEntities = new ArrayList<>(dataService.<FilterEntity>loadList(ctx));
-
-        Collections.sort(
-                filterEntities,
-                new Comparator<FilterEntity>() {
-                    @Override
-                    public int compare(FilterEntity f1, FilterEntity f2) {
-                        return getFilterCaption(f1).compareTo(getFilterCaption(f2));
-                    }
-                }
-        );
     }
 
     protected FilterEntity getDefaultFilter(List<FilterEntity> filters) {
@@ -885,6 +876,16 @@ public class FilterDelegateImpl implements FilterDelegate {
 
     protected void initFiltersPopupButton() {
         filtersPopupButton.removeAllActions();
+
+        Collections.sort(
+                filterEntities,
+                new Comparator<FilterEntity>() {
+                    @Override
+                    public int compare(FilterEntity f1, FilterEntity f2) {
+                        return getFilterCaption(f1).compareTo(getFilterCaption(f2));
+                    }
+                }
+        );
 
         Iterator<FilterEntity> it = filterEntities.iterator();
         int addedEntitiesCount = 0;
