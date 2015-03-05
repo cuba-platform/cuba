@@ -508,6 +508,7 @@
 
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasEditable"/>
+        <xs:attributeGroup ref="hasEnableProp"/>
         <xs:attributeGroup ref="hasCaption"/>
         <xs:attributeGroup ref="hasStyle"/>
         <xs:attributeGroup ref="hasAlign"/>
