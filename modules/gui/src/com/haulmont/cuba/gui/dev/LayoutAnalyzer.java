@@ -17,6 +17,7 @@ import java.util.List;
 
 import static com.haulmont.cuba.gui.dev.LayoutTip.error;
 import static com.haulmont.cuba.gui.dev.LayoutTip.warn;
+import static com.haulmont.cuba.gui.components.ExpandingLayout.ExpandDirection;
 
 /**
  * @author artamonov
@@ -331,10 +332,10 @@ public class LayoutAnalyzer {
         }
 
         private boolean isSizeIgnored(ExpandingLayout container, Component component) {
-            return container.getExpandDirection() == ExpandingLayout.ExpandDirection.HORIZONTAL
+            return container.getExpandDirection() == ExpandDirection.HORIZONTAL
                     && component.getWidthUnits() == Component.UNITS_PERCENTAGE
                     && component.getWidth() > 0
-                    || container.getExpandDirection() == ExpandingLayout.ExpandDirection.VERTICAL
+                    || container.getExpandDirection() == ExpandDirection.VERTICAL
                     && component.getHeightUnits() == Component.UNITS_PERCENTAGE
                     && component.getHeight() > 0;
         }
