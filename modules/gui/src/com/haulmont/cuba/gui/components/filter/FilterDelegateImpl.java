@@ -127,7 +127,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected PopupButton settingsBtn;
     protected Component applyTo;
     protected SaveAction saveAction;
-    protected HideConditionsAction hideConditionsAction;
+//    protected HideConditionsAction hideConditionsAction;
     protected TextField ftsSearchCriteriaField;
     protected CheckBox ftsSwitch;
 
@@ -167,6 +167,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             groupBoxLayout.setOrientation(GroupBoxLayout.Orientation.VERTICAL);
             groupBoxLayout.setStyleName("cuba-generic-filter");
             groupBoxLayout.setWidth("100%");
+            groupBoxLayout.setCollapsable(true);
             layout = componentsFactory.createComponent(VBoxLayout.NAME);
             layout.setWidth("100%");
             groupBoxLayout.add(layout);
@@ -447,7 +448,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         MakeDefaultAction makeDefaultAction = new MakeDefaultAction();
         RemoveAction removeAction = new RemoveAction();
         PinAppliedAction pinAppliedAction = new PinAppliedAction();
-        hideConditionsAction = new HideConditionsAction();
+//        hideConditionsAction = new HideConditionsAction();
         SaveAsFolderAction saveAsAppFolderAction = new SaveAsFolderAction(true);
         SaveAsFolderAction saveAsSearchFolderAction = new SaveAsFolderAction(false);
 
@@ -487,7 +488,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         pinAppliedAction.setEnabled(pinAppliedActionEnabled);
         saveAsSearchFolderAction.setEnabled(saveAsSearchFolderActionEnabled);
         saveAsAppFolderAction.setEnabled(saveAsAppFolderActionEnabled);
-        hideConditionsAction.setEnabled(hideConditionsActionEnabled);
+//        hideConditionsAction.setEnabled(hideConditionsActionEnabled);
 
         settingsBtn.addAction(saveAction);
         settingsBtn.addAction(saveAsAction);
@@ -497,7 +498,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         if (globalConfig.getAllowQueryFromSelected()) {
             settingsBtn.addAction(pinAppliedAction);
         }
-        settingsBtn.addAction(hideConditionsAction);
+//        settingsBtn.addAction(hideConditionsAction);
         if (folderActionsEnabled && filterHelper.isFolderActionsEnabled()) {
             settingsBtn.addAction(saveAsSearchFolderAction);
             settingsBtn.addAction(saveAsAppFolderAction);
@@ -643,7 +644,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         }
 
         if (!conditionsLayout.getComponents().isEmpty()) layout.setSpacing(true);
-        hideConditionsAction.setEnabled(isHideConditionsActionEnabled());
+//        hideConditionsAction.setEnabled(isHideConditionsActionEnabled());
     }
 
     protected void recursivelyCreateConditionsLayout(boolean focusOnConditions,
