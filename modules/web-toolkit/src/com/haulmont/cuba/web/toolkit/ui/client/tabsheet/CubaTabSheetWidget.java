@@ -5,8 +5,8 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.tabsheet;
 
-import com.google.gwt.event.dom.client.*;
-import com.vaadin.client.VConsole;
+import com.google.gwt.event.dom.client.ContextMenuEvent;
+import com.haulmont.cuba.web.toolkit.ui.client.appui.ValidationErrorHolder;
 import com.vaadin.client.ui.VTabsheet;
 
 /**
@@ -34,9 +34,28 @@ public class CubaTabSheetWidget extends VTabsheet {
     }
 
     public static class CubaTabBar extends TabBar {
-
         public CubaTabBar(VTabsheet tabsheet) {
             super(tabsheet);
+        }
+
+        @Override
+        protected Tab createTab() {
+            return new CubaTab(this);
+        }
+    }
+
+    public static class CubaTab extends Tab {
+        public CubaTab(TabBar tabBar) {
+            super(tabBar);
+        }
+
+        @Override
+        public void onClose() {
+            if (ValidationErrorHolder.hasValidationErrors()) {
+                return;
+            }
+
+            super.onClose();
         }
     }
 }

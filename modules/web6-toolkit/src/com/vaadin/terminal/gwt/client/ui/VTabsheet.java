@@ -49,7 +49,6 @@ public class VTabsheet extends VTabsheetBase {
         private boolean hasIcon = false;
 
         private String[] actionKeys = null;
-        private boolean focused = false;
 
         TabSheetCaption() {
             super(null, client);
@@ -89,31 +88,19 @@ public class VTabsheet extends VTabsheetBase {
 
         @Override
         public void onBrowserEvent(Event event) {
-            if (closable) {
-                if (event.getTypeInt() == Event.ONFOCUS) {
-                    focused = true;
-                } else if (event.getTypeInt() == Event.ONBLUR) {
-                    focused = false;
-                }
-            }
-
-            //client.handleTooltipEvent(event, VTabsheet.this, getElement());
-            if (focused) {
-                if (closable && event.getTypeInt() == Event.ONCLICK
-                        && event.getEventTarget().cast() == closeButton) {
-//                  final String tabKey = tabKeys.get(tb.getTabIndex(this))
-//                        .toString();
-                    if (isEnabled()) {
-                        client.updateVariable(id, "close", getTabKey(), true);
-                        event.stopPropagation();
-                        event.preventDefault();
-                        return;
-                    }
-                } else if (event.getTypeInt() == Event.ONCONTEXTMENU
-                        && isEnabled() && actionKeys != null && actionKeys.length > 0) {
-                    showContextMenu(event);
+            if (closable && event.getTypeInt() == Event.ONCLICK
+                    && event.getEventTarget().cast() == closeButton) {
+                if (!ValidationErrorHolder.hasValidationErrors()
+                        && isEnabled()) {
+                    client.updateVariable(id, "close", getTabKey(), true);
+                    event.stopPropagation();
+                    event.preventDefault();
                     return;
                 }
+            } else if (event.getTypeInt() == Event.ONCONTEXTMENU
+                    && isEnabled() && actionKeys != null && actionKeys.length > 0) {
+                showContextMenu(event);
+                return;
             }
 
             super.onBrowserEvent(event);

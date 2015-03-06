@@ -2727,32 +2727,61 @@ public class ApplicationConnection {
         return uri;
     }
 
+    public interface PendingVariableFilter {
+        boolean apply(String pendingVariable);
+    }
+
     /**
      * Discard next events in client-side event queue, exclude CubaTimer events and polling.
      */
     public void discardAccumulatedEvents() {
-        boolean isTimerRequest = false;
+        // silent time
+        ValidationErrorHolder.onValidationError();
+
+        // use blacklist of invocations
+        // do not discard all
+        PendingVariableFilter filter = new PendingVariableFilter() {
+            @Override
+            public boolean apply(String pendingVariable) {
+                return pendingVariable.contains(VAR_FIELD_SEPARATOR + "close" + VAR_FIELD_SEPARATOR)
+                        || pendingVariable.contains(VAR_FIELD_SEPARATOR + "mousedetails" + VAR_FIELD_SEPARATOR)
+                        || pendingVariable.contains(VAR_FIELD_SEPARATOR + "action" + VAR_FIELD_SEPARATOR);
+            }
+        };
+
+        boolean dropRequest = false;
+        String pid = null;
         for (String pendingVariable : pendingVariables) {
-            if ("timer".equals(pendingVariable)) {
-                isTimerRequest = true;
+            if (filter.apply(pendingVariable)) {
+                dropRequest = true;
+                pid = pendingVariable.substring(0, pendingVariable.indexOf(VAR_FIELD_SEPARATOR));
+                break;
             }
         }
-        if (!isTimerRequest) {
+        if (dropRequest) {
             pendingVariables.clear();
+            Paintable paintable = getPaintable(pid);
+            if (paintable instanceof VButton) {
+                ((VButton) paintable).stopWaiting();
+            }
         }
 
         for (ArrayList<String> variableBurst : new ArrayList<ArrayList<String>>(pendingVariableBursts)) {
-            isTimerRequest = false;
+            dropRequest = false;
             for (String pendingVariable : variableBurst) {
-                if ("timer".equals(pendingVariable)) {
-                    isTimerRequest = true;
+                if (filter.apply(pendingVariable)) {
+                    dropRequest = true;
+                    pid = pendingVariable.substring(0, pendingVariable.indexOf(VAR_FIELD_SEPARATOR));
+                    break;
                 }
             }
-            if (!isTimerRequest) {
+            if (dropRequest) {
                 pendingVariableBursts.remove(variableBurst);
+                Paintable paintable = getPaintable(pid);
+                if (paintable instanceof VButton) {
+                    ((VButton) paintable).stopWaiting();
+                }
             }
         }
-
-        VConsole.log(">> DISCARD");
     }
 }

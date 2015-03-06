@@ -8,6 +8,7 @@ package com.haulmont.cuba.web.toolkit.ui.client.window;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
+import com.haulmont.cuba.web.toolkit.ui.client.appui.ValidationErrorHolder;
 import com.vaadin.client.ui.VWindow;
 
 /**
@@ -15,8 +16,6 @@ import com.vaadin.client.ui.VWindow;
  * @version $Id$
  */
 public class CubaWindowWidget extends VWindow {
-
-    protected boolean focused = false;
 
     public interface ContextMenuHandler {
         void onContextMenu(Event event);
@@ -30,12 +29,6 @@ public class CubaWindowWidget extends VWindow {
 
     @Override
     public void onBrowserEvent(Event event) {
-        if (event.getTypeInt() == Event.ONFOCUS) {
-            focused = true;
-        } else if (event.getTypeInt() == Event.ONBLUR) {
-            focused = false;
-        }
-
         if (contextMenuHandler != null && event.getTypeInt() == Event.ONCONTEXTMENU) {
             contextMenuHandler.onContextMenu(event);
         }
@@ -56,8 +49,10 @@ public class CubaWindowWidget extends VWindow {
 
     @Override
     protected void onCloseClick() {
-        if (focused) {
-            super.onCloseClick();
+        if (ValidationErrorHolder.hasValidationErrors()) {
+            return;
         }
+
+        super.onCloseClick();
     }
 }

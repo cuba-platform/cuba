@@ -6,12 +6,13 @@
 package com.haulmont.cuba.web.toolkit.ui.client.appui;
 
 import com.haulmont.cuba.web.AppUI;
-import com.haulmont.cuba.web.toolkit.ui.client.timer.CubaTimerServerRpc;
 import com.vaadin.client.ApplicationConnection;
 import com.vaadin.client.ui.ui.UIConnector;
+import com.vaadin.shared.communication.LegacyChangeVariablesInvocation;
 import com.vaadin.shared.communication.MethodInvocation;
 import com.vaadin.shared.ui.Connect;
-import com.vaadin.shared.ui.ui.UIServerRpc;
+import com.vaadin.shared.ui.button.ButtonServerRpc;
+import com.vaadin.shared.ui.tabsheet.TabsheetServerRpc;
 
 /**
  * @author artamonov
@@ -24,21 +25,39 @@ public class AppUIConnector extends UIConnector {
         registerRpc(AppUIClientRpc.class, new AppUIClientRpc() {
             @Override
             public void discardAccumulatedEvents() {
+                // silent time
+                ValidationErrorHolder.onValidationError();
+
                 getConnection().removePendingInvocationsAndBursts(new ApplicationConnection.MethodInvocationFilter() {
                     @Override
                     public boolean apply(MethodInvocation mi) {
-                        // filter timers
-                        if (CubaTimerServerRpc.class.getName().equals(mi.getInterfaceName())) {
-                            return false;
-                        }
-                        // filter polling events
-                        //noinspection RedundantIfStatement
-                        if (UIServerRpc.class.getName().equals(mi.getInterfaceName())
-                                && "poll".equals(mi.getMethodName())) {
-                            return false;
+                        // use blacklist of invocations
+                        // do not discard all
+
+                        // button click
+                        if (ButtonServerRpc.class.getName().equals(mi.getInterfaceName())
+                                && "click".equals(mi.getMethodName())) {
+                            return true;
                         }
 
-                        return true;
+                        // tabsheet close
+                        if (TabsheetServerRpc.class.getName().equals(mi.getInterfaceName())
+                                && "closeTab".equals(mi.getMethodName())) {
+                            return true;
+                        }
+
+                        // shortcuts && window close
+                        //noinspection RedundantIfStatement
+                        if (mi instanceof LegacyChangeVariablesInvocation) {
+                            LegacyChangeVariablesInvocation invocation = (LegacyChangeVariablesInvocation) mi;
+                            if (invocation.getVariableChanges().containsKey("action")
+                                    || invocation.getVariableChanges().containsKey("actiontarget")
+                                    || invocation.getVariableChanges().containsKey("close")) {
+                                return true;
+                            }
+                        }
+
+                        return false;
                     }
                 });
             }

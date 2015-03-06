@@ -101,7 +101,6 @@ public class VButton extends FocusWidget implements Paintable, ClickHandler,
     private int clickShortcut = 0;
 
     protected boolean useResponsePending = false;
-    protected boolean focused = false;
 
     public VButton() {
         super(DOM.createDiv());
@@ -121,19 +120,6 @@ public class VButton extends FocusWidget implements Paintable, ClickHandler,
         wrapper.appendChild(captionElement);
 
         addClickHandler(this);
-
-        addFocusHandler(new FocusHandler() {
-            @Override
-            public void onFocus(FocusEvent event) {
-                focused = true;
-            }
-        });
-        addBlurHandler(new BlurHandler() {
-            @Override
-            public void onBlur(BlurEvent event) {
-                focused = false;
-            }
-        });
     }
 
     @Override
@@ -149,8 +135,7 @@ public class VButton extends FocusWidget implements Paintable, ClickHandler,
         }
 
         if (useResponsePending && uidl.hasVariable("clicked")) {
-            responsePending = false;
-            removeStyleDependentName("wait");
+            stopWaiting();
         }
 
         focusHandlerRegistration = EventHelper.updateFocusHandler(this, client,
@@ -199,6 +184,11 @@ public class VButton extends FocusWidget implements Paintable, ClickHandler,
         if (uidl.hasAttribute("keycode")) {
             clickShortcut = uidl.getIntAttribute("keycode");
         }
+    }
+
+    public void stopWaiting() {
+        responsePending = false;
+        removeStyleDependentName("wait");
     }
 
     public void setText(String text) {
@@ -392,7 +382,7 @@ public class VButton extends FocusWidget implements Paintable, ClickHandler,
             return;
         }
 
-        if (!focused) {
+        if (ValidationErrorHolder.hasValidationErrors()) {
             return;
         }
 
