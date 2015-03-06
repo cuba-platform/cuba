@@ -6,7 +6,10 @@
 package com.haulmont.cuba.web.toolkit.ui.client.appui;
 
 import com.haulmont.cuba.web.AppUI;
+import com.haulmont.cuba.web.toolkit.ui.client.button.CubaButtonConnector;
 import com.vaadin.client.ApplicationConnection;
+import com.vaadin.client.ConnectorMap;
+import com.vaadin.client.ServerConnector;
 import com.vaadin.client.ui.ui.UIConnector;
 import com.vaadin.shared.communication.LegacyChangeVariablesInvocation;
 import com.vaadin.shared.communication.MethodInvocation;
@@ -28,7 +31,8 @@ public class AppUIConnector extends UIConnector {
                 // silent time
                 ValidationErrorHolder.onValidationError();
 
-                getConnection().removePendingInvocationsAndBursts(new ApplicationConnection.MethodInvocationFilter() {
+                ApplicationConnection.MethodInvocationFilter filter =
+                        new ApplicationConnection.MethodInvocationFilter() {
                     @Override
                     public boolean apply(MethodInvocation mi) {
                         // use blacklist of invocations
@@ -59,7 +63,21 @@ public class AppUIConnector extends UIConnector {
 
                         return false;
                     }
-                });
+                };
+
+                ApplicationConnection.RemoveMethodInvocationCallback callback =
+                        new ApplicationConnection.RemoveMethodInvocationCallback() {
+                    @Override
+                    public void removed(MethodInvocation mi) {
+                        ConnectorMap connectorMap = getConnection().getConnectorMap();
+                        ServerConnector connector = connectorMap.getConnector(mi.getConnectorId());
+                        if (connector instanceof CubaButtonConnector) {
+                            ((CubaButtonConnector) connector).stopResponsePending();
+                        }
+                    }
+                };
+
+                getConnection().removePendingInvocationsAndBursts(filter, callback);
             }
         });
     }
