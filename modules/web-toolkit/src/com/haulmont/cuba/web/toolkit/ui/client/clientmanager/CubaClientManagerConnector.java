@@ -6,6 +6,7 @@
 package com.haulmont.cuba.web.toolkit.ui.client.clientmanager;
 
 import com.haulmont.cuba.web.toolkit.ui.CubaClientManager;
+import com.haulmont.cuba.web.toolkit.ui.client.tooltip.CubaTooltip;
 import com.vaadin.client.ApplicationConfiguration;
 import com.vaadin.client.ServerConnector;
 import com.vaadin.client.extensions.AbstractExtensionConnector;
@@ -42,5 +43,8 @@ public class CubaClientManagerConnector extends AbstractExtensionConnector {
 
     @Override
     protected void extend(ServerConnector target) {
+        // check mode of required indicator icon/hidden
+        // performed on page open or full refresh
+        CubaTooltip.checkRequiredInicatorMode();
     }
 }

@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.tooltip;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
@@ -43,11 +44,20 @@ public class CubaTooltip extends VTooltip {
             timeout = justClosed ? getQuickOpenDelay() : getOpenDelay();
         }
         if (timeout == 0) {
-            showTooltip();
+            Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+                @Override
+                public void execute() {
+                    showTooltip();
+                }
+            });
         } else {
             showTimer.schedule(timeout);
             opening = true;
         }
+    }
+
+    public static void checkRequiredInicatorMode() {
+        requiredIndicatorVisible = null;
     }
 
     public class CubaTooltipEventHandler extends TooltipEventHandler {
