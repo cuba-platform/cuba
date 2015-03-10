@@ -26,6 +26,18 @@ public class DialogAction extends AbstractAction {
             this.msgKey = msgKey;
             this.icon = icon;
         }
+
+        public String getId() {
+            return id;
+        }
+
+        public String getMsgKey() {
+            return msgKey;
+        }
+
+        public String getIcon() {
+            return icon;
+        }
     }
 
     private Type type;

@@ -5,11 +5,13 @@
 
 package com.haulmont.cuba.desktop.sys;
 
+import com.google.common.base.Strings;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.DesktopConfig;
 import com.haulmont.cuba.desktop.TopLevelFrame;
@@ -39,16 +41,21 @@ import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.Nullable;
 import javax.swing.*;
+import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.*;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
 import java.util.List;
 
+import static com.haulmont.cuba.gui.ComponentsHelper.preprocessHtmlMessage;
 import static com.haulmont.cuba.gui.components.Component.AUTO_SIZE;
 import static com.haulmont.cuba.gui.components.IFrame.MessageType;
+import static com.haulmont.cuba.gui.components.IFrame.NotificationType;
+import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
 
 /**
  * @author krivopustov
@@ -855,7 +862,7 @@ public class DesktopWindowManager extends WindowManager {
                     List<LayoutTip> tipsList = analyzer.analyze(window);
 
                     if (tipsList.isEmpty()) {
-                        showNotification("No layout problems found", IFrame.NotificationType.HUMANIZED);
+                        showNotification("No layout problems found", NotificationType.HUMANIZED);
                     } else {
                         window.openWindow("layoutAnalyzer", OpenType.DIALOG, ParamsMap.of("tipsList", tipsList));
                     }
@@ -1106,13 +1113,109 @@ public class DesktopWindowManager extends WindowManager {
     }
 
     @Override
-    public void showNotification(String caption, IFrame.NotificationType type) {
-        frame.showNotification(caption, type);
+    public void showNotification(String caption, NotificationType type) {
+        showNotification(null, caption, type);
     }
 
     @Override
-    public void showNotification(String caption, String description, IFrame.NotificationType type) {
-        frame.showNotification(caption, description, type);
+    public void showNotification(String caption, String description, NotificationType type) {
+        Configuration configuration = AppBeans.get(Configuration.NAME);
+        DesktopConfig config = configuration.getConfig(DesktopConfig.class);
+
+        if (!NotificationType.isHTML(type)) {
+            caption = preprocessHtmlMessage(escapeHtml(Strings.nullToEmpty(caption)));
+            description = preprocessHtmlMessage(escapeHtml(Strings.nullToEmpty(description)));
+        }
+
+        String text = preparePopupText(caption, description);
+        if (config.isDialogNotificationsEnabled()
+                && type != NotificationType.TRAY
+                && type != NotificationType.TRAY_HTML) {
+            showNotificationDialog(text, type);
+        } else {
+            showNotificationPopup(text, type);
+        }
+    }
+
+    protected void showNotificationDialog(String text, NotificationType type) {
+        Messages messages = AppBeans.get(Messages.NAME);
+        String title = messages.getMessage(AppConfig.getMessagesPack(), "notification.title." + type);
+
+        Icon icon = convertNotificationTypeToIcon(type);
+
+        showOptionDialog(title, text, icon, false, new Action[]{
+                new DesktopWindowManagerAction(DialogAction.Type.CLOSE)
+        }, "notificationDialog");
+    }
+
+    protected void showNotificationPopup(String popupText, NotificationType type) {
+        JPanel panel = new JPanel(new MigLayout("flowy"));
+        panel.setBorder(BorderFactory.createLineBorder(Color.gray));
+
+        switch (type) {
+            case WARNING:
+            case WARNING_HTML:
+                panel.setBackground(Color.yellow);
+                break;
+            case ERROR:
+            case ERROR_HTML:
+                panel.setBackground(Color.orange);
+                break;
+            default:
+                panel.setBackground(Color.cyan);
+        }
+
+        JLabel label = new JLabel(popupText);
+        panel.add(label);
+
+        Dimension labelSize = DesktopComponentsHelper.measureHtmlText(popupText);
+
+        int x = frame.getX() + frame.getWidth() - (50 + labelSize.getSize().width);
+        int y = frame.getY() + frame.getHeight() - (50 + labelSize.getSize().height);
+
+        PopupFactory factory = PopupFactory.getSharedInstance();
+        final Popup popup = factory.getPopup(frame, panel, x, y);
+        popup.show();
+
+        panel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                popup.hide();
+            }
+        });
+
+        PointerInfo pointerInfo = MouseInfo.getPointerInfo();
+        if (pointerInfo != null) {
+            final Point location = pointerInfo.getLocation();
+            final Timer timer = new Timer(3000, null);
+            timer.addActionListener(
+                    new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            PointerInfo currentPointer = MouseInfo.getPointerInfo();
+                            if (currentPointer == null) {
+                                timer.stop();
+                            } else if (!currentPointer.getLocation().equals(location)) {
+                                popup.hide();
+                                timer.stop();
+                            }
+                        }
+                    });
+            timer.start();
+        }
+    }
+
+    protected String preparePopupText(String caption, String description) {
+        if (StringUtils.isNotBlank(caption)) {
+            description = String.format("<b>%s</b><br>%s", caption, description);
+        }
+        StringBuilder sb = new StringBuilder("<html>");
+        String[] strings = description.split("(<br>)|(<br/>)");
+        for (String string : strings) {
+            sb.append(string).append("<br/>");
+        }
+        sb.append("</html>");
+        return sb.toString();
     }
 
     @Override
@@ -1184,6 +1287,21 @@ public class DesktopWindowManager extends WindowManager {
 
     protected void showOptionDialog(final String title, final String message, MessageType messageType,
                                     boolean alwaysModal, final Action[] actions, String debugName) {
+        Icon icon = convertMessageType(messageType);
+
+        String msg = message;
+        if (!MessageType.isHTML(messageType)) {
+            msg = StringEscapeUtils.escapeHtml(msg);
+            msg = ComponentsHelper.preprocessHtmlMessage("<html>" + msg + "</html>");
+        } else {
+            msg = "<html>" + msg + "</html>";
+        }
+
+        showOptionDialog(title, msg, icon, alwaysModal, actions, debugName);
+    }
+
+    protected void showOptionDialog(final String title, final String message, final Icon icon,
+                                    boolean alwaysModal, final Action[] actions, String debugName) {
         final DialogWindow dialog = new DialogWindow(frame, title);
 
         if (App.getInstance().isTestMode()) {
@@ -1216,20 +1334,12 @@ public class DesktopWindowManager extends WindowManager {
 
         MigLayout layout = new MigLayout(lc);
         final JPanel panel = new JPanel(layout);
-        Icon icon = convertMessageType(messageType);
         if (icon != null) {
             JLabel iconLabel = new JLabel(icon);
             panel.add(iconLabel, "aligny top");
         }
 
-        String msg = message;
-        if (!MessageType.isHTML(messageType)) {
-            msg = StringEscapeUtils.escapeHtml(msg);
-            msg = ComponentsHelper.preprocessHtmlMessage("<html>" + msg + "</html>");
-        } else {
-            msg = "<html>" + msg + "</html>";
-        }
-        JLabel msgLabel = new JLabel(msg);
+        JLabel msgLabel = new JLabel(message);
 
         panel.add(msgLabel, "width 100%, wrap, growy 0");
 
@@ -1285,6 +1395,22 @@ public class DesktopWindowManager extends WindowManager {
         switch (messageType) {
             case CONFIRMATION:
             case CONFIRMATION_HTML:
+                return UIManager.getIcon("OptionPane.informationIcon");
+            case WARNING:
+            case WARNING_HTML:
+                return UIManager.getIcon("OptionPane.warningIcon");
+            default:
+                return null;
+        }
+    }
+
+    protected Icon convertNotificationTypeToIcon(NotificationType type) {
+        switch (type) {
+            case ERROR:
+            case ERROR_HTML:
+                return UIManager.getIcon("OptionPane.errorIcon");
+            case HUMANIZED:
+            case HUMANIZED_HTML:
                 return UIManager.getIcon("OptionPane.informationIcon");
             case WARNING:
             case WARNING_HTML:
@@ -1557,6 +1683,115 @@ public class DesktopWindowManager extends WindowManager {
                     }
                 }
             });
+        }
+    }
+
+    protected class DesktopWindowManagerAction implements Action {
+        private DialogAction.Type type;
+
+        public DesktopWindowManagerAction(DialogAction.Type type) {
+            this.type = type;
+        }
+
+        public DialogAction.Type getType() {
+            return type;
+        }
+
+        @Override
+        public String getId() {
+            return type.getId();
+        }
+
+        @Override
+        public String getCaption() {
+            return messages.getMainMessage(type.getMsgKey());
+        }
+
+        @Override
+        public void setCaption(String caption) {
+        }
+
+        @Override
+        public String getDescription() {
+            return null;
+        }
+
+        @Override
+        public void setDescription(String description) {
+        }
+
+        @Override
+        public KeyCombination getShortcut() {
+            return null;
+        }
+
+        @Override
+        public void setShortcut(KeyCombination shortcut) {
+        }
+
+        @Override
+        public void setShortcut(String shortcut) {
+        }
+
+        @Override
+        public String getIcon() {
+            return type.getIcon();
+        }
+
+        @Override
+        public void setIcon(String icon) {
+        }
+
+        @Override
+        public boolean isEnabled() {
+            return false;
+        }
+
+        @Override
+        public void setEnabled(boolean enabled) {
+        }
+
+        @Override
+        public boolean isVisible() {
+            return false;
+        }
+
+        @Override
+        public void setVisible(boolean visible) {
+        }
+
+        @Override
+        public void refreshState() {
+        }
+
+        @Override
+        public Component.ActionOwner getOwner() {
+            return null;
+        }
+
+        @Override
+        public Collection<Component.ActionOwner> getOwners() {
+            return Collections.emptyList();
+        }
+
+        @Override
+        public void addOwner(Component.ActionOwner actionOwner) {
+        }
+
+        @Override
+        public void removeOwner(Component.ActionOwner actionOwner) {
+        }
+
+        @Override
+        public void actionPerform(Component component) {
+        }
+
+        @Override
+        public void addPropertyChangeListener(PropertyChangeListener listener) {
+        }
+
+        @Override
+        public void removePropertyChangeListener(PropertyChangeListener listener) {
         }
     }
 }
