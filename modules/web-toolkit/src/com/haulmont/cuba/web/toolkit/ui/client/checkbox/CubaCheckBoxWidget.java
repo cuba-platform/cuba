@@ -10,6 +10,7 @@ import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.i18n.client.HasDirection;
+import com.vaadin.client.BrowserInfo;
 import com.vaadin.client.ui.VCheckBox;
 
 /**
@@ -46,9 +47,26 @@ public class CubaCheckBoxWidget extends VCheckBox implements FocusHandler, BlurH
     }
 
     @Override
+    public void setFocus(boolean focused) {
+        super.setFocus(focused);
+
+        if (BrowserInfo.get().isWebkit()) {
+            clearWebkitTextSelection();
+        }
+    }
+
+    @Override
     public void onFocus(FocusEvent arg) {
         addStyleDependentName("focus");
     }
+
+    public static native void clearWebkitTextSelection()/*-{
+        if ($wnd.getSelection) {
+            if ($wnd.getSelection().empty) {  // only for Chrome
+                $wnd.getSelection().empty();
+            }
+        }
+    }-*/ ;
 
     @Override
     public void onBlur(BlurEvent arg) {
