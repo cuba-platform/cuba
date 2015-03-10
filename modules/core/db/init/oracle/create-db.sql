@@ -364,7 +364,7 @@ create table SEC_FILTER (
     COMPONENT varchar2(200),
     NAME varchar2(255),
     CODE varchar2(200),
-    XML varchar2(4000),
+    XML clob,
     USER_ID varchar2(32),
     primary key(ID)
 )^

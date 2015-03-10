@@ -34,7 +34,8 @@ public class FilterEntity extends StandardEntity {
     @Column(name = "CODE", length = 200)
     protected String code;
 
-    @Column(name = "XML", length = 4000)
+    @Column(name = "XML")
+    @Lob
     protected String xml;
 
     @ManyToOne(fetch = FetchType.LAZY)

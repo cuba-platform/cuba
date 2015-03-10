@@ -473,7 +473,7 @@ create table SEC_FILTER (
     COMPONENT varchar(200),
     NAME varchar(255),
     CODE varchar(200),
-    XML varchar(7000),
+    XML varchar(max),
     USER_ID uniqueidentifier,
     --
     primary key nonclustered (ID),

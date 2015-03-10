@@ -443,7 +443,7 @@ create table SEC_FILTER (
     COMPONENT varchar(200),
     NAME varchar(255),
     CODE varchar(200),
-    XML varchar(7000),
+    XML longvarchar,
     USER_ID varchar(36),
     --
     primary key (ID),
