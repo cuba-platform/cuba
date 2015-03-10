@@ -13,11 +13,7 @@
     color: $cuba-contextmenu-font-color;
 
     background: $cuba-contextmenu-background-color;
-    border: 1px solid $cuba-field-border-color;
-    border-radius: 3px;
-    -webkit-border-radius: 3px;
-    -moz-border-radius: 3px;
-    -o-border-radius: 3px;
+    border: 1px solid $cuba-field-focused-border-color;
 
     .popupContent {
       padding: 3px;
@@ -39,7 +35,7 @@
 
 @mixin havana-cuba-contextmenu($primary-stylename: cuba-context-menu) {
   .#{$primary-stylename} {
-    background: #fff;
+    background: $cuba-contextmenu-background-color;
     overflow: auto;
     padding: 3px;
     border: 1px solid $cuba-field-focused-border-color;

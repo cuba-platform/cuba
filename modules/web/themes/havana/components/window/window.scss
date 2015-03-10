@@ -56,6 +56,12 @@
         overflow: hidden;
       }
 
+      .#{$primary-stylename}-closebox:focus,
+      .#{$primary-stylename}-maximizebox:focus,
+      .#{$primary-stylename}-restorebox:focus {
+        outline: none;
+      }
+
       .#{$primary-stylename}-closebox {
         right: 7px;
         background-image: url(sprites/close.png);  /** sprite-ref: components; */
