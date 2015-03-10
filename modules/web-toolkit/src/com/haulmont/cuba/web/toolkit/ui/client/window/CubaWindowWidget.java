@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.window;
 
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
@@ -31,7 +32,17 @@ public class CubaWindowWidget extends VWindow {
     public void onBrowserEvent(Event event) {
         if (contextMenuHandler != null && event.getTypeInt() == Event.ONCONTEXTMENU) {
             contextMenuHandler.onContextMenu(event);
+            return;
         }
+
+        if ((event.getTypeInt() == Event.ONCLICK
+                || event.getTypeInt() == Event.ONMOUSEDOWN)
+                && event.getButton() != NativeEvent.BUTTON_LEFT) {
+            event.preventDefault();
+            event.stopPropagation();
+            return;
+        }
+
         super.onBrowserEvent(event);
     }
 
