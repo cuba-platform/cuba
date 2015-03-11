@@ -24,23 +24,31 @@ public class CubaThreadPoolTaskScheduler extends ThreadPoolTaskScheduler {
         return new ScheduledThreadPoolExecutor(poolSize, threadFactory, rejectedExecutionHandler) {
             @Override
             protected <V> RunnableScheduledFuture<V> decorateTask(Runnable runnable, RunnableScheduledFuture<V> task) {
-                return new TaskDecorator<>(task);
+                return decorate(runnable, task);
             }
 
             @Override
             protected <V> RunnableScheduledFuture<V> decorateTask(Callable<V> callable, RunnableScheduledFuture<V> task) {
-                return new TaskDecorator<>(task);
+                return decorate(callable, task);
             }
         };
     }
 
-    private static class TaskDecorator<V> implements RunnableScheduledFuture<V> {
+    protected <V> RunnableScheduledFuture<V> decorate(Runnable runnable, RunnableScheduledFuture<V> task) {
+        return new TaskDecorator<>(task);
+    }
 
-        private RunnableScheduledFuture<V> delegate;
+    protected <V> RunnableScheduledFuture<V> decorate(Callable<V> callable, RunnableScheduledFuture<V> task) {
+        return new TaskDecorator<>(task);
+    }
 
-        private Log log = LogFactory.getLog(getClass());
+    protected static class TaskDecorator<V> implements RunnableScheduledFuture<V> {
 
-        private TaskDecorator(RunnableScheduledFuture<V> delegate) {
+        protected RunnableScheduledFuture<V> delegate;
+
+        protected Log log = LogFactory.getLog(getClass());
+
+        public TaskDecorator(RunnableScheduledFuture<V> delegate) {
             this.delegate = delegate;
         }
 
@@ -55,15 +63,19 @@ public class CubaThreadPoolTaskScheduler extends ThreadPoolTaskScheduler {
                 log.trace("before execution: SecurityContext=" + AppContext.getSecurityContext());
 
             // Reset a SecurityContext in the thread before and after execution
-            AppContext.setSecurityContext(null);
+            cleanContext();
             try {
                 delegate.run();
 
                 if (log.isTraceEnabled())
                     log.trace("after execution: SecurityContext=" + AppContext.getSecurityContext());
             } finally {
-                AppContext.setSecurityContext(null);
+                cleanContext();
             }
+        }
+
+        protected void cleanContext() {
+            AppContext.setSecurityContext(null);
         }
 
         @Override
