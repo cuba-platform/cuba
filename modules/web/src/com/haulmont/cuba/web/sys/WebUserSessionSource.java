@@ -27,10 +27,6 @@ public class WebUserSessionSource extends AbstractUserSessionSource {
     @Inject
     private UserSessionService userSessionService;
 
-    public void setUserSessionService(UserSessionService userSessionService) {
-        this.userSessionService = userSessionService;
-    }
-
     @Override
     public boolean checkCurrentUserSession() {
         if (App.isBound()) {

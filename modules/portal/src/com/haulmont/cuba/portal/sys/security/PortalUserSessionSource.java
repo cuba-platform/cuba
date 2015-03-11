@@ -15,6 +15,7 @@ import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.UserSession;
 
 import javax.annotation.ManagedBean;
+import javax.inject.Inject;
 
 /**
  * @author krivopustov
@@ -23,17 +24,11 @@ import javax.annotation.ManagedBean;
 @ManagedBean(UserSessionSource.NAME)
 public class PortalUserSessionSource extends AbstractUserSessionSource {
 
+    @Inject
     protected UserSessionService userSessionService;
 
+    @Inject
     protected PortalSessionFactory portalSessionFactory;
-
-    public void setUserSessionService(UserSessionService userSessionService) {
-        this.userSessionService = userSessionService;
-    }
-
-    public void setPortalSessionFactory(PortalSessionFactory portalSessionFactory) {
-        this.portalSessionFactory = portalSessionFactory;
-    }
 
     @Override
     public boolean checkCurrentUserSession() {
