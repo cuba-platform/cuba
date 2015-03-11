@@ -56,13 +56,16 @@ public abstract class DesktopAbstractBox
             remove(component);
         }
 
+        int implIndex = getActualIndex(index);
+
         // add caption first
         ComponentCaption caption = null;
         boolean haveDescription = false;
         if (DesktopContainerHelper.hasExternalCaption(component)) {
             caption = new ComponentCaption(component);
             captions.put(component, caption);
-            impl.add(caption, layoutAdapter.getCaptionConstraints(component), index); // CAUTION this dramatically wrong
+            impl.add(caption, layoutAdapter.getCaptionConstraints(component), implIndex); // CAUTION this dramatically wrong
+            implIndex++;
         } else if (DesktopContainerHelper.hasExternalDescription(component)) {
             caption = new ComponentCaption(component);
             captions.put(component, caption);
@@ -80,10 +83,10 @@ public abstract class DesktopAbstractBox
             adapter.setMargin(false);
             wrapper.add(composition);
             wrapper.add(caption,new CC().alignY("top"));
-            impl.add(wrapper, layoutAdapter.getConstraints(component), index);
+            impl.add(wrapper, layoutAdapter.getConstraints(component), implIndex);
             wrappers.put(component, new Pair<>(wrapper, adapter));
         } else {
-            impl.add(composition, layoutAdapter.getConstraints(component), index);
+            impl.add(composition, layoutAdapter.getConstraints(component), implIndex);
         }
 
         if (component.getId() != null) {
@@ -116,6 +119,16 @@ public abstract class DesktopAbstractBox
         }
 
         requestRepaint();
+    }
+
+    protected int getActualIndex(int originalIndex) {
+        int index = originalIndex;
+        Object[] components = ownComponents.toArray();
+        for (int i = 0; i < originalIndex; i++) {
+            if (DesktopContainerHelper.hasExternalCaption((Component)components[i]))
+                index++;
+        }
+        return index;
     }
 
     @Override
