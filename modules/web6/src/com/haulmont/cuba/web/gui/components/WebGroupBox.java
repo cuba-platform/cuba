@@ -98,6 +98,15 @@ public class WebGroupBox extends WebAbstractComponent<GroupBox> implements Group
             newContent.setSpacing(((OrderedActionsLayout) component.getContent()).isSpacing());
         }
 
+        if (ownComponents.contains(childComponent)) {
+            int existingIndex = getComponentContent().getComponentIndex(WebComponentsHelper.getComposition(childComponent));
+            if (index > existingIndex) {
+                index--;
+            }
+
+            remove(childComponent);
+        }
+
         com.vaadin.ui.Component vComponent = WebComponentsHelper.getComposition(childComponent);
         getComponentContent().addComponent(vComponent, index);
         getComponentContent().setComponentAlignment(vComponent, convertAlignment(childComponent.getAlignment()));

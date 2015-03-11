@@ -57,6 +57,11 @@ public class WebFlowBoxLayout extends WebAbstractComponent<CubaFlowLayout> imple
     @Override
     public void add(Component childComponent, int index) {
         if (ownComponents.contains(childComponent)) {
+            int existingIndex = component.getComponentIndex(WebComponentsHelper.getComposition(childComponent));
+            if (index > existingIndex) {
+                index--;
+            }
+
             remove(childComponent);
         }
 

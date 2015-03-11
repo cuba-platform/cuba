@@ -53,6 +53,11 @@ public abstract class DesktopAbstractBox
     @Override
     public void add(Component component, int index) {
         if (ownComponents.contains(component)) {
+            int existingIndex = new ArrayList<>(ownComponents).indexOf(component);
+            if (index > existingIndex) {
+                index--;
+            }
+
             remove(component);
         }
 

@@ -83,6 +83,15 @@ public class WebScrollBoxLayout extends WebAbstractComponent<Panel> implements S
             applyScrollBarsPolicy(scrollBarPolicy);
         }
 
+        if (ownComponents.contains(childComponent)) {
+            int existingIndex = getContent().getComponentIndex(WebComponentsHelper.getComposition(childComponent));
+            if (index > existingIndex) {
+                index--;
+            }
+
+            remove(childComponent);
+        }
+
         com.vaadin.ui.Component vComponent = WebComponentsHelper.getComposition(childComponent);
         getContent().addComponent(vComponent, index);
         getContent().setComponentAlignment(vComponent, convertAlignment(childComponent.getAlignment()));

@@ -62,10 +62,20 @@ public class WebScrollBoxLayout extends WebAbstractComponent<ScrollablePanel> im
             applyScrollBarsPolicy(scrollBarPolicy);
         }
 
+        AbstractOrderedLayout content = (AbstractOrderedLayout) component.getContent();
+
+        if (ownComponents.contains(childComponent)) {
+            int existingIndex = content.getComponentIndex(WebComponentsHelper.getComposition(childComponent));
+            if (index > existingIndex) {
+                index--;
+            }
+
+            remove(childComponent);
+        }
+
         com.vaadin.ui.Component vComponent = WebComponentsHelper.getComposition(childComponent);
-        ((AbstractOrderedLayout)component.getContent()).addComponent(vComponent, index);
-        ((Layout.AlignmentHandler)component.getContent()).setComponentAlignment(vComponent,
-                convertAlignment(childComponent.getAlignment()));
+        content.addComponent(vComponent, index);
+        content.setComponentAlignment(vComponent, convertAlignment(childComponent.getAlignment()));
 
         if (childComponent.getId() != null) {
             componentByIds.put(childComponent.getId(), childComponent);

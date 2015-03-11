@@ -96,6 +96,15 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
             newContent.setSpacing(((CubaOrderedActionsLayout) component.getContent()).isSpacing());
         }
 
+        if (ownComponents.contains(childComponent)) {
+            int existingIndex = getComponentContent().getComponentIndex(WebComponentsHelper.getComposition(childComponent));
+            if (index > existingIndex) {
+                index--;
+            }
+
+            remove(childComponent);
+        }
+
         com.vaadin.ui.Component vComponent = WebComponentsHelper.getComposition(childComponent);
         getComponentContent().addComponent(vComponent, index);
         getComponentContent().setComponentAlignment(vComponent, convertAlignment(childComponent.getAlignment()));
