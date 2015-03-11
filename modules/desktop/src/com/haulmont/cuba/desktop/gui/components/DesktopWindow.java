@@ -106,6 +106,8 @@ public class DesktopWindow implements Window, Component.Disposable,
         initLayout();
         delegate = createDelegate();
         actionsHolder = new DesktopFrameActionsHolder(this, panel);
+
+        setWidth("100%");
     }
 
     protected void initLayout() {

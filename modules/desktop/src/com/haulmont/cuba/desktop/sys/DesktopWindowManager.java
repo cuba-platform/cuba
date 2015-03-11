@@ -546,7 +546,6 @@ public class DesktopWindowManager extends WindowManager {
 
         Dimension dim = new Dimension();
         if (forciblyDialog) {
-            window.setHeight("100%");
             // todo move it to desktop application preferences
             dim.width = 800;
             dim.height = 500;
