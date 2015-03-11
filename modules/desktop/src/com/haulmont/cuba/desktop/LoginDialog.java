@@ -101,7 +101,7 @@ public class LoginDialog extends JDialog {
         localeCombo = new JComboBox<>();
         initLocales(localeCombo);
         if (configuration.getConfig(GlobalConfig.class).getLocaleSelectVisible()) {
-            panel.add(new JLabel(messages.getMainMessage("loginWindow.localesSelect")));
+            panel.add(new JLabel(messages.getMainMessage("loginWindow.localesSelect", resolvedLocale)));
             panel.add(localeCombo, "width 150!, wrap");
         }
 
