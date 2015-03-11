@@ -17,9 +17,20 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 /**
- * Action that supports user defined permissions and UI permissions for actions.
- * It reacts on context and will be enabled only if it is permitted and allowed for current context.
- * Descendants may override {@link #isPermitted()} and {@link #isApplicable()} methods to define constraints in which
+ * Action that can change its enabled and visible properties depending on the user permissions and current context.
+ * <p> The BaseAction is visible if the following conditions are met:
+ * <ul>
+ *     <li>setVisible(false) method was not called;</li>
+ *     <li>there is no "hide" UI permission for this action.</li>
+ * </ul>
+ * <p>The action is enabled if the following conditions are met:
+ * <ul>
+ *     <li>setEnabled(false) method was not called;</li>
+ *     <li>there are no "hide" and "read-only" UI permissions for this action;</li>
+ *     <li>isPermitted() method returns true;</li>
+ *     <li>isApplicable() method returns true.</li>
+ * </ul>
+ * <p> Descendants may override {@link #isPermitted()} and {@link #isApplicable()} methods to define conditions in which
  * action will be enabled.
  *
  * @author artamonov
@@ -44,10 +55,18 @@ public abstract class BaseAction extends AbstractAction
         super(id, shortcut);
     }
 
+    /**
+     * Callback method which is invoked by the action to determine its enabled state.
+     * @return true if the action is enabled for the current user
+     */
     protected boolean isPermitted() {
         return true;
     }
 
+    /**
+     * Callback method which is invoked by the action to determine its enabled state.
+     * @return true if the action is enabled for the current context, e.g. there is a selected row in a table
+     */
     protected boolean isApplicable() {
         return true;
     }
