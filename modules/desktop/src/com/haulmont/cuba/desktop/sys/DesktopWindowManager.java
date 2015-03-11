@@ -1114,7 +1114,7 @@ public class DesktopWindowManager extends WindowManager {
 
     @Override
     public void showNotification(String caption, NotificationType type) {
-        showNotification(null, caption, type);
+        showNotification(caption, null, type);
     }
 
     @Override
@@ -1141,10 +1141,10 @@ public class DesktopWindowManager extends WindowManager {
         Messages messages = AppBeans.get(Messages.NAME);
         String title = messages.getMessage(AppConfig.getMessagesPack(), "notification.title." + type);
 
-        Icon icon = convertNotificationTypeToIcon(type);
+        Icon icon = convertNotificationType(type);
 
         showOptionDialog(title, text, icon, false, new Action[]{
-                new DesktopWindowManagerAction(DialogAction.Type.CLOSE)
+                new DesktopNotificationAction(DialogAction.Type.CLOSE)
         }, "notificationDialog");
     }
 
@@ -1206,11 +1206,11 @@ public class DesktopWindowManager extends WindowManager {
     }
 
     protected String preparePopupText(String caption, String description) {
-        if (StringUtils.isNotBlank(caption)) {
-            description = String.format("<b>%s</b><br>%s", caption, description);
+        if (StringUtils.isNotBlank(description)) {
+            caption = String.format("<b>%s</b><br>%s", caption, description);
         }
         StringBuilder sb = new StringBuilder("<html>");
-        String[] strings = description.split("(<br>)|(<br/>)");
+        String[] strings = caption.split("(<br>)|(<br/>)");
         for (String string : strings) {
             sb.append(string).append("<br/>");
         }
@@ -1404,7 +1404,7 @@ public class DesktopWindowManager extends WindowManager {
         }
     }
 
-    protected Icon convertNotificationTypeToIcon(NotificationType type) {
+    protected Icon convertNotificationType(NotificationType type) {
         switch (type) {
             case ERROR:
             case ERROR_HTML:
@@ -1686,10 +1686,10 @@ public class DesktopWindowManager extends WindowManager {
         }
     }
 
-    protected class DesktopWindowManagerAction implements Action {
+    protected class DesktopNotificationAction implements Action {
         private DialogAction.Type type;
 
-        public DesktopWindowManagerAction(DialogAction.Type type) {
+        public DesktopNotificationAction(DialogAction.Type type) {
             this.type = type;
         }
 
@@ -1744,7 +1744,7 @@ public class DesktopWindowManager extends WindowManager {
 
         @Override
         public boolean isEnabled() {
-            return false;
+            return true;
         }
 
         @Override
@@ -1753,7 +1753,7 @@ public class DesktopWindowManager extends WindowManager {
 
         @Override
         public boolean isVisible() {
-            return false;
+            return true;
         }
 
         @Override
