@@ -93,7 +93,7 @@ public class CreateAction extends BaseAction implements Action.HasOpenType {
         boolean createPermitted = security.isEntityOpPermitted(metaClass, EntityOp.CREATE);
 
         if (createPermitted && ownerDatasource instanceof PropertyDatasource) {
-            PropertyDatasource propertyDatasource = (PropertyDatasource) target.getDatasource();
+            PropertyDatasource propertyDatasource = target.getDatasource();
 
             MetaClass parentMetaClass = propertyDatasource.getMaster().getMetaClass();
             MetaProperty metaProperty = propertyDatasource.getProperty();
@@ -161,19 +161,7 @@ public class CreateAction extends BaseAction implements Action.HasOpenType {
         Map<String, Object> values = getInitialValues();
         if (values != null) {
             for (Map.Entry<String, Object> entry : values.entrySet()) {
-                final Object value = entry.getValue();
-                if (value instanceof Collection) {
-                    final Collection collection = (Collection) value;
-                    if (!collection.isEmpty()) {
-                        if (collection.size() != 1) {
-                            throw new UnsupportedOperationException();
-                        } else {
-                            item.setValue(entry.getKey(), collection.iterator().next());
-                        }
-                    }
-                } else {
-                    item.setValue(entry.getKey(), value);
-                }
+                item.setValue(entry.getKey(), entry.getValue());
             }
         }
 
