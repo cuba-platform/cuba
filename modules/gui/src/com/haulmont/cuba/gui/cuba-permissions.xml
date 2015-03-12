@@ -8,6 +8,7 @@
     <specific>
         <category id="cuba">
             <category id="cuba.gui">
+                <permission id="cuba.gui.loginToClient"/>
                 <permission id="cuba.gui.showInfo"/>
                 <category id="cuba.gui.filter">
                     <permission id="cuba.gui.filter.global"/>

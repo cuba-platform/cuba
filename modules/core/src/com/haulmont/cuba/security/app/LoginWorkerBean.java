@@ -22,10 +22,7 @@ import org.apache.commons.logging.LogFactory;
 import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Class that encapsulates the middleware login/logout functionality.
@@ -40,24 +37,24 @@ public class LoginWorkerBean implements LoginWorker {
     private Log log = LogFactory.getLog(LoginWorkerBean.class);
 
     @Inject
-    private Persistence persistence;
+    protected Persistence persistence;
 
     @Inject
-    private Messages messages;
+    protected Messages messages;
 
-    private Configuration configuration;
-
-    @Inject
-    private PasswordEncryption passwordEncryption;
+    protected Configuration configuration;
 
     @Inject
-    private UserSessionManager userSessionManager;
+    protected PasswordEncryption passwordEncryption;
 
     @Inject
-    private UserSessionSource userSessionSource;
+    protected UserSessionManager userSessionManager;
 
     @Inject
-    private TrustedLoginHandler trustedLoginHandler;
+    protected UserSessionSource userSessionSource;
+
+    @Inject
+    protected TrustedLoginHandler trustedLoginHandler;
 
     @Inject
     public void setConfiguration(Configuration configuration) {
@@ -65,7 +62,7 @@ public class LoginWorkerBean implements LoginWorker {
     }
 
     @Nullable
-    private User loadUser(String login) throws LoginException {
+    protected User loadUser(String login) throws LoginException {
         if (login == null)
             throw new IllegalArgumentException("Login is null");
 
@@ -100,6 +97,11 @@ public class LoginWorkerBean implements LoginWorker {
 
     @Override
     public UserSession login(String login, String password, Locale locale) throws LoginException {
+        return login(login, password, locale, Collections.<String, Object>emptyMap());
+    }
+
+    @Override
+    public UserSession login(String login, String password, Locale locale, Map<String, Object> params) throws LoginException {
         if (password == null)
             throw new LoginException(getInvalidCredentialsMessage(login, locale));
 
@@ -118,6 +120,16 @@ public class LoginWorkerBean implements LoginWorker {
             }
 
             UserSession session = userSessionManager.createSession(user, locale, false);
+            ClientType clientTypeParam = (ClientType) params.get(ClientType.class.getSimpleName());
+            if (clientTypeParam == ClientType.DESKTOP || clientTypeParam == ClientType.WEB) {
+                if (!session.isSpecificPermitted("cuba.gui.loginToClient")) {
+                    log.warn(String.format("Attempt of login to %s for user %s without cuba.gui.loginToClient permission",
+                            clientTypeParam.name(), login));
+
+                    throw new LoginException(getInvalidCredentialsMessage(login, locale));
+                }
+            }
+
             log.info("Logged in: " + session);
 
             tx.commit();
@@ -128,11 +140,6 @@ public class LoginWorkerBean implements LoginWorker {
         } finally {
             tx.end();
         }
-    }
-
-    @Override
-    public UserSession login(String login, String password, Locale locale, Map<String, Object> params) throws LoginException {
-        return login(login, password, locale);
     }
 
     protected String getInvalidCredentialsMessage(String login, Locale locale) {
@@ -164,11 +171,16 @@ public class LoginWorkerBean implements LoginWorker {
 
     @Override
     public UserSession loginTrusted(String login, String password, Locale locale) throws LoginException {
+        return loginTrusted(login, password, locale, Collections.<String, Object>emptyMap());
+    }
+
+    @Override
+    public UserSession loginTrusted(String login, String password, Locale locale, Map<String, Object> params) throws LoginException {
         RemoteClientInfo remoteClientInfo = RemoteClientInfo.get();
         if (remoteClientInfo != null) {
             // reject request from not permitted client ip
             if (!trustedLoginHandler.checkAddress(remoteClientInfo.getAddress())) {
-                log.warn("Attempt of trusted login from not permitted IP address: " + remoteClientInfo.getAddress());
+                log.warn("Attempt of trusted login from not permitted IP address: " + login + " " + remoteClientInfo.getAddress());
                 throw new LoginException(getInvalidCredentialsMessage(login, locale));
             }
         }
@@ -190,6 +202,16 @@ public class LoginWorkerBean implements LoginWorker {
                 userLocale = new Locale(user.getLanguage());
             }
             UserSession session = userSessionManager.createSession(user, userLocale, false);
+            ClientType clientTypeParam = (ClientType) params.get(ClientType.class.getSimpleName());
+            if (clientTypeParam == ClientType.DESKTOP || clientTypeParam == ClientType.WEB) {
+                if (!session.isSpecificPermitted("cuba.gui.loginToClient")) {
+                    log.warn(String.format("Attempt of login to %s for user %s without cuba.gui.loginToClient permission",
+                            clientTypeParam.name(), login));
+
+                    throw new LoginException(getInvalidCredentialsMessage(login, locale));
+                }
+            }
+
             log.info("Logged in: " + session);
 
             tx.commit();
@@ -203,12 +225,13 @@ public class LoginWorkerBean implements LoginWorker {
     }
 
     @Override
-    public UserSession loginTrusted(String login, String password, Locale locale, Map<String, Object> params) throws LoginException {
-        return loginTrusted(login, password, locale);
+    public UserSession loginByRememberMe(String login, String rememberMeToken, Locale locale) throws LoginException {
+        return loginByRememberMe(login, rememberMeToken, locale, Collections.<String, Object>emptyMap());
     }
 
     @Override
-    public UserSession loginByRememberMe(String login, String rememberMeToken, Locale locale) throws LoginException {
+    public UserSession loginByRememberMe(String login, String rememberMeToken, Locale locale, Map<String, Object> params)
+            throws LoginException {
         Transaction tx = persistence.createTransaction();
         try {
             User user = loadUser(login);
@@ -228,6 +251,16 @@ public class LoginWorkerBean implements LoginWorker {
                 userLocale = new Locale(user.getLanguage());
             }
             UserSession session = userSessionManager.createSession(user, userLocale, false);
+            ClientType clientTypeParam = (ClientType) params.get(ClientType.class.getSimpleName());
+            if (clientTypeParam == ClientType.DESKTOP || clientTypeParam == ClientType.WEB) {
+                if (!session.isSpecificPermitted("cuba.gui.loginToClient")) {
+                    log.warn(String.format("Attempt of login to %s for user %s without cuba.gui.loginToClient permission",
+                            clientTypeParam.name(), login));
+
+                    throw new LoginException(getInvalidCredentialsMessage(login, locale));
+                }
+            }
+
             log.info("Logged in: " + session);
 
             tx.commit();
@@ -238,12 +271,6 @@ public class LoginWorkerBean implements LoginWorker {
         } finally {
             tx.end();
         }
-    }
-
-    @Override
-    public UserSession loginByRememberMe(String login, String rememberMeToken, Locale locale, Map<String, Object> params)
-            throws LoginException {
-        return loginByRememberMe(login, rememberMeToken, locale);
     }
 
     @Override

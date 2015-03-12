@@ -5,8 +5,10 @@
 
 package com.haulmont.cuba.desktop;
 
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.client.ClientUserSession;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.security.app.LoginService;
@@ -38,7 +40,8 @@ public class Connection {
 
     public void login(String login, String password, Locale locale) throws LoginException {
         LoginService loginService = AppBeans.get(LoginService.NAME);
-        UserSession userSession = loginService.login(login, password, locale);
+        UserSession userSession = loginService.login(login, password, locale,
+                                                     ParamsMap.of(ClientType.class.getSimpleName(), ClientType.DESKTOP));
         session = new ClientUserSession(userSession);
         AppContext.setSecurityContext(new SecurityContext(session));
         log.info("Logged in: " + session);

@@ -5,7 +5,9 @@
 
 package com.haulmont.cuba.web;
 
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.web.auth.ActiveDirectoryConnection;
@@ -29,7 +31,8 @@ public class DefaultConnection extends AbstractConnection implements ActiveDirec
         if (locale == null)
             throw new IllegalArgumentException("Locale is null");
 
-        update(loginService.login(login, password, locale));
+        update(loginService.login(login, password, locale,
+                ParamsMap.of(ClientType.class.getSimpleName(), ClientType.WEB)));
     }
 
     @Override
@@ -38,7 +41,8 @@ public class DefaultConnection extends AbstractConnection implements ActiveDirec
             throw new IllegalArgumentException("Locale is null");
         }
 
-        update(loginService.loginByRememberMe(login, rememberMeToken, locale));
+        update(loginService.loginByRememberMe(login, rememberMeToken, locale,
+                ParamsMap.of(ClientType.class.getSimpleName(), ClientType.WEB)));
     }
 
     @Override
@@ -47,7 +51,8 @@ public class DefaultConnection extends AbstractConnection implements ActiveDirec
             throw new IllegalArgumentException("Locale is null");
 
         String password = configuration.getConfig(WebAuthConfig.class).getTrustedClientPassword();
-        update(loginService.loginTrusted(login, password, locale));
+        update(loginService.loginTrusted(login, password, locale,
+                ParamsMap.of(ClientType.class.getSimpleName(), ClientType.WEB)));
 
         session.setAttribute(ACTIVE_DIRECTORY_USER_SESSION_ATTRIBUTE, true);
     }
