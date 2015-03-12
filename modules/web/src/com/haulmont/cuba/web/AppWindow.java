@@ -267,12 +267,13 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
         Map<String, Object> info = userSessionService.getLicenseInfo();
         Integer licensed = (Integer) info.get("licensedSessions");
         if (licensed < 0) {
-            Notification.show("Invalid CUBA platform license", Notification.Type.WARNING_MESSAGE);
+            Notification.show("Invalid CUBA platform license. See server log for details.",
+                    Notification.Type.ERROR_MESSAGE);
         } else {
             Integer active = (Integer) info.get("activeSessions");
             if (licensed != 0 && active > licensed) {
                 Notification.show("Number of licensed sessions exceeded", "active: " + active + ", licensed: " + licensed,
-                        Notification.Type.WARNING_MESSAGE);
+                        Notification.Type.ERROR_MESSAGE);
             }
         }
     }

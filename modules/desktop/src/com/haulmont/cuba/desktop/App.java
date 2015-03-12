@@ -663,12 +663,13 @@ public class App implements ConnectionListener {
         Map<String, Object> info = userSessionService.getLicenseInfo();
         Integer licensed = (Integer) info.get("licensedSessions");
         if (licensed < 0) {
-            mainFrame.showNotification("Invalid CUBA platform license", IFrame.NotificationType.WARNING);
+            mainFrame.showNotification("Invalid CUBA platform license. See server log for details.",
+                    IFrame.NotificationType.ERROR);
         } else {
             Integer active = (Integer) info.get("activeSessions");
             if (licensed != 0 && active > licensed) {
                 mainFrame.showNotification("Number of licensed sessions exceeded", "active: " + active + ", licensed: " + licensed,
-                        IFrame.NotificationType.WARNING);
+                        IFrame.NotificationType.ERROR);
             }
         }
     }

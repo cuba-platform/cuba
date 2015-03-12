@@ -5,10 +5,9 @@
 
 package com.haulmont.cuba.gui.app.core.license;
 
-import com.haulmont.cuba.core.global.Resources;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.AbstractFrame;
+import com.haulmont.cuba.gui.components.TextArea;
 import com.haulmont.cuba.security.app.UserSessionService;
-import com.haulmont.cuba.security.global.UserSession;
 
 import javax.inject.Inject;
 import java.util.Map;
@@ -20,59 +19,21 @@ import java.util.Map;
 public class LicenseFrame extends AbstractFrame {
 
     @Inject
-    private Resources resources;
-    @Inject
-    private UserSession userSession;
-
-    @Inject
     private UserSessionService uss;
     @Inject
     private TextArea licenseTxtField;
-    @Inject
-    private LinkButton licenseLink;
-    @Inject
-    private TextField licensedToField;
-    @Inject
-    private Label licensedSessions;
-    @Inject
-    private Label activeSessions;
-
-    private String linkAddressMsg;
 
     @Override
     public void init(Map<String, Object> params) {
         Map<String, Object> info = uss.getLicenseInfo();
 
-        String licenseType = (String) info.get("licenseType");
-        licenseTxtField.setValue(getMessage(licenseType));
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<String, Object> entry : info.entrySet()) {
+            sb.append(getMessage(entry.getKey())).append(": ").append(entry.getValue()).append("\n");
+        }
+
+        licenseTxtField.setValue(sb.toString());
         licenseTxtField.setEditable(false);
 
-        String linkKey = licenseType + "Link";
-        String linkMsg = getMessage(linkKey);
-        if (!linkMsg.equals(linkKey)) {
-            licenseLink.setVisible(true);
-            licenseLink.setCaption(linkMsg);
-
-            String linkAddressKey = licenseType + "LinkAddress";
-            linkAddressMsg = getMessage(linkAddressKey);
-        }
-
-        if (!licenseType.equals("starter")) {
-            licensedToField.setVisible(true);
-            licensedToField.setValue(info.get("licensedTo"));
-            licensedToField.setEditable(false);
-        }
-
-        Integer licensed = (Integer) info.get("licensedSessions");
-        String licensedStr = licensed == 0 ? getMessage("unlimited") : String.valueOf(licensed);
-        licensedSessions.setValue(messages.formatMessage(getMessagesPack(), "licensedSessions", licensedStr));
-
-        activeSessions.setValue(messages.formatMessage(getMessagesPack(), "activeSessions", info.get("activeSessions")));
-    }
-
-    public void showLicense() {
-        if (linkAddressMsg != null) {
-            showWebPage(linkAddressMsg, null);
-        }
     }
 }

@@ -6,6 +6,8 @@ package com.haulmont.cuba.security.app;
 
 import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.bali.db.ResultSetHandler;
+import com.haulmont.bali.util.Dom4j;
+import com.haulmont.chile.core.model.MetaModel;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.app.ClusterListener;
 import com.haulmont.cuba.core.app.ClusterManagerAPI;
@@ -19,9 +21,12 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserSessionEntity;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.dom4j.Document;
+import org.dom4j.Element;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.PostConstruct;
@@ -37,6 +42,7 @@ import java.security.spec.RSAPublicKeySpec;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -48,6 +54,8 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @ManagedBean(UserSessionsAPI.NAME)
 public final class UserSessions implements UserSessionsAPI {
+
+    public static final String NOT_RESTRICTED = "Not restricted";
 
     static class UserSessionInfo implements Serializable {
         private static final long serialVersionUID = -4834267718111570841L;
@@ -190,30 +198,28 @@ public final class UserSessions implements UserSessionsAPI {
             log.error("\n======================================================"
                     + "\nInvalid license path: " + serverConfig.getLicensePath()
                     + "\n======================================================");
-            return;
+        } else {
+            Object[] objects;
+            try {
+                bytes = Base64.decodeBase64(encodedStr);
+            } catch (Exception ignored) {
+            }
+            objects = decode();
+            if (objects != null) {
+                StringBuilder sb = new StringBuilder();
+                sb.append("\n======================================================");
+                sb.append("\nCUBA platform license");
+                sb.append("\nType: ").append(objects[0]);
+                sb.append("\nLicense ID: ").append(objects[1]);
+                sb.append("\nLicensed to: ").append(objects[2]);
+                sb.append("\nApplication: ").append(objects[3]);
+                sb.append("\nValid for CUBA platform releases up to: ").append(objects[4]);
+                sb.append("\nMaximum number of sessions: ").append(((int) objects[5]) == 0 ? NOT_RESTRICTED : objects[5]);
+                sb.append("\nMaximum number of entities: ").append(((int) objects[6]) == 0 ? NOT_RESTRICTED : objects[6]);
+                sb.append("\n======================================================");
+                log.warn(sb.toString());
+            }
         }
-
-        Object[] objects;
-        try {
-            bytes = Base64.decodeBase64(encodedStr);
-        } catch (Exception e) {
-            //
-        }
-        objects = decode();
-        if (objects == null) {
-            log.error("\n======================================================"
-                    + "\nInvalid license data at " + serverConfig.getLicensePath()
-                    + "\n======================================================");
-            return;
-        }
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("\n======================================================")
-                .append("\nCUBA platform license type: ").append(objects[0])
-                .append("\nLicensed To: ").append(objects[1])
-                .append("\nNumber of licensed sessions: ").append(((int) objects[2]) == 0 ? "unlimited" : objects[2])
-                .append("\n======================================================");
-        log.warn(sb.toString());
 
         if (!globalConfig.getTestMode()) {
             Timer timer = new Timer(true);
@@ -269,12 +275,107 @@ public final class UserSessions implements UserSessionsAPI {
             String str = new String(decoded, Charset.forName("UTF-8"));
             String[] split = str.split("\\^");
 
-            Object[] arr = new Object[3];
-            arr[0] = split[0].trim();
-            arr[1] = split[1].trim();
-            arr[2] = Integer.valueOf(split[2].trim());
+            Object[] arr = new Object[7];
+            if (split.length == 7) {
+                arr[0] = split[0].trim();                   // type
+                arr[1] = split[1].trim();                   // id
+                arr[2] = split[2].trim();                   // to
+                arr[3] = split[3].trim();                   // app
+                arr[4] = split[4].trim();                   // platform date
+                arr[5] = Integer.valueOf(split[5].trim());  // sessions
+                arr[6] = Integer.valueOf(split[6].trim());  // entities
+            } else if (split.length == 3) {
+                arr[0] = "Commercial";                      // type
+                arr[1] = "1400001";                         // id
+                arr[2] = split[1].trim();                   // to
+                arr[3] = NOT_RESTRICTED;                    // app
+                arr[4] = NOT_RESTRICTED;                    // platform date
+                arr[5] = Integer.valueOf(split[2].trim());  // sessions
+                arr[6] = 0;                                 // entities
+            } else
+                throw new RuntimeException();
+
+            if (!arr[3].equals(NOT_RESTRICTED)) {
+                boolean found = false;
+                String config = AppContext.getProperty("cuba.metadataConfig");
+                String[] files = config.split("\\s");
+                String file = files[files.length - 1];
+                InputStream stream = resources.getResourceAsStream(file);
+                if (stream == null) {
+                    log.error("Cannot load '" + file + "' to check application name");
+                    throw new RuntimeException();
+                }
+                try {
+                    Document document = Dom4j.readDocument(stream);
+                    Element root = document.getRootElement();
+                    for (Element element : (List<Element>) root.elements("metadata-model")) {
+                        if (arr[3].equals(element.attributeValue("root-package"))) {
+                            found = true;
+                            break;
+                        }
+                    }
+                } finally {
+                    IOUtils.closeQuietly(stream);
+                }
+                if (!found) {
+                    log.error("\n======================================================"
+                            + "\nInvalid license file at " + serverConfig.getLicensePath()
+                            + "\napplication name mismatch"
+                            + "\n======================================================");
+                    return null;
+                }
+            }
+
+            if (!arr[4].equals(NOT_RESTRICTED)) {
+                InputStream stream = getClass().getResourceAsStream("/com/haulmont/cuba/core/global/release.timestamp");
+                if (stream == null) {
+                    log.error("Cannot load platform release timestamp");
+                    throw new RuntimeException();
+                }
+                String relStr = IOUtils.toString(stream);
+                SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
+                Date relDate = fmt.parse(relStr.substring(0, 10));
+                Date licDate = fmt.parse((String) arr[4]);
+                if (relDate.after(licDate)) {
+                    log.error("\n======================================================"
+                            + "\nInvalid license file at " + serverConfig.getLicensePath()
+                            + "\nunsupported platform release (licensed for releases"
+                            + "\nup to " + arr[4] + ", current release: " + relStr.substring(0, 10) + ")"
+                            + "\n======================================================");
+                    return null;
+                }
+            }
+
+            if ((int)arr[6] != 0) {
+                int count = 0;
+                for (MetaModel metaModel : metadata.getSession().getModels()) {
+                    String name = metaModel.getName();
+                    if (!name.equals("com.haulmont.cuba")
+                            && !name.equals("com.haulmont.reports")
+                            && !name.equals("com.haulmont.workflow")
+                            && !name.equals("com.haulmont.fts")
+                            && !name.equals("com.haulmont.ccpayments")
+                            && !name.equals("com.haulmont.bpmn"))
+                    {
+                        count += metaModel.getClasses().size();
+                    }
+                }
+                if (count > (int)arr[6]) {
+                    log.error("\n======================================================"
+                            + "\nInvalid license file at " + serverConfig.getLicensePath()
+                            + "\nmaximum number of entities exceeded "
+                            + "\n(licensed: " + arr[6] + ", actual: " + count + ")"
+                            + "\n======================================================");
+                    return null;
+                }
+            }
+
             return arr;
+
         } catch (Exception e) {
+            log.error("\n======================================================"
+                    + "\nInvalid license data at " + serverConfig.getLicensePath()
+                    + "\n======================================================");
             return null;
         }
     }
@@ -287,7 +388,7 @@ public final class UserSessions implements UserSessionsAPI {
             clusterManager.send(usi);
         Object[] objects = decode();
         if (objects != null) {
-            int licensed = (int) objects[2];
+            int licensed = (int) objects[5];
             if (licensed != 0 && count > licensed) {
                 LogFactory.getLog("com.haulmont.cuba.security.app.LoginWorkerBean").warn(
                         String.format("Active sessions: %d, licensed: %d", count, licensed));
@@ -355,16 +456,14 @@ public final class UserSessions implements UserSessionsAPI {
     @Override
     public Map<String, Object> getLicenseInfo() {
         Object[] objects = decode();
-        Map<String, Object> info = new HashMap<>();
-        if (objects != null) {
-            info.put("licenseType", objects[0]);
-            info.put("licensedTo", objects[1]);
-            info.put("licensedSessions", objects[2]);
-        } else {
-            info.put("licenseType", "invalid data");
-            info.put("licensedTo", "invalid data");
-            info.put("licensedSessions", -1);
-        }
+        Map<String, Object> info = new LinkedHashMap<>();
+        info.put("licenseType", objects != null ? objects[0] : "invalid data");
+        info.put("licenseId", objects != null ? objects[1] : "invalid data");
+        info.put("licensedTo", objects != null ? objects[2] : "invalid data");
+        info.put("rootPackage", objects != null ? objects[3] : "invalid data");
+        info.put("licensedReleaseDate", objects != null ? objects[4] : "invalid data");
+        info.put("licensedSessions", objects != null ? objects[5] : -1);
+        info.put("licensedEntities", objects != null ? objects[6] : -1);
         info.put("activeSessions", count);
         return info;
     }

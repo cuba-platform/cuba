@@ -8,12 +8,9 @@
         messagesPack="com.haulmont.cuba.gui.app.core.license">
 
     <layout>
-        <groupBox caption="msg://licenseTitle" spacing="true" expand="licenseTxtField" height="100%">
-            <textArea id="licenseTxtField" width="100%" rows="2"/>
-            <linkButton id="licenseLink" invoke="showLicense" visible="false"/>
-            <textField id="licensedToField" caption="msg://licensedTo" width="100%" visible="false"/>
-            <label id="licensedSessions"/>
-            <label id="activeSessions"/>
+        <groupBox caption="msg://licenseTitle" spacing="true" height="100%" expand="licenseTxtField">
+            <textArea id="licenseTxtField" width="100%"/>
+            <link caption="License text" url="https://www.cuba-platform.com/license" target="_blank"/>
         </groupBox>
     </layout>
 

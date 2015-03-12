@@ -242,12 +242,12 @@ public class AppWindow extends FocusHandlerWindow implements UserSubstitutionLis
         Map<String, Object> info = userSessionService.getLicenseInfo();
         Integer licensed = (Integer) info.get("licensedSessions");
         if (licensed < 0) {
-            showNotification("Invalid CUBA platform license", Notification.TYPE_WARNING_MESSAGE);
+            showNotification("Invalid CUBA platform license. See server log for details.", Notification.TYPE_ERROR_MESSAGE);
         } else {
             Integer active = (Integer) info.get("activeSessions");
             if (licensed != 0 && active > licensed) {
                 showNotification("Number of licensed sessions exceeded", "active: " + active + ", licensed: " + licensed,
-                        Notification.TYPE_WARNING_MESSAGE);
+                        Notification.TYPE_ERROR_MESSAGE);
             }
         }
     }
