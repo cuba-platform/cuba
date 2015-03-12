@@ -32,6 +32,10 @@ public class SaveFilterWindow extends AbstractWindow {
         getDialogParams()
                 .setWidth(theme.getInt("cuba.gui.saveFilterWindow.dialog.width"));
         super.init(params);
+        String filterNameParam = (String) params.get("filterName");
+        if (!Strings.isNullOrEmpty(filterNameParam)) {
+            filterName.setValue(filterNameParam);
+        }
     }
 
     public void commit() {

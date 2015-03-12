@@ -1592,7 +1592,11 @@ public class FilterDelegateImpl implements FilterDelegate {
         public void actionPerform(Component component) {
             if (PersistenceHelper.isNew(filterEntity)) {
                 WindowInfo windowInfo = windowConfig.getWindowInfo("saveFilter");
-                final SaveFilterWindow window = windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG);
+                Map<String, Object> params = new HashMap<>();
+                if (!getMessage("Filter.adHocFilter").equals(filterEntity.getName())) {
+                    params.put("filterName", filterEntity.getName());
+                }
+                final SaveFilterWindow window = windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
                 window.addListener(new Window.CloseListener() {
                     @Override
                     public void windowClosed(String actionId) {
