@@ -15,6 +15,7 @@ import com.haulmont.cuba.web.auth.ActiveDirectoryHelper;
 import com.haulmont.cuba.web.auth.WebAuthConfig;
 
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Default {@link Connection} implementation for web-client.
@@ -31,8 +32,7 @@ public class DefaultConnection extends AbstractConnection implements ActiveDirec
         if (locale == null)
             throw new IllegalArgumentException("Locale is null");
 
-        update(loginService.login(login, password, locale,
-                ParamsMap.of(ClientType.class.getSimpleName(), ClientType.WEB.name())));
+        update(loginService.login(login, password, locale, getLoginParams()));
     }
 
     @Override
@@ -41,8 +41,7 @@ public class DefaultConnection extends AbstractConnection implements ActiveDirec
             throw new IllegalArgumentException("Locale is null");
         }
 
-        update(loginService.loginByRememberMe(login, rememberMeToken, locale,
-                ParamsMap.of(ClientType.class.getSimpleName(), ClientType.WEB.name())));
+        update(loginService.loginByRememberMe(login, rememberMeToken, locale, getLoginParams()));
     }
 
     @Override
@@ -51,10 +50,13 @@ public class DefaultConnection extends AbstractConnection implements ActiveDirec
             throw new IllegalArgumentException("Locale is null");
 
         String password = configuration.getConfig(WebAuthConfig.class).getTrustedClientPassword();
-        update(loginService.loginTrusted(login, password, locale,
-                ParamsMap.of(ClientType.class.getSimpleName(), ClientType.WEB.name())));
+        update(loginService.loginTrusted(login, password, locale, getLoginParams()));
 
         session.setAttribute(ACTIVE_DIRECTORY_USER_SESSION_ATTRIBUTE, true);
+    }
+
+    protected Map<String, Object> getLoginParams() {
+        return ParamsMap.of(ClientType.class.getSimpleName(), ClientType.WEB.name());
     }
 
     @Override

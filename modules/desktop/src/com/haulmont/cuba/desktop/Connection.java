@@ -19,10 +19,7 @@ import org.apache.commons.logging.LogFactory;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
+import java.util.*;
 
 /**
  * @author krivopustov
@@ -40,8 +37,7 @@ public class Connection {
 
     public void login(String login, String password, Locale locale) throws LoginException {
         LoginService loginService = AppBeans.get(LoginService.NAME);
-        UserSession userSession = loginService.login(login, password, locale,
-                                                     ParamsMap.of(ClientType.class.getSimpleName(), ClientType.DESKTOP.name()));
+        UserSession userSession = loginService.login(login, password, locale, getLoginParams());
         session = new ClientUserSession(userSession);
         AppContext.setSecurityContext(new SecurityContext(session));
         log.info("Logged in: " + session);
@@ -50,6 +46,10 @@ public class Connection {
 
         connected = true;
         fireConnectionListeners();
+    }
+
+    protected Map<String, Object> getLoginParams() {
+        return ParamsMap.of(ClientType.class.getSimpleName(), ClientType.DESKTOP.name());
     }
 
     protected void updateSessionClientInfo() {
