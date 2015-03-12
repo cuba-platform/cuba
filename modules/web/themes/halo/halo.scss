@@ -36,6 +36,7 @@
 @import "components/optiongroup/optiongroup";
 @import "components/widgetstree/widgetstree";
 @import "components/popupbutton/popupbutton";
+@import "components/richtextarea/richtextarea";
 @import "components/notification/notification";
 @import "components/searchselect/searchselect";
 @import "components/orderedlayout/orderedlayout";
@@ -74,6 +75,7 @@
   @include halo-optiongroup;
   @include halo-popupbutton;
   @include halo-notification;
+  @include halo-richtextarea;
   @include halo-orderedlayout;
   @include halo-sourcecodeeditor;
 
