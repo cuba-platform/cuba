@@ -120,11 +120,11 @@ public class LoginWorkerBean implements LoginWorker {
             }
 
             UserSession session = userSessionManager.createSession(user, locale, false);
-            ClientType clientTypeParam = (ClientType) params.get(ClientType.class.getSimpleName());
-            if (clientTypeParam == ClientType.DESKTOP || clientTypeParam == ClientType.WEB) {
+            String clientTypeParam = (String) params.get(ClientType.class.getSimpleName());
+            if (ClientType.DESKTOP.name().equals(clientTypeParam) || ClientType.WEB.name().equals(clientTypeParam)) {
                 if (!session.isSpecificPermitted("cuba.gui.loginToClient")) {
-                    log.warn(String.format("Attempt of login to %s for user %s without cuba.gui.loginToClient permission",
-                            clientTypeParam.name(), login));
+                    log.warn(String.format("Attempt of login to %s for user '%s' without cuba.gui.loginToClient permission",
+                            clientTypeParam, login));
 
                     throw new LoginException(getInvalidCredentialsMessage(login, locale));
                 }
@@ -202,11 +202,11 @@ public class LoginWorkerBean implements LoginWorker {
                 userLocale = new Locale(user.getLanguage());
             }
             UserSession session = userSessionManager.createSession(user, userLocale, false);
-            ClientType clientTypeParam = (ClientType) params.get(ClientType.class.getSimpleName());
-            if (clientTypeParam == ClientType.DESKTOP || clientTypeParam == ClientType.WEB) {
+            String clientTypeParam = (String) params.get(ClientType.class.getSimpleName());
+            if (ClientType.DESKTOP.name().equals(clientTypeParam) || ClientType.WEB.name().equals(clientTypeParam)) {
                 if (!session.isSpecificPermitted("cuba.gui.loginToClient")) {
-                    log.warn(String.format("Attempt of login to %s for user %s without cuba.gui.loginToClient permission",
-                            clientTypeParam.name(), login));
+                    log.warn(String.format("Attempt of login to %s for user '%s' without cuba.gui.loginToClient permission",
+                            clientTypeParam, login));
 
                     throw new LoginException(getInvalidCredentialsMessage(login, locale));
                 }
@@ -251,11 +251,11 @@ public class LoginWorkerBean implements LoginWorker {
                 userLocale = new Locale(user.getLanguage());
             }
             UserSession session = userSessionManager.createSession(user, userLocale, false);
-            ClientType clientTypeParam = (ClientType) params.get(ClientType.class.getSimpleName());
-            if (clientTypeParam == ClientType.DESKTOP || clientTypeParam == ClientType.WEB) {
+            String clientTypeParam = (String) params.get(ClientType.class.getSimpleName());
+            if (ClientType.DESKTOP.name().equals(clientTypeParam) || ClientType.WEB.name().equals(clientTypeParam)) {
                 if (!session.isSpecificPermitted("cuba.gui.loginToClient")) {
-                    log.warn(String.format("Attempt of login to %s for user %s without cuba.gui.loginToClient permission",
-                            clientTypeParam.name(), login));
+                    log.warn(String.format("Attempt of login to %s for user '%s' without cuba.gui.loginToClient permission",
+                            clientTypeParam, login));
 
                     throw new LoginException(getInvalidCredentialsMessage(login, locale));
                 }

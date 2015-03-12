@@ -34,7 +34,7 @@ public class DefaultConnection extends AbstractConnection implements ActiveDirec
         }
 
         update(loginService.login(login, password, locale,
-                ParamsMap.of(ClientType.class.getSimpleName(), ClientType.WEB)));
+                ParamsMap.of(ClientType.class.getSimpleName(), ClientType.WEB.name())));
     }
 
     @Override
@@ -44,7 +44,7 @@ public class DefaultConnection extends AbstractConnection implements ActiveDirec
         }
 
         update(loginService.loginByRememberMe(login, rememberMeToken, locale,
-                ParamsMap.of(ClientType.class.getSimpleName(), ClientType.WEB)));
+                ParamsMap.of(ClientType.class.getSimpleName(), ClientType.WEB.name())));
     }
 
     @Override
@@ -55,7 +55,7 @@ public class DefaultConnection extends AbstractConnection implements ActiveDirec
 
         String password = configuration.getConfig(WebAuthConfig.class).getTrustedClientPassword();
         update(loginService.loginTrusted(login, password, locale,
-                ParamsMap.of(ClientType.class.getSimpleName(), ClientType.WEB)));
+                ParamsMap.of(ClientType.class.getSimpleName(), ClientType.WEB.name())));
 
         UserSession session = getSession();
         if (session == null) {

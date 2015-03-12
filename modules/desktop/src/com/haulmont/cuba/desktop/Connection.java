@@ -41,7 +41,7 @@ public class Connection {
     public void login(String login, String password, Locale locale) throws LoginException {
         LoginService loginService = AppBeans.get(LoginService.NAME);
         UserSession userSession = loginService.login(login, password, locale,
-                                                     ParamsMap.of(ClientType.class.getSimpleName(), ClientType.DESKTOP));
+                                                     ParamsMap.of(ClientType.class.getSimpleName(), ClientType.DESKTOP.name()));
         session = new ClientUserSession(userSession);
         AppContext.setSecurityContext(new SecurityContext(session));
         log.info("Logged in: " + session);

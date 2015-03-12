@@ -32,7 +32,7 @@ public class DefaultConnection extends AbstractConnection implements ActiveDirec
             throw new IllegalArgumentException("Locale is null");
 
         update(loginService.login(login, password, locale,
-                ParamsMap.of(ClientType.class.getSimpleName(), ClientType.WEB)));
+                ParamsMap.of(ClientType.class.getSimpleName(), ClientType.WEB.name())));
     }
 
     @Override
@@ -42,7 +42,7 @@ public class DefaultConnection extends AbstractConnection implements ActiveDirec
         }
 
         update(loginService.loginByRememberMe(login, rememberMeToken, locale,
-                ParamsMap.of(ClientType.class.getSimpleName(), ClientType.WEB)));
+                ParamsMap.of(ClientType.class.getSimpleName(), ClientType.WEB.name())));
     }
 
     @Override
@@ -52,7 +52,7 @@ public class DefaultConnection extends AbstractConnection implements ActiveDirec
 
         String password = configuration.getConfig(WebAuthConfig.class).getTrustedClientPassword();
         update(loginService.loginTrusted(login, password, locale,
-                ParamsMap.of(ClientType.class.getSimpleName(), ClientType.WEB)));
+                ParamsMap.of(ClientType.class.getSimpleName(), ClientType.WEB.name())));
 
         session.setAttribute(ACTIVE_DIRECTORY_USER_SESSION_ATTRIBUTE, true);
     }
