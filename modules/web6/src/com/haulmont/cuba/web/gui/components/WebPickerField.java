@@ -14,9 +14,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.MetadataTools;
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.CaptionMode;
-import com.haulmont.cuba.gui.components.PickerField;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
@@ -43,7 +41,7 @@ public class WebPickerField
         extends
             WebAbstractField<com.haulmont.cuba.web.toolkit.ui.PickerField>
         implements
-            PickerField {
+            PickerField, Component.SecuredActionsHolder {
 
     protected CaptionMode captionMode = CaptionMode.ITEM;
     protected String captionProperty;
@@ -59,6 +57,8 @@ public class WebPickerField
     protected Metadata metadata = AppBeans.get(Metadata.NAME);
 
     protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
+
+    protected final ActionsPermissions actionsPermissions = new ActionsPermissions(this);
 
     public WebPickerField() {
         component = new Picker(this);
@@ -347,6 +347,8 @@ public class WebPickerField
         if (action instanceof StandardAction) {
             ((StandardAction) action).setEditable(isEditable());
         }
+
+        actionsPermissions.apply(action);
     }
 
     @Override
@@ -405,6 +407,11 @@ public class WebPickerField
         com.vaadin.event.Action.Container actionContainer = ((com.vaadin.event.Action.Container) component.getField());
         actionHandler = new WebPickerFieldActionHandler(this);
         actionContainer.addActionHandler(actionHandler);
+    }
+
+    @Override
+    public ActionsPermissions getActionsPermissions() {
+        return actionsPermissions;
     }
 
     protected static class PickerButton extends WebButton {

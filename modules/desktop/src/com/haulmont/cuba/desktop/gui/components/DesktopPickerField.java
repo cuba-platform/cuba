@@ -15,16 +15,15 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.desktop.sys.vcl.Picker;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.CaptionMode;
-import com.haulmont.cuba.gui.components.KeyCombination;
-import com.haulmont.cuba.gui.components.PickerField;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
+import javax.swing.AbstractAction;
 import javax.swing.text.JTextComponent;
 import java.awt.event.*;
 import java.util.*;
@@ -35,7 +34,8 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
  * @author krivopustov
  * @version $Id$
  */
-public class DesktopPickerField extends DesktopAbstractField<Picker> implements PickerField {
+public class DesktopPickerField extends DesktopAbstractField<Picker>
+        implements PickerField, Component.SecuredActionsHolder {
 
     protected CaptionMode captionMode = CaptionMode.ITEM;
     protected String captionProperty;
@@ -65,6 +65,8 @@ public class DesktopPickerField extends DesktopAbstractField<Picker> implements 
     protected Metadata metadata = AppBeans.get(Metadata.NAME);
 
     protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
+
+    protected final ActionsPermissions actionsPermissions = new ActionsPermissions(this);
 
     public DesktopPickerField() {
         impl = new Picker();
@@ -475,6 +477,8 @@ public class DesktopPickerField extends DesktopAbstractField<Picker> implements 
             KeyStroke shortcutKeyStroke = DesktopComponentsHelper.convertKeyCombination(action.getShortcut());
             inputMap.put(shortcutKeyStroke, action.getId());
         }
+
+        actionsPermissions.apply(action);
     }
 
     @Override
@@ -537,5 +541,10 @@ public class DesktopPickerField extends DesktopAbstractField<Picker> implements 
         boolean value = required && editable && StringUtils.isBlank(editor.getText());
 
         decorateMissingValue(impl.getEditor(), value);
+    }
+
+    @Override
+    public ActionsPermissions getActionsPermissions() {
+        return actionsPermissions;
     }
 }

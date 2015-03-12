@@ -127,15 +127,48 @@ public final class WindowCreationHelper {
                         } else if (permissionValue == UiPermissionValue.READ_ONLY.getValue()) {
                             tab.setEnabled(false);
                         }
+                    } else {
+                        log.info(String.format("Couldn't find component %s in window %s", componentId, screenId));
                     }
                 } else if (compositeComponent instanceof FieldGroup) {
                     FieldGroup fieldGroup = (FieldGroup) compositeComponent;
-                    final FieldGroup.FieldConfig field = fieldGroup.getField(subComponentId);
-                    if (field != null) {
-                        if (permissionValue == UiPermissionValue.HIDE.getValue()) {
-                            fieldGroup.setVisible(field, false);
-                        } else if (permissionValue == UiPermissionValue.READ_ONLY.getValue()) {
-                            fieldGroup.setEditable(field, false);
+
+                    if (!subComponentId.contains("<")) {
+                        final FieldGroup.FieldConfig field = fieldGroup.getField(subComponentId);
+                        if (field != null) {
+                            if (permissionValue == UiPermissionValue.HIDE.getValue()) {
+                                fieldGroup.setVisible(field, false);
+                            } else if (permissionValue == UiPermissionValue.READ_ONLY.getValue()) {
+                                fieldGroup.setEditable(field, false);
+                            }
+                        } else {
+                            log.info(String.format("Couldn't find component %s in window %s", componentId, screenId));
+                        }
+                    } else {
+                        final Matcher actionMatcher = COMPONENT_ACTION_PATTERN.matcher(subComponentId);
+                        if (actionMatcher.find()) {
+                            final String subFieldComponentId = actionMatcher.group(1);
+                            final String actionId = actionMatcher.group(2);
+
+                            final Component fieldComponent = fieldGroup.getFieldComponent(subFieldComponentId);
+                            if (fieldComponent != null) {
+                                if (fieldComponent instanceof Component.SecuredActionsHolder) {
+                                    ActionsPermissions permissions =
+                                            ((Component.SecuredActionsHolder) fieldComponent).getActionsPermissions();
+                                    if (permissionValue == UiPermissionValue.HIDE.getValue()) {
+                                        permissions.addHiddenActionPermission(actionId);
+                                    } else if (permissionValue == UiPermissionValue.READ_ONLY.getValue()) {
+                                        permissions.addDisabledActionPermission(actionId);
+                                    }
+                                } else {
+                                    log.warn(String.format("Couldn't apply permission on action %s for component %s in window %s",
+                                            actionId, subFieldComponentId, screenId));
+                                }
+                            } else {
+                                log.info(String.format("Couldn't find component %s in window %s", componentId, screenId));
+                            }
+                        } else {
+                            log.warn(String.format("Incorrect permission definition for component %s in window %s", componentId, screenId));
                         }
                     }
                 }
@@ -152,12 +185,9 @@ public final class WindowCreationHelper {
      * @param screenId        Screen Id
      * @param permissionValue Permission value
      * @param componentId     Component Id
-     * @return If permission is applied
      */
-    private static boolean applyComponentActionPermission(Window window, String screenId,
-                                                          Integer permissionValue, String componentId) {
-        boolean applied = false;
-
+    private static void applyComponentActionPermission(Window window, String screenId,
+                                                       Integer permissionValue, String componentId) {
         final Matcher matcher = COMPONENT_ACTION_PATTERN.matcher(componentId);
         if (matcher.find()) {
             final String customComponentId = matcher.group(1);
@@ -172,8 +202,6 @@ public final class WindowCreationHelper {
                     } else if (permissionValue == UiPermissionValue.READ_ONLY.getValue()) {
                         permissions.addDisabledActionPermission(actionId);
                     }
-
-                    applied = true;
                 } else {
                     log.warn(String.format("Couldn't apply permission on action %s for component %s in window %s",
                             actionId, customComponentId, screenId));
@@ -184,8 +212,6 @@ public final class WindowCreationHelper {
         } else {
             log.warn(String.format("Incorrect permission definition for component %s in window %s", componentId, screenId));
         }
-
-        return applied;
     }
 
     /**

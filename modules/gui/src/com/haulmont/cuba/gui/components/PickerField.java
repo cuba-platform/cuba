@@ -16,6 +16,7 @@ import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowManagerProvider;
+import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataSupplier;
@@ -111,7 +112,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
         public abstract Action createAction(PickerField pickerField);
     }
 
-    public static abstract class StandardAction extends AbstractAction {
+    public static abstract class StandardAction extends BaseAction {
 
         protected PickerField pickerField;
 

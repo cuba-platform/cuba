@@ -13,9 +13,7 @@ import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.TestIdManager;
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.CaptionMode;
-import com.haulmont.cuba.gui.components.PickerField;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.web.AppUI;
@@ -34,7 +32,8 @@ import java.util.*;
  * @author abramov
  * @version $Id$
  */
-public class WebPickerField extends WebAbstractField<CubaPickerField> implements PickerField {
+public class WebPickerField extends WebAbstractField<CubaPickerField>
+        implements PickerField, Component.SecuredActionsHolder {
 
     protected CaptionMode captionMode = CaptionMode.ITEM;
     protected String captionProperty;
@@ -48,6 +47,8 @@ public class WebPickerField extends WebAbstractField<CubaPickerField> implements
     protected Metadata metadata = AppBeans.get(Metadata.NAME);
 
     protected MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
+
+    protected final ActionsPermissions actionsPermissions = new ActionsPermissions(this);
 
     public WebPickerField() {
         component = new Picker(this);
@@ -258,6 +259,8 @@ public class WebPickerField extends WebAbstractField<CubaPickerField> implements
         if (StringUtils.isNotEmpty(getDebugId())) {
             pButton.setDebugId(AppUI.getCurrent().getTestIdManager().getTestId(getDebugId() + "_" + action.getId()));
         }
+
+        actionsPermissions.apply(action);
     }
 
     @Override
@@ -337,6 +340,11 @@ public class WebPickerField extends WebAbstractField<CubaPickerField> implements
     protected void initActionHandler() {
         actionHandler = new WebPickerFieldActionHandler(this);
         component.addActionHandler(actionHandler);
+    }
+
+    @Override
+    public ActionsPermissions getActionsPermissions() {
+        return actionsPermissions;
     }
 
     protected static class PickerButton extends WebButton {
