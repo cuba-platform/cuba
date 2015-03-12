@@ -20,6 +20,7 @@
 @import "components/button/button";
 @import "components/window/window";
 @import "components/menubar/menubar";
+@import "components/checkbox/checkbox";
 @import "components/groupbox/groupbox";
 @import "components/tokenlist/tokenlist";
 @import "components/datefield/datefield";
@@ -66,6 +67,7 @@
   @include halo-button;
   @include halo-window;
   @include halo-menubar;
+  @include halo-checkbox;
   @include halo-datefield;
   @include halo-splitpanel;
   @include halo-twincolumn;
