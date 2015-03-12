@@ -529,15 +529,11 @@ public class FilterDelegateImpl implements FilterDelegate {
         if (filterEntity.getFolder() == null) {
             CommitContext ctx = new CommitContext(Collections.singletonList(filterEntity));
             Set<Entity> result = dataService.commit(ctx);
-            FilterEntity entity = (FilterEntity) result.iterator().next();
-            for (FilterEntity _filterEntity : filterEntities) {
-                if (entity.equals(_filterEntity)) {
-                    filterEntities.remove(_filterEntity);
-                    filterEntity = entity;
-                    filterEntities.add(filterEntity);
-                    break;
-                }
-            }
+            FilterEntity savedFilterEntity = (FilterEntity) result.iterator().next();
+            filterEntities.remove(filterEntity);
+            filterEntity = savedFilterEntity;
+            filterEntities.add(filterEntity);
+
             filterEntity.setApplyDefault(applyDefault);
             filterEntity.setIsDefault(isDefault);
         } else {
