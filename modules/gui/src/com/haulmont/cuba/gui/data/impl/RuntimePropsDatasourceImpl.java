@@ -10,6 +10,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.SetValueEntity;
+import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.data.*;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -389,6 +390,8 @@ public class RuntimePropsDatasourceImpl
 
     protected void setMainDs(String name) {
         mainDs = dsContext.get(name);
+        if (mainDs == null)
+            throw new DevelopmentException("runtimePropsDatasource initialization error: mainDs '" + name + "' does not exists");
         mainDs.addListener(
                 new DsListenerAdapter() {
                     @Override

@@ -15,6 +15,7 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.entity.CategoryAttributeValue;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.sys.SetValueEntity;
 import com.haulmont.cuba.gui.AppConfig;
@@ -56,11 +57,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
 
     @Override
     public void init(Map<String, Object> params) {
-        String dsId = (String) params.get("runtimeDs");
-        Preconditions.checkNotNullArgument(dsId, "runtimePropsDatasource is not set");
-
-        String categoriesDsId = (String) params.get("categoriesDs");
-        Preconditions.checkNotNullArgument(categoriesDsId, "categoriesDs is not set");
+        initDatasources(params);
 
         rows = (String) params.get("rows");
         cols = (String) params.get("cols");
@@ -70,12 +67,26 @@ public class RuntimePropertiesFrame extends AbstractWindow {
         if (StringUtils.isEmpty(fieldWidth)) {
             fieldWidth = DEFAULT_FIELD_WIDTH;
         }
-        rds = getDsContext().get(dsId);
-        categoriesDs = getDsContext().get(categoriesDsId);
 
         contentPane = getComponent("contentPane");
         initCategoryField();
         loadComponent(rds);
+    }
+
+    protected void initDatasources(Map<String, Object> params) {
+        String dsId = (String) params.get("runtimeDs");
+        if (dsId == null)
+            throw new DevelopmentException("runtimeProperties initialization error: runtimeDs is not provided");
+        rds = getDsContext().get(dsId);
+        if (rds == null)
+            throw new DevelopmentException("runtimeProperties initialization error: runtimeDs '" + dsId + "' does not exists");
+
+        String categoriesDsId = (String) params.get("categoriesDs");
+        if (categoriesDsId == null)
+            throw new DevelopmentException("runtimeProperties initialization error: categoriesDs is not provided");
+        categoriesDs = getDsContext().get(categoriesDsId);
+        if (categoriesDs == null)
+            throw new DevelopmentException("runtimeProperties initialization error: categoriesDs '" + categoriesDsId + "' does not exists");
     }
 
     private void initCategoryField() {
