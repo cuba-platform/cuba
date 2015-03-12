@@ -7,6 +7,10 @@
 
 @mixin halo-richtextarea($primary-stylename: v-richtextarea) {
 
+  .#{$primary-stylename} {
+    @include box-defaults;
+  }
+
   .#{$primary-stylename} .gwt-HTML.v-scrollable {
     font-size: $v-font-size;
   }
