@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.gui.app.security.group.browse;
 
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Metadata;
@@ -266,7 +267,7 @@ public class GroupBrowser extends AbstractWindow {
 
         @Override
         public Map<String, Object> getInitialValues() {
-            return Collections.<String, Object>singletonMap("group", groupsTree.getSelected());
+            return ParamsMap.of("group", groupsTree.getSingleSelected());
         }
 
         @Override
