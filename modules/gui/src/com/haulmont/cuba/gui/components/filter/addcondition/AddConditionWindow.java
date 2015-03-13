@@ -6,6 +6,7 @@
 package com.haulmont.cuba.gui.components.filter.addcondition;
 
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.components.*;
@@ -19,6 +20,7 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import javax.inject.Inject;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -85,16 +87,23 @@ public class AddConditionWindow extends AbstractWindow {
     }
 
     public void select() {
-        AbstractConditionDescriptor item = conditionDescriptorsDs.getItem();
-        if (item == null) {
+        Set<Entity> selectedItems = tree.getSelected();
+        if (selectedItems.isEmpty()) {
             showNotification(getMessage("AddCondition.selectCondition"), NotificationType.WARNING);
-        } else if (item instanceof HeaderConditionDescriptor) {
-            showNotification(getMessage("AddCondition.youSelectedGroup"), NotificationType.WARNING);
-        } else if (isEmbeddedProperty(item)) {
-            showNotification(getMessage("AddCondition.youSelectedEmbedded"), NotificationType.WARNING);
+            return;
         } else {
-            close(COMMIT_ACTION_ID);
+            for (Entity item : selectedItems) {
+                if (item instanceof HeaderConditionDescriptor) {
+                    showNotification(getMessage("AddCondition.youSelectedGroup"), NotificationType.WARNING);
+                    return;
+                } else if (isEmbeddedProperty((AbstractConditionDescriptor) item)) {
+                    showNotification(getMessage("AddCondition.youSelectedEmbedded"), NotificationType.WARNING);
+                    return;
+                }
+            }
         }
+
+        close(COMMIT_ACTION_ID);
     }
 
     protected boolean isEmbeddedProperty(AbstractConditionDescriptor item) {
@@ -111,8 +120,7 @@ public class AddConditionWindow extends AbstractWindow {
         close(CLOSE_ACTION_ID);
     }
 
-    public AbstractConditionDescriptor getDescriptor() {
-        AbstractConditionDescriptor item = conditionDescriptorsDs.getItem();
-        return item;
+    public Collection<AbstractConditionDescriptor> getDescriptors() {
+        return tree.getSelected();
     }
 }

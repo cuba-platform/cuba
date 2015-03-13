@@ -19,7 +19,7 @@
             <textField id="treeFilter"/>
             <button id="searchBtn" action="search"/>
         </hbox>
-        <tree id="tree" width="100%">
+        <tree id="tree" width="100%" multiselect="true">
             <treechildren datasource="conditionDescriptorsDs" captionProperty="treeCaption"/>
         </tree>
         <hbox spacing="true">

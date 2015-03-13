@@ -22,6 +22,7 @@ import com.haulmont.cuba.gui.components.filter.edit.RuntimePropConditionEditor;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -72,14 +73,15 @@ public class AddConditionHelper {
             @Override
             public void windowClosed(String actionId) {
                 if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                    AbstractConditionDescriptor descriptor = window.getDescriptor();
-                    if (descriptor != null) {
-                        _addCondition(descriptor);
+                    Collection<AbstractConditionDescriptor> descriptors = window.getDescriptors();
+                    if (descriptors != null) {
+                        for (AbstractConditionDescriptor descriptor : descriptors) {
+                            _addCondition(descriptor);
+                        }
                     }
                 }
             }
         });
-
     }
 
     protected void _addCondition(AbstractConditionDescriptor descriptor) {
