@@ -57,6 +57,7 @@ public class AppContext {
     private static Set<Listener> listeners = new LinkedHashSet<Listener>();
 
     private static volatile boolean started;
+    private static volatile boolean listenersNotified;
 
     public static final SecurityContext NO_USER_CONTEXT =
             new SecurityContext(UUID.fromString("23dce942-d13f-11df-88cd-b3d32fd1e595"), "server");
@@ -202,10 +203,17 @@ public class AppContext {
     }
 
     /**
-     * @return true if the application is fully initialized and can process requests
+     * @return true if the application context is initialized
      */
     public static boolean isStarted() {
         return started;
+    }
+
+    /**
+     * @return true if the application context is initialized and all {@link Listener}s have been notified
+     */
+    public static boolean isReady() {
+        return started && listenersNotified;
     }
 
     /**
@@ -219,6 +227,7 @@ public class AppContext {
         for (Listener listener : listeners) {
             listener.applicationStarted();
         }
+        listenersNotified = true;
     }
 
     /**

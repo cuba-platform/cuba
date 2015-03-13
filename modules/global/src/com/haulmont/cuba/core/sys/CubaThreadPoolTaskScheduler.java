@@ -31,6 +31,18 @@ public class CubaThreadPoolTaskScheduler extends ThreadPoolTaskScheduler {
             protected <V> RunnableScheduledFuture<V> decorateTask(Callable<V> callable, RunnableScheduledFuture<V> task) {
                 return decorate(callable, task);
             }
+
+            @Override
+            protected void beforeExecute(Thread t, Runnable r) {
+                while (!AppContext.isReady()) {
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        t.interrupt();
+                    }
+                }
+                super.beforeExecute(t, r);
+            }
         };
     }
 
