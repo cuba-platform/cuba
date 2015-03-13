@@ -26,6 +26,10 @@ public class DesktopTextArea extends DesktopAbstractTextField<JTextArea> impleme
 
     protected JComponent composition;
 
+    public DesktopTextArea() {
+        setRows(5);
+    }
+
     @Override
     protected JTextArea createTextComponentImpl() {
         final JTextArea impl = new TextAreaFlushableField();
@@ -98,7 +102,7 @@ public class DesktopTextArea extends DesktopAbstractTextField<JTextArea> impleme
         impl.setRows(rows);
 
         int minHeight = impl.getPreferredSize().height;
-        int minWidth = impl.getMinimumSize().width;
+        int minWidth = impl.getPreferredSize().width;
 
         Insets insets = impl.getInsets();
         minWidth += insets.left + insets.right;
@@ -117,7 +121,7 @@ public class DesktopTextArea extends DesktopAbstractTextField<JTextArea> impleme
         impl.setColumns(columns);
 
         if (columns > 1) {
-            int minHeight = impl.getMinimumSize().height;
+            int minHeight = impl.getPreferredSize().height;
             int minWidth = impl.getPreferredSize().width;
 
             Insets insets = impl.getInsets();
@@ -126,7 +130,7 @@ public class DesktopTextArea extends DesktopAbstractTextField<JTextArea> impleme
 
             composition.setMinimumSize(new Dimension(minWidth, minHeight));
         } else {
-            int minHeight = impl.getMinimumSize().height;
+            int minHeight = impl.getPreferredSize().height;
 
             Insets insets = impl.getInsets();
             minHeight += insets.bottom + insets.top;
