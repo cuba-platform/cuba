@@ -178,7 +178,7 @@ public class CreateAction extends BaseAction implements Action.HasOpenType {
         if (params == null)
             params = new HashMap<>();
 
-        final Window window = target.getFrame().openEditor(getWindowId(), item, openType, params, parentDs);
+        final Window window = target.getFrame().openEditor(getWindowId(), item, getOpenType(), params, parentDs);
 
         window.addListener(new Window.CloseListener() {
             @Override

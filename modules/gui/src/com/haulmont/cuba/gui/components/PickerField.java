@@ -209,7 +209,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
         @Override
         public void actionPerform(Component component) {
             if (pickerField.isEditable()) {
-                String windowAlias = lookupScreen;
+                String windowAlias = getLookupScreen();
                 if (windowAlias == null) {
                     final MetaClass metaClass = pickerField.getMetaClass();
                     if (metaClass == null) {
@@ -229,8 +229,12 @@ public interface PickerField extends Field, Component.ActionsHolder {
                     wm = window.getWindowManager();
                 }
 
-                if (lookupScreenOpenType == WindowManager.OpenType.DIALOG && lookupScreenDialogParams != null) {
-                    wm.getDialogParams().copyFrom(lookupScreenDialogParams);
+                WindowManager.OpenType openType = getLookupScreenOpenType();
+                DialogParams dialogParams = getLookupScreenDialogParams();
+                Map<String, Object> screenParams = getLookupScreenParams();
+
+                if (openType == WindowManager.OpenType.DIALOG && dialogParams != null) {
+                    wm.getDialogParams().copyFrom(dialogParams);
                 }
 
                 Window lookupWindow = wm.openLookup(
@@ -260,8 +264,8 @@ public interface PickerField extends Field, Component.ActionsHolder {
                                 }
                             }
                         },
-                        lookupScreenOpenType,
-                        lookupScreenParams != null ? lookupScreenParams : Collections.<String, Object>emptyMap()
+                        openType,
+                        screenParams != null ? screenParams : Collections.<String, Object>emptyMap()
                 );
                 lookupWindow.addListener(new Window.CloseListener() {
                     @Override
@@ -409,8 +413,12 @@ public interface PickerField extends Field, Component.ActionsHolder {
                 wm = window.getWindowManager();
             }
 
-            if (editScreenOpenType == WindowManager.OpenType.DIALOG && editScreenDialogParams != null) {
-                wm.getDialogParams().copyFrom(editScreenDialogParams);
+            WindowManager.OpenType openType = getEditScreenOpenType();
+            DialogParams dialogParams = getEditScreenDialogParams();
+            Map<String, Object> screenParams = getEditScreenParams();
+
+            if (openType == WindowManager.OpenType.DIALOG && dialogParams != null) {
+                wm.getDialogParams().copyFrom(dialogParams);
             }
 
             if (entity instanceof SoftDelete && ((SoftDelete) entity).isDeleted()) {
@@ -424,7 +432,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
             entity = dataSupplier.reload(entity, View.MINIMAL);
 
             if (entity != null) {
-                String windowAlias = editScreen;
+                String windowAlias = getEditScreen();
                 if (windowAlias == null) {
                     windowAlias = windowConfig.getEditorScreenId(entity.getMetaClass());
                 }
@@ -432,8 +440,8 @@ public interface PickerField extends Field, Component.ActionsHolder {
                 final Window.Editor editor = wm.openEditor(
                         windowConfig.getWindowInfo(windowAlias),
                         entity,
-                        editScreenOpenType,
-                        editScreenParams != null ? editScreenParams : Collections.<String, Object>emptyMap()
+                        openType,
+                        screenParams != null ? screenParams : Collections.<String, Object>emptyMap()
                 );
                 editor.addListener(new Window.CloseListener() {
 
@@ -463,7 +471,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
             if (pickerField.getDatasource() != null) {
                 Entity item = pickerField.getDatasource().getItem();
                 if (item != null) {
-                    Object dsValue = item.getValue(pickerField.getMetaProperty().getName());
+                    Object dsValue = item.getValue(pickerField.getMetaPropertyPath().getMetaProperty().getName());
                     if (dsValue instanceof Entity)
                         return (Entity) dsValue;
                 }

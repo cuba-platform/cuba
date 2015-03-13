@@ -153,7 +153,7 @@ public class EditAction extends BaseAction implements Action.HasOpenType {
             if (params == null)
                 params = new HashMap<>();
 
-            final Window window = target.getFrame().openEditor(windowID, datasource.getItem(), openType, params, parentDs);
+            final Window window = target.getFrame().openEditor(windowID, datasource.getItem(), getOpenType(), params, parentDs);
 
             window.addListener(new Window.CloseListener() {
                 @Override
