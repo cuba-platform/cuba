@@ -30,6 +30,12 @@ public class WebLookupPickerField extends WebLookupField implements LookupPicker
     protected boolean updateComponentValue = false;
 
     public WebLookupPickerField() {
+    }
+
+    @Override
+    protected void createComponent() {
+        super.createComponent();
+
         // delegate error indication
         this.componentErrorHandler = new ComponentErrorHandler() {
             @Override
