@@ -5,8 +5,7 @@
 
 package com.haulmont.cuba.desktop.sys.layout;
 
-import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import net.miginfocom.layout.AC;
 import net.miginfocom.layout.CC;
 import net.miginfocom.layout.LC;
@@ -77,7 +76,19 @@ public class MigGridLayoutAdapter extends GridLayoutAdapter {
 
     @Override
     public CC getConstraints(com.haulmont.cuba.gui.components.Component component) {
-        return MigLayoutHelper.getConstraints(component);
+        CC defaultContraints = MigLayoutHelper.getConstraints(component);
+
+        JComponent composition = DesktopComponentsHelper.getComposition(component);
+        if (composition.getParent() == container) {
+            // fill up span x span y
+            if (layout.getComponentConstraints(composition) instanceof CC) {
+                CC componentConstraints = (CC) layout.getComponentConstraints(composition);
+                defaultContraints.setSpanX(componentConstraints.getSpanX());
+                defaultContraints.setSpanY(componentConstraints.getSpanY());
+            }
+        }
+
+        return defaultContraints;
     }
 
     @Override
