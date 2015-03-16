@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           targetNamespace="http://schemas.haulmont.com/cuba/5.4/restapi-instance-v2.xsd"
-           xmlns="http://schemas.haulmont.com/cuba/5.4/restapi-instance-v2.xsd"
-	attributeFormDefault="unqualified" elementFormDefault="qualified">
+	       attributeFormDefault="unqualified"
+           elementFormDefault="qualified">
 
 	<xs:complexType name="instanceType">
 		<xs:sequence>
@@ -11,12 +10,16 @@
             <xs:element name="reference" type="referenceType" minOccurs="0" maxOccurs="unbounded"/>
             <xs:element name="collection" type="collectionType" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
-		<xs:attribute name="id" type="xs:ID"/>
+		<xs:attribute name="id" type="xs:string"/>
 	</xs:complexType>
 
     <xs:complexType name="fieldType">
-        <xs:attribute name="name" type="xs:string" use="required"/>
-        <xs:attribute name="null" type="xs:boolean"/>
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="name" type="xs:string" use="required"/>
+                <xs:attribute name="null" type="xs:boolean"/>
+            </xs:extension>
+        </xs:simpleContent>
     </xs:complexType>
 
     <xs:complexType name="referenceType">
@@ -41,5 +44,4 @@
         </xs:sequence>
     </xs:complexType>
 
-    <xs:element name="instances" type="instancesType"/>
 </xs:schema>

@@ -33,7 +33,7 @@
     </xs:element>
 
     <xs:complexType name="paramType" mixed="true">
-        <xs:choice>
+        <xs:choice minOccurs="0">
             <xs:element name="instance" type="instanceType" maxOccurs="1"/>
             <xs:element name="instances" type="instancesType"/>
         </xs:choice>
@@ -42,7 +42,7 @@
 
     <xs:element name="result">
         <xs:complexType mixed="true">
-            <xs:choice>
+            <xs:choice minOccurs="0">
                 <xs:element name="instance" type="instanceType"/>
                 <xs:element name="instances" type="instancesType"/>
             </xs:choice>
