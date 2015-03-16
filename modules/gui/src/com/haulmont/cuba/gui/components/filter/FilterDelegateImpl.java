@@ -71,6 +71,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected static final String CONDITIONS_LOCATION_TOP = "top";
 
     protected static final Log log = LogFactory.getLog(FilterDelegateImpl.class);
+    public static final String MODIFIED_INDICATOR_SYMBOL = "*";
 
     @Inject
     protected ComponentsFactory componentsFactory;
@@ -804,7 +805,16 @@ public class FilterDelegateImpl implements FilterDelegate {
     }
 
     protected void updateFilterModifiedIndicator() {
-        saveAction.setEnabled(editActionEnabled && isFilterModified());
+        boolean filterModified = isFilterModified();
+        saveAction.setEnabled(editActionEnabled && filterModified);
+
+        String currentCaption = groupBoxLayout.getCaption();
+        if (filterModified && !currentCaption.endsWith(MODIFIED_INDICATOR_SYMBOL)) {
+            groupBoxLayout.setCaption(currentCaption + MODIFIED_INDICATOR_SYMBOL);
+        }
+        if (!filterModified && currentCaption.endsWith(MODIFIED_INDICATOR_SYMBOL)) {
+            groupBoxLayout.setCaption(currentCaption.substring(0, currentCaption.length() - 1));
+        }
     }
 
     /**
