@@ -243,7 +243,12 @@ public class WebTree extends WebAbstractList<CubaTree> implements Tree {
                         public void itemClick(ItemClickEvent event) {
                             if (event.isDoubleClick()
                                     && !component.isReadOnly()) {
-                                component.setValue(event.getItemId());
+
+                                if (!component.isMultiSelect()) {
+                                    component.setValue(event.getItemId());
+                                } else {
+                                    component.setValue(Collections.singletonList(event.getItemId()));
+                                }
 
                                 if (doubleClickAction != null) {
                                     doubleClickAction.actionPerform(WebTree.this);
