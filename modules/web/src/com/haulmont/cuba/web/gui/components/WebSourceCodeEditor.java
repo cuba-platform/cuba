@@ -71,6 +71,10 @@ public class WebSourceCodeEditor extends WebAbstractField<CubaSourceCodeEditor> 
                 editorMode = AceMode.xml;
                 break;
 
+            case Properties:
+                editorMode = AceMode.properties;
+                break;
+
             default:
                 editorMode = AceMode.text;
                 break;

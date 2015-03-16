@@ -24,6 +24,7 @@ public interface SourceCodeEditor extends Field {
         Groovy,
         SQL,
         JavaScript,
+        Properties,
         Text;
 
         public static Mode parse(String name) {

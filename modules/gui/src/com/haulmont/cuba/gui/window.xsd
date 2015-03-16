@@ -139,6 +139,7 @@
             <xs:enumeration value="Groovy"/>
             <xs:enumeration value="SQL"/>
             <xs:enumeration value="JavaScript"/>
+            <xs:enumeration value="Properties"/>
             <xs:enumeration value="Text"/>
         </xs:restriction>
     </xs:simpleType>
