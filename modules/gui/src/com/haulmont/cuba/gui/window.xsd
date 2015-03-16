@@ -422,10 +422,11 @@
     </xs:complexType>
 
     <xs:complexType name="filterType">
-        <xs:sequence>
+        <xs:choice>
             <xs:element name="c" type="filterClauseType" minOccurs="0" maxOccurs="1"/>
             <xs:element name="and" type="filterLogicalType" minOccurs="0" maxOccurs="1"/>
-        </xs:sequence>
+            <xs:element name="or" type="filterLogicalType" minOccurs="0" maxOccurs="1"/>
+        </xs:choice>
     </xs:complexType>
 
     <xs:complexType name="filterClauseType" mixed="true">
@@ -433,11 +434,11 @@
     </xs:complexType>
 
     <xs:complexType name="filterLogicalType">
-        <xs:sequence>
+        <xs:choice maxOccurs="unbounded">
             <xs:element name="c" type="filterClauseType" minOccurs="0" maxOccurs="unbounded"/>
             <xs:element name="and" type="filterLogicalType" minOccurs="0" maxOccurs="unbounded"/>
             <xs:element name="or" type="filterLogicalType" minOccurs="0" maxOccurs="unbounded"/>
-        </xs:sequence>
+        </xs:choice>
     </xs:complexType>
 
     <xs:complexType name="frameAction">
