@@ -257,9 +257,13 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
         }
     }
 
+    /**
+     * Called when the user presses browser "Back" button and {@code cuba.web.allowHandleBrowserHistoryBack}
+     * application property is true.
+     * <p>Override this method and implement your logic to handle the "Back" button.
+     */
     @Override
     public void onHistoryBackPerformed() {
-        // Go back to the future
     }
 
     private void checkSessions() {
