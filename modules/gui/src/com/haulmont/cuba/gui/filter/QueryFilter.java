@@ -10,9 +10,10 @@ import com.haulmont.cuba.core.global.QueryTransformerFactory;
 import com.haulmont.cuba.core.global.TemplateHelper;
 import com.haulmont.cuba.gui.xml.ParameterInfo;
 import com.haulmont.cuba.gui.xml.ParametersHelper;
-import org.dom4j.Element;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
+import org.dom4j.Attribute;
+import org.dom4j.Element;
 
 import java.util.*;
 
@@ -57,18 +58,39 @@ public class QueryFilter {
         return root;
     }
 
-    private Condition createCondition(Element element) {
+    private Condition createCondition(Element conditionElement) {
         Condition condition;
 
-        if ("c".equals(element.getName())) {
-            condition = new Clause(element.getText(), element.attributeValue("join"));
+        if ("c".equals(conditionElement.getName())) {
+            condition = new Clause(conditionElement.getText(), conditionElement.attributeValue("join"));
             // support unary conditions without parameters in text (e.g. "is null")
-            for (Element paramElem : Dom4j.elements(element, "param")) {
+            for (Element paramElem : Dom4j.elements(conditionElement, "param")) {
                 Set<ParameterInfo> params = ParametersHelper.parseQuery(":" + paramElem.attributeValue("name"));
+                Attribute javaClass = paramElem.attribute("javaClass");
+                if (javaClass != null) {
+                    for (ParameterInfo param : params) {
+                        try {
+                            param.setJavaClass(Class.forName(javaClass.getValue()));
+                            param.setConditionName(conditionElement.attributeValue("name"));
+                        } catch (ClassNotFoundException e) {
+                            //do not fail
+                        }
+
+                        if (condition.getParameters().contains(param)) {
+                            for (ParameterInfo parameterInfo : condition.getParameters()) {
+                                if (parameterInfo.equals(param)) {
+                                    parameterInfo.setJavaClass(param.getJavaClass());
+                                    parameterInfo.setConditionName(param.getConditionName());
+                                }
+                            }
+                        }
+                    }
+                }
+
                 condition.getParameters().addAll(params);
             }
         } else {
-            condition = new LogicalCondition(LogicalOp.fromString(element.getName()));
+            condition = new LogicalCondition(LogicalOp.fromString(conditionElement.getName()));
         }
 
         return condition;
@@ -76,7 +98,7 @@ public class QueryFilter {
 
     private void parse(Element parentElem, List<Condition> conditions) {
         for (Element element : Dom4j.elements(parentElem)) {
-            if ("param".equals(element.getName())) 
+            if ("param".equals(element.getName()))
                 continue;
 
             Condition condition = createCondition(element);

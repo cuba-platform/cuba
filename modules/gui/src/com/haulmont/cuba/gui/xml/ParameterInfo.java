@@ -4,6 +4,8 @@
  */
 package com.haulmont.cuba.gui.xml;
 
+import javax.annotation.Nullable;
+
 public class ParameterInfo {
 
     public enum Type {
@@ -26,6 +28,8 @@ public class ParameterInfo {
 
     private Type type;
     private String path;
+    private Class javaClass;
+    private String conditionName;
     private boolean caseInsensitive;
 
     ParameterInfo(String name, Type type, boolean caseInsensitive) {
@@ -52,6 +56,24 @@ public class ParameterInfo {
 
     public boolean isCaseInsensitive() {
         return caseInsensitive;
+    }
+
+    @Nullable
+    public Class getJavaClass() {
+        return javaClass;
+    }
+
+    public void setJavaClass(Class javaClass) {
+        this.javaClass = javaClass;
+    }
+
+    @Nullable
+    public String getConditionName() {
+        return conditionName;
+    }
+
+    public void setConditionName(String conditionName) {
+        this.conditionName = conditionName;
     }
 
     @Override

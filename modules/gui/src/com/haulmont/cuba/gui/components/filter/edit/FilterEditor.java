@@ -10,6 +10,7 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.filter.AddConditionHelper;
 import com.haulmont.cuba.gui.components.filter.ConditionsTree;
@@ -26,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +51,9 @@ public class FilterEditor extends AbstractWindow {
 
     @Inject
     protected TextField filterName;
+
+    @Inject
+    protected Label filterNameLabel;
 
     @Inject
     protected CheckBox availableForAllCb;
@@ -99,9 +104,20 @@ public class FilterEditor extends AbstractWindow {
 
     protected static Log log = LogFactory.getLog(FilterEditor.class);
 
+    @WindowParam(name = "useShortConditionForm")
+    protected Boolean useShortConditionForm;
+
+    protected final List<String> componentsToHideInShortForm = Arrays.asList("hiddenLabel", "hidden",
+            "requiredLabel", "required", "widthLabel", "width", "defaultValueLayoutLabel", "defaultValueLayout",
+            "captionLabel", "caption");
+
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
+
+        if (useShortConditionForm) {
+            setCaption(getMessage("captionShortForm"));
+        }
 
         getDialogParams()
                 .setWidth(theme.getInt("cuba.gui.filterEditor.dialog.width"))
@@ -184,6 +200,15 @@ public class FilterEditor extends AbstractWindow {
                 if (activeConditionFrame != null) {
                     activeConditionFrame.setVisible(true);
                     activeConditionFrame.setCondition(item);
+
+                    if (Boolean.TRUE.equals(useShortConditionForm)) {
+                        for (String componentName : componentsToHideInShortForm) {
+                            Component component = activeConditionFrame.getComponent(componentName);
+                            if (component != null) {
+                                component.setVisible(false);
+                            }
+                        }
+                    }
                 }
             }
         });
@@ -208,6 +233,15 @@ public class FilterEditor extends AbstractWindow {
 
         FilterHelper filterHelper = AppBeans.get(FilterHelper.class);
         filterHelper.initConditionsDragAndDrop(conditionsTree, conditions);
+
+        if (Boolean.TRUE.equals(useShortConditionForm)) {
+            filterName.setVisible(false);
+            filterNameLabel.setVisible(false);
+            availableForAllCb.setVisible(false);
+            availableForAllLabel.setVisible(false);
+            defaultCb.setVisible(false);
+            defaultLabel.setVisible(false);
+        }
     }
 
     public ConditionsTree getConditions() {
@@ -311,9 +345,21 @@ public class FilterEditor extends AbstractWindow {
 
     public void showComponentName() {
         AbstractCondition item = conditionsDs.getItem();
-        String message = (item != null && item.getParam() != null) ?  item.getParam().getName() : getMessage("conditionIsNotSelected");
+        String message = (item != null && item.getParam() != null) ? item.getParam().getName() : getMessage("conditionIsNotSelected");
         showMessageDialog(getMessage("showComponentName.title"),
                 message,
                 MessageType.CONFIRMATION);
+    }
+
+    public FilterEntity getFilterEntity() {
+        return filterEntity;
+    }
+
+    public ConditionsTree getConditionsTree() {
+        return conditions;
+    }
+
+    public Filter getFilter() {
+        return filter;
     }
 }

@@ -29,7 +29,7 @@
                     </columns>
                     <rows>
                         <row>
-                            <label value="msg://filterName" align="MIDDLE_LEFT"/>
+                            <label id="filterNameLabel" value="msg://filterName" align="MIDDLE_LEFT"/>
                             <textField id="filterName" width="100%" required="true" requiredMessage="msg://fillFilterName"/>
                         </row>
                         <row>
