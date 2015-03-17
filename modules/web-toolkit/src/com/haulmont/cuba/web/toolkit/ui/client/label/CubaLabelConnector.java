@@ -38,17 +38,7 @@ public class CubaLabelConnector extends LabelConnector {
                 break;
 
             case TEXT:
-                // clear existing content
-                getWidget().setHTML("");
-                // set multiline text if needed
-                // Haulmont API
-                String text = getState().text;
-                if (text != null && text.contains("\n")) {
-                    text = Util.escapeHTML(text).replace("\n", "<br/>");
-                    getWidget().setHTML(text);
-                } else {
-                    getWidget().setText(text);
-                }
+                getWidget().setText(getState().text);
                 break;
 
             case HTML:

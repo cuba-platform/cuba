@@ -42,6 +42,7 @@ public class WebLabel extends WebAbstractComponent<com.vaadin.ui.Label> implemen
 
     public WebLabel() {
         component = new com.vaadin.ui.Label();
+        component.setContentMode(com.vaadin.ui.Label.CONTENT_PREFORMATTED);
 
         component.setSizeUndefined();
     }
@@ -182,6 +183,6 @@ public class WebLabel extends WebAbstractComponent<com.vaadin.ui.Label> implemen
 
     @Override
     public void setHtmlEnabled(boolean htmlEnabled) {
-        component.setContentMode(htmlEnabled ? com.vaadin.ui.Label.CONTENT_XHTML : com.vaadin.ui.Label.CONTENT_TEXT);
+        component.setContentMode(htmlEnabled ? com.vaadin.ui.Label.CONTENT_XHTML : com.vaadin.ui.Label.CONTENT_PREFORMATTED);
     }
 }

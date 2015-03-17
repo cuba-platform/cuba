@@ -47,6 +47,7 @@ public class WebLabel extends WebAbstractComponent<com.vaadin.ui.Label> implemen
 
     public WebLabel() {
         component = new CubaLabel();
+        component.setContentMode(ContentMode.PREFORMATTED);
 
         component.setSizeUndefined();
     }
@@ -215,6 +216,6 @@ public class WebLabel extends WebAbstractComponent<com.vaadin.ui.Label> implemen
 
     @Override
     public void setHtmlEnabled(boolean htmlEnabled) {
-        component.setContentMode(htmlEnabled ? ContentMode.HTML : ContentMode.TEXT);
+        component.setContentMode(htmlEnabled ? ContentMode.HTML : ContentMode.PREFORMATTED);
     }
 }
