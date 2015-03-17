@@ -20,6 +20,7 @@ import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
 import com.haulmont.cuba.desktop.sys.DialogWindow;
 import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
 import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
+import com.haulmont.cuba.desktop.sys.layout.MigLayoutHelper;
 import com.haulmont.cuba.desktop.sys.vcl.FocusableComponent;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.AbstractAction;
@@ -1335,6 +1336,39 @@ public class DesktopWindow implements Window, Component.Disposable,
             }
 
             panel.add(buttonsPanel);
+        }
+
+        @Override
+        public void setWidth(String width) {
+            super.setWidth(width);
+
+            updateContainerConstraints();
+        }
+
+        @Override
+        public void setHeight(String height) {
+            super.setHeight(height);
+
+            updateContainerConstraints();
+        }
+
+        protected void updateContainerConstraints() {
+            CC cc = new CC();
+
+            if (widthSize != null) {
+                MigLayoutHelper.applyWidth(cc, (int) widthSize.value, widthSize.unit, true);
+            } else {
+                MigLayoutHelper.applyWidth(cc, 100, UNITS_PERCENTAGE, true);
+            }
+
+            if (heightSize != null) {
+                MigLayoutHelper.applyHeight(cc, (int) heightSize.value, heightSize.unit, true);
+            } else {
+                MigLayoutHelper.applyHeight(cc, 100, UNITS_PERCENTAGE, true);
+            }
+
+            MigLayout migLayout = (MigLayout) panel.getLayout();
+            migLayout.setComponentConstraints(container, cc);
         }
 
         @Override
