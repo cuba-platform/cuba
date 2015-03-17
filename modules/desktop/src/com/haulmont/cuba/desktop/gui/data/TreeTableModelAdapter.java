@@ -55,11 +55,23 @@ public class TreeTableModelAdapter extends AbstractTreeTableModel implements Any
                         for (DataChangeListener changeListener : changeListeners)
                             changeListener.beforeChange(true);
 
-                        impl.backupExpandedNodes();
+                        switch (operation) {
+                            case CLEAR:
+                            case REFRESH:
+                            case ADD:
+                            case REMOVE:
+                                impl.backupExpandedNodes();
+                                modelSupport.fireTreeStructureChanged(root == null ? null : new TreePath(root));
+                                impl.restoreExpandedNodes();
+                                break;
 
-                        modelSupport.fireTreeStructureChanged(root == null ? null : new TreePath(root));
-
-                        impl.restoreExpandedNodes();
+                            case UPDATE:
+                                for (Entity item : items) {
+                                    TreePath treePath = getTreePath(item);
+                                    modelSupport.firePathChanged(treePath);
+                                }
+                                break;
+                        }
 
                         for (DataChangeListener changeListener : changeListeners)
                             changeListener.afterChange(true);

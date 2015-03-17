@@ -187,9 +187,11 @@ public class SpecificPermissionsFrame extends AbstractFrame {
                         break;
                     }
                 }
-                if (permission != null)
+                if (permission != null) {
                     specificPermissionsDs.removeItem(permission);
+                }
             }
+            // trigger generated column update
             specificPermissionsTreeDs.updateItem(target);
         }
     }

@@ -13,6 +13,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
+import org.apache.commons.lang.ObjectUtils;
 
 import javax.annotation.Nullable;
 import javax.swing.event.TreeModelEvent;
@@ -21,6 +22,7 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -51,9 +53,27 @@ public class TreeModelAdapter implements TreeModel {
                 new CollectionDsListenerAdapter<Entity>() {
                     @Override
                     public void collectionChanged(CollectionDatasource ds, Operation operation, List<Entity> items) {
-                        for (TreeModelListener listener : listeners) {
-                            TreeModelEvent ev = new TreeModelEvent(this, new Object[]{getRoot()});
-                            listener.treeStructureChanged(ev);
+                        switch (operation) {
+                            case CLEAR:
+                            case REFRESH:
+                            case ADD:
+                            case REMOVE:
+                                Object[] path = {getRoot()};
+                                for (TreeModelListener listener : listeners) {
+                                    TreeModelEvent ev = new TreeModelEvent(this, path);
+                                    listener.treeStructureChanged(ev);
+                                }
+                                break;
+
+                            case UPDATE:
+                                for (Entity item : items) {
+                                    TreePath treePath = getTreePath(item);
+                                    for (TreeModelListener listener : listeners) {
+                                        TreeModelEvent ev = new TreeModelEvent(this, treePath.getPath());
+                                        listener.treeNodesChanged(ev);
+                                    }
+                                }
+                                break;
                         }
                     }
                 }
@@ -174,6 +194,11 @@ public class TreeModelAdapter implements TreeModel {
                     node.setParent(parentNode);
                     node = parentNode;
                 }
+            } else {
+                List<Object> treePath = getTreePath(getRoot(), (Entity) object);
+                if (treePath != null) {
+                    return new TreePath(treePath.toArray());
+                }
             }
             list.add(0, rootNode);
             node.setParent(rootNode);
@@ -192,6 +217,24 @@ public class TreeModelAdapter implements TreeModel {
             list.add(object);
         }
         return new TreePath(list.toArray(new Object[list.size()]));
+    }
+
+    public List<Object> getTreePath(Object node, Entity entity) {
+        for (int i = 0; i < getChildCount(node); i++) {
+            Node child = (Node) getChild(node, i);
+            if (ObjectUtils.equals(entity, child.entity)) {
+                List<Object> list = new LinkedList<>();
+                list.add(createNode(entity));
+                return list;
+            } else {
+                List<Object> path = getTreePath(child, entity);
+                if (path != null) {
+                    path.add(0, child);
+                    return path;
+                }
+            }
+        }
+        return null;
     }
 
     public class Node {
