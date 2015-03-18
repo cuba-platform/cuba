@@ -295,9 +295,7 @@ public class DesktopComponentsHelper {
                 }
             }
 
-            if (!tabVisible) {
-                return false;
-            }
+            return tabVisible && isRecursivelyVisible(component.getParent());
         }
 
         return component.isVisible() && (component.getParent() == null || isRecursivelyVisible(component.getParent()));
@@ -321,9 +319,7 @@ public class DesktopComponentsHelper {
                 }
             }
 
-            if (!tabVisible) {
-                return false;
-            }
+            return tabVisible && isRecursivelyEnabled(component.getParent());
         }
 
         return component.isEnabled() && (component.getParent() == null || isRecursivelyEnabled(component.getParent()));
