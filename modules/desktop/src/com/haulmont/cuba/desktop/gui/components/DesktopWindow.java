@@ -1046,9 +1046,9 @@ public class DesktopWindow implements Window, Component.Disposable,
         if (errors.isEmpty())
             return true;
 
-        showValidationErrors(errors);
-
         focusProblemComponent(errors);
+
+        showValidationErrors(errors);
 
         return false;
     }

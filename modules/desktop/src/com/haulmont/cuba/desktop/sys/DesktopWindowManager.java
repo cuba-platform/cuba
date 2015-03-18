@@ -1345,7 +1345,8 @@ public class DesktopWindowManager extends WindowManager {
         if (icon != null) {
             panel.add(new JLabel(" "));
         }
-        panel.add(createButtonsPanel(actions, dialog), "alignx right");
+        final JPanel buttonsPanel = createButtonsPanel(actions, dialog);
+        panel.add(buttonsPanel, "alignx right");
 
         dialog.setLayout(new MigLayout(new LC().insets("0").width(width + "px")));
         dialog.setFixedWidth(width);
@@ -1368,6 +1369,11 @@ public class DesktopWindowManager extends WindowManager {
                 }
 
                 dialog.requestFocus();
+                dialog.requestFocusInWindow();
+
+                if (buttonsPanel.getComponentCount() == 1) {
+                    buttonsPanel.getComponent(0).requestFocus();
+                }
             }
         });
         dialog.setVisible(true);
