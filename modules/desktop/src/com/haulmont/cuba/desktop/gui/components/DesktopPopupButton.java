@@ -12,8 +12,11 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.gui.components.Component;
+import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
+import javax.swing.BoxLayout;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -27,7 +30,8 @@ import java.util.ArrayList;
  * @version $Id$
  */
 public class DesktopPopupButton extends DesktopAbstractActionsHolderComponent<JButton> implements PopupButton {
-    public static final String DEFAULT_ICON = "/components/popupbutton/open-popup.png";
+
+    public static final String DROP_DOWN_ICON = "/components/popupbutton/open-popup.png";
 
     protected JPopupMenu popup;
 
@@ -36,11 +40,22 @@ public class DesktopPopupButton extends DesktopAbstractActionsHolderComponent<JB
     protected DesktopResources resources = App.getInstance().getResources();
 
     protected List<Action> initializedActions = new ArrayList<>();
+    protected final JLabel captionLabel;
+    private final JLabel rightIcon;
 
     public DesktopPopupButton() {
         popup = new JPopupMenu();
 
         impl = new JButton();
+        impl.setLayout(new BoxLayout(impl, BoxLayout.X_AXIS));
+
+        captionLabel = new JLabel();
+        impl.add(captionLabel);
+
+        rightIcon = new JLabel();
+        rightIcon.setIcon(resources.getIcon(DROP_DOWN_ICON));
+        impl.add(rightIcon);
+
         impl.addActionListener(
                 new ActionListener() {
                     @Override
@@ -52,7 +67,6 @@ public class DesktopPopupButton extends DesktopAbstractActionsHolderComponent<JB
                     }
                 }
         );
-        impl.setIcon(resources.getIcon(DEFAULT_ICON));
         DesktopComponentsHelper.adjustSize(impl);
     }
 
@@ -148,7 +162,13 @@ public class DesktopPopupButton extends DesktopAbstractActionsHolderComponent<JB
 
     @Override
     public void setCaption(String caption) {
-        impl.setText(caption);
+        captionLabel.setText(caption);
+
+        if (StringUtils.isNotEmpty(caption) || icon != null) {
+            rightIcon.setBorder(new EmptyBorder(0, 5, 0, 0));
+        } else {
+            rightIcon.setBorder(null);
+        }
     }
 
     @Override
@@ -170,10 +190,17 @@ public class DesktopPopupButton extends DesktopAbstractActionsHolderComponent<JB
     @Override
     public void setIcon(String icon) {
         this.icon = icon;
-        if (icon != null)
-            impl.setIcon(resources.getIcon(icon));
-        else
-            impl.setIcon(resources.getIcon(DEFAULT_ICON));
+        if (icon != null) {
+            captionLabel.setIcon(resources.getIcon(icon));
+        } else {
+            captionLabel.setIcon(resources.getIcon(DROP_DOWN_ICON));
+        }
+
+        if (StringUtils.isNotEmpty(getCaption()) || icon != null) {
+            rightIcon.setBorder(new EmptyBorder(0, 5, 0, 0));
+        } else {
+            rightIcon.setBorder(null);
+        }
     }
 
     @Override
