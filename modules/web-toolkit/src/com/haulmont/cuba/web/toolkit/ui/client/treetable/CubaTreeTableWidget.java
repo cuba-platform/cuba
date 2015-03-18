@@ -21,6 +21,8 @@ import com.haulmont.cuba.web.toolkit.ui.client.aggregation.AggregatableTable;
 import com.haulmont.cuba.web.toolkit.ui.client.aggregation.TableAggregationRow;
 import com.haulmont.cuba.web.toolkit.ui.client.logging.ClientLogger;
 import com.haulmont.cuba.web.toolkit.ui.client.logging.ClientLoggerFactory;
+import com.vaadin.client.ComponentConnector;
+import com.vaadin.client.LayoutManager;
 import com.vaadin.client.UIDL;
 import com.vaadin.client.Util;
 import com.vaadin.client.ui.*;
@@ -51,6 +53,29 @@ public class CubaTreeTableWidget extends VTreeTable implements ShortcutActionHan
 
     public CubaTreeTableWidget() {
         hideColumnControlAfterClick = false;
+    }
+
+    @Override
+    public void scheduleLayoutForChildWidgets() {
+        if (scrollBody != null) {
+            // Fix for #VAADIN-12970, relayout cell widgets
+            // Haulmont API
+            ComponentConnector connector = Util.findConnectorFor(this);
+            LayoutManager lm = connector.getLayoutManager();
+
+            for (Widget w : scrollBody) {
+                HasWidgets row = (HasWidgets) w;
+                for (Widget child : row) {
+                    ComponentConnector childConnector = Util.findConnectorFor(child);
+                    if (childConnector != null && childConnector.getConnectorId() != null) {
+                        if (childConnector instanceof ManagedLayout
+                                || childConnector instanceof AbstractLayoutConnector) {
+                            lm.setNeedsMeasure(childConnector);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @Override
