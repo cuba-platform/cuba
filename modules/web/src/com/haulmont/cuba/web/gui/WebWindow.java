@@ -505,8 +505,8 @@ public class WebWindow implements Window, Component.Wrapper,
             } else {
                 if (child instanceof com.vaadin.ui.Component.Focusable
                         && !child.isReadOnly()
-                        && child.isVisible()
-                        && child.isEnabled()
+                        && WebComponentsHelper.isComponentVisible(child)
+                        && WebComponentsHelper.isComponentEnabled(child)
                         && !(child instanceof Button)) {
 
                     return (com.vaadin.ui.Component.Focusable) child;
