@@ -5,6 +5,7 @@
 
 project.ext.vaadinVersion = '7.3.9.cuba.11'
 
+project.ext.vaadinShared = [group: 'com.vaadin', name: 'vaadin-shared', version: vaadinVersion]
 project.ext.vaadinServer = [group: 'com.vaadin', name: 'vaadin-server', version: vaadinVersion]
 project.ext.vaadinClient = [group: 'com.vaadin', name: 'vaadin-client', version: vaadinVersion]
 project.ext.vaadinCompiler = [group: 'com.vaadin', name: 'vaadin-client-compiler', version: vaadinVersion]
