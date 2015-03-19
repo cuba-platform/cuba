@@ -71,7 +71,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected static final String CONDITIONS_LOCATION_TOP = "top";
 
     protected static final Log log = LogFactory.getLog(FilterDelegateImpl.class);
-    public static final String MODIFIED_INDICATOR_SYMBOL = "*";
+    public static final String MODIFIED_INDICATOR_SYMBOL = " *";
 
     @Inject
     protected ComponentsFactory componentsFactory;
