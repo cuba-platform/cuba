@@ -25,6 +25,8 @@ import java.beans.PropertyChangeListener;
 import java.util.List;
 import java.util.ArrayList;
 
+import static java.awt.Component.*;
+
 /**
  * @author krivopustov
  * @version $Id$
@@ -50,11 +52,15 @@ public class DesktopPopupButton extends DesktopAbstractActionsHolderComponent<JB
         impl.setLayout(new BoxLayout(impl, BoxLayout.X_AXIS));
 
         captionLabel = new JLabel();
+        impl.add(Box.createHorizontalGlue());
         impl.add(captionLabel);
+        captionLabel.setAlignmentX(CENTER_ALIGNMENT);
 
         rightIcon = new JLabel();
         rightIcon.setIcon(resources.getIcon(DROP_DOWN_ICON));
+        rightIcon.setAlignmentX(CENTER_ALIGNMENT);
         impl.add(rightIcon);
+        impl.add(Box.createHorizontalGlue());
 
         impl.addActionListener(
                 new ActionListener() {
