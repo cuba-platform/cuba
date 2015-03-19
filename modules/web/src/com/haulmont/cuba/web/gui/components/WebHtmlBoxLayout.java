@@ -39,6 +39,10 @@ public class WebHtmlBoxLayout extends WebAbstractComponent<CustomLayout> impleme
 
     @Override
     public void add(Component childComponent) {
+        if (childComponent.getParent() != null && childComponent.getParent() != this) {
+            throw new IllegalStateException("Component already has parent");
+        }
+
         final com.vaadin.ui.Component vComponent = WebComponentsHelper.getComposition(childComponent);
 
         if (childComponent.getId() != null) {
@@ -58,6 +62,8 @@ public class WebHtmlBoxLayout extends WebAbstractComponent<CustomLayout> impleme
         }
 
         ownComponents.add(childComponent);
+
+        childComponent.setParent(this);
     }
 
     @Override
@@ -69,6 +75,8 @@ public class WebHtmlBoxLayout extends WebAbstractComponent<CustomLayout> impleme
             component.removeComponent(WebComponentsHelper.getComposition(childComponent));
         }
         ownComponents.remove(childComponent);
+
+        childComponent.setParent(null);
     }
 
     @Override

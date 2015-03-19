@@ -1190,15 +1190,21 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     public void setButtonsPanel(ButtonsPanel panel) {
         if (buttonsPanel != null && topPanel != null) {
             topPanel.removeComponent(WebComponentsHelper.unwrap(buttonsPanel));
+            buttonsPanel.setParent(null);
         }
         buttonsPanel = panel;
         if (panel != null) {
+            if (panel.getParent() != null && panel.getParent() != this) {
+                throw new IllegalStateException("Component already has parent");
+            }
+
             if (topPanel == null) {
                 topPanel = new HorizontalLayout();
                 topPanel.setWidth("100%");
                 componentComposition.addComponentAsFirst(topPanel);
             }
             topPanel.addComponent(WebComponentsHelper.unwrap(panel));
+            panel.setParent(this);
         }
     }
 
@@ -1741,6 +1747,8 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             }
 
             applyPermissions(columnComponent);
+
+            columnComponent.setParent(WebAbstractTable.this);
 
             return fieldImpl;
         }

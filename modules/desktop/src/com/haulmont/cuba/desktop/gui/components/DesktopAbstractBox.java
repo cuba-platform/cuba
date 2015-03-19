@@ -52,6 +52,10 @@ public abstract class DesktopAbstractBox
 
     @Override
     public void add(Component component, int index) {
+        if (component.getParent() != null && component.getParent() != this) {
+            throw new IllegalStateException("Component already has parent");
+        }
+
         if (ownComponents.contains(component)) {
             int existingIndex = new ArrayList<>(ownComponents).indexOf(component);
             if (index > existingIndex) {
@@ -123,6 +127,8 @@ public abstract class DesktopAbstractBox
             ((DesktopAbstractComponent) component).setParentEnabled(false);
         }
 
+        component.setParent(this);
+
         requestRepaint();
     }
 
@@ -163,6 +169,8 @@ public abstract class DesktopAbstractBox
         if (component instanceof DesktopAbstractComponent && !isEnabledWithParent()) {
             ((DesktopAbstractComponent) component).setParentEnabled(true);
         }
+
+        component.setParent(null);
 
         requestRepaint();
     }

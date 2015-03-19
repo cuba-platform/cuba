@@ -61,6 +61,10 @@ public class WebScrollBoxLayout extends WebAbstractComponent<Panel> implements S
 
     @Override
     public void add(Component childComponent, int index) {
+        if (childComponent.getParent() != null && childComponent.getParent() != this) {
+            throw new IllegalStateException("Component already has parent");
+        }
+
         AbstractOrderedLayout newContent = null;
         if (orientation == Orientation.VERTICAL && !(getContent() instanceof CubaVerticalActionsLayout)) {
             newContent = new CubaVerticalActionsLayout();
@@ -118,6 +122,8 @@ public class WebScrollBoxLayout extends WebAbstractComponent<Panel> implements S
             ownComponents.clear();
             ownComponents.addAll(componentsTempList);
         }
+
+        childComponent.setParent(this);
     }
 
     @Override
@@ -145,6 +151,8 @@ public class WebScrollBoxLayout extends WebAbstractComponent<Panel> implements S
             componentByIds.remove(childComponent.getId());
         }
         ownComponents.remove(childComponent);
+
+        childComponent.setParent(null);
     }
 
     @Override

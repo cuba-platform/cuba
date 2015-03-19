@@ -16,7 +16,7 @@ import org.dom4j.Element;
  * @author abramov
  * @version $Id$
  */
-public class WebAbstractComponent<T extends com.vaadin.ui.Component>
+public abstract class WebAbstractComponent<T extends com.vaadin.ui.Component>
     implements
         Component, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame {
 
@@ -25,6 +25,8 @@ public class WebAbstractComponent<T extends com.vaadin.ui.Component>
 
     protected Element element;
     protected com.haulmont.cuba.gui.components.IFrame frame;
+    protected Component parent;
+
     protected Alignment alignment = Alignment.TOP_LEFT;
 
     protected boolean expandable = true;
@@ -57,6 +59,16 @@ public class WebAbstractComponent<T extends com.vaadin.ui.Component>
         if (this.component instanceof AbstractComponent && App.getInstance().isTestMode()) {
             ((AbstractComponent) this.component).setCubaId(id);
         }
+    }
+
+    @Override
+    public Component getParent() {
+        return parent;
+    }
+
+    @Override
+    public void setParent(Component parent) {
+        this.parent = parent;
     }
 
     public void assignAutoDebugId() {

@@ -35,6 +35,10 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
 
     @Override
     public void add(Component childComponent) {
+        if (childComponent.getParent() != null && childComponent.getParent() != this) {
+            throw new IllegalStateException("Component already has parent");
+        }
+
         if (component == null) {
             if (orientation == SplitPanel.ORIENTATION_HORIZONTAL) {
                 component = new CubaHorizontalSplitPanel() {
@@ -80,6 +84,8 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
         }
 
         ownComponents.add(childComponent);
+
+        childComponent.setParent(this);
     }
 
     protected void firePositionUpdateListener(float previousPosition, float newPosition) {
@@ -95,6 +101,8 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
             componentByIds.remove(childComponent.getId());
         }
         ownComponents.remove(childComponent);
+
+        childComponent.setParent(null);
     }
 
     @Override

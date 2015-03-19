@@ -68,6 +68,10 @@ public class DesktopGridLayout extends DesktopAbstractComponent<JPanel> implemen
 
     @Override
     public void add(Component component, int col, int row, int col2, int row2) {
+        if (component.getParent() != null && component.getParent() != this) {
+            throw new IllegalStateException("Component already has parent");
+        }
+
         final JComponent composition = DesktopComponentsHelper.getComposition(component);
 
         // add caption first
@@ -119,6 +123,8 @@ public class DesktopGridLayout extends DesktopAbstractComponent<JPanel> implemen
             ((DesktopAbstractComponent) component).setParentEnabled(false);
         }
 
+        component.setParent(this);
+
         requestRepaint();
     }
 
@@ -158,6 +164,10 @@ public class DesktopGridLayout extends DesktopAbstractComponent<JPanel> implemen
 
     @Override
     public void add(Component component) {
+        if (component.getParent() != null && component.getParent() != this) {
+            throw new IllegalStateException("Component already has parent");
+        }
+
         // captions not added here
         final JComponent composition = DesktopComponentsHelper.getComposition(component);
         impl.add(composition, layoutAdapter.getConstraints(component));
@@ -183,6 +193,7 @@ public class DesktopGridLayout extends DesktopAbstractComponent<JPanel> implemen
         if (component instanceof DesktopAbstractComponent && !isEnabledWithParent()) {
             ((DesktopAbstractComponent) component).setParentEnabled(false);
         }
+        component.setParent(this);
 
         requestRepaint();
     }
@@ -226,6 +237,7 @@ public class DesktopGridLayout extends DesktopAbstractComponent<JPanel> implemen
         if (component instanceof DesktopAbstractComponent && !isEnabledWithParent()) {
             ((DesktopAbstractComponent) component).setParentEnabled(true);
         }
+        component.setParent(null);
 
         requestRepaint();
     }

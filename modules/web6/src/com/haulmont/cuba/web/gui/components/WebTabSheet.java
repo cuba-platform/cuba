@@ -208,6 +208,10 @@ public class WebTabSheet extends WebAbstractComponent<com.vaadin.ui.TabSheet> im
 
     @Override
     public TabSheet.Tab addTab(String name, Component childComponent) {
+        if (childComponent.getParent() != null && childComponent.getParent() != this) {
+            throw new IllegalStateException("Component already has parent");
+        }
+
         final Tab tab = new Tab(name, childComponent);
 
         this.tabs.put(name, tab);
@@ -230,6 +234,8 @@ public class WebTabSheet extends WebAbstractComponent<com.vaadin.ui.TabSheet> im
                 frame.registerComponent(childComponent);
             }
         }
+
+        childComponent.setParent(this);
 
         return tab;
     }
@@ -287,6 +293,8 @@ public class WebTabSheet extends WebAbstractComponent<com.vaadin.ui.TabSheet> im
             componentByIds.remove(childComponent.getId());
         }
         tabMapping.remove(vComponent);
+
+        childComponent.setParent(null);
     }
 
     @Override
@@ -407,6 +415,8 @@ public class WebTabSheet extends WebAbstractComponent<com.vaadin.ui.TabSheet> im
                 tabContent.add(comp);
                 com.vaadin.ui.Component impl = WebComponentsHelper.getComposition(comp);
                 impl.setSizeFull();
+
+                comp.setParent(WebTabSheet.this);
 
                 final Window window = com.haulmont.cuba.gui.ComponentsHelper.getWindow(WebTabSheet.this);
                 if (window != null) {

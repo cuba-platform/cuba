@@ -718,6 +718,8 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         if (App.getInstance().isTestMode()) {
             jComponent.setName(fieldConfig.getId());
         }
+
+        fieldComponent.setParent(this);
     }
 
     @Override

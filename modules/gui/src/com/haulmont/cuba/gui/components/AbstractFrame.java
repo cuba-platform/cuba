@@ -33,6 +33,8 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
     private String styleName;
     private Object _companion;
 
+    private Component parent;
+
     @Inject
     protected Messages messages;
 
@@ -62,6 +64,16 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
     @Override
     public void setId(String id) {
         frame.setId(id);
+    }
+
+    @Override
+    public Component getParent() {
+        return parent;
+    }
+
+    @Override
+    public void setParent(Component parent) {
+        this.parent = parent;
     }
 
     @Override

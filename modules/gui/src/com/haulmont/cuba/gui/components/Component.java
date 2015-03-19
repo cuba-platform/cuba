@@ -43,6 +43,9 @@ public interface Component {
     /** Set component ID */
     void setId(String id);
 
+    Component getParent();
+    void setParent(Component parent);
+
     String getDebugId();
     /** For internal use only. Managed by debug Id system. */
     void setDebugId(String id);

@@ -582,34 +582,22 @@ public class WebWindow implements Window, Component.Wrapper,
 
     @Override
     public void add(Component childComponent) {
-        if (ownComponents.contains(childComponent)) {
-            remove(childComponent);
-        }
-
-        ComponentContainer container = getContainer();
-        com.vaadin.ui.Component vComponent = WebComponentsHelper.getComposition(childComponent);
-        container.addComponent(vComponent);
-
-        com.vaadin.ui.Alignment alignment = convertAlignment(childComponent.getAlignment());
-        ((AbstractOrderedLayout) container).setComponentAlignment(vComponent, alignment);
-
-        if (childComponent.getId() != null) {
-            componentByIds.put(childComponent.getId(), childComponent);
-        }
-
-        if (childComponent instanceof BelongToFrame
-                && ((BelongToFrame) childComponent).getFrame() == null) {
-            ((BelongToFrame) childComponent).setFrame(this);
-        } else {
-            registerComponent(childComponent);
-        }
-
-        ownComponents.add(childComponent);
+        add(childComponent, ownComponents.size());
     }
 
     @Override
     public void add(Component childComponent, int index) {
+        if (childComponent.getParent() != null && childComponent.getParent() != this) {
+            throw new IllegalStateException("Component already has parent");
+        }
+
         if (ownComponents.contains(childComponent)) {
+            com.vaadin.ui.Component composition = WebComponentsHelper.getComposition(childComponent);
+            int existingIndex = ((AbstractOrderedLayout)getContainer()).getComponentIndex(composition);
+            if (index > existingIndex) {
+                index--;
+            }
+
             remove(childComponent);
         }
 
@@ -631,20 +619,28 @@ public class WebWindow implements Window, Component.Wrapper,
             registerComponent(childComponent);
         }
 
-        List<Component> componentsTempList = new ArrayList<>(ownComponents);
-        componentsTempList.add(index, childComponent);
+        if (index == ownComponents.size()) {
+            ownComponents.add(childComponent);
+        } else {
+            List<Component> componentsTempList = new ArrayList<>(ownComponents);
+            componentsTempList.add(index, childComponent);
 
-        ownComponents.clear();
-        ownComponents.addAll(componentsTempList);
+            ownComponents.clear();
+            ownComponents.addAll(componentsTempList);
+        }
+
+        childComponent.setParent(this);
     }
 
     @Override
-    public void remove(Component component) {
-        getContainer().removeComponent(WebComponentsHelper.getComposition(component));
-        if (component.getId() != null) {
-            componentByIds.remove(component.getId());
+    public void remove(Component childComponent) {
+        getContainer().removeComponent(WebComponentsHelper.getComposition(childComponent));
+        if (childComponent.getId() != null) {
+            componentByIds.remove(childComponent.getId());
         }
-        ownComponents.remove(component);
+        ownComponents.remove(childComponent);
+
+        childComponent.setParent(null);
     }
 
     @Override
@@ -682,6 +678,15 @@ public class WebWindow implements Window, Component.Wrapper,
         if (AppUI.getCurrent().isTestMode() && StringUtils.isEmpty(debugId)) {
             setDebugId(id);
         }
+    }
+
+    @Override
+    public Component getParent() {
+        return null;
+    }
+
+    @Override
+    public void setParent(Component parent) {
     }
 
     @Override

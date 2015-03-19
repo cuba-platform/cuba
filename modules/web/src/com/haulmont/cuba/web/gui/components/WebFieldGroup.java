@@ -306,6 +306,8 @@ public class WebFieldGroup
                     fieldImpl.setCubaId(fieldConfig.getId());
                 }
 
+                fieldComponent.setParent(WebFieldGroup.this);
+
                 return fieldImpl;
             }
         });
@@ -460,6 +462,8 @@ public class WebFieldGroup
         }
 
         applyPermissions(fieldComponent);
+
+        fieldComponent.setParent(WebFieldGroup.this);
 
         return new FieldBasket(fieldComponent, fieldImpl);
     }

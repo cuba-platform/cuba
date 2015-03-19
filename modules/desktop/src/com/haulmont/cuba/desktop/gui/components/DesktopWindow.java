@@ -572,6 +572,15 @@ public class DesktopWindow implements Window, Component.Disposable,
     }
 
     @Override
+    public Component getParent() {
+        return null;
+    }
+
+    @Override
+    public void setParent(Component parent) {
+    }
+
+    @Override
     public void expand(Component component, String height, String width) {
         if (expandedComponent != null && expandedComponent instanceof DesktopComponent) {
             ((DesktopComponent) expandedComponent).setExpanded(false);
@@ -633,72 +642,33 @@ public class DesktopWindow implements Window, Component.Disposable,
 
     @Override
     public void add(Component component) {
-        if (ownComponents.contains(component)) {
-            remove(component);
-        }
-
-        ComponentCaption caption = null;
-        boolean haveDescription = false;
-        if (DesktopContainerHelper.hasExternalCaption(component)) {
-            caption = new ComponentCaption(component);
-            captions.put(component, caption);
-            getContainer().add(caption, layoutAdapter.getCaptionConstraints(component));
-        } else if (DesktopContainerHelper.hasExternalDescription(component)) {
-            caption = new ComponentCaption(component);
-            captions.put(component, caption);
-            haveDescription = true;
-        }
-
-        JComponent composition = DesktopComponentsHelper.getComposition(component);
-         //if component have description without caption, we need to wrap
-        // component to view Description button horizontally after component
-        if (haveDescription) {
-            JPanel wrapper = new JPanel();
-            BoxLayoutAdapter adapter = BoxLayoutAdapter.create(wrapper);
-            adapter.setExpandLayout(true);
-            adapter.setSpacing(false);
-            adapter.setMargin(false);
-            wrapper.add(composition);
-            wrapper.add(caption, new CC().alignY("top"));
-            getContainer().add(wrapper, layoutAdapter.getConstraints(component));
-            wrappers.put(component, new Pair<>(wrapper, adapter));
-        } else {
-            getContainer().add(composition, layoutAdapter.getConstraints(component));
-        }
-        if (component.getId() != null) {
-            componentByIds.put(component.getId(), component);
-        }
-
-        if (component instanceof BelongToFrame
-                && ((BelongToFrame) component).getFrame() == null) {
-            ((BelongToFrame) component).setFrame(this);
-        } else {
-            registerComponent(component);
-        }
-
-        ownComponents.add(component);
-
-        DesktopContainerHelper.assignContainer(component, this);
-
-        if (component instanceof DesktopAbstractComponent && !isEnabled()) {
-            ((DesktopAbstractComponent) component).setParentEnabled(false);
-        }
-
-        requestRepaint();
+        add(component, ownComponents.size());
     }
 
     @Override
     public void add(Component component, int index) {
+        if (component.getParent() != null && component.getParent() != this) {
+            throw new IllegalStateException("Component already has parent");
+        }
+
         if (ownComponents.contains(component)) {
+            int existingIndex = new ArrayList<>(ownComponents).indexOf(component);
+            if (index > existingIndex) {
+                index--;
+            }
+
             remove(component);
         }
+
+        int implIndex = getActualIndex(index);
 
         ComponentCaption caption = null;
         boolean haveDescription = false;
         if (DesktopContainerHelper.hasExternalCaption(component)) {
             caption = new ComponentCaption(component);
             captions.put(component, caption);
-            getContainer().add(caption, layoutAdapter.getCaptionConstraints(component), index);  // CAUTION this dramatically wrong
+            getContainer().add(caption, layoutAdapter.getCaptionConstraints(component), implIndex);  // CAUTION this dramatically wrong
+            implIndex++;
         } else if (DesktopContainerHelper.hasExternalDescription(component)) {
             caption = new ComponentCaption(component);
             captions.put(component, caption);
@@ -716,10 +686,10 @@ public class DesktopWindow implements Window, Component.Disposable,
             adapter.setMargin(false);
             wrapper.add(composition);
             wrapper.add(caption, new CC().alignY("top"));
-            getContainer().add(wrapper, layoutAdapter.getConstraints(component), index);
+            getContainer().add(wrapper, layoutAdapter.getConstraints(component), implIndex);
             wrappers.put(component, new Pair<>(wrapper, adapter));
         } else {
-            getContainer().add(composition, layoutAdapter.getConstraints(component), index);
+            getContainer().add(composition, layoutAdapter.getConstraints(component), implIndex);
         }
         if (component.getId() != null) {
             componentByIds.put(component.getId(), component);
@@ -732,17 +702,23 @@ public class DesktopWindow implements Window, Component.Disposable,
             registerComponent(component);
         }
 
-        List<Component> componentsTempList = new ArrayList<>(ownComponents);
-        componentsTempList.add(index, component);
+        if (index == ownComponents.size()) {
+            ownComponents.add(component);
+        } else {
+            List<Component> componentsTempList = new ArrayList<>(ownComponents);
+            componentsTempList.add(index, component);
 
-        ownComponents.clear();
-        ownComponents.addAll(componentsTempList);
+            ownComponents.clear();
+            ownComponents.addAll(componentsTempList);
+        }
 
         DesktopContainerHelper.assignContainer(component, this);
 
         if (component instanceof DesktopAbstractComponent && !isEnabled()) {
             ((DesktopAbstractComponent) component).setParentEnabled(false);
         }
+
+        component.setParent(this);
 
         requestRepaint();
     }
@@ -775,7 +751,20 @@ public class DesktopWindow implements Window, Component.Disposable,
             expandedComponent = null;
         }
 
+        component.setParent(null);
+
         requestRepaint();
+    }
+
+    protected int getActualIndex(int originalIndex) {
+        int index = originalIndex;
+        Object[] components = ownComponents.toArray();
+        for (int i = 0; i < originalIndex; i++) {
+            if (DesktopContainerHelper.hasExternalCaption((Component) components[i])) {
+                index++;
+            }
+        }
+        return index;
     }
 
     @Override

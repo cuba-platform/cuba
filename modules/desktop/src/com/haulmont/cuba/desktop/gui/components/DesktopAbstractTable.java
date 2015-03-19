@@ -966,6 +966,8 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
             applyPermissions(columnComponent);
 
+            columnComponent.setParent(DesktopAbstractTable.this);
+
             return new EditableColumnTableCellEditor(columnComponent);
         }
 
@@ -1594,11 +1596,18 @@ public abstract class DesktopAbstractTable<C extends JXTable>
     public void setButtonsPanel(ButtonsPanel panel) {
         if (buttonsPanel != null) {
             topPanel.remove(DesktopComponentsHelper.unwrap(buttonsPanel));
+            buttonsPanel.setParent(null);
         }
         buttonsPanel = panel;
         if (panel != null) {
+            if (panel.getParent() != null && panel.getParent() != this) {
+                throw new IllegalStateException("Component already has parent");
+            }
+
             topPanel.add(DesktopComponentsHelper.unwrap(panel), BorderLayout.WEST);
             topPanel.setVisible(true);
+
+            panel.setParent(this);
         }
     }
 

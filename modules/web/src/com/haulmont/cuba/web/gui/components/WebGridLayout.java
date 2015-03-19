@@ -34,6 +34,10 @@ public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implemen
 
     @Override
     public void add(Component childComponent) {
+        if (childComponent.getParent() != null && childComponent.getParent() != this) {
+            throw new IllegalStateException("Component already has parent");
+        }
+
         final com.vaadin.ui.Component vComponent = WebComponentsHelper.getComposition(childComponent);
 
         component.addComponent(vComponent);
@@ -53,6 +57,8 @@ public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implemen
         }
 
         ownComponents.add(childComponent);
+
+        childComponent.setParent(this);
     }
 
     @Override
@@ -82,10 +88,14 @@ public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implemen
 
     @Override
     public void add(Component childComponent, int col, int row, int col2, int row2) {
-        final com.vaadin.ui.Component itmillComponent = WebComponentsHelper.getComposition(childComponent);
+        if (childComponent.getParent() != null && childComponent.getParent() != this) {
+            throw new IllegalStateException("Component already has parent");
+        }
 
-        component.addComponent(itmillComponent, col, row, col2, row2);
-        component.setComponentAlignment(itmillComponent, convertAlignment(childComponent.getAlignment()));
+        final com.vaadin.ui.Component vComponent = WebComponentsHelper.getComposition(childComponent);
+
+        component.addComponent(vComponent, col, row, col2, row2);
+        component.setComponentAlignment(vComponent, convertAlignment(childComponent.getAlignment()));
 
         if (childComponent.getId() != null) {
             componentByIds.put(childComponent.getId(), childComponent);
@@ -101,6 +111,8 @@ public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implemen
         }
 
         ownComponents.add(childComponent);
+
+        childComponent.setParent(this);
     }
 
     @Override
@@ -130,6 +142,8 @@ public class WebGridLayout extends WebAbstractComponent<CubaGridLayout> implemen
             componentByIds.remove(childComponent.getId());
         }
         ownComponents.remove(childComponent);
+
+        childComponent.setParent(null);
     }
 
     @Override

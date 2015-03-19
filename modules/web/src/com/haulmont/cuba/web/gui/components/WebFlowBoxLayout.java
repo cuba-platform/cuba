@@ -30,32 +30,15 @@ public class WebFlowBoxLayout extends WebAbstractComponent<CubaFlowLayout> imple
 
     @Override
     public void add(Component childComponent) {
-        if (ownComponents.contains(childComponent)) {
-            remove(childComponent);
-        }
-
-        final com.vaadin.ui.Component vaadinComponent = WebComponentsHelper.getComposition(childComponent);
-
-        component.addComponent(vaadinComponent);
-
-        if (childComponent.getId() != null) {
-            componentByIds.put(childComponent.getId(), childComponent);
-        }
-
-        if (frame != null) {
-            if (childComponent instanceof BelongToFrame
-                    && ((BelongToFrame) childComponent).getFrame() == null) {
-                ((BelongToFrame) childComponent).setFrame(frame);
-            } else {
-                frame.registerComponent(childComponent);
-            }
-        }
-
-        ownComponents.add(childComponent);
+        add(childComponent, ownComponents.size());
     }
 
     @Override
     public void add(Component childComponent, int index) {
+        if (childComponent.getParent() != null && childComponent.getParent() != this) {
+            throw new IllegalStateException("Component already has parent");
+        }
+
         if (ownComponents.contains(childComponent)) {
             int existingIndex = component.getComponentIndex(WebComponentsHelper.getComposition(childComponent));
             if (index > existingIndex) {
@@ -81,11 +64,17 @@ public class WebFlowBoxLayout extends WebAbstractComponent<CubaFlowLayout> imple
             }
         }
 
-        List<Component> componentsTempList = new ArrayList<>(ownComponents);
-        componentsTempList.add(index, childComponent);
+        if (index == ownComponents.size()) {
+            ownComponents.add(childComponent);
+        } else {
+            List<Component> componentsTempList = new ArrayList<>(ownComponents);
+            componentsTempList.add(index, childComponent);
 
-        ownComponents.clear();
-        ownComponents.addAll(componentsTempList);
+            ownComponents.clear();
+            ownComponents.addAll(componentsTempList);
+        }
+
+        childComponent.setParent(this);
     }
 
     @Override
@@ -95,6 +84,8 @@ public class WebFlowBoxLayout extends WebAbstractComponent<CubaFlowLayout> imple
             componentByIds.remove(childComponent.getId());
         }
         ownComponents.remove(childComponent);
+
+        childComponent.setParent(null);
     }
 
     @Override

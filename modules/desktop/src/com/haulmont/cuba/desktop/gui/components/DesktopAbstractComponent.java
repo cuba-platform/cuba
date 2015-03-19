@@ -33,20 +33,22 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
     public static final String SWING_PROPERTY_CLASS = "cubaClass";
     public static final String SWING_PROPERTY_ID = "cubaId";
 
+    protected Log log = LogFactory.getLog(getClass());
+
     protected C impl;
 
     protected DesktopContainer container;
 
     protected String id;
     protected IFrame frame;
+    protected Component parent;
+
     protected Element xmlDescriptor;
 
     protected ComponentSize widthSize;
     protected ComponentSize heightSize;
 
     protected Alignment alignment;
-
-    protected Log log = LogFactory.getLog(getClass());
 
     protected boolean visible = true;
     protected boolean enabled = true;
@@ -61,6 +63,16 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
 
     protected String getSwingPropertyId() {
         return SWING_PROPERTY_ID;
+    }
+
+    @Override
+    public Component getParent() {
+        return parent;
+    }
+
+    @Override
+    public void setParent(Component parent) {
+        this.parent = parent;
     }
 
     @SuppressWarnings("unchecked")

@@ -26,10 +26,12 @@ import java.util.regex.Pattern;
  */
 public class ParamWrapper implements Component.HasValue {
 
+    public static final Pattern LIKE_PATTERN = Pattern.compile("\\slike\\s+" + ParametersHelper.QUERY_PARAMETERS_RE);
+
     protected final AbstractCondition condition;
     protected final Param param;
 
-    public static final Pattern LIKE_PATTERN = Pattern.compile("\\slike\\s+" + ParametersHelper.QUERY_PARAMETERS_RE);
+    protected Component parent;
 
     protected ParamWrapper(AbstractCondition condition, Param param) {
         this.condition = condition;
@@ -129,6 +131,16 @@ public class ParamWrapper implements Component.HasValue {
 
     @Override
     public void setId(String id) {
+    }
+
+    @Override
+    public Component getParent() {
+        return parent;
+    }
+
+    @Override
+    public void setParent(Component parent) {
+        this.parent = parent;
     }
 
     @Override

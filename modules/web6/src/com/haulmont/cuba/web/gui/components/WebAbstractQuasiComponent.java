@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.QuasiComponent;
 
 /**
@@ -13,6 +14,7 @@ import com.haulmont.cuba.gui.components.QuasiComponent;
 public abstract class WebAbstractQuasiComponent implements QuasiComponent {
 
     private String id;
+    private Component parent;
 
     @Override
     public String getId() {
@@ -22,6 +24,16 @@ public abstract class WebAbstractQuasiComponent implements QuasiComponent {
     @Override
     public void setId(String id) {
         this.id = id;
+    }
+
+    @Override
+    public Component getParent() {
+        return parent;
+    }
+
+    @Override
+    public void setParent(Component parent) {
+        this.parent = parent;
     }
 
     @Override

@@ -109,6 +109,10 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> imple
 
     @Override
     public Tab addTab(String name, Component component) {
+        if (component.getParent() != null && component.getParent() != this) {
+            throw new IllegalStateException("Component already has parent");
+        }
+
         final TabImpl tab = new TabImpl(name, component, false);
 
         tabs.add(tab);
@@ -137,6 +141,8 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> imple
         }
 
         adjustTabSize(component);
+
+        component.setParent(this);
 
         return tab;
     }
@@ -272,6 +278,8 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> imple
         if (component instanceof DesktopAbstractComponent && !isEnabledWithParent()) {
             ((DesktopAbstractComponent) component).setParentEnabled(true);
         }
+
+        component.setParent(null);
     }
 
     protected TabImpl getTabImpl(String name) {
@@ -377,6 +385,8 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> imple
         comp.setWidth("100%");
         lti.tabContent.add(comp);
         lti.tabContent.expand(comp, "", "");
+
+        comp.setParent(this);
 
         if (comp instanceof DesktopAbstractComponent && !isEnabledWithParent()) {
             ((DesktopAbstractComponent) comp).setParentEnabled(false);

@@ -254,6 +254,15 @@ public class DesktopPopupButton extends DesktopAbstractActionsHolderComponent<JB
         }
 
         @Override
+        public Component getParent() {
+            return null;
+        }
+
+        @Override
+        public void setParent(Component parent) {
+        }
+
+        @Override
         public String getDebugId() {
             return getId();
         }
