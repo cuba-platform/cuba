@@ -373,7 +373,9 @@ configure(webModule) {
         compile(group: 'org.springframework', name: 'spring-webmvc', version: springVersion)
         compile(group: 'org.json', name: 'json', version: '20090211')
 
-        compile(vaadinShared)
+        compile(vaadinShared) {
+            exclude(group: 'com.vaadin.external.google', module: 'guava')
+        }
         compile(vaadinServer) {
             exclude(group: 'com.vaadin', module: 'vaadin-sass-compiler')
         }
