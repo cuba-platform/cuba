@@ -1376,7 +1376,6 @@ public class DesktopWindowManager extends WindowManager {
                 }
             }
         });
-        dialog.setVisible(true);
         dialog.setLocationRelativeTo(frame);
 
         boolean modal = true;
@@ -1394,6 +1393,8 @@ public class DesktopWindowManager extends WindowManager {
                 lastDialogWindow.disableWindow(null);
             }
         }
+
+        dialog.setVisible(true);
     }
 
     protected Icon convertMessageType(MessageType messageType) {
