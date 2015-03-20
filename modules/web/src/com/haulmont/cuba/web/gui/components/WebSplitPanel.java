@@ -40,25 +40,7 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
         }
 
         if (component == null) {
-            if (orientation == SplitPanel.ORIENTATION_HORIZONTAL) {
-                component = new CubaHorizontalSplitPanel() {
-                    @Override
-                    protected void onPositionUpdate(float previousPosition, float newPosition) {
-                        super.onPositionUpdate(previousPosition, newPosition);
-
-                        firePositionUpdateListener(previousPosition, newPosition);
-                    }
-                };
-            } else {
-                component = new VerticalSplitPanel() {
-                    @Override
-                    protected void onPositionUpdate(float previousPosition, float newPosition) {
-                        super.onPositionUpdate(previousPosition, newPosition);
-
-                        firePositionUpdateListener(previousPosition, newPosition);
-                    }
-                };
-            }
+            createComponentImpl();
         }
         if (getId() != null) {
             component.setCubaId(getId());
@@ -86,6 +68,28 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
         ownComponents.add(childComponent);
 
         childComponent.setParent(this);
+    }
+
+    protected void createComponentImpl() {
+        if (orientation == SplitPanel.ORIENTATION_HORIZONTAL) {
+            component = new CubaHorizontalSplitPanel() {
+                @Override
+                protected void onPositionUpdate(float previousPosition, float newPosition) {
+                    super.onPositionUpdate(previousPosition, newPosition);
+
+                    firePositionUpdateListener(previousPosition, newPosition);
+                }
+            };
+        } else {
+            component = new VerticalSplitPanel() {
+                @Override
+                protected void onPositionUpdate(float previousPosition, float newPosition) {
+                    super.onPositionUpdate(previousPosition, newPosition);
+
+                    firePositionUpdateListener(previousPosition, newPosition);
+                }
+            };
+        }
     }
 
     protected void firePositionUpdateListener(float previousPosition, float newPosition) {
@@ -192,6 +196,10 @@ public class WebSplitPanel extends WebAbstractComponent<AbstractSplitPanel> impl
     @Override
     public void setOrientation(int orientation) {
         this.orientation = orientation;
+
+        if (component == null) {
+            createComponentImpl();
+        }
     }
 
     @Override
