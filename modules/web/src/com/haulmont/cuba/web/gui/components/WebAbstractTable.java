@@ -27,7 +27,9 @@ import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.presentations.PresentationsImpl;
+import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.security.entity.Presentation;
+import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.gui.CompositionLayout;
 import com.haulmont.cuba.web.gui.components.presentations.TablePresentations;
@@ -459,8 +461,15 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         component.setImmediate(true);
         component.setValidationVisible(false);
         component.setPageLength(15);
+
+        int defaultRowHeaderWidth = 16;
+        ThemeConstants theme = App.getInstance().getThemeConstants();
+        if (theme != null) {
+            defaultRowHeaderWidth = theme.getInt("cuba.web.Table.defaultRowHeaderWidth");
+        }
+
         // CAUTION: vaadin considers null as row header property id;
-        component.setColumnWidth(null, 16);
+        component.setColumnWidth(null, defaultRowHeaderWidth); // todo get width from theme
 
         contextMenuPopup.setParent(component);
         component.setContextMenuPopup(contextMenuPopup);
