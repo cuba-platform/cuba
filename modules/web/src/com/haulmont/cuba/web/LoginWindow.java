@@ -24,9 +24,6 @@ import com.haulmont.cuba.web.toolkit.ui.CubaCheckBox;
 import com.vaadin.data.Property;
 import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
-import com.vaadin.server.VaadinService;
-import com.vaadin.server.VaadinSession;
-import com.vaadin.server.WrappedSession;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -542,13 +539,6 @@ public class LoginWindow extends UIView implements Action.Handler {
                     app.removeCookie(COOKIE_LOGIN);
                     app.removeCookie(COOKIE_PASSWORD);
                 }
-            }
-
-            if (webConfig.getUseSessionFixationProtection()) {
-                VaadinService.reinitializeSession(VaadinService.getCurrentRequest());
-
-                WrappedSession session = VaadinSession.getCurrent().getSession();
-                session.setMaxInactiveInterval(webConfig.getHttpSessionExpirationTimeoutSec());
             }
         }
     }

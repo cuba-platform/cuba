@@ -13,6 +13,9 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.web.auth.ActiveDirectoryConnection;
 import com.haulmont.cuba.web.auth.ActiveDirectoryHelper;
+import com.vaadin.server.VaadinService;
+import com.vaadin.server.VaadinSession;
+import com.vaadin.server.WrappedSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -46,6 +49,13 @@ public class DefaultApp extends App implements ConnectionListener {
     @Override
     public void connectionStateChanged(Connection connection) throws LoginException {
         if (connection.isConnected()) {
+            if (webConfig.getUseSessionFixationProtection()) {
+                VaadinService.reinitializeSession(VaadinService.getCurrentRequest());
+
+                WrappedSession session = VaadinSession.getCurrent().getSession();
+                session.setMaxInactiveInterval(webConfig.getHttpSessionExpirationTimeoutSec());
+            }
+
             log.debug("Creating AppWindow");
 
             initExceptionHandlers(true);

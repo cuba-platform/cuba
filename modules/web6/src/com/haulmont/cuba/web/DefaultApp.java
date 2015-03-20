@@ -14,6 +14,7 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.web.auth.ActiveDirectoryConnection;
 import com.haulmont.cuba.web.auth.ActiveDirectoryHelper;
+import com.haulmont.cuba.web.sys.CubaApplicationContext;
 import com.haulmont.cuba.web.toolkit.Timer;
 import com.vaadin.service.ApplicationContext;
 import com.vaadin.ui.Window;
@@ -128,6 +129,13 @@ public class DefaultApp extends App implements ConnectionListener {
     @Override
     public void connectionStateChanged(Connection connection) throws LoginException {
         if (connection.isConnected()) {
+            if (webConfig.getUseSessionFixationProtection()) {
+                CubaApplicationContext context = (CubaApplicationContext) App.getInstance().getContext();
+                context.reinitializeSession();
+
+                context.getHttpSession().setMaxInactiveInterval(webConfig.getHttpSessionExpirationTimeoutSec());
+            }
+
             log.debug("Creating AppWindow");
 
             getTimers().stopAll();

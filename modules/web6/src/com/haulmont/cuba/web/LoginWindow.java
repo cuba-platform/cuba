@@ -15,7 +15,6 @@ import com.haulmont.cuba.web.auth.ActiveDirectoryConnection;
 import com.haulmont.cuba.web.auth.ActiveDirectoryHelper;
 import com.haulmont.cuba.web.auth.CubaAuthProvider;
 import com.haulmont.cuba.web.auth.DomainAliasesResolver;
-import com.haulmont.cuba.web.sys.CubaApplicationContext;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.vaadin.data.Property;
 import com.vaadin.event.Action;
@@ -486,13 +485,6 @@ public class LoginWindow extends Window implements Action.Handler {
                     app.removeCookie(COOKIE_LOGIN);
                     app.removeCookie(COOKIE_PASSWORD);
                 }
-            }
-
-            if (webConfig.getUseSessionFixationProtection()) {
-                CubaApplicationContext context = (CubaApplicationContext) App.getInstance().getContext();
-                context.reinitializeSession();
-
-                context.getHttpSession().setMaxInactiveInterval(webConfig.getHttpSessionExpirationTimeoutSec());
             }
         }
     }
