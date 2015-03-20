@@ -25,19 +25,21 @@ public class TrustedLoginHandler {
 
     protected Pattern permittedIpMaskPattern;
 
+    @Inject
+    public void setServerConfig(ServerConfig serverConfig) {
+        String permittedIpList = serverConfig.getTrustedClientPermittedIpList();
+        permittedIpList = convertToRegex(permittedIpList);
+        if (StringUtils.isEmpty(permittedIpList)) {
+            permittedIpList = serverConfig.getTrustedClientPermittedIpMask();
+        }
+        permittedIpMaskPattern = Pattern.compile(permittedIpList);
+    }
+
     /**
      * @param address   ip-address
      * @return          true if address in trusted list
      */
     public boolean checkAddress(String address) {
-        if (permittedIpMaskPattern == null) {
-            String permittedIpList = serverConfig.getTrustedClientPermittedIpList();
-            permittedIpList = convertToRegex(permittedIpList);
-            if (StringUtils.isEmpty(permittedIpList)) {
-                permittedIpList = serverConfig.getTrustedClientPermittedIpMask();
-            }
-            permittedIpMaskPattern = Pattern.compile(permittedIpList);
-        }
         return permittedIpMaskPattern.matcher(address).matches();
     }
 
