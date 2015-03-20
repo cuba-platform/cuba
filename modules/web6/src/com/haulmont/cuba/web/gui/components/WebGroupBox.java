@@ -84,6 +84,10 @@ public class WebGroupBox extends WebAbstractComponent<GroupBox> implements Group
 
     @Override
     public void add(Component childComponent, int index) {
+        if (childComponent.getParent() != null && childComponent.getParent() != this) {
+            throw new IllegalStateException("Component already has parent");
+        }
+
         AbstractOrderedLayout newContent = null;
         if (orientation == Orientation.VERTICAL && !(component.getContent() instanceof VerticalActionsLayout)) {
             newContent = new VerticalActionsLayout();
@@ -133,6 +137,8 @@ public class WebGroupBox extends WebAbstractComponent<GroupBox> implements Group
             ownComponents.clear();
             ownComponents.addAll(componentsTempList);
         }
+
+        childComponent.setParent(this);
     }
 
     @Override
@@ -142,6 +148,8 @@ public class WebGroupBox extends WebAbstractComponent<GroupBox> implements Group
             componentByIds.remove(childComponent.getId());
         }
         ownComponents.remove(childComponent);
+
+        childComponent.setParent(null);
     }
 
     @Override

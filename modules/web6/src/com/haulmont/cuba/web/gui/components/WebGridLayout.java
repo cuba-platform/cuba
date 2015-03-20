@@ -29,6 +29,10 @@ public class WebGridLayout extends WebAbstractComponent<com.vaadin.ui.GridLayout
 
     @Override
     public void add(Component childComponent) {
+        if (childComponent.getParent() != null && childComponent.getParent() != this) {
+            throw new IllegalStateException("Component already has parent");
+        }
+
         final com.vaadin.ui.Component itmillComponent = WebComponentsHelper.getComposition(childComponent);
 
         component.addComponent(itmillComponent);
@@ -48,6 +52,8 @@ public class WebGridLayout extends WebAbstractComponent<com.vaadin.ui.GridLayout
         }
 
         ownComponents.add(childComponent);
+
+        childComponent.setParent(this);
     }
 
     @Override
@@ -77,6 +83,10 @@ public class WebGridLayout extends WebAbstractComponent<com.vaadin.ui.GridLayout
 
     @Override
     public void add(Component childComponent, int col, int row, int col2, int row2) {
+        if (childComponent.getParent() != null && childComponent.getParent() != this) {
+            throw new IllegalStateException("Component already has parent");
+        }
+
         final com.vaadin.ui.Component vComponent = WebComponentsHelper.getComposition(childComponent);
 
         component.addComponent(vComponent, col, row, col2, row2);
@@ -96,6 +106,8 @@ public class WebGridLayout extends WebAbstractComponent<com.vaadin.ui.GridLayout
         }
 
         ownComponents.add(childComponent);
+
+        childComponent.setParent(this);
     }
 
     @Override
@@ -125,6 +137,8 @@ public class WebGridLayout extends WebAbstractComponent<com.vaadin.ui.GridLayout
             componentByIds.remove(childComponent.getId());
         }
         ownComponents.remove(childComponent);
+
+        childComponent.setParent(null);
     }
 
     @SuppressWarnings("unchecked")

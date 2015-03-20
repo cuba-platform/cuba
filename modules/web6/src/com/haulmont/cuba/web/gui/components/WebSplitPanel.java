@@ -59,6 +59,10 @@ public class WebSplitPanel extends WebAbstractComponent<com.vaadin.ui.SplitPanel
 
     @Override
     public void add(Component childComponent) {
+        if (childComponent.getParent() != null && childComponent.getParent() != this) {
+            throw new IllegalStateException("Component already has parent");
+        }
+
         final com.vaadin.ui.Component itmillComponent = WebComponentsHelper.getComposition(childComponent);
 
         component.addComponent(itmillComponent);
@@ -77,6 +81,8 @@ public class WebSplitPanel extends WebAbstractComponent<com.vaadin.ui.SplitPanel
         }
 
         ownComponents.add(childComponent);
+
+        childComponent.setParent(this);
     }
 
     @Override
@@ -86,6 +92,8 @@ public class WebSplitPanel extends WebAbstractComponent<com.vaadin.ui.SplitPanel
             componentByIds.remove(childComponent.getId());
         }
         ownComponents.remove(childComponent);
+
+        childComponent.setParent(null);
     }
 
     @Override

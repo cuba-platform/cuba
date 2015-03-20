@@ -33,6 +33,10 @@ public abstract class WebAbstractBox extends WebAbstractComponent<AbstractOrdere
 
     @Override
     public void add(Component childComponent, int index) {
+        if (childComponent.getParent() != null && childComponent.getParent() != this) {
+            throw new IllegalStateException("Component already has parent");
+        }
+
         if (ownComponents.contains(childComponent)) {
             int existingIndex = component.getComponentIndex(WebComponentsHelper.getComposition(childComponent));
             if (index > existingIndex) {
@@ -68,6 +72,8 @@ public abstract class WebAbstractBox extends WebAbstractComponent<AbstractOrdere
             ownComponents.clear();
             ownComponents.addAll(componentsTempList);
         }
+
+        childComponent.setParent(this);
     }
 
     @Override
@@ -77,6 +83,8 @@ public abstract class WebAbstractBox extends WebAbstractComponent<AbstractOrdere
             componentByIds.remove(childComponent.getId());
         }
         ownComponents.remove(childComponent);
+
+        childComponent.setParent(null);
     }
 
     @Override
