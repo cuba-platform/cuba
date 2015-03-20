@@ -49,7 +49,29 @@ public class WebComponentsHelper {
         } else if (resURL.startsWith("jar:")) {
             return new ClassResource(resURL.substring("jar:".length()));
         } else if (resURL.startsWith("theme:")) {
-            return new VersionedThemeResource(resURL.substring("theme:".length()));
+            String resourceId = resURL.substring("theme:".length());
+
+            Configuration configuration = AppBeans.get(Configuration.NAME);
+            WebConfig webConfig = configuration.getConfig(WebConfig.class);
+
+            if (webConfig.getUseFontIcons()) {
+                String fontIcon;
+
+                ThemeConstants themeConstants = App.getInstance().getThemeConstants();
+                String iconKey = "cuba.web." + StringUtils.replace(resourceId, "/", ".");
+                fontIcon = themeConstants.get(iconKey);
+
+                if (StringUtils.isNotEmpty(fontIcon)) {
+                    try {
+                        Field fontIconField = FontAwesome.class.getDeclaredField(fontIcon);
+                        return (Resource) fontIconField.get(null);
+                    } catch (NoSuchFieldException | IllegalAccessException e) {
+                        LogFactory.getLog(WebComponentsHelper.class).warn("Unable to use font icon " + fontIcon);
+                    }
+                }
+            }
+
+            return new VersionedThemeResource(resourceId);
         } else if (resURL.startsWith("font-icon:")) {
             String fontIcon = resURL.substring("font-icon:".length());
 
