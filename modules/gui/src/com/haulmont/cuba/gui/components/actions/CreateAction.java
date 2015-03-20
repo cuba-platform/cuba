@@ -42,6 +42,24 @@ public class CreateAction extends BaseAction implements Action.HasOpenType {
 
     protected Metadata metadata;
 
+    protected AfterCommitHandler afterCommitHandler;
+
+    protected AfterWindowClosedHandler afterWindowClosedHandler;
+
+    public interface AfterCommitHandler {
+        /**
+         * @param entity    new committed entity instance
+         */
+        void handle(Entity entity);
+    }
+
+    public interface AfterWindowClosedHandler {
+        /**
+         * @param window    the editor window
+         */
+        void handle(Window window);
+    }
+
     /**
      * The simplest constructor. The action has default name and opens the editor screen in THIS tab.
      * @param target    component containing this action
@@ -193,6 +211,9 @@ public class CreateAction extends BaseAction implements Action.HasOpenType {
                         }
                         target.setSelected(item);
                         afterCommit(item);
+                        if (afterCommitHandler != null) {
+                            afterCommitHandler.handle(item);
+                        }
                     }
                 }
 
@@ -200,6 +221,9 @@ public class CreateAction extends BaseAction implements Action.HasOpenType {
                 target.requestFocus();
 
                 afterWindowClosed(window);
+                if (afterWindowClosedHandler != null) {
+                    afterWindowClosedHandler.handle(window);
+                }
             }
         });
     }
@@ -280,5 +304,19 @@ public class CreateAction extends BaseAction implements Action.HasOpenType {
      * @param window    the editor window
      */
     protected void afterWindowClosed(Window window) {
+    }
+
+    /**
+     * @param afterCommitHandler handler that is invoked after the editor was commited and closed
+     */
+    public void setAfterCommitHandler(AfterCommitHandler afterCommitHandler) {
+        this.afterCommitHandler = afterCommitHandler;
+    }
+
+    /**
+     * @param afterWindowClosedHandler handler that is always invoked after the editor closed
+     */
+    public void setAfterWindowClosedHandler(AfterWindowClosedHandler afterWindowClosedHandler) {
+        this.afterWindowClosedHandler = afterWindowClosedHandler;
     }
 }

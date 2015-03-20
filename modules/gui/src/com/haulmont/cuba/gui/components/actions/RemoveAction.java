@@ -42,6 +42,15 @@ public class RemoveAction extends ItemTrackingAction {
 
     protected Security security = AppBeans.get(Security.NAME);
 
+    protected AfterRemoveHandler afterRemoveHandler;
+
+    public interface AfterRemoveHandler {
+        /**
+         * @param removedItems  set of removed instances
+         */
+        void handle(Set removedItems);
+    }
+
     /**
      * The simplest constructor. The action has default name and autocommit=true.
      * @param target    component containing this action
@@ -139,6 +148,9 @@ public class RemoveAction extends ItemTrackingAction {
                                 target.requestFocus();
 
                                 afterRemove(selected);
+                                if (afterRemoveHandler != null) {
+                                    afterRemoveHandler.handle(selected);
+                                }
                             }
                         },
                         new DialogAction(DialogAction.Type.CANCEL) {
@@ -225,5 +237,12 @@ public class RemoveAction extends ItemTrackingAction {
      * @param selected  set of removed instances
      */
     protected void afterRemove(Set selected) {
+    }
+
+    /**
+     * @param afterRemoveHandler handler that is invoked after remove
+     */
+    public void setAfterRemoveHandler(AfterRemoveHandler afterRemoveHandler) {
+        this.afterRemoveHandler = afterRemoveHandler;
     }
 }
