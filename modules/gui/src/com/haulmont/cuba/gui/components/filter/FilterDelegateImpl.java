@@ -140,7 +140,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected boolean editable;
     protected FilterMode filterMode;
     protected boolean editActionEnabled;
-    protected Integer columnsQty;
+    protected Integer columnsCount;
     protected String initialWindowCaption;
     protected String conditionsLocation;
 
@@ -663,14 +663,14 @@ public class FilterDelegateImpl implements FilterDelegate {
             return;
         }
 
-        //note that this is not grid columns qty, but qty of conditions (label cell + value cell) in one row
-        int conditionsQty = getColumnsQty();
+        //note that this is not grid columns count, but number of conditions (label cell + value cell) in one row
+        int conditionsCount = getColumnsCount();
         int row = 0;
         int nextColumnStart = 0;
         GridLayout grid = componentsFactory.createComponent(GridLayout.NAME);
-        grid.setColumns(conditionsQty * 2);
+        grid.setColumns(conditionsCount * 2);
         //set expand ratio only for cells with param edit components
-        for (int i = 0; i < conditionsQty; i++) {
+        for (int i = 0; i < conditionsCount; i++) {
             grid.setColumnExpandRatio(i * 2 + 1, 1);
         }
         grid.setRows(1);
@@ -726,9 +726,9 @@ public class FilterDelegateImpl implements FilterDelegate {
             }
 
             //groupBox for group conditions must occupy the whole line in conditions grid
-            Integer conditionWidth = condition.isGroup() ? conditionsQty : condition.getWidth();
+            Integer conditionWidth = condition.isGroup() ? conditionsCount : condition.getWidth();
             int nextColumnEnd = nextColumnStart + conditionWidth - 1;
-            if (nextColumnEnd >= conditionsQty) {
+            if (nextColumnEnd >= conditionsCount) {
                 //complete current row in grid with gaps if next cell will be on next row
                 completeGridRowWithGaps(grid, row, nextColumnStart);
                 //place cell to next row in grid
@@ -754,7 +754,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
             //add next row if necessary
             if (i < visibleConditionNodes.size() - 1) {
-                if (nextColumnStart >= conditionsQty) {
+                if (nextColumnStart >= conditionsCount) {
                     nextColumnStart = 0;
                     row++;
                     grid.setRows(row + 1);
@@ -1523,13 +1523,13 @@ public class FilterDelegateImpl implements FilterDelegate {
     }
 
     @Override
-    public Integer getColumnsQty() {
-        return columnsQty != null ? columnsQty : clientConfig.getGenericFilterColumnsQty();
+    public Integer getColumnsCount() {
+        return columnsCount != null ? columnsCount : clientConfig.getGenericFilterColumnsCount();
     }
 
     @Override
-    public void setColumnsQty(int columnsQty) {
-        this.columnsQty = columnsQty;
+    public void setColumnsCount(int columnsCount) {
+        this.columnsCount = columnsCount;
     }
 
     @Override

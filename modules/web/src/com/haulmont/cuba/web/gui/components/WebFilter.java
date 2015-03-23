@@ -7,6 +7,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Filter;
+import com.haulmont.cuba.gui.components.FilterImpl;
 import com.haulmont.cuba.gui.components.filter.FilterDelegate;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.security.entity.FilterEntity;
@@ -26,7 +27,7 @@ import java.util.List;
  * @author krivopustov
  * @version $Id$
  */
-public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> implements Filter {
+public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> implements Filter, FilterImpl {
 
     protected FilterDelegate delegate;
 
@@ -103,16 +104,6 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
     @Override
     public boolean isEditable() {
         return delegate.isEditable();
-    }
-
-    @Override
-    public void setRequired(boolean required) {
-
-    }
-
-    @Override
-    public boolean isRequired() {
-        return false;
     }
 
     @Override
@@ -226,12 +217,12 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
     }
 
     @Override
-    public void setColumnsQty(int columnsQty) {
-        delegate.setColumnsQty(columnsQty);
+    public void setColumnsCount(int columnsCount) {
+        delegate.setColumnsCount(columnsCount);
     }
 
     @Override
-    public int getColumnsQty() {
-        return delegate.getColumnsQty();
+    public int getColumnsCount() {
+        return delegate.getColumnsCount();
     }
 }

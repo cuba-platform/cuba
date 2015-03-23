@@ -31,11 +31,6 @@ public interface Filter
     boolean apply(boolean isNewWindow);
 
     /**
-     * Low-level method, don't invoke from application code
-     */
-    void loadFiltersAndApplyDefault();
-
-    /**
      * Whether to show field for rows count restriction.
      * <p>Automatically set to false for {@code HierarchicalDatasource}.
      */
@@ -51,9 +46,6 @@ public interface Filter
     void setEditable(boolean editable);
     boolean isEditable();
 
-    void setRequired(boolean required);
-    boolean isRequired();
-
     void setFolderActionsEnabled(boolean enabled);
     boolean isFolderActionsEnabled();
 
@@ -66,6 +58,6 @@ public interface Filter
     /**
      * Number of conditions to be displayed in one row
      */
-    void setColumnsQty(int columnsQty);
-    int getColumnsQty();
+    void setColumnsCount(int columnsCount);
+    int getColumnsCount();
 }

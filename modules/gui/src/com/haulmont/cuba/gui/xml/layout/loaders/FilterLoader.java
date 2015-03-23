@@ -8,6 +8,7 @@ import com.google.common.base.Strings;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Filter;
+import com.haulmont.cuba.gui.components.FilterImpl;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -48,17 +49,12 @@ public class FilterLoader extends ComponentLoader {
         final String manualApplyRequired = element.attributeValue("manualApplyRequired");
         filter.setManualApplyRequired(BooleanUtils.toBooleanObject(manualApplyRequired));
 
-        String requiredAttr = element.attributeValue("required");
-        Boolean required = BooleanUtils.toBooleanObject(requiredAttr);
-        if (required != null)
-            filter.setRequired(required);
-
         String editable = element.attributeValue("editable");
         filter.setEditable(editable == null || Boolean.valueOf(editable));
 
-        String columnsQty = element.attributeValue("columnsQty");
+        String columnsQty = element.attributeValue("columnsCount");
         if (!Strings.isNullOrEmpty(columnsQty))
-            filter.setColumnsQty(Integer.valueOf(columnsQty));
+            filter.setColumnsCount(Integer.valueOf(columnsQty));
 
         String folderActionsEnabled = element.attributeValue("folderActionsEnabled");
         if (folderActionsEnabled != null) {
@@ -94,7 +90,7 @@ public class FilterLoader extends ComponentLoader {
                 new PostInitTask() {
                     @Override
                     public void execute(Context context, IFrame window) {
-                        filter.loadFiltersAndApplyDefault();
+                        ((FilterImpl)filter).loadFiltersAndApplyDefault();
                     }
                 }
         );

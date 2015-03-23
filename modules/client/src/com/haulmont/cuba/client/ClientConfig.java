@@ -118,9 +118,9 @@ public interface ClientConfig extends Config {
     /**
      * @return Number of columns with conditions in generic filter UI component.
      */
-    @Property("cuba.gui.genericFilterColumnsQty")
+    @Property("cuba.gui.genericFilterColumnsCount")
     @DefaultInt(3)
-    int getGenericFilterColumnsQty();
+    int getGenericFilterColumnsCount();
 
     /**
      * @return location of panel with conditions in generic filter component.

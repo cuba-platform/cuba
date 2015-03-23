@@ -77,7 +77,7 @@ public interface FilterDelegate {
 
     List<Filter.FilterEntityChangeListener> getFilterEntityChangeListeners();
 
-    Integer getColumnsQty();
+    Integer getColumnsCount();
 
-    void setColumnsQty(int columnsQty);
+    void setColumnsCount(int columnsCount);
 }
