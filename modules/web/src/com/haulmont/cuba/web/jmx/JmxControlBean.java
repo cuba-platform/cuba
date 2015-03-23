@@ -16,6 +16,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.ManagedBean;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.management.*;
 import java.io.IOException;
@@ -125,16 +126,8 @@ public class JmxControlBean implements JmxControlAPI {
                 List<ManagedBeanInfo> infoList = new ArrayList<>();
                 for (ObjectName name : names) {
                     MBeanInfo info = connection.getMBeanInfo(name);
-                    ManagedBeanInfo mbi = new ManagedBeanInfo();
-                    mbi.setClassName(info.getClassName());
-                    mbi.setDescription(info.getDescription());
-                    mbi.setObjectName(name.toString());
-                    mbi.setDomain(name.getDomain());
-                    mbi.setPropertyList(name.getKeyPropertyListString());
-                    mbi.setJmxInstance(jmx);
-
+                    ManagedBeanInfo mbi = createManagedBeanInfo(jmx, name, info);
                     loadOperations(mbi, info);
-
                     infoList.add(mbi);
                 }
 
@@ -144,6 +137,43 @@ public class JmxControlBean implements JmxControlAPI {
         });
 
         return infos;
+    }
+
+    @Override
+    public ManagedBeanInfo getManagedBean(JmxInstance instance, final String beanObjectName) {
+        checkNotNullArgument(instance);
+        checkNotNullArgument(beanObjectName);
+
+        //noinspection UnnecessaryLocalVariable
+        ManagedBeanInfo info = withConnection(instance, new JmxAction<ManagedBeanInfo>() {
+            @Override
+            public ManagedBeanInfo perform(JmxInstance jmx, MBeanServerConnection connection) throws Exception {
+                Set<ObjectName> names = connection.queryNames(new ObjectName(beanObjectName), null);
+                ManagedBeanInfo mbi = null;
+                if (!names.isEmpty())
+                {
+                    ObjectName name = names.iterator().next();
+                    MBeanInfo info = connection.getMBeanInfo(name);
+                    mbi = createManagedBeanInfo(jmx, name, info);
+                    loadOperations(mbi, info);
+                }
+
+                return mbi;
+            }
+        });
+
+        return info;
+    }
+
+    private ManagedBeanInfo createManagedBeanInfo(JmxInstance jmx, ObjectName name, MBeanInfo info) {
+        ManagedBeanInfo mbi = new ManagedBeanInfo();
+        mbi.setClassName(info.getClassName());
+        mbi.setDescription(info.getDescription());
+        mbi.setObjectName(name.toString());
+        mbi.setDomain(name.getDomain());
+        mbi.setPropertyList(name.getKeyPropertyListString());
+        mbi.setJmxInstance(jmx);
+        return mbi;
     }
 
     @Override
@@ -159,33 +189,7 @@ public class JmxControlBean implements JmxControlAPI {
                 List<ManagedBeanAttribute> attrs = new ArrayList<>();
                 MBeanAttributeInfo[] attributes = info.getAttributes();
                 for (MBeanAttributeInfo attribute : attributes) {
-                    ManagedBeanAttribute mba = new ManagedBeanAttribute();
-                    mba.setMbean(mbinfo);
-                    mba.setName(attribute.getName());
-                    mba.setType(cleanType(attribute.getType()));
-                    mba.setReadable(attribute.isReadable());
-                    mba.setWriteable(attribute.isWritable());
-
-                    String mask = "";
-                    if (attribute.isReadable()) {
-                        mask += "R";
-                    }
-                    if (attribute.isWritable()) {
-                        mask += "W";
-                    }
-                    mba.setReadableWriteable(mask);
-
-                    if (mba.getReadable()) {
-                        try {
-                            Object value = connection.getAttribute(name, mba.getName());
-                            setSerializableValue(mba, value);
-                        } catch (Exception e) {
-                            log.error(e);
-                            mba.setValue(e.getMessage());
-                            mba.setWriteable(false);
-                        }
-                    }
-
+                    ManagedBeanAttribute mba = createManagedBeanAttribute(connection, name, attribute, mbinfo);
                     attrs.add(mba);
                 }
                 Collections.sort(attrs, new AttributeComparator());
@@ -193,6 +197,62 @@ public class JmxControlBean implements JmxControlAPI {
                 return null;
             }
         });
+    }
+
+    @Override
+    public ManagedBeanAttribute loadAttribute(final ManagedBeanInfo mbinfo, final String attributeName) {
+        checkNotNullArgument(mbinfo);
+        checkNotNullArgument(attributeName);
+
+        //noinspection UnnecessaryLocalVariable
+        ManagedBeanAttribute attribute = withConnection(mbinfo.getJmxInstance(), new JmxAction<ManagedBeanAttribute>() {
+            @Override
+            public ManagedBeanAttribute perform(JmxInstance jmx, MBeanServerConnection connection) throws Exception {
+                ObjectName name = new ObjectName(mbinfo.getObjectName());
+                MBeanInfo info = connection.getMBeanInfo(name);
+                MBeanAttributeInfo[] attributes = info.getAttributes();
+                ManagedBeanAttribute res = null;
+                for (MBeanAttributeInfo attribute : attributes) {
+                    if (attribute.getName().equals(attributeName)) {
+                        res = createManagedBeanAttribute(connection, name, attribute, mbinfo);
+                        break;
+                    }
+
+                }
+                return res;
+            }
+        });
+        return attribute;
+    }
+
+    private ManagedBeanAttribute createManagedBeanAttribute(MBeanServerConnection connection, ObjectName name, MBeanAttributeInfo attribute, ManagedBeanInfo mbinfo) {
+        ManagedBeanAttribute mba = new ManagedBeanAttribute();
+        mba.setMbean(mbinfo);
+        mba.setName(attribute.getName());
+        mba.setType(cleanType(attribute.getType()));
+        mba.setReadable(attribute.isReadable());
+        mba.setWriteable(attribute.isWritable());
+
+        String mask = "";
+        if (attribute.isReadable()) {
+            mask += "R";
+        }
+        if (attribute.isWritable()) {
+            mask += "W";
+        }
+        mba.setReadableWriteable(mask);
+
+        if (mba.getReadable()) {
+            try {
+                Object value = connection.getAttribute(name, mba.getName());
+                setSerializableValue(mba, value);
+            } catch (Exception e) {
+                log.error(e);
+                mba.setValue(e.getMessage());
+                mba.setWriteable(false);
+            }
+        }
+        return mba;
     }
 
     @Override
@@ -220,6 +280,35 @@ public class JmxControlBean implements JmxControlAPI {
                 return null;
             }
         });
+    }
+
+    @Override
+    public ManagedBeanOperation getOperation(ManagedBeanInfo bean, String operationName, @Nullable String[] argTypes) {
+        checkNotNullArgument(bean);
+        checkNotNullArgument(operationName);
+
+        ManagedBeanOperation res=null;
+        for (ManagedBeanOperation op : bean.getOperations()) {
+            if (op.getName().equals(operationName)) {
+                List<ManagedBeanOperationParameter> args = op.getParameters();
+                if ((args.isEmpty() && argTypes==null) || args.size()==argTypes.length) {
+                    boolean isFound=true;
+                    for (int i = 0; i < args.size(); i++) {
+                        ManagedBeanOperationParameter arg = args.get(i);
+                        if (!arg.getType().equals(argTypes[i])) {
+                            isFound=false;
+                            break;
+                        }
+                    }
+                    if (isFound) {
+                        res = op;
+                        break;
+                    }
+                }
+            }
+
+        }
+        return res;
     }
 
     @Override

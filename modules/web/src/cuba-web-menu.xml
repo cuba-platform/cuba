@@ -23,6 +23,7 @@
         <separator/>
         <item id="jmxConsole"/>
         <item id="serverLog"/>
+        <item id="performanceStatistics"/>
     </menu>
 
     <menu id="help">

@@ -62,6 +62,7 @@
     <bean id="serviceInterceptor" class="com.haulmont.cuba.core.sys.ServiceInterceptor">
         <property name="userSessions" ref="cuba_UserSessions"/>
         <property name="persistence" ref="cuba_Persistence"/>
+        <property name="statisticsCounter" ref="cuba_StatisticsCounterMBean"/>
     </bean>
 
     <bean id="authenticationInterceptor" class="com.haulmont.cuba.security.sys.AuthenticationInterceptor">
@@ -129,6 +130,8 @@
                        value-ref="cuba_JmxLogControlMBean"/>
                 <entry key="${cuba.webContextName}.cuba:type=ClassLoaderManager"
                        value-ref="cuba_ClassLoaderManager"/>
+                <entry key="${cuba.webContextName}.cuba:type=StatisticsCounter"
+                       value-ref="cuba_StatisticsCounterMBean"/>
             </map>
         </property>
     </bean>

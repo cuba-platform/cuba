@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.auth.RequestContext;
+import com.haulmont.cuba.web.jmx.StatisticsCounterMBean;
 import com.vaadin.server.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,6 +41,9 @@ public class CubaApplicationServlet extends VaadinServlet {
 
     protected WebConfig webConfig;
 
+    //private StatisticsCounter statisticsCounter;
+    private StatisticsCounterMBean statisticsCounter;
+
     @Override
     protected VaadinServletService createServletService(DeploymentConfiguration deploymentConfiguration)
             throws ServiceException {
@@ -52,6 +56,7 @@ public class CubaApplicationServlet extends VaadinServlet {
     public void init(ServletConfig servletConfig) throws ServletException {
         Configuration configuration = AppBeans.get(Configuration.NAME);
         webConfig = configuration.getConfig(WebConfig.class);
+        statisticsCounter = AppBeans.get(StatisticsCounterMBean.class);
 
         super.init(servletConfig);
     }
@@ -139,6 +144,7 @@ public class CubaApplicationServlet extends VaadinServlet {
             httpSession.setAttribute(AppUI.LAST_REQUEST_PARAMS_ATTR, params);
         }
 
+        statisticsCounter.incWebClientRequestsCount();
         log.debug("Redirect to application " + httpSession.getId());
         response.addCookie(new Cookie("JSESSIONID", httpSession.getId()));
         response.sendRedirect(sb.toString());
@@ -148,6 +154,7 @@ public class CubaApplicationServlet extends VaadinServlet {
             throws ServletException, IOException {
         RequestContext.create(request, response);
         AppContext.setSecurityContext(new VaadinSessionAwareSecurityContext());
+        statisticsCounter.incWebClientRequestsCount();
 
         long startTs = System.currentTimeMillis();
 

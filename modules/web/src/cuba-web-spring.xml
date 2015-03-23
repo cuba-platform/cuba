@@ -39,6 +39,7 @@
                 <entry key="${cuba.webContextName}.cuba:type=JmxNodeIdentifier" value-ref="cuba_JmxNodeIdentifierMBean"/>
                 <entry key="${cuba.webContextName}.cuba:type=JmxLogControl" value-ref="cuba_JmxLogControlMBean"/>
                 <entry key="${cuba.webContextName}.cuba:type=ClassLoaderManager" value-ref="cuba_ClassLoaderManager"/>
+                <entry key="${cuba.webContextName}.cuba:type=StatisticsCounter" value-ref="cuba_StatisticsCounterMBean"/>
             </map>
         </property>
     </bean>

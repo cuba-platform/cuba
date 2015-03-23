@@ -7,6 +7,7 @@ package com.haulmont.cuba.core.sys.persistence;
 
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.entity.BaseEntity;
+import com.haulmont.cuba.core.sys.jmx.StatisticsCounterMBean;
 import com.haulmont.cuba.core.sys.listener.EntityListenerManager;
 import com.haulmont.cuba.core.sys.listener.EntityListenerType;
 import org.apache.openjpa.event.AbstractTransactionListener;
@@ -29,6 +30,9 @@ public class EntityTransactionListener extends AbstractTransactionListener {
     @Inject
     private EntityListenerManager manager;
 
+    @Inject
+    private StatisticsCounterMBean statisticsCounter;
+
     @Override
     public void beforeCommit(TransactionEvent event) {
         for (Object obj : ((OpenJPAEntityManagerSPI) persistence.getEntityManager().getDelegate()).getManagedObjects()) {
@@ -39,5 +43,20 @@ public class EntityTransactionListener extends AbstractTransactionListener {
             entity.setDetached(true);
             manager.fireListener(entity, EntityListenerType.BEFORE_DETACH);
         }
+    }
+
+    @Override
+    public void afterBegin(TransactionEvent event) {
+        statisticsCounter.incStartedTransactionsCount();
+    }
+
+    @Override
+    public void afterCommit(TransactionEvent event) {
+        statisticsCounter.incCommittedTransactionsCount();
+    }
+
+    @Override
+    public void afterRollback(TransactionEvent event) {
+        statisticsCounter.incRolledBackTransactionsCount();
     }
 }

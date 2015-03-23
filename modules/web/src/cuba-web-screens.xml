@@ -55,4 +55,10 @@
 
     <screen id="printDomain"
             class="com.haulmont.cuba.web.app.domain.DomainProvider"/>
+    
+    <screen id="performanceStatistics"
+            template="/com/haulmont/cuba/web/app/ui/statistics/statistics-window.xml" multipleOpen="true"/>
+
+    <screen id="threadsMonitoringWindow"
+            template="/com/haulmont/cuba/web/app/ui/statistics/threads-monitoring-window.xml" multipleOpen="true"/>
 </screen-config>

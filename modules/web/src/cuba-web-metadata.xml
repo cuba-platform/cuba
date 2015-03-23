@@ -12,6 +12,8 @@
         <class>com.haulmont.cuba.web.jmx.entity.ManagedBeanInfo</class>
         <class>com.haulmont.cuba.web.jmx.entity.ManagedBeanOperation</class>
         <class>com.haulmont.cuba.web.jmx.entity.ManagedBeanOperationParameter</class>
+        <class>com.haulmont.cuba.web.app.ui.statistics.PerformanceParameter</class>
+        <class>com.haulmont.cuba.web.app.ui.statistics.ThreadSnapshot</class>
     </metadata-model>
 
 </metadata>

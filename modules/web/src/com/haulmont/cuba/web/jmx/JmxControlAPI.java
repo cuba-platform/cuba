@@ -11,6 +11,7 @@ import com.haulmont.cuba.web.jmx.entity.ManagedBeanDomain;
 import com.haulmont.cuba.web.jmx.entity.ManagedBeanInfo;
 import com.haulmont.cuba.web.jmx.entity.ManagedBeanOperation;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -51,11 +52,28 @@ public interface JmxControlAPI {
     List<ManagedBeanInfo> getManagedBeans(JmxInstance instance);
 
     /**
+     * Loads the managed bean by its ObjectName
+     * @param instance JMX node descriptor
+     * @param beanObjectName exact ObjectName of the bean
+     * @return found managed bean, null if no bean found
+     */
+    ManagedBeanInfo getManagedBean(JmxInstance instance, String beanObjectName);
+
+    /**
      * Loads attributes for managed bean descriptor
      *
      * @param info     managed bean descriptor
      */
     void loadAttributes(ManagedBeanInfo info);
+
+    /**
+     * Loads attribute by its name. Note that the reference from ManagedBeanInfo
+     * to loaded ManagedBeanAttribute is not set.
+     *
+     * @param info     managed bean descriptor
+     * @return loaded attribute, null if no attribute found.
+     */
+    ManagedBeanAttribute loadAttribute(ManagedBeanInfo info, String attributeName);
 
     /**
      * Loads attribute value for managed bean attribute
@@ -70,6 +88,15 @@ public interface JmxControlAPI {
      * @param attribute attribute descriptor
      */
     void saveAttributeValue(ManagedBeanAttribute attribute);
+
+    /**
+     * Searches for the bean operation by its name and argument types.
+     * @param bean  managed bean descriptor
+     * @param operationName operation exact name
+     * @param argTypes operation argument types
+     * @return Found operation descriptor, null if not found
+     */
+    ManagedBeanOperation getOperation(ManagedBeanInfo bean, String operationName, @Nullable String[] argTypes);
 
     /**
      * Invokes method of managed bean
