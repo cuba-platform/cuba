@@ -15,10 +15,6 @@ import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
 import com.vaadin.ui.Layout;
 import org.dom4j.Element;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -157,52 +153,6 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
     }
 
     @Override
-    public void add(Component component) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void remove(Component component) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void removeAll() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public <T extends Component> T getOwnComponent(String id) {
-        return delegate.getOwnComponent(id);
-    }
-
-    @Nullable
-    @Override
-    public <T extends Component> T getComponent(String id) {
-        return delegate.getComponent(id);
-    }
-
-    @Nonnull
-    @Override
-    public <T extends Component> T getComponentNN(String id) {
-        T component = getComponent(id);
-        if (component == null) {
-            throw new IllegalArgumentException(String.format("Not found component with id '%s'", id));
-        }
-        return component;
-    }
-
-    @Override
-    public Collection<Component> getOwnComponents() {
-        return Collections.emptyList();
-    }
-
-    @Override
-    public Collection<Component> getComponents() {
-        return getOwnComponents();
-    }
-
-    @Override
     public void setParamValue(String paramName, Object value) {
         delegate.setParamValue(paramName, value);
     }
@@ -231,5 +181,4 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
     public int getColumnsCount() {
         return delegate.getColumnsCount();
     }
-
 }
