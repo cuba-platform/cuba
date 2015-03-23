@@ -142,7 +142,7 @@ public class ObjectContainer implements com.vaadin.data.Container {
 
         @Override
         public Property getItemProperty(Object id) {
-            throw new UnsupportedOperationException();
+            return null;
         }
 
         @Override

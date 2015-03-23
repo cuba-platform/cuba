@@ -81,7 +81,7 @@ public class ItemWrapper implements Item, Item.PropertySetChangeNotifier {
             final MetaProperty metaProperty = (MetaProperty) id;
             return properties.get(new MetaPropertyPath(metaClass, metaProperty));
         } else {
-            throw new UnsupportedOperationException("Unsupported item property: " + id);
+            return null;
         }
     }
 
