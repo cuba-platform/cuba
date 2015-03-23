@@ -13,7 +13,7 @@ import java.util.List;
  * @author krivopustov
  * @version $Id$
  */
-public interface Filter extends Component.Margin, Component.BelongToFrame, Component.HasNamedParts,
+public interface Filter extends Component.Margin, Component.BelongToFrame, Component.HasNamedComponents,
                                 Component.HasXmlDescriptor, Component.HasSettings, Component.HasCaption {
 
     String NAME = "filter";

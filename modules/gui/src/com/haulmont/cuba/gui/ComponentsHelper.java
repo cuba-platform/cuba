@@ -53,10 +53,10 @@ public abstract class ComponentsHelper {
                 final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
                 String subPath = ValuePathHelper.format(subList.toArray(new String[subList.size()]));
                 return ((Component.Container) innerComponent).getComponent(subPath);
-            } else if (innerComponent instanceof Component.HasNamedParts) {
+            } else if (innerComponent instanceof Component.HasNamedComponents) {
                 final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
                 String subPath = ValuePathHelper.format(subList.toArray(new String[subList.size()]));
-                return ((Component.HasNamedParts) innerComponent).getComponent(subPath);
+                return ((Component.HasNamedComponents) innerComponent).getComponent(subPath);
             } else if (innerComponent instanceof FieldGroup) {
                 final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
                 String subPath = ValuePathHelper.format(subList.toArray(new String[subList.size()]));
@@ -85,10 +85,10 @@ public abstract class ComponentsHelper {
                 final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
                 String subPath = ValuePathHelper.format(subList.toArray(new String[subList.size()]));
                 return ((Component.Container) innerComponent).getComponent(subPath);
-            } else if (innerComponent instanceof Component.HasNamedParts) {
+            } else if (innerComponent instanceof Component.HasNamedComponents) {
                 final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
                 String subPath = ValuePathHelper.format(subList.toArray(new String[subList.size()]));
-                return ((Component.HasNamedParts) innerComponent).getComponent(subPath);
+                return ((Component.HasNamedComponents) innerComponent).getComponent(subPath);
             } else if (innerComponent instanceof FieldGroup) {
                 final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
                 String subPath = ValuePathHelper.format(subList.toArray(new String[subList.size()]));
@@ -122,10 +122,10 @@ public abstract class ComponentsHelper {
                     final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
                     String subPath = ValuePathHelper.format(subList.toArray(new String[subList.size()]));
                     return ((com.haulmont.cuba.gui.components.Component.Container) innerComponent).getComponent(subPath);
-                } else if (innerComponent instanceof Component.HasNamedParts) {
+                } else if (innerComponent instanceof Component.HasNamedComponents) {
                     final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
                     String subPath = ValuePathHelper.format(subList.toArray(new String[subList.size()]));
-                    return ((Component.HasNamedParts) innerComponent).getComponent(subPath);
+                    return ((Component.HasNamedComponents) innerComponent).getComponent(subPath);
                 } else if (innerComponent instanceof com.haulmont.cuba.gui.components.FieldGroup) {
                     final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
                     String subPath = ValuePathHelper.format(subList.toArray(new String[subList.size()]));

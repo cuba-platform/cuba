@@ -127,7 +127,7 @@ public interface Component {
         Collection<Component> getComponents();
     }
 
-    interface HasNamedParts {
+    interface HasNamedComponents {
         /**
          * Get subcomponent by name.
          * @return component or null if not found
