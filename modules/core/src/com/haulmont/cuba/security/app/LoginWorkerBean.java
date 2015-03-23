@@ -114,21 +114,14 @@ public class LoginWorkerBean implements LoginWorker {
             if (!passwordEncryption.checkPassword(user, password))
                 throw new LoginException(getInvalidCredentialsMessage(login, locale));
 
+            Locale userLocale = locale;
             if (user.getLanguage() != null &&
                     BooleanUtils.isFalse(configuration.getConfig(GlobalConfig.class).getLocaleSelectVisible())) {
-                locale = new Locale(user.getLanguage());
+                userLocale = new Locale(user.getLanguage());
             }
 
-            UserSession session = userSessionManager.createSession(user, locale, false);
-            String clientTypeParam = (String) params.get(ClientType.class.getSimpleName());
-            if (ClientType.DESKTOP.name().equals(clientTypeParam) || ClientType.WEB.name().equals(clientTypeParam)) {
-                if (!session.isSpecificPermitted("cuba.gui.loginToClient")) {
-                    log.warn(String.format("Attempt of login to %s for user '%s' without cuba.gui.loginToClient permission",
-                            clientTypeParam, login));
-
-                    throw new LoginException(getInvalidCredentialsMessage(login, locale));
-                }
-            }
+            UserSession session = userSessionManager.createSession(user, userLocale, false);
+            checkPermissions(login, params, userLocale, session);
 
             log.info("Logged in: " + session);
 
@@ -202,15 +195,7 @@ public class LoginWorkerBean implements LoginWorker {
                 userLocale = new Locale(user.getLanguage());
             }
             UserSession session = userSessionManager.createSession(user, userLocale, false);
-            String clientTypeParam = (String) params.get(ClientType.class.getSimpleName());
-            if (ClientType.DESKTOP.name().equals(clientTypeParam) || ClientType.WEB.name().equals(clientTypeParam)) {
-                if (!session.isSpecificPermitted("cuba.gui.loginToClient")) {
-                    log.warn(String.format("Attempt of login to %s for user '%s' without cuba.gui.loginToClient permission",
-                            clientTypeParam, login));
-
-                    throw new LoginException(getInvalidCredentialsMessage(login, locale));
-                }
-            }
+            checkPermissions(login, params, userLocale, session);
 
             log.info("Logged in: " + session);
 
@@ -251,15 +236,7 @@ public class LoginWorkerBean implements LoginWorker {
                 userLocale = new Locale(user.getLanguage());
             }
             UserSession session = userSessionManager.createSession(user, userLocale, false);
-            String clientTypeParam = (String) params.get(ClientType.class.getSimpleName());
-            if (ClientType.DESKTOP.name().equals(clientTypeParam) || ClientType.WEB.name().equals(clientTypeParam)) {
-                if (!session.isSpecificPermitted("cuba.gui.loginToClient")) {
-                    log.warn(String.format("Attempt of login to %s for user '%s' without cuba.gui.loginToClient permission",
-                            clientTypeParam, login));
-
-                    throw new LoginException(getInvalidCredentialsMessage(login, locale));
-                }
-            }
+            checkPermissions(login, params, userLocale, session);
 
             log.info("Logged in: " + session);
 
@@ -363,5 +340,19 @@ public class LoginWorkerBean implements LoginWorker {
             tx.end();
         }
         return verified;
+    }
+
+    protected void checkPermissions(String login, Map<String, Object> params, Locale userLocale, UserSession session)
+            throws LoginException {
+
+        String clientTypeParam = (String) params.get(ClientType.class.getSimpleName());
+        if (ClientType.DESKTOP.name().equals(clientTypeParam) || ClientType.WEB.name().equals(clientTypeParam)) {
+            if (!session.isSpecificPermitted("cuba.gui.loginToClient")) {
+                log.warn(String.format("Attempt of login to %s for user '%s' without cuba.gui.loginToClient permission",
+                        clientTypeParam, login));
+
+                throw new LoginException(getInvalidCredentialsMessage(login, userLocale));
+            }
+        }
     }
 }
