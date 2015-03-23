@@ -1665,7 +1665,6 @@ public class FilterDelegateImpl implements FilterDelegate {
                         filterEntity.setName(filterName);
                         filterEntity.setXml(FilterParser.getXml(conditions, Param.ValueProperty.DEFAULT_VALUE));
                         saveFilterEntity();
-                        filterEntities.add(filterEntity);
                         initFiltersPopupButton();
                         updateWindowCaption();
                         if (isNew) {
