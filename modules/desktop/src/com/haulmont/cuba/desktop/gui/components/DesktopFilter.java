@@ -17,6 +17,7 @@ import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
 import org.dom4j.Element;
 
+import javax.annotation.Nullable;
 import javax.swing.*;
 import java.util.List;
 
@@ -208,5 +209,11 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
                 enableComponents((java.awt.Container)component, enable);
             }
         }
+    }
+
+    @Nullable
+    @Override
+    public <T extends Component> T getComponent(String id) {
+        return delegate.getComponent(id);
     }
 }

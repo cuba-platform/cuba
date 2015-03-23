@@ -15,6 +15,7 @@ import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
 import com.vaadin.ui.Layout;
 import org.dom4j.Element;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -180,5 +181,11 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
     @Override
     public int getColumnsCount() {
         return delegate.getColumnsCount();
+    }
+
+    @Nullable
+    @Override
+    public <T extends Component> T getComponent(String id) {
+        return delegate.getComponent(id);
     }
 }

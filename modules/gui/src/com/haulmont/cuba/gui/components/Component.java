@@ -127,6 +127,15 @@ public interface Component {
         Collection<Component> getComponents();
     }
 
+    interface HasNamedParts {
+        /**
+         * Get subcomponent by name.
+         * @return component or null if not found
+         */
+        @Nullable
+        <T extends Component> T getComponent(String id);
+    }
+
     /**
      * Component delegating work to some "wrapped" client-specific implementation
      */
