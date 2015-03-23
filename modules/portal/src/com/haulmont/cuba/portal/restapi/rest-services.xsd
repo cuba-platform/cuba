@@ -5,9 +5,9 @@
   -->
 
 <xs:schema
-        targetNamespace="http://schemas.haulmont.com/cuba/5.4/rest-services.xsd"
+        targetNamespace="http://schemas.haulmont.com/cuba/5.5/rest-services.xsd"
         xmlns:xs="http://www.w3.org/2001/XMLSchema"
-        xmlns="http://schemas.haulmont.com/cuba/5.4/rest-services.xsd"
+        xmlns="http://schemas.haulmont.com/cuba/5.5/rest-services.xsd"
         elementFormDefault="qualified"
         attributeFormDefault="unqualified"
         >
