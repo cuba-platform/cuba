@@ -9,7 +9,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Filter;
-import com.haulmont.cuba.gui.components.FilterImpl;
+import com.haulmont.cuba.gui.components.FilterImplementation;
 import com.haulmont.cuba.gui.components.filter.FilterDelegate;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.security.entity.FilterEntity;
@@ -27,7 +27,7 @@ import java.util.List;
  * @author krivopustov
  * @version $Id$
  */
-public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements Filter, FilterImpl {
+public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements Filter, FilterImplementation {
 
     protected FilterDelegate delegate;
 

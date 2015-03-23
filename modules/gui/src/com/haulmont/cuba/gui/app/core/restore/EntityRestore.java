@@ -210,7 +210,7 @@ public class EntityRestore extends AbstractWindow {
 
                 entitiesTable.refresh();
 
-                ( (FilterImpl)filter).loadFiltersAndApplyDefault();
+                ( (FilterImplementation)filter).loadFiltersAndApplyDefault();
             }
         }
     }

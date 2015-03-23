@@ -8,7 +8,7 @@ import com.google.common.base.Strings;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Filter;
-import com.haulmont.cuba.gui.components.FilterImpl;
+import com.haulmont.cuba.gui.components.FilterImplementation;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -90,7 +90,7 @@ public class FilterLoader extends ComponentLoader {
                 new PostInitTask() {
                     @Override
                     public void execute(Context context, IFrame window) {
-                        ((FilterImpl)filter).loadFiltersAndApplyDefault();
+                        ((FilterImplementation)filter).loadFiltersAndApplyDefault();
                     }
                 }
         );

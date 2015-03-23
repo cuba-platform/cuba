@@ -29,7 +29,6 @@ import com.haulmont.cuba.security.entity.EntityOp;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import javax.persistence.*;
 import java.util.*;
 
 /**
@@ -208,7 +207,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
         entitiesTable.setMultiSelect(true);
         filter.setDatasource(entitiesDs);
         filter.setVisible(true);
-        ((FilterImpl)filter).loadFiltersAndApplyDefault();
+        ((FilterImplementation)filter).loadFiltersAndApplyDefault();
         filter.apply(true);
     }
 

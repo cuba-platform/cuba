@@ -11,6 +11,6 @@ package com.haulmont.cuba.gui.components;
  * @author gorbunkov
  * @version $Id$
  */
-public interface FilterImpl {
+public interface FilterImplementation {
     void loadFiltersAndApplyDefault();
 }
