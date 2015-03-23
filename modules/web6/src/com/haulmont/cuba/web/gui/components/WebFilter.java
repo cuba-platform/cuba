@@ -116,6 +116,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         return delegate.isFolderActionsEnabled();
     }
 
+    @Override
     public void applySettings(Element element) {
         // logic moved to loadFiltersAndApplyDefault()
     }
@@ -162,6 +163,11 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
 
     @Override
     public void remove(Component component) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void removeAll() {
         throw new UnsupportedOperationException();
     }
 

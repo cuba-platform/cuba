@@ -12,7 +12,6 @@ import com.haulmont.cuba.web.toolkit.ui.ScrollablePanel;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Layout;
 import com.vaadin.ui.VerticalLayout;
 import org.apache.commons.lang.ObjectUtils;
 
@@ -116,6 +115,19 @@ public class WebScrollBoxLayout extends WebAbstractComponent<ScrollablePanel> im
         ownComponents.remove(childComponent);
 
         childComponent.setParent(null);
+    }
+
+    @Override
+    public void removeAll() {
+        component.getContent().removeAllComponents();
+        componentByIds.clear();
+
+        List<Component> components = new ArrayList<>(ownComponents);
+        ownComponents.clear();
+
+        for (Component childComponent : components) {
+            childComponent.setParent(null);
+        }
     }
 
     @Override

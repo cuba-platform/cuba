@@ -156,6 +156,19 @@ public class WebScrollBoxLayout extends WebAbstractComponent<Panel> implements S
     }
 
     @Override
+    public void removeAll() {
+        getContent().removeAllComponents();
+        componentByIds.clear();
+
+        List<Component> components = new ArrayList<>(ownComponents);
+        ownComponents.clear();
+
+        for (Component childComponent : components) {
+            childComponent.setParent(null);
+        }
+    }
+
+    @Override
     public void setFrame(IFrame frame) {
         super.setFrame(frame);
 

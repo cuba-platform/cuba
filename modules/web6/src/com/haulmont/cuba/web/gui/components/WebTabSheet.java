@@ -58,6 +58,11 @@ public class WebTabSheet extends WebAbstractComponent<com.vaadin.ui.TabSheet> im
     }
 
     @Override
+    public void removeAll() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public <T extends Component> T getOwnComponent(String id) {
         for (Tab tab : tabs.values()) {
             //noinspection SuspiciousMethodCalls
@@ -295,6 +300,22 @@ public class WebTabSheet extends WebAbstractComponent<com.vaadin.ui.TabSheet> im
         tabMapping.remove(vComponent);
 
         childComponent.setParent(null);
+    }
+
+    @Override
+    public void removeAllTabs() {
+        tabMapping.clear();
+        componentByIds.clear();
+        component.removeAllComponents();
+
+        List<Tab> currentTabs = new ArrayList<>(tabs.values());
+        tabs.clear();
+
+        for (Tab tab : currentTabs) {
+            Component childComponent = tab.getComponent();
+
+            childComponent.setParent(null);
+        }
     }
 
     @Override

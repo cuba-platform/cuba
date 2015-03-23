@@ -60,6 +60,11 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public void removeAll() {
+        throw new UnsupportedOperationException();
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public <T extends Component> T getOwnComponent(String id) {
@@ -324,6 +329,22 @@ public class WebTabSheet extends WebAbstractComponent<CubaTabSheet> implements T
         tabMapping.remove(vComponent);
 
         childComponent.setParent(null);
+    }
+
+    @Override
+    public void removeAllTabs() {
+        tabMapping.clear();
+        componentByIds.clear();
+        component.removeAllComponents();
+
+        List<Tab> currentTabs = new ArrayList<>(tabs.values());
+        tabs.clear();
+
+        for (Tab tab : currentTabs) {
+            Component childComponent = tab.getComponent();
+
+            childComponent.setParent(null);
+        }
     }
 
     @Override

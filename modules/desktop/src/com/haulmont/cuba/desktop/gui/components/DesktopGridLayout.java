@@ -242,6 +242,29 @@ public class DesktopGridLayout extends DesktopAbstractComponent<JPanel> implemen
         requestRepaint();
     }
 
+    @Override
+    public void removeAll() {
+        wrappers.clear();
+        impl.removeAll();
+        componentByIds.clear();
+        captions.clear();
+
+        List<Component> components = new ArrayList<>(ownComponents);
+        ownComponents.clear();
+
+        for (Component component : components) {
+            if (component instanceof DesktopAbstractComponent && !isEnabledWithParent()) {
+                ((DesktopAbstractComponent) component).setParentEnabled(true);
+            }
+
+            component.setParent(null);
+
+            DesktopContainerHelper.assignContainer(component, null);
+        }
+
+        requestRepaint();
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public <T extends Component> T getOwnComponent(String id) {

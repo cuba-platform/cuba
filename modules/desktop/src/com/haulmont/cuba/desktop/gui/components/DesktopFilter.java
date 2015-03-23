@@ -127,6 +127,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         return delegate.isFolderActionsEnabled();
     }
 
+    @Override
     public void applySettings(Element element) {
         // logic moved to loadFiltersAndApplyDefault()
     }
@@ -175,6 +176,11 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
 
     @Override
     public void remove(Component component) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void removeAll() {
         throw new UnsupportedOperationException();
     }
 
@@ -253,5 +259,4 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
             }
         }
     }
-
 }

@@ -618,6 +618,22 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
     }
 
     @Override
+    public void removeAll() {
+        getContainer().removeAllComponents();
+        for (String childId : componentByIds.keySet()) {
+            allComponents.remove(childId);
+        }
+        componentByIds.clear();
+
+        List<Component> childComponents = new ArrayList<>(ownComponents);
+        ownComponents.clear();
+
+        for (Component ownComponent : childComponents) {
+            ownComponent.setParent(null);
+        }
+    }
+
+    @Override
     public Collection<Component> getOwnComponents() {
         return Collections.unmodifiableCollection(ownComponents);
     }

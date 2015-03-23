@@ -151,6 +151,19 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
     }
 
     @Override
+    public void removeAll() {
+        getComponentContent().removeAllComponents();
+        componentByIds.clear();
+
+        List<Component> components = new ArrayList<>(ownComponents);
+        ownComponents.clear();
+
+        for (Component childComponent : components) {
+            childComponent.setParent(null);
+        }
+    }
+
+    @Override
     public void setFrame(IFrame frame) {
         super.setFrame(frame);
 

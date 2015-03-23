@@ -80,6 +80,19 @@ public class WebHtmlBoxLayout extends WebAbstractComponent<CustomLayout> impleme
     }
 
     @Override
+    public void removeAll() {
+        component.removeAllComponents();
+        componentByIds.clear();
+
+        List<Component> components = new ArrayList<>(ownComponents);
+        ownComponents.clear();
+
+        for (Component childComponent : components) {
+            childComponent.setParent(null);
+        }
+    }
+
+    @Override
     public void setFrame(IFrame frame) {
         super.setFrame(frame);
 

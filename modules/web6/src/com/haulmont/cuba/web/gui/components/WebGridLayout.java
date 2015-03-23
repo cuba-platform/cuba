@@ -141,6 +141,19 @@ public class WebGridLayout extends WebAbstractComponent<com.vaadin.ui.GridLayout
         childComponent.setParent(null);
     }
 
+    @Override
+    public void removeAll() {
+        component.removeAllComponents();
+        componentByIds.clear();
+
+        List<Component> components = new ArrayList<>(ownComponents);
+        ownComponents.clear();
+
+        for (Component childComponent : components) {
+            childComponent.setParent(null);
+        }
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public <T extends Component> T getOwnComponent(String id) {

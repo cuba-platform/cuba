@@ -96,6 +96,8 @@ public interface Component {
         void add(Component childComponent);
         void remove(Component childComponent);
 
+        void removeAll();
+
         /**
          * Get component directly owned by this container.
          * @return component or null if not found

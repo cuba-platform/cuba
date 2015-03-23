@@ -162,6 +162,11 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
     }
 
     @Override
+    public void removeAll() {
+        frame.removeAll();
+    }
+
+    @Override
     public <T extends Component> T getOwnComponent(String id) {
         return frame.getOwnComponent(id);
     }

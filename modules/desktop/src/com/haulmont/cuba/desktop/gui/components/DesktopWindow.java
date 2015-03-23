@@ -756,6 +756,33 @@ public class DesktopWindow implements Window, Component.Disposable,
         requestRepaint();
     }
 
+    @Override
+    public void removeAll() {
+        wrappers.clear();
+        getContainer().removeAll();
+        componentByIds.clear();
+        captions.clear();
+
+        List<Component> components = new ArrayList<>(ownComponents);
+        ownComponents.clear();
+
+        for (Component component : components) {
+            if (component instanceof DesktopAbstractComponent && !isEnabled()) {
+                ((DesktopAbstractComponent) component).setParentEnabled(true);
+            }
+
+            if (expandedComponent == component) {
+                expandedComponent = null;
+            }
+
+            component.setParent(null);
+
+            DesktopContainerHelper.assignContainer(component, null);
+        }
+
+        requestRepaint();
+    }
+
     protected int getActualIndex(int originalIndex) {
         int index = originalIndex;
         Object[] components = ownComponents.toArray();

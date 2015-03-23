@@ -165,9 +165,27 @@ public class DesktopScrollBoxLayout extends DesktopAbstractComponent<JScrollPane
             ((DesktopAbstractComponent) component).setParentEnabled(true);
         }
 
-        adjustViewPreferredSize();
-
         component.setParent(null);
+
+        adjustViewPreferredSize();
+    }
+
+    @Override
+    public void removeAll() {
+        content.removeAll();
+
+        List<Component> innerComponents = new ArrayList<>(components);
+        components.clear();
+
+        for (Component component : innerComponents) {
+            if (component instanceof DesktopAbstractComponent && !isEnabledWithParent()) {
+                ((DesktopAbstractComponent) component).setParentEnabled(true);
+            }
+
+            component.setParent(null);
+        }
+
+        adjustViewPreferredSize();
     }
 
     @Override

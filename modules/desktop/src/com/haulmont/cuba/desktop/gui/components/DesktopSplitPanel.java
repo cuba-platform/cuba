@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.cuba.desktop.gui.data.DesktopContainerHelper;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
@@ -18,6 +19,7 @@ import javax.swing.*;
 import javax.swing.plaf.synth.SynthSplitPaneUI;
 import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 /**
  * @author krivopustov
@@ -155,6 +157,23 @@ public class DesktopSplitPanel extends DesktopAbstractComponent<JSplitPane> impl
             componentByIds.remove(component.getId());
         }
         ownComponents.remove(component);
+    }
+
+    @Override
+    public void removeAll() {
+        impl.removeAll();
+        componentByIds.clear();
+
+        List<Component> components = new ArrayList<>(ownComponents);
+        ownComponents.clear();
+
+        for (Component component : components) {
+            if (component instanceof DesktopAbstractComponent && !isEnabledWithParent()) {
+                ((DesktopAbstractComponent) component).setParentEnabled(true);
+            }
+
+            component.setParent(null);
+        }
     }
 
     @Override

@@ -71,6 +71,11 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> imple
     }
 
     @Override
+    public void removeAll() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public <T extends Component> T getOwnComponent(String id) {
         for (Component tabComponent : components.keySet()) {
             if (StringUtils.equals(id, tabComponent.getId())) {
@@ -280,6 +285,23 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> imple
         }
 
         component.setParent(null);
+    }
+
+    @Override
+    public void removeAllTabs() {
+        impl.removeAll();
+
+        List<Component> innerComponents = new ArrayList<>(components.keySet());
+        components.clear();
+
+        for (Component component : innerComponents) {
+            DesktopContainerHelper.assignContainer(component, null);
+            if (component instanceof DesktopAbstractComponent && !isEnabledWithParent()) {
+                ((DesktopAbstractComponent) component).setParentEnabled(true);
+            }
+
+            component.setParent(null);
+        }
     }
 
     protected TabImpl getTabImpl(String name) {

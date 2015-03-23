@@ -176,6 +176,33 @@ public abstract class DesktopAbstractBox
     }
 
     @Override
+    public void removeAll() {
+        wrappers.clear();
+        impl.removeAll();
+        componentByIds.clear();
+        captions.clear();
+
+        List<Component> components = new ArrayList<>(ownComponents);
+        ownComponents.clear();
+
+        for (Component component : components) {
+            if (component instanceof DesktopAbstractComponent && !isEnabledWithParent()) {
+                ((DesktopAbstractComponent) component).setParentEnabled(true);
+            }
+
+            if (expandedComponent == component) {
+                expandedComponent = null;
+            }
+
+            component.setParent(null);
+
+            DesktopContainerHelper.assignContainer(component, null);
+        }
+
+        requestRepaint();
+    }
+
+    @Override
     public void setFrame(IFrame frame) {
         super.setFrame(frame);
 
