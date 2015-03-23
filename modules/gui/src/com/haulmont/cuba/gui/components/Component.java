@@ -43,7 +43,18 @@ public interface Component {
     /** Set component ID */
     void setId(String id);
 
+    /**
+     * @return Parent of component.
+     */
     Component getParent();
+    /**
+     * This method for internal use only. <br/>
+     *
+     * {@link Component.Container#add(Component)} is normally used for adding components
+     * to a parent and the used method will call this method implicitly.
+     *
+     * @param parent Parent component
+     */
     void setParent(Component parent);
 
     String getDebugId();
