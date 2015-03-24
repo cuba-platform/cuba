@@ -66,7 +66,7 @@ public final class JmxConnectionHelper {
             public boolean evaluate(Object o) {
                 ObjectName objectName = (ObjectName) o;
 
-                if (StringUtils.equals(remoteContext, objectName.getDomain())) {
+                if (!StringUtils.equals(remoteContext, objectName.getDomain())) {
                     return false;
                 }
 
