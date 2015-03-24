@@ -115,7 +115,7 @@ public class FilterEditor extends AbstractWindow {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        if (useShortConditionForm) {
+        if (Boolean.TRUE.equals(useShortConditionForm)) {
             setCaption(getMessage("captionShortForm"));
         }
 
