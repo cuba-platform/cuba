@@ -9,13 +9,11 @@ import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.Persistence;
-import com.haulmont.cuba.core.Query;
-import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.entity.*;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.logging.Log;
@@ -187,11 +185,10 @@ public class EntityLog implements EntityLogAPI {
             }
             Date ts = timeSource.currentTimestamp();
             EntityManager em = persistence.getEntityManager();
-            User user = em.getReference(User.class, userSessionSource.getUserSession().getUser().getId());
 
             EntityLogItem item = new EntityLogItem();
             item.setEventTs(ts);
-            item.setUser(user);
+            item.setUser(findUser(em));
             item.setType(EntityLogItem.Type.CREATE);
             item.setEntity(entityName);
             item.setEntityId(entity.getUuid());
@@ -206,6 +203,21 @@ public class EntityLog implements EntityLogAPI {
 
         } catch (Exception e) {
             log.warn("Unable to log entity " + entity + ", id=" + entity.getId(), e);
+        }
+    }
+
+    protected User findUser(EntityManager em) {
+        if (AppContext.isStarted())
+            return em.getReference(User.class, userSessionSource.getUserSession().getUser().getId());
+        else {
+            String login = AppContext.getProperty("cuba.jmxUserLogin");
+            TypedQuery<User> query = em.createQuery("select u from sec$User u where u.loginLowerCase = ?1", User.class);
+            query.setParameter(1, login);
+            User user = query.getFirstResult();
+            if (user != null)
+                return user;
+            else
+                throw new RuntimeException("The user '" + login + "' specified in cuba.jmxUserLogin does not exist");
         }
     }
 
@@ -230,7 +242,6 @@ public class EntityLog implements EntityLogAPI {
             }
             Date ts = timeSource.currentTimestamp();
             EntityManager em = persistence.getEntityManager();
-            User user = em.getReference(User.class, userSessionSource.getUserSession().getUser().getId());
             Set<String> dirty = persistence.getTools().getDirtyFields(entity);
 
             Properties properties = new Properties();
@@ -242,7 +253,7 @@ public class EntityLog implements EntityLogAPI {
             if (!properties.isEmpty()) {
                 EntityLogItem item = new EntityLogItem();
                 item.setEventTs(ts);
-                item.setUser(user);
+                item.setUser(findUser(em));
                 item.setType(EntityLogItem.Type.MODIFY);
                 item.setEntity(entityName);
                 item.setEntityId(entity.getUuid());
@@ -299,11 +310,10 @@ public class EntityLog implements EntityLogAPI {
             }
             Date ts = timeSource.currentTimestamp();
             EntityManager em = persistence.getEntityManager();
-            User user = em.getReference(User.class, userSessionSource.getUserSession().getUser().getId());
 
             EntityLogItem item = new EntityLogItem();
             item.setEventTs(ts);
-            item.setUser(user);
+            item.setUser(findUser(em));
             item.setType(EntityLogItem.Type.DELETE);
             item.setEntity(entityName);
             item.setEntityId(entity.getUuid());
