@@ -8,6 +8,7 @@ package com.haulmont.cuba.desktop.gui.components;
 import com.haulmont.cuba.gui.components.Embedded;
 import com.haulmont.cuba.gui.export.ExportDataProvider;
 
+import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -46,55 +47,76 @@ public class DesktopEmbedded extends DesktopAbstractComponent<JPanel> implements
     }
 
     @Override
-    public void setSource(URL src) {
-        try {
-            BufferedImage image = ImageIO.read(src);
-            setContents(image, src.getFile());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public void setSource(String src) {
-        // the same as in WebEmbedded
-        if (src.startsWith("http") || src.startsWith("https")) {
+    public void setSource(@Nullable URL src) {
+        if (src != null) {
             try {
-                setSource(new URL(src));
-            } catch (MalformedURLException e) {
+                BufferedImage image = ImageIO.read(src);
+                setContents(image, src.getFile());
+            } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         } else {
-            throw new UnsupportedOperationException("Unsupported source for image");
+            setContents(null, null);
         }
     }
 
     @Override
-    public void setSource(String fileName, InputStream src) {
-        try {
-            BufferedImage image = ImageIO.read(src);
-            setContents(image, fileName);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } finally {
-            try {
-                src.close();
-            } catch (IOException e) {
-                // nothing
+    public void setSource(@Nullable String src) {
+        if (src != null) {
+            // the same as in WebEmbedded
+            if (src.startsWith("http") || src.startsWith("https")) {
+                try {
+                    setSource(new URL(src));
+                } catch (MalformedURLException e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                throw new UnsupportedOperationException("Unsupported source for image");
             }
+        } else {
+            setContents(null, null);
         }
     }
 
     @Override
-    public void setSource(String fileName, ExportDataProvider dataProvider) {
-        try {
-            BufferedImage image = ImageIO.read(dataProvider.provide());
-            setContents(image, fileName);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        } finally {
-            dataProvider.close();
+    public void setSource(String fileName,@Nullable InputStream src) {
+        if (src != null) {
+            try {
+                BufferedImage image = ImageIO.read(src);
+                setContents(image, fileName);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } finally {
+                try {
+                    src.close();
+                } catch (IOException e) {
+                    // nothing
+                }
+            }
+        } else {
+            setContents(null, null);
         }
+    }
+
+    @Override
+    public void setSource(String fileName,@Nullable ExportDataProvider dataProvider) {
+        if (dataProvider != null) {
+            try {
+                BufferedImage image = ImageIO.read(dataProvider.provide());
+                setContents(image, fileName);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            } finally {
+                dataProvider.close();
+            }
+        } else {
+            setContents(null, null);
+        }
+    }
+
+    @Override
+    public void resetSource() {
+        setContents(null, null);
     }
 
     @Override

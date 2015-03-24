@@ -16,9 +16,11 @@ import com.vaadin.server.ConnectorResource;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.StreamResource;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,6 +29,7 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * @author gorodnov
@@ -46,71 +49,96 @@ public class WebEmbedded extends WebAbstractComponent<com.vaadin.ui.Embedded> im
 
     @Override
     public void setSource(URL src) {
-        component.setSource(new ExternalResource(src));
-        setType(Type.BROWSER);
+        if (src != null) {
+            component.setSource(new ExternalResource(src));
+            setType(Type.BROWSER);
+        } else {
+            resetSource();
+        }
     }
 
     @Override
     public void setSource(String src) {
-        if (src.startsWith("http") || src.startsWith("https")) {
-            try {
-                setSource(new URL(src));
-            } catch (MalformedURLException e) {
-                throw new RuntimeException(e);
+        if (src != null) {
+            if (src.startsWith("http") || src.startsWith("https")) {
+                try {
+                    setSource(new URL(src));
+                } catch (MalformedURLException e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                File file = new File(src);
+                if (!file.isAbsolute()) {
+                    Configuration configuration = AppBeans.get(Configuration.NAME);
+                    String root = configuration.getConfig(WebConfig.class).getResourcesRoot();
+                    if (root != null) {
+                        if (!root.endsWith(File.separator)) {
+                            root += File.separator;
+                        }
+                        file = new File(root + file.getName());
+                    }
+                }
+
+                resource = new FileResource(file);
+                component.setSource(resource);
             }
         } else {
-            File file = new File(src);
-            if (!file.isAbsolute()) {
-                Configuration configuration = AppBeans.get(Configuration.NAME);
-                String root = configuration.getConfig(WebConfig.class).getResourcesRoot();
-                if (root != null) {
-                    if (!root.endsWith(File.separator)) {
-                        root += File.separator;
-                    }
-                    file = new File(root + file.getName());
-                }
-            }
-
-            resource = new FileResource(file);
-            component.setSource(resource);
+            resetSource();
         }
     }
 
     @Override
     public void setSource(String fileName, final InputStream src) {
-        final StreamResource.StreamSource source = new StreamResource.StreamSource() {
-            @Override
-            public InputStream getStream() {
-                try {
-                    src.reset();
-                } catch (IOException e) {
-                    Log log = LogFactory.getLog(WebEmbedded.this.getClass());
-                    log.debug("Ignored IOException on stream reset", e);
+        if (src != null) {
+            final StreamResource.StreamSource source = new StreamResource.StreamSource() {
+                @Override
+                public InputStream getStream() {
+                    try {
+                        src.reset();
+                    } catch (IOException e) {
+                        Log log = LogFactory.getLog(WebEmbedded.this.getClass());
+                        log.debug("Ignored IOException on stream reset", e);
+                    }
+                    return src;
                 }
-                return src;
-            }
-        };
+            };
 
-        resource = new StreamResource(source, fileName);
-        component.setSource(resource);
+            resource = new StreamResource(source, fileName);
+            component.setSource(resource);
+        } else {
+            resetSource();
+        }
     }
 
     @Override
     public void setSource(String fileName, final ExportDataProvider dataProvider) {
-        StreamResource.StreamSource streamSource = new StreamResource.StreamSource() {
-            @Override
-            public InputStream getStream() {
-                try {
-                    return dataProvider.provide();
-                } catch (ClosedDataProviderException e) {
-                    // todo log
-                    return null;
+        if (dataProvider != null) {
+            StreamResource.StreamSource streamSource = new StreamResource.StreamSource() {
+                @Override
+                public InputStream getStream() {
+                    try {
+                        return dataProvider.provide();
+                    } catch (ClosedDataProviderException e) {
+                        // todo log
+                        return null;
+                    }
                 }
-            }
-        };
+            };
 
-        resource = new StreamResource(streamSource, fileName);
-        component.setSource(resource);
+            resource = new StreamResource(streamSource, fileName);
+            component.setSource(resource);
+        } else {
+            resetSource();
+        }
+    }
+
+    @Override
+    public void resetSource() {
+        resource = null;
+        component.markAsDirty();
+        component.setMimeType("image/png");
+        component.setType(com.vaadin.ui.Embedded.TYPE_IMAGE);
+        component.setSource(new StreamResource(new EmptyStreamSource(), UUID.randomUUID() + ".png"));
     }
 
     @Override
@@ -173,5 +201,25 @@ public class WebEmbedded extends WebAbstractComponent<com.vaadin.ui.Embedded> im
     @Override
     public boolean isDisposed() {
         return disposed;
+    }
+
+    private static class EmptyStreamSource implements StreamResource.StreamSource {
+
+        private byte[] emptyImage;
+
+        @Override
+        public InputStream getStream() {
+            if (emptyImage == null) {
+                InputStream stream =
+                        getClass().getResourceAsStream("/com/haulmont/cuba/web/gui/components/resources/empty.png");
+                try {
+                    emptyImage = IOUtils.toByteArray(stream);
+                } catch (IOException e) {
+                    throw new RuntimeException("Unable to read empty.png from classpath", e);
+                }
+            }
+
+            return new ByteArrayInputStream(emptyImage);
+        }
     }
 }

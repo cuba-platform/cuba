@@ -7,6 +7,7 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.gui.export.ExportDataProvider;
 
+import javax.annotation.Nullable;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Map;
@@ -25,10 +26,12 @@ public interface Embedded extends Component, Component.BelongToFrame {
 
     void setMIMEType(String mt);
 
-    void setSource(URL src);
-    void setSource(String src);
-    void setSource(String fileName, InputStream src);
-    void setSource(String fileName, ExportDataProvider dataProvider);
+    void setSource(@Nullable URL src);
+    void setSource(@Nullable String src);
+    void setSource(String fileName, @Nullable InputStream src);
+    void setSource(String fileName, @Nullable ExportDataProvider dataProvider);
+
+    void resetSource();
 
     void addParameter(String name, String value);
     void removeParameter(String name);

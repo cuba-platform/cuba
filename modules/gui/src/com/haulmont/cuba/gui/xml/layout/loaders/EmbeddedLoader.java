@@ -54,7 +54,7 @@ public class EmbeddedLoader extends ComponentLoader {
                 component.setType(Embedded.Type.OBJECT);
                 component.setSource(src);
             } else {
-                throw new GuiDevelopmentException("Illegal src attribute value. 'url:' or 'file:' prefix expected",
+                throw new GuiDevelopmentException("Illegal src attribute value. 'url://' or 'file://' prefix expected",
                         context.getFullFrameId(), "src", srcAttr);
             }
         }

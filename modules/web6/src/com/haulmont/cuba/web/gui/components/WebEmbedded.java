@@ -12,14 +12,19 @@ import com.haulmont.cuba.gui.export.ExportDataProvider;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
 import com.vaadin.terminal.*;
+import org.apache.commons.io.IOUtils;
 
+import javax.annotation.Nullable;
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * @author gorodnov
@@ -49,53 +54,79 @@ public class WebEmbedded
     }
 
     @Override
-    public void setSource(URL src) {
-        component.setSource(new ExternalResource(src));
-        setType(Type.BROWSER);
-    }
-
-    @Override
-    public void setSource(String src) {
-        if (src.startsWith("http") || src.startsWith("https")) {
-            try {
-                setSource(new URL(src));
-            } catch (MalformedURLException e) {
-                throw new RuntimeException(e);
-            }
+    public void setSource(@Nullable URL src) {
+        if (src != null) {
+            component.setSource(new ExternalResource(src));
+            setType(Type.BROWSER);
         } else {
-            File file = new File(src);
-            if (!file.isAbsolute()) {
-                String root = ConfigProvider.getConfig(WebConfig.class).getResourcesRoot();
-                if (root != null) {
-                    if (!root.endsWith(File.separator)) {
-                        root += File.separator;
-                    }
-                    file = new File(root + file.getName());
-                }
-            }
-
-            resource = new FileResource(file, App.getInstance());
-            component.setSource(resource);
+            resetSource();
         }
     }
 
     @Override
-    public void setSource(String fileName, final InputStream src) {
-        final StreamResource.StreamSource source = new StreamResource.StreamSource() {
-            @Override
-            public InputStream getStream() {
-                return src;
-            }
-        };
+    public void setSource(@Nullable String src) {
+        if (src != null) {
+            if (src.startsWith("http") || src.startsWith("https")) {
+                try {
+                    setSource(new URL(src));
+                } catch (MalformedURLException e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                File file = new File(src);
+                if (!file.isAbsolute()) {
+                    String root = ConfigProvider.getConfig(WebConfig.class).getResourcesRoot();
+                    if (root != null) {
+                        if (!root.endsWith(File.separator)) {
+                            root += File.separator;
+                        }
+                        file = new File(root + file.getName());
+                    }
+                }
 
-        resource = new StreamResource(source, fileName, App.getInstance());
-        component.setSource(resource);
+                resource = new FileResource(file, App.getInstance());
+                component.setSource(resource);
+            }
+        } else {
+            resetSource();
+        }
     }
 
     @Override
-    public void setSource(String fileName, ExportDataProvider dataProvider) {
-        resource = new WebEmbeddedApplicationResource(dataProvider, fileName, App.getInstance());
-        component.setSource(resource);
+    public void setSource(String fileName,@Nullable final InputStream src) {
+        if (src != null) {
+            final StreamResource.StreamSource source = new StreamResource.StreamSource() {
+                @Override
+                public InputStream getStream() {
+                    return src;
+                }
+            };
+
+            resource = new StreamResource(source, fileName, App.getInstance());
+            component.setSource(resource);
+        } else {
+            resetSource();
+        }
+    }
+
+    @Override
+    public void setSource(String fileName,@Nullable ExportDataProvider dataProvider) {
+        if (dataProvider != null) {
+            resource = new WebEmbeddedApplicationResource(dataProvider, fileName, App.getInstance());
+            component.setSource(resource);
+        } else {
+            resetSource();
+        }
+    }
+
+
+    @Override
+    public void resetSource() {
+        resource = null;
+        component.setType(com.vaadin.ui.Embedded.TYPE_IMAGE);
+        component.setMimeType("image/png");
+        component.setSource(new StreamResource(new EmptyStreamSource(), UUID.randomUUID() + ".png", App.getInstance()));
+        component.requestRepaint();
     }
 
     public boolean isDoNotSetSize() {
@@ -173,5 +204,25 @@ public class WebEmbedded
     @Override
     public boolean isDisposed() {
         return disposed;
+    }
+
+    private static class EmptyStreamSource implements StreamResource.StreamSource {
+
+        private byte[] emptyImage;
+
+        @Override
+        public InputStream getStream() {
+            if (emptyImage == null) {
+                InputStream stream =
+                        getClass().getResourceAsStream("/com/haulmont/cuba/web/gui/components/resources/empty.png");
+                try {
+                    emptyImage = IOUtils.toByteArray(stream);
+                } catch (IOException e) {
+                    throw new RuntimeException("Unable to read empty.png from classpath", e);
+                }
+            }
+
+            return new ByteArrayInputStream(emptyImage);
+        }
     }
 }
