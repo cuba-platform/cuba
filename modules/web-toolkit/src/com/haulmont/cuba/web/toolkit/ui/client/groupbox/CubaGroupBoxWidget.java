@@ -44,6 +44,8 @@ public class CubaGroupBoxWidget extends VPanel {
         bottomDecoration.setClassName(primaryStyleName + "-deco");
         expander.setClassName(primaryStyleName + "-expander");
 
+        contentNode.getStyle().clearPosition();
+
         setExpanded(true);
 
         captionStartDeco.appendChild(DOM.createDiv());

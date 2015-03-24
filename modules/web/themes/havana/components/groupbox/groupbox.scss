@@ -8,6 +8,10 @@
 @mixin havana-cuba-groupbox($primary-stylename : cuba-groupbox) {
     @include base-panel($primary-stylename);
 
+  .#{$primary-stylename} {
+    font-size: 0;
+  }
+
   .#{$primary-stylename}-content {
     outline: none;
     border-left: 1px solid $cuba-groupbox-border-color;
@@ -15,6 +19,7 @@
     border-bottom: 1px solid $cuba-groupbox-border-color;
     padding: 0 5px;
     padding-bottom: 5px;
+    overflow: visible;
   }
 
   .#{$primary-stylename}.collapsed > .#{$primary-stylename}-content,
@@ -106,6 +111,7 @@
   .#{$primary-stylename}-deco {
     line-height: 0;
     height: 0;
+    font-size: 0;
     width: 0;
     display: none;
   }

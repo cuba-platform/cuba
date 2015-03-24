@@ -9,6 +9,11 @@
   @include valo-panel($primary-stylename);
   @include halo-panel($primary-stylename);
 
+  .#{$primary-stylename} {
+    font-size: 0;
+    overflow: hidden !important;
+  }
+
   .#{$primary-stylename}-content {
     outline: none;
     border-left: valo-border();
@@ -17,6 +22,7 @@
     border-bottom-left-radius: $v-border-radius;
     border-bottom-right-radius: $v-border-radius;
     padding: 0 round($v-unit-size/3) round($v-unit-size/3) round($v-unit-size/3);
+    overflow: visible;
   }
 
   .#{$primary-stylename}.collapsed > .#{$primary-stylename}-content,
