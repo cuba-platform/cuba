@@ -1224,7 +1224,7 @@ public class DesktopWindowManager extends WindowManager {
         }, "messageDialog");
     }
 
-    protected JPanel createButtonsPanel(Action[] actions, final JDialog dialog) {
+    protected JPanel createButtonsPanel(Action[] actions, final DialogWindow dialog) {
         JPanel buttonsPanel = new JPanel();
         for (final Action action : actions) {
             JButton button = new JButton(action.getCaption());
@@ -1234,14 +1234,7 @@ public class DesktopWindowManager extends WindowManager {
                 button.setIcon(App.getInstance().getResources().getIcon(icon));
             }
 
-            button.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    action.actionPerform(null);
-                    dialog.setVisible(false);
-                    cleanupAfterModalDialogClosed(null);
-                }
-            });
+            button.addActionListener(new DialogActionHandler(dialog, action));
 
             button.setPreferredSize(new Dimension(button.getPreferredSize().width, DesktopComponentsHelper.BUTTON_HEIGHT));
             button.setMaximumSize(new Dimension(Integer.MAX_VALUE, DesktopComponentsHelper.BUTTON_HEIGHT));
@@ -1310,14 +1303,7 @@ public class DesktopWindowManager extends WindowManager {
 
         if (actions.length == 1) {
             final Action action = actions[0];
-            dialog.addWindowListener(new WindowAdapter() {
-                @Override
-                public void windowClosing(WindowEvent e) {
-                    action.actionPerform(null);
-                    dialog.setVisible(false);
-                    cleanupAfterModalDialogClosed(null);
-                }
-            });
+            dialog.addWindowListener(new DialogActionHandler(dialog, action));
         } else if (actions.length > 1) {
             dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
         }
@@ -1369,7 +1355,6 @@ public class DesktopWindowManager extends WindowManager {
                 }
 
                 dialog.requestFocus();
-                dialog.requestFocusInWindow();
 
                 if (buttonsPanel.getComponentCount() == 1) {
                     buttonsPanel.getComponent(0).requestFocus();
@@ -1395,6 +1380,60 @@ public class DesktopWindowManager extends WindowManager {
         }
 
         dialog.setVisible(true);
+    }
+
+    /**
+     * Handler for OptionDialog, MessageDialog, NotificationPopup buttons,
+     * also used for handling dialog close event if dialog has only one action.
+     */
+    protected class DialogActionHandler extends WindowAdapter implements ActionListener {
+
+        protected final Action action;
+
+        protected final DialogWindow dialog;
+
+        protected final java.awt.Component lastFocusedComponent;
+
+        public DialogActionHandler(DialogWindow dialog, Action action) {
+            this.action = action;
+            this.dialog = dialog;
+
+            DialogWindow lastDialogWindow = getLastDialogWindow();
+            if (lastDialogWindow != null) {
+                lastFocusedComponent = lastDialogWindow.getFocusOwner();
+            } else {
+                lastFocusedComponent = frame.getFocusOwner();
+            }
+        }
+
+        protected void onClose() {
+            if (lastFocusedComponent != null
+                    && lastFocusedComponent.isEnabled()
+                    && lastFocusedComponent.isVisible()
+                    && !(lastFocusedComponent instanceof JDialog)
+                    && !(lastFocusedComponent instanceof JFrame)) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        lastFocusedComponent.requestFocus();
+                    }
+                });
+            }
+
+            action.actionPerform(null);
+            dialog.setVisible(false);
+            cleanupAfterModalDialogClosed(null);
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            onClose();
+        }
+
+        @Override
+        public void windowClosing(WindowEvent e) {
+            onClose();
+        }
     }
 
     protected Icon convertMessageType(MessageType messageType) {

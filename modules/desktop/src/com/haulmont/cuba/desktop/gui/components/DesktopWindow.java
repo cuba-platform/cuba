@@ -1077,7 +1077,7 @@ public class DesktopWindow implements Window, Component.Disposable,
 
         if (component != null) {
             try {
-                JComponent jComponent = DesktopComponentsHelper.unwrap(component);
+                final JComponent jComponent = DesktopComponentsHelper.unwrap(component);
                 java.awt.Component c = jComponent;
                 java.awt.Component prevC = null;
                 while (c != null) {
@@ -1096,35 +1096,33 @@ public class DesktopWindow implements Window, Component.Disposable,
                     c = jComponent;
                     while (c != null) {
                         if (c.isFocusable()) {
-                            final java.awt.Component focusComponent = c;
-                            SwingUtilities.invokeLater(new Runnable() {
-                                @Override
-                                public void run() {
-                                    focusComponent.requestFocusInWindow();
-                                    focusComponent.requestFocus();
-                                }
-                            });
+                            c.requestFocus();
                             break;
                         }
                         c = c.getParent();
                     }
                 }
             } catch (Exception e) {
-                log.warn("Error while validation handling ", e);
+                log.warn("Error while problem component focusing", e);
             }
         }
     }
 
-    protected void showValidationErrors(ValidationErrors errors) {
-        StringBuilder buffer = new StringBuilder();
-        for (ValidationErrors.Item error : errors.getAll()) {
-            buffer.append(error.description).append("\n");
-        }
-        showNotification(
-                messages.getMainMessage("validationFail.caption"),
-                buffer.toString(),
-                NotificationType.HUMANIZED
-        );
+    protected void showValidationErrors(final ValidationErrors errors) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                StringBuilder buffer = new StringBuilder();
+                for (ValidationErrors.Item error : errors.getAll()) {
+                    buffer.append(error.description).append("\n");
+                }
+                showNotification(
+                        messages.getMainMessage("validationFail.caption"),
+                        buffer.toString(),
+                        NotificationType.HUMANIZED
+                );
+            }
+        });
     }
 
     @Override

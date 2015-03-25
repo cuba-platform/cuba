@@ -552,7 +552,7 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
 
         @Override
         public void focus() {
-            DesktopDateField.this.requestFocus();
+            DesktopDateField.this.datePicker.requestFocus();
         }
 
         @Override
