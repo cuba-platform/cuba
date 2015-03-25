@@ -6,6 +6,37 @@
 // Version: $Id$
 
 @mixin halo-table($primary-stylename: v-table) {
+  $background-color: $v-table-background-color or valo-table-background-color();
+  $border-color: $v-table-border-color or first-color(valo-border($color: $background-color, $strength: 0.8));
+
+  .#{$primary-stylename}-arow {
+    @include box-defaults;
+
+    border-top: first-number($v-border) solid $border-color;
+    border-left: first-number($v-border) solid $border-color;
+    border-right: first-number($v-border) solid $border-color;
+  }
+
+  .#{$primary-stylename}-arow-row {
+    @include box-defaults;
+
+    height: $v-table-row-height;
+
+    $arow-background-color: white;
+    @if is-dark-color($v-app-background-color) {
+      $arow-background-color: scale-color($v-app-background-color, $lightness: 10%, $saturation: 80%);
+    } @else {
+      $arow-background-color: scale-color($v-app-background-color, $lightness: -10%, $saturation: 80%);
+    }
+    background-color: $arow-background-color;
+
+    border-right: first-number($v-border) solid $border-color;
+    color: valo-font-color($arow-background-color, 0.9);
+  }
+
+  .#{$primary-stylename}-arow-row > .#{$primary-stylename}-cell-content {
+    border-bottom: 0;
+  }
 
   .#{$primary-stylename},
   .#{$primary-stylename}-body {
