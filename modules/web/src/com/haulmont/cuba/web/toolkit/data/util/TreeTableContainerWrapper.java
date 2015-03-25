@@ -148,7 +148,7 @@ public class TreeTableContainerWrapper
     @Override
     public Object nextItemId(Object itemId) {
         if (itemId == null) {
-            throw new NullPointerException("Item id cannot be NULL");
+            return null;
         }
         int index = inlineIndex(itemId);
         if (index == -1 || isLastId(itemId)) {
@@ -161,7 +161,6 @@ public class TreeTableContainerWrapper
     public Object prevItemId(Object itemId) {
         if (itemId == null) {
             return null;
-//            throw new NullPointerException("Item id cannot be NULL");
         }
         int index = inlineIndex(itemId);
         if (index == -1 || isFirstId(itemId)) {
