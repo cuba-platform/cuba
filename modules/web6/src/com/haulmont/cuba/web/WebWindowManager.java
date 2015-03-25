@@ -1054,11 +1054,8 @@ public class WebWindowManager extends WindowManager {
         messageLab.setWidth("100%");
         if (MessageType.isHTML(messageType)) {
             messageLab.setContentMode(Label.CONTENT_XHTML);
-            messageLab.setValue(message);
-        } else {
-            messageLab.setContentMode(Label.CONTENT_PREFORMATTED);
-            messageLab.setValue(message);
         }
+        messageLab.setValue(message);
 
         layout.addComponent(messageLab);
 
@@ -1127,11 +1124,8 @@ public class WebWindowManager extends WindowManager {
         messageLab.setWidth("100%");
         if (MessageType.isHTML(messageType)) {
             messageLab.setContentMode(Label.CONTENT_XHTML);
-            messageLab.setValue(message);
-        } else {
-            messageLab.setContentMode(Label.CONTENT_PREFORMATTED);
-            messageLab.setValue(message);
         }
+        messageLab.setValue(message);
 
         float width;
         if (getDialogParams().getWidth() != null) {

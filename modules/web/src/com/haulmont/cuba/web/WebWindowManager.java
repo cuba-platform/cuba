@@ -22,6 +22,7 @@ import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.sys.WindowBreadCrumbs;
+import com.haulmont.cuba.web.toolkit.ui.CubaLabel;
 import com.haulmont.cuba.web.toolkit.ui.CubaTabSheet;
 import com.haulmont.cuba.web.toolkit.ui.CubaWindow;
 import com.vaadin.event.ShortcutAction;
@@ -1027,11 +1028,12 @@ public class WebWindowManager extends WindowManager {
         layout.setStyleName("cuba-app-message-dialog");
         vWindow.setContent(layout);
 
-        Label messageLab = new Label(message);
+        Label messageLab = new CubaLabel();
+        messageLab.setValue(message);
         if (MessageType.isHTML(messageType)) {
             messageLab.setContentMode(ContentMode.HTML);
         } else {
-            messageLab.setContentMode(ContentMode.PREFORMATTED);
+            messageLab.setContentMode(ContentMode.TEXT);
         }
         layout.addComponent(messageLab);
 
@@ -1093,11 +1095,12 @@ public class WebWindowManager extends WindowManager {
         }
         window.setClosable(false);
 
-        Label messageLab = new Label(message);
+        Label messageLab = new CubaLabel();
+        messageLab.setValue(message);
         if (MessageType.isHTML(messageType)) {
             messageLab.setContentMode(ContentMode.HTML);
         } else {
-            messageLab.setContentMode(ContentMode.PREFORMATTED);
+            messageLab.setContentMode(ContentMode.TEXT);
         }
 
         float width;
