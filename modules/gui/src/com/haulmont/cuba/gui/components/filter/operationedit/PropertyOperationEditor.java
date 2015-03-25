@@ -41,6 +41,7 @@ public class PropertyOperationEditor extends AbstractOperationEditor {
         }
 
         popupButton.setCaption(messages.getMessage(condition.getOperator()));
+        popupButton.setStyleName("condition-operation-button");
 
         return popupButton;
     }
