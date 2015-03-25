@@ -20,32 +20,46 @@ public interface ObjectsCacheManagerAPI {
 
     /**
      * Register cache instance in
+     *
      * @param objectsCache Cache instance
      */
     void registerCache(ObjectsCacheInstance objectsCache);
 
     /**
      * Register cache controller in
+     *
      * @param cacheController Cache controller
      */
     void registerController(ObjectsCacheController cacheController);
 
     /**
      * Get collection of registered instances
+     *
      * @return Active cache instances
      */
     Collection<ObjectsCacheInstance> getActiveInstances();
 
     /**
      * Get cache instance by name
+     *
      * @param cacheName Unique cache name
-     * @return Cache istance
+     * @return Cache instance
      */
     @Nullable
     ObjectsCacheInstance getCache(String cacheName);
 
     /**
+     * Get cache instance by name
+     *
+     * @param cacheName Unique cache name
+     * @return Cache instance
+     * @throws java.lang.IllegalArgumentException if cache with given name not found
+     */
+    ObjectsCacheInstance getCacheNN(String cacheName);
+
+    /**
      * Get cache controller instance by cache name
+     *
      * @param cacheName Unique cache name
      * @return Cache controller
      */

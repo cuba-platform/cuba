@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.core.app.cache;
 
+import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.collections.Predicate;
@@ -196,6 +197,16 @@ public class ObjectsCache implements ObjectsCacheInstance, ObjectsCacheControlle
         }
 
         return count;
+    }
+
+    @Override
+    public Pair<Integer, Integer> count(Collection<Predicate> selectors, Predicate amplifyingSelector) {
+        cacheLock.readLock().lock();
+        try {
+            return cacheSet.countConjunction(selectors, amplifyingSelector);
+        } finally {
+            cacheLock.readLock().unlock();
+        }
     }
 
     @Override

@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.core.app.cache;
 
+import com.haulmont.bali.datastruct.Pair;
 import org.apache.commons.collections.Predicate;
 
 import java.util.Collection;
@@ -23,4 +24,6 @@ public interface ObjectsCacheInstance {
     Collection execute(CacheSelector cacheSelector);
 
     int count(Predicate... selectors);
+
+    Pair<Integer, Integer> count(Collection<Predicate> selectors, Predicate amplifyingSelector);
 }

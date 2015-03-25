@@ -71,6 +71,15 @@ public class ObjectsCacheManager implements ObjectsCacheManagerAPI {
     }
 
     @Override
+    public ObjectsCacheInstance getCacheNN(String cacheName) {
+        ObjectsCacheInstance objectsCacheInstance = instances.get(cacheName);
+        if (objectsCacheInstance == null) {
+            throw new IllegalArgumentException("ObjectsCacheInstance with name '" + cacheName + "' not found");
+        }
+        return objectsCacheInstance;
+    }
+
+    @Override
     public ObjectsCacheController getController(String cacheName) {
         return controllers.get(cacheName);
     }

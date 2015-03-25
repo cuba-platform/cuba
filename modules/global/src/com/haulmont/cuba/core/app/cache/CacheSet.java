@@ -5,6 +5,7 @@
 
 package com.haulmont.cuba.core.app.cache;
 
+import com.haulmont.bali.datastruct.Pair;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 
@@ -93,6 +94,27 @@ public class CacheSet implements Cloneable {
         return CollectionUtils.countMatches(items, predicate);
     }
 
+    public Pair<Integer, Integer> countConjunction(Collection<Predicate> selectors, Predicate amplifyingSelector) {
+        checkNotNull(selectors);
+        checkNotNull(amplifyingSelector);
+
+        ConjunctionPredicate conjunctionPredicate = new ConjunctionPredicate(selectors);
+
+        int count1 = 0;
+        int count2 = 0;
+
+        for (Object item : items) {
+            if (conjunctionPredicate.evaluate(item)) {
+                count1++;
+                if (amplifyingSelector.evaluate(item)) {
+                    count2++;
+                }
+            }
+        }
+
+        return new Pair<>(count1, count2);
+    }
+
     /**
      * Conjunction filtering by selectors
      *
@@ -128,8 +150,17 @@ public class CacheSet implements Cloneable {
 
         public ConjunctionPredicate(Predicate... selectors) {
             checkNotNull(selectors);
-
             this.selectors = selectors;
+        }
+
+        public ConjunctionPredicate(Collection<Predicate> selectors) {
+            checkNotNull(selectors);
+
+            this.selectors = new Predicate[selectors.size()];
+            int i = 0;
+            for (Predicate selector : selectors) {
+                this.selectors[i++] = selector;
+            }
         }
 
         @Override
