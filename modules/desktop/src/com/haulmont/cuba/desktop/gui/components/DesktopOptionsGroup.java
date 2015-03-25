@@ -12,6 +12,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import net.miginfocom.swing.MigLayout;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -24,9 +25,7 @@ import java.util.*;
  * @author krivopustov
  * @version $Id$
  */
-public class DesktopOptionsGroup
-        extends DesktopAbstractOptionsField<JPanel>
-        implements OptionsGroup {
+public class DesktopOptionsGroup extends DesktopAbstractOptionsField<JPanel> implements OptionsGroup {
 
     private boolean multiselect;
     private boolean optionsInitialized;
@@ -187,18 +186,48 @@ public class DesktopOptionsGroup
                 new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        Object newValue = item.getValue();
-                        if (!ObjectUtils.equals(newValue, prevValue)) {
-                            updateInstance(newValue);
-                            fireChangeListeners(newValue);
+                        if (!multiselect) {
+                            Object newValue = item.getValue();
+                            if (!ObjectUtils.equals(newValue, prevValue)) {
+                                updateInstance(newValue);
+                                fireChangeListeners(newValue);
+                            }
+                            updateMissingValueState();
+                        } else {
+                            Set<Object> newValue = new HashSet<>();
+                            for (Map.Entry<ValueWrapper, JToggleButton> item : items.entrySet()) {
+                                if (item.getValue().isSelected()) {
+                                    newValue.add(item.getKey().getValue());
+                                }
+                            }
+                            if ((prevValue != null
+                                    && !CollectionUtils.isEqualCollection(newValue, (Collection) prevValue))
+                                || (prevValue == null)) {
+                                updateInstance(newValue);
+                                fireChangeListeners(newValue);
+                            }
+                            updateMissingValueState();
                         }
-                        updateMissingValueState();
                     }
                 }
         );
 
         impl.add(button);
         items.put(item, button);
+    }
+
+    @Override
+    protected void updateInstance(Object newValue) {
+        if (newValue instanceof Collection && multiselect && metaPropertyPath != null) {
+            Class propertyType = metaPropertyPath.getMetaProperty().getJavaType();
+            if (Set.class.isAssignableFrom(propertyType)) {
+                newValue = new HashSet<>((Collection<?>) newValue);
+            } else if (List.class.isAssignableFrom(propertyType)) {
+                newValue = new ArrayList<>((Collection<?>) newValue);
+            }
+        }
+
+        super.updateInstance(newValue);
     }
 
     @Override
