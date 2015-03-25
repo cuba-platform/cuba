@@ -7,9 +7,11 @@ package com.haulmont.cuba.web.toolkit.ui.client.treetable;
 
 import com.google.gwt.dom.client.Element;
 import com.haulmont.cuba.web.toolkit.ui.CubaTreeTable;
+import com.haulmont.cuba.web.toolkit.ui.client.aggregation.TableAggregationRow;
 import com.haulmont.cuba.web.toolkit.ui.client.table.CubaTableClientRpc;
 import com.vaadin.client.*;
 import com.vaadin.client.communication.StateChangeEvent;
+import com.vaadin.client.ui.FocusableScrollPanel;
 import com.vaadin.client.ui.ShortcutActionHandler;
 import com.vaadin.client.ui.treetable.TreeTableConnector;
 import com.vaadin.shared.ui.Connect;
@@ -99,6 +101,15 @@ public class CubaTreeTableConnector extends TreeTableConnector {
         }
 
         return super.getTooltipInfo(element);
+    }
+
+    @Override
+    protected FocusableScrollPanel getFocusableScrollPanel() {
+        if (getWidget().getWidget(1) instanceof TableAggregationRow) {
+            return (FocusableScrollPanel) getWidget().getWidget(2);
+        }
+
+        return super.getFocusableScrollPanel();
     }
 
     @Override
