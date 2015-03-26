@@ -318,11 +318,9 @@ public class VButton extends FocusWidget implements Paintable, ClickHandler,
         if ((event.getTypeInt() & Event.KEYEVENTS) != 0) {
             switch (type) {
             case Event.ONKEYDOWN:
-                if (event.getKeyCode() == 32 /* space */) {
+                if (event.getKeyCode() == 32 /* space */
+                    || event.getKeyCode() == KeyCodes.KEY_ENTER) {
                     isFocusing = true;
-                    event.preventDefault();
-                    event.stopPropagation();
-                } else if (event.getKeyCode() == KeyCodes.KEY_ENTER) {
                     event.preventDefault();
                     event.stopPropagation();
                 }
@@ -341,7 +339,8 @@ public class VButton extends FocusWidget implements Paintable, ClickHandler,
 
                     event.stopPropagation();
                     event.preventDefault();
-                } else if (event.getKeyCode() == KeyCodes.KEY_ENTER) {
+                } else if (isFocusing && event.getKeyCode() == KeyCodes.KEY_ENTER) {
+                    isFocusing = false;
 
                     /*
                      * If click shortcut is enter then the shortcut handler will
