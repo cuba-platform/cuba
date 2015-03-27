@@ -28,6 +28,7 @@ public class ParamEditor implements AbstractCondition.Listener {
     protected BoxLayout labelAndOperationLayout;
     protected LinkButton removeButton;
     protected ComponentsFactory componentsFactory;
+    protected Action removeButtonAction;
 
     public ParamEditor(final AbstractCondition condition, boolean removeButtonVisible) {
         this.condition = condition;
@@ -70,6 +71,7 @@ public class ParamEditor implements AbstractCondition.Listener {
         removeButton.setIcon("icons/item-remove.png");
         removeButton.setAlignment(Component.Alignment.MIDDLE_LEFT);
         removeButton.setVisible(removeButtonVisible);
+        removeButton.setAction(removeButtonAction);
         paramEditComponentLayout.add(removeButton);
 
         if (paramEditComponentExpandRequired(condition)) {
@@ -126,5 +128,10 @@ public class ParamEditor implements AbstractCondition.Listener {
 
     public void requestFocus() {
         paramEditComponent.requestFocus();
+    }
+
+    public void setRemoveButtonAction(Action removeButtonAction) {
+        this.removeButtonAction = removeButtonAction;
+        removeButton.setAction(removeButtonAction);
     }
 }

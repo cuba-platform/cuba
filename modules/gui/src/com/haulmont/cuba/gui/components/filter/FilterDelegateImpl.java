@@ -707,7 +707,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                         }
                     };
                     removeConditionAction.setVisible(conditionsRemoveEnabled);
-                    paramEditor.getRemoveButton().setAction(removeConditionAction);
+                    paramEditor.setRemoveButtonAction(removeConditionAction);
 
                     if (focusOnConditions && !focusSet) {
                         paramEditor.requestFocus();
