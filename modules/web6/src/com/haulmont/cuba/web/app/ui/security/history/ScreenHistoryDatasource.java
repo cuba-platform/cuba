@@ -26,7 +26,7 @@ public class ScreenHistoryDatasource extends CollectionDatasourceImpl<ScreenHist
     protected void loadData(Map<String, Object> params) {
         UserSession userSession = AppBeans.get(UserSessionSource.class).getUserSession();
         User user = null;
-        if(userSession.getSubstitutedUser() != null) {
+        if (userSession.getSubstitutedUser() != null) {
             user = userSession.getSubstitutedUser();
         } else {
             user = userSession.getUser();
