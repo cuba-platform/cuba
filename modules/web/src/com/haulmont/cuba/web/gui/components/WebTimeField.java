@@ -132,20 +132,30 @@ public class WebTimeField extends WebAbstractField<CubaMaskedTextField> implemen
 
         ThemeConstants theme = app.getThemeConstants();
         int digitWidth = theme.getInt("cuba.web.WebTimeField.digitWidth");
+        int digitPadding = theme.getInt("cuba.web.WebTimeField.digitPadding");
+        int separatorWidth = theme.getInt("cuba.web.WebTimeField.separatorWidth");
 
-        int width = isAmPmUsed() ? digitWidth : 0;
+        int partsCount = isAmPmUsed() ? 1 : 0;
+        int newWidth = isAmPmUsed() ? digitWidth + digitPadding: digitPadding;
         if (showSeconds) {
-            width = width + digitWidth;
+            newWidth = newWidth + digitWidth;
+            partsCount += 1;
         }
         switch (resolution) {
             case HOUR:
-                component.setWidth((digitWidth + width) + "px");
+                partsCount += 1;
+                newWidth = digitWidth + newWidth;
                 break;
             case MIN:
             case SEC:
-                component.setWidth((digitWidth * 2 + width) + "px");
+                partsCount += 2;
+                newWidth = digitWidth * 2 + newWidth;
                 break;
         }
+
+        newWidth += (partsCount - 1) * separatorWidth;
+
+        component.setWidth(newWidth + "px");
     }
 
     private boolean checkStringValue(String value) {
