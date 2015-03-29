@@ -21,6 +21,7 @@ import com.haulmont.cuba.desktop.sys.DialogWindow;
 import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
 import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
 import com.haulmont.cuba.desktop.sys.layout.MigLayoutHelper;
+import com.haulmont.cuba.desktop.sys.vcl.CollapsiblePanel;
 import com.haulmont.cuba.desktop.sys.vcl.FocusableComponent;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.AbstractAction;
@@ -1083,6 +1084,11 @@ public class DesktopWindow implements Window, Component.Disposable,
                 while (c != null) {
                     if (c instanceof JTabbedPane && !((JTabbedPane) c).getSelectedComponent().equals(prevC)) {
                         ((JTabbedPane) c).setSelectedComponent(prevC);
+                        break;
+                    }
+                    if (c instanceof CollapsiblePanel && !((CollapsiblePanel) c).isExpanded()) {
+                        ((CollapsiblePanel) c).setExpanded(true);
+                        // todo artamonov need another check for CollapsiblePanel
                         break;
                     }
                     prevC = c;

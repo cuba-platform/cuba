@@ -13,6 +13,7 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
+import com.haulmont.cuba.web.toolkit.ui.CubaGroupBox;
 import com.haulmont.cuba.web.toolkit.ui.CubaHorizontalActionsLayout;
 import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
 import com.vaadin.event.Action;
@@ -374,6 +375,11 @@ public class WebComponentsHelper {
             if (!tab.isVisible()) {
                 return false;
             }
+        }
+
+        if (child.getParent() instanceof CubaGroupBox) {
+            // ignore groupbox content container visibility
+            return isComponentVisible(child.getParent());
         }
 
         return child.isVisible() && (child.getParent() == null || isComponentVisible(child.getParent()));

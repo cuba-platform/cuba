@@ -26,6 +26,7 @@ import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebFrameActionsHolder;
 import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
+import com.haulmont.cuba.web.toolkit.ui.GroupBox;
 import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.terminal.Sizeable;
@@ -316,6 +317,10 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
                 while (c != null) {
                     if (c instanceof TabSheet && !((TabSheet) c).getSelectedTab().equals(prevC)) {
                         ((TabSheet) c).setSelectedTab(prevC);
+                        break;
+                    }
+                    if (c instanceof GroupBox && !((GroupBox) c).isExpanded()) {
+                        ((GroupBox) c).setExpanded(true);
                         break;
                     }
                     prevC = c;

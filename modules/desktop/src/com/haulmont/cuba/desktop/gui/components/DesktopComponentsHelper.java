@@ -298,6 +298,8 @@ public class DesktopComponentsHelper {
             return tabVisible && isRecursivelyVisible(component.getParent());
         }
 
+        // todo content of groupbox always visible if groupbox collapsed
+
         return component.isVisible() && (component.getParent() == null || isRecursivelyVisible(component.getParent()));
     }
 

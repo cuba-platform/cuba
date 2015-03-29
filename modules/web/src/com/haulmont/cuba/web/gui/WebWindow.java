@@ -26,6 +26,7 @@ import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebFrameActionsHolder;
+import com.haulmont.cuba.web.toolkit.ui.CubaGroupBox;
 import com.haulmont.cuba.web.toolkit.ui.CubaTimer;
 import com.haulmont.cuba.web.toolkit.ui.CubaTree;
 import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
@@ -330,6 +331,10 @@ public class WebWindow implements Window, Component.Wrapper,
                 while (c != null) {
                     if (c instanceof TabSheet && !((TabSheet) c).getSelectedTab().equals(prevC)) {
                         ((TabSheet) c).setSelectedTab(prevC);
+                        break;
+                    }
+                    if (c instanceof CubaGroupBox && !((CubaGroupBox) c).isExpanded()) {
+                        ((CubaGroupBox) c).setExpanded(true);
                         break;
                     }
                     prevC = c;
