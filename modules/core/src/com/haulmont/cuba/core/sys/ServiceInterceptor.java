@@ -5,9 +5,9 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.app.StatisticsCounterAPI;
 import com.haulmont.cuba.core.global.Logging;
 import com.haulmont.cuba.core.global.RemoteException;
-import com.haulmont.cuba.core.sys.jmx.StatisticsCounterMBean;
 import com.haulmont.cuba.security.app.UserSessionsAPI;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;
@@ -28,7 +28,7 @@ public class ServiceInterceptor {
 
     private Persistence persistence;
 
-    private StatisticsCounterMBean statisticsCounter;
+    private StatisticsCounterAPI statisticsCounter;
 
     private Log log = LogFactory.getLog(getClass());
 
@@ -40,7 +40,7 @@ public class ServiceInterceptor {
         this.persistence = persistence;
     }
 
-    public void setStatisticsCounter(StatisticsCounterMBean statisticsCounter) {
+    public void setStatisticsCounter(StatisticsCounterAPI statisticsCounter) {
         this.statisticsCounter = statisticsCounter;
     }
 

@@ -6,8 +6,8 @@
 package com.haulmont.cuba.core.sys.persistence;
 
 import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.app.StatisticsCounterAPI;
 import com.haulmont.cuba.core.entity.BaseEntity;
-import com.haulmont.cuba.core.sys.jmx.StatisticsCounterMBean;
 import com.haulmont.cuba.core.sys.listener.EntityListenerManager;
 import com.haulmont.cuba.core.sys.listener.EntityListenerType;
 import org.apache.openjpa.event.AbstractTransactionListener;
@@ -31,7 +31,7 @@ public class EntityTransactionListener extends AbstractTransactionListener {
     private EntityListenerManager manager;
 
     @Inject
-    private StatisticsCounterMBean statisticsCounter;
+    private StatisticsCounterAPI statisticsCounter;
 
     @Override
     public void beforeCommit(TransactionEvent event) {

@@ -3,19 +3,24 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-package com.haulmont.cuba.core.sys.jmx;
-
-import org.springframework.jmx.export.annotation.ManagedOperation;
-import org.springframework.jmx.export.annotation.ManagedResource;
-
-import javax.management.openmbean.CompositeType;
+package com.haulmont.cuba.core.app;
 
 /**
  * @author krivenko
  * @version $Id$
  */
-@ManagedResource(description = "Provides various information about middleware performance statistics")
-public interface StatisticsCounterMBean {
+public interface StatisticsCounterAPI {
+    final String NAME = "cuba_StatisticsCounter";
+
+    void incStartedTransactionsCount();
+
+    void incCommittedTransactionsCount();
+
+    void incRolledBackTransactionsCount();
+
+    void incMiddlewareRequestsCount();
+
+    void incSchedulersCallsCount();
 
     Long getActiveTransactionsCount();
 

@@ -5,8 +5,10 @@
 
 package com.haulmont.cuba.web.jmx;
 
+import com.haulmont.cuba.web.app.StatisticsCounterBean;
+
 import javax.annotation.ManagedBean;
-import java.util.concurrent.atomic.AtomicLong;
+import javax.inject.Inject;
 
 /**
  * @author krivenko
@@ -15,16 +17,12 @@ import java.util.concurrent.atomic.AtomicLong;
 @ManagedBean("cuba_StatisticsCounterMBean")
 public class StatisticsCounter implements StatisticsCounterMBean {
 
-    private AtomicLong webClientRequestsCount = new AtomicLong();
-
-    @Override
-    public void incWebClientRequestsCount() {
-        webClientRequestsCount.incrementAndGet();
-    }
+    @Inject
+    protected StatisticsCounterBean counterBean;
 
     @Override
     public Long getWebClientRequestsCount() {
-        return webClientRequestsCount.get();
+        return counterBean.getWebClientRequestsCount();
     }
 
 }

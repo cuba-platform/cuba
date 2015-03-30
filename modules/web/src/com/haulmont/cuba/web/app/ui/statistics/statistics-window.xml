@@ -16,47 +16,12 @@
                               datasourceClass="com.haulmont.cuba.web.app.ui.jmxcontrol.ds.JmxInstancesDatasource">
         </collectionDatasource>
 
-        <collectionDatasource id="memoryDs"
-                              class="com.haulmont.cuba.web.app.ui.statistics.PerformanceParameter"
-                              datasourceClass="com.haulmont.cuba.web.app.ui.statistics.StatisticsDatasource"
-                              view="_local">
-        </collectionDatasource>
+        <groupDatasource id="statisticsDs"
+                         class="com.haulmont.cuba.web.app.ui.statistics.PerformanceParameter"
+                         datasourceClass="com.haulmont.cuba.web.app.ui.statistics.StatisticsDatasource"
+                         view="_local">
+        </groupDatasource>
 
-        <collectionDatasource id="cpuDs"
-                              class="com.haulmont.cuba.web.app.ui.statistics.PerformanceParameter"
-                              datasourceClass="com.haulmont.cuba.web.app.ui.statistics.StatisticsDatasource"
-                              view="_local">
-        </collectionDatasource>
-
-        <collectionDatasource id="threadingDs"
-                              class="com.haulmont.cuba.web.app.ui.statistics.PerformanceParameter"
-                              datasourceClass="com.haulmont.cuba.web.app.ui.statistics.StatisticsDatasource"
-                              view="_local">
-        </collectionDatasource>
-
-        <collectionDatasource id="dbPoolDs"
-                              class="com.haulmont.cuba.web.app.ui.statistics.PerformanceParameter"
-                              datasourceClass="com.haulmont.cuba.web.app.ui.statistics.StatisticsDatasource"
-                              view="_local">
-        </collectionDatasource>
-
-        <collectionDatasource id="dbDs"
-                              class="com.haulmont.cuba.web.app.ui.statistics.PerformanceParameter"
-                              datasourceClass="com.haulmont.cuba.web.app.ui.statistics.StatisticsDatasource"
-                              view="_local">
-        </collectionDatasource>
-
-        <collectionDatasource id="requestsDs"
-                              class="com.haulmont.cuba.web.app.ui.statistics.PerformanceParameter"
-                              datasourceClass="com.haulmont.cuba.web.app.ui.statistics.StatisticsDatasource"
-                              view="_local">
-        </collectionDatasource>
-
-        <collectionDatasource id="applicationDs"
-                              class="com.haulmont.cuba.web.app.ui.statistics.PerformanceParameter"
-                              datasourceClass="com.haulmont.cuba.web.app.ui.statistics.StatisticsDatasource"
-                              view="_local">
-        </collectionDatasource>
     </dsContext>
 
     <timers>
@@ -70,6 +35,7 @@
                 <columns>
                     <column/>
                     <column/>
+                    <column/>
                 </columns>
                 <rows>
                     <row>
@@ -79,89 +45,24 @@
                     <row>
                         <label value="msg://com.haulmont.cuba.web.app.ui.jmxcontrol/targetJmxNode"/>
                         <lookupPickerField id="jmxConnectionField" optionsDatasource="jmxInstancesDs" width="${fieldWidth}"/>
+                        <button id="monitorThreads" caption="msg://threadsMonitor" invoke="onMonitorThreads" align="MIDDLE_CENTER"/>
                     </row>
                 </rows>
             </grid>
         </groupBox>
-        <hbox spacing="true" id="main" width="100%">
-            <vbox height="AUTO">
-                <groupBox caption="msg://group.memory" collapsable="true" width="100%">
-                    <table id="memoryTable" width="100%">
-                        <columns>
-                            <column id="parameterName"/>
-                            <column id="currentLongValue"/>
-                            <column id="average1m"/>
-                        </columns>
-                        <rows datasource="memoryDs"/>
-                    </table>
-                </groupBox>
-                <groupBox caption="msg://group.db" collapsable="true" width="100%">
-                    <table id="dbTable" width="100%">
-                        <columns>
-                            <column id="parameterName"/>
-                            <column id="currentStringValue"/>
-                            <column id="average1m"/>
-                            <column id="averageForUptime"/>
-                        </columns>
-                        <rows datasource="dbDs"/>
-                    </table>
-                </groupBox>
-                <groupBox caption="msg://group.threading" collapsable="true" width="100%" >
-                    <hbox width="100%" expand="monitorThreads" spacing="true">
-                        <table id="threadingTable">
-                            <columns>
-                                <column id="parameterName"/>
-                                <column id="currentStringValue"/>
-                                <column id="average1m"/>
-                            </columns>
-                            <rows datasource="threadingDs"/>
-                        </table>
-                        <button id="monitorThreads" caption="msg://threadsMonitor" invoke="onMonitorThreads" align="MIDDLE_CENTER"/>
-                    </hbox>
-                </groupBox>
-                <groupBox caption="msg://group.application" collapsable="true" width="100%">
-                    <table id="applicationTable" width="100%">
-                        <columns>
-                            <column id="parameterName"/>
-                            <column id="currentStringValue"/>
-                        </columns>
-                        <rows datasource="applicationDs"/>
-                    </table>
-                </groupBox>
-            </vbox>
-            <vbox>
-                    <groupBox caption="msg://group.requests" collapsable="true" width="100%">
-                        <table id="requestsTable" width="100%">
-                            <columns>
-                                <column id="parameterName"/>
-                                <column id="currentStringValue"/>
-                                <column id="average1m"/>
-                                <column id="averageForUptime"/>
-                            </columns>
-                            <rows datasource="requestsDs"/>
-                        </table>
-                    </groupBox>
-                    <groupBox caption="msg://group.connections" collapsable="true" width="100%" >
-                        <table id="dbPoolTable" width="100%">
-                            <columns>
-                                <column id="parameterName"/>
-                                <column id="currentStringValue"/>
-                                <column id="average1m"/>
-                            </columns>
-                            <rows datasource="dbPoolDs"/>
-                        </table>
-                    </groupBox>
-                    <groupBox caption="msg://group.cpuload" collapsable="true" width="100%">
-                        <table id="cpuTable" width="100%">
-                            <columns>
-                                <column id="parameterName"/>
-                                <column id="currentDoubleValue"/>
-                                <column id="average1m"/>
-                            </columns>
-                            <rows datasource="cpuDs"/>
-                        </table>
-                    </groupBox>
-            </vbox>
+        <hbox id="main">
+            <groupTable id="paramsTable" reorderingAllowed="false" sortable="false" width="AUTO" height="100%">
+                <columns>
+                    <group>
+                        <column id="parameterGroup"/>
+                    </group>
+                    <column id="parameterName" calculatable="true"/>
+                    <column id="currentStringValue"/>
+                    <column id="average1mStringValue"/>
+                    <column id="averageForUptime"/>
+                </columns>
+                <rows datasource="statisticsDs"/>
+            </groupTable>
         </hbox>
     </layout>
 

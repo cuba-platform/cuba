@@ -9,8 +9,8 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.WebConfig;
+import com.haulmont.cuba.web.app.StatisticsCounterBean;
 import com.haulmont.cuba.web.auth.RequestContext;
-import com.haulmont.cuba.web.jmx.StatisticsCounterMBean;
 import com.vaadin.server.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,7 +42,7 @@ public class CubaApplicationServlet extends VaadinServlet {
     protected WebConfig webConfig;
 
     //private StatisticsCounter statisticsCounter;
-    private StatisticsCounterMBean statisticsCounter;
+    private StatisticsCounterBean statisticsCounter;
 
     @Override
     protected VaadinServletService createServletService(DeploymentConfiguration deploymentConfiguration)
@@ -56,7 +56,7 @@ public class CubaApplicationServlet extends VaadinServlet {
     public void init(ServletConfig servletConfig) throws ServletException {
         Configuration configuration = AppBeans.get(Configuration.NAME);
         webConfig = configuration.getConfig(WebConfig.class);
-        statisticsCounter = AppBeans.get(StatisticsCounterMBean.class);
+        statisticsCounter = AppBeans.get(StatisticsCounterBean.class);
 
         super.init(servletConfig);
     }

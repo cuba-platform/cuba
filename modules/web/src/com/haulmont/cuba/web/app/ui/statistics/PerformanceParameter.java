@@ -26,19 +26,22 @@ public class PerformanceParameter extends AbstractNotPersistentEntity {
     private String parameterName;
 
     @MetaProperty
+    private String parameterGroup;
+
+    @MetaProperty
     private String currentStringValue;
 
-    @MetaProperty
     private Long currentLongValue;
 
-    @MetaProperty
     private Double currentDoubleValue;
 
     @MetaProperty
     private Double averageForUptime;
 
-    @MetaProperty
     private Double average1m;
+
+    @MetaProperty
+    private String average1mStringValue;
 
     private Boolean showUptime;
 
@@ -60,6 +63,15 @@ public class PerformanceParameter extends AbstractNotPersistentEntity {
         this.averageInterval = averageInterval;
         longValues = new ArrayBlockingQueue<>(averageInterval);
         doubleValues = new ArrayBlockingQueue<>(averageInterval);
+    }
+
+    public String getAverage1mStringValue() {
+        return average1mStringValue!=null ? average1mStringValue :
+                (average1m!=null ? average1m.toString() : "");
+    }
+
+    public void setAverage1mStringValue(String average1mStringValue) {
+        this.average1mStringValue = average1mStringValue;
     }
 
     public Long getUptime() {
@@ -102,10 +114,18 @@ public class PerformanceParameter extends AbstractNotPersistentEntity {
         this.parameterName = parameterName;
     }
 
+    public String getParameterGroup() {
+        return parameterGroup;
+    }
+
+    public void setParameterGroup(String parameterGroup) {
+        this.parameterGroup = parameterGroup;
+    }
+
     public String getCurrentStringValue() {
         return currentStringValue!=null ? currentStringValue :
-                (currentLongValue!=null ? Long.toString(currentLongValue) :
-                        (currentDoubleValue!=null ? Double.toString(currentDoubleValue) : ""));
+                (currentLongValue!=null ? currentLongValue.toString() :
+                        (currentDoubleValue!=null ? currentDoubleValue.toString() : ""));
     }
 
     public void setCurrentStringValue(String currentStringValue) {

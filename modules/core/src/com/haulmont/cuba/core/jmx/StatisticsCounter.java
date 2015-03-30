@@ -5,12 +5,11 @@
 
 package com.haulmont.cuba.core.jmx;
 
+import com.haulmont.cuba.core.app.StatisticsCounterAPI;
 import com.haulmont.cuba.core.sys.jmx.StatisticsCounterMBean;
 
 import javax.annotation.ManagedBean;
-import javax.management.openmbean.CompositeDataSupport;
-import javax.management.openmbean.SimpleType;
-import java.util.concurrent.atomic.AtomicLong;
+import javax.inject.Inject;
 
 /**
  * @author krivenko
@@ -19,65 +18,37 @@ import java.util.concurrent.atomic.AtomicLong;
 @ManagedBean("cuba_StatisticsCounterMBean")
 public class StatisticsCounter implements StatisticsCounterMBean {
 
-    private AtomicLong startedTransactionsCount = new AtomicLong();
-    private AtomicLong committedTransactionsCount = new AtomicLong();
-    private AtomicLong rolledBackTransactionsCount = new AtomicLong();
-    private AtomicLong middlewareRequestsCount = new AtomicLong();
-    private AtomicLong schedulersCallsCount = new AtomicLong();
-
-    @Override
-    public void incStartedTransactionsCount() {
-        startedTransactionsCount.incrementAndGet();
-    }
-
-    @Override
-    public void incCommittedTransactionsCount() {
-        committedTransactionsCount.incrementAndGet();
-    }
-
-    @Override
-    public void incRolledBackTransactionsCount() {
-        rolledBackTransactionsCount.incrementAndGet();
-    }
-
-    @Override
-    public void incMiddlewareRequestsCount() {
-        middlewareRequestsCount.incrementAndGet();
-    }
-
-    @Override
-    public void incSchedulersCallsCount() {
-        schedulersCallsCount.incrementAndGet();
-    }
+    @Inject
+    protected StatisticsCounterAPI statisticsCounterAPI;
 
     @Override
     public Long getActiveTransactionsCount() {
-        return (startedTransactionsCount.get()-committedTransactionsCount.get()-rolledBackTransactionsCount.get());
+        return statisticsCounterAPI.getActiveTransactionsCount();
     }
 
     @Override
     public Long getStartedTransactionsCount() {
-        return startedTransactionsCount.get();
+        return statisticsCounterAPI.getStartedTransactionsCount();
     }
 
     @Override
     public Long getCommittedTransactionsCount() {
-        return committedTransactionsCount.get();
+        return statisticsCounterAPI.getCommittedTransactionsCount();
     }
 
     @Override
     public Long getRolledBackTransactionsCount() {
-        return rolledBackTransactionsCount.get();
+        return statisticsCounterAPI.getRolledBackTransactionsCount();
     }
 
     @Override
     public Long getMiddlewareRequestsCount() {
-        return middlewareRequestsCount.get();
+        return statisticsCounterAPI.getMiddlewareRequestsCount();
     }
 
     @Override
     public Long getSchedulersCallsCount() {
-        return schedulersCallsCount.get();
+        return statisticsCounterAPI.getSchedulersCallsCount();
     }
 
 }

@@ -6,13 +6,17 @@
 package com.haulmont.cuba.web.app.ui.statistics;
 
 import com.haulmont.bali.util.ParamsMap;
+import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.impl.DoubleDatatype;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.JmxInstance;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.GroupDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.web.app.ui.jmxinstance.edit.JmxInstanceEditor;
@@ -35,31 +39,10 @@ public class StatisticsWindow extends AbstractWindow {
     private static final long serialVersionUID = 9164872304110482393L;
 
     @Inject
-    protected Table memoryTable;
+    protected GroupTable paramsTable;
 
     @Inject
-    protected Table applicationTable;
-
-    @Inject
-    protected CollectionDatasource memoryDs;
-
-    @Inject
-    protected CollectionDatasource cpuDs;
-
-    @Inject
-    protected CollectionDatasource threadingDs;
-
-    @Inject
-    protected CollectionDatasource dbPoolDs;
-
-    @Inject
-    protected CollectionDatasource dbDs;
-
-    @Inject
-    protected CollectionDatasource applicationDs;
-
-    @Inject
-    protected CollectionDatasource requestsDs;
+    protected GroupDatasource statisticsDs;
 
     @Inject
     protected JmxControlAPI jmxControlAPI;
@@ -89,11 +72,14 @@ public class StatisticsWindow extends AbstractWindow {
     public void init(Map<String, Object> params) {
         parameterClass = metadata.getClass(PerformanceParameter.class);
 
-        applicationDs.addListener(new DsListenerAdapter<PerformanceParameter>() {
+        statisticsDs.addListener(new DsListenerAdapter<PerformanceParameter>() {
             private static final long serialVersionUID = 8971263564912983432L;
+
+            private Formatter kilobyteFormatter = new KilobyteFormatter();
+            private DoubleDatatype doubleDatatype = Datatypes.get(DoubleDatatype.NAME);
             @Override
             public void valueChanged(PerformanceParameter source, String property, @Nullable Object prevValue, @Nullable Object value) {
-                if ("Uptime".equals(source.getParameterName()) && property.equals("currentLongValue")) {
+                if ("Uptime".equals(source.getParameterName()) && "currentLongValue".equals(property)) {
                     long uptime = (long)value;
                     //propagate uptime to calculate uptime average
                     for (Datasource ds : getDsContext().getAll()) {
@@ -105,15 +91,27 @@ public class StatisticsWindow extends AbstractWindow {
                         }
                     }
                 }
+                else if ("Memory".equals(source.getParameterGroup())) {
+                    if ("currentLongValue".equals(property)) {
+                        source.setCurrentStringValue(kilobyteFormatter.format(value));
+                    }
+                    else if ("average1m".equals(property)) {
+                        source.setAverage1mStringValue(kilobyteFormatter.format(value));
+                    }
+                }
+                else {
+                    if ("currentDoubleValue".equals(property)) {
+                        source.setCurrentStringValue(doubleDatatype.format((Double) value));
+                    }
+                    else if ("average1m".equals(property)) {
+                        source.setAverage1mStringValue(doubleDatatype.format((Double) value));
+                    }
+                }
             }
         });
         initJMXTable();
         setNode(jmxConnectionField.<JmxInstance>getValue());
         valuesTimer.setDelay(timerDelay);
-
-        memoryTable.getColumn("currentLongValue").setFormatter(new KilobyteFormatter());
-        memoryTable.getColumn("average1m").setFormatter(new KilobyteFormatter());
-        applicationTable.getColumn("currentStringValue").setFormatter(new KilobyteFormatter());
     }
 
     protected void initJMXTable() {
@@ -175,40 +173,17 @@ public class StatisticsWindow extends AbstractWindow {
     }
 
     public void onRefresh(Timer timer) {
-        applicationDs.refresh();
-        memoryDs.refresh();
-        cpuDs.refresh();
-        threadingDs.refresh();
-        dbPoolDs.refresh();
-        dbDs.refresh();
-        requestsDs.refresh();
+        statisticsDs.refresh();
     }
 
     protected void setNode(JmxInstance currentNode) {
-        applicationDs.clear();
-        memoryDs.clear();
-        cpuDs.clear();
-        threadingDs.clear();
-        dbPoolDs.clear();
-        dbDs.clear();
-        requestsDs.clear();
+        statisticsDs.clear();
 
         int avgInterval = 60 * 1000 / timerDelay;
         Map<String, Object> constantParams = ParamsMap.of("node", currentNode, "avgInterval",avgInterval);
-        //applicationDs should go first as it holds uptime value required in all datasources (propagated by a listener).
-        applicationDs.refresh(constructMap(constantParams, "category", StatisticsDatasource.Category.APPLICATION));
-        memoryDs.refresh(constructMap(constantParams, "category", StatisticsDatasource.Category.MEMORY));
-        cpuDs.refresh(constructMap(constantParams, "category", StatisticsDatasource.Category.CPU));
-        threadingDs.refresh(constructMap(constantParams, "category", StatisticsDatasource.Category.THREADING));
-        dbPoolDs.refresh(constructMap(constantParams, "category", StatisticsDatasource.Category.DBPOOL));
-        dbDs.refresh(constructMap(constantParams, "category", StatisticsDatasource.Category.DB));
-        requestsDs.refresh(constructMap(constantParams, "category", StatisticsDatasource.Category.REQUESTS));
-    }
-
-    private Map<String,Object> constructMap(Map<String, Object> initial, String key, Object value) {
-        Map<String,Object> res = new HashMap<>(initial);
-        res.put(key, value);
-        return res;
+        statisticsDs.refresh(constantParams);
+        statisticsDs.groupBy(new Object[]{new MetaPropertyPath(parameterClass, parameterClass.getProperty("parameterGroup"))});
+        paramsTable.expandAll();
     }
 
     public void onMonitorThreads() {
