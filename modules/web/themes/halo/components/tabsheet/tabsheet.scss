@@ -1,0 +1,12 @@
+/*
+ * Copyright (c) 2008-2015 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+ */
+
+@mixin halo-tabsheet($primary-stylename: v-tabsheet) {
+  // we rarely hide first tab but often hide other tabs
+  // unlike Vaadin we always show margin between tabs
+  .#{$primary-stylename}-tabitemcell[aria-hidden="true"] + td .v-caption {
+    margin-left: round($v-unit-size/2);
+  }
+}
