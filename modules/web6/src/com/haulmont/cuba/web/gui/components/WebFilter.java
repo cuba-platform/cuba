@@ -33,7 +33,7 @@ public class WebFilter extends WebAbstractComponent<VerticalActionsLayout> imple
         delegate.setFilter(this);
         component = new VerticalActionsLayout();
         Container layout = delegate.getLayout();
-        com.vaadin.ui.Component unwrap = WebComponentsHelper.unwrap(layout);
+        com.vaadin.ui.Component unwrap = WebComponentsHelper.getComposition(layout);
         component.addComponent(unwrap);
         component.setWidth("100%");
     }

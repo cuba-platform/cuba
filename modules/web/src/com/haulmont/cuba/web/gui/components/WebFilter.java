@@ -33,7 +33,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
         delegate.setFilter(this);
         component = new CubaVerticalActionsLayout();
         Container layout = delegate.getLayout();
-        com.vaadin.ui.Component unwrap = WebComponentsHelper.unwrap(layout);
+        com.vaadin.ui.Component unwrap = WebComponentsHelper.getComposition(layout);
         component.addComponent(unwrap);
         component.setWidth("100%");
     }

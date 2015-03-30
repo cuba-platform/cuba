@@ -43,7 +43,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         impl = new JPanel(topLayout);
 
         Container layout = delegate.getLayout();
-        JComponent unwrap = DesktopComponentsHelper.unwrap(layout);
+        JComponent unwrap = DesktopComponentsHelper.getComposition(layout);
         impl.add(unwrap, "width 100%");
 
         setWidth("100%");
