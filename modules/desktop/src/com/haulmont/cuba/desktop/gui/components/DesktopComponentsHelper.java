@@ -8,6 +8,7 @@ package com.haulmont.cuba.desktop.gui.components;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.DetachedFrame;
 import com.haulmont.cuba.desktop.TopLevelFrame;
+import com.haulmont.cuba.desktop.sys.vcl.CollapsiblePanel;
 import com.haulmont.cuba.desktop.sys.vcl.Flushable;
 import com.haulmont.cuba.gui.components.AbstractFrame;
 import com.haulmont.cuba.gui.components.Component;
@@ -298,7 +299,9 @@ public class DesktopComponentsHelper {
             return tabVisible && isRecursivelyVisible(component.getParent());
         }
 
-        // todo content of groupbox always visible if groupbox collapsed
+        if (component.getParent() instanceof CollapsiblePanel) {
+            return isRecursivelyVisible(component.getParent());
+        }
 
         return component.isVisible() && (component.getParent() == null || isRecursivelyVisible(component.getParent()));
     }
@@ -324,7 +327,8 @@ public class DesktopComponentsHelper {
             return tabVisible && isRecursivelyEnabled(component.getParent());
         }
 
-        return component.isEnabled() && (component.getParent() == null || isRecursivelyEnabled(component.getParent()));
+        return component.isEnabled() && (component.getParent() == null || isRecursivelyEnabled(component.getParent()))
+                && isRecursivelyVisible(component);
     }
 
     /**

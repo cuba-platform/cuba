@@ -142,11 +142,11 @@ public class CollapsiblePanel extends JPanel {
     }
 
     private void expandPanel() {
+        composition.setVisible(true);
+
         postPaintActions.add(new Runnable() {
             @Override
             public void run() {
-                add(composition, BorderLayout.CENTER);
-
                 titleBtn.setIcon(expandedIcon);
                 setPreferredSize(preferredSize);
                 updateUI();
@@ -159,6 +159,8 @@ public class CollapsiblePanel extends JPanel {
     }
 
     private void collapsePanel() {
+        composition.setVisible(false);
+
         postPaintActions.add(new Runnable() {
             @Override
             public void run() {
@@ -168,7 +170,6 @@ public class CollapsiblePanel extends JPanel {
                 preferredSize = getPreferredSize();
 
                 titleBtn.setIcon(collapsedIcon);
-                remove(composition);
                 setPreferredSize(new Dimension(collapsedWidth, collapsedHeight));
                 updateUI();
             }

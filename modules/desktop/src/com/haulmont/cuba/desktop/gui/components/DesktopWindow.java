@@ -1088,7 +1088,6 @@ public class DesktopWindow implements Window, Component.Disposable,
                     }
                     if (c instanceof CollapsiblePanel && !((CollapsiblePanel) c).isExpanded()) {
                         ((CollapsiblePanel) c).setExpanded(true);
-                        // todo artamonov need another check for CollapsiblePanel
                         break;
                     }
                     prevC = c;
