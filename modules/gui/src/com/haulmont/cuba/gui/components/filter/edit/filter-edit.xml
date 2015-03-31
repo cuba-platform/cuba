@@ -3,7 +3,7 @@
   ~ Use is subject to license terms, see http://www.cuba-platform.com/license for details.
   -->
 
-<window xmlns="http://schemas.haulmont.com/cuba/5.4/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/5.5/window.xsd"
         class="com.haulmont.cuba.gui.components.filter.edit.FilterEditor"
         messagesPack="com.haulmont.cuba.gui.components.filter.edit"
         caption="msg://caption"
@@ -20,8 +20,8 @@
     </actions>
 
     <layout spacing="true" expand="mainLayout">
-        <hbox id="mainLayout" spacing="true" width="100%">
-            <vbox id="leftPanel" height="100%" width="100%" spacing="true" expand="conditionsTree">
+        <hbox id="mainLayout" spacing="true" expand="leftPanel" width="100%">
+            <vbox id="leftPanel" height="100%" spacing="true" expand="conditionsTree">
                 <grid spacing="true" width="100%">
                     <columns>
                         <column/>
@@ -67,7 +67,7 @@
                     <treechildren datasource="conditionsDs" captionProperty="locCaption"/>
                 </tree>
             </vbox>
-            <groupBox id="conditionPropertiesLayout" caption="msg://conditionProperties" height="100%" width="100%">
+            <groupBox id="conditionPropertiesLayout" caption="msg://conditionProperties" height="100%" width="theme://cuba.gui.filterEditor.dialog.rightPanel.width">
                 <scrollBox scrollBars="vertical" height="100%" width="100%">
                     <iframe id="customConditionFrame" screen="customConditionFrame" visible="false"/>
                     <iframe id="runtimePropConditionFrame" screen="runtimePropConditionFrame" visible="false"/>
