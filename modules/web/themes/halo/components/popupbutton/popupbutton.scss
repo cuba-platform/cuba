@@ -34,7 +34,7 @@
       text-align: left;
     }
 
-    .v-button:hover {
+    .v-button.v-selected {
       @include valo-selection-item-selected-style;
     }
   }

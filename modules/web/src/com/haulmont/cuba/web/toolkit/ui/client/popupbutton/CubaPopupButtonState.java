@@ -14,4 +14,5 @@ import org.vaadin.hene.popupbutton.widgetset.client.ui.PopupButtonState;
 public class CubaPopupButtonState extends PopupButtonState {
 
     public boolean autoClose = true;
+    public boolean customLayout = false;
 }

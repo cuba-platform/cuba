@@ -8,6 +8,7 @@ import com.haulmont.cuba.gui.TestIdManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.web.AppUI;
 import com.haulmont.cuba.web.toolkit.ui.CubaPopupButton;
+import com.haulmont.cuba.web.toolkit.ui.CubaPopupButtonLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
@@ -44,10 +45,7 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
         };
         component.setImmediate(true);
 
-        vPopupComponent = new VerticalLayout();
-        vPopupComponent.addStyleName("cuba-popupmenu");
-        ((VerticalLayout) vPopupComponent).setMargin(false);
-        vPopupComponent.setSizeUndefined();
+        vPopupComponent = new CubaPopupButtonLayout();
         component.setContent(vPopupComponent);
     }
 

@@ -33,4 +33,13 @@ public class CubaPopupButton extends PopupButton {
             getState().autoClose = autoClose;
         }
     }
+
+    @Override
+    public void beforeClientResponse(boolean initial) {
+        super.beforeClientResponse(initial);
+
+        if (!(getContent() instanceof CubaPopupButtonLayout) && !getState(false).customLayout) {
+            getState().customLayout = true;
+        }
+    }
 }
