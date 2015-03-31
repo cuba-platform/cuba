@@ -181,6 +181,10 @@ public interface ClientConfig extends Config {
     @Property("cuba.gui.filterApplyShortcut")
     String getFilterApplyShortcut();
 
+    @DefaultString("SHIFT-PLUS")
+    @Property("cuba.gui.filterSelectShortcut")
+    String getFilterSelectShortcut();
+
     @DefaultString("CTRL-SHIFT-PAGE_DOWN")
     @Property("cuba.gui.nextTabShortcut")
     String getNextTabShortcut();

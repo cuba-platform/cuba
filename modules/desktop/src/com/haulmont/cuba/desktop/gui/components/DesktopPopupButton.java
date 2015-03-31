@@ -141,11 +141,16 @@ public class DesktopPopupButton extends DesktopAbstractActionsHolderComponent<JB
 
     @Override
     public boolean isPopupVisible() {
-        return false;
+        return popup.isVisible();
     }
 
     @Override
     public void setPopupVisible(boolean popupVisible) {
+        if (popupVisible && !popup.isVisible()) {
+            showPopup();
+        } else if (popup.isVisible()) {
+            popup.setVisible(false);
+        }
     }
 
     @Override

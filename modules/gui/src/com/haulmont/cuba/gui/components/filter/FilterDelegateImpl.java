@@ -1570,6 +1570,17 @@ public class FilterDelegateImpl implements FilterDelegate {
                 }
             });
         }
+
+        if (filter.getFrame().getAction("selectFilter") == null) {
+            filter.getFrame().addAction(new AbstractAction("selectFilter", clientConfig.getFilterSelectShortcut()) {
+                @Override
+                public void actionPerform(Component component) {
+                    if (isVisible() && datasource != null && filtersPopupButton.isEnabled()) {
+                        filtersPopupButton.setPopupVisible(true);
+                    }
+                }
+            });
+        }
     }
 
     protected void updateWindowCaption() {
