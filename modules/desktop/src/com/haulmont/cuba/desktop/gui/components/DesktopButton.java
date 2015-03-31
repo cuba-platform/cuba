@@ -29,6 +29,8 @@ public class DesktopButton extends DesktopAbstractComponent<JButton> implements 
     protected long responseEndTs = 0;
     protected boolean shouldBeFocused = true;
 
+    protected PropertyChangeListener actionPropertyChangeListener;
+
     public DesktopButton() {
         impl = createImplementation();
         impl.addActionListener(new ValidationAwareActionListener() {
@@ -65,29 +67,35 @@ public class DesktopButton extends DesktopAbstractComponent<JButton> implements 
 
     @Override
     public void setAction(Action action) {
-        this.action = action;
+        if (action != this.action) {
+            if (this.action != null) {
+                this.action.removeOwner(this);
+                this.action.removePropertyChangeListener(actionPropertyChangeListener);
+            }
 
-        String caption = action.getCaption();
-        if (!StringUtils.isEmpty(caption) && StringUtils.isEmpty(impl.getText())) {
-            impl.setText(caption);
-        }
+            this.action = action;
 
-        String description = action.getDescription();
-        if (!StringUtils.isEmpty(description) && StringUtils.isEmpty(getDescription())) {
-            setDescription(description);
-        }
+            if (action != null) {
+                String caption = action.getCaption();
+                if (!StringUtils.isEmpty(caption) && StringUtils.isEmpty(impl.getText())) {
+                    impl.setText(caption);
+                }
 
-        setEnabled(action.isEnabled());
-        setVisible(action.isVisible());
+                String description = action.getDescription();
+                if (!StringUtils.isEmpty(description) && StringUtils.isEmpty(getDescription())) {
+                    setDescription(description);
+                }
 
-        if (action.getIcon() != null) {
-            setIcon(action.getIcon());
-        }
+                setEnabled(action.isEnabled());
+                setVisible(action.isVisible());
 
-        action.addOwner(this);
+                if (action.getIcon() != null) {
+                    setIcon(action.getIcon());
+                }
 
-        action.addPropertyChangeListener(
-                new PropertyChangeListener() {
+                action.addOwner(this);
+
+                actionPropertyChangeListener = new PropertyChangeListener() {
                     @Override
                     public void propertyChange(PropertyChangeEvent evt) {
                         if (Action.PROP_ICON.equals(evt.getPropertyName())) {
@@ -102,10 +110,12 @@ public class DesktopButton extends DesktopAbstractComponent<JButton> implements 
                             setVisible(DesktopButton.this.action.isVisible());
                         }
                     }
-                }
-        );
+                };
+                action.addPropertyChangeListener(actionPropertyChangeListener);
 
-        assignAutoDebugId();
+                assignAutoDebugId();
+            }
+        }
     }
 
     @Override
