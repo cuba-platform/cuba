@@ -6,8 +6,12 @@
 package com.haulmont.cuba.core.app.entitysql;
 
 import com.google.common.base.Preconditions;
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.impl.DateDatatype;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
+import com.haulmont.chile.core.datatypes.impl.TimeDatatype;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Metadata;
@@ -40,12 +44,15 @@ public class EntitySqlGenerator {
 
     public static final String ID = "id";
 
-    protected SimpleDateFormat dateFormat = new SimpleDateFormat("''yyyy-MM-dd HH:mm:ss''");
+    protected SimpleDateFormat dateTimeFormat = new SimpleDateFormat("''yyyy-MM-dd HH:mm:ss''");
+    protected SimpleDateFormat dateFormat = new SimpleDateFormat("''yyyy-MM-dd''");
+    protected SimpleDateFormat timeFormat = new SimpleDateFormat("''HH:mm:ss''");
     protected String insertTemplate = "insert into %s \n(%s) \nvalues (%s);";
     protected String updateTemplate = "update %s \nset %s \nwhere %s=%s;";
     protected String selectTemplate = "select %s from %s where %s";
 
     protected Class clazz;
+    protected MetaClass metaClass;
     protected List<Table> tables = new LinkedList<>();
     protected String discriminatorValue;
 
@@ -61,7 +68,7 @@ public class EntitySqlGenerator {
 
     @PostConstruct
     public void init() {
-        MetaClass metaClass = metadata.getClass(clazz);
+        metaClass = metadata.getClass(clazz);
         collectTableMetadata(metaClass, new Table(null));
 
         if (tables.isEmpty()) {
@@ -127,14 +134,12 @@ public class EntitySqlGenerator {
             }
         }
 
-        where.add(tableAlias + "." + tableIdColumn + " = " + convertValue(entity.getId()));
-
-
+        where.add(tableAlias + "." + tableIdColumn + " = " + convertValue(ID, entity.getId()));
         return format(selectTemplate,
                 convertList(columns), convertList(tableNames), convertList(where).replaceAll(",", " and "));
     }
 
-    protected String convertValue(@Nullable Object value) {
+    protected String convertValue(String fieldName, @Nullable Object value) {
         try {
             String valueStr;
             if (value instanceof Entity) {
@@ -148,7 +153,16 @@ public class EntitySqlGenerator {
             if (value == null) {
                 valueStr = null;
             } else if (value instanceof Date) {
-                valueStr = dateFormat.format((Date) value);
+                MetaProperty property = metaClass.getPropertyNN(fieldName);
+                Datatype datatype = property.getRange().asDatatype();
+
+                if (datatype instanceof DateDatatype) {
+                    valueStr = dateFormat.format((Date) value);
+                } else if (datatype instanceof TimeDatatype) {
+                    valueStr = timeFormat.format((Date) value);
+                } else {
+                    valueStr = dateTimeFormat.format((Date) value);
+                }
             } else if (value instanceof String
                     || value instanceof UUID
                     || value.getClass().getName().toLowerCase().contains("uuid")
@@ -207,7 +221,7 @@ public class EntitySqlGenerator {
             List<String> valuesStr = new ArrayList<>();
 
             if (discriminatorColumn != null) {
-                String discriminatorValueStr = convertValue(discriminatorValue());
+                String discriminatorValueStr = convertValue(null, discriminatorValue());
                 columnNames.add(discriminatorColumn);
                 valuesStr.add(discriminatorValueStr);
             }
@@ -216,7 +230,7 @@ public class EntitySqlGenerator {
                 String fieldName = entry.getKey();
                 String columnName = entry.getValue();
                 Object value = entity.getValueEx(fieldName);
-                valuesStr.add(convertValue(value));
+                valuesStr.add(convertValue(fieldName, value));
                 columnNames.add(columnName);
             }
 
@@ -230,11 +244,11 @@ public class EntitySqlGenerator {
                 String columnName = entry.getValue();
                 if (!fieldName.equalsIgnoreCase(ID)) {
                     Object value = entity.getValueEx(fieldName);
-                    valuesStr.add(format("%s=%s", columnName, convertValue(value)));
+                    valuesStr.add(format("%s=%s", columnName, convertValue(fieldName, value)));
                 }
             }
 
-            return format(updateTemplate, name, convertList(valuesStr), fieldToColumnMapping.get(ID), convertValue(entity.getId()));
+            return format(updateTemplate, name, convertList(valuesStr), fieldToColumnMapping.get(ID), convertValue(ID, entity.getId()));
         }
 
 

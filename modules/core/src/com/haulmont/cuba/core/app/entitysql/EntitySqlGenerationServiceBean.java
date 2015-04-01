@@ -63,7 +63,10 @@ public class EntitySqlGenerationServiceBean implements EntitySqlGenerationServic
     protected Entity reload(Entity entity) {
         Transaction tx = persistence.createTransaction();
         try {
-            entity = persistence.getEntityManager().find(entity.getClass(), entity.getId(), createFullView(entity));
+            Entity reloaded = persistence.getEntityManager().find(entity.getClass(), entity.getId(), createFullView(entity));
+            if (reloaded != null) {
+                entity = reloaded;
+            }
             tx.commit();
         } finally {
             tx.end();
