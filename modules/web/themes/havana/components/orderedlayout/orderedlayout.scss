@@ -36,4 +36,10 @@
     overflow: hidden;
     @include box-defaults;
   }
+
+  .v-verticallayout,
+  .v-horizontallayout,
+  .v-slot {
+    -ms-scroll-limit: 0;
+  }
 }
