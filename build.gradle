@@ -78,7 +78,6 @@ def validationApi = [group: 'javax.validation', name: 'validation-api', version:
 
 /* Shared web dependencies */
 def commonsUpload = [group: 'commons-fileupload', name: 'commons-fileupload', version: '1.2.2']
-def casClient = [group: 'org.jasig.cas', name: 'cas-client-core', version: '3.1.10']
 
 configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
         webModule, desktopModule, portalModule, webAuthModule, webLegacyModule]) {
@@ -369,7 +368,6 @@ configure(webModule) {
         compile(webAuthModule)
 
         compile(commonsUpload)
-        compile(casClient)
         compile(group: 'org.springframework', name: 'spring-webmvc', version: springVersion)
         compile(group: 'org.json', name: 'json', version: '20090211')
 
@@ -603,7 +601,6 @@ configure(webLegacyModule) {
         compile(webAuthModule)
 
         compile(commonsUpload)
-        compile(casClient)
 
         compile(group: 'org.springframework', name: 'spring-webmvc', version: springVersion)
 
