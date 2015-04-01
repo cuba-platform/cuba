@@ -223,7 +223,6 @@ public class FilterDelegateImpl implements FilterDelegate {
                 apply(false);
             }
         });
-        searchBtn.setAlignment(Component.Alignment.MIDDLE_LEFT);
 
         filtersPopupButton = componentsFactory.createComponent(PopupButton.class);
         searchHBox.add(filtersPopupButton);
@@ -231,7 +230,6 @@ public class FilterDelegateImpl implements FilterDelegate {
         LinkButton addConditionBtn = componentsFactory.createComponent(LinkButton.NAME);
         controlsLayout.add(addConditionBtn);
         addConditionBtn.setCaption(getMessage("Filter.addCondition"));
-        addConditionBtn.setAlignment(Component.Alignment.MIDDLE_LEFT);
         addConditionBtn.setAction(new AbstractAction("openAddConditionDlg") {
             @Override
             public void actionPerform(Component component) {
@@ -239,13 +237,12 @@ public class FilterDelegateImpl implements FilterDelegate {
             }
         });
 
-        Component gap = componentsFactory.createComponent(BoxLayout.HBOX);
+        Component gap = componentsFactory.createComponent(Label.class);
         controlsLayout.add(gap);
         controlsLayout.expand(gap);
 
         settingsBtn = componentsFactory.createComponent(PopupButton.NAME);
         settingsBtn.setIcon("icons/gear.png");
-        searchBtn.setAlignment(Component.Alignment.MIDDLE_LEFT);
         controlsLayout.add(settingsBtn);
         createMaxResultsLayout();
         controlsLayout.add(maxResultsLayout);
@@ -276,10 +273,9 @@ public class FilterDelegateImpl implements FilterDelegate {
                 applyFts();
             }
         });
-        searchBtn.setAlignment(Component.Alignment.MIDDLE_LEFT);
         controlsLayout.add(searchBtn);
 
-        Component gap = componentsFactory.createComponent(BoxLayout.HBOX);
+        Component gap = componentsFactory.createComponent(Label.class);
         controlsLayout.add(gap);
         controlsLayout.expand(gap);
 
@@ -779,7 +775,7 @@ public class FilterDelegateImpl implements FilterDelegate {
      */
     protected void completeGridRowWithGaps(GridLayout grid, int row, int startColumn) {
         for (int i = startColumn * 2; i < grid.getColumns(); i++) {
-            Component gap = componentsFactory.createComponent(BoxLayout.HBOX);
+            Component gap = componentsFactory.createComponent(Label.class);
             gap.setWidth("100%");
             grid.add(gap, i, row);
         }
