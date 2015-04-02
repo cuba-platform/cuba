@@ -445,7 +445,6 @@ public class FilterDelegateImpl implements FilterDelegate {
         MakeDefaultAction makeDefaultAction = new MakeDefaultAction();
         RemoveAction removeAction = new RemoveAction();
         PinAppliedAction pinAppliedAction = new PinAppliedAction();
-//        hideConditionsAction = new HideConditionsAction();
         SaveAsFolderAction saveAsAppFolderAction = new SaveAsFolderAction(true);
         SaveAsFolderAction saveAsSearchFolderAction = new SaveAsFolderAction(false);
 
@@ -475,7 +474,6 @@ public class FilterDelegateImpl implements FilterDelegate {
                 && !(lastAppliedFilter.getFilterEntity() == adHocFilter && lastAppliedFilter.getConditions().getRoots().size() == 0);
         boolean saveAsSearchFolderActionEnabled = !isFolder && !hasCode;
         boolean saveAsAppFolderActionEnabled = !isFolder && !hasCode;
-        boolean hideConditionsActionEnabled = isHideConditionsActionEnabled();
 
         saveAction.setEnabled(saveActionEnabled);
         saveAsAction.setEnabled(saveAsActionEnabled);
@@ -485,7 +483,6 @@ public class FilterDelegateImpl implements FilterDelegate {
         pinAppliedAction.setEnabled(pinAppliedActionEnabled);
         saveAsSearchFolderAction.setEnabled(saveAsSearchFolderActionEnabled);
         saveAsAppFolderAction.setEnabled(saveAsAppFolderActionEnabled);
-//        hideConditionsAction.setEnabled(hideConditionsActionEnabled);
 
         settingsBtn.addAction(saveAction);
         settingsBtn.addAction(saveAsAction);
@@ -495,7 +492,6 @@ public class FilterDelegateImpl implements FilterDelegate {
         if (globalConfig.getAllowQueryFromSelected()) {
             settingsBtn.addAction(pinAppliedAction);
         }
-//        settingsBtn.addAction(hideConditionsAction);
         if (folderActionsEnabled && filterHelper.isFolderActionsEnabled()) {
             settingsBtn.addAction(saveAsSearchFolderAction);
             settingsBtn.addAction(saveAsAppFolderAction);
@@ -503,17 +499,6 @@ public class FilterDelegateImpl implements FilterDelegate {
         if (filterHelper.isTableActionsEnabled()) {
             fillTableActions();
         }
-    }
-
-    protected boolean isHideConditionsActionEnabled() {
-        boolean visibleConditionsExist = false;
-        for (AbstractCondition condition : conditions.toConditionsList()) {
-            if (!condition.getHidden()) {
-                visibleConditionsExist = true;
-                break;
-            }
-        }
-        return !filterEntity.getIsSet() && filterEntity.getFolder() == null && conditions != null && visibleConditionsExist;
     }
 
     protected boolean getUserCanEditGlobalFilter() {
