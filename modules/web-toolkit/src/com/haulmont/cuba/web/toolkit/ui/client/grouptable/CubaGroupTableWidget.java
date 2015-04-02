@@ -12,7 +12,6 @@ import com.google.gwt.dom.client.TableCellElement;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
-import com.haulmont.cuba.web.toolkit.ui.client.Tools;
 import com.haulmont.cuba.web.toolkit.ui.client.aggregation.TableAggregationRow;
 import com.haulmont.cuba.web.toolkit.ui.client.table.CubaScrollTableWidget;
 import com.vaadin.client.BrowserInfo;
@@ -529,12 +528,13 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
                 Element groupDiv = DOM.createDiv();
                 groupDiv.setInnerHTML("&nbsp;");
 
-                Tools.setStyleName(groupDiv, CLASSNAME + "-group-cell-expander");
+                groupDiv.setClassName(CLASSNAME + "-group-cell-expander");
                 DOM.appendChild(container, groupDiv);
 
                 Element contentDiv = DOM.createDiv();
                 contentDiv.setInnerHTML(containerInnerHTML);
-                Tools.setStyleName(contentDiv, CLASSNAME + "-float");
+
+                contentDiv.setClassName(CLASSNAME + "-float");
                 DOM.appendChild(container, contentDiv);
             }
 

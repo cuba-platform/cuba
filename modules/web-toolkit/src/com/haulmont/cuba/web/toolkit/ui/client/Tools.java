@@ -29,51 +29,6 @@ public class Tools {
         impl.textSelectionEnable(el, b);
     }
 
-    public static String setStyleName(Element el, String style) {
-        if (style == null) {
-            throw new RuntimeException("Style cannot be null");
-        }
-        style = style.trim();
-        el.setPropertyString("className", style);
-        return style;
-    }
-
-    public static String addStyleName(Element el, String style) {
-        if (style == null) {
-            throw new RuntimeException("Style cannot be null");
-        }
-        style = style.trim();
-        el.addClassName(style);
-        return style;
-    }
-
-    public static void removeStyleName(Element el, String style) {
-        if (style == null) {
-            throw new RuntimeException("Style cannot be null");
-        }
-        style = style.trim();
-        el.removeClassName(style);
-    }
-
-    public static String getStylePrimaryName(Element el) {
-        String className = el.getClassName();
-        int spaceIdx = className.indexOf(' ');
-        if (spaceIdx >= 0) {
-            return className.substring(0, spaceIdx);
-        }
-        return className;
-    }
-
-    public static String addStyleDependentName(Element el, String styleSuffix) {
-        String s = getStylePrimaryName(el) + '-' + styleSuffix;
-        addStyleName(el, s);
-        return s;
-    }
-
-    public static void removeStyleDependentName(Element el, String styleSuffix) {
-        removeStyleName(el, getStylePrimaryName(el) + '-' + styleSuffix);
-    }
-
     public static void replaceClassNames(Element element, String from, String to) {
         String className = element.getClassName();
         String newClassName = "";
