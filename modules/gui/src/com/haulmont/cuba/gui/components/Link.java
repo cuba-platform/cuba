@@ -11,7 +11,7 @@ package com.haulmont.cuba.gui.components;
  * @author artamonov
  * @version $Id$
  */
-public interface Link extends Component, Component.HasCaption, Component.BelongToFrame {
+public interface Link extends Component, Component.HasCaption, Component.BelongToFrame, Component.HasIcon {
 
     String NAME = "link";
 

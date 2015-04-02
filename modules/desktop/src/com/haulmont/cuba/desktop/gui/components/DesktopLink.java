@@ -23,6 +23,7 @@ public class DesktopLink extends DesktopAbstractComponent<JXHyperlink> implement
 
     protected String url;
     protected String target;
+    protected String icon;
 
     public DesktopLink() {
         impl = new JXHyperlink();
@@ -56,6 +57,20 @@ public class DesktopLink extends DesktopAbstractComponent<JXHyperlink> implement
     @Override
     public String getTarget() {
         return target;
+    }
+
+    @Override
+    public String getIcon() {
+        return icon;
+    }
+
+    @Override
+    public void setIcon(String icon) {
+        this.icon = icon;
+        if (icon != null)
+            impl.setIcon(App.getInstance().getResources().getIcon(icon));
+        else
+            impl.setIcon(null);
     }
 
     @Override

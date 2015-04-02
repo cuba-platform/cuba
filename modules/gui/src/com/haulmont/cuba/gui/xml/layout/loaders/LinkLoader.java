@@ -49,6 +49,11 @@ public class LinkLoader extends AbstractDatasourceComponentLoader {
             component.setTarget(target);
         }
 
+        String icon = element.attributeValue("icon");
+        if (StringUtils.isNotEmpty(icon)) {
+            component.setIcon(icon);
+        }
+
         loadWidth(component, element, Component.AUTO_SIZE);
         loadHeight(component, element, Component.AUTO_SIZE);
 

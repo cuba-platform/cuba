@@ -199,6 +199,22 @@
         </xs:restriction>
     </xs:simpleType>
 
+    <xs:simpleType name="linkTarget">
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:string"/>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="_blank"/>
+                    <xs:enumeration value="_self"/>
+                    <xs:enumeration value="_parent"/>
+                    <xs:enumeration value="_top"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:simpleType>
+
     <!-- Interfaces -->
 
     <xs:attributeGroup name="hasId">
@@ -501,7 +517,8 @@
         <xs:attributeGroup ref="hasCaption"/>
 
         <xs:attribute name="url" type="xs:anyURI"/>
-        <xs:attribute name="target" type="xs:string"/>
+        <xs:attribute name="target" type="linkTarget"/>
+        <xs:attribute name="icon" type="xs:string"/>
     </xs:complexType>
 
     <!-- CheckBox -->

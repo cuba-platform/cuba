@@ -5,14 +5,20 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Link;
+import com.haulmont.cuba.web.toolkit.VersionedThemeResource;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.terminal.Resource;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * @author abramov
  * @version $Id$
  */
 public class WebLink extends WebAbstractComponent<com.vaadin.ui.Link> implements Link {
+
+    public static final String ICON_STYLE = "icon";
+
+    protected String icon;
 
     public WebLink() {
         component = new com.vaadin.ui.Link();
@@ -40,6 +46,23 @@ public class WebLink extends WebAbstractComponent<com.vaadin.ui.Link> implements
     @Override
     public String getTarget() {
         return component.getTargetName();
+    }
+
+    @Override
+    public String getIcon() {
+        return icon;
+    }
+
+    @Override
+    public void setIcon(String icon) {
+        this.icon = icon;
+        if (!StringUtils.isEmpty(icon)) {
+            component.setIcon(new VersionedThemeResource(icon));
+            component.addStyleName(ICON_STYLE);
+        } else {
+            component.setIcon(null);
+            component.removeStyleName(ICON_STYLE);
+        }
     }
 
     @Override
