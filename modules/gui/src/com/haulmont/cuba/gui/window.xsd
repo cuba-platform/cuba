@@ -1067,7 +1067,7 @@
 
     <!-- TokenList -->
     <xs:complexType name="tokenListComponent">
-        <xs:sequence>
+        <xs:all>
             <xs:element name="lookup" maxOccurs="1">
                 <xs:complexType>
                     <xs:attribute name="optionsDatasource" type="xs:string"/>
@@ -1076,16 +1076,16 @@
                     <xs:attribute name="lookup" type="xs:boolean"/>
                     <xs:attribute name="filterMode" type="filterMode"/>
                     <xs:attribute name="openType" type="openType"/>
-                    <xs:attribute name="multiselect" type="xs:string"/>
+                    <xs:attribute name="multiselect" type="xs:boolean"/>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="button" maxOccurs="1">
+            <xs:element name="button" minOccurs="0" maxOccurs="1">
                 <xs:complexType>
                     <xs:attribute name="caption" type="xs:string" default="msg://"/>
                     <xs:attribute name="icon" type="xs:string"/>
                 </xs:complexType>
             </xs:element>
-        </xs:sequence>
+        </xs:all>
 
         <xs:attributeGroup ref="hasId"/>
         <xs:attributeGroup ref="hasSize"/>
@@ -1099,7 +1099,7 @@
         <xs:attributeGroup ref="hasDatasourceProp"/>
 
         <xs:attribute name="position" type="tokenListPosition"/>
-        <xs:attribute name="inline" type="xs:string"/>
+        <xs:attribute name="inline" type="xs:boolean"/>
         <xs:attribute name="simple" type="xs:boolean"/>
     </xs:complexType>
 
