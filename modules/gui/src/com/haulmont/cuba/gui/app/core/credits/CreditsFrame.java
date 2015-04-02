@@ -8,12 +8,17 @@ package com.haulmont.cuba.gui.app.core.credits;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
+import com.haulmont.cuba.gui.export.ExportDisplay;
+import com.haulmont.cuba.gui.export.ExportFormat;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * @author krivopustov
@@ -26,6 +31,9 @@ public class CreditsFrame extends AbstractFrame {
 
     @Inject
     protected ComponentsFactory componentsFactory;
+
+    @Inject
+    protected ExportDisplay exportDisplay;
 
     @Override
     public void init(final Map<String, Object> params) {
@@ -86,6 +94,45 @@ public class CreditsFrame extends AbstractFrame {
             }
 
             scrollBox.add(grid);
+        }
+    }
+
+    public void exportLicenses() {
+        Map<String, String> licenses = new TreeMap<>();
+        StringBuilder sb = new StringBuilder();
+        sb.append("<html><body>\n");
+        sb.append("<h1>Credits</h1>\n");
+        sb.append("<p><a href='#licenses'>Common Licenses</a></p>\n");
+        sb.append("<ol>\n");
+        List<CreditsItem> items = new CreditsLoader().load().getItems();
+        for (CreditsItem item : items) {
+            sb.append("<li><b>").append(item.getName()).append("</b>\n");
+            sb.append("<p>Web site: <a href='").append(item.getWebPage()).append("' target='_blank'>").append(item.getWebPage()).append("</a></p>\n");
+            sb.append("<p>License: ");
+            if (item.getLicenseId() == null) {
+                sb.append("<br>").append(item.getLicense().replace("\n", "<br>"));
+            } else {
+                sb.append("<a href='#").append(item.getLicenseId()).append("'>").append(item.getLicenseId()).append("</a>");
+                licenses.put(item.getLicenseId(), item.getLicense());
+            }
+            sb.append("</p>");
+            sb.append("</li>\n");
+        }
+        sb.append("</ol>\n");
+        sb.append("<a name='licenses'></a><h1>Common Licenses</h1>\n");
+        sb.append("<ol>\n");
+        for (Map.Entry<String, String> entry : licenses.entrySet()) {
+            sb.append("<li><a name='").append(entry.getKey()).append("'></a><b>").append(entry.getKey()).append("</b>\n");
+            sb.append("<p>").append(entry.getValue().replace("\n", "<br>")).append("</p>");
+            sb.append("</li>\n");
+        }
+        sb.append("</ol>\n");
+        sb.append("</body></html>\n");
+
+        try {
+            exportDisplay.show(new ByteArrayDataProvider(sb.toString().getBytes("UTF-8")), "Credits", ExportFormat.HTML);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
         }
     }
 }

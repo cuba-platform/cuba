@@ -76,7 +76,8 @@ public class CreditsLoader {
             return;
 
         for (Element element : Dom4j.elements(itemsEl)) {
-            CreditsItem item = new CreditsItem(element.attributeValue("name"), element.attributeValue("web"), loadLicense(element));
+            CreditsItem item = new CreditsItem(element.attributeValue("name"), element.attributeValue("web"),
+                    element.attributeValue("license"), loadLicense(element));
             if (items.contains(item)) {
                 items.set(items.indexOf(item), item);
             } else {

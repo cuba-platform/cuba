@@ -6,6 +6,9 @@
 <window xmlns="http://schemas.haulmont.com/cuba/5.4/window.xsd"
         class="com.haulmont.cuba.gui.app.core.credits.CreditsFrame"
         messagesPack="com.haulmont.cuba.gui.app.core.credits">
+    <actions>
+        <action id="printLicenses" shortcut="Ctrl-Alt-E" invoke="exportLicenses"/>
+    </actions>
     <layout>
         <scrollBox id="scroll" width="100%" height="100%" scrollBars="both">
 

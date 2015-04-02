@@ -12,6 +12,6 @@
     <dsContext/>
 
     <layout margin="true">
-        <textArea id="licenseTextArea" rows="10" height="100%" width="100%"/>
+        <textArea id="licenseTextArea" height="100%" width="100%"/>
     </layout>
 </window>
