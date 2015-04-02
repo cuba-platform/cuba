@@ -110,8 +110,8 @@ public class CubaPopupButtonConnector extends PopupButtonConnector {
 
                 case Event.ONKEYDOWN:
                     if (!getState().customLayout && getWidget().popupHasChild(target)) {
-                        VButton widget = Util.findWidget(target, VButton.class);
-                        if (widget != null) {
+                        Widget widget = Util.findWidget(target, null);
+                        if (widget instanceof VButton) {
                             Widget currentSlot = widget.getParent();
                             VAbstractOrderedLayout layout = (VAbstractOrderedLayout) currentSlot.getParent();
                             VButton focusButton = null;
@@ -133,12 +133,12 @@ public class CubaPopupButtonConnector extends PopupButtonConnector {
 
                 case Event.ONMOUSEOVER:
                     if (!getState().customLayout && getWidget().popupHasChild(target)) {
-                        VButton widget = Util.findWidget(target, VButton.class);
-                        if (widget != null && !widget.getStyleName().contains(SELECTED_ITEM_STYLE)) {
+                        Widget widget = Util.findWidget(target, null);
+                        if (widget instanceof VButton && !widget.getStyleName().contains(SELECTED_ITEM_STYLE)) {
                             getWidget().resetSelectedItem();
 
                             widget.addStyleName(SELECTED_ITEM_STYLE);
-                            widget.setFocus(true);
+                            ((VButton) widget).setFocus(true);
                         }
                     }
                     break;

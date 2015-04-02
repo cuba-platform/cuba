@@ -5,7 +5,6 @@
 
 package com.haulmont.cuba.web.toolkit.ui.client.sys;
 
-import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Element;
 
 /**
@@ -14,24 +13,24 @@ import com.google.gwt.dom.client.Element;
  */
 public class ToolsImpl {
 
-    protected JavaScriptObject falseFunction;
-
-    public ToolsImpl() {
-        this.falseFunction = initFalseFunction();
-    }
-
-    protected native JavaScriptObject initFalseFunction() /*-{
-        return function () {
-            return false;
-        };
-    }-*/;
-
     protected native void setTextSelectionEnable(Element el) /*-{
-        el.addEventListener("selectstart", this.@com.haulmont.cuba.web.toolkit.ui.client.sys.ToolsImpl::falseFunction, true);
+        if (typeof $doc.textSelectionFalseFunction != "function") {
+            $doc.textSelectionFalseFunction = function() {
+                return false;
+            };
+        }
+
+        el.addEventListener("selectstart", $doc.textSelectionFalseFunction, true);
     }-*/;
 
     protected native void setTextSelectionDisable(Element el) /*-{
-        el.removeEventListener("selectstart", this.@com.haulmont.cuba.web.toolkit.ui.client.sys.ToolsImpl::falseFunction, true);
+        if (typeof $doc.textSelectionFalseFunction != "function") {
+            $doc.textSelectionFalseFunction = function() {
+                return false;
+            };
+        }
+
+        el.removeEventListener("selectstart", $doc.textSelectionFalseFunction, true);
     }-*/;
 
     public native void textSelectionEnable(Element el, boolean enable) /*-{

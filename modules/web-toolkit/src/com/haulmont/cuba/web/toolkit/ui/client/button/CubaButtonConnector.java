@@ -9,6 +9,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.haulmont.cuba.web.toolkit.ui.client.appui.ValidationErrorHolder;
 import com.vaadin.client.communication.StateChangeEvent;
+
 import com.vaadin.client.ui.button.ButtonConnector;
 import com.vaadin.shared.ui.Connect;
 
@@ -33,6 +34,11 @@ public class CubaButtonConnector extends ButtonConnector {
     @Override
     public CubaButtonState getState() {
         return (CubaButtonState) super.getState();
+    }
+
+    @Override
+    public CubaButtonWidget getWidget() {
+        return (CubaButtonWidget) super.getWidget();
     }
 
     @Override

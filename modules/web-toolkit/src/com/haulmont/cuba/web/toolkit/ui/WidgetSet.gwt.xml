@@ -24,21 +24,31 @@
 
     <!-- Text selection enable functions deffered binding -->
 
+    <define-property name="ie11orHigher" values="no,yes"/>
+    <property-provider name="ie11orHigher"><![CDATA[
+      {
+        var ua = $wnd.navigator.userAgent;
+        if (ua.indexOf('MSIE') == -1 && ua.indexOf('Trident') != -1) { return 'yes'; }
+        return 'no';
+      }
+    ]]></property-provider>
+
     <replace-with class="com.haulmont.cuba.web.toolkit.ui.client.sys.ToolsImplIE">
         <when-type-is class="com.haulmont.cuba.web.toolkit.ui.client.sys.ToolsImpl"/>
         <any>
             <when-property-is name="user.agent" value="ie8"/>
             <when-property-is name="user.agent" value="ie9"/>
             <when-property-is name="user.agent" value="ie10"/>
+            <when-property-is name="ie11orHigher" value="yes"/>
         </any>
     </replace-with>
 
     <replace-with class="com.haulmont.cuba.web.toolkit.ui.client.sys.ToolsImplMozilla">
         <when-type-is class="com.haulmont.cuba.web.toolkit.ui.client.sys.ToolsImpl"/>
-        <any>
-            <when-property-is name="user.agent" value="gecko"/>
+        <all>
             <when-property-is name="user.agent" value="gecko1_8"/>
-        </any>
+            <when-property-is name="ie11orHigher" value="no"/>
+        </all>
     </replace-with>
 
     <replace-with class="com.haulmont.cuba.web.toolkit.ui.client.sys.ToolsImplWebkit">
