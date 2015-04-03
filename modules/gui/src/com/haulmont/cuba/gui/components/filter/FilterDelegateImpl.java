@@ -728,6 +728,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                     labelAndOperationCellContent.setMargin(false, false, false, true);
             }
             if (paramEditComponentCellContent != null) {
+                paramEditComponentCellContent.setAlignment(Component.Alignment.MIDDLE_LEFT);
                 grid.add(paramEditComponentCellContent, nextColumnStart * 2 + 1, row, nextColumnEnd * 2 + 1, row);
             }
 
