@@ -14,8 +14,8 @@ import com.google.gwt.dom.client.Element;
 public class ToolsImpl {
 
     protected native void setTextSelectionEnable(Element el) /*-{
-        if (typeof $doc.textSelectionFalseFunction != "function") {
-            $doc.textSelectionFalseFunction = function() {
+        if (typeof $wnd.textSelectionFalseFunction != "function") {
+            $wnd.textSelectionFalseFunction = function() {
                 return false;
             };
         }
@@ -24,13 +24,13 @@ public class ToolsImpl {
     }-*/;
 
     protected native void setTextSelectionDisable(Element el) /*-{
-        if (typeof $doc.textSelectionFalseFunction != "function") {
-            $doc.textSelectionFalseFunction = function() {
+        if (typeof $wnd.textSelectionFalseFunction != "function") {
+            $wnd.textSelectionFalseFunction = function() {
                 return false;
             };
         }
 
-        el.removeEventListener("selectstart", $doc.textSelectionFalseFunction, true);
+        el.removeEventListener("selectstart", $wnd.textSelectionFalseFunction, true);
     }-*/;
 
     public native void textSelectionEnable(Element el, boolean enable) /*-{

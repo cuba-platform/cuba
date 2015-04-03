@@ -17,20 +17,15 @@ public class ToolsImplIE extends ToolsImpl {
     protected native void setTextSelectionEnable(Element el) /*-{
         if (typeof el.style == "undefined")
             el.style = {};
-        el.setAttribute('onselectstart', null);
-        el.style.msUserSelect = "";
 
-        if (el.style.setProperty) {
-            el.style.setProperty("user-select", "");
-        } else {
-            el.style.setAttribute("user-select", "");
-        }
+        el.onselectstart = null;
+        el.style.msUserSelect = "";
     }-*/;
 
     @Override
     protected native void setTextSelectionDisable(Element el) /*-{
-        if (typeof $doc.ieTextSelectionFalseFunction != "function") {
-            $doc.ieTextSelectionFalseFunction = function() {
+        if (typeof $wnd.ieTextSelectionFalseFunction != "function") {
+            $wnd.ieTextSelectionFalseFunction = function() {
                 return false;
             };
         }
@@ -39,13 +34,7 @@ public class ToolsImplIE extends ToolsImpl {
             el.style = {};
         }
 
-        el.setAttribute('onselectstart', $doc.ieTextSelectionFalseFunction);
+        el.onselectstart = $wnd.ieTextSelectionFalseFunction;
         el.style.msUserSelect = "none";
-
-        if (el.style.setProperty) {
-            el.style.setProperty("user-select", "none");
-        } else {
-            el.style.setAttribute("user-select", "none");
-        }
     }-*/;
 }
