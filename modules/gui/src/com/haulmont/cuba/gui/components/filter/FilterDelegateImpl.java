@@ -229,6 +229,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         LinkButton addConditionBtn = componentsFactory.createComponent(LinkButton.NAME);
         controlsLayout.add(addConditionBtn);
+        addConditionBtn.setAlignment(Component.Alignment.MIDDLE_LEFT);
         addConditionBtn.setCaption(getMessage("Filter.addCondition"));
         addConditionBtn.setAction(new AbstractAction("openAddConditionDlg") {
             @Override
