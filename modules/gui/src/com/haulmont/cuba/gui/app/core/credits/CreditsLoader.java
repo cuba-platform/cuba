@@ -77,7 +77,7 @@ public class CreditsLoader {
 
         for (Element element : Dom4j.elements(itemsEl)) {
             CreditsItem item = new CreditsItem(element.attributeValue("name"), element.attributeValue("web"),
-                    element.attributeValue("license"), loadLicense(element));
+                    element.attributeValue("license"), loadLicense(element), loadAcknowledgement(element));
             if (items.contains(item)) {
                 items.set(items.indexOf(item), item);
             } else {
@@ -99,5 +99,10 @@ public class CreditsLoader {
                 throw new IllegalStateException("Neither license attribute, nor license element is not set for " + element.attributeValue("name"));
             return licenseEl.getText();
         }
+    }
+
+    private String loadAcknowledgement(Element element) {
+        Element acknowledgmentEl = element.element("acknowledgment");
+        return acknowledgmentEl == null ? null : acknowledgmentEl.getText();
     }
 }

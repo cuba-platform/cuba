@@ -10,7 +10,7 @@
         <action id="printLicenses" shortcut="Ctrl-Alt-E" invoke="exportLicenses"/>
     </actions>
     <layout>
-        <scrollBox id="scroll" width="100%" height="100%" scrollBars="both">
+        <scrollBox id="scroll" width="100%" height="100%" scrollBars="both" spacing="true">
 
         </scrollBox>
     </layout>

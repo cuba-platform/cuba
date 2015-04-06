@@ -16,14 +16,16 @@ public class CreditsItem implements Comparable<CreditsItem> {
     private String webPage;
     private String licenseId;
     private String license;
+    private String acknowledgement;
 
-    public CreditsItem(String name, String webPage, String licenseId, String license) {
+    public CreditsItem(String name, String webPage, String licenseId, String license, String acknowledgement) {
         if (name == null || webPage == null || license == null)
             throw new NullPointerException("Argument is null");
         this.name = name;
         this.webPage = webPage;
         this.licenseId = licenseId;
         this.license = license;
+        this.acknowledgement = acknowledgement;
     }
 
     public String getName() {
@@ -40,6 +42,10 @@ public class CreditsItem implements Comparable<CreditsItem> {
 
     public String getLicense() {
         return license;
+    }
+
+    public String getAcknowledgement() {
+        return acknowledgement;
     }
 
     @Override

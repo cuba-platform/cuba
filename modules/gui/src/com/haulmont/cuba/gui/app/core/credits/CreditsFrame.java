@@ -39,6 +39,8 @@ public class CreditsFrame extends AbstractFrame {
     public void init(final Map<String, Object> params) {
         getDialogParams().setResizable(true);
 
+        StringBuilder acknowledgements = new StringBuilder();
+
         GridLayout grid = componentsFactory.createComponent(GridLayout.NAME);
         grid.setSpacing(true);
         grid.setMargin(false, true, false, true);
@@ -51,6 +53,9 @@ public class CreditsFrame extends AbstractFrame {
 
             for (int i = 0, itemsSize = items.size(); i < itemsSize; i++) {
                 final CreditsItem item = items.get(i);
+
+                if (item.getAcknowledgement() != null)
+                    acknowledgements.append("<p>").append(item.getAcknowledgement());
 
                 Label nameLab = componentsFactory.createComponent(Label.NAME);
                 nameLab.setValue(item.getName());
@@ -93,18 +98,40 @@ public class CreditsFrame extends AbstractFrame {
                 grid.add(license, 4, i);
             }
 
+            if (acknowledgements.length() > 0) {
+                Label ackLab = componentsFactory.createComponent(Label.NAME);
+                ackLab.setWidth("420px");
+                ackLab.setHtmlEnabled(true);
+                ackLab.setValue(acknowledgements.toString());
+                scrollBox.add(ackLab);
+            }
+
             scrollBox.add(grid);
         }
     }
 
     public void exportLicenses() {
+        List<CreditsItem> items = new CreditsLoader().load().getItems();
+
         Map<String, String> licenses = new TreeMap<>();
         StringBuilder sb = new StringBuilder();
         sb.append("<html><body>\n");
         sb.append("<h1>Credits</h1>\n");
-        sb.append("<p><a href='#licenses'>Common Licenses</a></p>\n");
+
+        StringBuilder acknowledgements = new StringBuilder();
+        for (CreditsItem item : items) {
+            if (item.getAcknowledgement() != null)
+                acknowledgements.append("<p>").append(item.getAcknowledgement());
+        }
+        if (acknowledgements.length() > 0) {
+            sb.append("<h2>Acknowledgements</h1>\n");
+            sb.append(acknowledgements);
+        }
+
+//        sb.append("<p><a href='#licenses'>Common Licenses</a></p>\n");
+
+        sb.append("<h2>Third-party products</h1>\n");
         sb.append("<ol>\n");
-        List<CreditsItem> items = new CreditsLoader().load().getItems();
         for (CreditsItem item : items) {
             sb.append("<li><b>").append(item.getName()).append("</b>\n");
             sb.append("<p>Web site: <a href='").append(item.getWebPage()).append("' target='_blank'>").append(item.getWebPage()).append("</a></p>\n");
@@ -119,7 +146,8 @@ public class CreditsFrame extends AbstractFrame {
             sb.append("</li>\n");
         }
         sb.append("</ol>\n");
-        sb.append("<a name='licenses'></a><h1>Common Licenses</h1>\n");
+
+        sb.append("<a name='licenses'></a><h2>Common Licenses</h1>\n");
         sb.append("<ol>\n");
         for (Map.Entry<String, String> entry : licenses.entrySet()) {
             sb.append("<li><a name='").append(entry.getKey()).append("'></a><b>").append(entry.getKey()).append("</b>\n");
