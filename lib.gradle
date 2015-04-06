@@ -3,7 +3,7 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-project.ext.vaadinVersion = '7.3.9.cuba.12'
+project.ext.vaadinVersion = '7.3.9.cuba.14'
 
 project.ext.vaadinShared = [group: 'com.vaadin', name: 'vaadin-shared', version: vaadinVersion]
 project.ext.vaadinServer = [group: 'com.vaadin', name: 'vaadin-server', version: vaadinVersion]
