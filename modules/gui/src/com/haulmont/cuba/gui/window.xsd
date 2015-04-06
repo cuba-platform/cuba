@@ -649,6 +649,7 @@
                     <xs:element name="validator" minOccurs="0" maxOccurs="1" type="validatorType"/>
                 </xs:sequence>
                 <xs:attribute name="showSeconds" type="xs:boolean"/>
+                <xs:attribute name="timeFormat" type="xs:string"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>

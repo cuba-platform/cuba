@@ -184,9 +184,15 @@ public class WebTimeField extends WebAbstractField<MaskedTextField> implements T
         return showSeconds;
     }
 
+    @Override
     public void setFormat(String format) {
         timeFormat = format;
         updateTimeFormat();
+    }
+
+    @Override
+    public String getFormat() {
+        return timeFormat;
     }
 
     public void setResolution(DateField.Resolution resolution) {

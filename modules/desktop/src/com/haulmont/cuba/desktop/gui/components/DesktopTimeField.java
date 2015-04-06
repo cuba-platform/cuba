@@ -223,11 +223,13 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
         }
     }
 
+    @Override
     public void setFormat(String timeFormat) {
         this.timeFormat = timeFormat;
         updateTimeFormat();
     }
 
+    @Override
     public String getFormat() {
         return timeFormat;
     }

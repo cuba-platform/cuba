@@ -27,6 +27,12 @@ public class TimeFieldLoader extends AbstractFieldLoader {
 
         TimeField component = (TimeField) field;
 
+        String timeFormat = element.attributeValue("timeFormat");
+        if (StringUtils.isNotEmpty(timeFormat)) {
+            timeFormat = loadResourceString(timeFormat);
+            component.setFormat(timeFormat);
+        }
+
         String showSeconds = element.attributeValue("showSeconds");
         if (StringUtils.isNotEmpty(showSeconds)) {
             component.setShowSeconds(Boolean.valueOf(showSeconds));

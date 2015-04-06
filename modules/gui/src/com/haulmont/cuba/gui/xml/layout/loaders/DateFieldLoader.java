@@ -42,7 +42,7 @@ public class DateFieldLoader extends AbstractFieldLoader {
 
         final String resolution = element.attributeValue("resolution");
         String dateFormat = element.attributeValue("dateFormat");
-        if (!StringUtils.isEmpty(resolution)) {
+        if (StringUtils.isNotEmpty(resolution)) {
             DateField.Resolution res = DateField.Resolution.valueOf(resolution);
             component.setResolution(res);
             if (dateFormat == null) {
@@ -56,11 +56,8 @@ public class DateFieldLoader extends AbstractFieldLoader {
             component.setResolution(DateField.Resolution.DAY);
         }
 
-        if (!StringUtils.isEmpty(dateFormat)) {
-            //noinspection ConstantConditions
-            if (dateFormat.startsWith("msg://")) {
-                dateFormat = messages.getMainMessage(dateFormat.substring(6, dateFormat.length()));
-            }
+        if (StringUtils.isNotEmpty(dateFormat)) {
+            dateFormat = loadResourceString(dateFormat);
             component.setDateFormat(dateFormat);
         } else {
             String formatStr;

@@ -14,4 +14,7 @@ public interface TimeField extends Field {
 
     boolean getShowSeconds();
     void setShowSeconds(boolean showSeconds);
+
+    String getFormat();
+    void setFormat(String timeFormat);
 }
