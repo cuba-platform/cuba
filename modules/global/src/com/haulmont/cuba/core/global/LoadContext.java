@@ -62,9 +62,11 @@ public class LoadContext implements Serializable {
 
     /**
      * @param query query definition
+     * @return this instance for chaining
      */
-    public void setQuery(Query query) {
+    public LoadContext setQuery(Query query) {
         this.query = query;
+        return this;
     }
 
     /**
