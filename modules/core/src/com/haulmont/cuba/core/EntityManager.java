@@ -175,22 +175,24 @@ public interface EntityManager {
      * Set View for this EntityManager instance and all created {@link Query}s.
      * All non-lazy view properties contained in a combination of all added views are eagerly fetched.
      *
-     * <p/> WARNING: Use of this method is not recommended, it's better to specify view explicitly in
-     * <code>find()</code> methods or in <code>Query</code> instances.
+     * <p> DEPRECATED! Will be removed in 6.0. Specify view explicitly in <code>find()</code> methods or in
+     * <code>Query</code> instances.
      *
      * @param view view instance. If null, eager fetching is performed according to JPA mappings.
      */
+    @Deprecated
     void setView(@Nullable View view);
 
     /**
      * Adds View for this EntityManager instance and all created {@link Query}s.
      * All non-lazy view properties contained in a combination of all added views are eagerly fetched.
      *
-     * <p/> WARNING: Use of this method is not recommended, it's better to specify view explicitly in
-     * <code>find()</code> methods or in <code>Query</code> instances.
+     * <p> DEPRECATED! Will be removed in 6.0. Specify view explicitly in <code>find()</code> methods or in
+     * <code>Query</code> instances.
      *
      * @param view non-null view instance
      */
+    @Deprecated
     void addView(View view);
 
     /**
