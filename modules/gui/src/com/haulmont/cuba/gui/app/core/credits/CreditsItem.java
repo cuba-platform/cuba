@@ -5,6 +5,8 @@
 
 package com.haulmont.cuba.gui.app.core.credits;
 
+import javax.annotation.Nullable;
+
 /**
  * <p>$Id$</p>
  *
@@ -36,6 +38,7 @@ public class CreditsItem implements Comparable<CreditsItem> {
         return webPage;
     }
 
+    @Nullable
     public String getLicenseId() {
         return licenseId;
     }
@@ -44,6 +47,7 @@ public class CreditsItem implements Comparable<CreditsItem> {
         return license;
     }
 
+    @Nullable
     public String getAcknowledgement() {
         return acknowledgement;
     }
