@@ -14,16 +14,15 @@ import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.app.DataServiceQueryBuilder;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.QueryHolder;
 import com.haulmont.cuba.core.sys.persistence.DbTypeConverter;
 import com.haulmont.cuba.security.app.UserSessionsAPI;
 import com.haulmont.cuba.security.entity.UserSessionEntity;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
-import java.io.Serializable;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.*;
@@ -127,7 +126,9 @@ public class QueryResultsManager implements QueryResultsManagerAPI {
         QueryHolder queryHolder = new QueryHolder(query);
         QueryHolder oldQueryHolder = recentQueries.put(queryKey, queryHolder);
 
-        userSessionSource.getUserSession().setAttribute("_recentQueries", recentQueries);
+        // do not set to session attribute recentQueries directly, it contains reference to QueryResultsManager class
+        // copy data to new LinkedHashMap
+        userSessionSource.getUserSession().setAttribute("_recentQueries", new LinkedHashMap<>(recentQueries));
 
         return queryHolder.equals(oldQueryHolder);
     }
@@ -224,31 +225,6 @@ public class QueryResultsManager implements QueryResultsManagerAPI {
             runner.update(sb.toString());
         } catch (SQLException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    private static class QueryHolder implements Serializable {
-
-        private static final long serialVersionUID = -6055610488135337366L;
-
-        public final LoadContext.Query query;
-
-        public QueryHolder(LoadContext.Query query) {
-            this.query = query;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            QueryHolder that = (QueryHolder) o;
-
-            if (query == null || that.query == null) return false;
-            if (!ObjectUtils.equals(query.getQueryString(), that.query.getQueryString())) return false;
-            if (!ObjectUtils.equals(query.getParameters(), that.query.getParameters())) return false;
-
-            return true;
         }
     }
 }
