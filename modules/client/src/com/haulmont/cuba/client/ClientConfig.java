@@ -181,7 +181,7 @@ public interface ClientConfig extends Config {
     @Property("cuba.gui.filterApplyShortcut")
     String getFilterApplyShortcut();
 
-    @DefaultString("SHIFT-PLUS")
+    @DefaultString("SHIFT-BACKSPACE")
     @Property("cuba.gui.filterSelectShortcut")
     String getFilterSelectShortcut();
 
