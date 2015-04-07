@@ -233,7 +233,7 @@ public interface ClientConfig extends Config {
     boolean getSystemInfoScriptsEnabled();
     void setSystemInfoScriptsEnabled(boolean enabled);
 
-    @Property("cuba.manualSaveScreenSettings")
+    @Property("cuba.manualScreenSettingsSaving")
     @DefaultBoolean(false)
     boolean getManualSaveScreenSettings();
 }
