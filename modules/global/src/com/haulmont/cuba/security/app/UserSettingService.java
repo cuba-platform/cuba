@@ -31,6 +31,9 @@ public interface UserSettingService {
     /** Save settings for the current user */
     void saveSetting(ClientType clientType, String name, String value);
 
+    /** Delete settings for the current user */
+    void deleteSettings(ClientType clientType, String name);
+
     /** Copy user settings to another user */
     void copySettings(User fromUser, User toUser);
 }

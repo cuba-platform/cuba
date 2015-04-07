@@ -852,6 +852,25 @@ public class DesktopWindowManager extends WindowManager {
         Configuration configuration = AppBeans.get(Configuration.NAME);
         ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
 
+        if (clientConfig.getManualSaveScreenSettings()) {
+            JMenuItem saveSettingsItem = new JMenuItem(messages.getMainMessage("actions.saveSettings"));
+            saveSettingsItem.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    window.saveSettings();
+                }
+            });
+            popupMenu.add(saveSettingsItem);
+
+            JMenuItem restoreToDefaultsItem = new JMenuItem(messages.getMainMessage("actions.restoreToDefaults"));
+            restoreToDefaultsItem.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    window.deleteSettings();
+                }
+            });
+            popupMenu.add(restoreToDefaultsItem);
+        }
         if (clientConfig.getLayoutAnalyzerEnabled()) {
             JMenuItem analyzeLayoutItem = new JMenuItem(messages.getMainMessage("actions.analyzeLayout"));
             analyzeLayoutItem.addActionListener(new ActionListener() {

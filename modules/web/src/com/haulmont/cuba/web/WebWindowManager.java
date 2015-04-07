@@ -12,6 +12,7 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.SilentException;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.dev.LayoutAnalyzer;
@@ -25,8 +26,7 @@ import com.haulmont.cuba.web.sys.WindowBreadCrumbs;
 import com.haulmont.cuba.web.toolkit.ui.CubaLabel;
 import com.haulmont.cuba.web.toolkit.ui.CubaTabSheet;
 import com.haulmont.cuba.web.toolkit.ui.CubaWindow;
-import com.vaadin.event.ShortcutAction;
-import com.vaadin.event.ShortcutListener;
+import com.vaadin.event.*;
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.BorderStyle;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -774,10 +774,7 @@ public class WebWindowManager extends WindowManager {
     protected CubaWindow createDialogWindow(Window window) {
         CubaWindow dialogWindow = new CubaWindow(window.getCaption());
         dialogWindow.setErrorHandler(ui);
-        // if layout analyzer allowed
-        if (clientConfig.getLayoutAnalyzerEnabled()) {
-            dialogWindow.addContextActionHandler(new LayoutAnalyzerOpener(window));
-        }
+        dialogWindow.addContextActionHandler(new DialogWindowActionHandler(window));
         return dialogWindow;
     }
 
@@ -1276,23 +1273,43 @@ public class WebWindowManager extends WindowManager {
         }
     }
 
-    protected class LayoutAnalyzerOpener implements com.vaadin.event.Action.Handler {
+    protected class DialogWindowActionHandler implements com.vaadin.event.Action.Handler {
         protected Window window;
-        protected com.vaadin.event.Action analyzeAction =
-                new com.vaadin.event.Action(messages.getMainMessage("actions.analyzeLayout"));
+        protected com.vaadin.event.Action saveSettingsAction;
+        protected com.vaadin.event.Action restoreToDefaultsAction;
 
-        public LayoutAnalyzerOpener(Window window) {
+        protected com.vaadin.event.Action analyzeAction;
+
+        public DialogWindowActionHandler(Window window) {
             this.window = window;
+
+            saveSettingsAction = new com.vaadin.event.Action(messages.getMainMessage("actions.saveSettings"));
+            restoreToDefaultsAction = new com.vaadin.event.Action(messages.getMainMessage("actions.restoreToDefaults"));
+            analyzeAction = new com.vaadin.event.Action(messages.getMainMessage("actions.analyzeLayout"));
         }
 
         @Override
         public com.vaadin.event.Action[] getActions(Object target, Object sender) {
-            return new com.vaadin.event.Action[]{analyzeAction};
+            List<com.vaadin.event.Action> actions = new ArrayList<>(3);
+
+            if (clientConfig.getManualSaveScreenSettings()) {
+                actions.add(saveSettingsAction);
+                actions.add(restoreToDefaultsAction);
+            }
+            if (clientConfig.getLayoutAnalyzerEnabled()) {
+                actions.add(analyzeAction);
+            }
+
+            return actions.toArray(new com.vaadin.event.Action[actions.size()]);
         }
 
         @Override
         public void handleAction(com.vaadin.event.Action action, Object sender, Object target) {
-            if (analyzeAction == action) {
+            if (saveSettingsAction == action) {
+                window.saveSettings();
+            } else if (restoreToDefaultsAction == action) {
+                window.deleteSettings();
+            } else if (analyzeAction == action) {
                 LayoutAnalyzer analyzer = new LayoutAnalyzer();
                 List<LayoutTip> tipsList = analyzer.analyze(window);
 

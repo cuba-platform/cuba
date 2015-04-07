@@ -132,6 +132,10 @@ public class WindowDelegate {
         }
     }
 
+    public void deleteSettings() {
+        settings.delete();
+    }
+
     public void applySettings(Settings settings) {
         this.settings = settings;
         ComponentsHelper.walkComponents(

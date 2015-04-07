@@ -943,6 +943,11 @@ public class WebWindow implements Window, Component.Wrapper, Component.HasXmlDes
     }
 
     @Override
+    public void deleteSettings() {
+        delegate.deleteSettings();
+    }
+
+    @Override
     public String getCaption() {
         return caption;
     }

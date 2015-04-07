@@ -112,6 +112,11 @@ public class AbstractWindow extends AbstractFrame
     }
 
     @Override
+    public void deleteSettings() {
+        ((Window) frame).deleteSettings();
+    }
+
+    @Override
     public void setFocusComponent(String componentId) {
         ((Window) frame).setFocusComponent(componentId);
     }

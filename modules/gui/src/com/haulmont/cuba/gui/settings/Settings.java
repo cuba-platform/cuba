@@ -8,6 +8,9 @@ import org.dom4j.Element;
 
 /**
  * Interface to user settings of a window
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 public interface Settings {
 
@@ -18,4 +21,6 @@ public interface Settings {
     void setModified(boolean modified);
 
     void commit();
+
+    void delete();
 }

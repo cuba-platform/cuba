@@ -864,13 +864,16 @@ public class WebWindow implements Window, Component.Wrapper,
                 return false;
         }
 
-        if (closing)
+        if (closing) {
             return true;
+        }
+
+        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
 
         if (!forceClose && isModified()) {
             final Committable committable = (getWrapper() instanceof Committable) ? (Committable) getWrapper() :
                         (this instanceof Committable) ? (Committable) this : null;
-            if ((committable != null) && configuration.getConfig(ClientConfig.class).getUseSaveConfirmation()) {
+            if ((committable != null) && clientConfig.getUseSaveConfirmation()) {
                 windowManager.showOptionDialog(
                         messages.getMainMessage("closeUnsaved.caption"),
                         messages.getMainMessage("saveUnsaved"),
@@ -942,10 +945,13 @@ public class WebWindow implements Window, Component.Wrapper,
             return false;
         }
 
-        if (getWrapper() != null)
-            getWrapper().saveSettings();
-        else
-            saveSettings();
+        if (!clientConfig.getManualSaveScreenSettings()) {
+            if (getWrapper() != null) {
+                getWrapper().saveSettings();
+            } else {
+                saveSettings();
+            }
+        }
 
         delegate.disposeComponents();
 
@@ -974,6 +980,11 @@ public class WebWindow implements Window, Component.Wrapper,
     @Override
     public void saveSettings() {
         delegate.saveSettings();
+    }
+
+    @Override
+    public void deleteSettings() {
+        delegate.deleteSettings();
     }
 
     @Override

@@ -19,4 +19,6 @@ public interface SettingsClient {
 
     String getSetting(String name);
     void setSetting(String name, @Nullable String value);
+
+    void deleteSettings(String name);
 }

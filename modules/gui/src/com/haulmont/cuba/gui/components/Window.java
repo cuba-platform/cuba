@@ -74,6 +74,9 @@ public interface Window extends IFrame, Component.HasCaption {
      * to save user settings if they have been changed. */
     void saveSettings();
 
+    /** This method is called by the framework on reset to defaults action */
+    void deleteSettings();
+
     /**
      * Set a component to be focused after the screen is opened.
      * @param componentId component's ID in XML. If null, then first focusable component will be focused

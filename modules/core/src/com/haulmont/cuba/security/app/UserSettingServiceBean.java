@@ -14,6 +14,7 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.List;
@@ -46,22 +47,11 @@ public class UserSettingServiceBean implements UserSettingService {
         String value;
         Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = persistence.getEntityManager();
+            UserSetting us = findUserSettings(clientType, name);
 
-            TypedQuery<UserSetting> q = em.createQuery(
-                    "select s from sec$UserSetting s where s.user.id = ?1 and s.name =?2 and s.clientType = ?3",
-                    UserSetting.class);
-            q.setParameter(1, userSessionSource.getUserSession().getUser().getId());
-            q.setParameter(2, name);
-            q.setParameter(3, clientType == null ? null : clientType.getId());
-            q.setViewName("userSetting.value");
-
-            List<UserSetting> list = q.getResultList();
-
-            value = list.isEmpty() ? null : list.get(0).getValue();
+            value = us == null ? null : us.getValue();
 
             tx.commit();
-
         } finally {
             tx.end();
         }
@@ -79,24 +69,33 @@ public class UserSettingServiceBean implements UserSettingService {
         try {
             EntityManager em = persistence.getEntityManager();
 
-            TypedQuery<UserSetting> q = em.createQuery(
-                    "select s from sec$UserSetting s where s.user.id = ?1 and s.name =?2 and s.clientType = ?3",
-                    UserSetting.class);
-            q.setParameter(1, userSessionSource.getUserSession().getUser().getId());
-            q.setParameter(2, name);
-            q.setParameter(3, clientType == null ? null : clientType.getId());
-
-            List<UserSetting> list = q.getResultList();
-            if (list.isEmpty()) {
-                UserSetting us = new UserSetting();
+            UserSetting us = findUserSettings(clientType, name);
+            if (us == null) {
+                us = new UserSetting();
                 us.setUser(em.getReference(User.class, userSessionSource.getUserSession().getUser().getId()));
                 us.setName(name);
                 us.setClientType(clientType);
                 us.setValue(value);
+
                 em.persist(us);
             } else {
-                UserSetting us = list.get(0);
                 us.setValue(value);
+            }
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+    }
+
+    @Override
+    public void deleteSettings(ClientType clientType, String name) {
+        Transaction tx = persistence.createTransaction();
+        try {
+            UserSetting us = findUserSettings(clientType, name);
+            EntityManager em = persistence.getEntityManager();
+            if(us!=null){
+                em.remove(us);
             }
 
             tx.commit();
@@ -173,6 +172,20 @@ public class UserSettingServiceBean implements UserSettingService {
         } finally {
             tx.end();
         }
+    }
+
+    @Nullable
+    protected UserSetting findUserSettings(ClientType clientType, String name) {
+        EntityManager em = persistence.getEntityManager();
+
+        TypedQuery<UserSetting> q = em.createQuery(
+                "select s from sec$UserSetting s where s.user.id = ?1 and s.name =?2 and s.clientType = ?3",
+                UserSetting.class);
+        q.setParameter(1, userSessionSource.getUserSession().getUser().getId());
+        q.setParameter(2, name);
+        q.setParameter(3, clientType == null ? null : clientType.getId());
+
+        return q.getFirstResult();
     }
 
     protected Map<UUID, Presentation> copyPresentations(User fromUser, User toUser) {

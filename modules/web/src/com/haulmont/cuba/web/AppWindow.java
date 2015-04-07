@@ -1074,14 +1074,15 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
         protected Map<Component, TabCloseHandler> closeHandlers = null;
 
         protected com.vaadin.event.Action closeAllTabs;
-
         protected com.vaadin.event.Action closeOtherTabs;
-
         protected com.vaadin.event.Action closeCurrentTab;
 
         protected com.vaadin.event.Action showInfo;
 
         protected com.vaadin.event.Action analyzeLayout;
+
+        protected com.vaadin.event.Action saveSettings;
+        protected com.vaadin.event.Action restoreToDefaults;
 
         public AppTabSheet() {
             setCloseHandler(new CloseHandler() {
@@ -1096,16 +1097,19 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
                 }
             });
 
-            addActionHandler(this);
-
             Messages messages = AppBeans.get(Messages.NAME);
+
             closeAllTabs = new com.vaadin.event.Action(messages.getMainMessage("actions.closeAllTabs"));
             closeOtherTabs = new com.vaadin.event.Action(messages.getMainMessage("actions.closeOtherTabs"));
             closeCurrentTab = new com.vaadin.event.Action(messages.getMainMessage("actions.closeCurrentTab"));
             showInfo = new com.vaadin.event.Action(messages.getMainMessage("actions.showInfo"));
             analyzeLayout = new com.vaadin.event.Action(messages.getMainMessage("actions.analyzeLayout"));
+            saveSettings = new com.vaadin.event.Action(messages.getMainMessage("actions.saveSettings"));
+            restoreToDefaults = new com.vaadin.event.Action(messages.getMainMessage("actions.restoreToDefaults"));
 
             addStyleName("cuba-main-tabsheet");
+
+            addActionHandler(this);
         }
 
         @Override
@@ -1175,15 +1179,19 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
             actions.add(closeAllTabs);
 
             if (target != null) {
+                Configuration configuration = AppBeans.get(Configuration.NAME);
+                ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
+                if (clientConfig.getManualSaveScreenSettings()) {
+                    actions.add(saveSettings);
+                    actions.add(restoreToDefaults);
+                }
+
                 UserSessionSource sessionSource = AppBeans.get(UserSessionSource.NAME);
                 UserSession userSession = sessionSource.getUserSession();
                 if (userSession.isSpecificPermitted(ShowInfoAction.ACTION_PERMISSION) &&
                         findEditor((Layout) target) != null) {
                     actions.add(showInfo);
                 }
-
-                Configuration configuration = AppBeans.get(Configuration.NAME);
-                ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
                 if (clientConfig.getLayoutAnalyzerEnabled()) {
                     actions.add(analyzeLayout);
                 }
@@ -1204,6 +1212,10 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
                 showInfo(target);
             } else if (analyzeLayout == action) {
                 analyzeLayout(target);
+            } else if (saveSettings == action) {
+                saveSettings(target);
+            } else if (restoreToDefaults == action) {
+                restoreToDefaults(target);
             }
         }
 
@@ -1243,6 +1255,35 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
                 } else {
                     window.openWindow("layoutAnalyzer", WindowManager.OpenType.DIALOG, ParamsMap.of("tipsList", tipsList));
                 }
+            }
+        }
+
+        @Nullable
+        protected com.haulmont.cuba.gui.components.Window getWindow(Object target) {
+            if (target instanceof Layout) {
+                Layout layout = (Layout) target;
+                for (Component component : layout) {
+                    if (component instanceof WindowBreadCrumbs) {
+                        WindowBreadCrumbs breadCrumbs = (WindowBreadCrumbs) component;
+                        return breadCrumbs.getCurrentWindow();
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        public void restoreToDefaults(Object target) {
+            com.haulmont.cuba.gui.components.Window window = getWindow(target);
+            if (window != null) {
+                window.deleteSettings();
+            }
+        }
+
+        public void saveSettings(Object target) {
+            com.haulmont.cuba.gui.components.Window window = getWindow(target);
+            if (window != null) {
+                window.saveSettings();
             }
         }
 

@@ -86,4 +86,10 @@ public class SettingsImpl implements Settings {
             modified = false;
         }
     }
+
+    @Override
+    public void delete() {
+        getSettingsClient().deleteSettings(name);
+        modified = false;
+    }
 }

@@ -49,6 +49,12 @@ public class WebSettingsClient implements SettingsClient {
         userSettingService.saveSetting(ClientType.WEB, name, value);
     }
 
+    @Override
+    public void deleteSettings(String name) {
+        getCache().put(name, Optional.<String>absent());
+        userSettingService.deleteSettings(ClientType.WEB, name);
+    }
+
     public void clearCache() {
         VaadinSession session = VaadinSession.getCurrent();
         session.setAttribute(SettingsClient.NAME, null);

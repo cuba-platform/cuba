@@ -155,6 +155,11 @@ public class DesktopWindow implements Window, Component.Disposable,
     }
 
     @Override
+    public void deleteSettings() {
+        delegate.deleteSettings();
+    }
+
+    @Override
     public void setFocusComponent(String componentId) {
         this.focusComponentId = componentId;
         if (componentId != null) {
@@ -232,10 +237,12 @@ public class DesktopWindow implements Window, Component.Disposable,
                 return false;
         }
 
+        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
+
         if (!forceClose && isModified()) {
             final Committable committable = (getWrapper() instanceof Committable) ? (Committable) getWrapper() :
                         (this instanceof Committable) ? (Committable) this : null;
-            if ((committable != null) && configuration.getConfig(ClientConfig.class).getUseSaveConfirmation()) {
+            if ((committable != null) && clientConfig.getUseSaveConfirmation()) {
                 windowManager.showOptionDialog(
                         messages.getMainMessage("closeUnsaved.caption"),
                         messages.getMainMessage("saveUnsaved"),
@@ -303,10 +310,13 @@ public class DesktopWindow implements Window, Component.Disposable,
             return false;
         }
 
-        if (delegate.getWrapper() != null)
-            delegate.getWrapper().saveSettings();
-        else
-            saveSettings();
+        if (!clientConfig.getManualSaveScreenSettings()) {
+            if (delegate.getWrapper() != null) {
+                delegate.getWrapper().saveSettings();
+            } else {
+                saveSettings();
+            }
+        }
 
         delegate.disposeComponents();
 

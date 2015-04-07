@@ -51,6 +51,12 @@ public class DesktopSettingsClient implements SettingsClient {
         userSettingService.saveSetting(ClientType.DESKTOP, name, value);
     }
 
+    @Override
+    public void deleteSettings(String name) {
+        getCache().put(name, Optional.<String>absent());
+        userSettingService.deleteSettings(ClientType.DESKTOP, name);
+    }
+
     protected Map<String, Optional<String>> getCache() {
         ApplicationSession session = App.getInstance().getApplicationSession();
         if (session == null) {

@@ -50,6 +50,12 @@ public class WebSettingsClient implements SettingsClient {
         userSettingService.saveSetting(ClientType.WEB, name, value);
     }
 
+    @Override
+    public void deleteSettings(String name) {
+        getCache().put(name, Optional.<String>absent());
+        userSettingService.deleteSettings(ClientType.WEB, name);
+    }
+
     protected Map<String, Optional<String>> getCache() {
         HttpSession session = RequestContext.get().getSession();
         @SuppressWarnings("unchecked")
