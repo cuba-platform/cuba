@@ -11,13 +11,22 @@ package com.haulmont.cuba.gui.components;
  */
 public interface TextInputField extends Field {
 
-    public interface TrimSupported extends TextInputField {
+    interface TrimSupported extends TextInputField {
         boolean isTrimming();
         void setTrimming(boolean trimming);
     }
 
-    public interface MaxLengthLimited extends TextInputField {
+    interface MaxLengthLimited extends TextInputField {
         int getMaxLength();
         void setMaxLength(int value);
+    }
+
+    interface CursorPositionSupported extends TextInputField {
+        /**
+         * Sets the cursor position in the field.
+         *
+         * @param position new cursor position
+         */
+        void setCursorPosition(int position);
     }
 }

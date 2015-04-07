@@ -82,7 +82,13 @@ public class DesktopTextField extends DesktopAbstractTextField<JTextComponent> i
         this.inputPrompt = inputPrompt;
     }
 
-    private class FlushableTextField extends JTextField implements Flushable {
+    @Override
+    public void setCursorPosition(int position) {
+        impl.setSelectionStart(position);
+        impl.setSelectionEnd(position);
+    }
+
+    protected class FlushableTextField extends JTextField implements Flushable {
 
         @Override
         public void flushValue() {

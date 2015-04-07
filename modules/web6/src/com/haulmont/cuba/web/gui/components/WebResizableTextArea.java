@@ -64,4 +64,9 @@ public class WebResizableTextArea
             }
         });
     }
+
+    @Override
+    public void setCursorPosition(int position) {
+        component.setCursorPosition(position);
+    }
 }

@@ -21,6 +21,9 @@ public class WebTextField extends WebAbstractTextField<CubaTextField> implements
 
     protected boolean trimming = true;
 
+    public WebTextField() {
+    }
+
     @Override
     protected CubaTextField createTextFieldImpl() {
         return new CubaTextField();
@@ -90,5 +93,10 @@ public class WebTextField extends WebAbstractTextField<CubaTextField> implements
     @Override
     public void setInputPrompt(String inputPrompt) {
         component.setInputPrompt(inputPrompt);
+    }
+
+    @Override
+    public void setCursorPosition(int position) {
+        component.setCursorPosition(position);
     }
 }

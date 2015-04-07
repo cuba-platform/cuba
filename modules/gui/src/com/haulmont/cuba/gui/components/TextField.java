@@ -15,6 +15,7 @@ public interface TextField
             TextInputField,
             TextInputField.MaxLengthLimited,
             TextInputField.TrimSupported,
+            TextInputField.CursorPositionSupported,
             Component.HasFormatter {
 
     String NAME = "textField";

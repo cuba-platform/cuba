@@ -96,4 +96,9 @@ public class WebMaskedField extends WebAbstractTextField<MaskedTextField> implem
     public void setInputPrompt(String inputPrompt) {
         this.inputPrompt = inputPrompt;
     }
+
+    @Override
+    public void setCursorPosition(int position) {
+        component.setCursorPosition(position);
+    }
 }

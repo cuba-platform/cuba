@@ -90,4 +90,9 @@ public class WebTextField
     public void setInputPrompt(String inputPrompt) {
         this.inputPrompt = inputPrompt;
     }
+
+    @Override
+    public void setCursorPosition(int position) {
+        component.setCursorPosition(position);
+    }
 }

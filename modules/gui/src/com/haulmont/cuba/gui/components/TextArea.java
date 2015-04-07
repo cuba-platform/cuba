@@ -8,7 +8,10 @@ package com.haulmont.cuba.gui.components;
  * @author abramov
  * @version $Id$
  */
-public interface TextArea extends TextInputField, TextInputField.MaxLengthLimited, TextInputField.TrimSupported {
+public interface TextArea extends TextInputField,
+                                  TextInputField.MaxLengthLimited,
+                                  TextInputField.CursorPositionSupported,
+                                  TextInputField.TrimSupported {
 
     String NAME = "textArea";
 

@@ -23,4 +23,9 @@ public class WebTextArea
         textField.setRows(5);
         return textField;
     }
+
+    @Override
+    public void setCursorPosition(int position) {
+        component.setCursorPosition(position);
+    }
 }

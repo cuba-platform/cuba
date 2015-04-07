@@ -159,6 +159,12 @@ public class DesktopTextArea extends DesktopAbstractTextField<JTextArea> impleme
         this.trimming = trimming;
     }
 
+    @Override
+    public void setCursorPosition(int position) {
+        impl.setSelectionStart(position);
+        impl.setSelectionEnd(position);
+    }
+
     protected class TextAreaFlushableField extends JTextArea implements Flushable {
 
         @Override

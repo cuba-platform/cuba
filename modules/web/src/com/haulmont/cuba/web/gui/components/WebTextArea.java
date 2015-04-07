@@ -22,4 +22,9 @@ public class WebTextArea
     protected TextArea createTextFieldImpl() {
         return new CubaTextArea();
     }
+
+    @Override
+    public void setCursorPosition(int position) {
+        component.setCursorPosition(position);
+    }
 }
