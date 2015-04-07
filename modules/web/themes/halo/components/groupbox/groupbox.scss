@@ -5,6 +5,7 @@
 
 // Version: $Id$
 
+//noinspection ALL
 @mixin halo-cuba-groupbox($primary-stylename : cuba-groupbox) {
   @include valo-panel($primary-stylename);
   @include halo-panel($primary-stylename);
@@ -100,6 +101,21 @@
       border-top: valo-border();
       border-top-right-radius: $v-border-radius;
     }
+  }
+
+  .#{$primary-stylename}.collapsed > .#{$primary-stylename}-captionwrap {
+    .#{$primary-stylename}-caption-end-deco,
+    .#{$primary-stylename}-caption-start-deco {
+      height: round(2*$v-unit-size/3);
+
+      div {
+        height: round($v-unit-size/3);
+      }
+    }
+  }
+
+  .#{$primary-stylename}.collapsed > .#{$primary-stylename}-content {
+    padding-bottom: 0;
   }
 
   .#{$primary-stylename}-expander {

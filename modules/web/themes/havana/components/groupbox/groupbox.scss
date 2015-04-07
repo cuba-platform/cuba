@@ -28,6 +28,10 @@
     border: 0;
   }
 
+  .#{$primary-stylename}.collapsed > .#{$primary-stylename}-content {
+    padding-bottom: 0;
+  }
+
   .#{$primary-stylename}-captionwrap {
     display: block;
     font-size: 0;
