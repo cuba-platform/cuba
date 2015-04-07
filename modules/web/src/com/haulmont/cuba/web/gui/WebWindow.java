@@ -945,7 +945,7 @@ public class WebWindow implements Window, Component.Wrapper,
             return false;
         }
 
-        if (!clientConfig.getManualSaveScreenSettings()) {
+        if (!clientConfig.getManualScreenSettingsSaving()) {
             if (getWrapper() != null) {
                 getWrapper().saveSettings();
             } else {

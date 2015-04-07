@@ -1292,7 +1292,7 @@ public class WebWindowManager extends WindowManager {
         public com.vaadin.event.Action[] getActions(Object target, Object sender) {
             List<com.vaadin.event.Action> actions = new ArrayList<>(3);
 
-            if (clientConfig.getManualSaveScreenSettings()) {
+            if (clientConfig.getManualScreenSettingsSaving()) {
                 actions.add(saveSettingsAction);
                 actions.add(restoreToDefaultsAction);
             }

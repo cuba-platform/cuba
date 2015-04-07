@@ -1181,7 +1181,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
             if (target != null) {
                 Configuration configuration = AppBeans.get(Configuration.NAME);
                 ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
-                if (clientConfig.getManualSaveScreenSettings()) {
+                if (clientConfig.getManualScreenSettingsSaving()) {
                     actions.add(saveSettings);
                     actions.add(restoreToDefaults);
                 }

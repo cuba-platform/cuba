@@ -235,5 +235,5 @@ public interface ClientConfig extends Config {
 
     @Property("cuba.manualScreenSettingsSaving")
     @DefaultBoolean(false)
-    boolean getManualSaveScreenSettings();
+    boolean getManualScreenSettingsSaving();
 }

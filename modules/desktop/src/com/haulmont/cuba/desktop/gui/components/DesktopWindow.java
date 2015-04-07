@@ -310,7 +310,7 @@ public class DesktopWindow implements Window, Component.Disposable,
             return false;
         }
 
-        if (!clientConfig.getManualSaveScreenSettings()) {
+        if (!clientConfig.getManualScreenSettingsSaving()) {
             if (delegate.getWrapper() != null) {
                 delegate.getWrapper().saveSettings();
             } else {

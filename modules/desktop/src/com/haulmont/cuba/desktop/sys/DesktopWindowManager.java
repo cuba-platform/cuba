@@ -852,7 +852,7 @@ public class DesktopWindowManager extends WindowManager {
         Configuration configuration = AppBeans.get(Configuration.NAME);
         ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
 
-        if (clientConfig.getManualSaveScreenSettings()) {
+        if (clientConfig.getManualScreenSettingsSaving()) {
             JMenuItem saveSettingsItem = new JMenuItem(messages.getMainMessage("actions.saveSettings"));
             saveSettingsItem.addActionListener(new ActionListener() {
                 @Override
