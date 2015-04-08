@@ -128,8 +128,6 @@ public class CreditsFrame extends AbstractFrame {
             sb.append(acknowledgements);
         }
 
-//        sb.append("<p><a href='#licenses'>Common Licenses</a></p>\n");
-
         sb.append("<h2>Third-party products</h1>\n");
         sb.append("<ol>\n");
         for (CreditsItem item : items) {

@@ -531,9 +531,9 @@ OF SUCH DAMAGE.
 
     <licenses>
         <license id="apache-2.0"><![CDATA[
-                             Apache License
-                       Version 2.0, January 2004
-                    http://www.apache.org/licenses/
+Apache License
+Version 2.0, January 2004
+http://www.apache.org/licenses/
 
 TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
 
@@ -994,8 +994,8 @@ NOTE: The text of this Exhibit A may differ slightly from the text of the notice
 ]]></license>
 
         <license id="lgpl-2.1"><![CDATA[
-                  GNU LESSER GENERAL PUBLIC LICENSE
-                       Version 2.1, February 1999
+GNU LESSER GENERAL PUBLIC LICENSE
+Version 2.1, February 1999
 
  Copyright (C) 1991, 1999 Free Software Foundation, Inc.
  51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA

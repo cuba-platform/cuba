@@ -35,6 +35,7 @@ public class LicenseWindow extends AbstractWindow {
         if (licenseText != null) {
             licenseTextArea.setValue(licenseText);
             licenseTextArea.setEditable(false);
+            licenseTextArea.setCursorPosition(0);
         }
     }
 }
