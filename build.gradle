@@ -48,15 +48,11 @@ def portalModule = project(':cuba-portal')
 def webAuthModule = project(':cuba-web-auth')
 def webToolkitModule = project(':cuba-web-toolkit')
 def webModule = project(':cuba-web')
-def webLegacyModule = project(':cuba-web6')
-def webToolkitLegacyModule = project(':cuba-web6-toolkit')
 
 def webModuleThemes = project(':cuba-web-themes')
-def webLegacyModuleThemes = project(':cuba-web6-themes')
 
 apply from: "$rootProject.projectDir/lib.gradle"
 
-def vaadinLegacyVersion = '6.6.1.162'
 def springVersion = '3.2.8.RELEASE'
 def springSecurityVersion = '3.2.3.RELEASE'
 
@@ -67,20 +63,11 @@ def poi = [group: 'com.haulmont.thirdparty', name: 'poi', version: '3.9.20130515
 def postgres = [group: 'postgresql', name: 'postgresql', version: '9.1-901.jdbc4']
 def hsqldb = [group: 'org.hsqldb', name: 'hsqldb', version: '2.2.9']
 
-/* Legacy dependencies */
-def vaadinLegacy = [group: 'com.haulmont.thirdparty', name: 'vaadin', version: vaadinLegacyVersion]
-def popupButtonLegacy = [group: 'com.haulmont.thirdparty', name: 'popupbutton', version: '1.0.0']
-def appletIntegrationLegacy = [group: 'com.haulmont.thirdparty', name: 'appletintegration', version: '1.1.4']
-def gwtUser = [group: 'com.google.gwt', name: 'gwt-user', version: '2.3.0']
-def gwtDev = [group: 'com.google.gwt', name: 'gwt-dev', version: '2.3.0']
-def gwtServlets = [group: 'com.google.gwt', name: 'gwt-servlet', version: '2.3.0']
-def validationApi = [group: 'javax.validation', name: 'validation-api', version: '1.0.0.GA']
-
 /* Shared web dependencies */
 def commonsUpload = [group: 'commons-fileupload', name: 'commons-fileupload', version: '1.2.2']
 
 configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
-        webModule, desktopModule, portalModule, webAuthModule, webLegacyModule]) {
+        webModule, desktopModule, portalModule, webAuthModule]) {
     apply(plugin: 'java')
     apply(plugin: 'idea')
     apply(plugin: 'maven')
@@ -166,7 +153,7 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule,
 }
 
 // configure web toolkit modules
-configure([webToolkitModule, webToolkitLegacyModule]) {
+configure(webToolkitModule) {
     apply(plugin: 'java')
     apply(plugin: 'idea')
     apply(plugin: 'maven')
@@ -591,122 +578,6 @@ configure(portalModule) {
     test {
         scanForTestClasses = false
         includes = ['**/*Test.class']
-    }
-}
-
-configure(webLegacyModule) {
-    dependencies {
-        compile(sharedLibModule)
-        compile(guiModule)
-        compile(webAuthModule)
-
-        compile(commonsUpload)
-
-        compile(group: 'org.springframework', name: 'spring-webmvc', version: springVersion)
-
-        compile(vaadinLegacy)
-        compile(popupButtonLegacy)
-        compile(appletIntegrationLegacy)
-
-        provided(webToolkitLegacyModule)
-        provided(servletApi)
-
-        testCompile(clientModule.sourceSets.test.output)
-        testCompile(guiModule.sourceSets.test.output)
-        testRuntime(servletApi)
-    }
-
-    task enhanceTransient(type: CubaEnhanceTransient) {
-        metadataXml = "$webLegacyModule.projectDir/src/cuba-web-metadata.xml"
-    }
-
-    task buildScssThemes(type: CubaWebScssThemeCreation) {
-        themes = ['havana']
-        destDir = "${project.buildDir}/web/VAADIN/themes"
-//        compress = true
-        sprites = false
-//        cleanup = true
-    }
-
-    File webOutDir = new File("$buildDir/web")
-    task buildWidgetSet(dependsOn: compileJava, type: CubaVaadinLegacyBuilding) {
-        widgetSetsDir = "$webOutDir/VAADIN/widgetsets"
-        widgetSetModules = [webToolkitLegacyModule]
-        widgetSetClass = 'com.haulmont.cuba.toolkit.gwt.WidgetSet'
-//        jvmArgs('-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000')
-        //        compilerArgs = ['-style' : 'PRETTY', '-localWorkers' : '2']
-    }
-
-    task webArchive(dependsOn: [buildWidgetSet, buildScssThemes], type: Zip) {
-        from file('web')
-        from webOutDir
-        exclude '**/web.xml', '**/app.properties'
-        classifier = 'web'
-    }
-
-    artifacts {
-        archives webArchive
-    }
-
-    task deploy(dependsOn: assemble, type: CubaDeployment) {
-        appName = 'cuba6'
-        appJars('cuba-global', 'cuba-client', 'cuba-gui', 'cuba-web-auth', 'cuba-web6',
-                'vaadin', 'popupbutton', 'appletintegration')
-    }
-
-    deploy << {
-        delete {
-            "$tomcatDir/webapps/cuba6/VAADIN/widgetsets"
-        }
-        copy {
-            from "$buildDir/web"
-            into "$tomcatDir/webapps/cuba6"
-        }
-    }
-
-    jar {
-        manifest {
-            attributes("Vaadin-Widgetsets": "com.haulmont.cuba.toolkit.gwt.WidgetSet")
-        }
-    }
-}
-
-configure(webLegacyModuleThemes) {
-    apply(plugin: 'java')
-    apply(plugin: 'maven')
-    apply(plugin: 'cuba')
-
-    buildDir = file('../build/scss-themes')
-
-    sourceSets {
-        main {
-            java {
-                srcDir '.'
-            }
-            resources {
-                srcDir '.'
-            }
-        }
-    }
-}
-
-configure(webToolkitLegacyModule) {
-    dependencies {
-        compile(vaadinLegacy)
-        compile(popupButtonLegacy)
-        compile(appletIntegrationLegacy)
-
-        compile(gwtUser)
-        compile(gwtDev)
-        compile(gwtServlets)
-        compile(validationApi)
-        compile(validationApi + ['classifier' : 'sources'])
-    }
-
-    jar {
-        manifest {
-            attributes("Vaadin-Widgetsets": "com.haulmont.cuba.toolkit.gwt.WidgetSet")
-        }
     }
 }
 

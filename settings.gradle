@@ -5,7 +5,7 @@
  */
 
 include(':cuba-shared-lib', ':cuba-global', ':cuba-core', ':cuba-client', ':cuba-gui', ':cuba-web-toolkit',
-        ':cuba-web', ':cuba-web-themes', ':cuba-desktop', ':cuba-portal',':cuba-web-auth', ':cuba-web6', ':cuba-web6-themes', ':cuba-web6-toolkit')
+        ':cuba-web', ':cuba-web-themes', ':cuba-desktop', ':cuba-portal',':cuba-web-auth')
 rootProject.name = 'cuba'
 project(':cuba-shared-lib').projectDir = new File(settingsDir, 'modules/shared-lib')
 project(':cuba-global').projectDir = new File(settingsDir, 'modules/global')
@@ -17,7 +17,4 @@ project(':cuba-web').projectDir = new File(settingsDir, 'modules/web')
 project(':cuba-desktop').projectDir = new File(settingsDir, 'modules/desktop')
 project(':cuba-portal').projectDir = new File(settingsDir, 'modules/portal')
 project(':cuba-web-auth').projectDir = new File(settingsDir, 'modules/web-auth')
-project(':cuba-web6').projectDir = new File(settingsDir, 'modules/web6')
-project(':cuba-web6-toolkit').projectDir = new File(settingsDir, 'modules/web6-toolkit')
 project(':cuba-web-themes').projectDir = new File(settingsDir, 'modules/web/themes')
-project(':cuba-web6-themes').projectDir = new File(settingsDir, 'modules/web6/themes')
