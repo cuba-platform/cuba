@@ -319,14 +319,6 @@ configure(clientModule) {
 }
 
 configure(guiModule) {
-    apply(plugin: 'groovy')
-
-    sourceSets {
-        main {
-            groovy { srcDir 'src' }
-        }
-    }
-
     dependencies {
         compile(clientModule)
         compile(poi)
