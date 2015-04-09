@@ -23,10 +23,10 @@ public final class ExportFormat implements Serializable {
     public static final ExportFormat HTM = new ExportFormat("text/html", "htm");
     public static final ExportFormat PDF = new ExportFormat("application/pdf", "pdf");
     public static final ExportFormat XLS = new ExportFormat("application/vnd.ms-excel", "xls");
-    public static final ExportFormat XLSX = new ExportFormat("application/vnd.ms-excel", "xlsx");
+    public static final ExportFormat XLSX = new ExportFormat("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "xlsx");
     public static final ExportFormat RTF = new ExportFormat("application/rtf", "rtf");
     public static final ExportFormat DOC = new ExportFormat("application/doc", "doc");
-    public static final ExportFormat DOCX = new ExportFormat("application/docx", "docx");
+    public static final ExportFormat DOCX = new ExportFormat("application/vnd.openxmlformats-officedocument.wordprocessingml.document", "docx");
     public static final ExportFormat XML = new ExportFormat("text/xml", "xml");
     public static final ExportFormat CSV = new ExportFormat("application/csv", "csv");
     public static final ExportFormat JPEG = new ExportFormat("image/jpeg", "jpeg");
