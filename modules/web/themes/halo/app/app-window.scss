@@ -105,4 +105,11 @@
   .cuba-app-icon {
     height: 24px;
   }
+
+  // Padding for main tabsheet content
+
+  .cuba-splitpanel-dockable-right > div > div.v-splitpanel-second-container .cuba-app-tabbed-window.v-margin-left,
+  .cuba-splitpanel-dockable-left > div > div.v-splitpanel-second-container .cuba-app-tabbed-window.v-margin-left {
+    padding-left: 12px;
+  }
 }
