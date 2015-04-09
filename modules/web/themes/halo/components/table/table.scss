@@ -102,6 +102,7 @@
 
   .#{$primary-stylename} [class*="-row"].v-selected {
     $font-color: valo-font-color($v-selection-color, 0.9);
+    .v-popupview,
     .v-button-link,
     .v-link {
       color: $font-color;
