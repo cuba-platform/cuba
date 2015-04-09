@@ -6,6 +6,7 @@
 // Version: $Id$
 
 $cuba-splitpanel-splitter-width: 3px !default;
+$cuba-splitpanel-dock-button-width: round($v-unit-size / 3) !default;
 
 @mixin halo-splitpanel($primary-stylename: v-splitpanel) {
   .#{$primary-stylename}-horizontal > div > .#{$primary-stylename}-hsplitter {
@@ -24,12 +25,10 @@ $cuba-splitpanel-splitter-width: 3px !default;
   $border-width: first-number($v-border);
   $border-radius: $v-border-radius;
   $button-color: valo-font-color($v-app-background-color, .5);
-  $border-right-color: $v-app-background-color;
-  $border-left-color: $v-panel-background-color;
 
   .cuba-splitpanel-dock-button {
     cursor: pointer;
-    width: 10px;
+    width: $cuba-splitpanel-dock-button-width;
     background: transparent;
     border: $border-width solid $border-color;
     font-family: FontAwesome;
@@ -42,14 +41,14 @@ $cuba-splitpanel-splitter-width: 3px !default;
   }
 
   .cuba-splitpanel-dock-button-left {
-    border-right-color: $border-left-color;
-    margin-left: -2px;
+    border-right-color: $v-panel-background-color;
+    margin-left: -($cuba-splitpanel-splitter-width - $border-width);
     border-radius: $border-radius 0 0 $border-radius;
   }
 
   .cuba-splitpanel-dock-button-right {
-    border-left-color: $border-right-color;
-    margin-left: 2px;
+    border-left-color: $v-app-background-color;
+    margin-left: $cuba-splitpanel-splitter-width - $border-width;
     border-radius: 0 $border-radius $border-radius 0;
   }
 
