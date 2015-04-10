@@ -68,9 +68,9 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
  */
 public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhancedTable>
         extends
-        WebAbstractList<T>
+            WebAbstractList<T>
         implements
-        Table {
+            Table {
 
     protected Map<Object, Column> columns = new HashMap<>();
     protected List<Table.Column> columnsOrder = new ArrayList<>();
