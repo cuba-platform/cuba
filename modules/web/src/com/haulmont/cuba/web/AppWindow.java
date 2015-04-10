@@ -41,6 +41,7 @@ import com.vaadin.server.BrowserWindowOpener;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -843,7 +844,7 @@ public class AppWindow extends UIView implements UserSubstitutionListener, CubaH
         } else {
             if (webConfig.getUseLightHeader()) {
                 substUserSelect = new ComboBox();
-
+                ((ComboBox)substUserSelect).setFilteringMode(FilteringMode.CONTAINS);
                 ThemeConstants theme = app.getThemeConstants();
                 substUserSelect.setWidth(theme.get("cuba.web.AppWindow.substUserSelect.width"));
             } else {
