@@ -21,9 +21,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
@@ -62,12 +60,21 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         } else {
             @SuppressWarnings("unchecked")
             final List<Element> columnElements = element.elements("column");
+            @SuppressWarnings("unchecked")
+            final List<Element> fieldElements = element.elements("field");
+            if (fieldElements.size() > 0) {
+                Map<String, Object> params = new HashMap<>();
+                String fieldGroupId = component.getId();
+                if (StringUtils.isNotEmpty(fieldGroupId))
+                    params.put("FieldGroup ID", fieldGroupId);
+                throw new GuiDevelopmentException("FieldGroup field elements should be placed within its column.", context.getFullFrameId(), params);
+            }
             component.setColumns(columnElements.size());
 
             int colIndex = 0;
             for (final Element columnElement : columnElements) {
                 String flex = columnElement.attributeValue("flex");
-                if (!StringUtils.isEmpty(flex)) {
+                if (StringUtils.isNotEmpty(flex)) {
                     component.setColumnExpandRatio(colIndex, Float.parseFloat(flex));
                 }
 
@@ -76,7 +83,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
                 final List<FieldGroup.FieldConfig> columnFields = loadFields(component, columnElement, ds);
                 for (final FieldGroup.FieldConfig field : columnFields) {
                     component.addField(field, colIndex);
-                    if (!StringUtils.isEmpty(width) && field.getWidth() == null) {
+                    if (StringUtils.isNotEmpty(width) && field.getWidth() == null) {
                         field.setWidth(width);
                     }
                 }
@@ -187,8 +194,18 @@ public class FieldGroupLoader extends AbstractFieldLoader {
 
     protected List<FieldGroup.FieldConfig> loadFields(FieldGroup component, List<Element> elements, Datasource ds) {
         final List<FieldGroup.FieldConfig> fields = new ArrayList<>(elements.size());
+        List<String> ids = new ArrayList<>();
         for (final Element fieldElement : elements) {
-            fields.add(loadField(component, fieldElement, ds));
+            FieldGroup.FieldConfig field = loadField(component, fieldElement, ds);
+            if (ids.contains(field.getId())) {
+                Map<String, Object> params = new HashMap<>();
+                String fieldGroupId = component.getId();
+                if (StringUtils.isNotEmpty(fieldGroupId))
+                    params.put("FieldGroup ID", fieldGroupId);
+                throw new GuiDevelopmentException(String.format("FieldGroup column contains duplicate fields '%s'.", field.getId()), context.getFullFrameId(), params);
+            }
+            fields.add(field);
+            ids.add(field.getId());
         }
         return fields;
     }
