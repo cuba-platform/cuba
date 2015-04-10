@@ -1243,7 +1243,7 @@
 
                     <xs:attribute name="enable" type="xs:boolean"/>
                     <xs:attribute name="lazy" type="xs:boolean"/>
-                    <xs:attribute name="margin" type="xs:boolean"/>
+                    <xs:attribute name="margin" type="xs:string"/>
                     <xs:attribute name="spacing" type="xs:boolean"/>
                     <xs:attribute name="expand" type="xs:string"/>
                     <xs:attribute name="detachable" type="xs:boolean"/>
