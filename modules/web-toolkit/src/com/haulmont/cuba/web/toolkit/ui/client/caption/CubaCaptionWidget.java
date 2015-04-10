@@ -8,10 +8,7 @@ package com.haulmont.cuba.web.toolkit.ui.client.caption;
 import com.google.gwt.aria.client.Roles;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.dom.client.Element;
-import com.vaadin.client.ApplicationConnection;
-import com.vaadin.client.ComponentConnector;
-import com.vaadin.client.Util;
-import com.vaadin.client.VCaption;
+import com.vaadin.client.*;
 import com.vaadin.client.ui.AbstractFieldConnector;
 import com.vaadin.client.ui.ImageIcon;
 import com.vaadin.client.ui.aria.AriaHelper;
@@ -62,7 +59,7 @@ public class CubaCaptionWidget extends VCaption {
             }
         }
         if (!owner.isEnabled()) {
-            style += " " + ApplicationConnection.DISABLED_CLASSNAME;
+            style += " " + StyleConstants.DISABLED;
         }
         setStyleName(style);
 
@@ -130,7 +127,7 @@ public class CubaCaptionWidget extends VCaption {
                     captionText.setInnerHTML("&nbsp;");
                 }
             } else {
-                captionText.setInnerText(c);
+                setCaptionText(captionText, owner.getState());
             }
 
         } else if (captionText != null) {

@@ -208,7 +208,7 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
     }
 
     @Override
-    protected boolean isEmpty() {
+    public boolean isEmpty() {
         return getValue() == null;
     }
 

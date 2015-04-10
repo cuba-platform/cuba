@@ -131,6 +131,9 @@ public class CubaGroupTableWidget extends CubaScrollTableWidget {
         // Change header order
         tHead.moveCell(oldIndex, newIndex);
 
+        // Change body order
+        scrollBody.moveCol(oldIndex, newIndex);
+
         // Change footer order
         tFoot.moveCell(oldIndex, newIndex);
 

@@ -83,7 +83,7 @@ public class CubaOrderedActionsLayoutConnector extends AbstractOrderedLayoutConn
 
         // Haulmont API
         slot.setCaption(caption, description, icon, styles, error, showError, required,
-                enabled);
+                enabled, child.getState().captionAsHtml);
 
         AriaHelper.handleInputRequired(child.getWidget(), required);
         AriaHelper.handleInputInvalid(child.getWidget(), showError);

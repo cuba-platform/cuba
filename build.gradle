@@ -58,7 +58,7 @@ def springSecurityVersion = '3.2.3.RELEASE'
 
 def servletApi = [group: 'org.apache.tomcat', name: 'tomcat-servlet-api', version: '7.0.53']
 def groovyArtifact = [group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.1.6']
-def asm = [group: 'asm', name: 'asm', version: '3.3.1']
+def asm = [group: 'org.ow2.asm', name: 'asm', version: '5.0.3']
 def poi = [group: 'com.haulmont.thirdparty', name: 'poi', version: '3.9.20130515']
 def postgres = [group: 'postgresql', name: 'postgresql', version: '9.1-901.jdbc4']
 def hsqldb = [group: 'org.hsqldb', name: 'hsqldb', version: '2.2.9']
@@ -356,6 +356,7 @@ configure(webModule) {
         compile(vaadinServer) {
             exclude(group: 'com.vaadin', module: 'vaadin-sass-compiler')
         }
+        provided(vaadinThemes)
         // compile(group: 'com.vaadin', name: 'vaadin-themes', version: vaadinVersion)
         /* Vaadin addons */
         compile(group: 'com.haulmont.thirdparty', name: 'appletintegration', version: '1.2.10')
