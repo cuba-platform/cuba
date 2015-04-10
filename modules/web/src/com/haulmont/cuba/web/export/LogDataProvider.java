@@ -5,10 +5,8 @@
 
 package com.haulmont.cuba.web.export;
 
-import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.entity.JmxInstance;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.export.ClosedDataProviderException;
 import com.haulmont.cuba.gui.export.ExportDataProvider;
@@ -37,15 +35,12 @@ public class LogDataProvider implements ExportDataProvider {
 
     protected Log log = LogFactory.getLog(getClass());
 
-    protected FileDescriptor fileDescriptor;
     protected InputStream inputStream;
     protected boolean closed = false;
 
     protected ClientConnectionManager connectionManager;
 
     protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.NAME);
-
-    protected Configuration configuration = AppBeans.get(Configuration.NAME);
 
     protected JmxRemoteLoggingAPI jmxRemoteLoggingAPI = AppBeans.get(JmxRemoteLoggingAPI.NAME);
 
@@ -131,7 +126,6 @@ public class LogDataProvider implements ExportDataProvider {
                 log.warn("Error while closing log data provider", e);
             } finally {
                 inputStream = null;
-                fileDescriptor = null;
                 connectionManager = null;
             }
         }

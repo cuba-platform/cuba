@@ -684,8 +684,6 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
 
     protected class DefaultGroupPropertyValueFormatter implements CubaGroupTable.GroupPropertyValueFormatter {
 
-        protected Messages messages = AppBeans.get(Messages.NAME);
-
         @SuppressWarnings("unchecked")
         @Override
         public String format(Object groupId, @Nullable Object value) {
@@ -708,7 +706,7 @@ public class WebGroupTable extends WebAbstractTable<CubaGroupTable> implements G
         }
     }
 
-    protected class GroupAggregationCells {
+    protected static class GroupAggregationCells {
         protected Map<Object, String> cells = new HashMap<>();
 
         public void addCell(Object groupId, String value) {
