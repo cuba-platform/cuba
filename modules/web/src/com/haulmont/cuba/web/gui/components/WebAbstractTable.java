@@ -517,7 +517,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         });
 
         // vaadin7
-        component.addColumnCollapseListener(new CubaEnhancedTable.CollapseListener() {
+        component.addColumnCollapseListener(new CubaEnhancedTable.ColumnCollapseListener() {
             @Override
             public void columnCollapsed(Object columnId, boolean collapsed) {
                 final Column collapsedColumn = getColumn(columnId.toString());
