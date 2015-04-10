@@ -11,7 +11,6 @@ import com.haulmont.cuba.web.App;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.event.Action;
-import com.vaadin.event.FieldEvents;
 import com.vaadin.server.AbstractErrorMessage;
 import com.vaadin.server.CompositeErrorMessage;
 import com.vaadin.server.ErrorMessage;
@@ -153,13 +152,15 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
     }
 
     public void addFieldListener(final PickerField.FieldListener listener) {
-        ((TextField) field).addTextChangeListener(new FieldEvents.TextChangeListener() {
+        field.addValueChangeListener(new ValueChangeListener() {
             @Override
-            public void textChange(FieldEvents.TextChangeEvent event) {
-                if (!suppressTextChangeListener && !StringUtils.equals(getStringRepresentation(), event.getText())) {
+            public void valueChange(Property.ValueChangeEvent event) {
+                String text = (String) event.getProperty().getValue();
+
+                if (!suppressTextChangeListener && !StringUtils.equals(getStringRepresentation(), text)) {
                     suppressTextChangeListener = true;
 
-                    listener.actionPerformed(event.getText(), getValue());
+                    listener.actionPerformed(text, getValue());
 
                     suppressTextChangeListener = false;
 
