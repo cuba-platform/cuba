@@ -68,9 +68,9 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
  */
 public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhancedTable>
         extends
-            WebAbstractList<T>
+        WebAbstractList<T>
         implements
-            Table {
+        Table {
 
     protected Map<Object, Column> columns = new HashMap<>();
     protected List<Table.Column> columnsOrder = new ArrayList<>();
@@ -174,7 +174,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                     .setViewName("_local")
                     .buildDatasource();
 
-            ((DatasourceImplementation)fieldDatasource).valid();
+            ((DatasourceImplementation) fieldDatasource).valid();
 
             fieldDatasource.setItem(item);
             fieldDatasources.put(item, fieldDatasource);
@@ -517,15 +517,15 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         });
 
         // vaadin7
-//        component.addColumnCollapseListener(new com.haulmont.cuba.web.toolkit.ui.Table.CollapseListener() {
-//            @Override
-//            public void columnCollapsed(Object columnId, boolean collapsed) {
-//                final Column collapsedColumn = getColumn(columnId.toString());
-//                for (ColumnCollapseListener listener : columnCollapseListeners) {
-//                    listener.columnCollapsed(collapsedColumn, collapsed);
-//                }
-//            }
-//        });
+        component.addColumnCollapseListener(new CubaEnhancedTable.CollapseListener() {
+            @Override
+            public void columnCollapsed(Object columnId, boolean collapsed) {
+                final Column collapsedColumn = getColumn(columnId.toString());
+                for (ColumnCollapseListener listener : columnCollapseListeners) {
+                    listener.columnCollapsed(collapsedColumn, collapsed);
+                }
+            }
+        });
 
         component.setSelectable(true);
         component.setTableFieldFactory(new WebTableFieldFactory());
@@ -546,6 +546,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
         component.setCellStyleGenerator(createStyleGenerator());
     }
+
 
     protected StyleGeneratorAdapter createStyleGenerator() {
         return new StyleGeneratorAdapter();
@@ -648,7 +649,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                     }
                 } /*else if (propertyPath.getRange().isEnum()) {
                     // TODO (abramov)
-                } */else if (!propertyPath.getRange().isEnum()) {
+                } */ else if (!propertyPath.getRange().isEnum()) {
                     throw new UnsupportedOperationException();
                 }
             }
@@ -892,7 +893,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                 String propertyPath = column.getId().toString();
 
                 if (security.isEntityAttrReadPermitted(metaClass, propertyPath)) {
-                    result.add((MetaPropertyPath)column.getId());
+                    result.add((MetaPropertyPath) column.getId());
                 }
             }
         }
@@ -1531,10 +1532,10 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             Column columnConf = columns.get(columnId);
 
             Item item = component.getItem(itemId);
-            Entity entity = ((ItemWrapper)item).getItem();
+            Entity entity = ((ItemWrapper) item).getItem();
             Datasource fieldDatasource = getItemDatasource(entity);
 
-            AbstractFieldFactory factory = (AbstractFieldFactory)component.getTableFieldFactory();
+            AbstractFieldFactory factory = (AbstractFieldFactory) component.getTableFieldFactory();
             com.haulmont.cuba.gui.components.Component columnComponent =
                     factory.createField(fieldDatasource, fieldPropertyId, columnConf.getXmlDescriptor());
 
@@ -1746,7 +1747,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             Column columnConf = columns.get(propertyId);
 
             Item item = container.getItem(itemId);
-            Entity entity = ((ItemWrapper)item).getItem();
+            Entity entity = ((ItemWrapper) item).getItem();
             Datasource fieldDatasource = getItemDatasource(entity);
 
             com.haulmont.cuba.gui.components.Component columnComponent =

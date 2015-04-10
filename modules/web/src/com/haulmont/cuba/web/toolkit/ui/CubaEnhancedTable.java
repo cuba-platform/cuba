@@ -51,4 +51,12 @@ public interface CubaEnhancedTable extends AggregationContainer {
 
     boolean isShowTotalAggregation();
     void setShowTotalAggregation(boolean showTotalAggregation);
+
+    void addColumnCollapseListener(CollapseListener listener);
+
+    void removeColumnCollapseListener(CollapseListener listener);
+
+    interface CollapseListener {
+        void columnCollapsed(Object columnId, boolean collapsed);
+    }
 }
