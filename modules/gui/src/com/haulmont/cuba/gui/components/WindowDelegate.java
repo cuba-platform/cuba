@@ -9,6 +9,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.ComponentVisitor;
 import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
@@ -87,7 +88,7 @@ public class WindowDelegate {
             }
         }
         if (ds == null)
-            throw new IllegalStateException("Can't find main datasource");
+            throw new GuiDevelopmentException("Can't find main datasource", window.getId());
         else
             return ds;
     }
