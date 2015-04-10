@@ -82,7 +82,6 @@ public class FoldersBean implements Folders {
             filterEntity.setFolder(folder);
             filterEntity.setComponentId(folder.getFilterComponentId());
             filterEntity.setName(folder.getLocName());
-            filterEntity.setCode(folder.getName());
 
             filterEntity.setXml(folder.getFilterXml());
             filterEntity.setApplyDefault(BooleanUtils.isNotFalse(folder.getApplyDefault()));
