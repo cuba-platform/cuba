@@ -574,7 +574,7 @@ configure(portalModule) {
     }
 }
 
-task restart(dependsOn: ['stop', ':cuba-core:deploy', ':cuba-web:deploy', ':cuba-web6:deploy'], description: 'Redeploys applications and restarts local Tomcat') << {
+task restart(dependsOn: ['stop', ':cuba-core:deploy', ':cuba-web:deploy'], description: 'Redeploys applications and restarts local Tomcat') << {
     ant.waitfor(maxwait: 6, maxwaitunit: 'second', checkevery: 2, checkeveryunit: 'second') {
         not {
             socket(server: 'localhost', port: '8787')
