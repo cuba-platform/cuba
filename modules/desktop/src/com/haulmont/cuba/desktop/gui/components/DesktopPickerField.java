@@ -22,6 +22,8 @@ import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.*;
 import javax.swing.AbstractAction;
 import javax.swing.text.JTextComponent;
@@ -409,6 +411,8 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
 
     @Override
     public void addAction(final Action action) {
+        checkNotNullArgument(action, "action must be non null");
+
         Action oldAction = getAction(action.getId());
 
         // get button for old action
@@ -482,28 +486,29 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
     }
 
     @Override
-    public void removeAction(Action action) {
+    public void removeAction(@Nullable Action action) {
         if (action != null) {
-            actionsOrder.remove(action);
-            if (action.getOwner() != null && action.getOwner() instanceof DesktopButton) {
-                JButton button = ((DesktopButton) action.getOwner()).getImpl();
-                impl.removeButton(button);
-            }
-
-            InputMap inputMap = getImpl().getInputField().getInputMap(JComponent.WHEN_FOCUSED);
-            ActionMap actionMap = getImpl().getInputField().getActionMap();
-            List<KeyStroke> keyStrokes = keyStrokesMap.get(action);
-            if (keyStrokes != null) {
-                for (KeyStroke keyStroke : keyStrokes) {
-                    inputMap.remove(keyStroke);
+            if (actionsOrder.remove(action)) {
+                if (action.getOwner() != null && action.getOwner() instanceof DesktopButton) {
+                    JButton button = ((DesktopButton) action.getOwner()).getImpl();
+                    impl.removeButton(button);
                 }
-                actionMap.remove(action.getId());
+
+                InputMap inputMap = getImpl().getInputField().getInputMap(JComponent.WHEN_FOCUSED);
+                ActionMap actionMap = getImpl().getInputField().getActionMap();
+                List<KeyStroke> keyStrokes = keyStrokesMap.get(action);
+                if (keyStrokes != null) {
+                    for (KeyStroke keyStroke : keyStrokes) {
+                        inputMap.remove(keyStroke);
+                    }
+                    actionMap.remove(action.getId());
+                }
             }
         }
     }
 
     @Override
-    public void removeAction(String id) {
+    public void removeAction(@Nullable String id) {
         Action action = getAction(id);
         if (action != null) {
             removeAction(action);
@@ -523,6 +528,7 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
     }
 
     @Override
+    @Nullable
     public Action getAction(String id) {
         for (Action action : getActions()) {
             if (ObjectUtils.equals(action.getId(), id)) {
@@ -530,6 +536,16 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
             }
         }
         return null;
+    }
+
+    @Nonnull
+    @Override
+    public Action getActionNN(String id) {
+        Action action = getAction(id);
+        if (action == null) {
+            throw new IllegalStateException("Unable to find action with id " + id);
+        }
+        return action;
     }
 
     @Override

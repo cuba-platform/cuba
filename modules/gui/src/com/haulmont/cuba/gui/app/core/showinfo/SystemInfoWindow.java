@@ -15,8 +15,6 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -79,10 +77,7 @@ public class SystemInfoWindow extends AbstractWindow {
             companion.initInfoTable(infoTable);
         }
 
-        // remove all actions
-        List<Action> tableActions = new ArrayList<>(infoTable.getActions());
-        for (Action action : tableActions)
-            infoTable.removeAction(action);
+        infoTable.removeAllActions();
 
         if (!clientConfig.getSystemInfoScriptsEnabled()
                 || item == null

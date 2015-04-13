@@ -14,8 +14,12 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.StringUtils;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.beans.PropertyChangeListener;
 import java.util.*;
+
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 /**
  * @author pavlov
@@ -140,7 +144,9 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
 
     @Override
     public void addAction(final Action action) {
-        if (action != null && vPopupComponent instanceof com.vaadin.ui.Layout) {
+        checkNotNullArgument(action, "action must be non null");
+
+        if (vPopupComponent instanceof com.vaadin.ui.Layout) {
             WebButton button = new PopupButtonActionButton() {
                 @Override
                 protected void beforeActionPerformed() {
@@ -188,20 +194,23 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
     }
 
     @Override
-    public void removeAction(Action action) {
-        if (vPopupComponent instanceof com.vaadin.ui.Layout && actionOrder.remove(action)) {
-            for (ActionOwner owner : new LinkedList<>(action.getOwners())) {
-                if (owner instanceof PopupButtonActionButton) {
-                    owner.setAction(null);
-                    Button vButton = WebComponentsHelper.unwrap((PopupButtonActionButton) owner);
-                    ((com.vaadin.ui.Layout) vPopupComponent).removeComponent(vButton);
+    public void removeAction(@Nullable Action action) {
+        if (vPopupComponent instanceof com.vaadin.ui.Layout) {
+            if (actionOrder.remove(action)) {
+                //noinspection ConstantConditions
+                for (ActionOwner owner : new LinkedList<>(action.getOwners())) {
+                    if (owner instanceof PopupButtonActionButton) {
+                        owner.setAction(null);
+                        Button vButton = WebComponentsHelper.unwrap((PopupButtonActionButton) owner);
+                        ((com.vaadin.ui.Layout) vPopupComponent).removeComponent(vButton);
+                    }
                 }
             }
         }
     }
 
     @Override
-    public void removeAction(String id) {
+    public void removeAction(@Nullable String id) {
         Action action = getAction(id);
         if (action != null) {
             removeAction(action);
@@ -216,6 +225,7 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
     }
 
     @Override
+    @Nullable
     public Action getAction(String id) {
         if (vPopupComponent instanceof com.vaadin.ui.Layout && id != null) {
             for (Action action : actionOrder) {
@@ -225,6 +235,16 @@ public class WebPopupButton extends WebAbstractComponent<CubaPopupButton>
             }
         }
         return null;
+    }
+
+    @Nonnull
+    @Override
+    public Action getActionNN(String id) {
+        Action action = getAction(id);
+        if (action == null) {
+            throw new IllegalStateException("Unable to find action with id " + id);
+        }
+        return action;
     }
 
     @Override

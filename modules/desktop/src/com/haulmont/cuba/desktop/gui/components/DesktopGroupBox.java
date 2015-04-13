@@ -12,8 +12,12 @@ import com.haulmont.cuba.gui.components.GroupBoxLayout;
 import org.apache.commons.lang.BooleanUtils;
 import org.dom4j.Element;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.*;
 import java.util.*;
+
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 /**
  * @author krivopustov
@@ -124,11 +128,12 @@ public class DesktopGroupBox extends DesktopAbstractBox implements GroupBoxLayou
     }
 
     @Override
-    public void addAction(Action action) {
+    public void addAction(@Nullable Action action) {
+        checkNotNullArgument(action, "action must be non null");
     }
 
     @Override
-    public void removeAction(Action action) {
+    public void removeAction(@Nullable Action action) {
     }
 
     @Override
@@ -147,6 +152,16 @@ public class DesktopGroupBox extends DesktopAbstractBox implements GroupBoxLayou
     @Override
     public Action getAction(String id) {
         return null;
+    }
+
+    @Nonnull
+    @Override
+    public Action getActionNN(String id) {
+        Action action = getAction(id);
+        if (action == null) {
+            throw new IllegalStateException("Unable to find action with id " + id);
+        }
+        return action;
     }
 
     @Override

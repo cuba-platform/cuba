@@ -6,13 +6,14 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.components.PickerField;
-import com.haulmont.cuba.gui.components.SearchPickerField;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.*;
+import javax.swing.Action;
 import java.util.Collection;
 
 /**
@@ -79,12 +80,12 @@ public class DesktopSearchPickerField extends DesktopSearchField implements Sear
     }
 
     @Override
-    public void removeAction(com.haulmont.cuba.gui.components.Action action) {
+    public void removeAction(@Nullable com.haulmont.cuba.gui.components.Action action) {
         pickerField.removeAction(action);
     }
 
     @Override
-    public void removeAction(String id) {
+    public void removeAction(@Nullable String id) {
         pickerField.removeAction(id);
     }
 
@@ -99,8 +100,19 @@ public class DesktopSearchPickerField extends DesktopSearchField implements Sear
     }
 
     @Override
+    @Nullable
     public com.haulmont.cuba.gui.components.Action getAction(String id) {
         return pickerField.getAction(id);
+    }
+
+    @Nonnull
+    @Override
+    public com.haulmont.cuba.gui.components.Action getActionNN(String id) {
+        com.haulmont.cuba.gui.components.Action action = getAction(id);
+        if (action == null) {
+            throw new IllegalStateException("Unable to find action with id " + id);
+        }
+        return action;
     }
 
     @Override

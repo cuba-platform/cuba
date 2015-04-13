@@ -9,7 +9,6 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.AbstractAction;
-import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.presentations.PresentationsChangeListener;
@@ -24,8 +23,6 @@ import com.vaadin.data.util.AbstractProperty;
 import com.vaadin.ui.*;
 import org.dom4j.Element;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -182,10 +179,7 @@ public class TablePresentations extends VerticalLayout {
     }
 
     protected void buildActions() {
-        final Collection<Action> actions = new ArrayList<>(button.getActions());
-        for (final Action action : actions) {
-            button.removeAction(action);
-        }
+        button.removeAllActions();
 
         final Presentations p = table.getPresentations();
         final Presentation current = p.getCurrent();

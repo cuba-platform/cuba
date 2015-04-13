@@ -60,16 +60,17 @@ public class DesktopFrameActionsHolder {
     }
 
     public void removeAction(Action action) {
-        if (action.getShortcut() != null) {
-            InputMap inputMap = panel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-            ActionMap actionMap = panel.getActionMap();
-            KeyStroke keyStroke = shortcutActions.get(action);
-            if (keyStroke != null) {
-                inputMap.remove(keyStroke);
-                actionMap.remove(action.getId());
+        if (actionList.remove(action)) {
+            if (action.getShortcut() != null) {
+                InputMap inputMap = panel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+                ActionMap actionMap = panel.getActionMap();
+                KeyStroke keyStroke = shortcutActions.get(action);
+                if (keyStroke != null) {
+                    inputMap.remove(keyStroke);
+                    actionMap.remove(action.getId());
+                }
             }
         }
-        actionList.remove(action);
     }
 
     public void removeAction(String id) {

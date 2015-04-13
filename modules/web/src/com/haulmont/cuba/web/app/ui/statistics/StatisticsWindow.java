@@ -135,9 +135,7 @@ public class StatisticsWindow extends AbstractWindow {
             }
         });
 
-        for (Action action : new LinkedList<>(jmxConnectionField.getActions())) {
-            jmxConnectionField.removeAction(action);
-        }
+        jmxConnectionField.removeAllActions();
 
         jmxConnectionField.addAction(new PickerField.LookupAction(jmxConnectionField) {
             @Override

@@ -472,12 +472,12 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
     }
 
     @Override
-    public void removeAction(Action action) {
+    public void removeAction(@Nullable Action action) {
         frame.removeAction(action);
     }
 
     @Override
-    public void removeAction(String id) {
+    public void removeAction(@Nullable String id) {
         frame.removeAction(id);
     }
 
@@ -492,7 +492,18 @@ public class AbstractFrame implements IFrame, Component.Wrapper {
     }
 
     @Override
+    @Nullable
     public Action getAction(String id) {
         return frame.getAction(id);
+    }
+
+    @Nonnull
+    @Override
+    public Action getActionNN(String id) {
+        Action action = getAction(id);
+        if (action == null) {
+            throw new IllegalStateException("Unable to find action with id " + id);
+        }
+        return action;
     }
 }

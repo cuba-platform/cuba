@@ -26,7 +26,11 @@ import com.vaadin.ui.Button;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
+
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 /**
  * @author abramov
@@ -221,6 +225,8 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
 
     @Override
     public void addAction(Action action) {
+        checkNotNullArgument(action, "action must be non null");
+
         Action oldAction = getAction(action.getId());
 
         // get button for old action
@@ -284,10 +290,10 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
     }
 
     @Override
-    public void removeAction(Action action) {
-        if (action != null) {
-            actions.remove(action);
+    public void removeAction(@Nullable Action action) {
+        if (actions.remove(action)) {
             actionHandler.removeAction(action);
+            //noinspection ConstantConditions
             if (action.getOwner() != null && action.getOwner() instanceof WebButton) {
                 Button button = ((WebButton) action.getOwner()).getComponent();
                 component.removeButton(button);
@@ -296,7 +302,7 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
     }
 
     @Override
-    public void removeAction(String id) {
+    public void removeAction(@Nullable String id) {
         Action action = getAction(id);
         if (action != null) {
             removeAction(action);
@@ -328,6 +334,7 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
     }
 
     @Override
+    @Nullable
     public Action getAction(String id) {
         for (Action action : actions) {
             if (ObjectUtils.equals(id, action.getId())) {
@@ -335,6 +342,16 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
             }
         }
         return null;
+    }
+
+    @Nonnull
+    @Override
+    public Action getActionNN(String id) {
+        Action action = getAction(id);
+        if (action == null) {
+            throw new IllegalStateException("Unable to find action with id " + id);
+        }
+        return action;
     }
 
     protected void initActionHandler() {

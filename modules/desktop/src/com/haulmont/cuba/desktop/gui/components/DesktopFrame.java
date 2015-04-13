@@ -19,6 +19,7 @@ import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.event.HierarchyEvent;
 import java.awt.event.HierarchyListener;
@@ -26,6 +27,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.lang.reflect.Constructor;
 import java.util.*;
+
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 /**
  * @author krivopustov
@@ -301,6 +304,7 @@ public class DesktopFrame
         getWindowManager().showNotification(caption, type);
     }
 
+    @Override
     public IFrame wrapBy(Class<? extends IFrame> aClass) {
         try {
             // First try to find an old-style constructor with IFrame parameter
@@ -346,16 +350,18 @@ public class DesktopFrame
 
     @Override
     public void addAction(final Action action) {
+        checkNotNullArgument(action, "action must be non null");
+
         actionsHolder.addAction(action);
     }
 
     @Override
-    public void removeAction(Action action) {
+    public void removeAction(@Nullable Action action) {
         actionsHolder.removeAction(action);
     }
 
     @Override
-    public void removeAction(String id) {
+    public void removeAction(@Nullable String id) {
         actionsHolder.removeAction(id);
     }
 
@@ -370,7 +376,18 @@ public class DesktopFrame
     }
 
     @Override
+    @Nullable
     public Action getAction(String id) {
         return actionsHolder.getAction(id);
+    }
+
+    @Nonnull
+    @Override
+    public Action getActionNN(String id) {
+        Action action = getAction(id);
+        if (action == null) {
+            throw new IllegalStateException("Unable to find action with id " + id);
+        }
+        return action;
     }
 }

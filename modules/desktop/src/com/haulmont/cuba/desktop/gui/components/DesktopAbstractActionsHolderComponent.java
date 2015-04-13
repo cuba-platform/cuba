@@ -10,6 +10,8 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action;
 import org.apache.commons.lang.ObjectUtils;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
@@ -88,14 +90,14 @@ public class DesktopAbstractActionsHolderComponent<C extends JComponent> extends
     }
 
     @Override
-    public void removeAction(Action action) {
-        actionList.remove(action);
-
-        shortcutsDelegate.removeAction(action);
+    public void removeAction(@Nullable Action action) {
+        if (actionList.remove(action)) {
+            shortcutsDelegate.removeAction(action);
+        }
     }
 
     @Override
-    public void removeAction(String id) {
+    public void removeAction(@Nullable String id) {
         Action action = getAction(id);
         if (action != null) {
             removeAction(action);
@@ -115,6 +117,7 @@ public class DesktopAbstractActionsHolderComponent<C extends JComponent> extends
     }
 
     @Override
+    @Nullable
     public Action getAction(String id) {
         for (Action action : getActions()) {
             if (ObjectUtils.equals(action.getId(), id)) {
@@ -122,6 +125,16 @@ public class DesktopAbstractActionsHolderComponent<C extends JComponent> extends
             }
         }
         return null;
+    }
+
+    @Nonnull
+    @Override
+    public Action getActionNN(String id) {
+        Action action = getAction(id);
+        if (action == null) {
+            throw new IllegalStateException("Unable to find action with id " + id);
+        }
+        return action;
     }
 
     @Override

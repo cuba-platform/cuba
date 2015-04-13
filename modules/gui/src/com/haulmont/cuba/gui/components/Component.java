@@ -230,12 +230,12 @@ public interface Component {
         /**
          * Remove the action from the component
          */
-        void removeAction(Action action);
+        void removeAction(@Nullable Action action);
 
         /**
          * Remove the action by its ID. If there is no action with that ID, nothing happens.
          */
-        void removeAction(String id);
+        void removeAction(@Nullable String id);
 
         /**
          * Remove all actions from the component
@@ -250,7 +250,15 @@ public interface Component {
         /**
          * @return an action by its ID, or null if not found
          */
+        @Nullable
         Action getAction(String id);
+
+        /**
+         * @return an action by its ID
+         * @throws java.lang.IllegalArgumentException if not found
+         */
+        @Nonnull
+        Action getActionNN(String id);
     }
 
     interface SecuredActionsHolder extends ActionsHolder {

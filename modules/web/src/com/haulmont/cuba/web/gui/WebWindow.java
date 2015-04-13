@@ -47,6 +47,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.convertAlignment;
 
 /**
@@ -193,17 +194,19 @@ public class WebWindow implements Window, Component.Wrapper,
 
     @Override
     public void addAction(final com.haulmont.cuba.gui.components.Action action) {
+        checkNotNullArgument(action, "action must be non null");
+
         actionsHolder.addAction(action);
         actionsPermissions.apply(action);
     }
 
     @Override
-    public void removeAction(com.haulmont.cuba.gui.components.Action action) {
+    public void removeAction(@Nullable com.haulmont.cuba.gui.components.Action action) {
         actionsHolder.removeAction(action);
     }
 
     @Override
-    public void removeAction(String id) {
+    public void removeAction(@Nullable String id) {
         actionsHolder.removeAction(id);
     }
 
@@ -218,8 +221,19 @@ public class WebWindow implements Window, Component.Wrapper,
     }
 
     @Override
+    @Nullable
     public com.haulmont.cuba.gui.components.Action getAction(String id) {
         return actionsHolder.getAction(id);
+    }
+
+    @Nonnull
+    @Override
+    public Action getActionNN(String id) {
+        Action action = getAction(id);
+        if (action == null) {
+            throw new IllegalStateException("Unable to find action with id " + id);
+        }
+        return action;
     }
 
     @Override

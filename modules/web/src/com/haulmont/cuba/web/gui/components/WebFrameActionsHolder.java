@@ -12,6 +12,8 @@ import org.apache.commons.lang.ObjectUtils;
 
 import java.util.*;
 
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+
 /**
  * Encapsulates {@link com.haulmont.cuba.gui.components.Component.ActionsHolder} functionality for web frames and
  * windows.
@@ -40,8 +42,9 @@ public class WebFrameActionsHolder {
     }
 
     public void removeAction(Action action) {
-        actionList.remove(action);
-        actions.inverse().remove(action);
+        if (actionList.remove(action)) {
+            actions.inverse().remove(action);
+        }
     }
 
     public void removeAction(String id) {

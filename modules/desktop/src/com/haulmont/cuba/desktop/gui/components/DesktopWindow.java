@@ -50,6 +50,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.*;
 
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+
 /**
  * @author krivopustov
  * @version $Id$
@@ -375,17 +377,19 @@ public class DesktopWindow implements Window, Component.Disposable,
 
     @Override
     public void addAction(final Action action) {
+        checkNotNullArgument(action, "action must be non null");
+
         actionsHolder.addAction(action);
         actionsPermissions.apply(action);
     }
 
     @Override
-    public void removeAction(Action action) {
+    public void removeAction(@Nullable Action action) {
         actionsHolder.removeAction(action);
     }
 
     @Override
-    public void removeAction(String id) {
+    public void removeAction(@Nullable String id) {
         actionsHolder.removeAction(id);
     }
 
@@ -400,8 +404,19 @@ public class DesktopWindow implements Window, Component.Disposable,
     }
 
     @Override
+    @Nullable
     public Action getAction(String id) {
         return actionsHolder.getAction(id);
+    }
+
+    @Nonnull
+    @Override
+    public Action getActionNN(String id) {
+        Action action = getAction(id);
+        if (action == null) {
+            throw new IllegalStateException("Unable to find action with id " + id);
+        }
+        return action;
     }
 
     @Override

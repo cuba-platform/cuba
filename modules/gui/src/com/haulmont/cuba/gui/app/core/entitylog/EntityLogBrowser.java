@@ -156,7 +156,7 @@ public class EntityLogBrowser extends AbstractWindow {
 
         Action clearAction = instancePicker.getAction("clear");
         instancePicker.removeAction(clearAction);
-        instancePicker.removeAction(instancePicker.getAction("lookup"));
+        instancePicker.removeAction("lookup");
 
         addAction(new SaveAction());
         addAction(new CancelAction());

@@ -25,6 +25,7 @@ import java.beans.PropertyChangeListener;
 import java.util.List;
 import java.util.ArrayList;
 
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static java.awt.Component.*;
 
 /**

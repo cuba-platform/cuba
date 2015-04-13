@@ -24,6 +24,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
+import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.convertAlignment;
 
 /**
@@ -308,6 +309,8 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
 
     @Override
     public void addAction(final com.haulmont.cuba.gui.components.Action action) {
+        checkNotNullArgument(action, "action must be non null");
+
         if (action.getShortcut() != null) {
             actions.put(WebComponentsHelper.createShortcutAction(action), action);
         }
@@ -315,13 +318,14 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
     }
 
     @Override
-    public void removeAction(com.haulmont.cuba.gui.components.Action action) {
-        actionsOrder.remove(action);
-        actions.inverse().remove(action);
+    public void removeAction(@Nullable com.haulmont.cuba.gui.components.Action action) {
+        if (actionsOrder.remove(action)) {
+            actions.inverse().remove(action);
+        }
     }
 
     @Override
-    public void removeAction(String id) {
+    public void removeAction(@Nullable String id) {
         Action action = getAction(id);
         if (action != null) {
             removeAction(action);
@@ -340,6 +344,7 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
     }
 
     @Override
+    @Nullable
     public com.haulmont.cuba.gui.components.Action getAction(String id) {
         for (com.haulmont.cuba.gui.components.Action action : getActions()) {
             if (ObjectUtils.equals(action.getId(), id)) {
@@ -347,6 +352,16 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
             }
         }
         return null;
+    }
+
+    @Nonnull
+    @Override
+    public Action getActionNN(String id) {
+        Action action = getAction(id);
+        if (action == null) {
+            throw new IllegalStateException("Unable to find action with id " + id);
+        }
+        return action;
     }
 
     @Override

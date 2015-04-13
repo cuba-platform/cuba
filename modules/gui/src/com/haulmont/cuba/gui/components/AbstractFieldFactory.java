@@ -239,9 +239,7 @@ public abstract class AbstractFieldFactory implements FieldFactory {
 
                 pickerField = lookupPickerField;
 
-                if (pickerField.getAction(PickerField.LookupAction.NAME) != null) {
-                    pickerField.removeAction(pickerField.getAction(PickerField.LookupAction.NAME));
-                }
+                pickerField.removeAction(PickerField.LookupAction.NAME);
             }
 
             if (xmlDescriptor != null) {

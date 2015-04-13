@@ -15,6 +15,7 @@ import com.vaadin.ui.VerticalLayout;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
@@ -148,33 +149,29 @@ public abstract class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.
     protected abstract ContextMenuButton createContextMenuButton();
 
     @Override
-    public void removeAction(Action action) {
-        if (action == null) {
-            return;
-        }
-
-        actionList.remove(action);
-
-        ContextMenuButton actionButton = null;
-        for (ContextMenuButton button : contextMenuButtons) {
-            if (button.getAction() == action) {
-                actionButton = button;
-                break;
+    public void removeAction(@Nullable Action action) {
+        if (actionList.remove(action)) {
+            ContextMenuButton actionButton = null;
+            for (ContextMenuButton button : contextMenuButtons) {
+                if (button.getAction() == action) {
+                    actionButton = button;
+                    break;
+                }
             }
+
+            if (actionButton != null) {
+                actionButton.setAction(null);
+                contextMenuButtons.remove(actionButton);
+
+                contextMenuPopup.removeComponent(WebComponentsHelper.unwrap(actionButton));
+            }
+
+            shortcutsDelegate.removeAction(action);
         }
-
-        if (actionButton != null) {
-            actionButton.setAction(null);
-            contextMenuButtons.remove(actionButton);
-
-            contextMenuPopup.removeComponent(WebComponentsHelper.unwrap(actionButton));
-        }
-
-        shortcutsDelegate.removeAction(action);
     }
 
     @Override
-    public void removeAction(String id) {
+    public void removeAction(@Nullable String id) {
         Action action = getAction(id);
         if (action != null) {
             removeAction(action);
@@ -202,6 +199,16 @@ public abstract class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.
             }
         }
         return null;
+    }
+
+    @Nonnull
+    @Override
+    public Action getActionNN(String id) {
+        Action action = getAction(id);
+        if (action == null) {
+            throw new IllegalStateException("Unable to find action with id " + id);
+        }
+        return action;
     }
 
     @Override
