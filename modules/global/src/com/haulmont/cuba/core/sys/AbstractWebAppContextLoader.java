@@ -89,6 +89,7 @@ public abstract class AbstractWebAppContextLoader extends AbstractAppContextLoad
 
         DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
         StrTokenizer tokenizer = new StrTokenizer(propsConfigName);
+        tokenizer.setQuoteChar('"');
         for (String str : tokenizer.getTokenArray()) {
             log.trace("Processing properties location: " + str);
             InputStream stream = null;
