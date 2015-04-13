@@ -53,12 +53,12 @@
 
   .#{$primary-stylename}-caption-start-deco {
     display: inline-block;
-    height: $v-unit-size;
+    height: round(2*$v-unit-size/3 + $v-unit-size/10);
     padding-top: round($v-unit-size/3);
 
     div {
-      width: round(2*$v-unit-size/3);
-      height: round(2*$v-unit-size/3);
+      width: round($v-unit-size/3);
+      height: round($v-unit-size/3 + $v-unit-size/10);
       border-left: valo-border();
       border-top: valo-border();
       border-top-left-radius: $v-border-radius;
@@ -77,7 +77,7 @@
 
   .#{$primary-stylename}-caption {
     display: inline-block;
-    height: round(2*$v-unit-size/3);
+    height: round(2*$v-unit-size/3 + $v-unit-size/10);
     vertical-align: top;
     padding: 0 round($v-unit-size/6);
     font-weight: normal;
@@ -90,27 +90,16 @@
 
   .#{$primary-stylename}-caption-end-deco {
     display: inline-block;
-    height: $v-unit-size;
+    height: round(2*$v-unit-size/3 + $v-unit-size/10);
     border: 0;
     padding-top: round($v-unit-size/3);
 
     div {
       width: 100%;
-      height: round(2*$v-unit-size/3);
+      height: round($v-unit-size/3 + $v-unit-size/10);
       border-right: valo-border();
       border-top: valo-border();
       border-top-right-radius: $v-border-radius;
-    }
-  }
-
-  .#{$primary-stylename}.collapsed > .#{$primary-stylename}-captionwrap {
-    .#{$primary-stylename}-caption-end-deco,
-    .#{$primary-stylename}-caption-start-deco {
-      height: round(2*$v-unit-size/3);
-
-      div {
-        height: round($v-unit-size/3);
-      }
     }
   }
 
@@ -120,7 +109,7 @@
 
   .#{$primary-stylename}-expander {
     width: round($v-unit-size/3);
-    height: round($v-unit-size/3);
+    height: 100%;
     cursor: pointer;
     display: inline-block;
     margin-right: round($v-unit-size/6);
