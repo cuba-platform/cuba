@@ -1543,10 +1543,22 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         if (cellEditor instanceof DesktopTableCellEditor) {
             ((DesktopTableCellEditor) cellEditor).clearCache();
         }
+
+        List<TableColumn> implColumns = impl.getColumns();
         for (Column column : getColumns()) {
-            TableCellEditor columnCellEditor = impl.getColumn(column).getCellEditor();
-            if (columnCellEditor instanceof DesktopTableCellEditor) {
-                ((DesktopTableCellEditor) columnCellEditor).clearCache();
+            TableColumn tableColumn = null;
+            for (TableColumn implColumn : implColumns) {
+                if (column.getId().equals(implColumn.getIdentifier())) {
+                    tableColumn = implColumn;
+                    break;
+                }
+            }
+            // column may be hidden
+            if (tableColumn != null) {
+                TableCellEditor columnCellEditor = tableColumn.getCellEditor();
+                if (columnCellEditor instanceof DesktopTableCellEditor) {
+                    ((DesktopTableCellEditor) columnCellEditor).clearCache();
+                }
             }
         }
         packRows();
