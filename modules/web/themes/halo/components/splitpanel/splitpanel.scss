@@ -13,7 +13,7 @@ $cuba-splitpanel-dock-button-width: round($v-unit-size / 3) !default;
     width: $cuba-splitpanel-splitter-width;
   }
 
-  .#{$primary-stylename}-horizontal > div > .#{$primary-stylename}-vsplitter {
+  .#{$primary-stylename}-vertical > div > .#{$primary-stylename}-vsplitter {
     height: $cuba-splitpanel-splitter-width;
   }
 
