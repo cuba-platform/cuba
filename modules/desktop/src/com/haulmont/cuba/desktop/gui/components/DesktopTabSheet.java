@@ -9,6 +9,7 @@ import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.DetachedFrame;
 import com.haulmont.cuba.desktop.gui.data.DesktopContainerHelper;
 import com.haulmont.cuba.desktop.sys.ButtonTabComponent;
+import com.haulmont.cuba.desktop.sys.vcl.JTabbedPaneExt;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentVisitor;
 import com.haulmont.cuba.gui.ComponentsHelper;
@@ -55,7 +56,7 @@ public class DesktopTabSheet extends DesktopAbstractComponent<JTabbedPane> imple
     protected Set<TabChangeListener> listeners = new HashSet<>();
 
     public DesktopTabSheet() {
-        impl = new JTabbedPane();
+        impl = new JTabbedPaneExt();
 
         setWidth("100%");
     }

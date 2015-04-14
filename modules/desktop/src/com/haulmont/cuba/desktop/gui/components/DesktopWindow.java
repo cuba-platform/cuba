@@ -23,6 +23,7 @@ import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
 import com.haulmont.cuba.desktop.sys.layout.MigLayoutHelper;
 import com.haulmont.cuba.desktop.sys.vcl.CollapsiblePanel;
 import com.haulmont.cuba.desktop.sys.vcl.FocusableComponent;
+import com.haulmont.cuba.desktop.sys.vcl.JTabbedPaneExt;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Action;
@@ -1108,7 +1109,11 @@ public class DesktopWindow implements Window, Component.Disposable,
                 java.awt.Component prevC = null;
                 while (c != null) {
                     if (c instanceof JTabbedPane && !((JTabbedPane) c).getSelectedComponent().equals(prevC)) {
-                        ((JTabbedPane) c).setSelectedComponent(prevC);
+                        final JTabbedPane tabbedPane = (JTabbedPane) c;
+
+                        // do not focus tabbed pane on programmaticaly selection change
+                        JTabbedPaneExt.setFocusOnSelectionChange(false);
+                        tabbedPane.setSelectedComponent(prevC);
                         break;
                     }
                     if (c instanceof CollapsiblePanel && !((CollapsiblePanel) c).isExpanded()) {
@@ -1117,6 +1122,15 @@ public class DesktopWindow implements Window, Component.Disposable,
                     }
                     prevC = c;
                     c = c.getParent();
+                }
+
+                if (!JTabbedPaneExt.isFocusOnSelectionChange()) {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            JTabbedPaneExt.setFocusOnSelectionChange(true);
+                        }
+                    });
                 }
 
                 if (jComponent instanceof FocusableComponent) {

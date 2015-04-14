@@ -14,6 +14,7 @@ import com.haulmont.cuba.desktop.gui.SessionMessagesNotifier;
 import com.haulmont.cuba.desktop.sys.*;
 import com.haulmont.cuba.desktop.sys.validation.ValidationAwareActionListener;
 import com.haulmont.cuba.desktop.sys.validation.ValidationAwareWindowClosingListener;
+import com.haulmont.cuba.desktop.sys.vcl.JTabbedPaneExt;
 import com.haulmont.cuba.desktop.theme.DesktopTheme;
 import com.haulmont.cuba.desktop.theme.DesktopThemeLoader;
 import com.haulmont.cuba.gui.AppConfig;
@@ -547,7 +548,7 @@ public class App implements ConnectionListener {
     }
 
     protected JComponent createTabsPane() {
-        tabsPane = new JTabbedPane();
+        tabsPane = new JTabbedPaneExt();
         if (isTestMode()) {
             tabsPane.setName("tabsPane");
         }
