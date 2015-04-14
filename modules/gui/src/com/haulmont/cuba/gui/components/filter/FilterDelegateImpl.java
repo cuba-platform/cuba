@@ -1101,9 +1101,6 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         Security security = AppBeans.get(Security.NAME);
         maxResultsLayout.setVisible(useMaxResults && security.isSpecificPermitted("cuba.gui.filter.maxResults"));
-
-        if (datasource != null)
-            initMaxResults();
     }
 
     @Override
