@@ -33,7 +33,8 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
     protected List<Button> buttons = new ArrayList<>();
     protected CubaHorizontalActionsLayout container;
 
-    protected boolean fieldReadOnly = false;
+    protected boolean useCustomField = false;
+    protected boolean fieldReadOnly = true;
 
     protected boolean suppressTextChangeListener = false;
 
@@ -45,6 +46,7 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
 
     public CubaPickerField(com.vaadin.ui.AbstractField field) {
         this.field = field;
+        this.useCustomField = true;
         initLayout();
         setValidationVisible(false);
     }
@@ -85,6 +87,27 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
                 }
             }
         });
+    }
+
+    public boolean isFieldReadOnly() {
+        return fieldReadOnly;
+    }
+
+    public void setFieldReadOnly(boolean fieldReadOnly) {
+        this.fieldReadOnly = fieldReadOnly;
+
+        if (!useCustomField) {
+            getField().setReadOnly(isReadOnly() || fieldReadOnly);
+        }
+    }
+
+    @Override
+    public void setReadOnly(boolean readOnly) {
+        super.setReadOnly(readOnly);
+
+        if (!useCustomField) {
+            getField().setReadOnly(readOnly || fieldReadOnly);
+        }
     }
 
     @Override
@@ -173,23 +196,6 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
                 }
             }
         });
-    }
-
-    public boolean isFieldReadOnly() {
-        return fieldReadOnly;
-    }
-
-    public void setFieldReadOnly(boolean fieldReadOnly) {
-        this.fieldReadOnly = fieldReadOnly;
-
-        getField().setReadOnly(isReadOnly() || fieldReadOnly);
-    }
-
-    @Override
-    public void setReadOnly(boolean readOnly) {
-        super.setReadOnly(readOnly);
-
-        getField().setReadOnly(readOnly || fieldReadOnly);
     }
 
     @Override

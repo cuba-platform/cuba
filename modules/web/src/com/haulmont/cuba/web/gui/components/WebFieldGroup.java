@@ -264,8 +264,8 @@ public class WebFieldGroup
                     if (fieldConfig.getRequiredError() != null) {
                         cubaField.setRequiredMessage(fieldConfig.getRequiredError());
                     }
-                    if (!fieldConfig.isEditable()) {
-                        cubaField.setEditable(fieldConfig.isEditable());
+                    if (!fieldConfig.isEditable() || !isEditable()) {
+                        cubaField.setEditable(false);
                     }
                 } else if (!(fieldComponent instanceof HasCaption)) {
                     // if component does not support caption
@@ -444,7 +444,7 @@ public class WebFieldGroup
             if (fieldConf.getRequiredError() != null) {
                 cubaField.setRequiredMessage(fieldConf.getRequiredError());
             }
-            if (!fieldConf.isEditable()) {
+            if (!fieldConf.isEditable() || !isEditable()) {
                 cubaField.setEditable(false);
             }
         }
@@ -543,11 +543,27 @@ public class WebFieldGroup
     @Override
     public void setEditable(boolean editable) {
         component.setReadOnly(!editable);
+
+        for (Map.Entry<FieldConfig, Component> componentEntry : fieldComponents.entrySet()) {
+            Component fieldComponent = getFieldComponent(componentEntry.getKey());
+            if (fieldComponent instanceof Field) {
+                ((Field) fieldComponent).setEditable(editable);
+            } else {
+                com.vaadin.ui.Field fieldImpl = component.getField(componentEntry.getKey().getId());
+                fieldImpl.setReadOnly(!editable);
+            }
+        }
+
         // if we have editable field group with some read-only fields then we keep them read-only
         if (editable) {
             for (FieldConfig field : readOnlyFields) {
-                com.vaadin.ui.Field f = component.getField(field.getId());
-                f.setReadOnly(true);
+                Component fieldComponent = getFieldComponent(field.getId());
+                if (fieldComponent instanceof Field) {
+                    ((Field) fieldComponent).setEditable(true);
+                } else {
+                    com.vaadin.ui.Field fieldImpl = component.getField(field.getId());
+                    fieldImpl.setReadOnly(false);
+                }
             }
         }
     }

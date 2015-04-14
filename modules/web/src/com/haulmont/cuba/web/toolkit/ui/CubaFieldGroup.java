@@ -41,15 +41,6 @@ public class CubaFieldGroup extends CubaGroupBox {
     }
 
     @Override
-    public void setReadOnly(boolean readOnly) {
-        super.setReadOnly(readOnly);
-
-        for (Field field : fields.values()) {
-            field.setReadOnly(readOnly);
-        }
-    }
-
-    @Override
     protected CubaFieldGroupState getState() {
         return (CubaFieldGroupState) super.getState();
     }
