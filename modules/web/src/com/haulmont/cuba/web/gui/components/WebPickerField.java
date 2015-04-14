@@ -323,9 +323,7 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
 
     @Override
     public void setFieldEditable(boolean editable) {
-        if (isEditable()) {
-            component.getField().setReadOnly(!editable);
-        }
+        component.setFieldReadOnly(!editable);
     }
 
     @Override
@@ -396,9 +394,6 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
         @Override
         public void setReadOnly(boolean readOnly) {
             super.setReadOnly(readOnly);
-            if (readOnly) {
-                field.setReadOnly(true);
-            }
 
             for (Action action : owner.getActions()) {
                 if (action instanceof StandardAction) {
