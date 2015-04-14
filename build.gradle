@@ -53,8 +53,8 @@ def webModuleThemes = project(':cuba-web-themes')
 
 apply from: "$rootProject.projectDir/lib.gradle"
 
-def springVersion = '3.2.8.RELEASE'
-def springSecurityVersion = '3.2.3.RELEASE'
+def springVersion = '3.2.13.RELEASE'
+def springSecurityVersion = '3.2.7.RELEASE'
 
 def servletApi = [group: 'org.apache.tomcat', name: 'tomcat-servlet-api', version: '7.0.53']
 def groovyArtifact = [group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.1.6']
@@ -356,7 +356,7 @@ configure(webModule) {
             exclude(group: 'com.vaadin', module: 'vaadin-sass-compiler')
         }
         provided(vaadinThemes)
-        // compile(group: 'com.vaadin', name: 'vaadin-themes', version: vaadinVersion)
+        // provided(group: 'com.vaadin', name: 'vaadin-themes', version: vaadinVersion)
         /* Vaadin addons */
         compile(group: 'com.haulmont.thirdparty', name: 'appletintegration', version: '1.2.10')
         compile(group: 'com.haulmont.thirdparty', name: 'popupbutton', version: '2.5.2.cuba.3')
@@ -465,7 +465,7 @@ configure(webToolkitModule) {
         compile(vaadinCompiler)
 
 //        Uncomment for SuperDevMode debug
-//        compile(servletApi)
+//        runtime(servletApi)
     }
 
     task buildWidgetSet(type: CubaWidgetSetBuilding) {
