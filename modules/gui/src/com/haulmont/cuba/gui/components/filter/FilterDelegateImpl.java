@@ -281,8 +281,6 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         ControlsLayoutBuilder controlsLayoutBuilder = new ControlsLayoutBuilder(layoutDescription);
         controlsLayoutBuilder.build();
-
-//        initAppliedFiltersLayout();
     }
 
     protected void createControlsLayoutForFts() {
