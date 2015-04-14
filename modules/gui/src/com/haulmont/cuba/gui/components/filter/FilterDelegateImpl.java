@@ -5,7 +5,9 @@
 
 package com.haulmont.cuba.gui.components.filter;
 
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.datatypes.Datatypes;
@@ -44,7 +46,10 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.security.entity.SearchFolder;
 import com.haulmont.cuba.security.entity.User;
-import org.apache.commons.lang.*;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Attribute;
@@ -56,6 +61,8 @@ import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author gorbunkov
@@ -128,21 +135,36 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected PopupButton settingsBtn;
     protected Component applyTo;
     protected SaveAction saveAction;
-//    protected HideConditionsAction hideConditionsAction;
     protected TextField ftsSearchCriteriaField;
     protected CheckBox ftsSwitch;
+    protected LinkButton addConditionBtn;
+    protected HBoxLayout filtersPopupBox;
+    protected Button searchBtn;
+    protected Component controlsLayoutGap;
 
     protected String caption;
     protected boolean useMaxResults;
     protected Boolean manualApplyRequired;
     protected boolean folderActionsEnabled = true;
     protected boolean conditionsRemoveEnabled = false;
+    protected boolean filtersLookupListenerEnabled = true;
+    protected boolean filtersPopupDisplayed = false;
+    protected boolean filtersLookupDisplayed = false;
     protected boolean editable;
     protected FilterMode filterMode;
     protected boolean editActionEnabled;
     protected Integer columnsCount;
     protected String initialWindowCaption;
     protected String conditionsLocation;
+
+    protected SaveAsAction saveAsAction;
+    protected EditAction editAction;
+    protected MakeDefaultAction makeDefaultAction;
+    protected RemoveAction removeAction;
+    protected PinAppliedAction pinAppliedAction;
+    protected SaveAsFolderAction saveAsAppFolderAction;
+    protected SaveAsFolderAction saveAsSearchFolderAction;
+    protected LookupField filtersLookup;
 
     @PostConstruct
     public void init() {
@@ -208,12 +230,11 @@ public class FilterDelegateImpl implements FilterDelegate {
         controlsLayout.setSpacing(true);
         controlsLayout.setWidth("100%");
 
-        HBoxLayout searchHBox = componentsFactory.createComponent(HBoxLayout.class);
-        controlsLayout.add(searchHBox);
-        searchHBox.setStyleName("filter-search-button-layout");
+        filtersPopupBox = componentsFactory.createComponent(HBoxLayout.class);
+        filtersPopupBox.setStyleName("filter-search-button-layout");
 
-        Button searchBtn = componentsFactory.createComponent(Button.NAME);
-        searchHBox.add(searchBtn);
+        searchBtn = componentsFactory.createComponent(Button.NAME);
+        filtersPopupBox.add(searchBtn);
         searchBtn.setStyleName("filter-search-button");
         searchBtn.setCaption(getMessage("Filter.search"));
         searchBtn.setIcon("icons/search.png");
@@ -225,10 +246,14 @@ public class FilterDelegateImpl implements FilterDelegate {
         });
 
         filtersPopupButton = componentsFactory.createComponent(PopupButton.class);
-        searchHBox.add(filtersPopupButton);
+        filtersPopupBox.add(filtersPopupButton);
 
-        LinkButton addConditionBtn = componentsFactory.createComponent(LinkButton.NAME);
-        controlsLayout.add(addConditionBtn);
+        filtersLookup = componentsFactory.createComponent(LookupField.NAME);
+        filtersLookup.setWidth(theme.get("cuba.gui.filter.select.width"));
+        filtersLookup.addListener(new FiltersLookupChangeListener());
+        filterHelper.setLookupNullSelectionAllowed(filtersLookup, false);
+
+        addConditionBtn = componentsFactory.createComponent(LinkButton.NAME);
         addConditionBtn.setAlignment(Component.Alignment.MIDDLE_LEFT);
         addConditionBtn.setCaption(getMessage("Filter.addCondition"));
         addConditionBtn.setAction(new AbstractAction("openAddConditionDlg") {
@@ -238,19 +263,25 @@ public class FilterDelegateImpl implements FilterDelegate {
             }
         });
 
-        Component gap = componentsFactory.createComponent(Label.class);
-        controlsLayout.add(gap);
-        controlsLayout.expand(gap);
+        controlsLayoutGap = componentsFactory.createComponent(Label.class);
+        controlsLayout.add(controlsLayoutGap);
+        controlsLayout.expand(controlsLayoutGap);
 
         settingsBtn = componentsFactory.createComponent(PopupButton.NAME);
         settingsBtn.setIcon("icons/gear.png");
-        controlsLayout.add(settingsBtn);
+        createFilterActions();
+
         createMaxResultsLayout();
         controlsLayout.add(maxResultsLayout);
 
         createFtsSwitch();
         ftsSwitch.setAlignment(Component.Alignment.MIDDLE_RIGHT);
-        controlsLayout.add(ftsSwitch);
+
+        String layoutDescription = clientConfig.getGenericFilterControlsLayout();
+
+        ControlsLayoutBuilder controlsLayoutBuilder = new ControlsLayoutBuilder(layoutDescription);
+        controlsLayoutBuilder.build();
+
     }
 
     protected void createControlsLayoutForFts() {
@@ -304,8 +335,8 @@ public class FilterDelegateImpl implements FilterDelegate {
                 initMaxResults();
                 if (filterMode == FilterMode.GENERIC_MODE) {
                     fillConditionsLayout(true);
-                    fillActions();
-                    initFiltersPopupButton();
+                    setFilterActionsEnabled();
+                    initFilterSelectComponents();
                 }
                 updateWindowCaption();
             }
@@ -338,7 +369,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         initAdHocFilter();
         loadFilterEntities();
         FilterEntity defaultFilter = getDefaultFilter(filterEntities);
-        initFiltersPopupButton();
+        initFilterSelectComponents();
 
         if (defaultFilter == null) {
             defaultFilter = adHocFilter;
@@ -396,8 +427,14 @@ public class FilterDelegateImpl implements FilterDelegate {
 
         saveInitialFilterState();
 
+        if (filtersLookupDisplayed) {
+            filtersLookupListenerEnabled = false;
+            filtersLookup.setValue(filterEntity);
+            filtersLookupListenerEnabled = true;
+        }
+
         conditionsRemoveEnabled = filterEntity == adHocFilter;
-        fillActions();
+        setFilterActionsEnabled();
         fillConditionsLayout(true);
         setConditionsLayoutVisible(true);
 
@@ -432,23 +469,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         controlsLayout.setStyleName(getControlsLayoutStyleName());
     }
 
-    /**
-     * Removes all actions from 'Settings' PopupButton and creates all actions anew
-     */
-    protected void fillActions() {
-        settingsBtn.removeAllActions();
-        if (filterEntity == null)
-            return;
-
-        saveAction = new SaveAction();
-        SaveAsAction saveAsAction = new SaveAsAction();
-        EditAction editAction = new EditAction();
-        MakeDefaultAction makeDefaultAction = new MakeDefaultAction();
-        RemoveAction removeAction = new RemoveAction();
-        PinAppliedAction pinAppliedAction = new PinAppliedAction();
-        SaveAsFolderAction saveAsAppFolderAction = new SaveAsFolderAction(true);
-        SaveAsFolderAction saveAsSearchFolderAction = new SaveAsFolderAction(false);
-
+    protected void setFilterActionsEnabled() {
         boolean isGlobal = filterEntity.getUser() == null;
         boolean userCanEditGlobalFilter = getUserCanEditGlobalFilter();
         boolean userCanEditGlobalAppFolder = userSessionSource.getUserSession().isSpecificPermitted(GLOBAL_APP_FOLDERS_PERMISSION);
@@ -485,21 +506,20 @@ public class FilterDelegateImpl implements FilterDelegate {
         saveAsSearchFolderAction.setEnabled(saveAsSearchFolderActionEnabled);
         saveAsAppFolderAction.setEnabled(saveAsAppFolderActionEnabled);
 
-        settingsBtn.addAction(saveAction);
-        settingsBtn.addAction(saveAsAction);
-        settingsBtn.addAction(editAction);
-        settingsBtn.addAction(makeDefaultAction);
-        settingsBtn.addAction(removeAction);
-        if (globalConfig.getAllowQueryFromSelected()) {
-            settingsBtn.addAction(pinAppliedAction);
-        }
-        if (folderActionsEnabled && filterHelper.isFolderActionsEnabled()) {
-            settingsBtn.addAction(saveAsSearchFolderAction);
-            settingsBtn.addAction(saveAsAppFolderAction);
-        }
         if (filterHelper.isTableActionsEnabled()) {
             fillTableActions();
         }
+    }
+
+    protected void createFilterActions() {
+        saveAction = new SaveAction();
+        saveAsAction = new SaveAsAction();
+        editAction = new EditAction();
+        makeDefaultAction = new MakeDefaultAction();
+        removeAction = new RemoveAction();
+        pinAppliedAction = new PinAppliedAction();
+        saveAsAppFolderAction = new SaveAsFolderAction(true);
+        saveAsSearchFolderAction = new SaveAsFolderAction(false);
     }
 
     protected boolean getUserCanEditGlobalFilter() {
@@ -624,7 +644,6 @@ public class FilterDelegateImpl implements FilterDelegate {
         }
 
         if (!conditionsLayout.getComponents().isEmpty()) layout.setSpacing(true);
-//        hideConditionsAction.setEnabled(isHideConditionsActionEnabled());
     }
 
     protected void recursivelyCreateConditionsLayout(boolean focusOnConditions,
@@ -936,6 +955,37 @@ public class FilterDelegateImpl implements FilterDelegate {
         }
     }
 
+    protected void initFiltersLookup() {
+        Map<Object, String> captionsMap = new LinkedHashMap<>();
+        for (FilterEntity entity : filterEntities) {
+            String caption = getFilterCaption(entity);
+            if (entity.getIsDefault()) {
+                caption += " " + getMessage("Filter.default");
+            }
+            captionsMap.put(entity, caption);
+        }
+        captionsMap.put(adHocFilter, getFilterCaption(adHocFilter));
+        filtersLookupListenerEnabled = false;
+        //set null to remove previous value from lookup options list
+        filtersLookup.setValue(null);
+        List<Object> optionsList = new ArrayList<>();
+        optionsList.add(adHocFilter);
+        optionsList.addAll(filterEntities);
+        filtersLookup.setOptionsList(optionsList);
+        filterHelper.setLookupCaptions(filtersLookup, captionsMap);
+        filtersLookup.setValue(filterEntity);
+        filtersLookupListenerEnabled = true;
+    }
+
+    protected void initFilterSelectComponents() {
+        if (filtersPopupDisplayed) {
+            initFiltersPopupButton();
+        }
+        if (filtersLookupDisplayed) {
+            initFiltersLookup();
+        }
+    }
+
     protected void initAdHocFilter() {
         adHocFilter = metadata.create(FilterEntity.class);
         String emptyXml = FilterParser.getXml(new ConditionsTree(), Param.ValueProperty.VALUE);
@@ -1144,7 +1194,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             lastAppliedFilter = null;
         }
 
-        fillActions();
+        setFilterActionsEnabled();
 
         if ((applyTo != null) && (Table.class.isAssignableFrom(applyTo.getClass()))) {
             filterHelper.removeTableFtsTooltips((Table) applyTo);
@@ -1582,6 +1632,16 @@ public class FilterDelegateImpl implements FilterDelegate {
         groupBoxLayout.setCaption(Strings.isNullOrEmpty(filterTitle) ? caption : caption + ": " + filterTitle);
     }
 
+    protected class FiltersLookupChangeListener implements ValueListener {
+
+        @Override
+        public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
+            if (!filtersLookupListenerEnabled) return;
+            if (value instanceof FilterEntity) {
+                setFilterEntity((FilterEntity) value);
+            }
+        }
+    }
 
     protected class SaveAction extends AbstractAction {
 
@@ -1607,7 +1667,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                             filterEntity.setXml(FilterParser.getXml(conditions, Param.ValueProperty.DEFAULT_VALUE));
                             saveFilterEntity();
                             initAdHocFilter();
-                            initFiltersPopupButton();
+                            initFilterSelectComponents();
                             updateWindowCaption();
 
                             //recreate layout to remove delete conditions buttons
@@ -1625,6 +1685,11 @@ public class FilterDelegateImpl implements FilterDelegate {
         @Override
         public String getCaption() {
             return getMessage("Filter.save");
+        }
+
+        @Override
+        public String getIcon() {
+            return "icons/save.png";
         }
     }
 
@@ -1656,7 +1721,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                         filterEntity.setName(filterName);
                         filterEntity.setXml(FilterParser.getXml(conditions, Param.ValueProperty.DEFAULT_VALUE));
                         saveFilterEntity();
-                        initFiltersPopupButton();
+                        initFilterSelectComponents();
                         updateWindowCaption();
                         if (isNew) {
                             //recreate layout to remove delete conditions buttons
@@ -1692,7 +1757,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                 public void windowClosed(String actionId) {
                     if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                         conditions = window.getConditions();
-                        initFiltersPopupButton();
+                        initFilterSelectComponents();
                         updateWindowCaption();
                         fillConditionsLayout(true);
                         updateFilterModifiedIndicator();
@@ -1704,6 +1769,11 @@ public class FilterDelegateImpl implements FilterDelegate {
         @Override
         public String getCaption() {
             return getMessage("Filter.edit");
+        }
+
+        @Override
+        public String getIcon() {
+            return "icons/edit.png";
         }
     }
 
@@ -1729,7 +1799,8 @@ public class FilterDelegateImpl implements FilterDelegate {
                     }
                 }
             }
-            fillActions();
+            initFilterSelectComponents();
+            setFilterActionsEnabled();
         }
 
     }
@@ -1761,13 +1832,18 @@ public class FilterDelegateImpl implements FilterDelegate {
         public String getCaption() {
             return getMessage("Filter.remove");
         }
+
+        @Override
+        public String getIcon() {
+            return "icons/remove.png";
+        }
     }
 
     protected void removeFilterEntity() {
         CommitContext ctx = new CommitContext(Collections.emptyList(), Collections.singletonList(filterEntity));
         dataService.commit(ctx);
         filterEntities.remove(filterEntity);
-        initFiltersPopupButton();
+        initFilterSelectComponents();
         setFilterEntity(adHocFilter);
         updateWindowCaption();
     }
@@ -1792,17 +1868,9 @@ public class FilterDelegateImpl implements FilterDelegate {
             return getMessage("Filter.pinApplied");
         }
 
-    }
-
-    public class HideConditionsAction extends AbstractAction {
-        protected HideConditionsAction() {
-            super("Filter.hideConditions");
-        }
-
         @Override
-        public void actionPerform(Component component) {
-            setConditionsLayoutVisible(!conditionsLayout.isVisible());
-            setCaption(conditionsLayout.isVisible() ? getMessage("Filter.hideConditions") : getMessage("Filter.showConditions"));
+        public String getIcon() {
+            return "icons/pin.png";
         }
     }
 
@@ -1955,5 +2023,128 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected enum FilterMode {
         GENERIC_MODE,
         FTS_MODE
+    }
+
+    /**
+     * Class creates filter controls layout based on template.
+     * See template format in documentation for {@link ClientConfig#getGenericFilterControlsLayout()}
+     */
+    protected class ControlsLayoutBuilder {
+        protected Map<String, List<String>> components = new LinkedHashMap<>();
+
+        protected Map<String, AbstractAction> filterActions = new HashMap<>();
+
+        public ControlsLayoutBuilder(String layoutDescription) {
+            filterActions.put("save", saveAction);
+            filterActions.put("save_as", saveAsAction);
+            filterActions.put("edit", editAction);
+            filterActions.put("remove", removeAction);
+            filterActions.put("pin", pinAppliedAction);
+            filterActions.put("save_search_folder", saveAsSearchFolderAction);
+            filterActions.put("save_app_folder", saveAsSearchFolderAction);
+            filterActions.put("make_default", makeDefaultAction);
+
+            parseLayoutDescription(layoutDescription);
+        }
+
+        protected void parseLayoutDescription(String layoutDescription) {
+            Pattern panelComponentPattern = Pattern.compile("\\[(.*?)\\]");
+            Matcher matcher = panelComponentPattern.matcher(layoutDescription);
+            Splitter componentDescriptionSplitter = Splitter.on("|").trimResults();
+            Splitter optionsSplitter = Splitter.on(",").trimResults();
+            while (matcher.find()) {
+                String componentDescription = matcher.group(1);
+                Iterable<String> parts = componentDescriptionSplitter.split(componentDescription);
+                Iterator<String> iterator = parts.iterator();
+                String componentName = iterator.next();
+                String componentOptions = iterator.hasNext() ? iterator.next() : "";
+                Iterable<String> options = optionsSplitter.split(componentOptions);
+                components.put(componentName, Lists.newArrayList(options));
+            }
+        }
+
+        public void build() {
+            for (Map.Entry<String, List<String>> entry : components.entrySet()) {
+                Component component = getControlsLayoutComponent(entry.getKey(), entry.getValue());
+                if (component == null) continue;
+                controlsLayout.add(component);
+                if (component == controlsLayoutGap) {
+                    controlsLayout.expand(component);
+                }
+            }
+        }
+
+        @Nullable
+        protected Component getControlsLayoutComponent(String name, List<String> options) {
+            switch (name) {
+                case "filters_popup":
+                    filtersPopupDisplayed = true;
+                    return filtersPopupBox;
+                case "filters_lookup":
+                    filtersLookupDisplayed = true;
+                    return filtersLookup;
+                case "search":
+                    searchBtn.setParent(null);
+                    return searchBtn;
+                case "add_condition":
+                    return addConditionBtn;
+                case "settings":
+                    fillSettingsBtn(options);
+                    return settingsBtn;
+                case "max_results":
+                    return maxResultsLayout;
+                case "fts_switch":
+                    return ftsSwitch;
+                case "gap":
+                    return controlsLayoutGap;
+                case "pin":
+                case "save":
+                case "save_as":
+                case "edit":
+                case "remove":
+                case "make_default":
+                case "save_search_folder":
+                case "save_app_folder":
+                    return createActionBtn(name, options);
+            }
+            log.warn("Filter controls layout component " + name + " not supported");
+            return null;
+        }
+
+        protected Button createActionBtn(String actionName, List<String> options) {
+            if (!isActionAllowed(actionName)) return null;
+            Button button = componentsFactory.createComponent(Button.class);
+            button.setAction(filterActions.get(actionName));
+            if (options.contains("no-caption"))
+                button.setCaption(null);
+            if (options.contains("no-icon"))
+                button.setIcon(null);
+            return button;
+        }
+
+        protected void fillSettingsBtn(List<String> actionNames) {
+            for (String actionName : actionNames) {
+                AbstractAction action = filterActions.get(actionName);
+                if (action == null) {
+                    log.warn("Action " + actionName + " cannot be added to settingsBtn");
+                    continue;
+                }
+                if (isActionAllowed(actionName)) {
+                    settingsBtn.addAction(action);
+                }
+            }
+        }
+
+        protected boolean isActionAllowed(String actionName) {
+            switch (actionName) {
+                case "pin":
+                    return globalConfig.getAllowQueryFromSelected();
+                case "save_search_folder":
+                case "save_app_folder":
+                    return folderActionsEnabled && filterHelper.isFolderActionsEnabled();
+                default:
+                    return true;
+            }
+        }
     }
 }

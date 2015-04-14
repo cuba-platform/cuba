@@ -132,13 +132,53 @@ public interface ClientConfig extends Config {
     String getGenericFilterConditionsLocation();
 
     /**
-     * Returns a number of items to be displayed in pupup list near the 'Search' button. If number of filter
+     * Returns a number of items to be displayed in popup list near the 'Search' button. If number of filter
      * entities exceeds this value then 'Show more..' action is added to the popup list. The action
      * will show new dialog window with all possible filter entities for selecting a desired one.
      */
     @Property("cuba.gui.genericFilterPopupListSize")
     @DefaultInt(10)
     int getGenericFilterPopupListSize();
+
+    /**
+     * Returns a template for filter controls layout. Each component has the following format:
+     * [<i>component_name</i> | <i>options-comma-separated</i>], e.g. [pin | no-caption, no-icon].
+     * <p>Available component names:</p>
+     * <ul>
+     *     <li>{@code filters_popup} - popup button for selecting a filter entity combined with Search button.
+     *     When using this component there is no need to add a separate Search button</li>
+     *     <li>{@code filters_lookup} - lookup field for selecting a filter entity. Search button should be added as
+     *     a separate component</li>
+     *     <li>{@code search} - search button. Do not add if use {@code filters_popup}</li>
+     *     <li>{@code add_condition} - button for adding a new condition</li>
+     *     <li>{@code gap} - space between component groups </li>
+     *     <li>{@code settings} - settings button. Specify actions names that should be displayed in Settings popup
+     *     as component options </li>
+     *     <li>{@code max_results} - group of components for setting max number of records to be displayed</li>
+     *     <li>{@code fts_switch} - checkbox for switching to FTS mode</li>
+     * </ul>
+     * Next components can be used as options for {@code settings} component. They also can be used as independent components
+     * if for example you want to display a Pin button:
+     * <ul>
+     *     <li>{@code save}</li>
+     *     <li>{@code save_as}</li>
+     *     <li>{@code edit}</li>
+     *     <li>{@code remove}</li>
+     *     <li>{@code pin}</li>
+     *     <li>{@code make_default}</li>
+     *     <li>{@code save_search_folder}</li>
+     *     <li>{@code save_app_folder}</li>
+     * </ul>
+     * Action components can have next options:
+     * <ul>
+     *     <li>{@code no-icon} - if an icon shouldn't be displayed on action button. For example: [save | no-icon]</li>
+     *     <li>{@code no-caption} - if a caption shouldn't be displayed on action button. For example: [pin | no-caption]</li>
+     * </ul>
+     * @return a template for filter controls layout
+     */
+    @Property("cuba.gui.genericFilterControlsLayout")
+    @Default("[filters_popup] [add_condition] [gap] [settings | save, save_as, edit, remove, make_default, pin, save_search_folder, save_app_folder] [max_results] [fts_switch]")
+    String getGenericFilterControlsLayout();
 
     /**
      * Support e-mail. Exception reports and feedback emails are sent to this address.
