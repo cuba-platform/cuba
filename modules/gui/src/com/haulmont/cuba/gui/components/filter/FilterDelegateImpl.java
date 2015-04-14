@@ -282,6 +282,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         ControlsLayoutBuilder controlsLayoutBuilder = new ControlsLayoutBuilder(layoutDescription);
         controlsLayoutBuilder.build();
 
+//        initAppliedFiltersLayout();
     }
 
     protected void createControlsLayoutForFts() {
@@ -329,6 +330,9 @@ public class FilterDelegateImpl implements FilterDelegate {
                 filterMode = Boolean.TRUE.equals(value) ? FilterMode.FTS_MODE : FilterMode.GENERIC_MODE;
                 if (filterMode == FilterMode.FTS_MODE) {
                     prevConditions = conditions;
+                    ((CollectionDatasource.SupportsApplyToSelected) datasource).unpinAllQuery();
+                    appliedFilters.clear();
+                    lastAppliedFilter = null;
                 }
                 conditions = (filterMode == FilterMode.GENERIC_MODE) ? prevConditions : new ConditionsTree();
                 createLayout();
