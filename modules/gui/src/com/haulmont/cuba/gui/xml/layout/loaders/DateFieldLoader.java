@@ -42,31 +42,33 @@ public class DateFieldLoader extends AbstractFieldLoader {
 
         final String resolution = element.attributeValue("resolution");
         String dateFormat = element.attributeValue("dateFormat");
+        String mainDateFormat = null;
         if (StringUtils.isNotEmpty(resolution)) {
             DateField.Resolution res = DateField.Resolution.valueOf(resolution);
             component.setResolution(res);
             if (dateFormat == null) {
                 if (res == DateField.Resolution.DAY) {
-                    dateFormat = "msg://dateFormat";
+                    mainDateFormat = "dateFormat";
                 } else if (res == DateField.Resolution.MIN) {
-                    dateFormat = "msg://dateTimeFormat";
+                    mainDateFormat = "dateTimeFormat";
                 }
             }
         } else if (tt == TemporalType.DATE) {
             component.setResolution(DateField.Resolution.DAY);
         }
 
+        String formatStr;
         if (StringUtils.isNotEmpty(dateFormat)) {
-            dateFormat = loadResourceString(dateFormat);
-            component.setDateFormat(dateFormat);
-        } else {
-            String formatStr;
+            formatStr = loadResourceString(dateFormat);
+        } else if (StringUtils.isNotEmpty(mainDateFormat)) {
+            formatStr = messages.getMainMessage(mainDateFormat);
+        }else {
             if (tt == TemporalType.DATE) {
                 formatStr = messages.getMainMessage("dateFormat");
             } else {
                 formatStr = messages.getMainMessage("dateTimeFormat");
             }
-            component.setDateFormat(formatStr);
         }
+        component.setDateFormat(formatStr);
     }
 }
