@@ -151,14 +151,14 @@ public interface ClientConfig extends Config {
      *     a separate component</li>
      *     <li>{@code search} - search button. Do not add if use {@code filters_popup}</li>
      *     <li>{@code add_condition} - button for adding a new condition</li>
-     *     <li>{@code gap} - space between component groups </li>
+     *     <li>{@code spacer} - space between component groups </li>
      *     <li>{@code settings} - settings button. Specify actions names that should be displayed in Settings popup
      *     as component options </li>
      *     <li>{@code max_results} - group of components for setting max number of records to be displayed</li>
      *     <li>{@code fts_switch} - checkbox for switching to FTS mode</li>
      * </ul>
-     * Next components can be used as options for {@code settings} component. They also can be used as independent components
-     * if for example you want to display a Pin button:
+     * The following components can be used as options for {@code settings} component. They also can be used as
+     * independent components if for example you want to display a Pin button:
      * <ul>
      *     <li>{@code save}</li>
      *     <li>{@code save_as}</li>
@@ -169,7 +169,7 @@ public interface ClientConfig extends Config {
      *     <li>{@code save_search_folder}</li>
      *     <li>{@code save_app_folder}</li>
      * </ul>
-     * Action components can have next options:
+     * Action components can have the following options:
      * <ul>
      *     <li>{@code no-icon} - if an icon shouldn't be displayed on action button. For example: [save | no-icon]</li>
      *     <li>{@code no-caption} - if a caption shouldn't be displayed on action button. For example: [pin | no-caption]</li>
@@ -177,7 +177,7 @@ public interface ClientConfig extends Config {
      * @return a template for filter controls layout
      */
     @Property("cuba.gui.genericFilterControlsLayout")
-    @Default("[filters_popup] [add_condition] [gap] [settings | save, save_as, edit, remove, make_default, pin, save_search_folder, save_app_folder] [max_results] [fts_switch]")
+    @Default("[filters_popup] [add_condition] [spacer] [settings | save, save_as, edit, remove, make_default, pin, save_search_folder, save_app_folder] [max_results] [fts_switch]")
     String getGenericFilterControlsLayout();
 
     /**

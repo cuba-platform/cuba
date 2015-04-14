@@ -2095,7 +2095,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                     return maxResultsLayout;
                 case "fts_switch":
                     return ftsSwitch;
-                case "gap":
+                case "spacer":
                     return controlsLayoutGap;
                 case "pin":
                 case "save":
@@ -2115,8 +2115,10 @@ public class FilterDelegateImpl implements FilterDelegate {
             if (!isActionAllowed(actionName)) return null;
             Button button = componentsFactory.createComponent(Button.class);
             button.setAction(filterActions.get(actionName));
-            if (options.contains("no-caption"))
+            if (options.contains("no-caption")) {
                 button.setCaption(null);
+                button.setDescription(filterActions.get(actionName).getCaption());
+            }
             if (options.contains("no-icon"))
                 button.setIcon(null);
             return button;
