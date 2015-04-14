@@ -190,15 +190,16 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
         <item name="Perf4J" web="http://perf4j.codehaus.org/" license="apache-2.0"/>
 
-        <item name="Apache POI" web="http://poi.apache.org/" license="apache-2.0"/>
+        <item name="Apache POI" web="http://poi.apache.org/" license="apache-2.0" fork="true"/>
 
-        <item name="PopupButton Vaadin Addon" web="http://vaadin.com/addon/popupbutton" license="apache-2.0"/>
+        <item name="PopupButton Vaadin Addon" web="http://vaadin.com/addon/popupbutton" license="apache-2.0" fork="true"/>
 
         <item name="MaskedTextField Vaadin Addon" web="http://vaadin.com/addon/maskedtextfield" license="apache-2.0"/>
 
         <item name="AceEditor Vaadin Addon" web="http://vaadin.com/addon/aceeditor" license="apache-2.0"/>
 
-        <item name="AppletIntegration Vaadin Addon" web="https://vaadin.com/addon/appletintegration" license="apache-2.0"/>
+        <item name="AppletIntegration Vaadin Addon" web="https://vaadin.com/addon/appletintegration" license="apache-2.0"
+              fork="true"/>
 
         <item name="Serp" web="http://serp.sourceforge.net/">
             <license><![CDATA[
@@ -232,9 +233,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
         <item name="Spring Framework" web="http://www.springsource.org/" license="apache-2.0"/>
 
-        <item name="Vaadin" web="http://vaadin.com" license="apache-2.0"/>
+        <item name="Vaadin" web="http://vaadin.com" license="apache-2.0" fork="true"/>
 
-        <item name="XStream" web="http://xstream.codehaus.org/">
+        <item name="XStream" web="http://xstream.codehaus.org/" fork="true">
             <license><![CDATA[
 Copyright (c) 2003-2006, Joe Walnes
 Copyright (c) 2006-2009, XStream Committers
@@ -524,7 +525,7 @@ OF SUCH DAMAGE.
             </license>
         </item>
 
-        <item name="SwingLabs SwingX" web="https://swingx.java.net" license="lgpl-3">
+        <item name="SwingLabs SwingX" web="https://swingx.java.net" license="lgpl-3" fork="true">
             <jar>swingx-.*</jar>
         </item>
     </items>

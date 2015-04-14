@@ -119,16 +119,25 @@ public class CreditsFrame extends AbstractFrame {
         sb.append("<h1>Credits</h1>\n");
 
         StringBuilder acknowledgements = new StringBuilder();
+        StringBuilder forks = new StringBuilder();
         for (CreditsItem item : items) {
             if (item.getAcknowledgement() != null)
                 acknowledgements.append("<p>").append(item.getAcknowledgement());
+            if (item.isFork())
+                forks.append("<li>").append(item.getName());
         }
         if (acknowledgements.length() > 0) {
-            sb.append("<h2>Acknowledgements</h1>\n");
+            sb.append("<h2>Acknowledgements</h2>\n");
             sb.append(acknowledgements);
         }
+        if (forks.length() > 0) {
+            sb.append("<h2>Forks and modifications</h2>\n");
+            sb.append("<p>The following libraries have been modified by Haulmont:");
+            sb.append("<ul>").append(forks).append("</ul>");
+            sb.append("<p>All modifications are distributed under the same license as the corresponding library.");
+        }
 
-        sb.append("<h2>Third-party products</h1>\n");
+        sb.append("<h2>Third-party products</h2>\n");
         sb.append("<ol>\n");
         for (CreditsItem item : items) {
             sb.append("<li><b>").append(item.getName()).append("</b>\n");
@@ -145,7 +154,7 @@ public class CreditsFrame extends AbstractFrame {
         }
         sb.append("</ol>\n");
 
-        sb.append("<a name='licenses'></a><h2>Common Licenses</h1>\n");
+        sb.append("<a name='licenses'></a><h2>Common Licenses</h2>\n");
         sb.append("<ol>\n");
         for (Map.Entry<String, String> entry : licenses.entrySet()) {
             sb.append("<li><a name='").append(entry.getKey()).append("'></a><b>").append(entry.getKey()).append("</b>\n");

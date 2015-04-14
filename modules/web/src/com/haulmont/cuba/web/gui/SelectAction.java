@@ -5,6 +5,7 @@
 package com.haulmont.cuba.web.gui;
 
 import com.haulmont.chile.core.model.Instance;
+import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.gui.components.*;
 import com.vaadin.ui.Button;
 
@@ -59,6 +60,9 @@ public class SelectAction implements Button.ClickListener {
                 ((Instance) obj).removeAllListeners();
             }
         }
-        lookupHandler.handleLookup(selected);
+        if (lookupHandler != null)
+            lookupHandler.handleLookup(selected);
+        else
+            throw new DevelopmentException("A Lookup.Handler was not passed to lookup window " + window.getId());
     }
 }

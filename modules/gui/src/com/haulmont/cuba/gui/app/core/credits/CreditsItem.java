@@ -19,8 +19,11 @@ public class CreditsItem implements Comparable<CreditsItem> {
     private String licenseId;
     private String license;
     private String acknowledgement;
+    private boolean fork;
 
-    public CreditsItem(String name, String webPage, String licenseId, String license, String acknowledgement) {
+    public CreditsItem(String name, String webPage, String licenseId, String license, String acknowledgement,
+                       boolean fork) {
+        this.fork = fork;
         if (name == null || webPage == null || license == null)
             throw new NullPointerException("Argument is null");
         this.name = name;
@@ -50,6 +53,10 @@ public class CreditsItem implements Comparable<CreditsItem> {
     @Nullable
     public String getAcknowledgement() {
         return acknowledgement;
+    }
+
+    public boolean isFork() {
+        return fork;
     }
 
     @Override
