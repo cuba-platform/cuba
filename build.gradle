@@ -348,7 +348,6 @@ configure(webModule) {
 
         compile(commonsUpload)
         compile(group: 'org.springframework', name: 'spring-webmvc', version: springVersion)
-        compile(group: 'org.json', name: 'json', version: '20090211')
 
         compile(vaadinShared) {
             exclude(group: 'com.vaadin.external.google', module: 'guava')
@@ -540,14 +539,6 @@ configure(desktopModule) {
 }
 
 configure(portalModule) {
-    apply(plugin: 'groovy')
-
-    sourceSets {
-        main {
-            groovy { srcDir 'src' }
-        }
-    }
-
     dependencies {
         compile(globalModule)
         compile(clientModule)
@@ -558,7 +549,7 @@ configure(portalModule) {
         compile(group: 'org.springframework.security', name: 'spring-security-web', version: springSecurityVersion)
         compile(group: 'org.springframework.security', name: 'spring-security-config', version: springSecurityVersion)
         compile(group: 'org.springframework.security', name: 'spring-security-taglibs', version: springSecurityVersion)
-        compile(group: 'org.json', name: 'json', version: '20090211')
+        compile(group: 'org.json', name: 'json', version: '20140107')
         compile(groovyArtifact)
         compile(asm)
 
@@ -574,7 +565,8 @@ configure(portalModule) {
     }
 }
 
-task restart(dependsOn: ['stop', ':cuba-core:deploy', ':cuba-web:deploy'], description: 'Redeploys applications and restarts local Tomcat') << {
+task restart(dependsOn: ['stop', ':cuba-core:deploy', ':cuba-web:deploy', ':cuba-web-toolkit:deploy'],
+        description: 'Redeploys applications and restarts local Tomcat') << {
     ant.waitfor(maxwait: 6, maxwaitunit: 'second', checkevery: 2, checkeveryunit: 'second') {
         not {
             socket(server: 'localhost', port: '8787')
