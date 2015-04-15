@@ -4,10 +4,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.GroupBoxLayout;
 import com.haulmont.cuba.gui.components.IFrame;
@@ -24,7 +21,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 import static com.haulmont.cuba.web.gui.components.WebComponentsHelper.convertAlignment;
 
 /**
@@ -41,39 +37,12 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
     protected List<ExpandListener> expandListeners = null;
     protected List<CollapseListener> collapseListeners = null;
 
-    protected List<com.haulmont.cuba.gui.components.Action> actionsOrder = new LinkedList<>();
-    protected BiMap<com.vaadin.event.Action, Action> actions = HashBiMap.create();
-
-    protected com.vaadin.event.Action.Handler actionHandler;
-
     public WebGroupBox() {
         component = new CubaGroupBox();
         component.setExpandChangeHandler(this);
 
         CubaVerticalActionsLayout container = new CubaVerticalActionsLayout();
-        initContainer(container);
-    }
-
-    private void initContainer(AbstractOrderedLayout container) {
         component.setContent(container);
-        if (actionHandler == null) {
-            actionHandler = new com.vaadin.event.Action.Handler() {
-                @Override
-                public com.vaadin.event.Action[] getActions(Object target, Object sender) {
-                    final Set<com.vaadin.event.Action> keys = actions.keySet();
-                    return keys.toArray(new com.vaadin.event.Action[keys.size()]);
-                }
-
-                @Override
-                public void handleAction(com.vaadin.event.Action action, Object sender, Object target) {
-                    Action act = actions.get(action);
-                    if (act != null && act.isEnabled()) {
-                        act.actionPerform(WebGroupBox.this);
-                    }
-                }
-            };
-            component.addActionHandler(actionHandler);
-        }
     }
 
     @Override
@@ -95,7 +64,7 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
         }
 
         if (newContent != null) {
-            initContainer(newContent);
+            component.setContent(newContent);
 
             newContent.setMargin(((CubaOrderedActionsLayout) component.getContent()).getMargin());
             newContent.setSpacing(((CubaOrderedActionsLayout) component.getContent()).isSpacing());
@@ -305,63 +274,6 @@ public class WebGroupBox extends WebAbstractComponent<CubaGroupBox> implements G
                 collapseListener.onCollapse(this);
             }
         }
-    }
-
-    @Override
-    public void addAction(final com.haulmont.cuba.gui.components.Action action) {
-        checkNotNullArgument(action, "action must be non null");
-
-        if (action.getShortcut() != null) {
-            actions.put(WebComponentsHelper.createShortcutAction(action), action);
-        }
-        actionsOrder.add(action);
-    }
-
-    @Override
-    public void removeAction(@Nullable com.haulmont.cuba.gui.components.Action action) {
-        if (actionsOrder.remove(action)) {
-            actions.inverse().remove(action);
-        }
-    }
-
-    @Override
-    public void removeAction(@Nullable String id) {
-        Action action = getAction(id);
-        if (action != null) {
-            removeAction(action);
-        }
-    }
-
-    @Override
-    public void removeAllActions() {
-        actionsOrder.clear();
-        actions.clear();
-    }
-
-    @Override
-    public Collection<Action> getActions() {
-        return Collections.unmodifiableCollection(actionsOrder);
-    }
-
-    @Override
-    @Nullable
-    public com.haulmont.cuba.gui.components.Action getAction(String id) {
-        for (com.haulmont.cuba.gui.components.Action action : getActions()) {
-            if (ObjectUtils.equals(action.getId(), id)) {
-                return action;
-            }
-        }
-        return null;
-    }
-
-    @Nonnull
-    @Override
-    public Action getActionNN(String id) {
-        Action action = getAction(id);
-        if (action == null) {
-            throw new IllegalStateException("Unable to find action with id " + id);
-        }
-        return action;
     }
 
     @Override

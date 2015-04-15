@@ -7,17 +7,14 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
 import com.haulmont.cuba.desktop.sys.vcl.CollapsiblePanel;
-import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.GroupBoxLayout;
 import org.apache.commons.lang.BooleanUtils;
 import org.dom4j.Element;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.swing.*;
-import java.util.*;
-
-import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * @author krivopustov
@@ -125,43 +122,6 @@ public class DesktopGroupBox extends DesktopAbstractBox implements GroupBoxLayou
                 collapseListener.onCollapse(this);
             }
         }
-    }
-
-    @Override
-    public void addAction(@Nullable Action action) {
-        checkNotNullArgument(action, "action must be non null");
-    }
-
-    @Override
-    public void removeAction(@Nullable Action action) {
-    }
-
-    @Override
-    public void removeAction(String id) {
-    }
-
-    @Override
-    public void removeAllActions() {
-    }
-
-    @Override
-    public Collection<Action> getActions() {
-        return Collections.emptyList();
-    }
-
-    @Override
-    public Action getAction(String id) {
-        return null;
-    }
-
-    @Nonnull
-    @Override
-    public Action getActionNN(String id) {
-        Action action = getAction(id);
-        if (action == null) {
-            throw new IllegalStateException("Unable to find action with id " + id);
-        }
-        return action;
     }
 
     @Override
