@@ -18,6 +18,16 @@ public interface Filter extends Component.Margin, Component.BelongToFrame, Compo
 
     String NAME = "filter";
 
+    /**
+     * Action registered with parent frame to apply filter.
+     */
+    String APPLY_ACTION_ID = "applyFilter";
+
+    /**
+     * Action registered with parent frame to open filter select menu.
+     */
+    String SELECT_ACTION_ID = "selectFilter";
+
     interface FilterEntityChangeListener {
         void filterEntityChanged(FilterEntity filterEntity);
     }

@@ -1621,8 +1621,8 @@ public class FilterDelegateImpl implements FilterDelegate {
     }
 
     protected void initShortcutActions() {
-        if (filter.getFrame().getAction("applyFilter") == null) {
-            filter.getFrame().addAction(new AbstractAction("applyFilter", clientConfig.getFilterApplyShortcut()) {
+        if (filter.getFrame().getAction(Filter.APPLY_ACTION_ID) == null) {
+            filter.getFrame().addAction(new AbstractAction(Filter.APPLY_ACTION_ID, clientConfig.getFilterApplyShortcut()) {
                 @Override
                 public void actionPerform(Component component) {
                     if (isVisible() && datasource != null) {
@@ -1636,8 +1636,8 @@ public class FilterDelegateImpl implements FilterDelegate {
             });
         }
 
-        if (filter.getFrame().getAction("selectFilter") == null) {
-            filter.getFrame().addAction(new AbstractAction("selectFilter", clientConfig.getFilterSelectShortcut()) {
+        if (filter.getFrame().getAction(Filter.SELECT_ACTION_ID) == null) {
+            filter.getFrame().addAction(new AbstractAction(Filter.SELECT_ACTION_ID, clientConfig.getFilterSelectShortcut()) {
                 @Override
                 public void actionPerform(Component component) {
                     if (isVisible() && datasource != null && filtersPopupButton.isEnabled()) {
