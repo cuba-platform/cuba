@@ -10,10 +10,7 @@ import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.Folder;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.gui.components.LookupField;
-import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.components.TextField;
-import com.haulmont.cuba.gui.components.Tree;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.filter.ConditionsTree;
 import com.haulmont.cuba.gui.components.filter.FilterHelper;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
@@ -253,6 +250,26 @@ public class WebFilterHelper implements FilterHelper {
             @Override
             public void textChange(FieldEvents.TextChangeEvent event) {
                 listener.textChanged(event.getText());
+            }
+        });
+    }
+
+    @Override
+    public void addShortcutListener(TextField textField, final ShortcutListener listener) {
+        CubaTextField vTextField = WebComponentsHelper.unwrap(textField);
+        int[] modifiers = null;
+        KeyCombination.Modifier[] listenerModifiers = listener.getKeyCombination().getModifiers();
+        if (listenerModifiers != null) {
+            modifiers = new int[listenerModifiers.length];
+            for (int i = 0; i < modifiers.length; i++) {
+                modifiers[i] = listenerModifiers[i].getCode();
+
+            }
+        }
+        vTextField.addShortcutListener(new com.vaadin.event.ShortcutListener(listener.getCaption(), listener.getKeyCombination().getKey().getCode(), modifiers) {
+            @Override
+            public void handleAction(Object sender, Object target) {
+                listener.handleShortcutPressed();
             }
         });
     }

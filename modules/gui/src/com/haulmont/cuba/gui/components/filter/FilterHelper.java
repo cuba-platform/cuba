@@ -7,10 +7,7 @@ package com.haulmont.cuba.gui.components.filter;
 
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.Folder;
-import com.haulmont.cuba.gui.components.LookupField;
-import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.components.TextField;
-import com.haulmont.cuba.gui.components.Tree;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.presentations.Presentations;
 
 import java.util.Map;
@@ -27,6 +24,26 @@ public interface FilterHelper {
 
     interface TextChangeListener {
         void textChanged(String text);
+    }
+
+    abstract class ShortcutListener {
+        protected String caption;
+        private KeyCombination keyCombination;
+
+        public ShortcutListener(String caption, KeyCombination keyCombination) {
+            this.caption = caption;
+            this.keyCombination = keyCombination;
+        }
+
+        public abstract void handleShortcutPressed();
+
+        public String getCaption() {
+            return caption;
+        }
+
+        public KeyCombination getKeyCombination() {
+            return keyCombination;
+        }
     }
 
     void setLookupNullSelectionAllowed(LookupField lookupField, boolean value);
@@ -63,4 +80,5 @@ public interface FilterHelper {
 
     void addTextChangeListener(TextField textField, TextChangeListener listener);
 
+    void addShortcutListener(TextField textField, ShortcutListener listener);
 }

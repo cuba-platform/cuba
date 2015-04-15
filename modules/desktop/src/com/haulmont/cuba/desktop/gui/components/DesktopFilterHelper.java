@@ -12,6 +12,7 @@ import com.haulmont.cuba.gui.components.filter.ConditionsTree;
 import com.haulmont.cuba.gui.components.filter.FilterHelper;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.security.entity.FilterEntity;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -112,6 +113,21 @@ public class DesktopFilterHelper implements FilterHelper {
             @Override
             public void keyReleased(KeyEvent e) {
                 listener.textChanged(dTextField.getText());
+            }
+        });
+    }
+
+    @Override
+    public void addShortcutListener(TextField textField, final ShortcutListener listener) {
+        final JTextField dTextField = DesktopComponentsHelper.unwrap(textField);
+        final KeyStroke keyStroke = DesktopComponentsHelper.convertKeyCombination(listener.getKeyCombination());
+        dTextField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if (ObjectUtils.equals(e.getKeyCode(), keyStroke.getKeyCode()) &&
+                        ObjectUtils.equals(e.getModifiers(), keyStroke.getModifiers())) {
+                    listener.handleShortcutPressed();
+                }
             }
         });
     }

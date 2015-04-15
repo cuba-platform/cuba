@@ -294,6 +294,12 @@ public class FilterDelegateImpl implements FilterDelegate {
         ftsSearchCriteriaField.setWidth(theme.get("cuba.gui.filter.ftsSearchCriteriaField.width"));
         ftsSearchCriteriaField.setInputPrompt(getMessage("Filter.enterSearchPhrase"));
         ftsSearchCriteriaField.requestFocus();
+        filterHelper.addShortcutListener(ftsSearchCriteriaField, new FilterHelper.ShortcutListener("ftsSearch", new KeyCombination(KeyCombination.Key.ENTER, null)) {
+            @Override
+            public void handleShortcutPressed() {
+                applyFts();
+            }
+        });
         controlsLayout.add(ftsSearchCriteriaField);
 
         Button searchBtn = componentsFactory.createComponent(Button.NAME);
