@@ -58,7 +58,7 @@ public class JSONConvertor implements Convertor {
         try {
             MIME_TYPE_JSON = new MimeType(MIME_STR);
         } catch (MimeTypeParseException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to initialize JSON mime type", e);
         }
     }
 
@@ -139,6 +139,7 @@ public class JSONConvertor implements Convertor {
         } else if (result instanceof Collection) {
             if (!checkCollectionItemTypes((Collection) result, Entity.class))
                 throw new IllegalArgumentException("Items that are not instances of Entity found in service method result");
+            //noinspection unchecked
             ArrayList list = new ArrayList((Collection) result);
             MetaClass metaClass;
             if (!list.isEmpty())
@@ -212,7 +213,7 @@ public class JSONConvertor implements Convertor {
             }
             return result;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to parse commit request", e);
         }
     }
 
@@ -258,8 +259,11 @@ public class JSONConvertor implements Convertor {
 
             switch (property.getType()) {
                 case DATATYPE:
-                    String value = json.getString(key);
-                    if (json.isNull(key)) value = null;
+                    String value = null;
+                    if (!json.isNull(key)) {
+                        value = json.get(key).toString();
+                    }
+
                     setField(bean, key, property.getRange().asDatatype().parse(value));
                     break;
                 case ENUM:
@@ -267,7 +271,7 @@ public class JSONConvertor implements Convertor {
                     break;
                 case COMPOSITION:
                 case ASSOCIATION:
-                    if ("null".equals(json.getString(key))) {
+                    if ("null".equals(json.get(key).toString())) {
                         setField(bean, key, null);
                         break;
                     }
@@ -347,7 +351,8 @@ public class JSONConvertor implements Convertor {
             while (true) {
                 if (!params.has("param" + idx)) break;
 
-                String param = params.getString("param" + idx);
+                // we need strings for objects
+                String param = params.get("param" + idx).toString();
                 serviceRequest.getParamValuesString().add(param);
 
                 if (params.has("param" + idx + "_type")) {
@@ -372,7 +377,7 @@ public class JSONConvertor implements Convertor {
             JSONObject json = new JSONObject(content);
             return _parseEntity(json);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to parse entity", e);
         }
     }
 
@@ -399,8 +404,10 @@ public class JSONConvertor implements Convertor {
                 MetaProperty property = metaClass.getPropertyNN(key);
                 switch (property.getType()) {
                     case DATATYPE:
-                        String value = json.getString(key);
-                        if (json.isNull(key)) value = null;
+                        String value = null;
+                        if (!json.isNull(key)) {
+                            value = json.get(key).toString();
+                        }
                         setField(instance, key, property.getRange().asDatatype().parse(value));
                         break;
                     case ENUM:
@@ -408,7 +415,7 @@ public class JSONConvertor implements Convertor {
                         break;
                     case COMPOSITION:
                     case ASSOCIATION:
-                        if ("null".equals(json.getString(key))) {
+                        if ("null".equals(json.get(key).toString())) {
                             setField(instance, key, null);
                             break;
                         }
@@ -449,7 +456,7 @@ public class JSONConvertor implements Convertor {
 
             return instance;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to parse entity", e);
         }
     }
 
@@ -474,7 +481,8 @@ public class JSONConvertor implements Convertor {
     @Override
     public Collection<? extends Entity> parseEntitiesCollection(String content, Class<? extends Collection> collectionClass) {
         try {
-            Collection collection = newCollectionInstance(collectionClass);
+            @SuppressWarnings("unchecked")
+            Collection<Entity> collection = newCollectionInstance(collectionClass);
             JSONArray jsonArray = new JSONArray(content);
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject instanceObj = jsonArray.getJSONObject(i);
@@ -483,7 +491,7 @@ public class JSONConvertor implements Convertor {
             }
             return collection;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to parse entities collection", e);
         }
     }
 
