@@ -2082,7 +2082,7 @@ public class FilterDelegateImpl implements FilterDelegate {
             filterActions.put("remove", removeAction);
             filterActions.put("pin", pinAppliedAction);
             filterActions.put("save_search_folder", saveAsSearchFolderAction);
-            filterActions.put("save_app_folder", saveAsSearchFolderAction);
+            filterActions.put("save_app_folder", saveAsAppFolderAction);
             filterActions.put("make_default", makeDefaultAction);
 
             parseLayoutDescription(layoutDescription);
