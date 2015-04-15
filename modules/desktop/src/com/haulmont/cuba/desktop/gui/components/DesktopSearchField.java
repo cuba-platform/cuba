@@ -294,26 +294,24 @@ public class DesktopSearchField extends DesktopAbstractOptionsField<JComponent> 
         if (StringUtils.length(newFilter) >= minSearchStringLength) {
             optionsDatasource.refresh(
                     Collections.singletonMap(SearchField.SEARCH_STRING_PARAM, (Object) newFilter));
-            if (optionsDatasource.getState() == Datasource.State.VALID && optionsDatasource.size() == 1) {
-                setValue(optionsDatasource.getItems().iterator().next());
-                updateOptionsDsItem();
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        updateComponent(getValue());
-                    }
-                });
-            }
 
-            if (searchNotifications != null) {
-                if (optionsDatasource.getState() == Datasource.State.VALID && optionsDatasource.size() == 0) {
-                    searchNotifications.notFoundSuggestions(originalFilter);
+            if (optionsDatasource.getState() == Datasource.State.VALID) {
+                if (optionsDatasource.size() == 0) {
+                    if (searchNotifications != null)
+                        searchNotifications.notFoundSuggestions(originalFilter);
+                } else if (optionsDatasource.size() == 1) {
+                    setValue(optionsDatasource.getItems().iterator().next());
+                    updateOptionsDsItem();
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateComponent(getValue());
+                        }
+                    });
+                } else {
+                    initSearchVariants();
+                    comboBox.showSearchPopup();
                 }
-            }
-
-            if (optionsDatasource.getState() == Datasource.State.VALID && optionsDatasource.size() > 1) {
-                initSearchVariants();
-                comboBox.showSearchPopup();
             }
         } else {
             if (optionsDatasource.getState() == Datasource.State.VALID) {

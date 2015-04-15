@@ -4,8 +4,6 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.SearchField;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -85,13 +83,13 @@ public class WebSearchField extends WebLookupField implements SearchField {
 
                 if (StringUtils.length(newFilter) >= minSearchStringLength) {
                     optionsDatasource.refresh(Collections.singletonMap(SEARCH_STRING_PARAM, (Object) newFilter));
-                    if (optionsDatasource.getState() == Datasource.State.VALID && optionsDatasource.size() == 1) {
-                        setValue(optionsDatasource.getItems().iterator().next());
-                    }
-
-                    if (searchNotifications != null) {
-                        if (optionsDatasource.getState() == Datasource.State.VALID && optionsDatasource.size() == 0)
-                            searchNotifications.notFoundSuggestions(originalFilter);
+                    if (optionsDatasource.getState() == Datasource.State.VALID) {
+                        if (optionsDatasource.size() == 0) {
+                            if (searchNotifications != null)
+                                searchNotifications.notFoundSuggestions(originalFilter);
+                        } else if (optionsDatasource.size() == 1) {
+                            setValue(optionsDatasource.getItems().iterator().next());
+                        }
                     }
                 } else {
                     if (optionsDatasource.getState() == Datasource.State.VALID) {
