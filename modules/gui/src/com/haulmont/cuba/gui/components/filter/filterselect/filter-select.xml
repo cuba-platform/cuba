@@ -14,10 +14,15 @@
                 refreshMode="NEVER"/>
     </dsContext>
     <actions>
+        <action id="search" invoke="search" shortcut="ENTER" icon="icons/search.png" caption=""/>
         <action id="select" invoke="select" shortcut="CTRL-ENTER" icon="icons/ok.png" caption="msg://actions.Select"/>
         <action id="cancel" invoke="cancel" shortcut="ESCAPE" icon="icons/cancel.png" caption="msg://actions.Cancel"/>
     </actions>
     <layout spacing="true" expand="filterEntitiesTable">
+        <hbox id="nameFilterBox" width="100%" expand="nameFilterField" spacing="true">
+            <textField id="nameFilterField" width="100%"/>
+            <button id="searchBtn" action="search"/>
+        </hbox>
         <table id="filterEntitiesTable" width="100%" columnControlVisible="false">
             <columns>
                 <column id="name"/>

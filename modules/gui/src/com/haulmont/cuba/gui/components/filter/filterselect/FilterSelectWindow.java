@@ -15,6 +15,7 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.FilterEntity;
 
 import javax.inject.Inject;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -39,7 +40,12 @@ public class FilterSelectWindow extends AbstractWindow {
     @Inject
     protected ComponentsFactory componentsFactory;
 
+    @Inject
+    protected TextField nameFilterField;
+
     protected List<FilterEntity> filterEntities;
+
+    protected Map<FilterEntity, String> captionsMap = new HashMap<>();
 
     @SuppressWarnings("unchecked")
     @Override
@@ -54,20 +60,20 @@ public class FilterSelectWindow extends AbstractWindow {
             @Override
             public Component generateCell(FilterEntity entity) {
                 Label label = componentsFactory.createComponent(Label.class);
+                String caption;
                 if (Strings.isNullOrEmpty(entity.getCode())) {
-                    label.setValue(InstanceUtils.getInstanceName(entity));
+                    caption = InstanceUtils.getInstanceName(entity);
                 } else {
-                    label.setValue(messages.getMainMessage(entity.getCode()));
+                    caption = messages.getMainMessage(entity.getCode());
                 }
+                label.setValue(caption);
+                captionsMap.put(entity, caption);
                 return label;
             }
         });
 
         filterEntities = (List<FilterEntity>) params.get("filterEntities");
-        for (FilterEntity filterEntity : filterEntities) {
-            filterEntitiesDs.includeItem(filterEntity);
-        }
-        filterEntitiesDs.refresh();
+        fillDatasource(null);
 
         filterEntitiesTable.setItemClickAction(new AbstractAction("selectByDblClk") {
             @Override
@@ -81,7 +87,6 @@ public class FilterSelectWindow extends AbstractWindow {
         FilterEntity item = filterEntitiesDs.getItem();
         if (item == null) {
             showNotification(getMessage("FilterSelect.selectFilterEntity"), NotificationType.WARNING);
-            return;
         } else {
             close(COMMIT_ACTION_ID);
         }
@@ -93,5 +98,25 @@ public class FilterSelectWindow extends AbstractWindow {
 
     public FilterEntity getFilterEntity() {
         return filterEntitiesDs.getItem();
+    }
+
+    public void search() {
+        fillDatasource((String) nameFilterField.getValue());
+    }
+
+    protected void fillDatasource(String nameFilterText) {
+        filterEntitiesDs.clear();
+        for (FilterEntity filterEntity : filterEntities) {
+            if (passesFilter(filterEntity, nameFilterText)) {
+                filterEntitiesDs.includeItem(filterEntity);
+            }
+        }
+        filterEntitiesDs.refresh();
+    }
+
+    protected boolean passesFilter(FilterEntity filterEntity, String nameFilterText) {
+        if (Strings.isNullOrEmpty(nameFilterText)) return true;
+        String caption = captionsMap.get(filterEntity);
+        return caption != null && caption.toLowerCase().contains(nameFilterText.toLowerCase());
     }
 }
