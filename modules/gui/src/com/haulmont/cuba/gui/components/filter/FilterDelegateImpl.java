@@ -78,7 +78,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected static final String CONDITIONS_LOCATION_TOP = "top";
 
     protected static final Log log = LogFactory.getLog(FilterDelegateImpl.class);
-    public static final String MODIFIED_INDICATOR_SYMBOL = " *";
+    protected static final String MODIFIED_INDICATOR_SYMBOL = " *";
 
     @Inject
     protected ComponentsFactory componentsFactory;
@@ -152,10 +152,11 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected boolean filtersLookupDisplayed = false;
     protected boolean editable;
     protected FilterMode filterMode;
-    protected boolean filterSavingPossible;
+    protected boolean filterSavingPossible = true;
     protected Integer columnsCount;
     protected String initialWindowCaption;
     protected String conditionsLocation;
+    protected boolean filterActionsCreated = false;
 
     protected SaveAsAction saveAsAction;
     protected EditAction editAction;
@@ -473,7 +474,9 @@ public class FilterDelegateImpl implements FilterDelegate {
 
     protected void setFilterActionsEnabled() {
         boolean isGlobal = filterEntity.getUser() == null;
-        boolean userCanEditGlobalFilter = getUserCanEditGlobalFilter();
+        boolean userCanEditGlobalFilter = uerCanEditGlobalFilter();
+        boolean userCanEditFilters = userCanEditFilers();
+        boolean filterEditable = isEditable();
         boolean userCanEditGlobalAppFolder = userSessionSource.getUserSession().isSpecificPermitted(GLOBAL_APP_FOLDERS_PERMISSION);
         boolean createdByCurrentUser = userSessionSource.getUserSession().getCurrentOrSubstitutedUser().equals(filterEntity.getUser());
         boolean hasCode = !Strings.isNullOrEmpty(filterEntity.getCode());
@@ -484,16 +487,16 @@ public class FilterDelegateImpl implements FilterDelegate {
         boolean isDefault = BooleanUtils.isTrue(filterEntity.getIsDefault());
         boolean isAdHocFilter = filterEntity == adHocFilter;
 
-        boolean editActionEnabled = !isSet;
+        boolean editActionEnabled = !isSet && filterEditable && userCanEditFilters;
         filterSavingPossible = editActionEnabled &&
                 ((isGlobal && userCanEditGlobalFilter) || (!isGlobal && createdByCurrentUser)) &&
                 ((!isFolder && !hasCode) || isSearchFolder || (isAppFolder && userCanEditGlobalAppFolder));
         boolean saveActionEnabled = filterSavingPossible && isFilterModified();
-        boolean saveAsActionEnabled = !isSet;
+        boolean saveAsActionEnabled = !isSet && filterEditable && userCanEditFilters;
         boolean removeActionEnabled = !isSet &&
                 (!hasCode && !isFolder) &&
                 ((isGlobal && userCanEditGlobalFilter) || (!isGlobal && createdByCurrentUser)) &&
-                !isAdHocFilter;
+                !isAdHocFilter && filterEditable && userCanEditFilters;
         boolean makeDefaultActionEnabled = !isDefault && !isFolder && !isSet && !isAdHocFilter;
         boolean pinAppliedActionEnabled = lastAppliedFilter != null
                 && !(lastAppliedFilter.getFilterEntity() == adHocFilter && lastAppliedFilter.getConditions().getRoots().size() == 0);
@@ -523,10 +526,15 @@ public class FilterDelegateImpl implements FilterDelegate {
         pinAppliedAction = new PinAppliedAction();
         saveAsAppFolderAction = new SaveAsFolderAction(true);
         saveAsSearchFolderAction = new SaveAsFolderAction(false);
+        filterActionsCreated = true;
     }
 
-    protected boolean getUserCanEditGlobalFilter() {
+    protected boolean uerCanEditGlobalFilter() {
         return userSessionSource.getUserSession().isSpecificPermitted(GLOBAL_FILTER_PERMISSION);
+    }
+
+    protected boolean userCanEditFilers() {
+        return security.isSpecificPermitted(FILTER_EDIT_PERMISSION);
     }
 
     protected void saveFilterEntity() {
@@ -580,7 +588,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         folder.setFilterComponentId(filterEntity.getComponentId());
         folder.setFilterXml(newXml);
         if (!isAppFolder) {
-            if (getUserCanEditGlobalFilter())
+            if (uerCanEditGlobalFilter())
                 ((SearchFolder) folder).setUser(filterEntity.getUser());
             else
                 ((SearchFolder) folder).setUser(userSessionSource.getUserSession().getCurrentOrSubstitutedUser());
@@ -701,7 +709,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                 groupCellContent = groupBox;
             } else {
                 if (condition.getParam().getJavaClass() != null) {
-                    ParamEditor paramEditor = new ParamEditor(condition, conditionsRemoveEnabled);
+                    ParamEditor paramEditor = new ParamEditor(condition, conditionsRemoveEnabled, isEditable() && userCanEditFilers());
                     AbstractAction removeConditionAction = new AbstractAction("") {
                         @Override
                         public void actionPerform(Component component) {
@@ -1540,7 +1548,11 @@ public class FilterDelegateImpl implements FilterDelegate {
     @Override
     public void setEditable(boolean editable) {
         this.editable = editable;
-        settingsBtn.setVisible(editable && security.isSpecificPermitted(FILTER_EDIT_PERMISSION));
+        addConditionBtn.setEnabled(editable && userCanEditFilers());
+        //do not process actions if method is invoked from filter loader
+        if (filterActionsCreated && filterEntity != null) {
+            setFilterActionsEnabled();
+        }
     }
 
     @Override
@@ -1737,7 +1749,7 @@ public class FilterDelegateImpl implements FilterDelegate {
                         newFilterEntity.setId(UuidProvider.createUuid());
                         //if filter was global but current user cannot create global filter then new filter
                         //will be connected with current user
-                        if (newFilterEntity.getUser() == null && !getUserCanEditGlobalFilter()) {
+                        if (newFilterEntity.getUser() == null && !uerCanEditGlobalFilter()) {
                             newFilterEntity.setUser(userSessionSource.getUserSession().getCurrentOrSubstitutedUser());
                         }
                         filterEntity = newFilterEntity;

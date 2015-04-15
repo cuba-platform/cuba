@@ -30,7 +30,7 @@ public class ParamEditor implements AbstractCondition.Listener {
     protected ComponentsFactory componentsFactory;
     protected Action removeButtonAction;
 
-    public ParamEditor(final AbstractCondition condition, boolean removeButtonVisible) {
+    public ParamEditor(final AbstractCondition condition, boolean removeButtonVisible, boolean operationEditable) {
         this.condition = condition;
         this.removeButtonVisible = removeButtonVisible;
 
@@ -46,6 +46,7 @@ public class ParamEditor implements AbstractCondition.Listener {
 
         operationEditor = condition.createOperationEditor().getComponent();
         operationEditor.setAlignment(Component.Alignment.MIDDLE_RIGHT);
+        operationEditor.setEnabled(operationEditable);
         labelAndOperationLayout.add(operationEditor);
 
         createParamEditLayout();

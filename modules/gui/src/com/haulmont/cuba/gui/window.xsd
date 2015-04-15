@@ -1001,7 +1001,6 @@
         <xs:attribute name="applyTo" type="xs:string"/>
         <xs:attribute name="useMaxResults" type="xs:boolean"/>
         <xs:attribute name="manualApplyRequired" type="xs:boolean"/>
-        <xs:attribute name="required" type="xs:boolean"/>
         <xs:attribute name="editable" type="xs:boolean"/>
         <xs:attribute name="folderActionsEnabled" type="xs:boolean"/>
         <xs:attribute name="columnsQty" type="xs:int"/>
