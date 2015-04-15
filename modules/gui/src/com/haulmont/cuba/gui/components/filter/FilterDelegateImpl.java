@@ -152,7 +152,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected boolean filtersLookupDisplayed = false;
     protected boolean editable;
     protected FilterMode filterMode;
-    protected boolean editActionEnabled;
+    protected boolean filterSavingPossible;
     protected Integer columnsCount;
     protected String initialWindowCaption;
     protected String conditionsLocation;
@@ -484,10 +484,11 @@ public class FilterDelegateImpl implements FilterDelegate {
         boolean isDefault = BooleanUtils.isTrue(filterEntity.getIsDefault());
         boolean isAdHocFilter = filterEntity == adHocFilter;
 
-        editActionEnabled = !isSet &&
+        boolean editActionEnabled = !isSet;
+        filterSavingPossible = editActionEnabled &&
                 ((isGlobal && userCanEditGlobalFilter) || (!isGlobal && createdByCurrentUser)) &&
                 ((!isFolder && !hasCode) || isSearchFolder || (isAppFolder && userCanEditGlobalAppFolder));
-        boolean saveActionEnabled = editActionEnabled && isFilterModified();
+        boolean saveActionEnabled = filterSavingPossible && isFilterModified();
         boolean saveAsActionEnabled = !isSet;
         boolean removeActionEnabled = !isSet &&
                 (!hasCode && !isFolder) &&
@@ -810,7 +811,7 @@ public class FilterDelegateImpl implements FilterDelegate {
 
     protected void updateFilterModifiedIndicator() {
         boolean filterModified = isFilterModified();
-        saveAction.setEnabled(editActionEnabled && filterModified);
+        saveAction.setEnabled(filterSavingPossible && filterModified);
 
         String currentCaption = groupBoxLayout.getCaption();
         if (filterModified && !currentCaption.endsWith(MODIFIED_INDICATOR_SYMBOL)) {
