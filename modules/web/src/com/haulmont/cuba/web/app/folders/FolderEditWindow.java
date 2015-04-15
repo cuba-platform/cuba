@@ -68,33 +68,36 @@ public class FolderEditWindow extends Window {
         setCaption(adding ? getMessage("folders.folderEditWindow.adding") : getMessage("folders.folderEditWindow"));
 
         ThemeConstants theme = App.getInstance().getThemeConstants();
-        setWidth(theme.get("cuba.web.FolderEditWindow.width"));
+        setWidthUndefined();
         setResizable(false);
 
         layout = new VerticalLayout();
+        layout.setWidthUndefined();
         layout.setSpacing(true);
 
         setContent(layout);
         setModal(true);
         center();
 
+        String fieldWidth = theme.get("cuba.web.FolderEditWindow.field.width");
+
         nameField = new TextField();
         nameField.setRequired(true);
         nameField.setCaption(getMessage("folders.folderEditWindow.nameField"));
-        nameField.setWidth(theme.get("cuba.web.FolderEditWindow.field.width"));
+        nameField.setWidth(fieldWidth);
         nameField.setValue(folder.getName());
         nameField.focus();
         layout.addComponent(nameField);
 
         tabNameField = new TextField();
         tabNameField.setCaption(getMessage("folders.folderEditWindow.tabNameField"));
-        tabNameField.setWidth(theme.get("cuba.web.FolderEditWindow.field.width"));
+        tabNameField.setWidth(fieldWidth);
         tabNameField.setValue(StringUtils.trimToEmpty(folder.getTabName()));
         layout.addComponent(tabNameField);
 
         parentSelect = new ComboBox();
         parentSelect.setCaption(getMessage("folders.folderEditWindow.parentSelect"));
-        parentSelect.setWidth(theme.get("cuba.web.FolderEditWindow.field.width"));
+        parentSelect.setWidth(fieldWidth);
         parentSelect.setNullSelectionAllowed(true);
         fillParentSelect();
         parentSelect.setValue(folder.getParent());
@@ -104,14 +107,14 @@ public class FolderEditWindow extends Window {
             if (presentations != null) {
                 presentation = new ComboBox();
                 presentation.setCaption(getMessage("folders.folderEditWindow.presentation"));
-                presentation.setWidth(theme.get("cuba.web.FolderEditWindow.field.width"));
+                presentation.setWidth(fieldWidth);
                 presentation.setNullSelectionAllowed(true);
                 fillPresentations(presentations);
                 presentation.setValue(((SearchFolder) folder).getPresentation());
                 layout.addComponent(presentation);
             } else if (((SearchFolder) folder).getPresentation() != null) {
                 selectedPresentationField = new TextField();
-                selectedPresentationField.setWidth(theme.get("cuba.web.FolderEditWindow.field.width"));
+                selectedPresentationField.setWidth(fieldWidth);
                 selectedPresentationField.setCaption(getMessage("folders.folderEditWindow.presentation"));
                 selectedPresentationField.setValue(((SearchFolder) folder).getPresentation().getName());
                 selectedPresentationField.setEnabled(false);
@@ -121,7 +124,7 @@ public class FolderEditWindow extends Window {
 
         sortOrderField = new TextField();
         sortOrderField.setCaption(getMessage("folders.folderEditWindow.sortOrder"));
-        sortOrderField.setWidth(theme.get("cuba.web.FolderEditWindow.field.width"));
+        sortOrderField.setWidth(fieldWidth);
         sortOrderField.setValue(folder.getSortOrder() == null ? "" : folder.getSortOrder().toString());
         layout.addComponent(sortOrderField);
 

@@ -59,6 +59,8 @@ public class AppFolderEditWindow extends FolderEditWindow {
             ThemeConstants theme = App.getInstance().getThemeConstants();
             setWidth(theme.get("cuba.web.AppFolderEditWindow.width"));
 
+            layout.setWidth("100%");
+
             visibilityScriptField = new TextArea();
             visibilityScriptField.setRows(10);
             visibilityScriptField.setWidth(100, Unit.PERCENTAGE);
