@@ -38,4 +38,14 @@
       }
     }
   }
+
+  .v-button.v-button-link.cuba-paging-count-number {
+    cursor: default;
+
+    .v-button-wrap .v-button-caption {
+      text-decoration: none;
+      color: $cuba-havana-font-color;
+      cursor: default;
+    }
+  }
 }

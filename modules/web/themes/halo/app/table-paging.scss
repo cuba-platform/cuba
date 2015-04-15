@@ -18,4 +18,15 @@
   .cuba-paging-count {
     height: round($v-unit-size/1.5);
   }
+
+  .v-button.v-button-link.cuba-paging-count-number {
+    text-decoration: none;
+    cursor: default;
+
+    .v-button-wrap .v-button-caption {
+      text-decoration: none;
+      color: $v-font-color;
+      cursor: default;
+    }
+  }
 }

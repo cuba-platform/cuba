@@ -7,7 +7,6 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.RowsCount;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -45,6 +44,7 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
     public void setDatasource(CollectionDatasource datasource) {
         this.datasource = datasource;
         if (datasource != null) {
+            //noinspection unchecked
             this.datasource.addListener(
                     new CollectionDsListenerAdapter<Entity>() {
                         @Override
@@ -93,7 +93,7 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         this.owner = owner;
     }
 
-    private void onPrevClick() {
+    protected void onPrevClick() {
         if (!(datasource instanceof CollectionDatasource.SupportsPaging))
             return;
 
@@ -107,7 +107,7 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         }
     }
 
-    private void onNextClick() {
+    protected void onNextClick() {
         if (!(datasource instanceof CollectionDatasource.SupportsPaging))
             return;
 
@@ -129,7 +129,7 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         }
     }
 
-    private void refreshDatasource(CollectionDatasource.SupportsPaging ds) {
+    protected void refreshDatasource(CollectionDatasource.SupportsPaging ds) {
         refreshing = true;
         try {
             ds.refresh();
@@ -138,12 +138,13 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         }
     }
 
-    private void onLinkClick() {
+    protected void onLinkClick() {
         if (datasource == null || !(datasource instanceof CollectionDatasource.SupportsPaging))
             return;
 
         int count = ((CollectionDatasource.SupportsPaging) datasource).getCount();
         component.getCountButton().setCaption(String.valueOf(count));
+        component.getCountButton().addStyleName("cuba-paging-count-number");
     }
 
     protected void onCollectionChanged() {
@@ -222,11 +223,11 @@ public class WebRowsCount extends WebAbstractComponent<CubaRowsCount> implements
         }
         Messages messages = AppBeans.get(Messages.NAME);
 
-        String messagesPack = AppConfig.getMessagesPack();
-        component.getLabel().setValue(messages.formatMessage(messagesPack, msgKey, countValue));
+        component.getLabel().setValue(messages.formatMainMessage(msgKey, countValue));
 
         if (component.getCountButton().isVisible() && !refreshing) {
-            component.getCountButton().setCaption(messages.getMessage(messagesPack, "table.rowsCount.msg3"));
+            component.getCountButton().setCaption(messages.getMainMessage("table.rowsCount.msg3"));
+            component.getCountButton().removeStyleName("cuba-paging-count-number");
         }
     }
 }
