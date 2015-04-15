@@ -80,4 +80,6 @@ public interface FilterDelegate {
     Integer getColumnsCount();
 
     void setColumnsCount(int columnsCount);
+
+    void applySettings(Element element);
 }

@@ -126,7 +126,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
 
     @Override
     public void applySettings(Element element) {
-        // logic moved to loadFiltersAndApplyDefault()
+        delegate.applySettings(element);
     }
 
     @Override

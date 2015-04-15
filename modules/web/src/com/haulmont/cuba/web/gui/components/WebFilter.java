@@ -115,7 +115,7 @@ public class WebFilter extends WebAbstractComponent<CubaVerticalActionsLayout> i
 
     @Override
     public void applySettings(Element element) {
-        // logic moved to loadFiltersAndApplyDefault()
+        delegate.applySettings(element);
     }
 
     @Override

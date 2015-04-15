@@ -1362,6 +1362,15 @@ public class FilterDelegateImpl implements FilterDelegate {
     }
 
     @Override
+    public void applySettings(Element element) {
+        Element groupBoxExpandedEl = element.element("groupBoxExpanded");
+        if (groupBoxExpandedEl != null) {
+            Boolean expanded = Boolean.valueOf(groupBoxExpandedEl.getText());
+            groupBoxLayout.setExpanded(expanded);
+        }
+    }
+
+    @Override
     public boolean saveSettings(Element element) {
         Boolean changed = false;
         Element e = element.element("defaultFilter");
@@ -1402,6 +1411,17 @@ public class FilterDelegateImpl implements FilterDelegate {
             } else {
                 e.addAttribute("applyDefault", newApplyDef.toString());
             }
+            changed = true;
+        }
+
+        Element groupBoxExpandedEl = element.element("groupBoxExpanded");
+        if (groupBoxExpandedEl == null)
+            groupBoxExpandedEl = element.addElement("groupBoxExpanded");
+
+        Boolean oldGroupBoxExpandedValue = Boolean.valueOf(groupBoxExpandedEl.getText());
+        Boolean newGroupBoxExpandedValue = groupBoxLayout.isExpanded();
+        if (!ObjectUtils.equals(oldGroupBoxExpandedValue, newGroupBoxExpandedValue)) {
+            groupBoxExpandedEl.setText(newGroupBoxExpandedValue.toString());
             changed = true;
         }
 
