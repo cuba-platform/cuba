@@ -7,10 +7,7 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.Folder;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.LookupField;
-import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.components.Tree;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.filter.ConditionsTree;
 import com.haulmont.cuba.gui.components.filter.FilterHelper;
 import com.haulmont.cuba.gui.presentations.Presentations;
@@ -21,6 +18,8 @@ import org.apache.commons.logging.LogFactory;
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import javax.swing.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.Map;
 import java.util.UUID;
 
@@ -104,6 +103,17 @@ public class DesktopFilterHelper implements FilterHelper {
     @Override
     public void setLookupCaptions(LookupField lookupField, Map<Object, String> captions) {
         ((DesktopLookupField) lookupField).setCaptionFormatter(new FilterEntityCaptionFormatter(captions));
+    }
+
+    @Override
+    public void addTextChangeListener(TextField textField, final TextChangeListener listener) {
+        final JTextField dTextField = DesktopComponentsHelper.unwrap(textField);
+        dTextField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                listener.textChanged(dTextField.getText());
+            }
+        });
     }
 
     protected class FilterEntityCaptionFormatter implements DesktopAbstractOptionsField.CaptionFormatter<FilterEntity> {

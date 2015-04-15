@@ -7,7 +7,9 @@ package com.haulmont.cuba.gui.components.filter.filterselect;
 
 import com.google.common.base.Strings;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.filter.FilterHelper;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
@@ -79,6 +81,14 @@ public class FilterSelectWindow extends AbstractWindow {
             @Override
             public void actionPerform(Component component) {
                 select();
+            }
+        });
+
+        FilterHelper filterHelper = AppBeans.get(FilterHelper.class);
+        filterHelper.addTextChangeListener(nameFilterField, new FilterHelper.TextChangeListener() {
+            @Override
+            public void textChanged(String text) {
+                fillDatasource(text);
             }
         });
     }

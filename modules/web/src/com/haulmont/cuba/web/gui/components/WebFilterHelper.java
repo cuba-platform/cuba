@@ -25,6 +25,7 @@ import com.haulmont.cuba.web.app.folders.AppFolderEditWindow;
 import com.haulmont.cuba.web.app.folders.FolderEditWindow;
 import com.haulmont.cuba.web.app.folders.FoldersPane;
 import com.haulmont.cuba.web.toolkit.ui.CubaTextField;
+import com.vaadin.event.FieldEvents;
 import com.vaadin.event.Transferable;
 import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
@@ -33,6 +34,7 @@ import com.vaadin.event.dd.acceptcriteria.Not;
 import com.vaadin.event.dd.acceptcriteria.Or;
 import com.vaadin.shared.ui.dd.VerticalDropLocation;
 import com.vaadin.ui.AbstractSelect;
+import com.vaadin.ui.AbstractTextField;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 
@@ -241,5 +243,17 @@ public class WebFilterHelper implements FilterHelper {
         for (Map.Entry<Object, String> entry : captions.entrySet()) {
             vLookupField.setItemCaption(entry.getKey(), entry.getValue());
         }
+    }
+
+    @Override
+    public void addTextChangeListener(TextField textField, final TextChangeListener listener) {
+        CubaTextField vTextField = WebComponentsHelper.unwrap(textField);
+        vTextField.setTextChangeEventMode(AbstractTextField.TextChangeEventMode.TIMEOUT);
+        vTextField.addTextChangeListener(new FieldEvents.TextChangeListener() {
+            @Override
+            public void textChange(FieldEvents.TextChangeEvent event) {
+                listener.textChanged(event.getText());
+            }
+        });
     }
 }

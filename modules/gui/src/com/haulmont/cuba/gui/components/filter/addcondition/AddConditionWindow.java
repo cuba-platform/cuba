@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.filter.FilterHelper;
 import com.haulmont.cuba.gui.components.filter.descriptor.AbstractConditionDescriptor;
 import com.haulmont.cuba.gui.components.filter.descriptor.HeaderConditionDescriptor;
 import com.haulmont.cuba.gui.components.filter.descriptor.PropertyConditionDescriptor;
@@ -71,6 +72,14 @@ public class AddConditionWindow extends AbstractWindow {
                 select();
             }
         });
+
+        FilterHelper filterHelper = AppBeans.get(FilterHelper.class);
+        filterHelper.addTextChangeListener(treeFilter, new FilterHelper.TextChangeListener() {
+            @Override
+            public void textChanged(String text) {
+                _search(text);
+            }
+        });
     }
 
     public void expandTreeRoots() {
@@ -82,6 +91,10 @@ public class AddConditionWindow extends AbstractWindow {
 
     public void search() {
         String filterValue = treeFilter.getValue();
+        _search(filterValue);
+    }
+
+    protected void _search(String filterValue) {
         conditionDescriptorsDs.setFilter(filterValue);
         tree.expandTree();
     }

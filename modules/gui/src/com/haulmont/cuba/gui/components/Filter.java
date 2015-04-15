@@ -18,7 +18,7 @@ public interface Filter extends Component.Margin, Component.BelongToFrame, Compo
 
     String NAME = "filter";
 
-    public interface FilterEntityChangeListener {
+    interface FilterEntityChangeListener {
         void filterEntityChanged(FilterEntity filterEntity);
     }
 

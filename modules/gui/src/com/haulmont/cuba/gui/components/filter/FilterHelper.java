@@ -25,6 +25,10 @@ import java.util.UUID;
 public interface FilterHelper {
     String NAME = "cuba_FilterHelper";
 
+    interface TextChangeListener {
+        void textChanged(String text);
+    }
+
     void setLookupNullSelectionAllowed(LookupField lookupField, boolean value);
 
     void setLookupTextInputAllowed(LookupField lookupField, boolean value);
@@ -56,4 +60,7 @@ public interface FilterHelper {
     void setComponentFocusable(com.haulmont.cuba.gui.components.Component component, boolean focusable);
 
     void setLookupCaptions(LookupField lookupField, Map<Object, String> captions);
+
+    void addTextChangeListener(TextField textField, TextChangeListener listener);
+
 }
