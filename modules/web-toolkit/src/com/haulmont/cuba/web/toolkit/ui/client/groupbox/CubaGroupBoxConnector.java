@@ -153,5 +153,9 @@ public class CubaGroupBoxConnector extends PanelConnector {
 
         widget.setCollapsable(getState().collapsable);
         widget.setExpanded(getState().expanded);
+
+        if (stateChangeEvent.hasPropertyChanged("caption")) {
+            getLayoutManager().setNeedsMeasure(this);
+        }
     }
 }
