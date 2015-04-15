@@ -276,7 +276,7 @@ public abstract class AbstractCondition extends AbstractNotPersistentEntity{
     public void toXml(Element element, Param.ValueProperty valueProperty) {
         String text = getText();
         if (StringUtils.isNotBlank(text))
-            element.setText(text);
+            element.addCDATA(text);
 
         element.addAttribute("name", name);
 

@@ -98,7 +98,7 @@ public class QueryFilter {
 
     private void parse(Element parentElem, List<Condition> conditions) {
         for (Element element : Dom4j.elements(parentElem)) {
-            if ("param".equals(element.getName()))
+            if ("param".equals(element.getName()) || "join".equals(element.getName()))
                 continue;
 
             Condition condition = createCondition(element);

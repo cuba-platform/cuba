@@ -52,7 +52,15 @@ public class CustomCondition extends AbstractCondition {
         }
 
         entityAlias = element.attributeValue("entityAlias");
-        join = element.attributeValue("join");
+
+        Element joinElement = element.element("join");
+        if (joinElement != null) {
+            this.join = joinElement.getText();
+        } else {
+            //for backward compatibility
+            this.join = element.attributeValue("join");
+        }
+
     }
 
     public CustomCondition(AbstractConditionDescriptor descriptor, String where, String join, String entityAlias) {
@@ -77,7 +85,8 @@ public class CustomCondition extends AbstractCondition {
         element.addAttribute("entityAlias", entityAlias);
 
         if (!isBlank(join)) {
-            element.addAttribute("join", StringEscapeUtils.escapeXml(join));
+            Element joinElement = element.addElement("join");
+            joinElement.addCDATA(join);
         }
         if (operator != null) {
             element.addAttribute("operatorType", operator.name());
