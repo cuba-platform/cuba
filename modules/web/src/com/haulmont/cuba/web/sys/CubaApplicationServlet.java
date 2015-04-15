@@ -93,7 +93,7 @@ public class CubaApplicationServlet extends VaadinServlet {
             throws ServletException, IOException {
 
         String requestURI = request.getRequestURI();
-        String contextName = request.getContextPath().substring(1);
+        String contextName = request.getContextPath().length() == 0 ? "" : request.getContextPath().substring(1);
 
         if (request.getParameter("restartApp") != null) {
             request.getSession().invalidate();
@@ -104,10 +104,12 @@ public class CubaApplicationServlet extends VaadinServlet {
         String[] uriParts = requestURI.split("/");
         String action = null;
 
-        String lastPart = uriParts[uriParts.length - 1];
+        if (uriParts.length > 0) {
+            String lastPart = uriParts[uriParts.length - 1];
 
-        if (webConfig.getLoginAction().equals(lastPart) || webConfig.getLinkHandlerActions().contains(lastPart)) {
-            action = lastPart;
+            if (webConfig.getLoginAction().equals(lastPart) || webConfig.getLinkHandlerActions().contains(lastPart)) {
+                action = lastPart;
+            }
         }
 
         boolean needRedirect = action != null;
