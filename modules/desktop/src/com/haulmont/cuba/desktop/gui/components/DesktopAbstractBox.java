@@ -129,6 +129,8 @@ public abstract class DesktopAbstractBox
 
         component.setParent(this);
 
+        requestContainerUpdate();
+
         requestRepaint();
     }
 
@@ -171,6 +173,8 @@ public abstract class DesktopAbstractBox
         }
 
         component.setParent(null);
+
+        requestContainerUpdate();
 
         requestRepaint();
     }

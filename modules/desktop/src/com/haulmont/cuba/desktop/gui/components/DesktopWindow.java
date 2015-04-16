@@ -648,10 +648,10 @@ public class DesktopWindow implements Window, Component.Disposable,
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    panel.revalidate();
-                    panel.repaint();
+                    getContainer().revalidate();
+                    getContainer().repaint();
 
-                    java.awt.Container container = panel.getTopLevelAncestor();
+                    java.awt.Container container = getContainer().getTopLevelAncestor();
                     if (container instanceof DialogWindow) {
                         DialogWindow dialog = (DialogWindow) container;
                         if (!dialog.isResizable() && (getHeight() <= 0 || getWidth() <= 0)) {
