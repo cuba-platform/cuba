@@ -197,6 +197,7 @@ public class TreeModelAdapter implements TreeModel {
             } else {
                 List<Object> treePath = getTreePath(getRoot(), (Entity) object);
                 if (treePath != null) {
+                    treePath.add(0, rootNode);
                     return new TreePath(treePath.toArray());
                 }
             }
