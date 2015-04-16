@@ -13,7 +13,9 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.security.entity.Presentation;
@@ -24,8 +26,14 @@ import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.toolkit.ui.CubaButton;
 import com.haulmont.cuba.web.toolkit.ui.CubaCheckBox;
+import com.vaadin.event.ShortcutAction;
+import com.vaadin.event.ShortcutListener;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.Window;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -70,6 +78,14 @@ public class FolderEditWindow extends Window {
         ThemeConstants theme = App.getInstance().getThemeConstants();
         setWidthUndefined();
         setResizable(false);
+
+        int[] modifiers = {ShortcutAction.ModifierKey.CTRL};
+        addAction(new ShortcutListener("commit", com.vaadin.event.ShortcutAction.KeyCode.ENTER, modifiers) {
+            @Override
+            public void handleAction(Object sender, Object target) {
+                commit();
+            }
+        });
 
         layout = new VerticalLayout();
         layout.setWidthUndefined();
@@ -192,56 +208,60 @@ public class FolderEditWindow extends Window {
         okBtn.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                SearchFolder folder = (SearchFolder)FolderEditWindow.this.folder;
-                if (StringUtils.trimToNull(nameField.getValue()) == null) {
-                    String msg = messages.getMainMessage("folders.folderEditWindow.emptyName");
-                    App.getInstance().getWindowManager().showNotification(msg, IFrame.NotificationType.TRAY);
-                    return;
-                }
-                folder.setName(nameField.getValue());
-                folder.setTabName(tabNameField.getValue());
-
-                if (sortOrderField.getValue() == null || "".equals(sortOrderField.getValue())) {
-                    folder.setSortOrder(null);
-                } else {
-                    String value = sortOrderField.getValue();
-                    int sortOrder;
-                    try {
-                        sortOrder = Integer.parseInt(value);
-                    } catch (NumberFormatException e) {
-                        String msg = messages.getMainMessage("folders.folderEditWindow.invalidSortOrder");
-                        App.getInstance().getWindowManager().showNotification(msg, IFrame.NotificationType.WARNING);
-                        return;
-                    }
-                    folder.setSortOrder(sortOrder);
-                }
-
-                Object parent = parentSelect.getValue();
-                if (parent instanceof Folder)
-                    folder.setParent((Folder) parent);
-                else
-                    folder.setParent(null);
-
-                folder.setApplyDefault(Boolean.valueOf(applyDefaultCb.getValue().toString()));
-                if (globalCb != null) {
-                    if (BooleanUtils.isTrue(globalCb.getValue())) {
-                        folder.setUser(null);
-                    } else {
-                        folder.setUser(userSessionSource.getUserSession().getCurrentOrSubstitutedUser());
-                    }
-                } else {
-                    folder.setUser(userSessionSource.getUserSession().getCurrentOrSubstitutedUser());
-                }
-
-                if (presentation != null) {
-                    folder.setPresentation((Presentation) presentation.getValue());
-                }
-
-                FolderEditWindow.this.commitHandler.run();
-
-                close();
+                commit();
             }
         });
+    }
+
+    protected void commit() {
+        SearchFolder folder = (SearchFolder)FolderEditWindow.this.folder;
+        if (StringUtils.trimToNull(nameField.getValue()) == null) {
+            String msg = messages.getMainMessage("folders.folderEditWindow.emptyName");
+            App.getInstance().getWindowManager().showNotification(msg, IFrame.NotificationType.TRAY);
+            return;
+        }
+        folder.setName(nameField.getValue());
+        folder.setTabName(tabNameField.getValue());
+
+        if (sortOrderField.getValue() == null || "".equals(sortOrderField.getValue())) {
+            folder.setSortOrder(null);
+        } else {
+            String value = sortOrderField.getValue();
+            int sortOrder;
+            try {
+                sortOrder = Integer.parseInt(value);
+            } catch (NumberFormatException e) {
+                String msg = messages.getMainMessage("folders.folderEditWindow.invalidSortOrder");
+                App.getInstance().getWindowManager().showNotification(msg, IFrame.NotificationType.WARNING);
+                return;
+            }
+            folder.setSortOrder(sortOrder);
+        }
+
+        Object parent = parentSelect.getValue();
+        if (parent instanceof Folder)
+            folder.setParent((Folder) parent);
+        else
+            folder.setParent(null);
+
+        folder.setApplyDefault(Boolean.valueOf(applyDefaultCb.getValue().toString()));
+        if (globalCb != null) {
+            if (BooleanUtils.isTrue(globalCb.getValue())) {
+                folder.setUser(null);
+            } else {
+                folder.setUser(userSessionSource.getUserSession().getCurrentOrSubstitutedUser());
+            }
+        } else {
+            folder.setUser(userSessionSource.getUserSession().getCurrentOrSubstitutedUser());
+        }
+
+        if (presentation != null) {
+            folder.setPresentation((Presentation) presentation.getValue());
+        }
+
+        FolderEditWindow.this.commitHandler.run();
+
+        close();
     }
 
     protected void fillParentSelect() {

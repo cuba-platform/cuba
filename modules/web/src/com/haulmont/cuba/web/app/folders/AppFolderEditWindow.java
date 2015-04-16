@@ -91,52 +91,57 @@ public class AppFolderEditWindow extends FolderEditWindow {
         okBtn.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                AppFolder folder = (AppFolder) AppFolderEditWindow.this.folder;
-                if (StringUtils.trimToNull(nameField.getValue()) == null) {
-                    String msg = messages.getMessage(messagesPack, "folders.folderEditWindow.emptyName");
-                    App.getInstance().getWindowManager().showNotification(msg, IFrame.NotificationType.TRAY);
-                    return;
-                }
-                folder.setName(nameField.getValue());
-                folder.setTabName(tabNameField.getValue());
-
-                if (sortOrderField.getValue() == null || "".equals(sortOrderField.getValue())) {
-                    folder.setSortOrder(null);
-                } else {
-                    Object value = sortOrderField.getValue();
-                    int sortOrder;
-                    try {
-                        sortOrder = Integer.parseInt((String) value);
-                    } catch (NumberFormatException e) {
-                        String msg = messages.getMessage(messagesPack, "folders.folderEditWindow.invalidSortOrder");
-                        App.getInstance().getWindowManager().showNotification(msg, IFrame.NotificationType.TRAY);
-                        return;
-                    }
-                    folder.setSortOrder(sortOrder);
-                }
-
-                Object parent = parentSelect.getValue();
-                if (parent instanceof Folder) {
-                    folder.setParent((Folder) parent);
-                } else {
-                    folder.setParent(null);
-                }
-
-                if (visibilityScriptField != null) {
-                    String scriptText = visibilityScriptField.getValue();
-                    folder.setVisibilityScript(scriptText);
-                }
-                if (quantityScriptField != null) {
-                    String scriptText = quantityScriptField.getValue();
-                    folder.setQuantityScript(scriptText);
-                }
-                folder.setApplyDefault(Boolean.valueOf(applyDefaultCb.getValue().toString()));
-
-                AppFolderEditWindow.this.commitHandler.run();
-
-                close();
+                commit();
             }
         });
+    }
+
+    @Override
+    protected void commit() {
+        AppFolder folder = (AppFolder) AppFolderEditWindow.this.folder;
+        if (StringUtils.trimToNull(nameField.getValue()) == null) {
+            String msg = messages.getMessage(messagesPack, "folders.folderEditWindow.emptyName");
+            App.getInstance().getWindowManager().showNotification(msg, IFrame.NotificationType.TRAY);
+            return;
+        }
+        folder.setName(nameField.getValue());
+        folder.setTabName(tabNameField.getValue());
+
+        if (sortOrderField.getValue() == null || "".equals(sortOrderField.getValue())) {
+            folder.setSortOrder(null);
+        } else {
+            Object value = sortOrderField.getValue();
+            int sortOrder;
+            try {
+                sortOrder = Integer.parseInt((String) value);
+            } catch (NumberFormatException e) {
+                String msg = messages.getMessage(messagesPack, "folders.folderEditWindow.invalidSortOrder");
+                App.getInstance().getWindowManager().showNotification(msg, IFrame.NotificationType.TRAY);
+                return;
+            }
+            folder.setSortOrder(sortOrder);
+        }
+
+        Object parent = parentSelect.getValue();
+        if (parent instanceof Folder) {
+            folder.setParent((Folder) parent);
+        } else {
+            folder.setParent(null);
+        }
+
+        if (visibilityScriptField != null) {
+            String scriptText = visibilityScriptField.getValue();
+            folder.setVisibilityScript(scriptText);
+        }
+        if (quantityScriptField != null) {
+            String scriptText = quantityScriptField.getValue();
+            folder.setQuantityScript(scriptText);
+        }
+        folder.setApplyDefault(Boolean.valueOf(applyDefaultCb.getValue().toString()));
+
+        AppFolderEditWindow.this.commitHandler.run();
+
+        close();
     }
 
     @Override
