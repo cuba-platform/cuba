@@ -44,9 +44,21 @@ public class CustomConditionDescriptor extends AbstractConditionDescriptor {
     @Override
     public AbstractCondition createCondition() {
         CustomCondition condition = new CustomCondition(this,
-                element.getText(), element.attributeValue("join"), entityAlias);
+                element.getText(), getJoinValue(), entityAlias);
         condition.setInExpr(inExpr);
         return condition;
+    }
+
+    protected String getJoinValue() {
+        Element joinElement = element.element("join");
+        String join;
+        if (joinElement != null) {
+            join = joinElement.getText();
+        } else {
+            //for backward compatibility
+            join = element.attributeValue("join");
+        }
+        return join;
     }
 
     @Override

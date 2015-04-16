@@ -62,7 +62,7 @@ public class QueryFilter {
         Condition condition;
 
         if ("c".equals(conditionElement.getName())) {
-            condition = new Clause(conditionElement.getText(), conditionElement.attributeValue("join"));
+            condition = new Clause(conditionElement.getText(), getJoinValue(conditionElement));
             // support unary conditions without parameters in text (e.g. "is null")
             for (Element paramElem : Dom4j.elements(conditionElement, "param")) {
                 Set<ParameterInfo> params = ParametersHelper.parseQuery(":" + paramElem.attributeValue("name"));
@@ -94,6 +94,18 @@ public class QueryFilter {
         }
 
         return condition;
+    }
+
+    private String getJoinValue(Element conditionElement) {
+        Element joinElement = conditionElement.element("join");
+        String join;
+        if (joinElement != null) {
+            join = joinElement.getText();
+        } else {
+            //for backward compatibility
+            join = conditionElement.attributeValue("join");
+        }
+        return join;
     }
 
     private void parse(Element parentElem, List<Condition> conditions) {

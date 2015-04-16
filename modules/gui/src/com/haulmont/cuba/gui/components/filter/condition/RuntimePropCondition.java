@@ -69,7 +69,15 @@ public class RuntimePropCondition extends AbstractCondition {
 
         entityAlias = element.attributeValue("entityAlias");
         text = element.getText();
-        join = element.attributeValue("join");
+
+        Element joinElement = element.element("join");
+        if (joinElement != null) {
+            this.join = joinElement.getText();
+        } else {
+            //for backward compatibility
+            this.join = element.attributeValue("join");
+        }
+
         categoryId = UUID.fromString(element.attributeValue("category"));
         String categoryAttributeValue = element.attributeValue("categoryAttribute");
         if (!Strings.isNullOrEmpty(categoryAttributeValue)) {
@@ -98,7 +106,8 @@ public class RuntimePropCondition extends AbstractCondition {
         element.addAttribute("categoryAttribute", categoryAttributeId.toString());
         element.addAttribute("entityAlias", entityAlias);
         if (!isBlank(join)) {
-            element.addAttribute("join", StringEscapeUtils.escapeXml(join));
+            Element joinElement = element.addElement("join");
+            joinElement.addCDATA(join);
         }
     }
 
