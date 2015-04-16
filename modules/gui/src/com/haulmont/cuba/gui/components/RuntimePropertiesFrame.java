@@ -5,7 +5,6 @@
 
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.*;
@@ -19,6 +18,7 @@ import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.sys.SetValueEntity;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.WindowParam;
 import com.haulmont.cuba.gui.components.validators.DateValidator;
 import com.haulmont.cuba.gui.components.validators.DoubleValidator;
 import com.haulmont.cuba.gui.components.validators.IntegerValidator;
@@ -26,11 +26,16 @@ import com.haulmont.cuba.gui.components.validators.LongValidator;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.StringUtils;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+
+import static com.haulmont.cuba.gui.components.PickerField.LookupAction;
 
 /**
  * Universal frame for editing Runtime properties
@@ -41,34 +46,43 @@ import java.util.Map;
  */
 public class RuntimePropertiesFrame extends AbstractWindow {
 
-    protected RuntimePropsDatasource rds;
-    private CollectionDatasource categoriesDs;
-
     public static final String NAME = "runtimeProperties";
+    public static final String DEFAULT_FIELD_WIDTH = "100%";
 
-    private static final String DEFAULT_FIELD_WIDTH = "100%";
+    protected RuntimePropsDatasource rds;
+    protected CollectionDatasource categoriesDs;
+
+    protected boolean requiredControlEnabled = true;
+
+    @Inject
+    protected BoxLayout categoryFieldBox;
+
+    @Inject
+    protected LookupField categoryField;
+
+    @Inject
+    protected ComponentsFactory componentsFactory;
+
+    @WindowParam
     protected String rows;
+
+    @WindowParam
     protected String cols;
-    private String fieldWidth;
+
+    @WindowParam
+    protected String fieldWidth;
+
+    @WindowParam
     protected Boolean borderVisible;
-    protected BoxLayout contentPane;
-    private FieldGroup categoryFieldGroup;
-    private boolean requiredControlEnabled = true;
 
     @Override
     public void init(Map<String, Object> params) {
         initDatasources(params);
 
-        rows = (String) params.get("rows");
-        cols = (String) params.get("cols");
-        fieldWidth = (String) params.get("fieldWidth");
-        borderVisible = Boolean.valueOf((String) params.get("borderVisible"));
-
         if (StringUtils.isEmpty(fieldWidth)) {
             fieldWidth = DEFAULT_FIELD_WIDTH;
         }
 
-        contentPane = getComponent("contentPane");
         initCategoryField();
         loadComponent(rds);
     }
@@ -89,62 +103,36 @@ public class RuntimePropertiesFrame extends AbstractWindow {
             throw new DevelopmentException("runtimeProperties initialization error: categoriesDs '" + categoriesDsId + "' does not exists");
     }
 
-    private void initCategoryField() {
-        categoryFieldGroup = AppConfig.getFactory().createComponent(FieldGroup.NAME);
-        categoryFieldGroup.setId("categoryFieldGroup");
-        categoryFieldGroup.setFrame(this.<IFrame>getFrame());
-        categoryFieldGroup.setBorderVisible(borderVisible);
-
-        contentPane.add(categoryFieldGroup);
-        registerComponent(categoryFieldGroup);
-
-        FieldGroup.FieldConfig field = new FieldGroup.FieldConfig("category");
-
-        field.setCustom(true);
-        categoryFieldGroup.addField(field);
-        categoryFieldGroup.setDatasource(rds.getMainDs());
-        categoryFieldGroup.addCustomField("category", new FieldGroup.CustomFieldGenerator() {
-            @Override
-            public Component generateField(Datasource datasource, String propertyId) {
-                LookupField field = AppConfig.getFactory().createComponent(LookupField.NAME);
-                field.setDatasource(rds.getMainDs(), "category");
-                field.setOptionsDatasource(categoriesDs);
-//                field.setHeight("-1px");
-                field.setWidth(fieldWidth);
-                field.setCaptionProperty("name");
-                field.setCaption(getMessage("runtimeProperties.category"));
-                return field;
-            }
-        });
+    protected void initCategoryField() {
+        categoryField.setDatasource(rds.getMainDs(), "category");
+        categoryField.setOptionsDatasource(categoriesDs);
     }
 
     protected void loadComponent(Datasource ds) {
-
         ds.addListener(new DsListenerAdapter() {
             @Override
             public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
                 if (!Datasource.State.VALID.equals(state)) {
                     return;
                 }
-                Component runtime = getComponent("runtime");
-                final FieldGroup newRuntime = AppConfig.getFactory().createComponent(FieldGroup.NAME);
-                newRuntime.setBorderVisible(borderVisible);
-                newRuntime.setId("runtime");
-                if (runtime != null) {
-                    contentPane.remove(runtime);
-                    Component cfg = contentPane.getComponent("categoryFieldGroup");
-                    if (cfg != null) {
-                        contentPane.remove(cfg);
-                        contentPane.add(cfg);
-                    }
-                }
-                newRuntime.setFrame(getFrame());
-                contentPane.add(newRuntime);
-                registerComponent(newRuntime);
 
-                final java.util.List<FieldGroup.FieldConfig> fields = newRuntime.getFields();
-                for (FieldGroup.FieldConfig field : fields)
+                Component runtime = getComponent("runtime");
+                if (runtime != null) {
+                    remove(runtime);
+                }
+
+                final FieldGroup newRuntime = componentsFactory.createComponent(FieldGroup.NAME);
+                newRuntime.setBorderVisible(Boolean.TRUE.equals(borderVisible));
+                newRuntime.setWidth("100%");
+                newRuntime.setId("runtime");
+
+                newRuntime.setFrame(getFrame());
+                add(newRuntime);
+
+                final List<FieldGroup.FieldConfig> fields = newRuntime.getFields();
+                for (FieldGroup.FieldConfig field : fields) {
                     newRuntime.removeField(field);
+                }
 
                 int rowsPerColumn;
                 int propertiesCount = rds.getMetaClass().getProperties().size();
@@ -162,31 +150,30 @@ public class RuntimePropertiesFrame extends AbstractWindow {
 
                 int columnNo = 0;
                 int fieldsCount = 0;
-                final java.util.List<FieldGroup.FieldConfig> rootFields = loadFields(newRuntime, ds);
-                for (final FieldGroup.FieldConfig field : rootFields) {
+                List<FieldGroup.FieldConfig> rootFields = loadFields(newRuntime, ds);
+                for (FieldGroup.FieldConfig fieldConfig : rootFields) {
                     fieldsCount++;
-                    newRuntime.addField(field, columnNo);
+                    newRuntime.addField(fieldConfig, columnNo);
                     if (fieldsCount % rowsPerColumn == 0) {
                         columnNo++;
                         newRuntime.setColumns(columnNo + 1);
                     }
                 }
-                if (!rootFields.isEmpty())
+                if (!rootFields.isEmpty()) {
                     newRuntime.setDatasource(ds);
+                }
 
                 addCustomFields(newRuntime, rootFields, ds);
 
-                for (final FieldGroup.FieldConfig field : newRuntime.getFields()) {
-                    loadValidators(newRuntime, field);
-                    loadRequired(newRuntime, field);
-                    //loadEditable(component, field);
-                    //loadEnabled(component, field);
+                for (FieldGroup.FieldConfig fieldConfig : newRuntime.getFields()) {
+                    loadValidators(newRuntime, fieldConfig);
+                    loadRequired(newRuntime, fieldConfig);
                 }
             }
         });
     }
 
-    protected void addCustomFields(FieldGroup component, java.util.List<FieldGroup.FieldConfig> fields, final Datasource ds) {
+    protected void addCustomFields(FieldGroup component, List<FieldGroup.FieldConfig> fields, final Datasource ds) {
         MetaClass meta = ds.getMetaClass();
         Collection<MetaProperty> metaProperties = meta.getProperties();
         for (final MetaProperty property : metaProperties) {
@@ -199,7 +186,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
                             component.addCustomField(property.getName(), new FieldGroup.CustomFieldGenerator() {
                                 @Override
                                 public Component generateField(Datasource datasource, String propertyId) {
-                                    LookupField field = AppConfig.getFactory().createComponent(LookupField.NAME);
+                                    LookupField field = componentsFactory.createComponent(LookupField.NAME);
                                     field.setFrame(RuntimePropertiesFrame.this);
                                     CollectionDatasource fieldDs = getDsContext().get(propertyId);
                                     if (fieldDs == null) {
@@ -237,19 +224,19 @@ public class RuntimePropertiesFrame extends AbstractWindow {
                                         .setViewName(View.MINIMAL)
                                         .buildCollectionDatasource();
                                 optionsDs.refresh();
-                                Action action = pickerField.getAction(PickerField.LookupAction.NAME);
+                                Action action = pickerField.getAction(LookupAction.NAME);
                                 if (action != null)
                                     pickerField.removeAction(action);
 
                                         ((LookupPickerField) pickerField).setOptionsDatasource(optionsDs);
                             } else {
-                                pickerField = AppConfig.getFactory().createComponent(PickerField.NAME);
+                                pickerField = componentsFactory.createComponent(PickerField.NAME);
                                 pickerField.addLookupAction();
                             }
                             pickerField.setMetaClass(ds.getMetaClass());
                             pickerField.setFrame(RuntimePropertiesFrame.this);
                             pickerField.setDatasource(ds, propertyId);
-                            PickerField.LookupAction lookupAction = (PickerField.LookupAction) pickerField.getAction(PickerField.LookupAction.NAME);
+                            LookupAction lookupAction = (LookupAction) pickerField.getAction(LookupAction.NAME);
                             if (lookupAction != null) {
                                 RuntimePropertiesEntity runtimePropertiesEntity = (RuntimePropertiesEntity) ds.getItem();
                                 CategoryAttributeValue categoryAttributeValue = runtimePropertiesEntity.getCategoryValue(property.getName());
@@ -272,17 +259,16 @@ public class RuntimePropertiesFrame extends AbstractWindow {
         }
     }
 
-    protected java.util.List<FieldGroup.FieldConfig> loadFields(FieldGroup component, Datasource ds) {
+    protected List<FieldGroup.FieldConfig> loadFields(FieldGroup component, Datasource ds) {
         MetaClass meta = ds.getMetaClass();
         Collection<MetaProperty> metaProperties = meta.getProperties();
-        java.util.List<FieldGroup.FieldConfig> fields = new ArrayList<>();
+        List<FieldGroup.FieldConfig> fields = new ArrayList<>();
         for (MetaProperty property : metaProperties) {
             FieldGroup.FieldConfig field = new FieldGroup.FieldConfig(property.getName());
             field.setCaption(property.getName());
             field.setWidth(fieldWidth);
             fields.add(field);
             Range range = property.getRange();
-//            if (!range.isDatatype() && range.asClass().getJavaClass().equals(SetValueEntity.class))
             if (!range.isDatatype())
                 field.setCustom(true);
         }
@@ -334,7 +320,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
     }
 
     public void setCategoryFieldVisible(boolean visible) {
-        categoryFieldGroup.setVisible(visible);
+        categoryFieldBox.setVisible(visible);
     }
 
     public boolean isRequiredControlEnabled() {
@@ -352,7 +338,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
     }
 
     public void setCategoryFieldEditable(boolean editable) {
-        categoryFieldGroup.setEditable(editable);
+        categoryField.setEditable(editable);
         FieldGroup newRuntime = getComponent("runtime");
         if (newRuntime != null) {
             newRuntime.setEditable(editable);

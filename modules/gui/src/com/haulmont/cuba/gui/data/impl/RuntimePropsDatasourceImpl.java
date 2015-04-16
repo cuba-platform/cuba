@@ -10,7 +10,6 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.SetValueEntity;
-import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.data.*;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -51,6 +50,7 @@ public class RuntimePropsDatasourceImpl
         this.setCommitMode(CommitMode.DATASTORE);
 
         mainDs.addListener(new DsListenerAdapter() {
+            @Override
             public void valueChanged(Entity source, String property, Object prevValue, Object value) {
                 if (property.equals("category")) {
                     categoryChanged=true;
@@ -79,6 +79,8 @@ public class RuntimePropsDatasourceImpl
         if (!inittedBefore && PersistenceHelper.isNew(entity) && (entity.getCategory() == null)) {
             entity.setCategory(getDefaultCategory(entity));
         }
+
+        // todo atomic load of values and attributes
 
         LoadContext valuesContext = new LoadContext(CategoryAttributeValue.class);
         LoadContext.Query query = valuesContext.setQueryString("select a from sys$CategoryAttributeValue a" +
