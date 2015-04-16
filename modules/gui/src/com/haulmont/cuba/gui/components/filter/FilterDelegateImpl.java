@@ -279,8 +279,7 @@ public class FilterDelegateImpl implements FilterDelegate {
         ftsSwitch.setAlignment(Component.Alignment.MIDDLE_RIGHT);
 
         String layoutDescription = clientConfig.getGenericFilterControlsLayout();
-
-        ControlsLayoutBuilder controlsLayoutBuilder = new ControlsLayoutBuilder(layoutDescription);
+        ControlsLayoutBuilder controlsLayoutBuilder = createControlsLayoutBuilder(layoutDescription);
         controlsLayoutBuilder.build();
     }
 
@@ -1673,6 +1672,10 @@ public class FilterDelegateImpl implements FilterDelegate {
         groupBoxLayout.setCaption(Strings.isNullOrEmpty(filterTitle) ? caption : caption + ": " + filterTitle);
     }
 
+    protected ControlsLayoutBuilder createControlsLayoutBuilder(String layoutDescription) {
+        return new ControlsLayoutBuilder(layoutDescription);
+    }
+
     protected class FiltersLookupChangeListener implements ValueListener {
 
         @Override
@@ -2071,11 +2074,16 @@ public class FilterDelegateImpl implements FilterDelegate {
      * See template format in documentation for {@link ClientConfig#getGenericFilterControlsLayout()}
      */
     protected class ControlsLayoutBuilder {
-        protected Map<String, List<String>> components = new LinkedHashMap<>();
 
+        protected Map<String, List<String>> components = new LinkedHashMap<>();
         protected Map<String, AbstractAction> filterActions = new HashMap<>();
 
         public ControlsLayoutBuilder(String layoutDescription) {
+            initFilterActions();
+            parseLayoutDescription(layoutDescription);
+        }
+
+        protected void initFilterActions() {
             filterActions.put("save", saveAction);
             filterActions.put("save_as", saveAsAction);
             filterActions.put("edit", editAction);
@@ -2084,8 +2092,6 @@ public class FilterDelegateImpl implements FilterDelegate {
             filterActions.put("save_search_folder", saveAsSearchFolderAction);
             filterActions.put("save_app_folder", saveAsAppFolderAction);
             filterActions.put("make_default", makeDefaultAction);
-
-            parseLayoutDescription(layoutDescription);
         }
 
         protected void parseLayoutDescription(String layoutDescription) {
@@ -2107,7 +2113,10 @@ public class FilterDelegateImpl implements FilterDelegate {
         public void build() {
             for (Map.Entry<String, List<String>> entry : components.entrySet()) {
                 Component component = getControlsLayoutComponent(entry.getKey(), entry.getValue());
-                if (component == null) continue;
+                if (component == null) {
+                    log.warn("Filter controls layout component " + entry.getKey() + " not supported");
+                    continue;
+                }
                 controlsLayout.add(component);
                 if (component == controlsLayoutGap) {
                     controlsLayout.expand(component);
@@ -2148,7 +2157,6 @@ public class FilterDelegateImpl implements FilterDelegate {
                 case "save_app_folder":
                     return createActionBtn(name, options);
             }
-            log.warn("Filter controls layout component " + name + " not supported");
             return null;
         }
 
