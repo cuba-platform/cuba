@@ -18,10 +18,7 @@ import org.jdesktop.swingx.decorator.ComponentAdapter;
 
 import javax.swing.*;
 import javax.swing.event.*;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumnModel;
-import javax.swing.table.TableModel;
+import javax.swing.table.*;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.util.*;
@@ -366,16 +363,13 @@ public class DesktopTreeTable extends DesktopAbstractTable<JXTreeTableExt> imple
 
     @Override
     public void repaint() {
-        TableCellEditor cellEditor = impl.getCellEditor();
-        if (cellEditor instanceof DesktopTableCellEditor) {
-            ((DesktopTableCellEditor) cellEditor).clearCache();
-        }
         for (TableCellRenderer renderer : cellRenderers.values()) {
             if (renderer instanceof DesktopTableCellEditor) {
                 ((DesktopTableCellEditor) renderer).clearCache();
             }
         }
-        impl.repaint();
+
+        super.repaint();
     }
 
     @Override
@@ -403,11 +397,12 @@ public class DesktopTreeTable extends DesktopAbstractTable<JXTreeTableExt> imple
             throw new IllegalArgumentException("generator is null");
 
         Column col = getColumn(columnId);
-        tableModel.addGeneratedColumn(col);
+
         TableColumnModel columnModel = impl.getColumnModel();
         int columnIndex = columnModel.getColumnIndex(col);
         if (columnIndex == 0)
             throw new UnsupportedOperationException("Unable to add cell renderer for hierarchical column in TreeTable");
-        cellRenderers.put(columnIndex, new DesktopTableCellEditor(this, generator, componentClass));
+
+        addGeneratedColumnInternal(columnId, generator, componentClass);
     }
 }

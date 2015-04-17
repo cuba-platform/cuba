@@ -1331,6 +1331,11 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         checkArgument(columnId != null, "columnId is null");
         checkArgument(generator != null, "generator is null for column id '%s'", columnId);
 
+        addGeneratedColumnInternal(columnId, generator, componentClass);
+    }
+
+    protected void addGeneratedColumnInternal(String columnId, ColumnGenerator generator,
+                                              Class<? extends com.haulmont.cuba.gui.components.Component> componentClass) {
         Column col = getColumn(columnId);
         Column associatedRuntimeColumn = null;
         if (col == null) {
