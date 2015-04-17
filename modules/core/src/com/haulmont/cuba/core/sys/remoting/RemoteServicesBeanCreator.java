@@ -19,6 +19,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -50,24 +51,45 @@ public class RemoteServicesBeanCreator implements BeanFactoryPostProcessor, Appl
             String serviceName = entry.getKey();
             Object service = entry.getValue();
 
-            List<String> intfNames = new ArrayList<>();
+            List<Class> serviceInterfaces = new ArrayList<>();
             List<Class> interfaces = ClassUtils.getAllInterfaces(service.getClass());
             for (Class intf : interfaces) {
                 if (intf.getName().endsWith("Service"))
-                    intfNames.add(intf.getName());
+                    serviceInterfaces.add(intf);
             }
-            if (intfNames.size() == 0) {
-                log.warn("Bean " + serviceName + " has @Service annotation but no interfaces named '*Service'. Ignoring it.");
-            } else if (intfNames.size() > 1) {
-                log.warn("Bean " + serviceName + " has @Service annotation but more than one interface named '*Service'. Ignoring it.");
+            String intfName = null;
+            if (serviceInterfaces.size() == 0) {
+                log.error("Bean " + serviceName + " has @Service annotation but no interfaces named '*Service'. Ignoring it.");
+            } else if (serviceInterfaces.size() > 1) {
+                intfName = findLowestSubclassName(serviceInterfaces);
+                if (intfName == null)
+                    log.error("Bean " + serviceName + " has @Service annotation and more than one interface named '*Service', " +
+                            "but these interfaces are not from the same hierarchy. Ignoring it.");
             } else {
+                intfName = serviceInterfaces.get(0).getName();
+            }
+            if (intfName != null) {
                 BeanDefinition definition = new RootBeanDefinition(HttpServiceExporter.class);
                 MutablePropertyValues propertyValues = definition.getPropertyValues();
                 propertyValues.add("service", service);
-                propertyValues.add("serviceInterface", intfNames.get(0));
+                propertyValues.add("serviceInterface", intfName);
                 registry.registerBeanDefinition("/" + serviceName, definition);
                 log.debug("Bean " + serviceName + " configured for export via HTTP");
             }
         }
+    }
+
+    @Nullable
+    protected String findLowestSubclassName(List<Class> interfaces) {
+        outer:
+        for (Class<?> intf : interfaces) {
+            for (Class<?> other : interfaces) {
+                if (intf != other && !other.isAssignableFrom(intf)) {
+                    continue outer;
+                }
+            }
+            return intf.getName();
+        }
+        return null;
     }
 }
