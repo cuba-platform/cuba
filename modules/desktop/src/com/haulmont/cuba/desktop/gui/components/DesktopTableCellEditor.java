@@ -8,8 +8,8 @@ package com.haulmont.cuba.desktop.gui.components;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.desktop.sys.vcl.DatePicker.DatePicker;
 import com.haulmont.cuba.desktop.sys.vcl.Flushable;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Label;
-import com.haulmont.cuba.gui.components.Table;
 import org.jdesktop.swingx.JXHyperlink;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
@@ -20,6 +20,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
+import java.awt.Component;
 import java.util.*;
 
 /**
@@ -30,6 +31,7 @@ public class DesktopTableCellEditor extends AbstractCellEditor implements TableC
 
     // Client property key for cell editor components, value of property contains table for this editor
     public static final String CELL_EDITOR_TABLE = "CELL_EDITOR_TABLE";
+    public static final String CELL_COMPONENT = "CELL_COMPONENT";
 
     private static final long serialVersionUID = 5217563286634642347L;
 
@@ -124,6 +126,7 @@ public class DesktopTableCellEditor extends AbstractCellEditor implements TableC
         } else {
             JComponent jComposition = DesktopComponentsHelper.getComposition(component);
             jComposition.putClientProperty(CELL_EDITOR_TABLE, desktopAbstractTable.getComponent());
+            jComposition.putClientProperty(CELL_COMPONENT, component);
 
             comp = jComposition;
         }
@@ -230,6 +233,12 @@ public class DesktopTableCellEditor extends AbstractCellEditor implements TableC
                 }
             }
             jcomponent.setBackground(background);
+        }
+
+        com.haulmont.cuba.gui.components.Component cellComponent =
+                (com.haulmont.cuba.gui.components.Component) jcomponent.getClientProperty(CELL_COMPONENT);
+        if (cellComponent instanceof DesktopAbstractField) {
+            ((DesktopAbstractField) cellComponent).updateMissingValueState();
         }
 
         jcomponent.setFont(table.getFont());
