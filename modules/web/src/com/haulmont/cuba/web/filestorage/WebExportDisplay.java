@@ -7,6 +7,7 @@ package com.haulmont.cuba.web.filestorage;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.FileTypesHelper;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.export.*;
 import com.haulmont.cuba.web.App;
@@ -110,6 +111,11 @@ public class WebExportDisplay implements ExportDisplay {
             }
         };
         StreamResource resource = new StreamResource(streamSource, resourceName);
+        if (exportFormat != null && StringUtils.isNotEmpty(exportFormat.getContentType())) {
+            resource.setMIMEType(exportFormat.getContentType());
+        } else {
+            resource.setMIMEType(FileTypesHelper.getMIMEType(resourceName));
+        }
 
         if (newWindow) {
             fileDownloader.viewDocument(resource);
