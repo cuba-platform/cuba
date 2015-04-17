@@ -19,6 +19,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
@@ -391,23 +392,50 @@ public class DesktopTree extends DesktopAbstractActionsHolderComponent<JTree> im
 
     protected class SelectionListener implements TreeSelectionListener {
 
+        @SuppressWarnings("unchecked")
         @Override
         public void valueChanged(TreeSelectionEvent e) {
-            Set selected = getSelected();
+            Set<Entity> selected = getSelected();
             if (selected.isEmpty()) {
+                Entity dsItem = datasource.getItemIfValid();
                 datasource.setItem(null);
+
+                if (dsItem == null) {
+                    // in this case item change event will not be generated
+                    refreshActionsState();
+                }
             } else {
                 Object item = selected.iterator().next();
-                if (item instanceof Entity) {
+                if (item != null) {
                     // reset selection and select new item
                     if (isMultiSelect()) {
                         datasource.setItem(null);
                     }
-                    datasource.setItem((Entity) item);
+                    Entity newItem = selected.iterator().next();
+                    Entity dsItem = datasource.getItemIfValid();
+                    datasource.setItem(newItem);
+
+                    if (ObjectUtils.equals(dsItem, newItem)) {
+                        // in this case item change event will not be generated
+                        refreshActionsState();
+                    }
                 } else {
+                    // todo remove this if branch, should not happen
+                    Entity dsItem = datasource.getItemIfValid();
                     datasource.setItem(null);
+
+                    if (dsItem == null) {
+                        // in this case item change event will not be generated
+                        refreshActionsState();
+                    }
                 }
             }
+        }
+    }
+
+    protected void refreshActionsState() {
+        for (Action action : getActions()) {
+            action.refreshState();
         }
     }
 

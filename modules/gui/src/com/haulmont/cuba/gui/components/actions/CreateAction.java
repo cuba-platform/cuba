@@ -111,7 +111,7 @@ public class CreateAction extends BaseAction implements Action.HasOpenType {
         boolean createPermitted = security.isEntityOpPermitted(metaClass, EntityOp.CREATE);
 
         if (createPermitted && ownerDatasource instanceof PropertyDatasource) {
-            PropertyDatasource propertyDatasource = target.getDatasource();
+            PropertyDatasource propertyDatasource = (PropertyDatasource) ownerDatasource;
 
             MetaClass parentMetaClass = propertyDatasource.getMaster().getMetaClass();
             MetaProperty metaProperty = propertyDatasource.getProperty();

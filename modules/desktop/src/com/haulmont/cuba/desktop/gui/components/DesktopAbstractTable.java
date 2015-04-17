@@ -31,6 +31,7 @@ import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import net.miginfocom.layout.CC;
 import net.miginfocom.swing.MigLayout;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -313,6 +314,12 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                     action.actionPerform(DesktopAbstractTable.this);
                 }
             }
+        }
+    }
+
+    protected void refreshActionsState() {
+        for (Action action : getActions()) {
+            action.refreshState();
         }
     }
 
@@ -1022,12 +1029,27 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                         selectedItems = getSelected();
 
                         if (selectedItems.isEmpty()) {
+                            Entity dsItem = datasource.getItemIfValid();
                             datasource.setItem(null);
+
+                            if (dsItem == null) {
+                                // in this case item change event will not be generated
+                                refreshActionsState();
+                            }
                         } else {
                             // reset selection and select new item
-                            if (isMultiSelect())
+                            if (isMultiSelect()) {
                                 datasource.setItem(null);
-                            datasource.setItem(selectedItems.iterator().next());
+                            }
+
+                            Entity newItem = selectedItems.iterator().next();
+                            Entity dsItem = datasource.getItemIfValid();
+                            datasource.setItem(newItem);
+
+                            if (ObjectUtils.equals(dsItem, newItem)) {
+                                // in this case item change event will not be generated
+                                refreshActionsState();
+                            }
                         }
                     }
                 }

@@ -50,6 +50,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.TextArea;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
@@ -484,12 +485,26 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
                 final Set<Entity> selected = getSelected();
                 if (selected.isEmpty()) {
+                    Entity dsItem = datasource.getItemIfValid();
                     datasource.setItem(null);
+                    if (dsItem == null) {
+                        // in this case item change event will not be generated
+                        refreshActionsState();
+                    }
                 } else {
                     // reset selection and select new item
-                    if (isMultiSelect())
+                    if (isMultiSelect()) {
                         datasource.setItem(null);
-                    datasource.setItem(selected.iterator().next());
+                    }
+
+                    Entity newItem = selected.iterator().next();
+                    Entity dsItem = datasource.getItemIfValid();
+                    datasource.setItem(newItem);
+
+                    if (ObjectUtils.equals(dsItem, newItem)) {
+                        // in this case item change event will not be generated
+                        refreshActionsState();
+                    }
                 }
             }
         });
@@ -547,6 +562,11 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         component.setCellStyleGenerator(createStyleGenerator());
     }
 
+    protected void refreshActionsState() {
+        for (Action action : getActions()) {
+            action.refreshState();
+        }
+    }
 
     protected StyleGeneratorAdapter createStyleGenerator() {
         return new StyleGeneratorAdapter();

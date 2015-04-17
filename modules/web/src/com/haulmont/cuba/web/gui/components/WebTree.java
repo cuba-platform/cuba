@@ -21,6 +21,7 @@ import com.haulmont.cuba.web.toolkit.ui.CubaTree;
 import com.vaadin.data.Property;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.ui.AbstractSelect;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Collections;
@@ -55,20 +56,39 @@ public class WebTree extends WebAbstractList<CubaTree> implements Tree {
                     @Override
                     public void valueChange(Property.ValueChangeEvent event) {
                         if (datasource != null) {
-                            Set selected = getSelected();
+                            Set<Entity> selected = getSelected();
                             if (selected.isEmpty()) {
+                                Entity dsItem = datasource.getItemIfValid();
                                 datasource.setItem(null);
+
+                                if (dsItem == null) {
+                                    // in this case item change event will not be generated
+                                    refreshActionsState();
+                                }
                             } else {
                                 // reset selection and select new item
                                 if (isMultiSelect()) {
                                     datasource.setItem(null);
                                 }
-                                datasource.setItem((Entity) selected.iterator().next());
+                                Entity newItem = selected.iterator().next();
+                                Entity dsItem = datasource.getItemIfValid();
+                                datasource.setItem(newItem);
+
+                                if (ObjectUtils.equals(dsItem, newItem)) {
+                                    // in this case item change event will not be generated
+                                    refreshActionsState();
+                                }
                             }
                         }
                     }
                 }
         );
+    }
+
+    protected void refreshActionsState() {
+        for (Action action : getActions()) {
+            action.refreshState();
+        }
     }
 
     @Override
