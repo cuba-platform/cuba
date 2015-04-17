@@ -1252,13 +1252,12 @@ public class FilterDelegateImpl implements FilterDelegate {
 
     protected void initDatasourceMaxResults() {
         if (useMaxResults) {
-            int maxResults;
-            Integer maxResultsFieldValue = maxResultsField.getValue();
-            if (maxResultsFieldValue != null) {
-                maxResults = maxResultsFieldValue;
-            } else
-                maxResults = persistenceManager.getMaxFetchUI(datasource.getMetaClass().getName());
-            datasource.setMaxResults(maxResults);
+            Integer maxResults = maxResultsField.getValue();
+            if (maxResults != null && maxResults > 0) {
+                datasource.setMaxResults(maxResults);
+            } else {
+                datasource.setMaxResults(persistenceManager.getMaxFetchUI(datasource.getMetaClass().getName()));
+            }
         }
         if (datasource instanceof CollectionDatasource.SupportsPaging) {
             ((CollectionDatasource.SupportsPaging) datasource).setFirstResult(0);
