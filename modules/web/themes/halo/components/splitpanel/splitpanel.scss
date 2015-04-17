@@ -29,7 +29,7 @@ $cuba-splitpanel-dock-button-width: round($v-unit-size / 3) !default;
   .cuba-splitpanel-dock-button {
     cursor: pointer;
     width: $cuba-splitpanel-dock-button-width;
-    background: transparent;
+    background: $v-panel-background-color;
     border: $border-width solid $border-color;
     font-family: FontAwesome;
     color: $button-color;
@@ -47,7 +47,7 @@ $cuba-splitpanel-dock-button-width: round($v-unit-size / 3) !default;
   }
 
   .cuba-splitpanel-dock-button-right {
-    border-left-color: $v-app-background-color;
+    border-left-color: $v-panel-background-color;
     margin-left: $cuba-splitpanel-splitter-width - $border-width;
     border-radius: 0 $border-radius $border-radius 0;
   }

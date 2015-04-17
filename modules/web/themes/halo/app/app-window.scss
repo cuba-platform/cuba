@@ -106,6 +106,10 @@
     height: 24px;
   }
 
+  .v-splitpanel-horizontal > div > .v-splitpanel-hsplitter div:before {
+    background: $v-panel-background-color;
+  }
+
   // Padding for main tabsheet content
 
   .cuba-splitpanel-dockable-right > div > div.v-splitpanel-second-container .cuba-app-tabbed-window.v-margin-left,
