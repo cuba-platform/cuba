@@ -1575,7 +1575,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         for (Column column : getColumns()) {
             TableColumn tableColumn = null;
             for (TableColumn implColumn : implColumns) {
-                if (column.getId().equals(implColumn.getIdentifier())) {
+                if (column.equals((implColumn.getIdentifier()))) {
                     tableColumn = implColumn;
                     break;
                 }
