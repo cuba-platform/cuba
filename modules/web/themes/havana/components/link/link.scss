@@ -1,0 +1,25 @@
+/*
+ * Copyright (c) 2008-2015 Haulmont. All rights reserved.
+ * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
+ */
+
+// Version: $Id$
+
+@mixin havana-link($primary-stylename: v-link) {
+
+  .#{$primary-stylename} > a {
+    border: 1px dashed transparent;
+    border-radius: $v-border-radius;
+    box-sizing: border-box;
+    display: inline-block;
+  }
+
+  .#{$primary-stylename} > a:focus {
+    outline: none;
+    border: 1px dashed $cuba-link-color;
+  }
+
+  .v-disabled.#{$primary-stylename} > a:focus {
+    border: 1px dashed transparent;
+  }
+}

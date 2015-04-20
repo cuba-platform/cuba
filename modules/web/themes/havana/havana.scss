@@ -19,6 +19,7 @@
 // Components
 @import "components/tree/tree";
 @import "components/label/label";
+@import "components/link/link";
 @import "components/table/table";
 @import "components/panel/panel";
 @import "components/window/window";
@@ -79,6 +80,7 @@
 
   @include havana-tree;
   @include havana-label;
+  @include havana-link;
   @include havana-table;
   @include havana-panel;
   @include havana-window;

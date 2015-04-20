@@ -11,12 +11,25 @@
     font-size: $v-font-size;
   }
 
+  $link-padding: 2px;
+
   .#{$primary-stylename}-link {
-    padding-left: 0;
-    padding-right: 0;
+    padding-left: $link-padding;
+    padding-right: $link-padding;
+    border: 1px dashed transparent;
+    height: auto;
 
     &:focus:after {
       box-shadow: none;
     }
+  }
+
+  .v-disabled.#{$primary-stylename}-link:focus {
+    border: 1px dashed transparent;
+  }
+
+  .#{$primary-stylename}-link:focus {
+    outline: none;
+    border: 1px dashed $v-link-font-color;
   }
 }

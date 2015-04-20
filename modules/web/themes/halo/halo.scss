@@ -17,6 +17,7 @@
 @import "components/panel/panel";
 @import "components/table/table";
 @import "components/label/label";
+@import "components/link/link";
 @import "components/button/button";
 @import "components/window/window";
 @import "components/menubar/menubar";
@@ -64,6 +65,7 @@
 
   @include halo-tree;
   @include halo-label;
+  @include halo-link;
   @include halo-panel;
   @include halo-table;
   @include halo-button;
