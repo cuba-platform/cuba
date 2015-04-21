@@ -26,6 +26,7 @@ public class MessagesTest extends CubaTestCase {
     public MessagesTest() {
         appender = new TestAppender();
         Logger.getRootLogger().addAppender(appender);
+        Logger.getLogger("com.haulmont.cuba.core.sys.AbstractMessages").setLevel(Level.TRACE);
     }
 
     public void test() {
@@ -193,6 +194,23 @@ public class MessagesTest extends CubaTestCase {
 
         msg = messages.getMessage("com.haulmont.cuba.core.mp_test.nested", "non-existing-message", uss.getLocale());
         assertEquals("non-existing-message", msg);
+    }
+
+    public void testMainMessagePack() throws Exception {
+        Messages messages = AppBeans.get(Messages.class);
+
+        String msg;
+
+        msg = messages.getMainMessage("trueString", Locale.forLanguageTag("en"));
+        assertEquals("True", msg);
+
+        msg = messages.getMessage("com.haulmont.cuba.something", "trueString", Locale.forLanguageTag("en"));
+        assertEquals("True", msg);
+
+        appender.getMessages().clear();
+        msg = messages.getMessage("com.haulmont.cuba.something", "trueString", Locale.forLanguageTag("en"));
+        assertEquals("True", msg);
+        assertEquals(0, getSearchMessagesCount());
     }
 
     private int getSearchMessagesCount() {

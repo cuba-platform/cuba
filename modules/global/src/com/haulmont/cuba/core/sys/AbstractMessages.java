@@ -47,7 +47,7 @@ public abstract class AbstractMessages implements Messages {
     public static final String EXT = ".properties";
     public static final String ENCODING = "UTF-8";
 
-    protected Log log = LogFactory.getLog(getClass());
+    private Log log = LogFactory.getLog(AbstractMessages.class);
 
     @Inject
     protected MessageTools messageTools;
@@ -208,7 +208,7 @@ public abstract class AbstractMessages implements Messages {
     @Override
     public String getMainMessage(String key, Locale locale) {
         Preconditions.checkNotNullArgument(key, "Message key is null");
-        return internalGetMessage(mainMessagePack, key, locale, key);
+        return internalGetMessage(mainMessagePack, key, locale, key, false);
     }
 
     @Override
@@ -235,11 +235,11 @@ public abstract class AbstractMessages implements Messages {
         Preconditions.checkNotNullArgument(key, "Message key is null");
 
         String compositeKey = packs + "/" + key;
-        String msg = internalGetMessage(mainMessagePack, compositeKey, locale, null);
+        String msg = internalGetMessage(mainMessagePack, compositeKey, locale, null, false);
         if (msg != null)
             return msg;
 
-        return internalGetMessage(packs, key, locale, key);
+        return internalGetMessage(packs, key, locale, key, true);
     }
 
     @Nullable
@@ -252,11 +252,11 @@ public abstract class AbstractMessages implements Messages {
             locale = getUserLocale();
 
         String compositeKey = packs + "/" + key;
-        String msg = internalGetMessage(mainMessagePack, compositeKey, locale, null);
+        String msg = internalGetMessage(mainMessagePack, compositeKey, locale, null, false);
         if (msg != null)
             return msg;
 
-        return internalGetMessage(packs, key, locale, null);
+        return internalGetMessage(packs, key, locale, null, true);
     }
 
     @Override
@@ -281,7 +281,8 @@ public abstract class AbstractMessages implements Messages {
         notFoundCache.clear();
     }
 
-    protected String internalGetMessage(String packs, String key, Locale locale, String defaultValue) {
+    protected String internalGetMessage(String packs, String key, Locale locale, String defaultValue,
+                                        boolean searchMainIfNotFound) {
         locale = messageTools.trimLocale(locale);
 
         String cacheKey = makeCacheKey(packs, key, locale, false);
@@ -298,6 +299,15 @@ public abstract class AbstractMessages implements Messages {
         if (msg != null) {
             cache(cacheKey, msg);
             return msg;
+        }
+
+        if (searchMainIfNotFound) {
+            String tmpCacheKey = makeCacheKey(mainMessagePack, key, locale, false);
+            msg = searchMessage(tmpCacheKey, key, locale, false, new HashSet<String>());
+            if (msg != null) {
+                cache(cacheKey, msg);
+                return msg;
+            }
         }
 
         notFoundCache.put(cacheKey, key);
