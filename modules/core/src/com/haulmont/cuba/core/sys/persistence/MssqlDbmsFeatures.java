@@ -57,4 +57,9 @@ public class MssqlDbmsFeatures implements DbmsFeatures {
     public String getUniqueConstraintViolationPattern() {
         return "with unique index \'(.+)\'";
     }
+
+    @Override
+    public boolean isNullsLastSorting() {
+        return false;
+    }
 }

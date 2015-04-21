@@ -57,4 +57,9 @@ public class PostgresDbmsFeatures implements DbmsFeatures {
     public String getUniqueConstraintViolationPattern() {
         return "ERROR: duplicate key value violates unique constraint \"(.+)\"";
     }
+
+    @Override
+    public boolean isNullsLastSorting() {
+        return true;
+    }
 }

@@ -57,4 +57,9 @@ public class HsqlDbmsFeatures implements DbmsFeatures {
     public String getUniqueConstraintViolationPattern() {
         return "Violation of unique index (.+): duplicate value\\(s\\) for column\\(s\\) (.+) in statement";
     }
+
+    @Override
+    public boolean isNullsLastSorting() {
+        return false;
+    }
 }

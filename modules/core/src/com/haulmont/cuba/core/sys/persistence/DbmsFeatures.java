@@ -56,4 +56,9 @@ public interface DbmsFeatures {
      * @return  regexp to extract a unique constraint name from an exception message
      */
     String getUniqueConstraintViolationPattern();
+
+    /**
+     * @return default sort order of null values
+     */
+    boolean isNullsLastSorting();
 }

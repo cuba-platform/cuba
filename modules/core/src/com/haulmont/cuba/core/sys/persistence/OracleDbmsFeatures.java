@@ -98,4 +98,9 @@ public class OracleDbmsFeatures implements DbmsFeatures {
     public String getUniqueConstraintViolationPattern() {
         return "unique constraint \\((.+)\\) violated";
     }
+
+    @Override
+    public boolean isNullsLastSorting() {
+        return true;
+    }
 }

@@ -27,19 +27,24 @@ public class PersistenceManagerClient implements PersistenceManagerService {
 
     public static final String NAME = "cuba_PersistenceManagerClient";
 
-    private static class CacheEntry {
-        private Boolean useLazyCollection;
-        private Boolean useLookupScreen;
-        private Integer fetchUI;
-        private Integer maxFetchUI;
+    protected static class CacheEntry {
+        Boolean useLazyCollection;
+        Boolean useLookupScreen;
+        Integer fetchUI;
+        Integer maxFetchUI;
     }
 
-    private Map<String, CacheEntry> cache = new ConcurrentHashMap<String, CacheEntry>();
+    protected Map<String, CacheEntry> cache = new ConcurrentHashMap<String, CacheEntry>();
+
+    protected volatile String dbmsType;
+    protected volatile String dbmsVersion;
+    protected volatile String uniqueConstraintViolationPattern;
+    protected volatile Boolean defaultNullSorting;
 
     @Inject
-    private PersistenceManagerService service;
+    protected PersistenceManagerService service;
 
-    private CacheEntry getCacheEntry(String entityName) {
+    protected CacheEntry getCacheEntry(String entityName) {
         CacheEntry cacheEntry = cache.get(entityName);
         if (cacheEntry == null) {
             cacheEntry = new CacheEntry();
@@ -86,17 +91,30 @@ public class PersistenceManagerClient implements PersistenceManagerService {
 
     @Override
     public String getDbmsType() {
-        return service.getDbmsType();
+        if (dbmsType == null)
+            dbmsType = service.getDbmsType();
+        return dbmsType;
     }
 
     @Override
     public String getDbmsVersion() {
-        return service.getDbmsVersion();
+        if (dbmsVersion == null)
+            dbmsVersion = service.getDbmsVersion();
+        return dbmsVersion;
     }
 
     @Override
     public String getUniqueConstraintViolationPattern() {
-        return service.getUniqueConstraintViolationPattern();
+        if (uniqueConstraintViolationPattern == null)
+            uniqueConstraintViolationPattern = service.getUniqueConstraintViolationPattern();
+        return uniqueConstraintViolationPattern;
+    }
+
+    @Override
+    public boolean isNullsLastSorting() {
+        if (defaultNullSorting == null)
+            defaultNullSorting = service.isNullsLastSorting();
+        return defaultNullSorting;
     }
 
     public void clearCache() {

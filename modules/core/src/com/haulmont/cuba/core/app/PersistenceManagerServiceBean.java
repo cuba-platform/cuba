@@ -54,4 +54,9 @@ public class PersistenceManagerServiceBean implements PersistenceManagerService 
     public String getUniqueConstraintViolationPattern() {
         return DbmsSpecificFactory.getDbmsFeatures().getUniqueConstraintViolationPattern();
     }
+
+    @Override
+    public boolean isNullsLastSorting() {
+        return DbmsSpecificFactory.getDbmsFeatures().isNullsLastSorting();
+    }
 }

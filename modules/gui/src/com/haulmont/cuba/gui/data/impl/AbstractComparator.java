@@ -5,16 +5,22 @@
 package com.haulmont.cuba.gui.data.impl;
 
 import com.haulmont.chile.core.model.Instance;
+import com.haulmont.cuba.client.sys.PersistenceManagerClient;
+import com.haulmont.cuba.core.global.AppBeans;
 
 import java.util.Comparator;
 
 /**
- * @param <T>
  * @author gorodnov
  * @version $Id$
  */
 public abstract class AbstractComparator<T> implements Comparator<T> {
+
     protected boolean asc;
+
+    protected int nullsLast =
+            AppBeans.get(PersistenceManagerClient.NAME, PersistenceManagerClient.class).isNullsLastSorting() ?
+                    1 : -1;
 
     protected AbstractComparator(boolean asc) {
         this.asc = asc;
@@ -31,12 +37,12 @@ public abstract class AbstractComparator<T> implements Comparator<T> {
             c = ((Instance) o1).getInstanceName().compareToIgnoreCase(((Instance) o2).getInstanceName());
         } else if (o1 == null) {
             if (o2 != null) {
-                c = 1;
+                c = nullsLast;
             } else {
                 c = 0;
             }
         } else {
-            c = -1;
+            c = -nullsLast;
         }
 
         return asc ? c : -c;
