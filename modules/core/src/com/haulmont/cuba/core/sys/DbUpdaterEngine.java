@@ -387,6 +387,7 @@ public class DbUpdaterEngine implements DbUpdater {
         try {
             script = FileUtils.readFileToString(file);
         } catch (IOException e) {
+            log.error(e.getMessage());
             throw new RuntimeException(e);
         }
         StrTokenizer tokenizer = new StrTokenizer(script,
@@ -400,6 +401,7 @@ public class DbUpdaterEngine implements DbUpdater {
                 try {
                     executeSql(sql);
                 } catch (SQLException e) {
+                    log.error(e.getMessage());
                     throw new RuntimeException(e);
                 }
             }
@@ -440,6 +442,7 @@ public class DbUpdaterEngine implements DbUpdater {
 
             scriptEngine.run(file.getName(), bind);
         } catch (IOException | ResourceException | ScriptException e) {
+            log.error(e.getMessage());
             throw new RuntimeException(e);
         }
         return true;
