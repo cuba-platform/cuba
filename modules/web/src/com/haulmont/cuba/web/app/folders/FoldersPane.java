@@ -472,6 +472,7 @@ public class FoldersPane extends VerticalLayout {
             return null;
 
         appFoldersTree = new CubaTree();
+        appFoldersTree.setCubaId("appFoldersTree");
         appFoldersTree.setSelectable(false);
         appFoldersTree.setItemStyleGenerator(new FolderTreeStyleProvider());
         appFoldersTree.addExpandListener(new Tree.ExpandListener() {
@@ -510,6 +511,7 @@ public class FoldersPane extends VerticalLayout {
 
     protected Component createSearchFoldersPane() {
         searchFoldersTree = new CubaTree();
+        searchFoldersTree.setCubaId("searchFoldersTree");
         searchFoldersTree.setSelectable(false);
         searchFoldersTree.setItemStyleGenerator(new FolderTreeStyleProvider());
 
