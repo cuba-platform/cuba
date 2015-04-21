@@ -104,7 +104,7 @@ public abstract class AbstractFieldFactory implements FieldFactory {
     private Component createUuidField(Datasource datasource, String property) {
         MaskedField maskedField = componentsFactory.createComponent(MaskedField.NAME);
         maskedField.setDatasource(datasource, property);
-        maskedField.setMask("HHHHHHHH-HHHH-HHHH-HHHH-HHHHHHHHHHHH");
+        maskedField.setMask("hhhhhhhh-hhhh-hhhh-hhhh-hhhhhhhhhhhh");
         return maskedField;
     }
 
