@@ -110,7 +110,8 @@ public class CubaMaskedFieldWidget extends VTextField {
         maskMap.put('?', new LetterMask());
         maskMap.put('A', new AlphanumericMask());
         maskMap.put('*', new WildcardMask());
-        maskMap.put('H', new HexMask());
+        maskMap.put('H', new UpperCaseHexMask());
+        maskMap.put('h', new LowerCaseHexMask());
         maskMap.put('~', new SignMask());
     }
 
@@ -376,7 +377,7 @@ public class CubaMaskedFieldWidget extends VTextField {
     /**
      * Represents a hex character, 0-9a-fA-F. a-f is mapped to A-F
      */
-    public static class HexMask implements Mask {
+    public static class HexMask extends AbstractMask {
         @Override
         public boolean isValid(char c) {
             return ((c == '0' || c == '1' ||
@@ -391,7 +392,19 @@ public class CubaMaskedFieldWidget extends VTextField {
                     c == 'e' || c == 'E' ||
                     c == 'f' || c == 'F'));
         }
+    }
 
+    public static class LowerCaseHexMask extends HexMask {
+        @Override
+        public char getChar(char c) {
+            if (Character.isDigit(c)) {
+                return c;
+            }
+            return Character.toLowerCase(c);
+        }
+    }
+
+    public static class UpperCaseHexMask extends HexMask {
         @Override
         public char getChar(char c) {
             if (Character.isDigit(c)) {
