@@ -276,23 +276,25 @@ public class AbstractViewRepository implements ViewRepository {
         } else if (View.MINIMAL.equals(name)) {
             Collection<MetaProperty> metaProperties = metadata.getTools().getNamePatternProperties(metaClass, true);
             for (MetaProperty metaProperty : metaProperties) {
-                if (metaProperty.getRange().isClass()
-                        && !metaProperty.getRange().getCardinality().isMany()) {
+                if (!metadata.getTools().isTransient(metaProperty)) {
+                    if (metaProperty.getRange().isClass()
+                            && !metaProperty.getRange().getCardinality().isMany()) {
 
-                    Map<String, View> views = storage.get(metaClass);
-                    View refMinimalView = (views == null ? null : views.get(View.MINIMAL));
+                        Map<String, View> views = storage.get(metaClass);
+                        View refMinimalView = (views == null ? null : views.get(View.MINIMAL));
 
-                    if (refMinimalView != null) {
-                        view.addProperty(metaProperty.getName(), refMinimalView);
+                        if (refMinimalView != null) {
+                            view.addProperty(metaProperty.getName(), refMinimalView);
+                        } else {
+                            visited.add(info);
+                            View referenceMinimalView = deployDefaultView(metaProperty.getRange().asClass(), View.MINIMAL, visited);
+                            visited.remove(info);
+
+                            view.addProperty(metaProperty.getName(), referenceMinimalView);
+                        }
                     } else {
-                        visited.add(info);
-                        View referenceMinimalView = deployDefaultView(metaProperty.getRange().asClass(), View.MINIMAL, visited);
-                        visited.remove(info);
-
-                        view.addProperty(metaProperty.getName(), referenceMinimalView);
+                        view.addProperty(metaProperty.getName());
                     }
-                } else {
-                    view.addProperty(metaProperty.getName());
                 }
             }
         } else {
