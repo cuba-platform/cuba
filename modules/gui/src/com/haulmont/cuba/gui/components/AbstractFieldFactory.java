@@ -55,6 +55,8 @@ public abstract class AbstractFieldFactory implements FieldFactory {
                     } else {
                         return createStringField(datasource, property, xmlDescriptor);
                     }
+                } else if (typeName.equals(UUIDDatatype.NAME)) {
+                    return createUuidField(datasource, property);
                 } else if (typeName.equals(BooleanDatatype.NAME)) {
                     return createBooleanField(datasource, property);
                 } else if (typeName.equals(DateDatatype.NAME) || typeName.equals(DateTimeDatatype.NAME)) {
@@ -97,6 +99,13 @@ public abstract class AbstractFieldFactory implements FieldFactory {
         }
 
         return linkField;
+    }
+
+    private Component createUuidField(Datasource datasource, String property) {
+        MaskedField maskedField = componentsFactory.createComponent(MaskedField.NAME);
+        maskedField.setDatasource(datasource, property);
+        maskedField.setMask("HHHHHHHH-HHHH-HHHH-HHHH-HHHHHHHHHHHH");
+        return maskedField;
     }
 
     protected Component createNumberField(Datasource datasource, String property) {

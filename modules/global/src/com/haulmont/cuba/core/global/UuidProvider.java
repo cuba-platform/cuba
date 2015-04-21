@@ -48,7 +48,15 @@ public abstract class UuidProvider {
             return null;
 
         if (str.length() != 36) {
-            throw new IllegalArgumentException(str);
+            if (!str.contains("-") && str.length() == 32) {
+                str = str.substring(0, 8) + "-"
+                        + str.substring(8, 12) + "-"
+                        + str.substring(12, 16) + "-"
+                        + str.substring(16, 20) + "-"
+                        + str.substring(20);
+            } else {
+                throw new IllegalArgumentException(str);
+            }
         }
         long m = 0, x = 0;
         for (int i = 0; i < 36; i++) {
