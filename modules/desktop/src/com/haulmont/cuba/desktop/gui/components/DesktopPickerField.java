@@ -43,9 +43,6 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
     protected String captionProperty;
 
     protected Datasource<Entity> datasource;
-    protected MetaProperty metaProperty;
-    protected MetaPropertyPath metaPropertyPath;
-
     protected MetaClass metaClass;
 
     protected Object prevValue;
@@ -264,12 +261,7 @@ public class DesktopPickerField extends DesktopAbstractField<Picker>
             return;
         }
 
-        final MetaClass metaClass = datasource.getMetaClass();
-        metaPropertyPath = metaClass.getPropertyPath(property);
-
-        checkNotNullArgument(metaPropertyPath, "Could not resolve property path '%s' in '%s'", property, metaClass);
-
-        metaProperty = metaPropertyPath.getMetaProperty();
+        resolveMetaPropertyPath(datasource.getMetaClass(), property);
 
         datasource.addListener(
                 new DsListenerAdapter() {

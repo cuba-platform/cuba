@@ -5,13 +5,18 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.bali.util.Preconditions;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.RequiredValueMissingException;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.gui.runtimeprops.RuntimePropertiesGuiTools;
 import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
@@ -42,6 +47,9 @@ public abstract class DesktopAbstractField<C extends JComponent>
     // todo move nimbus constants to theme
     protected Color requiredBgColor = (Color) UIManager.get("cubaRequiredBackground");
     protected Color defaultBgColor = (Color) UIManager.get("nimbusLightBackground");
+
+    protected MetaProperty metaProperty;
+    protected MetaPropertyPath metaPropertyPath;
 
     @Override
     public void addListener(ValueListener listener) {
@@ -164,5 +172,11 @@ public abstract class DesktopAbstractField<C extends JComponent>
         }
 
         return getClass().getSimpleName();
+    }
+
+    protected void resolveMetaPropertyPath(MetaClass metaClass, String property) {
+        metaPropertyPath = AppBeans.get(RuntimePropertiesGuiTools.class).resolveMetaPropertyPath(metaClass, property);
+        Preconditions.checkNotNullArgument(metaPropertyPath, "Could not resolve property path '%s' in '%s'", property, metaClass);
+        this.metaProperty = metaPropertyPath.getMetaProperty();
     }
 }

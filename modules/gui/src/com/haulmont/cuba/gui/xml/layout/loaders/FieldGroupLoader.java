@@ -7,6 +7,9 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.app.runtimeproperties.RuntimePropertiesUtils;
+import com.haulmont.cuba.core.entity.CategoryAttribute;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Component;
@@ -14,8 +17,11 @@ import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.FieldGroup;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.xml.layout.*;
+import com.haulmont.cuba.gui.runtimeprops.RuntimePropertiesGuiTools;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import com.haulmont.cuba.security.entity.EntityOp;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.LogFactory;
@@ -103,6 +109,9 @@ public class FieldGroupLoader extends AbstractFieldLoader {
                 colIndex++;
             }
         }
+
+        addRuntimeProperties(component, ds);
+
         component.setDatasource(ds);
 
         loadEditable(component, element);
@@ -124,7 +133,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
 
         final List<FieldGroup.FieldConfig> fields = component.getFields();
         for (final FieldGroup.FieldConfig field : fields) {
-            if (!field.isCustom()) {
+            if (!field.isCustom() && !RuntimePropertiesUtils.isRuntimeProperty(field.getId())) {
                 loadValidators(component, field);
                 loadRequired(component, field);
                 loadEditable(component, field);
@@ -155,6 +164,33 @@ public class FieldGroupLoader extends AbstractFieldLoader {
                 }
             }
         });
+    }
+
+    protected void addRuntimeProperties(FieldGroup fieldGroup, Datasource ds) {
+        RuntimePropertiesGuiTools runtimePropertiesGuiTools = AppBeans.get(RuntimePropertiesGuiTools.class);
+        if (ds != null) {
+            Set<CategoryAttribute> attributesToShow =
+                    runtimePropertiesGuiTools.getAttributesToShowOnTheScreen(ds.getMetaClass(), context.getFullFrameId(), fieldGroup.getId());
+            if (CollectionUtils.isNotEmpty(attributesToShow)) {
+                ds.setNeedToLoadRuntimeProperties(true);
+                for (CategoryAttribute attribute : attributesToShow) {
+                    MetaPropertyPath metaPropertyPath = RuntimePropertiesUtils.getMetaPropertyPath(ds.getMetaClass(), attribute);
+                    final FieldGroup.FieldConfig field = new FieldGroup.FieldConfig(
+                            RuntimePropertiesUtils.encodeAttributeCode(attribute.getCode()));
+                    field.setMetaPropertyPath(metaPropertyPath);
+                    field.setType(metaPropertyPath.getRangeJavaClass());
+                    field.setCaption(attribute.getName());
+                    field.setDatasource(ds);
+
+                    if (fieldGroup.getWidth() > 0) {
+                        field.setWidth("100%");
+                    } else {
+                        field.setWidth(FieldGroup.DEFAULT_FIELD_WIDTH);
+                    }
+                    fieldGroup.addField(field);
+                }
+            }
+        }
     }
 
     protected void loadFieldCaptionWidth(FieldGroup component, Element element) {
@@ -232,18 +268,17 @@ public class FieldGroupLoader extends AbstractFieldLoader {
 
         if (ds != null) {
             final MetaClass metaClass = ds.getMetaClass();
-            if (metaClass.getPropertyPath(id) == null) {
+            metaPropertyPath = AppBeans.get(RuntimePropertiesGuiTools.class).resolveMetaPropertyPath(ds.getMetaClass(), id);
+            if (metaPropertyPath == null) {
                 if (!customField) {
                     throw new GuiDevelopmentException(String.format("Property '%s' is not found in entity '%s'",
                             id, metaClass.getName()), context.getFullFrameId());
                 }
-            } else {
-                metaPropertyPath = metaClass.getPropertyPath(id);
             }
         }
 
         final FieldGroup.FieldConfig field = new FieldGroup.FieldConfig(id);
-
+        field.setMetaPropertyPath(metaPropertyPath);
         if (datasource != null) {
             field.setDatasource(datasource);
         }
@@ -252,8 +287,8 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         loadDescription(field, element);
 
         field.setXmlDescriptor(element);
-        if (metaPropertyPath != null) {
-            field.setType(metaPropertyPath.getRangeJavaClass());
+        if (field.getMetaPropertyPath() != null) {
+            field.setType(field.getMetaPropertyPath().getRangeJavaClass());
         }
 
         field.setFormatter(loadFormatter(element));
@@ -300,7 +335,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
                 ds = field.getDatasource();
             }
             if (ds != null) {
-                MetaPropertyPath metaPropertyPath = ds.getMetaClass().getPropertyPath(field.getId());
+                MetaPropertyPath metaPropertyPath = field.getMetaPropertyPath();
                 if (metaPropertyPath != null) {
                     MetaProperty metaProperty = metaPropertyPath.getMetaProperty();
                     Field.Validator validator = null;
@@ -323,7 +358,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
             boolean isMandatory = false;
             MetaClass metaClass = getMetaClass(component, field);
             if (metaClass != null) {
-                MetaPropertyPath propertyPath = metaClass.getPropertyPath(field.getId());
+                MetaPropertyPath propertyPath = field.getMetaPropertyPath();
 
                 checkNotNullArgument(propertyPath, "Could not resolve property path '%s' in '%s'", field.getId(), metaClass);
 
@@ -340,7 +375,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
 
             String requiredMsg = element.attributeValue("requiredMessage");
             if (StringUtils.isEmpty(requiredMsg) && metaClass != null) {
-                MetaPropertyPath propertyPath = metaClass.getPropertyPath(field.getId());
+                MetaPropertyPath propertyPath = field.getMetaPropertyPath();
 
                 checkNotNullArgument(propertyPath, "Could not resolve property path '%s' in '%s'", field.getId(), metaClass);
 
@@ -392,7 +427,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         } else {
             if (component.isEditable()) {
                 MetaClass metaClass = getMetaClass(component, field);
-                MetaPropertyPath propertyPath = metaClass.getPropertyPath(field.getId());
+                MetaPropertyPath propertyPath = field.getMetaPropertyPath();
 
                 checkNotNullArgument(propertyPath, "Could not resolve property path '%s' in '%s'", field.getId(), metaClass);
 

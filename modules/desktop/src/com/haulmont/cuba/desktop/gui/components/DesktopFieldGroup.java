@@ -22,6 +22,7 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.runtimeprops.RuntimePropertiesGuiTools;
 import net.miginfocom.layout.CC;
 import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
@@ -178,7 +179,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     }
 
     @Override
-    public void setDatasource(Datasource datasource) {
+    public void setDatasource(final Datasource datasource) {
         this.datasource = datasource;
 
         if (!this.fields.isEmpty()) {
@@ -190,6 +191,8 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         assignAutoDebugId();
 
         createFields();
+
+        AppBeans.get(RuntimePropertiesGuiTools.class).listenRuntimePropertiesChanges(datasource);
     }
 
     @Override
@@ -760,12 +763,9 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         if (c instanceof DatasourceComponent) {
             DatasourceComponent dsComponent = (DatasourceComponent) c;
             MetaPropertyPath propertyPath = dsComponent.getMetaPropertyPath();
-
-            if (propertyPath != null) {
-                MetaClass metaClass = dsComponent.getDatasource().getMetaClass();
-                dsComponent.setEditable(dsComponent.isEditable()
-                        && security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString()));
-            }
+            MetaClass metaClass = dsComponent.getDatasource().getMetaClass();
+            dsComponent.setEditable(dsComponent.isEditable()
+                    && security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString()));
         }
     }
 

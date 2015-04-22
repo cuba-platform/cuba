@@ -21,4 +21,6 @@ public interface CachingFacadeMBean {
     void clearEntityLogCache();
 
     void clearViewRepositoryCache();
+
+    void clearRuntimePropertiesCache();
 }

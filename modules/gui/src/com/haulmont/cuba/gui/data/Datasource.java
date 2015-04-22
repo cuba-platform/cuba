@@ -144,4 +144,8 @@ public interface Datasource<T extends Entity> {
      * Remove listener to datasource events
      */
     void removeListener(DatasourceListener<T> listener);
+
+    boolean needToLoadRuntimeProperties();
+
+    void setNeedToLoadRuntimeProperties(boolean value);
 }

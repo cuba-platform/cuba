@@ -6,6 +6,8 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.app.runtimeproperties.RuntimePropertiesUtils;
+import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.ComponentsHelper;
@@ -15,8 +17,10 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.ListActionType;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.runtimeprops.RuntimePropertiesGuiTools;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -28,6 +32,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author abramov
@@ -117,11 +122,13 @@ public abstract class AbstractTableLoader extends ComponentLoader {
         context.getFullFrameId();
 
         Datasource ds = context.getDsContext().get(datasource);
-        if (ds == null)
+        if (ds == null) {
             throw new GuiDevelopmentException("Can't find datasource by name: " + datasource, context.getCurrentIFrameId());
+        }
 
-        if (!(ds instanceof CollectionDatasource))
+        if (!(ds instanceof CollectionDatasource)) {
             throw new GuiDevelopmentException("Not a CollectionDatasource: " + datasource, context.getCurrentIFrameId());
+        }
 
         CollectionDatasource cds = (CollectionDatasource) ds;
         List<Table.Column> availableColumns;
@@ -138,10 +145,40 @@ public abstract class AbstractTableLoader extends ComponentLoader {
             loadRequired(component, column);
         }
 
+        addRuntimeProperties(component, ds, availableColumns);
+
         component.setDatasource(cds);
 
         final String multiselect = element.attributeValue("multiselect");
         component.setMultiSelect(BooleanUtils.toBoolean(multiselect));
+    }
+
+    protected void addRuntimeProperties(Table component, Datasource ds, List<Table.Column> availableColumns) {
+        RuntimePropertiesGuiTools runtimePropertiesGuiTools = AppBeans.get(RuntimePropertiesGuiTools.class);
+        Set<CategoryAttribute> attributesToShow =
+                runtimePropertiesGuiTools.getAttributesToShowOnTheScreen(ds.getMetaClass(), context.getFullFrameId(), component.getId());
+        if (CollectionUtils.isNotEmpty(attributesToShow)) {
+            ds.setNeedToLoadRuntimeProperties(true);
+            for (CategoryAttribute attribute : attributesToShow) {
+                final MetaPropertyPath metaPropertyPath = RuntimePropertiesUtils.getMetaPropertyPath(ds.getMetaClass(), attribute);
+
+                Object columnWithSameId = CollectionUtils.find(availableColumns, new org.apache.commons.collections.Predicate() {
+                    @Override
+                    public boolean evaluate(Object o) {
+                        return ((Table.Column) o).getId().equals(metaPropertyPath);
+                    }
+                });
+
+                if (columnWithSameId != null) {
+                    continue;
+                }
+
+                final Table.Column column = new Table.Column(metaPropertyPath);
+                column.setCaption(attribute.getName());
+                column.setEditable(true);
+                component.addColumn(column);
+            }
+        }
     }
 
     protected void loadMultiLineCells(Table table, Element element) {
@@ -247,8 +284,8 @@ public abstract class AbstractTableLoader extends ComponentLoader {
     protected Table.Column loadColumn(Element element, Datasource ds) {
         final String id = element.attributeValue("id");
 
-        final MetaClass metaClass = ds.getMetaClass();
-        final MetaPropertyPath metaPropertyPath = metaClass.getPropertyPath(id);
+        final MetaPropertyPath metaPropertyPath =
+                AppBeans.get(RuntimePropertiesGuiTools.class).resolveMetaPropertyPath(ds.getMetaClass(), id);
 
         final Table.Column column = new Table.Column(metaPropertyPath != null ? metaPropertyPath : id);
 
@@ -488,7 +525,7 @@ public abstract class AbstractTableLoader extends ComponentLoader {
                             context.getFullFrameId());
                 }
 
-                ((Action.HasOpenType)action).setOpenType(openType);
+                ((Action.HasOpenType) action).setOpenType(openType);
             }
         }
     }

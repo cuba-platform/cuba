@@ -5,8 +5,10 @@
 
 package com.haulmont.cuba.gui.data.impl;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.app.runtimeproperties.*;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.SetValueEntity;
@@ -30,15 +32,17 @@ public class RuntimePropsDatasourceImpl
 
     protected DsContext dsContext;
     protected DataSupplier dataSupplier;
-    protected MetaClass metaClass;
+    protected RuntimePropertiesMetaClass metaClass;
     protected View view;
     protected Datasource mainDs;
-    protected boolean inittedBefore = false;
+    protected boolean initializedBefore = false;
     protected boolean categoryChanged = false;
 
     protected State state = State.NOT_INITIALIZED;
 
     protected RuntimePropertiesEntity item;
+    private final Collection<CategoryAttribute> attributes;
+    private Category category;
 
     public RuntimePropsDatasourceImpl(DsContext dsContext, DataSupplier dataSupplier, String id, String mainDsId) {
         this.id = id;
@@ -46,14 +50,19 @@ public class RuntimePropsDatasourceImpl
         this.dataSupplier = dataSupplier;
         this.metaClass = new RuntimePropertiesMetaClass();
         this.setMainDs(mainDsId);
-
         this.setCommitMode(CommitMode.DATASTORE);
+
+        attributes = AppBeans.get(RuntimePropertiesService.class).getAttributesForMetaClass(mainDs.getMetaClass());
+        for (CategoryAttribute attribute : attributes) {
+            MetaProperty metaProperty = RuntimePropertiesUtils.getMetaPropertyPath(mainDs.getMetaClass(), attribute).getMetaProperty();
+            this.metaClass.addProperty(metaProperty, attribute);
+        }
 
         mainDs.addListener(new DsListenerAdapter() {
             @Override
             public void valueChanged(Entity source, String property, Object prevValue, Object value) {
                 if (property.equals("category")) {
-                    categoryChanged=true;
+                    categoryChanged = true;
                     initMetaClass();
                 }
             }
@@ -67,71 +76,53 @@ public class RuntimePropsDatasourceImpl
     }
 
     protected void initMetaClass() {
-        for (MetaProperty property : metaClass.getProperties()) {
-            itemToCreate.clear();
-            itemToUpdate.clear();
-            itemToDelete.add(item.getCategoryValue(property.getName()));
+        Entity entity = mainDs.getItem();
+        if (!(entity instanceof BaseGenericIdEntity)) {
+            throw new IllegalStateException("This datasource can contain only entity with subclass of BaseGenericIdEntity");
         }
-        metaClass.getProperties().clear();
+        BaseGenericIdEntity baseGenericIdEntity = (BaseGenericIdEntity) entity;
+        if (PersistenceHelper.isNew(baseGenericIdEntity)) {
+            baseGenericIdEntity.setRuntimeProperties(new HashMap<String, CategoryAttributeValue>());
+        }
+        Map<String, CategoryAttributeValue> runtimeProperties = baseGenericIdEntity.getRuntimeProperties();
+        Preconditions.checkNotNullArgument(runtimeProperties, "Runtime properties should be loaded explicitly");
 
-        CategorizedEntity entity = (CategorizedEntity) mainDs.getItem();
-
-        if (!inittedBefore && PersistenceHelper.isNew(entity) && (entity.getCategory() == null)) {
-            entity.setCategory(getDefaultCategory(entity));
+        if (entity instanceof CategorizedEntity) {
+            category = ((CategorizedEntity) entity).getCategory();
+        }
+        if (!initializedBefore && category == null) {
+            category = getDefaultCategory(entity);
         }
 
-        // todo atomic load of values and attributes
-
-        LoadContext valuesContext = new LoadContext(CategoryAttributeValue.class);
-        LoadContext.Query query = valuesContext.setQueryString("select a from sys$CategoryAttributeValue a" +
-                ",sys$CategoryAttribute atr where a.entityId =:e and a.categoryAttribute=atr and atr.category.id=:cat ");
-        query.setParameter("e", entity.getUuid());
-        query.setParameter("cat", entity.getCategory());
-        valuesContext.setView("categoryAttributeValue");
-        List<CategoryAttributeValue> entityValues = dataSupplier.loadList(valuesContext);
-
-        LoadContext attributesContext = new LoadContext(CategoryAttribute.class);
-        LoadContext.Query attributeQuery = attributesContext.setQueryString("select a from sys$CategoryAttribute a " +
-                "where a.category.id=:cat order by a.orderNo");
-        attributeQuery.setParameter("cat", entity.getCategory());
-        attributesContext.setView(View.LOCAL);
-        List<CategoryAttribute> attributes = dataSupplier.loadList(attributesContext);
-
-        Map<String, Object> variables = new HashMap<>();
-        Map<String, CategoryAttributeValue> categoryValues = new HashMap<>();
-
+        item = new RuntimePropertiesEntity(metaClass);
+        Collection<CategoryAttributeValue> entityValues = runtimeProperties.values();
         TimeSource timeSource = AppBeans.get(TimeSource.NAME);
         for (CategoryAttribute attribute : attributes) {
-            CategoryAttributeValue attrValue = getValue(attribute, entityValues);
+            CategoryAttributeValue attributeValue = getValue(attribute, entityValues);
             Object value;
-            if (attrValue == null) {
-                attrValue = new CategoryAttributeValue();
-                attrValue.setCategoryAttribute(attribute);
-                attrValue.setEntityId(entity.getId());
+            if (attributeValue == null) {
+                attributeValue = new CategoryAttributeValue();
+                runtimeProperties.put(attribute.getCode(), attributeValue);
+                attributeValue.setCategoryAttribute(attribute);
+                attributeValue.setEntityId(entity.getUuid());
                 if (PersistenceHelper.isNew(entity) || categoryChanged) {
-                    attrValue.setStringValue(StringUtils.trimToNull(attribute.getDefaultString()));
-                    attrValue.setIntValue(attribute.getDefaultInt());
-                    attrValue.setDoubleValue(attribute.getDefaultDouble());
-                    attrValue.setBooleanValue(attribute.getDefaultBoolean());
-                    attrValue.setDateValue(BooleanUtils.isTrue(attribute.getDefaultDateIsCurrent()) ?
+                    attributeValue.setStringValue(StringUtils.trimToNull(attribute.getDefaultString()));
+                    attributeValue.setIntValue(attribute.getDefaultInt());
+                    attributeValue.setDoubleValue(attribute.getDefaultDouble());
+                    attributeValue.setBooleanValue(attribute.getDefaultBoolean());
+                    attributeValue.setDateValue(BooleanUtils.isTrue(attribute.getDefaultDateIsCurrent()) ?
                             timeSource.currentTimestamp() : attribute.getDefaultDate());
-                    attrValue.setEntityValue(attribute.getDefaultEntityId());
-                    value = parseValue(attribute, attrValue);
-                    itemToUpdate.add(attrValue);
-                    modified = true;
+                    attributeValue.setEntityValue(attribute.getDefaultEntityId());
+                    value = parseValue(attribute, attributeValue);
                 } else {
                     value = null;
                 }
             } else {
-                value = parseValue(attribute, attrValue);
+                value = parseValue(attribute, attributeValue);
             }
-            categoryValues.put(attribute.getName(), attrValue);
-            variables.put(attribute.getName(), value);
-            RuntimePropertiesMetaProperty property = new RuntimePropertiesMetaProperty(
-                    this.metaClass,
-                    attribute.getName(),
-                    RuntimePropertiesHelper.getAttributeClass(attribute));
-            ((RuntimePropertiesMetaClass) this.metaClass).addProperty(property);
+
+            item.addAttributeValue(attribute, attributeValue, value);
+
             if (RuntimePropertiesHelper.getAttributeClass(attribute).equals(SetValueEntity.class)) {
                 createOptionsDatasource(attribute, (SetValueEntity) value);
             }
@@ -143,25 +134,23 @@ public class RuntimePropsDatasourceImpl
             view.addProperty(property.getName());
         }
 
-        item = new RuntimePropertiesEntity(metaClass, variables, categoryValues);
+        item.addListener(listener);
         item.addListener(new com.haulmont.chile.core.common.ValueListener() {
             public void propertyChanged(Object item, String property, Object prevValue, Object value) {
                 modified = true;
                 itemToUpdate.add(((RuntimePropertiesEntity) item).getCategoryValue(property));
             }
         });
-
         this.valid();
-        inittedBefore = true;
+        initializedBefore = true;
         if (!itemToDelete.isEmpty()) {
             modified = true;
         }
+        fireItemChanged(null);
     }
 
     protected void createOptionsDatasource(CategoryAttribute attribute, final SetValueEntity attributeValue) {
         final String property = attribute.getName();
-        final String id = property;
-
         final MetaClass metaClass = this.getMetaClass();
         final MetaProperty metaProperty = metaClass.getProperty(property);
         if (metaProperty == null) {
@@ -170,7 +159,7 @@ public class RuntimePropsDatasourceImpl
         }
         DsBuilder builder = new DsBuilder(getDsContext());
         builder.reset().setMetaClass(metadata.getSession().getClass(SetValueEntity.class)).setId(id)
-                .setViewName("_minimal").setSoftDeletion(false);
+                .setViewName(View.MINIMAL).setSoftDeletion(false);
 
         final CollectionDatasource datasource;
 
@@ -202,8 +191,7 @@ public class RuntimePropsDatasourceImpl
         return options;
     }
 
-    protected CategoryAttributeValue getValue(CategoryAttribute attribute, List<CategoryAttributeValue> entityValues) {
-
+    protected CategoryAttributeValue getValue(CategoryAttribute attribute, Collection<CategoryAttributeValue> entityValues) {
         for (CategoryAttributeValue attrValue : entityValues) {
             if (attrValue.getCategoryAttribute().equals(attribute))
                 return attrValue;
@@ -414,16 +402,20 @@ public class RuntimePropsDatasourceImpl
         return mainDs;
     }
 
+    public Collection<MetaProperty> getPropertiesFilteredByCategory() {
+        return metaClass.getPropertiesFilteredByCategory(category);
+    }
+
+    @Nullable
     public Category getDefaultCategory(Entity entity) {
-        LoadContext categoryContext = new LoadContext(Category.class);
-        LoadContext.Query query = categoryContext.setQueryString(
-                "select c from sys$Category c where c.isDefault = true and c.entityType=:type ");
-        query.setParameter("type", metadata.getSession().getClassNN(entity.getClass()).getName());
-        categoryContext.setView("_minimal");
-        List<Category> categories = dataSupplier.loadList(categoryContext);
-        if (!categories.isEmpty())
-            return categories.iterator().next();
-        else
-            return null;
+        MetaClass metaClass = metadata.getSession().getClassNN(entity.getClass());
+        Collection<Category> categoriesForMetaClass = AppBeans.get(RuntimePropertiesService.class).getCategoriesForMetaClass(metaClass);
+        for (Category category : categoriesForMetaClass) {
+            if (Boolean.TRUE.equals(category.getIsDefault())) {
+                return category;
+            }
+        }
+
+        return null;
     }
 }

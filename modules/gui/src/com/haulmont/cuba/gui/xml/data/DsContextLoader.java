@@ -74,25 +74,29 @@ public class DsContextLoader {
         //noinspection unchecked
         List<Element> elements = element.elements("datasource");
         for (Element ds : elements) {
-            loadDatasource(ds);
+            Datasource datasource = loadDatasource(ds);
+            setNeedToLoadRuntimeProperties(ds, datasource);
         }
 
         //noinspection unchecked
         elements = element.elements("hierarchicalDatasource");
         for (Element ds : elements) {
-            loadHierarchicalDatasource(ds);
+            Datasource datasource = loadHierarchicalDatasource(ds);
+            setNeedToLoadRuntimeProperties(ds, datasource);
         }
 
         //noinspection unchecked
         elements = element.elements("collectionDatasource");
         for (Element ds : elements) {
-            loadCollectionDatasource(ds);
+            CollectionDatasource datasource = loadCollectionDatasource(ds);
+            setNeedToLoadRuntimeProperties(ds, datasource);
         }
 
         //noinspection unchecked
         elements = element.elements("groupDatasource");
         for (Element ds : elements) {
-            loadGroupDatasource(ds);
+            Datasource datasource = loadGroupDatasource(ds);
+            setNeedToLoadRuntimeProperties(ds, datasource);
         }
 
         //noinspection unchecked
@@ -104,6 +108,10 @@ public class DsContextLoader {
         context.executeLazyTasks();
 
         return context;
+    }
+
+    protected void setNeedToLoadRuntimeProperties(Element element, Datasource datasource) {
+        datasource.setNeedToLoadRuntimeProperties("true".equals(element.attributeValue("needToLoadRuntimeProperties")));
     }
 
     protected DsContextImplementation createDsContext(String contextClass, Element element) {

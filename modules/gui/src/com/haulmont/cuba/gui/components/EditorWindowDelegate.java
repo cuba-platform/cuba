@@ -140,7 +140,7 @@ public class EditorWindowDelegate extends WindowDelegate {
 
         } else if (!PersistenceHelper.isNew(item)) {
             boolean useSecConstraints = !WindowParams.DISABLE_SECURITY_CONSTRAINTS.getBool(window.getContext());
-            item = dataservice.reload(item, ds.getView(), ds.getMetaClass(), useSecConstraints);
+            item = dataservice.reload(item, ds.getView(), ds.getMetaClass(), useSecConstraints, ds.needToLoadRuntimeProperties());
         }
 
         if (item == null) {

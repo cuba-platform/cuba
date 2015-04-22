@@ -9,7 +9,6 @@ import com.haulmont.cuba.core.entity.Entity;
 import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -29,6 +28,32 @@ import java.util.Map;
  * @version $Id$
  */
 public class View implements Serializable {
+    public static class ViewParams {
+        protected View src;
+        protected Class<? extends Entity> entityClass;
+        protected String name;
+        protected boolean includeSystemProperties;
+
+        public ViewParams src(View src) {
+            this.src = src;
+            return this;
+        }
+
+        public ViewParams entityClass(Class<? extends Entity> entityClass) {
+            this.entityClass = entityClass;
+            return this;
+        }
+
+        public ViewParams name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public ViewParams includeSystemProperties(boolean includeSystemProperties) {
+            this.includeSystemProperties = includeSystemProperties;
+            return this;
+        }
+    }
 
     /**
      * Includes all local non-system properties.
@@ -63,9 +88,10 @@ public class View implements Serializable {
     }
 
     public View(Class<? extends Entity> entityClass, String name, boolean includeSystemProperties) {
-        this.entityClass = entityClass;
-        this.name = name != null ? name : "";
-        this.includeSystemProperties = includeSystemProperties;
+        this(new ViewParams().entityClass(entityClass)
+                        .name(name)
+                        .includeSystemProperties(includeSystemProperties)
+        );
     }
 
     public View(View src, String name, boolean includeSystemProperties) {
@@ -73,10 +99,23 @@ public class View implements Serializable {
     }
 
     public View(View src, @Nullable Class<? extends Entity> entityClass, String name, boolean includeSystemProperties) {
-        this.entityClass = entityClass == null ? src.entityClass : entityClass;
-        this.name = name != null ? name : "";
-        this.includeSystemProperties = includeSystemProperties;
-        this.properties.putAll(src.properties);
+        this(new ViewParams().src(src)
+                        .entityClass(entityClass)
+                        .name(name)
+                        .includeSystemProperties(includeSystemProperties)
+        );
+    }
+
+    public View(ViewParams viewParams) {
+        this.entityClass = viewParams.entityClass;
+        this.name = viewParams.name != null ? viewParams.name : "";
+        this.includeSystemProperties = viewParams.includeSystemProperties;
+        if (viewParams.src != null) {
+            this.properties.putAll(viewParams.src.properties);
+            if (entityClass == null) {
+                this.entityClass = viewParams.src.entityClass;
+            }
+        }
     }
 
     /**

@@ -48,8 +48,6 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
     private MaskFormatter formatter;
     private boolean updatingInstance;
     private Datasource datasource;
-    private MetaProperty metaProperty;
-    private MetaPropertyPath metaPropertyPath;
     private Object prevValue;
     private String caption;
     private DateField.Resolution resolution;
@@ -174,12 +172,7 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
             return;
         }
 
-        final MetaClass metaClass = datasource.getMetaClass();
-        metaPropertyPath = metaClass.getPropertyPath(property);
-
-        checkNotNullArgument(metaPropertyPath, "Could not resolve property path '%s' in '%s'", property, metaClass);
-
-        metaProperty = metaPropertyPath.getMetaProperty();
+        resolveMetaPropertyPath(datasource.getMetaClass(), property);
 
         datasource.addListener(
                 new DsListenerAdapter() {

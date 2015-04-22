@@ -742,6 +742,7 @@ create table SYS_CATEGORY_ATTR (
     SCREEN varchar(255),
     REQUIRED tinyint,
     LOOKUP tinyint,
+    TARGET_SCREENS varchar(10000),
     --
     primary key nonclustered (ID),
     constraint SYS_CATEGORY_ATTR_CATEGORY_ID foreign key (CATEGORY_ID) references SYS_CATEGORY(ID)
@@ -769,6 +770,7 @@ create table SYS_ATTR_VALUE (
     DATE_VALUE datetime,
     BOOLEAN_VALUE tinyint,
     ENTITY_VALUE uniqueidentifier,
+    CODE varchar(100),
     --
     primary key nonclustered (ID),
     constraint SYS_ATTR_VALUE_CATEGORY_ATTR_ID foreign key (CATEGORY_ATTR_ID) references SYS_CATEGORY_ATTR(ID)

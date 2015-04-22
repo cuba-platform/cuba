@@ -226,7 +226,11 @@ public class AbstractViewRepository implements ViewRepository {
             return null;
         }
 
-        View copy = new View(view.getEntityClass(), view.getName(), view.isIncludeSystemProperties());
+        View.ViewParams viewParams = new View.ViewParams()
+                .entityClass(view.getEntityClass())
+                .name(view.getName())
+                .includeSystemProperties(view.isIncludeSystemProperties());
+        View copy = new View(viewParams);
         for (ViewProperty property : view.getProperties()) {
             copy.addProperty(property.getName(), copyView(property.getView()), property.isLazy());
         }
@@ -402,16 +406,17 @@ public class AbstractViewRepository implements ViewRepository {
 
         String systemProperties = viewElem.attributeValue("systemProperties");
 
-        View view;
+        View.ViewParams viewParam = new View.ViewParams().entityClass(metaClass.getJavaClass()).name(viewName);
         if (ancestor != null) {
             View ancestorView = getAncestorView(metaClass, ancestor, visited);
-
             boolean includeSystemProperties = systemProperties == null ?
                     ancestorView.isIncludeSystemProperties() : Boolean.valueOf(systemProperties);
-            view = new View(ancestorView, metaClass.getJavaClass(), viewName, includeSystemProperties);
+            viewParam.src(ancestorView)
+                    .includeSystemProperties(includeSystemProperties);
         } else {
-            view = new View(metaClass.getJavaClass(), viewName, Boolean.valueOf(systemProperties));
+            viewParam.includeSystemProperties(Boolean.valueOf(systemProperties));
         }
+        View view = new View(viewParam);
 
         visited.add(info);
         loadView(rootElem, viewElem, view, visited);

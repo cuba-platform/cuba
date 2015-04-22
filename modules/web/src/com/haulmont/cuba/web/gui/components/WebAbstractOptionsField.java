@@ -50,12 +50,7 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
         this.datasource = datasource;
 
         final MetaClass metaClass = datasource.getMetaClass();
-        metaPropertyPath = metaClass.getPropertyPath(property);
-        try {
-            metaProperty = metaPropertyPath.getMetaProperty();
-        } catch (ArrayIndexOutOfBoundsException e) {
-            throw new RuntimeException("Metaproperty name is possibly wrong: " + property, e);
-        }
+        resolveMetaPropertyPath(metaClass, property);
 
         if (metaProperty.getRange().getCardinality() != null) {
             setMultiSelect(metaProperty.getRange().getCardinality().isMany());

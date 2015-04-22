@@ -28,11 +28,7 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
  * @version $Id$
  */
 public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements CheckBox {
-
     protected Datasource datasource;
-    protected MetaProperty metaProperty;
-    protected MetaPropertyPath metaPropertyPath;
-
     protected boolean updatingInstance;
     protected Object prevValue;
 
@@ -98,14 +94,7 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
             setValue(null);
             return;
         }
-
-        final MetaClass metaClass = datasource.getMetaClass();
-        metaPropertyPath = metaClass.getPropertyPath(property);
-
-        checkNotNullArgument(metaPropertyPath, "Could not resolve property path '%s' in '%s'", property, metaClass);
-
-        metaProperty = metaPropertyPath.getMetaProperty();
-
+        resolveMetaPropertyPath(datasource.getMetaClass(), property);
         datasource.addListener(
                 new DsListenerAdapter() {
                     @Override

@@ -4,31 +4,35 @@
  */
 package com.haulmont.cuba.core.entity;
 
+import com.google.common.base.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.IllegalEntityStateException;
-import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.app.runtimeproperties.RuntimePropertiesUtils;
+import com.haulmont.cuba.core.global.*;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.kernel.DetachedStateManager;
 
+import javax.annotation.Nullable;
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 import java.util.BitSet;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Base class for persistent entities.
  * <p>When choosing a base class for your entity, consider more specific base classes defining the primary key type:
  * <ul>
- *     <li>{@link BaseUuidEntity}</li>
- *     <li>{@link BaseLongIdEntity}</li>
- *     <li>{@link BaseIntegerIdEntity}</li>
- *     <li>{@link BaseStringIdEntity}</li>
+ * <li>{@link BaseUuidEntity}</li>
+ * <li>{@link BaseLongIdEntity}</li>
+ * <li>{@link BaseIntegerIdEntity}</li>
+ * <li>{@link BaseStringIdEntity}</li>
  * </ul>
  * or most commonly used {@link StandardEntity}.
  * </p>
+ *
  * @author krivopustov
  * @version $Id$
  */
@@ -45,6 +49,8 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
 
     @Column(name = "CREATED_BY", length = LOGIN_FIELD_LEN)
     protected String createdBy;
+
+    protected Map<String, CategoryAttributeValue> runtimeProperties = null;
 
     public abstract void setId(T id);
 
@@ -109,4 +115,59 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
      * For internal use only.
      */
     public static boolean allowSetNotLoadedAttributes;
+
+    @Override
+    public void setValue(String property, Object obj, boolean checkEquals) {
+        if (RuntimePropertiesUtils.isRuntimeProperty(property)) {
+            Preconditions.checkState(runtimeProperties != null, "Runtime properties should be loaded explicitly");
+            String attributeCode = RuntimePropertiesUtils.decodeAttributeCode(property);
+            CategoryAttributeValue categoryAttributeValue = runtimeProperties.get(attributeCode);
+            if (categoryAttributeValue != null) {
+                if (obj != null) {
+                    categoryAttributeValue.setValue(obj);
+                } else {
+                    categoryAttributeValue.setDeleteTs(AppBeans.get(TimeSource.class).currentTimestamp());
+                }
+            } else if (obj != null) {
+                categoryAttributeValue = new CategoryAttributeValue();
+                categoryAttributeValue.setValue(obj);
+                categoryAttributeValue.setEntityId(getUuid());
+                categoryAttributeValue.setCode(attributeCode);
+                runtimeProperties.put(attributeCode, categoryAttributeValue);
+            }
+
+            propertyChanged(property, null, obj);
+        } else {
+            super.setValue(property, obj, checkEquals);
+        }
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getValue(String property) {
+        if (RuntimePropertiesUtils.isRuntimeProperty(property)) {
+            if (PersistenceHelper.isNew(this) && runtimeProperties == null) {
+                    runtimeProperties = new HashMap<>();
+            }
+
+            Preconditions.checkState(runtimeProperties != null, "Runtime properties should be loaded explicitly");
+            CategoryAttributeValue categoryAttributeValue = runtimeProperties.get(RuntimePropertiesUtils.decodeAttributeCode(property));
+            if (categoryAttributeValue != null) {
+                return (T) categoryAttributeValue.getValue();
+            } else {
+                return null;
+            }
+        } else {
+            return super.getValue(property);
+        }
+    }
+
+    public void setRuntimeProperties(Map<String, CategoryAttributeValue> runtimeProperties) {
+        this.runtimeProperties = runtimeProperties;
+    }
+
+    @Nullable
+    public Map<String, CategoryAttributeValue> getRuntimeProperties() {
+        return runtimeProperties;
+    }
 }

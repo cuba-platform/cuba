@@ -8,10 +8,11 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.*;
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
+import com.haulmont.cuba.core.app.runtimeproperties.RuntimePropertiesService;
+import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.CategoryAttributeValue;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.DevelopmentException;
@@ -135,7 +136,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
                 }
 
                 int rowsPerColumn;
-                int propertiesCount = rds.getMetaClass().getProperties().size();
+                int propertiesCount = rds.getPropertiesFilteredByCategory().size();
                 if (StringUtils.isNotBlank(cols)) {
                     int propertiesSize = propertiesCount;
                     if (propertiesSize % Integer.valueOf(cols) == 0)
@@ -150,10 +151,10 @@ public class RuntimePropertiesFrame extends AbstractWindow {
 
                 int columnNo = 0;
                 int fieldsCount = 0;
-                List<FieldGroup.FieldConfig> rootFields = loadFields(newRuntime, ds);
-                for (FieldGroup.FieldConfig fieldConfig : rootFields) {
+                final java.util.List<FieldGroup.FieldConfig> rootFields = loadFields();
+                for (final FieldGroup.FieldConfig field : rootFields) {
                     fieldsCount++;
-                    newRuntime.addField(fieldConfig, columnNo);
+                    newRuntime.addField(field, columnNo);
                     if (fieldsCount % rowsPerColumn == 0) {
                         columnNo++;
                         newRuntime.setColumns(columnNo + 1);
@@ -173,9 +174,8 @@ public class RuntimePropertiesFrame extends AbstractWindow {
         });
     }
 
-    protected void addCustomFields(FieldGroup component, List<FieldGroup.FieldConfig> fields, final Datasource ds) {
-        MetaClass meta = ds.getMetaClass();
-        Collection<MetaProperty> metaProperties = meta.getProperties();
+    protected void addCustomFields(FieldGroup component, java.util.List<FieldGroup.FieldConfig> fields, final Datasource ds) {
+        Collection<MetaProperty> metaProperties = rds.getPropertiesFilteredByCategory();
         for (final MetaProperty property : metaProperties) {
             Range range = property.getRange();
             if (!range.isDatatype()) {
@@ -216,7 +216,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
                             //todo move field generation to generator previous to this block (upper)
                             final PickerField pickerField;
                             Boolean lookup = ((RuntimePropertiesEntity) datasource.getItem()).getCategoryValue(property.getName()).getCategoryAttribute().getLookup();
-                            if (lookup != null && lookup){
+                            if (lookup != null && lookup) {
                                 pickerField = AppConfig.getFactory().createComponent(LookupPickerField.NAME);
 
                                 CollectionDatasource optionsDs = new DsBuilder(datasource.getDsContext())
@@ -228,7 +228,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
                                 if (action != null)
                                     pickerField.removeAction(action);
 
-                                        ((LookupPickerField) pickerField).setOptionsDatasource(optionsDs);
+                                ((LookupPickerField) pickerField).setOptionsDatasource(optionsDs);
                             } else {
                                 pickerField = componentsFactory.createComponent(PickerField.NAME);
                                 pickerField.addLookupAction();
@@ -259,18 +259,20 @@ public class RuntimePropertiesFrame extends AbstractWindow {
         }
     }
 
-    protected List<FieldGroup.FieldConfig> loadFields(FieldGroup component, Datasource ds) {
-        MetaClass meta = ds.getMetaClass();
-        Collection<MetaProperty> metaProperties = meta.getProperties();
-        List<FieldGroup.FieldConfig> fields = new ArrayList<>();
+    protected java.util.List<FieldGroup.FieldConfig> loadFields() {
+        Collection<MetaProperty> metaProperties = rds.getPropertiesFilteredByCategory();
+        java.util.List<FieldGroup.FieldConfig> fields = new ArrayList<>();
         for (MetaProperty property : metaProperties) {
             FieldGroup.FieldConfig field = new FieldGroup.FieldConfig(property.getName());
-            field.setCaption(property.getName());
+            CategoryAttribute attribute = AppBeans.get(RuntimePropertiesService.class)
+                    .getAttributeForMetaClass(rds.getMainDs().getMetaClass(), property.getName().substring(1));
+            field.setCaption(attribute != null ? attribute.getName() : property.getName());
             field.setWidth(fieldWidth);
             fields.add(field);
             Range range = property.getRange();
-            if (!range.isDatatype())
+            if (!range.isDatatype()) {
                 field.setCustom(true);
+            }
         }
         return fields;
     }

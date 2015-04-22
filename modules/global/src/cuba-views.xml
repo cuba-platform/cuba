@@ -179,6 +179,10 @@
         <property name="categoryAttrs" view="_local"/>
     </view>
 
+    <view class="com.haulmont.cuba.core.entity.CategoryAttribute" name="category.edit" extends="_local">
+        <property name="category" view="_local"/>
+    </view>
+
     <view class="com.haulmont.cuba.core.entity.Category" name="category.defaultEdit" extends="_minimal">
         <property name="isDefault"/>
     </view>

@@ -86,6 +86,19 @@ public interface DataManager {
     <A extends Entity> A reload(A entity, View view, @Nullable MetaClass metaClass, boolean useSecurityConstraints);
 
     /**
+     * Reload the entity instance from database with the view specified. Loading instance class may differ from original
+     * instance if we want to load an ancestor or a descendant.
+     * @param entity                    reloading instance
+     * @param view                      view object
+     * @param metaClass                 desired MetaClass, if null - original entity's metaclass is used
+     * @param useSecurityConstraints    whether to apply security constraints when loading the instnace
+     * @param loadRuntimeProperties     whether to load dynamic attributes for the entity
+     * @return                          reloaded instance
+     * @throws EntityAccessException if the entity cannot be reloaded because it was deleted or access restrictions has been changed
+     */
+    public <A extends Entity> A reload(A entity, View view, @Nullable MetaClass metaClass, boolean useSecurityConstraints, boolean loadRuntimeProperties);
+
+    /**
      * Commit a collection of new or detached entity instances to the database.
      * @param context   {@link com.haulmont.cuba.core.global.CommitContext} object, containing committing entities and other information
      * @return          set of committed instances

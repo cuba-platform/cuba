@@ -13,6 +13,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.runtimeprops.RuntimePropertiesGuiTools;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
@@ -33,9 +34,9 @@ import java.util.*;
  */
 public class WebFieldGroup
         extends
-            WebAbstractComponent<CubaFieldGroup>
+        WebAbstractComponent<CubaFieldGroup>
         implements
-            com.haulmont.cuba.gui.components.FieldGroup {
+        com.haulmont.cuba.gui.components.FieldGroup {
 
     protected Map<String, FieldConfig> fields = new LinkedHashMap<>();
     protected Map<FieldConfig, Integer> fieldsColumn = new HashMap<>();
@@ -354,7 +355,7 @@ public class WebFieldGroup
 
     @SuppressWarnings("unchecked")
     @Override
-    public void setDatasource(Datasource datasource) {
+    public void setDatasource(final Datasource datasource) {
         this.datasource = datasource;
 
         component.setCols(cols);
@@ -368,6 +369,8 @@ public class WebFieldGroup
         assignAutoDebugId();
 
         createFields(datasource);
+
+        AppBeans.get(RuntimePropertiesGuiTools.class).listenRuntimePropertiesChanges(datasource);
     }
 
     protected void createFields(Datasource datasource) {
@@ -472,9 +475,9 @@ public class WebFieldGroup
         if (c instanceof DatasourceComponent) {
             DatasourceComponent dsComponent = (DatasourceComponent) c;
             MetaPropertyPath propertyPath = dsComponent.getMetaPropertyPath();
-
-            if (propertyPath != null) {
-                MetaClass metaClass = dsComponent.getDatasource().getMetaClass();
+            Datasource datasource = dsComponent.getDatasource();
+            if (datasource != null && propertyPath != null) {
+                MetaClass metaClass = datasource.getMetaClass();
                 dsComponent.setEditable(dsComponent.isEditable()
                         && security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString()));
             }

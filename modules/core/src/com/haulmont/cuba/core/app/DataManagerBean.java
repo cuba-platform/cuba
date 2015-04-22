@@ -5,15 +5,24 @@
 
 package com.haulmont.cuba.core.app;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.queryresults.QueryResultsManagerAPI;
+import com.haulmont.cuba.core.app.runtimeproperties.RuntimePropertiesManagerAPI;
+import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
+import com.haulmont.cuba.core.entity.CategoryAttribute;
+import com.haulmont.cuba.core.entity.CategoryAttributeValue;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.PermissionType;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,11 +38,15 @@ import java.util.*;
  */
 @ManagedBean(DataManager.NAME)
 public class DataManagerBean implements DataManager {
+    public static final int MAX_ENTITIES_FOR_ATTRIBUTE_VALUES_BATCH = 100;
 
     private Log log = LogFactory.getLog(DataManagerBean.class);
 
     @Inject
     protected Metadata metadata;
+
+    @Inject
+    protected ViewRepository viewRepository;
 
     @Inject
     protected Configuration configuration;
@@ -55,6 +68,9 @@ public class DataManagerBean implements DataManager {
 
     @Inject
     protected EntityLoadInfoBuilder entityLoadInfoBuilder;
+
+    @Inject
+    protected RuntimePropertiesManagerAPI runtimePropertiesManagerAPI;
 
     @Nullable
     @Override
@@ -85,7 +101,10 @@ public class DataManagerBean implements DataManager {
                 result = resultList.get(0);
 
             if (result != null && context.getView() != null) {
-                em.fetch((Entity) result, context.getView());
+                em.fetch(result, context.getView());
+                if (result instanceof BaseGenericIdEntity && context.isNeedToLoadRuntimeProperties()) {
+                    fetchRuntimeProperties(Collections.singletonList((BaseGenericIdEntity) result));
+                }
             }
 
             tx.commit();
@@ -136,11 +155,17 @@ public class DataManagerBean implements DataManager {
 
             // Fetch if StoreCache is enabled or there are lazy properties in the view
             if (context.getView() != null && (dataCacheAPI.isStoreCacheEnabled()
-                    || context.getView().hasLazyProperties()))
-            {
+                    || context.getView().hasLazyProperties())) {
                 for (Entity entity : resultList) {
                     em.fetch(entity, context.getView());
                 }
+            }
+
+            // Fetch runtime properties
+            if (context.getView() != null
+                    && BaseGenericIdEntity.class.isAssignableFrom(context.getView().getEntityClass())
+                    && context.isNeedToLoadRuntimeProperties()) {
+                fetchRuntimeProperties((List<BaseGenericIdEntity>) resultList);
             }
 
             tx.commit();
@@ -169,6 +194,11 @@ public class DataManagerBean implements DataManager {
 
     @Override
     public <A extends Entity> A reload(A entity, View view, @Nullable MetaClass metaClass, boolean useSecurityConstraints) {
+        return reload(entity, view, metaClass, useSecurityConstraints, false);
+    }
+
+    @Override
+    public <A extends Entity> A reload(A entity, View view, @Nullable MetaClass metaClass, boolean useSecurityConstraints, boolean loadRuntimeProperties) {
         if (metaClass == null) {
             metaClass = metadata.getSession().getClass(entity.getClass());
         }
@@ -176,6 +206,7 @@ public class DataManagerBean implements DataManager {
         context.setUseSecurityConstraints(useSecurityConstraints);
         context.setId(entity.getId());
         context.setView(view);
+        context.setNeedToLoadRuntimeProperties(loadRuntimeProperties);
 
         A reloaded = load(context);
         if (reloaded == null)
@@ -214,19 +245,48 @@ public class DataManagerBean implements DataManager {
                         persisted.add(entity);
                     }
                 }
+
+
                 // merge detached
+                List<BaseGenericIdEntity> entitiesToFetchRuntimeProperties = new ArrayList<>();
                 for (Entity entity : context.getCommitInstances()) {
                     if (PersistenceHelper.isDetached(entity)) {
                         Entity e = em.merge(entity);
                         res.add(e);
+                        if (entity instanceof BaseGenericIdEntity) {
+                            if (((BaseGenericIdEntity) entity).getRuntimeProperties() != null) {
+                                entitiesToFetchRuntimeProperties.add((BaseGenericIdEntity) e);
+                            }
+                        }
                     }
                 }
+
+                for (Entity entity : context.getCommitInstances()) {
+                    if (entity instanceof BaseGenericIdEntity) {
+                        storeRuntimeProperties((BaseGenericIdEntity) entity);
+                    }
+                }
+
+                fetchRuntimeProperties(entitiesToFetchRuntimeProperties);
             }
+
             // remove
             for (Entity entity : context.getRemoveInstances()) {
                 Entity e = em.merge(entity);
                 em.remove(e);
                 res.add(e);
+
+                if (entity instanceof BaseGenericIdEntity) {
+                    Map<String, CategoryAttributeValue> runtimeProperties = ((BaseGenericIdEntity) entity).getRuntimeProperties();
+                    if (runtimeProperties != null) {
+                        for (CategoryAttributeValue categoryAttributeValue : runtimeProperties.values()) {
+                            if (!PersistenceHelper.isNew(categoryAttributeValue)) {
+                                em.remove(categoryAttributeValue);
+                                res.add(categoryAttributeValue);
+                            }
+                        }
+                    }
+                }
             }
 
             for (Entity entity : res) {
@@ -244,6 +304,89 @@ public class DataManagerBean implements DataManager {
         updateReferences(persisted, res);
 
         return res;
+    }
+
+    protected void storeRuntimeProperties(BaseGenericIdEntity entity) {
+        final EntityManager em = persistence.getEntityManager();
+        Map<String, CategoryAttributeValue> runtimeProperties = entity.getRuntimeProperties();
+        if (runtimeProperties != null) {
+            for (Map.Entry<String, CategoryAttributeValue> entry : runtimeProperties.entrySet()) {
+                CategoryAttributeValue categoryAttributeValue = entry.getValue();
+                if (categoryAttributeValue.getCategoryAttribute() == null
+                        && categoryAttributeValue.getCode() != null) {
+                    CategoryAttribute attribute =
+                            runtimePropertiesManagerAPI.getAttributeForMetaClass(entity.getMetaClass(), categoryAttributeValue.getCode());
+                    categoryAttributeValue.setCategoryAttribute(attribute);
+                }
+
+                //remove deleted and empty attributes
+                if (categoryAttributeValue.getDeleteTs() == null && categoryAttributeValue.getValue() != null) {
+                    em.merge(categoryAttributeValue);
+                } else {
+                    em.remove(categoryAttributeValue);
+                }
+            }
+        }
+    }
+
+    protected <A extends BaseGenericIdEntity> void fetchRuntimeProperties(List<A> entities) {
+        if (CollectionUtils.isNotEmpty(entities)) {
+            Collection<UUID> ids = Collections2.transform(entities, new Function<Entity, UUID>() {
+                @Nullable
+                @Override
+                public UUID apply(@Nullable Entity input) {
+                    return input != null ? input.getUuid() : null;
+                }
+            });
+
+            Multimap<UUID, CategoryAttributeValue> attributeValuesForEntity = HashMultimap.create();
+
+            List<UUID> currentIds = new ArrayList<>();
+            for (UUID id : ids) {
+                currentIds.add(id);
+                if (currentIds.size() >= MAX_ENTITIES_FOR_ATTRIBUTE_VALUES_BATCH) {
+                    handleAttributeValuesForIds(currentIds, attributeValuesForEntity);
+                    currentIds = new ArrayList<>();
+                }
+            }
+            handleAttributeValuesForIds(currentIds, attributeValuesForEntity);
+
+            for (BaseGenericIdEntity entity : entities) {
+                Collection<CategoryAttributeValue> theEntityAttributeValues = attributeValuesForEntity.get(entity.getUuid());
+                Map<String, CategoryAttributeValue> map = new HashMap<>();
+                entity.setRuntimeProperties(map);
+                if (CollectionUtils.isNotEmpty(theEntityAttributeValues)) {
+                    for (CategoryAttributeValue categoryAttributeValue : theEntityAttributeValues) {
+                        CategoryAttribute attribute = categoryAttributeValue.getCategoryAttribute();
+                        if (attribute != null) {
+                            map.put(attribute.getCode(), categoryAttributeValue);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    protected void handleAttributeValuesForIds(List<UUID> currentIds, Multimap<UUID, CategoryAttributeValue> attributeValuesForEntity) {
+        if (CollectionUtils.isNotEmpty(currentIds)) {
+            List<CategoryAttributeValue> allAttributeValues = loadAttributeValues(currentIds);
+            for (CategoryAttributeValue categoryAttributeValue : allAttributeValues) {
+                attributeValuesForEntity.put(categoryAttributeValue.getEntityId(), categoryAttributeValue);
+            }
+        }
+    }
+
+    protected List<CategoryAttributeValue> loadAttributeValues(List<UUID> entityIds) {
+        final EntityManager em = persistence.getEntityManager();
+        View baseAttributeValueView = viewRepository.getView(CategoryAttributeValue.class, View.LOCAL);
+        View baseAttributeView = viewRepository.getView(CategoryAttribute.class, View.LOCAL);
+
+        View view = new View(baseAttributeValueView, null, false)
+                .addProperty("categoryAttribute", new View(baseAttributeView, null, false).addProperty("category"));
+        return em.createQuery("select cav from sys$CategoryAttributeValue cav where cav.entityId in (:ids)", CategoryAttributeValue.class)
+                .setParameter("ids", entityIds)
+                .setView(view)
+                .getResultList();
     }
 
     protected void persistOrMergeNotDetached(NotDetachedCommitContext context, EntityManager em, Set<Entity> result) {
@@ -288,8 +431,8 @@ public class DataManagerBean implements DataManager {
     @Override
     public <A extends Entity> A commit(A entity, @Nullable View view) {
         CommitContext context = new CommitContext(
-                        Collections.singleton((Entity) entity),
-                        Collections.<Entity>emptyList());
+                Collections.singleton((Entity) entity),
+                Collections.<Entity>emptyList());
         if (view != null)
             context.getViews().put(entity, view);
 
@@ -312,8 +455,8 @@ public class DataManagerBean implements DataManager {
     @Override
     public void remove(Entity entity) {
         CommitContext context = new CommitContext(
-                        Collections.<Entity>emptyList(),
-                        Collections.singleton(entity));
+                Collections.<Entity>emptyList(),
+                Collections.singleton(entity));
         commit(context);
     }
 
@@ -463,6 +606,7 @@ public class DataManagerBean implements DataManager {
     /**
      * Update references from newly persisted entities to merged detached entities. Otherwise a new entity can
      * contain a stale instance of merged entity.
+     *
      * @param persisted persisted entities
      * @param committed all committed entities
      */

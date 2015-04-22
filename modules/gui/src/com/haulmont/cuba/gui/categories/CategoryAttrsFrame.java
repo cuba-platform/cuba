@@ -19,7 +19,7 @@ import com.haulmont.cuba.gui.components.actions.RefreshAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.RuntimePropsDatasource;
+import com.haulmont.cuba.core.app.runtimeproperties.PropertyType;
 import com.haulmont.cuba.gui.data.impl.CollectionPropertyDatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -176,7 +176,7 @@ public class CategoryAttrsFrame extends AbstractFrame {
                 String defaultValue = "";
 
                 if (BooleanUtils.isNotTrue(attribute.getIsEntity())) {
-                    RuntimePropsDatasource.PropertyType dataType = RuntimePropsDatasource.PropertyType.valueOf(attribute.getDataType());
+                    PropertyType dataType = PropertyType.valueOf(attribute.getDataType());
                     switch (dataType) {
                         case DATE:
                             Date date = attribute.getDefaultDate();

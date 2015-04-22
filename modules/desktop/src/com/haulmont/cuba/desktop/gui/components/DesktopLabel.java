@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -20,6 +21,7 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
+import com.haulmont.cuba.gui.runtimeprops.RuntimePropertiesGuiTools;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 
@@ -27,8 +29,6 @@ import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
-import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 /**
  * @author krivopustov
@@ -86,12 +86,7 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
             return;
         }
 
-        final MetaClass metaClass = datasource.getMetaClass();
-        metaPropertyPath = metaClass.getPropertyPath(property);
-
-        checkNotNullArgument(metaPropertyPath, "Could not resolve property path '%s' in '%s'", property, metaClass);
-
-        metaProperty = metaPropertyPath.getMetaProperty();
+        resolveMetaPropertyPath(datasource.getMetaClass(), property);
 
         valueFormatter.setMetaProperty(metaProperty);
 
@@ -260,5 +255,11 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
     @Override
     public void setHtmlEnabled(boolean htmlEnabled) {
         this.htmlEnabled = htmlEnabled;
+    }
+
+    protected void resolveMetaPropertyPath(MetaClass metaClass, String property) {
+        metaPropertyPath = AppBeans.get(RuntimePropertiesGuiTools.class).resolveMetaPropertyPath(metaClass, property);
+        Preconditions.checkNotNullArgument(metaPropertyPath, "Could not resolve property path '%s' in '%s'", property, metaClass);
+        this.metaProperty = metaPropertyPath.getMetaProperty();
     }
 }

@@ -8,21 +8,30 @@ package com.haulmont.cuba.gui.categories;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.haulmont.cuba.core.app.runtimeproperties.PropertyType;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.core.global.MessageTools;
+import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ScreensHelper;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.components.validators.DateValidator;
 import com.haulmont.cuba.gui.components.validators.DoubleValidator;
 import com.haulmont.cuba.gui.components.validators.IntegerValidator;
 import com.haulmont.cuba.gui.config.WindowConfig;
-import com.haulmont.cuba.gui.data.*;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.DataSupplier;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -35,6 +44,7 @@ import java.util.*;
  * @author devyatkin
  * @version $Id$
  */
+//todo eude rewrite the editor, use common way
 public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     protected Container fieldsContainer;
     protected TextField nameField;
@@ -71,7 +81,13 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     @Inject
     protected ScreensHelper screensHelper;
 
+    @Inject
+    protected ComponentsFactory componentsFactory;
+
     protected String fieldWidth;
+
+    @Inject
+    private Table targetScreensTable;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -129,8 +145,8 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
 
         dataTypeField = factory.createComponent(LookupField.NAME);
         Map<String, Object> options = new TreeMap<>();
-        RuntimePropsDatasource.PropertyType[] types = RuntimePropsDatasource.PropertyType.values();
-        for (RuntimePropsDatasource.PropertyType propertyType : types) {
+        PropertyType[] types = PropertyType.values();
+        for (PropertyType propertyType : types) {
             options.put(getMessage(propertyType.toString()), propertyType);
         }
         dataTypeField.setWidth(fieldWidth);
@@ -148,21 +164,21 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
                     clearValue(attribute);
                 }
                 lookupField.setVisible(false);
-                if (RuntimePropsDatasource.PropertyType.ENTITY.equals(value)) {
+                if (PropertyType.ENTITY.equals(value)) {
                     attribute.setIsEntity(true);
                     generateDefaultEntityValueField(!dataTypeFieldInited);
                     lookupField.setVisible(true);
-                } else if (RuntimePropsDatasource.PropertyType.ENUMERATION.equals(value)) {
+                } else if (PropertyType.ENUMERATION.equals(value)) {
                     attribute.setIsEntity(false);
                     attribute.setDataType(value.toString());
                     generateDefaultEnumValueField(!dataTypeFieldInited);
                 } else {
-                    if (RuntimePropsDatasource.PropertyType.BOOLEAN.equals(value)) {
+                    if (PropertyType.BOOLEAN.equals(value)) {
                         requiredField.setVisible(false);
                     }
                     attribute.setDataType(value.toString());
                     attribute.setIsEntity(false);
-                    generateDefaultValueField((Enum<RuntimePropsDatasource.PropertyType>) value, !dataTypeFieldInited);
+                    generateDefaultValueField((Enum<PropertyType>) value, !dataTypeFieldInited);
                 }
                 dataTypeFieldInited = true;
             }
@@ -182,6 +198,34 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         });
         lookupField.setVisible(false);
         fieldsContainer.add(lookupField);
+
+        targetScreensTable.addAction(new AbstractAction("create") {
+            @Override
+            public void actionPerform(Component component) {
+                targetScreensTable.getDatasource().addItem(new ScreenAndComponent());
+            }
+        });
+        targetScreensTable.addAction(new RemoveAction(targetScreensTable));
+    }
+
+    @Override
+    public boolean preCommit() {
+        Collection<ScreenAndComponent> screens = targetScreensTable.getDatasource().getItems();
+        StringBuilder stringBuilder = new StringBuilder();
+        for (ScreenAndComponent screenAndComponent : screens) {
+            stringBuilder.append(screenAndComponent.getScreen());
+            if (StringUtils.isNotBlank(screenAndComponent.getComponent())) {
+                stringBuilder.append("#");
+                stringBuilder.append(screenAndComponent.getComponent());
+            }
+            stringBuilder.append(",");
+        }
+
+        if (stringBuilder.length() > 0) {
+            stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+        }
+        attribute.setTargetScreens(stringBuilder.toString());
+        return true;
     }
 
     @Override
@@ -204,10 +248,10 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         }
     }
 
-    protected void generateDefaultValueField(Enum<RuntimePropsDatasource.PropertyType> dataType, boolean setValue) {
+    protected void generateDefaultValueField(Enum<PropertyType> dataType, boolean setValue) {
         boolean hasValue = (attribute.getDefaultValue() == null || !setValue) ? (false) : (true);
         clearComponents();
-        if (RuntimePropsDatasource.PropertyType.STRING.equals(dataType)) {
+        if (PropertyType.STRING.equals(dataType)) {
             TextField textField = factory.createComponent(TextField.NAME);
             textField.setId("stringDefaultValueField");
             textField.setCaption(getMessage("defaultValue"));
@@ -226,7 +270,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             fieldsContainer.add(textField);
         }
 
-        if (RuntimePropsDatasource.PropertyType.DATE.equals(dataType)) {
+        if (PropertyType.DATE.equals(dataType)) {
             BoxLayout boxLayout = factory.createComponent(BoxLayout.VBOX);
             boxLayout.setId("defaultDateBox");
             CheckBox checkBox = factory.createComponent(CheckBox.NAME);
@@ -266,7 +310,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             }
             if (hasValue)
                 dateField.setValue(attribute.getDefaultDate());
-        } else if (RuntimePropsDatasource.PropertyType.INTEGER.equals(dataType)) {
+        } else if (PropertyType.INTEGER.equals(dataType)) {
             TextField textField = factory.createComponent(TextField.NAME);
             textField.setId("intDefaultValueField");
             textField.setCaption(getMessage("defaultValue"));
@@ -284,7 +328,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             if (hasValue)
                 textField.setValue(attribute.getDefaultInt());
             fieldsContainer.add(textField);
-        } else if (RuntimePropsDatasource.PropertyType.DOUBLE.equals(dataType)) {
+        } else if (PropertyType.DOUBLE.equals(dataType)) {
             TextField textField = factory.createComponent(TextField.NAME);
             textField.setId("doubleDefaultValueField");
             textField.setCaption(getMessage("defaultValue"));
@@ -304,7 +348,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             if (hasValue)
                 textField.setValue(attribute.getDefaultDouble());
             fieldsContainer.add(textField);
-        } else if (RuntimePropsDatasource.PropertyType.BOOLEAN.equals(dataType)) {
+        } else if (PropertyType.BOOLEAN.equals(dataType)) {
             CheckBox checkBox = factory.createComponent(CheckBox.NAME);
             checkBox.setId("booleanDefaultValueField");
             checkBox.setCaption(getMessage("defaultValue"));
@@ -433,7 +477,7 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
     }
 
     protected void fillScreens(Class entityClass) {
-        Map<String, Object> screensMap = screensHelper.getAvailableScreensMap(entityClass);
+        Map<String, Object> screensMap = screensHelper.getAvailableBrowserScreens(entityClass);
         screenField.setValue(null);             // While #PL-4731 unfixed
         screenField.setOptionsMap(screensMap);
         String value = attribute.getScreen();
@@ -485,10 +529,10 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
         requiredField.setValue(attribute.getRequired());
         lookupField.setValue(attribute.getLookup());
         if (BooleanUtils.isTrue(attribute.getIsEntity())) {
-            dataTypeField.setValue(RuntimePropsDatasource.PropertyType.ENTITY);
+            dataTypeField.setValue(PropertyType.ENTITY);
         } else {
             if (attribute.getDataType() != null) {
-                RuntimePropsDatasource.PropertyType type = RuntimePropsDatasource.PropertyType.valueOf(attribute.getDataType());
+                PropertyType type = PropertyType.valueOf(attribute.getDataType());
                 dataTypeField.setValue(type);
             }
         }
@@ -497,9 +541,36 @@ public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
             screenField.setEnabled(BooleanUtils.isNotTrue(attribute.getLookup()));
         }
 
-        if (dataTypeField.getValue() != null && dataTypeField.getValue().equals(RuntimePropsDatasource.PropertyType.BOOLEAN)) {
+        if (dataTypeField.getValue() != null && dataTypeField.getValue().equals(PropertyType.BOOLEAN)) {
             requiredField.setVisible(false);
         }
+
+        Set<String> targetScreens = attribute.targetScreensSet();
+        for (String targetScreen : targetScreens) {
+            if (targetScreen.contains("#")) {
+                String[] split = targetScreen.split("#");
+                targetScreensTable.getDatasource().addItem(new ScreenAndComponent(split[0], split[1]));
+            } else {
+                targetScreensTable.getDatasource().addItem(new ScreenAndComponent(targetScreen, null));
+            }
+        }
+
+        final Map<String, Object> optionsMap =
+                screensHelper.getAvailableScreens(metadata.getClassNN(attribute.getCategory().getEntityType()).getJavaClass());
+
+        targetScreensTable.addGeneratedColumn(
+                "screen",
+                new Table.ColumnGenerator<ScreenAndComponent>() {
+                    @Override
+                    public Component generateCell(ScreenAndComponent entity) {
+                        LookupField lookupField = componentsFactory.createComponent(LookupField.NAME);
+                        lookupField.setDatasource(targetScreensTable.getItemDatasource(entity), "screen");
+                        lookupField.setOptionsMap(optionsMap);
+                        lookupField.setWidth("100%");
+                        return lookupField;
+                    }
+                }
+        );
     }
 
     protected void clearComponents() {

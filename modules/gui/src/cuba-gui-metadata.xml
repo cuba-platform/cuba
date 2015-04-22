@@ -26,6 +26,7 @@
         <class>com.haulmont.cuba.gui.components.filter.descriptor.CustomConditionCreator</class>
         <class>com.haulmont.cuba.gui.components.filter.descriptor.RuntimePropConditionCreator</class>
         <class>com.haulmont.cuba.gui.components.filter.descriptor.HeaderConditionDescriptor</class>
+        <class>com.haulmont.cuba.gui.categories.ScreenAndComponent</class>
     </metadata-model>
 
 </metadata>

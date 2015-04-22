@@ -236,12 +236,8 @@ public class WebEntityLinkField extends WebAbstractField<CubaButtonField> implem
         this.datasource = datasource;
 
         final MetaClass metaClass = datasource.getMetaClass();
-        this.metaPropertyPath = metaClass.getPropertyPath(property);
-        if (metaPropertyPath == null) {
-            throw new RuntimeException(String.format("Property '%s' not found in class %s", property, metaClass));
-        }
+        resolveMetaPropertyPath(metaClass, property);
 
-        this.metaProperty = metaPropertyPath.getMetaProperty();
         if (metaProperty.getRange().isClass()) {
             this.metaClass = metaProperty.getRange().asClass();
         }

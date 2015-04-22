@@ -155,12 +155,7 @@ public class WebPickerField extends WebAbstractField<CubaPickerField>
         this.datasource = datasource;
 
         final MetaClass metaClass = datasource.getMetaClass();
-        metaPropertyPath = metaClass.getPropertyPath(property);
-        if (metaPropertyPath == null) {
-            throw new RuntimeException(String.format("Property '%s' not found in class %s", property, metaClass));
-        }
-
-        this.metaProperty = metaPropertyPath.getMetaProperty();
+        resolveMetaPropertyPath(metaClass, property);
         this.metaClass = metaProperty.getRange().asClass();
 
         final ItemWrapper wrapper = createDatasourceWrapper(datasource, Collections.singleton(metaPropertyPath));

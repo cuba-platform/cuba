@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -16,6 +17,7 @@ import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.gui.runtimeprops.RuntimePropertiesGuiTools;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.vaadin.data.Property;
 import com.vaadin.ui.AbstractComponent;
@@ -27,8 +29,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-
-import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 /**
  * @param <T>
@@ -70,9 +70,8 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field> extends We
         this.datasource = datasource;
 
         final MetaClass metaClass = datasource.getMetaClass();
-        metaPropertyPath = metaClass.getPropertyPath(property);
 
-        checkNotNullArgument(metaPropertyPath, "Could not resolve property path '%s' in '%s'", property, metaClass);
+        resolveMetaPropertyPath(metaClass, property);
 
         metaProperty = metaPropertyPath.getMetaProperty();
 
@@ -90,6 +89,12 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field> extends We
         if (metaProperty.isReadOnly()) {
             setEditable(false);
         }
+    }
+
+    protected void resolveMetaPropertyPath(MetaClass metaClass, String property) {
+        metaPropertyPath = AppBeans.get(RuntimePropertiesGuiTools.class).resolveMetaPropertyPath(metaClass, property);
+        Preconditions.checkNotNullArgument(metaPropertyPath, "Could not resolve property path '%s' in '%s'", property, metaClass);
+        this.metaProperty = metaPropertyPath.getMetaProperty();
     }
 
     protected void initFieldConverter() {

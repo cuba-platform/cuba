@@ -311,11 +311,7 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
         this.datasource = datasource;
 
         final MetaClass metaClass = datasource.getMetaClass();
-        metaPropertyPath = metaClass.getPropertyPath(property);
-
-        checkNotNullArgument(metaPropertyPath, "Could not resolve property path '%s' in '%s'", property, metaClass);
-
-        metaProperty = metaPropertyPath.getMetaProperty();
+        resolveMetaPropertyPath(metaClass, property);
 
         if (metaProperty.getRange().isDatatype()
                 && metaProperty.getRange().asDatatype().getName().equals(DateTimeDatatype.NAME)

@@ -7,12 +7,12 @@ package com.haulmont.cuba.core.entity;
 
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
+import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.persistence.Persistent;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
-import java.util.Date;
-import java.util.UUID;
+import java.util.*;
 
 @Entity(name = "sys$CategoryAttribute")
 @Table(name = "SYS_CATEGORY_ATTR")
@@ -35,6 +35,30 @@ public class CategoryAttribute extends StandardEntity {
     @Column(name = "CODE", length = CODE_FIELD_LENGTH)
     private String code;
 
+    @Column(name = "ENUMERATION")
+    private String enumeration;
+
+    @Column(name = "DATA_TYPE")
+    private String dataType;
+
+    @Column(name = "IS_ENTITY")
+    private Boolean isEntity;
+
+    @Column(name = "ORDER_NO")
+    private Integer orderNo;
+
+    @Column(name = "SCREEN")
+    private String screen;
+
+    @Column(name = "REQUIRED")
+    private Boolean required = false;
+
+    @Column(name = "LOOKUP")
+    private Boolean lookup = false;
+
+    @Column(name = "TARGET_SCREENS")
+    private String targetScreens;//comma separated list of screenId#componentId pairs. componentId might not exist
+
     @Column(name = "DEFAULT_STRING")
     private String defaultString;
 
@@ -50,30 +74,9 @@ public class CategoryAttribute extends StandardEntity {
     @Column(name = "DEFAULT_DATE")
     private Date defaultDate;
 
-    @Column(name = "ENUMERATION")
-    private String enumeration;
-
-    @Column(name = "DATA_TYPE")
-    private String dataType;
-
-    @Column(name = "IS_ENTITY")
-    private Boolean isEntity;
-
     @Column(name = "DEFAULT_ENTITY_VALUE")
     @Persistent
     private UUID defaultEntityId;
-
-    @Column(name = "ORDER_NO")
-    private Integer orderNo;
-
-    @Column(name = "SCREEN")
-    private String screen;
-
-    @Column(name = "REQUIRED")
-    private Boolean required = false;
-
-    @Column(name = "LOOKUP")
-    private Boolean lookup = false;
 
     @Column(name = "DEFAULT_DATE_IS_CURRENT")
     private Boolean defaultDateIsCurrent;
@@ -225,5 +228,21 @@ public class CategoryAttribute extends StandardEntity {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public String getTargetScreens() {
+        return targetScreens;
+    }
+
+    public void setTargetScreens(String targetScreens) {
+        this.targetScreens = targetScreens;
+    }
+
+    public Set<String> targetScreensSet(){
+        if (StringUtils.isNotBlank(targetScreens)) {
+            return new HashSet<>(Arrays.asList(targetScreens.split(",")));
+        } else {
+            return Collections.emptySet();
+        }
     }
 }

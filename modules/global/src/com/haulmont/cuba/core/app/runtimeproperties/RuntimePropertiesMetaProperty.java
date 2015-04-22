@@ -3,7 +3,7 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-package com.haulmont.cuba.gui.data;
+package com.haulmont.cuba.core.app.runtimeproperties;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.*;
@@ -11,11 +11,13 @@ import com.haulmont.chile.core.model.impl.AbstractRange;
 import com.haulmont.chile.core.model.impl.ClassRange;
 import com.haulmont.chile.core.model.impl.DatatypeRange;
 import com.haulmont.chile.core.model.impl.MetadataObjectImpl;
+import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.sys.SetValueEntity;
 
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 
@@ -26,17 +28,16 @@ import java.lang.reflect.AnnotatedElement;
  * @version $Id$
  */
 public class RuntimePropertiesMetaProperty extends MetadataObjectImpl implements MetaProperty {
-
     private MetaClass metaClass;
-    private Range range;
+    private transient Range range;
     private Class javaClass;
 
     private AnnotatedElement annotatedElement = new FakeAnnotatedElement();
 
-    public RuntimePropertiesMetaProperty(MetaClass metaClass, String name, Class javaClass) {
-        this.javaClass = javaClass;
+    public RuntimePropertiesMetaProperty(MetaClass metaClass, CategoryAttribute attribute) {
+        this.javaClass = RuntimePropertiesHelper.getAttributeClass(attribute);
         this.metaClass = metaClass;
-        this.name = name;
+        this.name = RuntimePropertiesUtils.encodeAttributeCode(attribute.getCode());
         Metadata metadata = AppBeans.get(Metadata.NAME);
         Session metadataSession = metadata.getSession();
         if (SetValueEntity.class.isAssignableFrom(javaClass)) {
@@ -99,7 +100,7 @@ public class RuntimePropertiesMetaProperty extends MetadataObjectImpl implements
         return null;
     }
 
-    protected static class FakeAnnotatedElement implements AnnotatedElement {
+    protected static class FakeAnnotatedElement implements AnnotatedElement, Serializable {
 
         @Override
         public boolean isAnnotationPresent(Class<? extends Annotation> annotationClass) {
@@ -120,5 +121,21 @@ public class RuntimePropertiesMetaProperty extends MetadataObjectImpl implements
         public Annotation[] getDeclaredAnnotations() {
             return new Annotation[0];
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof RuntimePropertiesMetaProperty)) return false;
+
+        RuntimePropertiesMetaProperty that = (RuntimePropertiesMetaProperty) o;
+
+        return metaClass.equals(that.metaClass) && name.equals(that.name);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return 31 * metaClass.hashCode() + name.hashCode();
     }
 }

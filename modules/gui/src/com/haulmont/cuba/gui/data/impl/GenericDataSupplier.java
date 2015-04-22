@@ -51,6 +51,11 @@ public class GenericDataSupplier implements DataSupplier {
     }
 
     @Override
+    public <A extends Entity> A reload(A entity, View view, @Nullable MetaClass metaClass, boolean useSecurityConstraints, boolean loadRuntimeProperties) {
+        return dataManager.reload(entity, view, metaClass, useSecurityConstraints, loadRuntimeProperties);
+    }
+
+    @Override
     public <A extends Entity> A commit(A instance, @Nullable View view) {
         return dataManager.commit(instance, view);
     }

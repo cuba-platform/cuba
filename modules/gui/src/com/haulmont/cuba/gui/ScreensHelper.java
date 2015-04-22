@@ -7,7 +7,10 @@ package com.haulmont.cuba.gui;
 
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.MessageTools;
+import com.haulmont.cuba.core.global.MetadataTools;
+import com.haulmont.cuba.core.global.Resources;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
@@ -77,7 +80,7 @@ public class ScreensHelper {
     }
 
     @Nullable
-    public WindowInfo getAvailableBrowseScreen(MetaClass metaClass) {
+    public WindowInfo getDefaultBrowseScreen(MetaClass metaClass) {
         WindowInfo browseWindow = windowConfig.findWindowInfo(windowConfig.getBrowseScreenId(metaClass));
         if (browseWindow != null
                 && userSessionSource.getUserSession().isScreenPermitted(browseWindow.getId())) {
@@ -93,13 +96,26 @@ public class ScreensHelper {
         return null;
     }
 
-    public Map<String, Object> getAvailableScreensMap(Class entityClass) {
-        String key = getScreensCacheKey(entityClass.getName(), getUserLocale());
-        Map<String, Object> screensMap = availableScreensCache.get(key);
-        if (screensMap != null)
-            return screensMap;
+    protected enum ScreenType {
+        BROWSER, EDITOR, ALL;
+    }
 
-        List<WindowInfo> windowInfoCollection =  new ArrayList<>(windowConfig.getWindows());
+    public Map<String, Object> getAvailableBrowserScreens(Class entityClass) {
+        return getAvailableScreensMap(entityClass, ScreenType.BROWSER);
+    }
+
+    public Map<String, Object> getAvailableScreens(Class entityClass) {
+        return getAvailableScreensMap(entityClass, ScreenType.ALL);
+    }
+
+    protected Map<String, Object> getAvailableScreensMap(Class entityClass, ScreenType filterScreenType) {
+        String key = getScreensCacheKey(entityClass.getName(), getUserLocale(), filterScreenType);
+        Map<String, Object> screensMap = availableScreensCache.get(key);
+        if (screensMap != null) {
+            return screensMap;
+        }
+
+        List<WindowInfo> windowInfoCollection = new ArrayList<>(windowConfig.getWindows());
         screensMap = new TreeMap<>();
         for (WindowInfo windowInfo : windowInfoCollection) {
             String windowId = windowInfo.getId();
@@ -108,7 +124,7 @@ public class ScreensHelper {
                 try {
                     Element windowElement = getWindowElement(src);
                     if (windowElement != null) {
-                        if (isEntityAvailable(windowElement, entityClass)) {
+                        if (isEntityAvailable(windowElement, entityClass, filterScreenType)) {
                             String caption = getScreenCaption(windowElement, src);
                             caption = getDetailedScreenCaption(caption, windowId);
                             screensMap.put(caption, windowId);
@@ -125,36 +141,26 @@ public class ScreensHelper {
         return screensMap;
     }
 
-    protected boolean isEntityAvailable(Element window, Class entityClass) {
-        String lookupId = window.attributeValue("lookupComponent");
-        if (StringUtils.isEmpty(lookupId))
-            return false;
-
+    protected boolean isEntityAvailable(Element window, Class entityClass, ScreenType filterScreenType) {
         Element dsContext = window.element("dsContext");
-        if (dsContext == null)
+        if (dsContext == null) {
             return false;
-
-        Element lookupElement = elementByID(window, lookupId);
-        if (lookupElement == null)
-            return false;
-
-        String datasourceId = null;
-        for (Element element : Dom4j.elements(lookupElement)) {
-            String datasource = element.attributeValue("datasource");
-            if (StringUtils.isNotEmpty(datasource)) {
-                datasourceId = datasource;
-            }
         }
-        if (StringUtils.isEmpty(datasourceId))
+
+        String datasourceId = getDatasourceId(window, filterScreenType);
+        if (StringUtils.isEmpty(datasourceId)) {
             return false;
+        }
 
         Element datasource = elementByID(dsContext, datasourceId);
-        if (datasource == null)
+        if (datasource == null) {
             return false;
+        }
 
         String dsClassValue = datasource.attributeValue("class");
-        if (StringUtils.isEmpty(dsClassValue))
+        if (StringUtils.isEmpty(dsClassValue)) {
             return false;
+        }
 
         Class entity = entityClass;
         boolean isAvailable;
@@ -165,6 +171,39 @@ public class ScreensHelper {
             process = metadataTools.isPersistent(entity);
         } while (process && !isAvailable);
         return isAvailable;
+    }
+
+    @Nullable
+    protected String getDatasourceId(Element window, ScreenType filterScreenType) {
+        String windowDatasource = window.attributeValue("datasource");
+        String lookupDatasource = resolveLookupDatasource(window);
+        if (filterScreenType == ScreenType.ALL) {
+            return windowDatasource != null ? windowDatasource : lookupDatasource;
+        } else if (filterScreenType == ScreenType.BROWSER) {
+            return lookupDatasource;
+        } else {
+            return windowDatasource;
+        }
+    }
+
+    @Nullable
+    protected String resolveLookupDatasource(Element window) {
+        String lookupId = window.attributeValue("lookupComponent");
+        Element lookupElement = null;
+        if (StringUtils.isNotBlank(lookupId)) {
+            lookupElement = elementByID(window, lookupId);
+        }
+
+        if (lookupElement != null) {
+            for (Element element : Dom4j.elements(lookupElement)) {
+                String datasource = element.attributeValue("datasource");
+                if (StringUtils.isNotBlank(datasource)) {
+                    return datasource;
+                }
+            }
+        }
+
+        return null;
     }
 
     @Nullable
@@ -305,8 +344,8 @@ public class ScreensHelper {
         return src + locale.toString();
     }
 
-    protected String getScreensCacheKey(String className, Locale locale) {
-        return className + locale.toString();
+    protected String getScreensCacheKey(String className, Locale locale, ScreenType filterScreenType) {
+        return String.format("%s_%s_%s", className, locale.toString(), filterScreenType);
     }
 
     public void clearCache() {

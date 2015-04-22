@@ -81,6 +81,7 @@
                 <entry key="cuba_EntitySqlGenerationService" value="com.haulmont.cuba.core.app.EntitySqlGenerationService"/>
                 <entry key="cuba_NumberIdService" value="com.haulmont.cuba.core.app.NumberIdService"/>
                 <entry key="cuba_QueryResultsService" value="com.haulmont.cuba.core.app.QueryResultsService"/>
+                <entry key="cuba_RuntimePropertiesService" value="com.haulmont.cuba.core.app.runtimeproperties.RuntimePropertiesService"/>
             </map>
         </property>
     </bean>

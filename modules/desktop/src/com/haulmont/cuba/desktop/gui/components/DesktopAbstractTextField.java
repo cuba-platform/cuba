@@ -48,8 +48,6 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
     protected Object prevValue;
 
     protected Datasource datasource;
-    protected MetaProperty metaProperty;
-    protected MetaPropertyPath metaPropertyPath;
 
     protected boolean editable = true;
 
@@ -193,13 +191,7 @@ public abstract class DesktopAbstractTextField<T extends JTextComponent> extends
             return;
         }
 
-        final MetaClass metaClass = datasource.getMetaClass();
-        metaPropertyPath = metaClass.getPropertyPath(property);
-
-        checkNotNullArgument(metaPropertyPath, "Could not resolve property path '%s' in '%s'", property, metaClass);
-
-        metaProperty = metaPropertyPath.getMetaProperty();
-
+        resolveMetaPropertyPath(datasource.getMetaClass(), property);
         valueFormatter.setMetaProperty(metaProperty);
 
         //noinspection unchecked

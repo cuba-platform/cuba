@@ -6,9 +6,13 @@ package com.haulmont.cuba.gui.data;
 
 import com.haulmont.chile.core.common.ValueListener;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.app.runtimeproperties.PropertyType;
+import com.haulmont.cuba.core.app.runtimeproperties.RuntimePropertiesUtils;
 import com.haulmont.cuba.core.entity.BaseEntity;
+import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.CategoryAttributeValue;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UuidProvider;
 import com.haulmont.cuba.core.sys.SetValueEntity;
 import org.apache.commons.lang.ObjectUtils;
@@ -28,17 +32,21 @@ public class RuntimePropertiesEntity implements BaseEntity {
 
     private MetaClass metaClass;
     private UUID id;
-    private Map<String,Object> values;
     private Map<String, Object> changed = new HashMap<>();
     private Set<ValueListener> listeners = new LinkedHashSet<>();
-    private Map<String,CategoryAttributeValue> categoryValues;
 
-    public RuntimePropertiesEntity(MetaClass metaClass, Map<String, Object> variables,
-                                   Map<String, CategoryAttributeValue> categoryValues) {
+    private Map<String, CategoryAttributeValue> categoryValues = new HashMap<>();
+    private Map<String, Object> values = new HashMap<>();
+
+    public RuntimePropertiesEntity(MetaClass metaClass) {
         this.metaClass = metaClass;
         this.id = UuidProvider.createUuid();
-        this.values = variables;
-        this.categoryValues = categoryValues;
+    }
+
+    public void addAttributeValue(CategoryAttribute attribute, CategoryAttributeValue categoryAttributeValue, Object value) {
+        String attributeCode = RuntimePropertiesUtils.encodeAttributeCode(attribute.getCode());
+        categoryValues.put(attributeCode, categoryAttributeValue);
+        values.put(attributeCode, value);
     }
 
     @Override
@@ -159,7 +167,7 @@ public class RuntimePropertiesEntity implements BaseEntity {
         }
     }
 
-    public CategoryAttributeValue getCategoryValue(String name){
+    public CategoryAttributeValue getCategoryValue(String name) {
         return categoryValues.get(name);
     }
 
@@ -168,7 +176,7 @@ public class RuntimePropertiesEntity implements BaseEntity {
             attrValue.setEntityValue((UUID) value);
         } else {
             String dataType = attrValue.getCategoryAttribute().getDataType();
-            switch (RuntimePropsDatasource.PropertyType.valueOf(dataType)) {
+            switch (PropertyType.valueOf(dataType)) {
                 case INTEGER:
                     attrValue.setIntValue((Integer) value);
                     break;

@@ -44,6 +44,8 @@ public abstract class AbstractDatasource<T extends Entity> implements Datasource
 
     protected boolean listenersEnabled = true;
 
+    protected boolean needToLoadRuntimeProperties;
+
     @Override
     public void setup(DsContext dsContext, DataSupplier dataSupplier, String id,
                       MetaClass metaClass, @Nullable View view) {
@@ -202,6 +204,16 @@ public abstract class AbstractDatasource<T extends Entity> implements Datasource
         itemToCreate.clear();
         itemToUpdate.clear();
         itemToDelete.clear();
+    }
+
+    @Override
+    public boolean needToLoadRuntimeProperties() {
+        return needToLoadRuntimeProperties;
+    }
+
+    @Override
+    public void setNeedToLoadRuntimeProperties(boolean value) {
+        this.needToLoadRuntimeProperties = value;
     }
 
     protected void attachListener(Instance item) {

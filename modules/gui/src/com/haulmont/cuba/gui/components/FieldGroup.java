@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.gui.data.Datasource;
 import org.dom4j.Element;
 
@@ -100,6 +101,7 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
         private String width;
         private Datasource datasource;
         private String requiredError;
+        private MetaPropertyPath metaPropertyPath;
         
         private boolean custom;
         private boolean required;
@@ -210,6 +212,14 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
 
         public void setRequiredError(String requiredError) {
             this.requiredError = requiredError;
+        }
+
+        public MetaPropertyPath getMetaPropertyPath() {
+            return metaPropertyPath;
+        }
+
+        public void setMetaPropertyPath(MetaPropertyPath metaPropertyPath) {
+            this.metaPropertyPath = metaPropertyPath;
         }
     }
 

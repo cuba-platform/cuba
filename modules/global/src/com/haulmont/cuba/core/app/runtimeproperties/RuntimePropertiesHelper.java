@@ -3,7 +3,7 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-package com.haulmont.cuba.gui.data;
+package com.haulmont.cuba.core.app.runtimeproperties;
 
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.sys.SetValueEntity;
@@ -29,7 +29,7 @@ public class RuntimePropertiesHelper {
 
         } else {
             String dataType = attribute.getDataType();
-            switch (RuntimePropsDatasource.PropertyType.valueOf(dataType)) {
+            switch (PropertyType.valueOf(dataType)) {
                 case STRING:
                     return String.class;
                 case INTEGER:

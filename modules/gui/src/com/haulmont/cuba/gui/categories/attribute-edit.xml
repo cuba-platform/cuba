@@ -12,13 +12,34 @@
         <datasource
                 id="attributeDs"
                 class="com.haulmont.cuba.core.entity.CategoryAttribute"
-                view="_local"
+                view="category.edit"
                 >
         </datasource>
+        <collectionDatasource id="screensDs" class="com.haulmont.cuba.gui.categories.ScreenAndComponent"
+                              allowCommit="false" refreshMode="NEVER"/>
     </dsContext>
-    <layout spacing="true">
-        <vbox id="attributeProperties" spacing="true" width="100%">
-        </vbox>
+    <layout spacing="true" expand="buttons">
+        <tabSheet id="tabsheet">
+            <tab id="main" caption="msg://caption.mainTab" expand="attributeProperties" spacing="true" margin="true">
+                <vbox id="attributeProperties" spacing="true" width="100%">
+                </vbox>
+            </tab>
+            <tab id="visibility" caption="msg://caption.targetScreensTab" spacing="true"  margin="true">
+                <table id="targetScreensTable" width="100%" height="250px" editable="true">
+                    <buttonsPanel>
+                        <button action="targetScreensTable.create" icon="icons/create.png"
+                                caption="msg://targetScreensTable.create"/>
+                        <button action="targetScreensTable.remove" icon="icons/remove.png"
+                                caption="msg://targetScreensTable.remove"/>
+                    </buttonsPanel>
+                    <columns>
+                        <column id="screen" editable="true" custom="true" caption="msg://sys$ScreenAndComponent.screen"/>
+                        <column id="component" editable="true" caption="msg://sys$ScreenAndComponent.component"/>
+                    </columns>
+                    <rows datasource="screensDs"/>
+                </table>
+            </tab>
+        </tabSheet>
         <iframe id="buttons" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
     </layout>
 </window>

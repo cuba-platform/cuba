@@ -49,9 +49,6 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
     protected Map<String, Object> optionsMap;
 
     protected Datasource datasource;
-    protected MetaProperty metaProperty;
-    protected MetaPropertyPath metaPropertyPath;
-
     protected boolean updatingInstance;
 
     protected Object prevValue;
@@ -136,11 +133,7 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
             return;
         }
 
-        final MetaClass metaClass = datasource.getMetaClass();
-        metaPropertyPath = metaClass.getPropertyPath(property);
-        checkNotNullArgument(metaPropertyPath, "Could not resolve property path '%s' in '%s'", property, metaClass);
-
-        metaProperty = metaPropertyPath.getMetaProperty();
+        resolveMetaPropertyPath(datasource.getMetaClass(), property);
 
         datasource.addListener(
                 new DsListenerAdapter() {

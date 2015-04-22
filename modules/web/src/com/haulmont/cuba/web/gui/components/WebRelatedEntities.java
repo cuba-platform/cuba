@@ -139,7 +139,7 @@ public class WebRelatedEntities extends WebPopupButton implements RelatedEntitie
         // check if browse screen available
         PropertyOption propertyOption = propertyOptions.get(metaProperty.getName());
 
-        WindowInfo defaultScreen = screensHelper.getAvailableBrowseScreen(metaProperty.getRange().asClass());
+        WindowInfo defaultScreen = screensHelper.getDefaultBrowseScreen(metaProperty.getRange().asClass());
         if (defaultScreen != null
                 || (propertyOption != null && StringUtils.isNotEmpty(propertyOption.getScreen()))) {
             RelatedAction relatedAction = new RelatedAction("related" + actionOrder.size(), listComponent, metaClass, metaProperty);

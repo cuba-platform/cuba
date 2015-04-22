@@ -29,6 +29,7 @@ public class LoadContext implements Serializable {
     protected List<Query> prevQueries = new ArrayList<>();
     protected int queryKey;
     protected Map<String, Object> dbHints = new HashMap<>();
+    protected boolean needToLoadRuntimeProperties;
 
     /**
      * @param metaClass metaclass of the loaded entities
@@ -176,6 +177,14 @@ public class LoadContext implements Serializable {
      */
     public Map<String, Object> getDbHints() {
         return dbHints;
+    }
+
+    public boolean isNeedToLoadRuntimeProperties() {
+        return needToLoadRuntimeProperties;
+    }
+
+    public void setNeedToLoadRuntimeProperties(boolean needToLoadRuntimeProperties) {
+        this.needToLoadRuntimeProperties = needToLoadRuntimeProperties;
     }
 
     @Override

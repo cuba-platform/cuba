@@ -20,9 +20,11 @@
 
     <layout expand="categoryAttrsFrame" spacing="true">
         <hbox id="categoryProperties" spacing="true">
+            <label value="msg://name" align="MIDDLE_LEFT"/>
             <textField width="${fieldWidth}" id="name" datasource="categoryDs" property="name" required="true"
-                       requiredMessage="msg://nameRequired" caption="msg://name"/>
-            <lookupField width="${fieldWidth}" id="entityType" caption="msg://entityType" required="true"
+                       requiredMessage="msg://nameRequired"/>
+            <label value="msg://entityType" align="MIDDLE_LEFT"/>
+            <lookupField width="${fieldWidth}" id="entityType" required="true"
                          requiredMessage="msg://entityTypeRequired"/>
             <checkBox id="isDefault" caption="msg://isDefault" align="MIDDLE_LEFT"/>
         </hbox>

@@ -13,6 +13,7 @@ import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.data.DataSupplier;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -79,6 +80,11 @@ public class TestDataSupplier implements DataSupplier {
 
     @Override
     public <A extends Entity> A reload(A entity, View view, MetaClass metaClass, boolean useSecurityConstraints) {
+        return null;
+    }
+
+    @Override
+    public <A extends Entity> A reload(A entity, View view, @Nullable MetaClass metaClass, boolean useSecurityConstraints, boolean loadRuntimeProperties) {
         return null;
     }
 

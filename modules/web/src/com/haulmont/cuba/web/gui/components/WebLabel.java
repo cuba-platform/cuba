@@ -4,6 +4,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -17,6 +18,7 @@ import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.gui.runtimeprops.RuntimePropertiesGuiTools;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CubaLabel;
 import com.haulmont.cuba.web.toolkit.ui.converters.StringToDatatypeConverter;
@@ -28,8 +30,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-
-import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 /**
  * @author abramov
@@ -69,13 +69,7 @@ public class WebLabel extends WebAbstractComponent<com.vaadin.ui.Label> implemen
     @Override
     public void setDatasource(Datasource datasource, String property) {
         this.datasource = datasource;
-
-        final MetaClass metaClass = datasource.getMetaClass();
-        metaPropertyPath = metaClass.getPropertyPath(property);
-
-        checkNotNullArgument(metaPropertyPath, "Could not resolve property path '%s' in '%s'", property, metaClass);
-
-        metaProperty = metaPropertyPath.getMetaProperty();
+        resolveMetaPropertyPath(datasource.getMetaClass(), property);
 
         switch (metaProperty.getType()) {
             case ASSOCIATION:
@@ -216,5 +210,11 @@ public class WebLabel extends WebAbstractComponent<com.vaadin.ui.Label> implemen
     @Override
     public void setHtmlEnabled(boolean htmlEnabled) {
         component.setContentMode(htmlEnabled ? ContentMode.HTML : ContentMode.TEXT);
+    }
+
+    protected void resolveMetaPropertyPath(MetaClass metaClass, String property) {
+        metaPropertyPath = AppBeans.get(RuntimePropertiesGuiTools.class).resolveMetaPropertyPath(metaClass, property);
+        Preconditions.checkNotNullArgument(metaPropertyPath, "Could not resolve property path '%s' in '%s'", property, metaClass);
+        this.metaProperty = metaPropertyPath.getMetaProperty();
     }
 }

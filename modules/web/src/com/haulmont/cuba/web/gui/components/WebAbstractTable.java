@@ -27,6 +27,7 @@ import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.presentations.PresentationsImpl;
+import com.haulmont.cuba.gui.runtimeprops.RuntimePropertiesGuiTools;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.security.entity.Presentation;
 import com.haulmont.cuba.web.App;
@@ -69,9 +70,9 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
  */
 public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhancedTable>
         extends
-            WebAbstractList<T>
+        WebAbstractList<T>
         implements
-            Table {
+        Table {
 
     protected Map<Object, Column> columns = new HashMap<>();
     protected List<Table.Column> columnsOrder = new ArrayList<>();
@@ -679,7 +680,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
     }
 
     @Override
-    public void setDatasource(CollectionDatasource datasource) {
+    public void setDatasource(final CollectionDatasource datasource) {
         MessageTools messageTools = AppBeans.get(MessageTools.NAME);
         MetadataTools metadataTools = AppBeans.get(MetadataTools.NAME);
 
@@ -754,7 +755,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             if (column != null) {
                 if (editableColumns != null && column.isEditable() && (columnId instanceof MetaPropertyPath)) {
                     MetaPropertyPath propertyPath = ((MetaPropertyPath) columnId);
-
                     if (security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString())) {
                         editableColumns.add(propertyPath);
                     }
@@ -846,6 +846,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             setSortable(false);
 
         assignAutoDebugId();
+
+        AppBeans.get(RuntimePropertiesGuiTools.class).listenRuntimePropertiesChanges(datasource);
     }
 
     protected boolean canBeSorted(CollectionDatasource datasource) {
@@ -910,9 +912,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         MetaClass metaClass = datasource.getMetaClass();
         for (Column column : columnsOrder) {
             if (column.getId() instanceof MetaPropertyPath) {
-                String propertyPath = column.getId().toString();
-
-                if (security.isEntityAttrReadPermitted(metaClass, propertyPath)) {
+                MetaPropertyPath propertyPath = (MetaPropertyPath) column.getId();
+                if (security.isEntityAttrReadPermitted(metaClass, propertyPath.toString())) {
                     result.add((MetaPropertyPath) column.getId());
                 }
             }
@@ -1825,8 +1826,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
                 if (propertyPath != null) {
                     MetaClass metaClass = dsComponent.getDatasource().getMetaClass();
-                    dsComponent.setEditable(security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString())
-                            && dsComponent.isEditable());
+                    dsComponent.setEditable(dsComponent.isEditable()
+                            && security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString()));
                 }
             }
         }
@@ -1837,8 +1838,9 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             if (datasource == null)
                 throw new IllegalStateException("Table datasource is null");
 
-            Column columnConf = columns.get(datasource.getMetaClass().getPropertyPath(propertyId));
-
+            MetaPropertyPath metaPropertyPath =
+                    AppBeans.get(RuntimePropertiesGuiTools.class).resolveMetaPropertyPath(datasource.getMetaClass(), propertyId);
+            Column columnConf = columns.get(metaPropertyPath);
             final DsContext dsContext = datasource.getDsContext();
 
             String optDsName = columnConf.getXmlDescriptor() != null ?

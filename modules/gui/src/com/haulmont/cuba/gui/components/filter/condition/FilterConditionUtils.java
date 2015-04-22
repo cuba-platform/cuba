@@ -8,15 +8,8 @@ package com.haulmont.cuba.gui.components.filter.condition;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.core.entity.CategoryAttribute;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
-import com.haulmont.cuba.core.sys.SetValueEntity;
-import com.haulmont.cuba.gui.components.filter.Op;
-import com.haulmont.cuba.gui.data.RuntimePropertiesHelper;
-
-import java.util.Date;
 
 /**
  * @author gorbunkov

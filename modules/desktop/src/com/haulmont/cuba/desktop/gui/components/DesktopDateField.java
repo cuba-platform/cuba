@@ -53,12 +53,8 @@ import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
  * @version $Id$
  */
 public class DesktopDateField extends DesktopAbstractField<JPanel> implements DateField {
-
     protected Resolution resolution;
     protected Datasource datasource;
-    protected MetaPropertyPath metaPropertyPath;
-    protected MetaProperty metaProperty;
-
     protected String dateTimeFormat;
     protected String dateFormat;
     protected String timeFormat;
@@ -287,13 +283,7 @@ public class DesktopDateField extends DesktopAbstractField<JPanel> implements Da
             return;
         }
 
-        final MetaClass metaClass = datasource.getMetaClass();
-        metaPropertyPath = metaClass.getPropertyPath(property);
-
-        checkNotNullArgument(metaPropertyPath, "Could not resolve property path '%s' in '%s'", property, metaClass);
-
-        metaProperty = metaPropertyPath.getMetaProperty();
-
+        resolveMetaPropertyPath(datasource.getMetaClass(), property);
         if (metaProperty.getRange().isDatatype()
                 && metaProperty.getRange().asDatatype().getName().equals(DateTimeDatatype.NAME)
                 && timeZone == null) {

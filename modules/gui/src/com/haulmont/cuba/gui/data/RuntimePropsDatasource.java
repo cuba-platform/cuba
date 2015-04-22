@@ -5,7 +5,10 @@
 
 package com.haulmont.cuba.gui.data;
 
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
+
+import java.util.Collection;
 
 /**
  * @author devyatkin
@@ -13,9 +16,7 @@ import com.haulmont.cuba.core.entity.Entity;
  */
 public interface RuntimePropsDatasource<T extends Entity> extends Datasource<T> {
 
-    public enum PropertyType {
-        STRING, INTEGER, DOUBLE, DATE, BOOLEAN, ENTITY, ENUMERATION
-    }
-
     Datasource getMainDs();
+
+    Collection<MetaProperty> getPropertiesFilteredByCategory();
 }

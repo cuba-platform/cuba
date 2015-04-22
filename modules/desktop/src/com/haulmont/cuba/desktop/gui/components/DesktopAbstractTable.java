@@ -29,6 +29,7 @@ import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.presentations.Presentations;
+import com.haulmont.cuba.gui.runtimeprops.RuntimePropertiesGuiTools;
 import net.miginfocom.layout.CC;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.ObjectUtils;
@@ -605,8 +606,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
                 if (editableColumns != null && column.isEditable() && (property instanceof MetaPropertyPath)) {
                     MetaPropertyPath propertyPath = (MetaPropertyPath) property;
-
-                    if (security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString())) {
+                    if (security.isEntityAttrUpdatePermitted(metaClass, property.toString())) {
                         editableColumns.add(propertyPath);
                     }
                 }
@@ -620,9 +620,8 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         List<Object> columnsOrder = new ArrayList<>();
         for (Table.Column column : this.columnsOrder) {
             if (column.getId() instanceof MetaPropertyPath) {
-                MetaPropertyPath propertyPath = (MetaPropertyPath) column.getId();
-
-                if (security.isEntityAttrReadPermitted(metaClass, propertyPath.toString())) {
+                MetaPropertyPath metaPropertyPath = (MetaPropertyPath) column.getId();
+                if (security.isEntityAttrReadPermitted(metaClass, metaPropertyPath.toString())) {
                     columnsOrder.add(column.getId());
                 }
             } else {
@@ -709,6 +708,8 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
         if (!canBeSorted(datasource))
             setSortable(false);
+
+        AppBeans.get(RuntimePropertiesGuiTools.class).listenRuntimePropertiesChanges(datasource);
     }
 
     protected boolean canBeSorted(CollectionDatasource datasource) {
@@ -985,8 +986,8 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
                 if (propertyPath != null) {
                     MetaClass metaClass = dsComponent.getDatasource().getMetaClass();
-                    dsComponent.setEditable(security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString())
-                            && dsComponent.isEditable());
+                    dsComponent.setEditable(dsComponent.isEditable()
+                            && security.isEntityAttrUpdatePermitted(metaClass, propertyPath.toString()));
                 }
             }
         }
@@ -997,7 +998,9 @@ public abstract class DesktopAbstractTable<C extends JXTable>
             if (datasource == null)
                 throw new IllegalStateException("Table datasource is null");
 
-            Column columnConf = columns.get(datasource.getMetaClass().getPropertyPath(propertyId));
+            MetaPropertyPath metaPropertyPath =
+                    AppBeans.get(RuntimePropertiesGuiTools.class).resolveMetaPropertyPath(datasource.getMetaClass(), propertyId);
+            Column columnConf = columns.get(metaPropertyPath);
 
             final DsContext dsContext = datasource.getDsContext();
 

@@ -25,6 +25,7 @@ create table SYS_ATTR_VALUE (
     DATE_VALUE timestamp,
     BOOLEAN_VALUE char(1),
     ENTITY_VALUE varchar2(32),
+    CODE varchar2(100),
     primary key(ID)
 )^
 create index IDX_SYS_ATTR_VALUE_ENTITY on SYS_ATTR_VALUE(ENTITY_ID)^
@@ -72,6 +73,7 @@ create table SYS_CATEGORY_ATTR (
     SCREEN varchar2(255),
     REQUIRED char(1),
     LOOKUP char(1),
+    TARGET_SCREENS varchar2(10000),
     primary key(ID)
 )^
 create index IDX_SYS_CATEGORY_ATTR_CATEGORY on SYS_CATEGORY_ATTR(CATEGORY_ID)^

@@ -710,6 +710,7 @@ create table SYS_CATEGORY_ATTR (
     SCREEN varchar(255),
     REQUIRED boolean,
     LOOKUP boolean,
+    TARGET_SCREENS varchar(10000)
     --
     primary key (ID),
     constraint SYS_CATEGORY_ATTR_CATEGORY_ID foreign key (CATEGORY_ID) references SYS_CATEGORY(ID)
@@ -729,6 +730,7 @@ create table SYS_ATTR_VALUE (
     DELETED_BY varchar(50),
     --
     CATEGORY_ATTR_ID uuid,
+    CODE varchar(100),
     ENTITY_ID uuid,
     STRING_VALUE varchar,
     INTEGER_VALUE integer,

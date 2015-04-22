@@ -5,6 +5,7 @@
 package com.haulmont.cuba.core.jmx;
 
 import com.haulmont.cuba.core.app.ConfigStorageAPI;
+import com.haulmont.cuba.core.app.runtimeproperties.RuntimePropertiesManagerAPI;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.global.ViewRepository;
@@ -36,6 +37,9 @@ public class CachingFacade implements CachingFacadeMBean {
     @Inject
     private ViewRepository viewRepository;
 
+    @Inject
+    protected RuntimePropertiesManagerAPI runtimePropertiesManagerAPI;
+
     @Override
     public int getMessagesCacheSize() {
         return messages.getCacheSize();
@@ -55,6 +59,10 @@ public class CachingFacade implements CachingFacadeMBean {
 
     public void clearEntityLogCache() {
         entityLog.invalidateCache();
+    }
+
+    public void clearRuntimePropertiesCache() {
+        runtimePropertiesManagerAPI.loadCache();
     }
 
     @Override
