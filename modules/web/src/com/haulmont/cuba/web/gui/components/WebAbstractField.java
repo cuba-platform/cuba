@@ -19,6 +19,7 @@ import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.vaadin.data.Property;
 import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.AbstractField;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -65,6 +66,7 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field> extends We
 
     @Override
     public void setDatasource(Datasource datasource, String property) {
+        //noinspection unchecked
         this.datasource = datasource;
 
         final MetaClass metaClass = datasource.getMetaClass();
@@ -119,24 +121,18 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field> extends We
 
     @Override
     public <V> V getValue() {
+        //noinspection unchecked
         return (V) component.getValue();
     }
 
     @Override
     public void setValue(Object value) {
-        boolean readOnly = component.isReadOnly();
-        if (readOnly) {
-            component.setReadOnly(false);
+        if (component instanceof AbstractField) {
+            ((AbstractField) component).setCheckReadOnlyOnNextSetValue(false);
         }
 
-        try {
-            //noinspection unchecked
-            component.setValue(value);
-        } finally {
-            if (readOnly) {
-                component.setReadOnly(true);
-            }
-        }
+        //noinspection unchecked
+        component.setValue(value);
     }
 
     @Override
@@ -201,6 +197,7 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field> extends We
                 // use setting block value only for ValueChangingListener
                 settingValue = true;
                 if (!ObjectUtils.equals(value, newValue)) {
+                    //noinspection unchecked
                     WebAbstractField.this.component.setValue(newValue);
                 }
                 settingValue = false;
@@ -230,6 +227,7 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field> extends We
     protected void fireValueChanged(Object prevValue, Object value) {
         if (!ObjectUtils.equals(prevValue, value)) {
             for (ValueListener listener : listeners) {
+                //noinspection unchecked
                 listener.valueChanged(this, "value", prevValue, value);
             }
         }

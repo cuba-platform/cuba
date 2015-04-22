@@ -226,20 +226,14 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
     }
 
     protected void setValueToFields(Date value) {
-        if (!editable) {
-            setEditableInternal(true);
-        }
-
         updatingInstance = true;
         try {
+            dateField.setCheckReadOnlyOnNextSetValue(false);
             dateField.setValue(value);
+
             timeField.setValue(value);
         } finally {
             updatingInstance = false;
-
-            if (!editable) {
-                setEditableInternal(false);
-            }
         }
     }
 
