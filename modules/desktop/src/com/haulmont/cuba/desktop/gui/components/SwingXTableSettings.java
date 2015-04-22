@@ -22,7 +22,6 @@ import org.jdesktop.swingx.table.TableColumnExt;
 
 import javax.swing.*;
 import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.font.TextAttribute;
 import java.util.*;
@@ -56,10 +55,17 @@ public class SwingXTableSettings implements TableSettings {
         }
         columnsElem = element.addElement("columns");
 
+        final List<TableColumn> visibleTableColumns = table.getColumns();
+        final List<Table.Column> visibleColumns = new ArrayList<>();
+        for (TableColumn tableColumn : visibleTableColumns) {
+            visibleColumns.add((Table.Column) tableColumn.getIdentifier());
+        }
+
         List<TableColumn> columns = table.getColumns(true);
         Collections.sort(
                 columns,
                 new Comparator<TableColumn>() {
+                    @SuppressWarnings("SuspiciousMethodCalls")
                     @Override
                     public int compare(TableColumn col1, TableColumn col2) {
                         if (col1 instanceof TableColumnExt && !((TableColumnExt) col1).isVisible()) {
@@ -68,9 +74,8 @@ public class SwingXTableSettings implements TableSettings {
                         if (col2 instanceof TableColumnExt && !((TableColumnExt) col2).isVisible()) {
                             return -1;
                         }
-                        TableColumnModel model = table.getColumnModel();
-                        int i1 = model.getColumnIndex(col1.getIdentifier());
-                        int i2 = model.getColumnIndex(col2.getIdentifier());
+                        int i1 = visibleColumns.indexOf(col1.getIdentifier());
+                        int i2 = visibleColumns.indexOf(col2.getIdentifier());
                         return Integer.compare(i1, i2);
                     }
                 }

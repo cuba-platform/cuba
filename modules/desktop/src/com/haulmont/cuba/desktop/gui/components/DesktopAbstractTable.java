@@ -49,8 +49,7 @@ import javax.swing.AbstractAction;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import javax.swing.event.*;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -359,10 +358,9 @@ public abstract class DesktopAbstractTable<C extends JXTable>
 
         // take into account only visible columns
         Enumeration<TableColumn> columnEnumeration = impl.getColumnModel().getColumns();
-        int i = 0;
         while (columnEnumeration.hasMoreElements()) {
             TableColumn tableColumn = columnEnumeration.nextElement();
-            Column column = columnsOrder.get(i++);
+            Column column = (Column) tableColumn.getIdentifier();
 
             Integer width = column.getWidth();
             if (width != null) {
@@ -731,7 +729,9 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         int i = 0;
         for (TableColumn tableColumn : getAllColumns()) {
             Column column = columnsOrder.get(i++);
-            tableColumn.setIdentifier(column);
+            if (!(tableColumn.getIdentifier() instanceof Column)) {
+                tableColumn.setIdentifier(column);
+            }
         }
     }
 
