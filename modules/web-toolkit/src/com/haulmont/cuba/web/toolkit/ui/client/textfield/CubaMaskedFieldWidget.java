@@ -77,7 +77,7 @@ public class CubaMaskedFieldWidget extends VTextField {
                         @Override
                         public void execute() {
                             if (!isReadOnly() && isEnabled() && focused) {
-                                setSelectionRange(0, 0);
+                                setSelectionRange(getPreviousPos(0), 0);
                             }
 
                             removeStyleName("cuba-focus-move");
@@ -122,6 +122,8 @@ public class CubaMaskedFieldWidget extends VTextField {
     protected int getNextPos(int pos) {
         while (++pos < maskTest.size() && maskTest.get(pos) == null) {
         }
+        if (pos >= maskTest.size())
+            return getPreviousPos(maskTest.size()) + 1;
         return pos;
     }
 
@@ -502,13 +504,9 @@ public class CubaMaskedFieldWidget extends VTextField {
                 event.preventDefault();
             } else if (event.getNativeKeyCode() == KeyCodes.KEY_RIGHT) {
                 if (getCursorPosSelection() <= shiftPressPos) {
-                    int nextPos = getNextPos(getCursorPos());
-                    if (nextPos < getText().length())
-                        setCursorPos(nextPos);
+                    setCursorPos(getNextPos(getCursorPos()));
                 } else {
-                    int nextPos = getNextPos(getCursorPosSelection());
-                    if (nextPos < getText().length())
-                        setCursorPos(nextPos);
+                    setCursorPos(getNextPos(getCursorPosSelection()));
                 }
                 updateSelectionRange();
                 event.preventDefault();
