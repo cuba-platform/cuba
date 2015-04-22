@@ -28,7 +28,7 @@ import java.io.InputStream;
  */
 public class RuntimePropertiesFrameLoader extends IFrameLoader {
 
-    private static final String DEFAULT_DESCRIPTOR = "/com/haulmont/cuba/gui/dynamicattributes/runtime-properties-frame.xml";
+    private static final String DEFAULT_DESCRIPTOR = "/com/haulmont/cuba/gui/runtimeprops/runtime-properties-frame.xml";
 
     public RuntimePropertiesFrameLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
         super(context, config, factory);

@@ -119,7 +119,7 @@
             template="/com/haulmont/cuba/gui/app/core/entityinspector/entity-inspector-edit.xml"/>
 
     <screen id="runtimePropertiesFrame"
-            template="/com/haulmont/cuba/gui/dynamicattributes/runtime-properties-frame.xml"/>
+            template="/com/haulmont/cuba/gui/runtimeprops/runtime-properties-frame.xml"/>
 
     <screen id="aboutWindow"
             template="/com/haulmont/cuba/gui/app/core/about/about-window.xml"/>
