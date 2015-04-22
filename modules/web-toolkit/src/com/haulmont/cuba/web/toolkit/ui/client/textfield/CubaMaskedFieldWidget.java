@@ -595,12 +595,15 @@ public class CubaMaskedFieldWidget extends VTextField {
                     || e.getNativeEvent().getKeyCode() == KeyCodes.KEY_PAGEUP
                     || e.getNativeEvent().getKeyCode() == KeyCodes.KEY_RIGHT
                     || e.getNativeEvent().getAltKey()
-                    //|| e.getNativeEvent().getCtrlKey()
-                    || e.getNativeEvent().getMetaKey()) {
+                //|| e.getNativeEvent().getCtrlKey()
+                //|| e.getNativeEvent().getMetaKey()
+                    ) {
 
                 e.preventDefault(); // KK: otherwise incorrectly handles combinations like Shift+'='
                 return;
-            } else if (BrowserInfo.get().isGecko() && e.getCharCode() == '\u0000' || e.getNativeEvent().getCtrlKey()) {
+            } else if (BrowserInfo.get().isGecko() && e.getCharCode() == '\u0000'
+                    || e.getNativeEvent().getCtrlKey()
+                    || e.getNativeEvent().getMetaKey()) {
                 //pressed tab in firefox or ctrl. because FF fires keyPressEvents on CTRL+C
                 return;
             }
