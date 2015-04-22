@@ -40,6 +40,7 @@ import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.ui.CubaEnhancedTable;
 import com.haulmont.cuba.web.toolkit.ui.CubaFieldWrapper;
+import com.haulmont.cuba.web.toolkit.ui.CubaResizableTextArea;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.event.ItemClickEvent;
@@ -48,7 +49,6 @@ import com.vaadin.server.Resource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.TextArea;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -1657,14 +1657,13 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
         }
 
         @Override
-        public com.vaadin.ui.Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
+        public Object generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
             final Property property = source.getItem(itemId).getItemProperty(columnId);
             final Object value = property.getValue();
 
             if (value == null) {
                 return null;
             }
-            com.vaadin.ui.Component cell;
 
             String stringValue = value.toString();
             String cellValue = stringValue;
@@ -1675,19 +1674,32 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
             int maxTextLength = column.getMaxTextLength();
             if (stringValue.length() > maxTextLength + MAX_TEXT_LENGTH_GAP || isMultiLineCell) {
-                TextArea content = new TextArea(null, stringValue);
-                content.setWidth("100%");
-                content.setHeight("100%");
+                CubaResizableTextArea content = new CubaResizableTextArea();
+                content.setResizable(true);
+                content.setValue(stringValue);
+
+                ThemeConstants theme = App.getInstance().getThemeConstants();
+                if (theme != null) {
+                    content.setWidth(theme.get("cuba.web.Table.abbreviatedPopupWidth"));
+                    content.setHeight(theme.get("cuba.web.Table.abbreviatedPopupHeight"));
+                } else {
+                    content.setWidth("320px");
+                    content.setHeight("200px");
+                }
+
                 content.setReadOnly(true);
                 CssLayout cssLayout = new CssLayout();
+                cssLayout.setSizeUndefined();
                 cssLayout.addComponent(content);
-                cell = new PopupView(StringEscapeUtils.escapeHtml(StringUtils.abbreviate(cellValue, maxTextLength)),
+                PopupView view = new PopupView(StringEscapeUtils.escapeHtml(StringUtils.abbreviate(cellValue, maxTextLength)),
                         cssLayout);
-                cell.addStyleName("abbreviated");
+                view.setHideOnMouseOut(false);
+                view.addStyleName("abbreviated");
+
+                return view;
             } else {
-                cell = new Label(cellValue);
+                return cellValue;
             }
-            return cell;
         }
     }
 
