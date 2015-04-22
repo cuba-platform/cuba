@@ -127,13 +127,10 @@ public class CubaPickerField extends com.vaadin.ui.CustomField implements Action
     protected void updateTextRepresentation() {
         TextField textField = (TextField) field;
 
-        boolean textFieldReadonly = textField.isReadOnly();
-
         suppressTextChangeListener = true;
 
-        textField.setReadOnly(false);
+        textField.setCheckReadOnlyOnNextSetValue(false);
         textField.setValue(getStringRepresentation());
-        textField.setReadOnly(textFieldReadonly);
 
         suppressTextChangeListener = false;
     }

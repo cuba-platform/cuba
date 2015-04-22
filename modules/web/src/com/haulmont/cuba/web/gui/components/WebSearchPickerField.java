@@ -53,12 +53,8 @@ public class WebSearchPickerField extends WebSearchField implements SearchPicker
 
                 updateComponentValue = true;
                 if (!ObjectUtils.equals(selectComponent.getValue(), picker.getValue())) {
-                    boolean readOnly = picker.isReadOnly();
-                    picker.setReadOnly(false);
-
+                    picker.setCheckReadOnlyOnNextSetValue(false);
                     picker.setValue(selectComponent.getValue());
-
-                    picker.setReadOnly(readOnly);
                 }
                 updateComponentValue = false;
             }
@@ -72,11 +68,8 @@ public class WebSearchPickerField extends WebSearchField implements SearchPicker
 
                 updateComponentValue = true;
                 if (!ObjectUtils.equals(selectComponent.getValue(), picker.getValue())) {
-                    boolean readOnly = selectComponent.isReadOnly();
-                    selectComponent.setReadOnly(false);
-
+                    selectComponent.setCheckReadOnlyOnNextSetValue(false);
                     selectComponent.setValue(picker.getValue());
-                    selectComponent.setReadOnly(readOnly);
                 }
                 updateComponentValue = false;
             }
