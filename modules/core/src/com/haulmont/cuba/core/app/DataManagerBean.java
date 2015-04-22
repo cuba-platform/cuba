@@ -14,7 +14,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.queryresults.QueryResultsManagerAPI;
-import com.haulmont.cuba.core.app.runtimeproperties.RuntimePropertiesManagerAPI;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesManagerAPI;
 import com.haulmont.cuba.core.entity.BaseGenericIdEntity;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.CategoryAttributeValue;
@@ -70,7 +70,7 @@ public class DataManagerBean implements DataManager {
     protected EntityLoadInfoBuilder entityLoadInfoBuilder;
 
     @Inject
-    protected RuntimePropertiesManagerAPI runtimePropertiesManagerAPI;
+    protected DynamicAttributesManagerAPI dynamicAttributesManagerAPI;
 
     @Nullable
     @Override
@@ -102,8 +102,8 @@ public class DataManagerBean implements DataManager {
 
             if (result != null && context.getView() != null) {
                 em.fetch(result, context.getView());
-                if (result instanceof BaseGenericIdEntity && context.isNeedToLoadRuntimeProperties()) {
-                    fetchRuntimeProperties(Collections.singletonList((BaseGenericIdEntity) result));
+                if (result instanceof BaseGenericIdEntity && context.getLoadDynamicAttributes()) {
+                    fetchDynamicAttributes(Collections.singletonList((BaseGenericIdEntity) result));
                 }
             }
 
@@ -161,11 +161,11 @@ public class DataManagerBean implements DataManager {
                 }
             }
 
-            // Fetch runtime properties
+            // Fetch dynamic attributes
             if (context.getView() != null
                     && BaseGenericIdEntity.class.isAssignableFrom(context.getView().getEntityClass())
-                    && context.isNeedToLoadRuntimeProperties()) {
-                fetchRuntimeProperties((List<BaseGenericIdEntity>) resultList);
+                    && context.getLoadDynamicAttributes()) {
+                fetchDynamicAttributes((List<BaseGenericIdEntity>) resultList);
             }
 
             tx.commit();
@@ -198,7 +198,7 @@ public class DataManagerBean implements DataManager {
     }
 
     @Override
-    public <A extends Entity> A reload(A entity, View view, @Nullable MetaClass metaClass, boolean useSecurityConstraints, boolean loadRuntimeProperties) {
+    public <A extends Entity> A reload(A entity, View view, @Nullable MetaClass metaClass, boolean useSecurityConstraints, boolean loadDynamicAttributes) {
         if (metaClass == null) {
             metaClass = metadata.getSession().getClass(entity.getClass());
         }
@@ -206,7 +206,7 @@ public class DataManagerBean implements DataManager {
         context.setUseSecurityConstraints(useSecurityConstraints);
         context.setId(entity.getId());
         context.setView(view);
-        context.setNeedToLoadRuntimeProperties(loadRuntimeProperties);
+        context.setLoadDynamicAttributes(loadDynamicAttributes);
 
         A reloaded = load(context);
         if (reloaded == null)
@@ -248,14 +248,14 @@ public class DataManagerBean implements DataManager {
 
 
                 // merge detached
-                List<BaseGenericIdEntity> entitiesToFetchRuntimeProperties = new ArrayList<>();
+                List<BaseGenericIdEntity> entitiesToFetchDynamicAttributes = new ArrayList<>();
                 for (Entity entity : context.getCommitInstances()) {
                     if (PersistenceHelper.isDetached(entity)) {
                         Entity e = em.merge(entity);
                         res.add(e);
                         if (entity instanceof BaseGenericIdEntity) {
-                            if (((BaseGenericIdEntity) entity).getRuntimeProperties() != null) {
-                                entitiesToFetchRuntimeProperties.add((BaseGenericIdEntity) e);
+                            if (((BaseGenericIdEntity) entity).getDynamicAttributes() != null) {
+                                entitiesToFetchDynamicAttributes.add((BaseGenericIdEntity) e);
                             }
                         }
                     }
@@ -263,11 +263,11 @@ public class DataManagerBean implements DataManager {
 
                 for (Entity entity : context.getCommitInstances()) {
                     if (entity instanceof BaseGenericIdEntity) {
-                        storeRuntimeProperties((BaseGenericIdEntity) entity);
+                        storeDynamicAttributes((BaseGenericIdEntity) entity);
                     }
                 }
 
-                fetchRuntimeProperties(entitiesToFetchRuntimeProperties);
+                fetchDynamicAttributes(entitiesToFetchDynamicAttributes);
             }
 
             // remove
@@ -277,9 +277,9 @@ public class DataManagerBean implements DataManager {
                 res.add(e);
 
                 if (entity instanceof BaseGenericIdEntity) {
-                    Map<String, CategoryAttributeValue> runtimeProperties = ((BaseGenericIdEntity) entity).getRuntimeProperties();
-                    if (runtimeProperties != null) {
-                        for (CategoryAttributeValue categoryAttributeValue : runtimeProperties.values()) {
+                    Map<String, CategoryAttributeValue> dynamicAttributes = ((BaseGenericIdEntity) entity).getDynamicAttributes();
+                    if (dynamicAttributes != null) {
+                        for (CategoryAttributeValue categoryAttributeValue : dynamicAttributes.values()) {
                             if (!PersistenceHelper.isNew(categoryAttributeValue)) {
                                 em.remove(categoryAttributeValue);
                                 res.add(categoryAttributeValue);
@@ -306,16 +306,16 @@ public class DataManagerBean implements DataManager {
         return res;
     }
 
-    protected void storeRuntimeProperties(BaseGenericIdEntity entity) {
+    protected void storeDynamicAttributes(BaseGenericIdEntity entity) {
         final EntityManager em = persistence.getEntityManager();
-        Map<String, CategoryAttributeValue> runtimeProperties = entity.getRuntimeProperties();
-        if (runtimeProperties != null) {
-            for (Map.Entry<String, CategoryAttributeValue> entry : runtimeProperties.entrySet()) {
+        Map<String, CategoryAttributeValue> dynamicAttributes = entity.getDynamicAttributes();
+        if (dynamicAttributes != null) {
+            for (Map.Entry<String, CategoryAttributeValue> entry : dynamicAttributes.entrySet()) {
                 CategoryAttributeValue categoryAttributeValue = entry.getValue();
                 if (categoryAttributeValue.getCategoryAttribute() == null
                         && categoryAttributeValue.getCode() != null) {
                     CategoryAttribute attribute =
-                            runtimePropertiesManagerAPI.getAttributeForMetaClass(entity.getMetaClass(), categoryAttributeValue.getCode());
+                            dynamicAttributesManagerAPI.getAttributeForMetaClass(entity.getMetaClass(), categoryAttributeValue.getCode());
                     categoryAttributeValue.setCategoryAttribute(attribute);
                 }
 
@@ -329,7 +329,7 @@ public class DataManagerBean implements DataManager {
         }
     }
 
-    protected <A extends BaseGenericIdEntity> void fetchRuntimeProperties(List<A> entities) {
+    protected <A extends BaseGenericIdEntity> void fetchDynamicAttributes(List<A> entities) {
         if (CollectionUtils.isNotEmpty(entities)) {
             Collection<UUID> ids = Collections2.transform(entities, new Function<Entity, UUID>() {
                 @Nullable
@@ -354,7 +354,7 @@ public class DataManagerBean implements DataManager {
             for (BaseGenericIdEntity entity : entities) {
                 Collection<CategoryAttributeValue> theEntityAttributeValues = attributeValuesForEntity.get(entity.getUuid());
                 Map<String, CategoryAttributeValue> map = new HashMap<>();
-                entity.setRuntimeProperties(map);
+                entity.setDynamicAttributes(map);
                 if (CollectionUtils.isNotEmpty(theEntityAttributeValues)) {
                     for (CategoryAttributeValue categoryAttributeValue : theEntityAttributeValues) {
                         CategoryAttribute attribute = categoryAttributeValue.getCategoryAttribute();

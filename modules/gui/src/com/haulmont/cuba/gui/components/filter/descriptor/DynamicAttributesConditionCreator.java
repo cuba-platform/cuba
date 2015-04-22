@@ -9,7 +9,7 @@ import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.gui.components.filter.condition.RuntimePropCondition;
+import com.haulmont.cuba.gui.components.filter.condition.DynamicAttributesCondition;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import org.apache.commons.lang.RandomStringUtils;
@@ -18,19 +18,19 @@ import org.apache.commons.lang.RandomStringUtils;
  * @author devyatkin
  * @version $Id$
  */
-@MetaClass(name = "sec$RuntimePropConditionCreator")
+@MetaClass(name = "sec$DynamicAttributesConditionCreator")
 @SystemLevel
-public class RuntimePropConditionCreator extends AbstractConditionDescriptor {
-    public RuntimePropConditionCreator(String filterComponentName, CollectionDatasource datasource) {
+public class DynamicAttributesConditionCreator extends AbstractConditionDescriptor {
+    public DynamicAttributesConditionCreator(String filterComponentName, CollectionDatasource datasource) {
         super(RandomStringUtils.randomAlphabetic(10), filterComponentName, datasource);
         Messages messages = AppBeans.get(Messages.NAME);
-        locCaption = messages.getMessage(RuntimePropConditionCreator.class, "runtimePropConditionCreator");
+        locCaption = messages.getMessage(DynamicAttributesConditionCreator.class, "dynamicAttributeConditionCreator");
         showImmediately = true;
     }
 
     @Override
     public AbstractCondition createCondition() {
-        return new RuntimePropCondition(this, entityAlias);
+        return new DynamicAttributesCondition(this, entityAlias);
     }
 
     @Override

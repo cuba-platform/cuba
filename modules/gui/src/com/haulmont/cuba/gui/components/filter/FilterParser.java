@@ -84,7 +84,7 @@ public class FilterParser {
             case CUSTOM:
                 return new CustomCondition(element, messagesPack, filterComponentName, datasource);
             case RUNTIME_PROPERTY:
-                return new RuntimePropCondition(element, messagesPack, filterComponentName, datasource);
+                return new DynamicAttributesCondition(element, messagesPack, filterComponentName, datasource);
             default:
                 throw new IllegalStateException("Unknown condition type: " + type + " in " + xml);
         }

@@ -3,12 +3,12 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-package com.haulmont.cuba.gui.runtimeprops;
+package com.haulmont.cuba.gui.dynamicattributes;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.core.app.runtimeproperties.RuntimePropertiesService;
-import com.haulmont.cuba.core.app.runtimeproperties.RuntimePropertiesUtils;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesService;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -26,20 +26,20 @@ import java.util.Set;
  * @author degtyarjov
  * @version $Id$
  */
-@ManagedBean(RuntimePropertiesGuiTools.NAME)
-public class RuntimePropertiesGuiTools {
-    public static final String NAME = "cuba_RuntimePropertiesGuiTools";
+@ManagedBean(DynamicAttributesGuiTools.NAME)
+public class DynamicAttributesGuiTools {
+    public static final String NAME = "cuba_DynamicAttributesGuiTools";
 
     @Inject
-    protected RuntimePropertiesService runtimePropertiesService;
+    protected DynamicAttributesService dynamicAttributesService;
 
     @SuppressWarnings("unchecked")
-    public void listenRuntimePropertiesChanges(final Datasource datasource) {
-        if (datasource != null && datasource.needToLoadRuntimeProperties()) {
+    public void listenDynamicAttributesChanges(final Datasource datasource) {
+        if (datasource != null && datasource.getLoadDynamicAttributes()) {
             datasource.addListener(new DsListenerAdapter() {
                 @Override
                 public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
-                    if (RuntimePropertiesUtils.isRuntimeProperty(property)) {
+                    if (DynamicAttributesUtils.isDynamicAttribute(property)) {
                         ((DatasourceImplementation) datasource).modified((Entity) source);
                     }
                 }
@@ -49,15 +49,15 @@ public class RuntimePropertiesGuiTools {
 
     public MetaPropertyPath resolveMetaPropertyPath(MetaClass metaClass, String property) {
         MetaPropertyPath metaPropertyPath = metaClass.getPropertyPath(property);
-        if (metaPropertyPath == null && RuntimePropertiesUtils.isRuntimeProperty(property)) {
-            metaPropertyPath = RuntimePropertiesUtils.getMetaPropertyPath(metaClass, property);
+        if (metaPropertyPath == null && DynamicAttributesUtils.isDynamicAttribute(property)) {
+            metaPropertyPath = DynamicAttributesUtils.getMetaPropertyPath(metaClass, property);
         }
         return metaPropertyPath;
     }
 
     public Set<CategoryAttribute> getAttributesToShowOnTheScreen(MetaClass metaClass, String screen, String component) {
         Collection<CategoryAttribute> attributesForMetaClass =
-                runtimePropertiesService.getAttributesForMetaClass(metaClass);
+                dynamicAttributesService.getAttributesForMetaClass(metaClass);
         Set<CategoryAttribute> categoryAttributes = new HashSet<>();
 
         for (CategoryAttribute attribute : attributesForMetaClass) {

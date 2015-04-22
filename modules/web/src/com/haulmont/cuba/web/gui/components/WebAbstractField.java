@@ -17,7 +17,7 @@ import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
-import com.haulmont.cuba.gui.runtimeprops.RuntimePropertiesGuiTools;
+import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.vaadin.data.Property;
 import com.vaadin.ui.AbstractComponent;
@@ -92,7 +92,7 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field> extends We
     }
 
     protected void resolveMetaPropertyPath(MetaClass metaClass, String property) {
-        metaPropertyPath = AppBeans.get(RuntimePropertiesGuiTools.class).resolveMetaPropertyPath(metaClass, property);
+        metaPropertyPath = AppBeans.get(DynamicAttributesGuiTools.class).resolveMetaPropertyPath(metaClass, property);
         Preconditions.checkNotNullArgument(metaPropertyPath, "Could not resolve property path '%s' in '%s'", property, metaClass);
         this.metaProperty = metaPropertyPath.getMetaProperty();
     }

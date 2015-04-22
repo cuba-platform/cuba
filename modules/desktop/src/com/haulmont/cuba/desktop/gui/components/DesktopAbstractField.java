@@ -16,7 +16,7 @@ import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
-import com.haulmont.cuba.gui.runtimeprops.RuntimePropertiesGuiTools;
+import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
@@ -175,7 +175,7 @@ public abstract class DesktopAbstractField<C extends JComponent>
     }
 
     protected void resolveMetaPropertyPath(MetaClass metaClass, String property) {
-        metaPropertyPath = AppBeans.get(RuntimePropertiesGuiTools.class).resolveMetaPropertyPath(metaClass, property);
+        metaPropertyPath = AppBeans.get(DynamicAttributesGuiTools.class).resolveMetaPropertyPath(metaClass, property);
         Preconditions.checkNotNullArgument(metaPropertyPath, "Could not resolve property path '%s' in '%s'", property, metaClass);
         this.metaProperty = metaPropertyPath.getMetaProperty();
     }

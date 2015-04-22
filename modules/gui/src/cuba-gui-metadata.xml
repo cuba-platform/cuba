@@ -18,13 +18,13 @@
         <class>com.haulmont.cuba.gui.components.filter.condition.AbstractCondition</class>
         <class>com.haulmont.cuba.gui.components.filter.condition.PropertyCondition</class>
         <class>com.haulmont.cuba.gui.components.filter.condition.CustomCondition</class>
-        <class>com.haulmont.cuba.gui.components.filter.condition.RuntimePropCondition</class>
+        <class>com.haulmont.cuba.gui.components.filter.condition.DynamicAttributesCondition</class>
         <class>com.haulmont.cuba.gui.components.filter.condition.GroupCondition</class>
         <class>com.haulmont.cuba.gui.components.filter.descriptor.AbstractConditionDescriptor</class>
         <class>com.haulmont.cuba.gui.components.filter.descriptor.PropertyConditionDescriptor</class>
         <class>com.haulmont.cuba.gui.components.filter.descriptor.CustomConditionDescriptor</class>
         <class>com.haulmont.cuba.gui.components.filter.descriptor.CustomConditionCreator</class>
-        <class>com.haulmont.cuba.gui.components.filter.descriptor.RuntimePropConditionCreator</class>
+        <class>com.haulmont.cuba.gui.components.filter.descriptor.DynamicAttributesConditionCreator</class>
         <class>com.haulmont.cuba.gui.components.filter.descriptor.HeaderConditionDescriptor</class>
         <class>com.haulmont.cuba.gui.categories.ScreenAndComponent</class>
     </metadata-model>

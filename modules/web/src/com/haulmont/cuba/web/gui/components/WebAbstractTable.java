@@ -27,7 +27,7 @@ import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.presentations.PresentationsImpl;
-import com.haulmont.cuba.gui.runtimeprops.RuntimePropertiesGuiTools;
+import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.security.entity.Presentation;
 import com.haulmont.cuba.web.App;
@@ -847,7 +847,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
         assignAutoDebugId();
 
-        AppBeans.get(RuntimePropertiesGuiTools.class).listenRuntimePropertiesChanges(datasource);
+        AppBeans.get(DynamicAttributesGuiTools.class).listenDynamicAttributesChanges(datasource);
     }
 
     protected boolean canBeSorted(CollectionDatasource datasource) {
@@ -1851,7 +1851,7 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
                 throw new IllegalStateException("Table datasource is null");
 
             MetaPropertyPath metaPropertyPath =
-                    AppBeans.get(RuntimePropertiesGuiTools.class).resolveMetaPropertyPath(datasource.getMetaClass(), propertyId);
+                    AppBeans.get(DynamicAttributesGuiTools.class).resolveMetaPropertyPath(datasource.getMetaClass(), propertyId);
             Column columnConf = columns.get(metaPropertyPath);
             final DsContext dsContext = datasource.getDsContext();
 

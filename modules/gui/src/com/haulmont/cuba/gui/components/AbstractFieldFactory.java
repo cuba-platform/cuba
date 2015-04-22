@@ -11,7 +11,7 @@ import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.core.app.runtimeproperties.RuntimePropertiesUtils;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.AppConfig;
@@ -42,8 +42,8 @@ public abstract class AbstractFieldFactory implements FieldFactory {
         MetaClass metaClass = datasource.getMetaClass();
         MetaPropertyPath mpp = metaClass.getPropertyPath(property);
 
-        if (mpp == null && RuntimePropertiesUtils.isRuntimeProperty(property)) {
-            mpp = RuntimePropertiesUtils.getMetaPropertyPath(metaClass, property);
+        if (mpp == null && DynamicAttributesUtils.isDynamicAttribute(property)) {
+            mpp = DynamicAttributesUtils.getMetaPropertyPath(metaClass, property);
         }
 
         if (mpp != null) {

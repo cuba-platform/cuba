@@ -11,7 +11,7 @@ import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.condition.CustomCondition;
 import com.haulmont.cuba.gui.components.filter.condition.PropertyCondition;
-import com.haulmont.cuba.gui.components.filter.condition.RuntimePropCondition;
+import com.haulmont.cuba.gui.components.filter.condition.DynamicAttributesCondition;
 import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.xml.ParametersHelper;
@@ -55,8 +55,8 @@ public class ParamWrapper implements Component.HasValue {
                 } else if (Op.ENDS_WITH.equals(op)) {
                     value = wrapValueForLike(value, true, false);
                 }
-            } else if (condition instanceof RuntimePropCondition) {
-                Op op = ((RuntimePropCondition) condition).getOperator();
+            } else if (condition instanceof DynamicAttributesCondition) {
+                Op op = ((DynamicAttributesCondition) condition).getOperator();
                 if (Op.CONTAINS.equals(op) || op.equals(Op.DOES_NOT_CONTAIN)) {
                     value = wrapValueForLike(value);
                 } else if (Op.STARTS_WITH.equals(op)) {

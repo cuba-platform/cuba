@@ -119,7 +119,7 @@
             template="/com/haulmont/cuba/gui/app/core/entityinspector/entity-inspector-edit.xml"/>
 
     <screen id="runtimePropertiesFrame"
-            template="/com/haulmont/cuba/gui/runtimeprops/runtime-properties-frame.xml"/>
+            template="/com/haulmont/cuba/gui/dynamicattributes/runtime-properties-frame.xml"/>
 
     <screen id="aboutWindow"
             template="/com/haulmont/cuba/gui/app/core/about/about-window.xml"/>
@@ -160,8 +160,8 @@
     <screen id="customConditionFrame"
             template="/com/haulmont/cuba/gui/components/filter/edit/custom-condition-frame.xml"/>
 
-    <screen id="runtimePropConditionFrame"
-            template="/com/haulmont/cuba/gui/components/filter/edit/runtime-prop-condition-frame.xml"/>
+    <screen id="dynamicAttributeConditionFrame"
+            template="/com/haulmont/cuba/gui/components/filter/edit/dynamic-attribute-condition-frame.xml"/>
 
     <screen id="propertyConditionFrame"
             template="/com/haulmont/cuba/gui/components/filter/edit/property-condition-frame.xml"/>
@@ -169,8 +169,8 @@
     <screen id="customConditionEditor"
             template="/com/haulmont/cuba/gui/components/filter/edit/custom-condition-edit.xml"/>
 
-    <screen id="runtimePropConditionEditor"
-            template="/com/haulmont/cuba/gui/components/filter/edit/runtime-prop-condition-edit.xml"/>
+    <screen id="dynamicAttributeConditionEditor"
+            template="/com/haulmont/cuba/gui/components/filter/edit/dynamic-attribute-condition-edit.xml"/>
 
     <screen id="groupConditionFrame"
             template="/com/haulmont/cuba/gui/components/filter/edit/group-condition-frame.xml"/>

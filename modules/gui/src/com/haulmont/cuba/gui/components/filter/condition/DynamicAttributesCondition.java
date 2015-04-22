@@ -10,14 +10,13 @@ import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MessageTools;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.filter.Op;
 import com.haulmont.cuba.gui.components.filter.operationedit.AbstractOperationEditor;
 import com.haulmont.cuba.gui.components.filter.Param;
 import com.haulmont.cuba.gui.components.filter.descriptor.AbstractConditionDescriptor;
-import com.haulmont.cuba.gui.components.filter.operationedit.RuntimePropOperationEditor;
+import com.haulmont.cuba.gui.components.filter.operationedit.DynamicAttributesOperationEditor;
 import com.haulmont.cuba.gui.data.Datasource;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -34,30 +33,30 @@ import static org.apache.commons.lang.StringUtils.isBlank;
  * @author devyatkin
  * @version $Id$
  */
-@MetaClass(name = "sec$RuntimePropCondition")
+@MetaClass(name = "sec$DynamicAttributesCondition")
 @SystemLevel
-public class RuntimePropCondition extends AbstractCondition {
+public class DynamicAttributesCondition extends AbstractCondition {
 
     private UUID categoryId;
     private UUID categoryAttributeId;
     protected String join;
 
-    public RuntimePropCondition(RuntimePropCondition condition) {
+    public DynamicAttributesCondition(DynamicAttributesCondition condition) {
         super(condition);
         this.join = condition.getJoin();
         this.categoryId = condition.getCategoryId();
         this.categoryAttributeId = condition.getCategoryAttributeId();
     }
 
-    public RuntimePropCondition(AbstractConditionDescriptor descriptor, String entityAlias) {
+    public DynamicAttributesCondition(AbstractConditionDescriptor descriptor, String entityAlias) {
         super(descriptor);
         this.entityAlias = entityAlias;
         this.name = RandomStringUtils.randomAlphabetic(10);
         Messages messages = AppBeans.get(Messages.class);
-        this.locCaption = messages.getMessage(RuntimePropCondition.class, "newRuntimePropCondition");
+        this.locCaption = messages.getMessage(DynamicAttributesCondition.class, "newDynamicAttributeCondition");
     }
 
-    public RuntimePropCondition(Element element, String messagesPack, String filterComponentName, Datasource datasource) {
+    public DynamicAttributesCondition(Element element, String messagesPack, String filterComponentName, Datasource datasource) {
         super(element, messagesPack, filterComponentName, datasource);
 
         if (isBlank(caption)) {
@@ -69,15 +68,7 @@ public class RuntimePropCondition extends AbstractCondition {
 
         entityAlias = element.attributeValue("entityAlias");
         text = element.getText();
-
-        Element joinElement = element.element("join");
-        if (joinElement != null) {
-            this.join = joinElement.getText();
-        } else {
-            //for backward compatibility
-            this.join = element.attributeValue("join");
-        }
-
+        join = element.attributeValue("join");
         categoryId = UUID.fromString(element.attributeValue("category"));
         String categoryAttributeValue = element.attributeValue("categoryAttribute");
         if (!Strings.isNullOrEmpty(categoryAttributeValue)) {
@@ -106,8 +97,7 @@ public class RuntimePropCondition extends AbstractCondition {
         element.addAttribute("categoryAttribute", categoryAttributeId.toString());
         element.addAttribute("entityAlias", entityAlias);
         if (!isBlank(join)) {
-            Element joinElement = element.addElement("join");
-            joinElement.addCDATA(join);
+            element.addAttribute("join", StringEscapeUtils.escapeXml(join));
         }
     }
 
@@ -153,7 +143,7 @@ public class RuntimePropCondition extends AbstractCondition {
 
     @Override
     public AbstractOperationEditor createOperationEditor() {
-        operationEditor = new RuntimePropOperationEditor(this);
+        operationEditor = new DynamicAttributesOperationEditor(this);
         return operationEditor;
     }
 
@@ -195,6 +185,6 @@ public class RuntimePropCondition extends AbstractCondition {
 
     @Override
     public AbstractCondition createCopy() {
-        return new RuntimePropCondition(this);
+        return new DynamicAttributesCondition(this);
     }
 }

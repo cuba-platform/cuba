@@ -3,7 +3,7 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-package com.haulmont.cuba.core.app.runtimeproperties;
+package com.haulmont.cuba.core.app.dynamicattributes;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -33,8 +33,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * @author degtyarjov
  * @version $Id$
  */
-@ManagedBean(RuntimePropertiesManagerAPI.NAME)
-public class RuntimePropertiesManager implements RuntimePropertiesManagerAPI {
+@ManagedBean(DynamicAttributesManagerAPI.NAME)
+public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
     @Inject
     protected Metadata metadata;
 

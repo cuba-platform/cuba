@@ -8,7 +8,6 @@ package com.haulmont.cuba.gui.components.filter.edit;
 import com.haulmont.cuba.gui.components.AbstractFrame;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.filter.condition.RuntimePropCondition;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 
 import javax.inject.Inject;
@@ -19,10 +18,10 @@ import java.util.Map;
  * @version $Id$
  */
 
-public class RuntimePropConditionEditor extends AbstractWindow {
+public class DynamicAttributesConditionEditor extends AbstractWindow {
 
     @Inject
-    protected RuntimePropConditionFrame runtimePropConditionFrame;
+    protected DynamicAttributesConditionFrame dynamicAttributeConditionFrame;
 
     @Inject
     protected ThemeConstants theme;
@@ -32,21 +31,21 @@ public class RuntimePropConditionEditor extends AbstractWindow {
         super.init(params);
 
         getDialogParams()
-                .setWidth(theme.getInt("cuba.gui.runtimePropConditionEditor.dialog.width"))
+                .setWidth(theme.getInt("cuba.gui.dynamicAttributeConditionEditor.dialog.width"))
                 .setResizable(true);
 
         hideUnnecessaryFields();
     }
 
     protected void hideUnnecessaryFields() {
-        hideComponent(runtimePropConditionFrame, "width");
-        hideComponent(runtimePropConditionFrame, "widthLabel");
-        hideComponent(runtimePropConditionFrame, "hidden");
-        hideComponent(runtimePropConditionFrame, "hiddenLabel");
-        hideComponent(runtimePropConditionFrame, "required");
-        hideComponent(runtimePropConditionFrame, "requiredLabel");
-        hideComponent(runtimePropConditionFrame, "defaultValueLayout");
-        hideComponent(runtimePropConditionFrame, "defaultValueLayoutLabel");
+        hideComponent(dynamicAttributeConditionFrame, "width");
+        hideComponent(dynamicAttributeConditionFrame, "widthLabel");
+        hideComponent(dynamicAttributeConditionFrame, "hidden");
+        hideComponent(dynamicAttributeConditionFrame, "hiddenLabel");
+        hideComponent(dynamicAttributeConditionFrame, "required");
+        hideComponent(dynamicAttributeConditionFrame, "requiredLabel");
+        hideComponent(dynamicAttributeConditionFrame, "defaultValueLayout");
+        hideComponent(dynamicAttributeConditionFrame, "defaultValueLayoutLabel");
     }
 
     protected void hideComponent(AbstractFrame parentFrame, String componentId) {
@@ -56,7 +55,7 @@ public class RuntimePropConditionEditor extends AbstractWindow {
     }
 
     public void commit() {
-        if (runtimePropConditionFrame.commit()) {
+        if (dynamicAttributeConditionFrame.commit()) {
             close(COMMIT_ACTION_ID);
         }
     }

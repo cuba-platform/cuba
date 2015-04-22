@@ -6,7 +6,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.core.app.runtimeproperties.RuntimePropertiesUtils;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MetadataTools;
@@ -17,7 +17,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.ListActionType;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.runtimeprops.RuntimePropertiesGuiTools;
+import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.collections.CollectionUtils;
@@ -145,7 +145,7 @@ public abstract class AbstractTableLoader extends ComponentLoader {
             loadRequired(component, column);
         }
 
-        addRuntimeProperties(component, ds, availableColumns);
+        addDynamicAttributes(component, ds, availableColumns);
 
         component.setDatasource(cds);
 
@@ -153,14 +153,14 @@ public abstract class AbstractTableLoader extends ComponentLoader {
         component.setMultiSelect(BooleanUtils.toBoolean(multiselect));
     }
 
-    protected void addRuntimeProperties(Table component, Datasource ds, List<Table.Column> availableColumns) {
-        RuntimePropertiesGuiTools runtimePropertiesGuiTools = AppBeans.get(RuntimePropertiesGuiTools.class);
+    protected void addDynamicAttributes(Table component, Datasource ds, List<Table.Column> availableColumns) {
+        DynamicAttributesGuiTools dynamicAttributesGuiTools = AppBeans.get(DynamicAttributesGuiTools.class);
         Set<CategoryAttribute> attributesToShow =
-                runtimePropertiesGuiTools.getAttributesToShowOnTheScreen(ds.getMetaClass(), context.getFullFrameId(), component.getId());
+                dynamicAttributesGuiTools.getAttributesToShowOnTheScreen(ds.getMetaClass(), context.getFullFrameId(), component.getId());
         if (CollectionUtils.isNotEmpty(attributesToShow)) {
-            ds.setNeedToLoadRuntimeProperties(true);
+            ds.setLoadDynamicAttributes(true);
             for (CategoryAttribute attribute : attributesToShow) {
-                final MetaPropertyPath metaPropertyPath = RuntimePropertiesUtils.getMetaPropertyPath(ds.getMetaClass(), attribute);
+                final MetaPropertyPath metaPropertyPath = DynamicAttributesUtils.getMetaPropertyPath(ds.getMetaClass(), attribute);
 
                 Object columnWithSameId = CollectionUtils.find(availableColumns, new org.apache.commons.collections.Predicate() {
                     @Override
@@ -285,7 +285,7 @@ public abstract class AbstractTableLoader extends ComponentLoader {
         final String id = element.attributeValue("id");
 
         final MetaPropertyPath metaPropertyPath =
-                AppBeans.get(RuntimePropertiesGuiTools.class).resolveMetaPropertyPath(ds.getMetaClass(), id);
+                AppBeans.get(DynamicAttributesGuiTools.class).resolveMetaPropertyPath(ds.getMetaClass(), id);
 
         final Table.Column column = new Table.Column(metaPropertyPath != null ? metaPropertyPath : id);
 

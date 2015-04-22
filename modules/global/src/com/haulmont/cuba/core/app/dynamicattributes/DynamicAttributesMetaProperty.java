@@ -3,7 +3,7 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-package com.haulmont.cuba.core.app.runtimeproperties;
+package com.haulmont.cuba.core.app.dynamicattributes;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.*;
@@ -22,22 +22,22 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 
 /**
- * Specific MetaProperty for runtime property.
+ * Specific MetaProperty for dynamic attribute.
  *
  * @author devyatkin
  * @version $Id$
  */
-public class RuntimePropertiesMetaProperty extends MetadataObjectImpl implements MetaProperty {
+public class DynamicAttributesMetaProperty extends MetadataObjectImpl implements MetaProperty {
     private MetaClass metaClass;
     private transient Range range;
     private Class javaClass;
 
     private AnnotatedElement annotatedElement = new FakeAnnotatedElement();
 
-    public RuntimePropertiesMetaProperty(MetaClass metaClass, CategoryAttribute attribute) {
-        this.javaClass = RuntimePropertiesHelper.getAttributeClass(attribute);
+    public DynamicAttributesMetaProperty(MetaClass metaClass, CategoryAttribute attribute) {
+        this.javaClass = DynamicAttributesUtils.getAttributeClass(attribute);
         this.metaClass = metaClass;
-        this.name = RuntimePropertiesUtils.encodeAttributeCode(attribute.getCode());
+        this.name = DynamicAttributesUtils.encodeAttributeCode(attribute.getCode());
         Metadata metadata = AppBeans.get(Metadata.NAME);
         Session metadataSession = metadata.getSession();
         if (SetValueEntity.class.isAssignableFrom(javaClass)) {
@@ -126,9 +126,9 @@ public class RuntimePropertiesMetaProperty extends MetadataObjectImpl implements
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof RuntimePropertiesMetaProperty)) return false;
+        if (!(o instanceof DynamicAttributesMetaProperty)) return false;
 
-        RuntimePropertiesMetaProperty that = (RuntimePropertiesMetaProperty) o;
+        DynamicAttributesMetaProperty that = (DynamicAttributesMetaProperty) o;
 
         return metaClass.equals(that.metaClass) && name.equals(that.name);
 

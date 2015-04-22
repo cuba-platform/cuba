@@ -8,7 +8,7 @@ package com.haulmont.cuba.gui.data.impl;
 import com.haulmont.bali.util.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.cuba.core.app.runtimeproperties.*;
+import com.haulmont.cuba.core.app.dynamicattributes.*;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.SetValueEntity;
@@ -20,19 +20,19 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 /**
- * Specific datasource for runtime properties.
+ * Specific datasource for dynamic attributes.
  * It will be initialized only when main datasource will be valid.
  *
  * @author devyatkin
  * @version $Id$
  */
 public class RuntimePropsDatasourceImpl
-        extends AbstractDatasource<RuntimePropertiesEntity>
-        implements RuntimePropsDatasource<RuntimePropertiesEntity> {
+        extends AbstractDatasource<DynamicAttributesEntity>
+        implements RuntimePropsDatasource<DynamicAttributesEntity> {
 
     protected DsContext dsContext;
     protected DataSupplier dataSupplier;
-    protected RuntimePropertiesMetaClass metaClass;
+    protected DynamicAttributesMetaClass metaClass;
     protected View view;
     protected Datasource mainDs;
     protected boolean initializedBefore = false;
@@ -40,7 +40,7 @@ public class RuntimePropsDatasourceImpl
 
     protected State state = State.NOT_INITIALIZED;
 
-    protected RuntimePropertiesEntity item;
+    protected DynamicAttributesEntity item;
     private final Collection<CategoryAttribute> attributes;
     private Category category;
 
@@ -48,13 +48,13 @@ public class RuntimePropsDatasourceImpl
         this.id = id;
         this.dsContext = dsContext;
         this.dataSupplier = dataSupplier;
-        this.metaClass = new RuntimePropertiesMetaClass();
+        this.metaClass = new DynamicAttributesMetaClass();
         this.setMainDs(mainDsId);
         this.setCommitMode(CommitMode.DATASTORE);
 
-        attributes = AppBeans.get(RuntimePropertiesService.class).getAttributesForMetaClass(mainDs.getMetaClass());
+        attributes = AppBeans.get(DynamicAttributesService.class).getAttributesForMetaClass(mainDs.getMetaClass());
         for (CategoryAttribute attribute : attributes) {
-            MetaProperty metaProperty = RuntimePropertiesUtils.getMetaPropertyPath(mainDs.getMetaClass(), attribute).getMetaProperty();
+            MetaProperty metaProperty = DynamicAttributesUtils.getMetaPropertyPath(mainDs.getMetaClass(), attribute).getMetaProperty();
             this.metaClass.addProperty(metaProperty, attribute);
         }
 
@@ -82,10 +82,10 @@ public class RuntimePropsDatasourceImpl
         }
         BaseGenericIdEntity baseGenericIdEntity = (BaseGenericIdEntity) entity;
         if (PersistenceHelper.isNew(baseGenericIdEntity)) {
-            baseGenericIdEntity.setRuntimeProperties(new HashMap<String, CategoryAttributeValue>());
+            baseGenericIdEntity.setDynamicAttributes(new HashMap<String, CategoryAttributeValue>());
         }
-        Map<String, CategoryAttributeValue> runtimeProperties = baseGenericIdEntity.getRuntimeProperties();
-        Preconditions.checkNotNullArgument(runtimeProperties, "Runtime properties should be loaded explicitly");
+        Map<String, CategoryAttributeValue> dynamicAttributes = baseGenericIdEntity.getDynamicAttributes();
+        Preconditions.checkNotNullArgument(dynamicAttributes, "Dynamic attributes should be loaded explicitly");
 
         if (entity instanceof CategorizedEntity) {
             category = ((CategorizedEntity) entity).getCategory();
@@ -94,15 +94,15 @@ public class RuntimePropsDatasourceImpl
             category = getDefaultCategory(entity);
         }
 
-        item = new RuntimePropertiesEntity(metaClass);
-        Collection<CategoryAttributeValue> entityValues = runtimeProperties.values();
+        item = new DynamicAttributesEntity(metaClass);
+        Collection<CategoryAttributeValue> entityValues = dynamicAttributes.values();
         TimeSource timeSource = AppBeans.get(TimeSource.NAME);
         for (CategoryAttribute attribute : attributes) {
             CategoryAttributeValue attributeValue = getValue(attribute, entityValues);
             Object value;
             if (attributeValue == null) {
                 attributeValue = new CategoryAttributeValue();
-                runtimeProperties.put(attribute.getCode(), attributeValue);
+                dynamicAttributes.put(attribute.getCode(), attributeValue);
                 attributeValue.setCategoryAttribute(attribute);
                 attributeValue.setEntityId(entity.getUuid());
                 if (PersistenceHelper.isNew(entity) || categoryChanged) {
@@ -123,12 +123,12 @@ public class RuntimePropsDatasourceImpl
 
             item.addAttributeValue(attribute, attributeValue, value);
 
-            if (RuntimePropertiesHelper.getAttributeClass(attribute).equals(SetValueEntity.class)) {
+            if (DynamicAttributesUtils.getAttributeClass(attribute).equals(SetValueEntity.class)) {
                 createOptionsDatasource(attribute, (SetValueEntity) value);
             }
         }
 
-        view = new View(RuntimePropertiesEntity.class);
+        view = new View(DynamicAttributesEntity.class);
         Collection<MetaProperty> properties = metaClass.getProperties();
         for (MetaProperty property : properties) {
             view.addProperty(property.getName());
@@ -138,7 +138,7 @@ public class RuntimePropsDatasourceImpl
         item.addListener(new com.haulmont.chile.core.common.ValueListener() {
             public void propertyChanged(Object item, String property, Object prevValue, Object value) {
                 modified = true;
-                itemToUpdate.add(((RuntimePropertiesEntity) item).getCategoryValue(property));
+                itemToUpdate.add(((DynamicAttributesEntity) item).getCategoryValue(property));
             }
         });
         this.valid();
@@ -307,7 +307,7 @@ public class RuntimePropsDatasourceImpl
     }
 
     @Override
-    public RuntimePropertiesEntity getItem() {
+    public DynamicAttributesEntity getItem() {
         if (State.VALID.equals(state))
             return item;
         else
@@ -316,12 +316,12 @@ public class RuntimePropsDatasourceImpl
 
     @Nullable
     @Override
-    public RuntimePropertiesEntity getItemIfValid() {
+    public DynamicAttributesEntity getItemIfValid() {
         return getState() == State.VALID ? getItem() : null;
     }
 
     @Override
-    public void setItem(RuntimePropertiesEntity item) {
+    public void setItem(DynamicAttributesEntity item) {
         throw new UnsupportedOperationException();
     }
 
@@ -370,7 +370,7 @@ public class RuntimePropsDatasourceImpl
         for (Entity entity : entities) {
             if (entity.equals(item)) {
                 detachListener(item);
-                item = (RuntimePropertiesEntity) entity;
+                item = (DynamicAttributesEntity) entity;
                 attachListener(item);
             }
         }
@@ -409,7 +409,7 @@ public class RuntimePropsDatasourceImpl
     @Nullable
     public Category getDefaultCategory(Entity entity) {
         MetaClass metaClass = metadata.getSession().getClassNN(entity.getClass());
-        Collection<Category> categoriesForMetaClass = AppBeans.get(RuntimePropertiesService.class).getCategoriesForMetaClass(metaClass);
+        Collection<Category> categoriesForMetaClass = AppBeans.get(DynamicAttributesService.class).getCategoriesForMetaClass(metaClass);
         for (Category category : categoriesForMetaClass) {
             if (Boolean.TRUE.equals(category.getIsDefault())) {
                 return category;

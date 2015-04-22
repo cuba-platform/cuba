@@ -3,7 +3,7 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-package com.haulmont.cuba.core.app.runtimeproperties;
+package com.haulmont.cuba.core.app.dynamicattributes;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Category;
@@ -16,8 +16,8 @@ import java.util.Collection;
  * @author degtyarjov
  * @version $Id$
  */
-public interface RuntimePropertiesService {
-    String NAME = "cuba_RuntimePropertiesService";
+public interface DynamicAttributesManagerAPI {
+    String NAME = "cuba_DynamicAttributesManager";
 
     void loadCache();
 

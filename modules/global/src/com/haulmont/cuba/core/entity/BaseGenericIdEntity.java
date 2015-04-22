@@ -7,7 +7,7 @@ package com.haulmont.cuba.core.entity;
 import com.google.common.base.Preconditions;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
-import com.haulmont.cuba.core.app.runtimeproperties.RuntimePropertiesUtils;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.global.*;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.kernel.DetachedStateManager;
@@ -50,7 +50,7 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
     @Column(name = "CREATED_BY", length = LOGIN_FIELD_LEN)
     protected String createdBy;
 
-    protected Map<String, CategoryAttributeValue> runtimeProperties = null;
+    protected Map<String, CategoryAttributeValue> dynamicAttributes = null;
 
     public abstract void setId(T id);
 
@@ -118,10 +118,10 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
 
     @Override
     public void setValue(String property, Object obj, boolean checkEquals) {
-        if (RuntimePropertiesUtils.isRuntimeProperty(property)) {
-            Preconditions.checkState(runtimeProperties != null, "Runtime properties should be loaded explicitly");
-            String attributeCode = RuntimePropertiesUtils.decodeAttributeCode(property);
-            CategoryAttributeValue categoryAttributeValue = runtimeProperties.get(attributeCode);
+        if (DynamicAttributesUtils.isDynamicAttribute(property)) {
+            Preconditions.checkState(dynamicAttributes != null, "Dynamic attributes should be loaded explicitly");
+            String attributeCode = DynamicAttributesUtils.decodeAttributeCode(property);
+            CategoryAttributeValue categoryAttributeValue = dynamicAttributes.get(attributeCode);
             if (categoryAttributeValue != null) {
                 if (obj != null) {
                     categoryAttributeValue.setValue(obj);
@@ -133,7 +133,7 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
                 categoryAttributeValue.setValue(obj);
                 categoryAttributeValue.setEntityId(getUuid());
                 categoryAttributeValue.setCode(attributeCode);
-                runtimeProperties.put(attributeCode, categoryAttributeValue);
+                dynamicAttributes.put(attributeCode, categoryAttributeValue);
             }
 
             propertyChanged(property, null, obj);
@@ -145,13 +145,13 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
     @Override
     @SuppressWarnings("unchecked")
     public <T> T getValue(String property) {
-        if (RuntimePropertiesUtils.isRuntimeProperty(property)) {
-            if (PersistenceHelper.isNew(this) && runtimeProperties == null) {
-                    runtimeProperties = new HashMap<>();
+        if (DynamicAttributesUtils.isDynamicAttribute(property)) {
+            if (PersistenceHelper.isNew(this) && dynamicAttributes == null) {
+                    dynamicAttributes = new HashMap<>();
             }
 
-            Preconditions.checkState(runtimeProperties != null, "Runtime properties should be loaded explicitly");
-            CategoryAttributeValue categoryAttributeValue = runtimeProperties.get(RuntimePropertiesUtils.decodeAttributeCode(property));
+            Preconditions.checkState(dynamicAttributes != null, "Dynamic attributes should be loaded explicitly");
+            CategoryAttributeValue categoryAttributeValue = dynamicAttributes.get(DynamicAttributesUtils.decodeAttributeCode(property));
             if (categoryAttributeValue != null) {
                 return (T) categoryAttributeValue.getValue();
             } else {
@@ -162,12 +162,12 @@ public abstract class BaseGenericIdEntity<T> extends AbstractInstance implements
         }
     }
 
-    public void setRuntimeProperties(Map<String, CategoryAttributeValue> runtimeProperties) {
-        this.runtimeProperties = runtimeProperties;
+    public void setDynamicAttributes(Map<String, CategoryAttributeValue> dynamicAttributes) {
+        this.dynamicAttributes = dynamicAttributes;
     }
 
     @Nullable
-    public Map<String, CategoryAttributeValue> getRuntimeProperties() {
-        return runtimeProperties;
+    public Map<String, CategoryAttributeValue> getDynamicAttributes() {
+        return dynamicAttributes;
     }
 }

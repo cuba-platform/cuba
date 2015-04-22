@@ -7,6 +7,7 @@ package com.haulmont.cuba.gui.components.filter.edit;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.DataService;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.Category;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.Entity;
@@ -15,8 +16,7 @@ import com.haulmont.cuba.core.sys.SetValueEntity;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.filter.Op;
 import com.haulmont.cuba.gui.components.filter.Param;
-import com.haulmont.cuba.gui.components.filter.condition.RuntimePropCondition;
-import com.haulmont.cuba.core.app.runtimeproperties.RuntimePropertiesHelper;
+import com.haulmont.cuba.gui.components.filter.condition.DynamicAttributesCondition;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import org.apache.commons.lang.ObjectUtils;
@@ -29,7 +29,7 @@ import java.util.*;
  * @author devyatkin
  * @version $Id$
  */
-public class RuntimePropConditionFrame extends ConditionFrame<RuntimePropCondition> {
+public class DynamicAttributesConditionFrame extends ConditionFrame<DynamicAttributesCondition> {
 
     @Inject
     protected ThemeConstants themeConstants;
@@ -75,26 +75,26 @@ public class RuntimePropConditionFrame extends ConditionFrame<RuntimePropConditi
             @Override
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
                 if (value != null)
-                    fillOperationSelect(RuntimePropertiesHelper.getAttributeClass((CategoryAttribute) value));
+                    fillOperationSelect(DynamicAttributesUtils.getAttributeClass((CategoryAttribute) value));
             }
         });
     }
 
     @Override
-    public void setCondition(RuntimePropCondition condition) {
+    public void setCondition(DynamicAttributesCondition condition) {
         super.setCondition(condition);
         fillCategorySelect();
     }
 
     protected String checkCondition() {
         if (categoryLookup.getValue() == null) {
-            return "RuntimePropConditionFrame.selectCategory";
+            return "DynamicAttributesConditionFrame.selectCategory";
         }
         if (attributeLookup.getValue() == null) {
-            return "RuntimePropConditionFrame.selectAttribute";
+            return "DynamicAttributesConditionFrame.selectAttribute";
         }
         if (operationLookup.getValue() == null) {
-            return "RuntimePropConditionFrame.selectOperator";
+            return "DynamicAttributesConditionFrame.selectOperator";
         }
         return null;
     }
@@ -113,15 +113,14 @@ public class RuntimePropConditionFrame extends ConditionFrame<RuntimePropConditi
         CategoryAttribute attribute = attributeLookup.getValue();
 
         String alias = condition.getEntityAlias();
-        String caAlias = "ca" + RandomStringUtils.randomNumeric(5);
         String cavAlias = "cav" + RandomStringUtils.randomNumeric(5);
-        condition.setJoin("join " + alias + ".category.categoryAttrs " + caAlias + ", sys$CategoryAttributeValue " + cavAlias + " ");
+        condition.setJoin(", sys$CategoryAttributeValue " + cavAlias + " ");
 
         String paramName;
         String operation = operationLookup.<Op>getValue().getText();
         Op op = operationLookup.getValue();
 
-        Class javaClass = RuntimePropertiesHelper.getAttributeClass(attribute);
+        Class javaClass = DynamicAttributesUtils.getAttributeClass(attribute);
         String valueFieldName = "stringValue";
 
         if (SetValueEntity.class.isAssignableFrom(javaClass)) {

@@ -22,5 +22,5 @@ public interface CachingFacadeMBean {
 
     void clearViewRepositoryCache();
 
-    void clearRuntimePropertiesCache();
+    void clearDynamicAttributesCache();
 }

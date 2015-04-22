@@ -4,7 +4,7 @@
   -->
 
 <window xmlns="http://schemas.haulmont.com/cuba/5.4/window.xsd"
-        class="com.haulmont.cuba.gui.components.filter.edit.RuntimePropConditionFrame"
+        class="com.haulmont.cuba.gui.components.filter.edit.DynamicAttributesConditionFrame"
         messagesPack="com.haulmont.cuba.gui.components.filter.edit">
 
     <layout spacing="true">
@@ -31,21 +31,21 @@
                     <hbox id="defaultValueLayout" width="100%"/>
                 </row>
                 <row>
-                    <label id="categoryLabel" value="msg://RuntimePropConditionFrame.category" align="MIDDLE_LEFT"/>
+                    <label id="categoryLabel" value="msg://DynamicAttributesConditionFrame.category" align="MIDDLE_LEFT"/>
                     <lookupField id="categoryLookup"
-                                 width="theme://cuba.gui.runtimePropConditionFrame.lookup.width"
+                                 width="theme://cuba.gui.dynamicAttributeConditionFrame.lookup.width"
                                  required="true"/>
                 </row>
                 <row>
-                    <label value="msg://RuntimePropConditionFrame.attribute" align="MIDDLE_LEFT"/>
+                    <label value="msg://DynamicAttributesConditionFrame.attribute" align="MIDDLE_LEFT"/>
                     <lookupField id="attributeLookup"
-                                 width="theme://cuba.gui.runtimePropConditionFrame.lookup.width"
+                                 width="theme://cuba.gui.dynamicAttributeConditionFrame.lookup.width"
                                  required="true"/>
                 </row>
                 <row>
-                    <label value="msg://RuntimePropConditionFrame.operation" align="MIDDLE_LEFT"/>
+                    <label value="msg://DynamicAttributesConditionFrame.operation" align="MIDDLE_LEFT"/>
                     <lookupField id="operationLookup"
-                                 width="theme://cuba.gui.runtimePropConditionFrame.lookup.width"
+                                 width="theme://cuba.gui.dynamicAttributeConditionFrame.lookup.width"
                                  required="true"/>
                 </row>
             </rows>

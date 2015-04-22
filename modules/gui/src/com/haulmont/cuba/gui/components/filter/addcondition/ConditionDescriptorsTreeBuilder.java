@@ -5,7 +5,6 @@
 
 package com.haulmont.cuba.gui.components.filter.addcondition;
 
-import com.google.common.base.Strings;
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.datastruct.Tree;
 import com.haulmont.bali.util.Dom4j;
@@ -139,7 +138,7 @@ public class ConditionDescriptorsTreeBuilder {
         }
 
         if (CategorizedEntity.class.isAssignableFrom(datasource.getMetaClass().getJavaClass())) {
-            rootNodes.add(new Node<AbstractConditionDescriptor>(new RuntimePropConditionCreator(filterComponentName, datasource)));
+            rootNodes.add(new Node<AbstractConditionDescriptor>(new DynamicAttributesConditionCreator(filterComponentName, datasource)));
         }
 
         tree.setRootNodes(rootNodes);

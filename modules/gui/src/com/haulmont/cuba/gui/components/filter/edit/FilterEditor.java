@@ -74,7 +74,7 @@ public class FilterEditor extends AbstractWindow {
     protected Label applyDefaultLabel;
 
     @Inject
-    protected RuntimePropConditionFrame runtimePropConditionFrame;
+    protected DynamicAttributesConditionFrame dynamicAttributesConditionFrame;
 
     @Inject
     protected CustomConditionFrame customConditionFrame;
@@ -181,8 +181,8 @@ public class FilterEditor extends AbstractWindow {
                 } else {
                     if (item instanceof PropertyCondition) {
                         activeConditionFrame = propertyConditionFrame;
-                    } else if (item instanceof RuntimePropCondition) {
-                        activeConditionFrame = runtimePropConditionFrame;
+                    } else if (item instanceof DynamicAttributesCondition) {
+                        activeConditionFrame = dynamicAttributesConditionFrame;
                     } else if (item instanceof CustomCondition) {
                         activeConditionFrame = customConditionFrame;
                     } else if (item instanceof GroupCondition) {
@@ -194,7 +194,7 @@ public class FilterEditor extends AbstractWindow {
 
                 propertyConditionFrame.setVisible(false);
                 customConditionFrame.setVisible(false);
-                runtimePropConditionFrame.setVisible(false);
+                dynamicAttributesConditionFrame.setVisible(false);
                 groupConditionFrame.setVisible(false);
 
                 if (activeConditionFrame != null) {

@@ -44,7 +44,7 @@ public abstract class AbstractDatasource<T extends Entity> implements Datasource
 
     protected boolean listenersEnabled = true;
 
-    protected boolean needToLoadRuntimeProperties;
+    protected boolean loadDynamicAttributes;
 
     @Override
     public void setup(DsContext dsContext, DataSupplier dataSupplier, String id,
@@ -207,13 +207,13 @@ public abstract class AbstractDatasource<T extends Entity> implements Datasource
     }
 
     @Override
-    public boolean needToLoadRuntimeProperties() {
-        return needToLoadRuntimeProperties;
+    public boolean getLoadDynamicAttributes() {
+        return loadDynamicAttributes;
     }
 
     @Override
-    public void setNeedToLoadRuntimeProperties(boolean value) {
-        this.needToLoadRuntimeProperties = value;
+    public void setLoadDynamicAttributes(boolean value) {
+        this.loadDynamicAttributes = value;
     }
 
     protected void attachListener(Instance item) {

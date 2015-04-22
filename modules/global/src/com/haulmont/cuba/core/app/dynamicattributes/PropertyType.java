@@ -3,7 +3,7 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-package com.haulmont.cuba.core.app.runtimeproperties;
+package com.haulmont.cuba.core.app.dynamicattributes;
 
 /**
 * @author degtyarjov

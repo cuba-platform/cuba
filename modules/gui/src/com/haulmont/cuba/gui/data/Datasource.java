@@ -145,7 +145,7 @@ public interface Datasource<T extends Entity> {
      */
     void removeListener(DatasourceListener<T> listener);
 
-    boolean needToLoadRuntimeProperties();
+    boolean getLoadDynamicAttributes();
 
-    void setNeedToLoadRuntimeProperties(boolean value);
+    void setLoadDynamicAttributes(boolean value);
 }

@@ -13,7 +13,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
-import com.haulmont.cuba.gui.runtimeprops.RuntimePropertiesGuiTools;
+import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppUI;
@@ -370,7 +370,7 @@ public class WebFieldGroup
 
         createFields(datasource);
 
-        AppBeans.get(RuntimePropertiesGuiTools.class).listenRuntimePropertiesChanges(datasource);
+        AppBeans.get(DynamicAttributesGuiTools.class).listenDynamicAttributesChanges(datasource);
     }
 
     protected void createFields(Datasource datasource) {

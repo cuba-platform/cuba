@@ -29,7 +29,7 @@ import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.presentations.Presentations;
-import com.haulmont.cuba.gui.runtimeprops.RuntimePropertiesGuiTools;
+import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import net.miginfocom.layout.CC;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.ObjectUtils;
@@ -709,7 +709,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
         if (!canBeSorted(datasource))
             setSortable(false);
 
-        AppBeans.get(RuntimePropertiesGuiTools.class).listenRuntimePropertiesChanges(datasource);
+        AppBeans.get(DynamicAttributesGuiTools.class).listenDynamicAttributesChanges(datasource);
     }
 
     protected boolean canBeSorted(CollectionDatasource datasource) {
@@ -999,7 +999,7 @@ public abstract class DesktopAbstractTable<C extends JXTable>
                 throw new IllegalStateException("Table datasource is null");
 
             MetaPropertyPath metaPropertyPath =
-                    AppBeans.get(RuntimePropertiesGuiTools.class).resolveMetaPropertyPath(datasource.getMetaClass(), propertyId);
+                    AppBeans.get(DynamicAttributesGuiTools.class).resolveMetaPropertyPath(datasource.getMetaClass(), propertyId);
             Column columnConf = columns.get(metaPropertyPath);
 
             final DsContext dsContext = datasource.getDsContext();

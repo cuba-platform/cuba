@@ -3,7 +3,7 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-package com.haulmont.cuba.core.app.runtimeproperties;
+package com.haulmont.cuba.core.app.dynamicattributes;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Category;
@@ -18,29 +18,29 @@ import java.util.Collection;
  * @author degtyarjov
  * @version $Id$
  */
-@Service(RuntimePropertiesService.NAME)
-public class RuntimePropertiesServiceBean implements RuntimePropertiesService {
+@Service(DynamicAttributesService.NAME)
+public class DynamicAttributesServiceBean implements DynamicAttributesService {
     @Inject
-    protected RuntimePropertiesManagerAPI runtimePropertiesManagerAPI;
+    protected DynamicAttributesManagerAPI dynamicAttributesManagerAPI;
 
     @Override
     public void loadCache(){
-        runtimePropertiesManagerAPI.loadCache();
+        dynamicAttributesManagerAPI.loadCache();
     };
 
     @Override
     public Collection<Category> getCategoriesForMetaClass(MetaClass metaClass) {
-        return runtimePropertiesManagerAPI.getCategoriesForMetaClass(metaClass);
+        return dynamicAttributesManagerAPI.getCategoriesForMetaClass(metaClass);
     }
 
     @Override
     public Collection<CategoryAttribute> getAttributesForMetaClass(MetaClass metaClass){
-        return runtimePropertiesManagerAPI.getAttributesForMetaClass(metaClass);
+        return dynamicAttributesManagerAPI.getAttributesForMetaClass(metaClass);
     }
 
     @Nullable
     @Override
     public CategoryAttribute getAttributeForMetaClass(MetaClass metaClass, String code) {
-        return runtimePropertiesManagerAPI.getAttributeForMetaClass(metaClass, code);
+        return dynamicAttributesManagerAPI.getAttributeForMetaClass(metaClass, code);
     }
 }

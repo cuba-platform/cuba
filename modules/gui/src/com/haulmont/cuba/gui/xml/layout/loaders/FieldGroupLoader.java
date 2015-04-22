@@ -7,7 +7,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.core.app.runtimeproperties.RuntimePropertiesUtils;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
@@ -17,7 +17,7 @@ import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.FieldGroup;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.runtimeprops.RuntimePropertiesGuiTools;
+import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import com.haulmont.cuba.security.entity.EntityOp;
@@ -110,7 +110,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
             }
         }
 
-        addRuntimeProperties(component, ds);
+        addDynamicAttributes(component, ds);
 
         component.setDatasource(ds);
 
@@ -133,7 +133,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
 
         final List<FieldGroup.FieldConfig> fields = component.getFields();
         for (final FieldGroup.FieldConfig field : fields) {
-            if (!field.isCustom() && !RuntimePropertiesUtils.isRuntimeProperty(field.getId())) {
+            if (!field.isCustom() && !DynamicAttributesUtils.isDynamicAttribute(field.getId())) {
                 loadValidators(component, field);
                 loadRequired(component, field);
                 loadEditable(component, field);
@@ -166,17 +166,17 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         });
     }
 
-    protected void addRuntimeProperties(FieldGroup fieldGroup, Datasource ds) {
-        RuntimePropertiesGuiTools runtimePropertiesGuiTools = AppBeans.get(RuntimePropertiesGuiTools.class);
+    protected void addDynamicAttributes(FieldGroup fieldGroup, Datasource ds) {
+        DynamicAttributesGuiTools dynamicAttributesGuiTools = AppBeans.get(DynamicAttributesGuiTools.class);
         if (ds != null) {
             Set<CategoryAttribute> attributesToShow =
-                    runtimePropertiesGuiTools.getAttributesToShowOnTheScreen(ds.getMetaClass(), context.getFullFrameId(), fieldGroup.getId());
+                    dynamicAttributesGuiTools.getAttributesToShowOnTheScreen(ds.getMetaClass(), context.getFullFrameId(), fieldGroup.getId());
             if (CollectionUtils.isNotEmpty(attributesToShow)) {
-                ds.setNeedToLoadRuntimeProperties(true);
+                ds.setLoadDynamicAttributes(true);
                 for (CategoryAttribute attribute : attributesToShow) {
-                    MetaPropertyPath metaPropertyPath = RuntimePropertiesUtils.getMetaPropertyPath(ds.getMetaClass(), attribute);
+                    MetaPropertyPath metaPropertyPath = DynamicAttributesUtils.getMetaPropertyPath(ds.getMetaClass(), attribute);
                     final FieldGroup.FieldConfig field = new FieldGroup.FieldConfig(
-                            RuntimePropertiesUtils.encodeAttributeCode(attribute.getCode()));
+                            DynamicAttributesUtils.encodeAttributeCode(attribute.getCode()));
                     field.setMetaPropertyPath(metaPropertyPath);
                     field.setType(metaPropertyPath.getRangeJavaClass());
                     field.setCaption(attribute.getName());
@@ -268,7 +268,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
 
         if (ds != null) {
             final MetaClass metaClass = ds.getMetaClass();
-            metaPropertyPath = AppBeans.get(RuntimePropertiesGuiTools.class).resolveMetaPropertyPath(ds.getMetaClass(), id);
+            metaPropertyPath = AppBeans.get(DynamicAttributesGuiTools.class).resolveMetaPropertyPath(ds.getMetaClass(), id);
             if (metaPropertyPath == null) {
                 if (!customField) {
                     throw new GuiDevelopmentException(String.format("Property '%s' is not found in entity '%s'",

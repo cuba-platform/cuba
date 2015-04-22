@@ -66,7 +66,7 @@ public class DataManagerClientImpl implements DataManager {
     }
 
     @Override
-    public <A extends Entity> A reload(A entity, View view, @Nullable MetaClass metaClass, boolean useSecurityConstraints, boolean loadRuntimeProperties) {
+    public <A extends Entity> A reload(A entity, View view, @Nullable MetaClass metaClass, boolean useSecurityConstraints, boolean loadDynamicAttributes) {
         if (metaClass == null) {
             metaClass = metadata.getSession().getClass(entity.getClass());
         }
@@ -74,7 +74,7 @@ public class DataManagerClientImpl implements DataManager {
         context.setUseSecurityConstraints(useSecurityConstraints);
         context.setId(entity.getId());
         context.setView(view);
-        context.setNeedToLoadRuntimeProperties(loadRuntimeProperties);
+        context.setLoadDynamicAttributes(loadDynamicAttributes);
 
         A reloaded = load(context);
         if (reloaded == null)

@@ -3,7 +3,7 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-package com.haulmont.cuba.core.app.runtimeproperties;
+package com.haulmont.cuba.core.app.dynamicattributes;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
@@ -20,7 +20,7 @@ import java.util.*;
  * @version $Id$
  */
 
-public class RuntimePropertiesMetaClass extends MetadataObjectImpl implements MetaClass {
+public class DynamicAttributesMetaClass extends MetadataObjectImpl implements MetaClass {
 
     private Map<String, MetaProperty> properties = new LinkedHashMap<>();
     private Map<String, CategoryAttribute> attributes = new LinkedHashMap<>();

@@ -11,7 +11,7 @@ import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
-import com.haulmont.cuba.core.app.runtimeproperties.RuntimePropertiesService;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesService;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.CategoryAttributeValue;
 import com.haulmont.cuba.core.global.AppBeans;
@@ -39,7 +39,7 @@ import java.util.Map;
 import static com.haulmont.cuba.gui.components.PickerField.LookupAction;
 
 /**
- * Universal frame for editing Runtime properties
+ * Universal frame for editing dynamic attributes
  * of any {@link com.haulmont.cuba.core.entity.CategorizedEntity} subclass.
  *
  * @author devyatkin
@@ -215,7 +215,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
                         public Component generateField(Datasource datasource, String propertyId) {
                             //todo move field generation to generator previous to this block (upper)
                             final PickerField pickerField;
-                            Boolean lookup = ((RuntimePropertiesEntity) datasource.getItem()).getCategoryValue(property.getName()).getCategoryAttribute().getLookup();
+                            Boolean lookup = ((DynamicAttributesEntity) datasource.getItem()).getCategoryValue(property.getName()).getCategoryAttribute().getLookup();
                             if (lookup != null && lookup) {
                                 pickerField = AppConfig.getFactory().createComponent(LookupPickerField.NAME);
 
@@ -238,8 +238,8 @@ public class RuntimePropertiesFrame extends AbstractWindow {
                             pickerField.setDatasource(ds, propertyId);
                             LookupAction lookupAction = (LookupAction) pickerField.getAction(LookupAction.NAME);
                             if (lookupAction != null) {
-                                RuntimePropertiesEntity runtimePropertiesEntity = (RuntimePropertiesEntity) ds.getItem();
-                                CategoryAttributeValue categoryAttributeValue = runtimePropertiesEntity.getCategoryValue(property.getName());
+                                DynamicAttributesEntity dynamicAttributesEntity = (DynamicAttributesEntity) ds.getItem();
+                                CategoryAttributeValue categoryAttributeValue = dynamicAttributesEntity.getCategoryValue(property.getName());
                                 if (categoryAttributeValue != null) {
                                     String screen = categoryAttributeValue.getCategoryAttribute().getScreen();
                                     if (StringUtils.isBlank(screen)) {
@@ -264,7 +264,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
         java.util.List<FieldGroup.FieldConfig> fields = new ArrayList<>();
         for (MetaProperty property : metaProperties) {
             FieldGroup.FieldConfig field = new FieldGroup.FieldConfig(property.getName());
-            CategoryAttribute attribute = AppBeans.get(RuntimePropertiesService.class)
+            CategoryAttribute attribute = AppBeans.get(DynamicAttributesService.class)
                     .getAttributeForMetaClass(rds.getMainDs().getMetaClass(), property.getName().substring(1));
             field.setCaption(attribute != null ? attribute.getName() : property.getName());
             field.setWidth(fieldWidth);
@@ -311,8 +311,8 @@ public class RuntimePropertiesFrame extends AbstractWindow {
     }
 
     protected void loadRequired(FieldGroup fieldGroup, FieldGroup.FieldConfig field) {
-        RuntimePropertiesEntity runtimePropertiesEntity = (RuntimePropertiesEntity) rds.getItem();
-        CategoryAttributeValue categoryAttributeValue = runtimePropertiesEntity.getCategoryValue(field.getId());
+        DynamicAttributesEntity dynamicAttributesEntity = (DynamicAttributesEntity) rds.getItem();
+        CategoryAttributeValue categoryAttributeValue = dynamicAttributesEntity.getCategoryValue(field.getId());
         String requiredMessage = messages.formatMessage(
                 AppConfig.getMessagesPack(),
                 "validation.required.defaultMsg",

@@ -75,28 +75,28 @@ public class DsContextLoader {
         List<Element> elements = element.elements("datasource");
         for (Element ds : elements) {
             Datasource datasource = loadDatasource(ds);
-            setNeedToLoadRuntimeProperties(ds, datasource);
+            setLoadDynamicAttributes(ds, datasource);
         }
 
         //noinspection unchecked
         elements = element.elements("hierarchicalDatasource");
         for (Element ds : elements) {
             Datasource datasource = loadHierarchicalDatasource(ds);
-            setNeedToLoadRuntimeProperties(ds, datasource);
+            setLoadDynamicAttributes(ds, datasource);
         }
 
         //noinspection unchecked
         elements = element.elements("collectionDatasource");
         for (Element ds : elements) {
             CollectionDatasource datasource = loadCollectionDatasource(ds);
-            setNeedToLoadRuntimeProperties(ds, datasource);
+            setLoadDynamicAttributes(ds, datasource);
         }
 
         //noinspection unchecked
         elements = element.elements("groupDatasource");
         for (Element ds : elements) {
             Datasource datasource = loadGroupDatasource(ds);
-            setNeedToLoadRuntimeProperties(ds, datasource);
+            setLoadDynamicAttributes(ds, datasource);
         }
 
         //noinspection unchecked
@@ -110,8 +110,8 @@ public class DsContextLoader {
         return context;
     }
 
-    protected void setNeedToLoadRuntimeProperties(Element element, Datasource datasource) {
-        datasource.setNeedToLoadRuntimeProperties("true".equals(element.attributeValue("needToLoadRuntimeProperties")));
+    protected void setLoadDynamicAttributes(Element element, Datasource datasource) {
+        datasource.setLoadDynamicAttributes("true".equals(element.attributeValue("loadDynamicAttributes")));
     }
 
     protected DsContextImplementation createDsContext(String contextClass, Element element) {

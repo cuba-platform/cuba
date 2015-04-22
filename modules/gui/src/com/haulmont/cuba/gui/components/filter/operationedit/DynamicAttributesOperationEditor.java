@@ -17,9 +17,9 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
  * @author devyatkin
  * @version $Id$
  */
-public class RuntimePropOperationEditor extends PropertyOperationEditor {
+public class DynamicAttributesOperationEditor extends PropertyOperationEditor {
 
-    public RuntimePropOperationEditor(AbstractCondition condition) {
+    public DynamicAttributesOperationEditor(AbstractCondition condition) {
         super(condition);
     }
 

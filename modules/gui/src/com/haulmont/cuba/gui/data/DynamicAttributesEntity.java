@@ -6,13 +6,12 @@ package com.haulmont.cuba.gui.data;
 
 import com.haulmont.chile.core.common.ValueListener;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.app.runtimeproperties.PropertyType;
-import com.haulmont.cuba.core.app.runtimeproperties.RuntimePropertiesUtils;
+import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.CategoryAttributeValue;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UuidProvider;
 import com.haulmont.cuba.core.sys.SetValueEntity;
 import org.apache.commons.lang.ObjectUtils;
@@ -21,12 +20,12 @@ import org.apache.commons.lang.StringUtils;
 import java.util.*;
 
 /**
- * The entity, that contains a set of runtime properties.
+ * The entity, that contains a set of dynamic attributes.
  *
  * @author devyatkin
  * @version $Id$
  */
-public class RuntimePropertiesEntity implements BaseEntity {
+public class DynamicAttributesEntity implements BaseEntity {
 
     private static final long serialVersionUID = -8091230910619941201L;
 
@@ -38,13 +37,13 @@ public class RuntimePropertiesEntity implements BaseEntity {
     private Map<String, CategoryAttributeValue> categoryValues = new HashMap<>();
     private Map<String, Object> values = new HashMap<>();
 
-    public RuntimePropertiesEntity(MetaClass metaClass) {
+    public DynamicAttributesEntity(MetaClass metaClass) {
         this.metaClass = metaClass;
         this.id = UuidProvider.createUuid();
     }
 
     public void addAttributeValue(CategoryAttribute attribute, CategoryAttributeValue categoryAttributeValue, Object value) {
-        String attributeCode = RuntimePropertiesUtils.encodeAttributeCode(attribute.getCode());
+        String attributeCode = DynamicAttributesUtils.encodeAttributeCode(attribute.getCode());
         categoryValues.put(attributeCode, categoryAttributeValue);
         values.put(attributeCode, value);
     }

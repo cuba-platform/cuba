@@ -552,7 +552,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     protected void prepareLoadContext(LoadContext context) {
-        context.setNeedToLoadRuntimeProperties(needToLoadRuntimeProperties);
+        context.setLoadDynamicAttributes(loadDynamicAttributes);
         context.setQueryKey(queryKey == null ? 0 : queryKey);
         context.getPrevQueries().addAll(prevQueries);
     }

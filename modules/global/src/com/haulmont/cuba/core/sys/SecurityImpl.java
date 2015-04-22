@@ -7,7 +7,7 @@ package com.haulmont.cuba.core.sys;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.core.app.runtimeproperties.RuntimePropertiesUtils;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.global.ExtendedEntities;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.Security;
@@ -75,7 +75,7 @@ public class SecurityImpl implements Security {
 
     @Override
     public boolean isEntityAttrReadPermitted(MetaClass metaClass, String propertyPath) {
-        if (RuntimePropertiesUtils.isRuntimeProperty(propertyPath)) {
+        if (DynamicAttributesUtils.isDynamicAttribute(propertyPath)) {
             return true;//todo eude add the attributes to security
         }
 
@@ -93,7 +93,7 @@ public class SecurityImpl implements Security {
 
     @Override
     public boolean isEntityAttrUpdatePermitted(MetaClass metaClass, String propertyPath) {
-        if (RuntimePropertiesUtils.isRuntimeProperty(propertyPath)) {
+        if (DynamicAttributesUtils.isDynamicAttribute(propertyPath)) {
             return true;//todo eude add the attributes to security
         }
 

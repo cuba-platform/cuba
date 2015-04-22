@@ -84,7 +84,7 @@ public class TestDataSupplier implements DataSupplier {
     }
 
     @Override
-    public <A extends Entity> A reload(A entity, View view, @Nullable MetaClass metaClass, boolean useSecurityConstraints, boolean loadRuntimeProperties) {
+    public <A extends Entity> A reload(A entity, View view, @Nullable MetaClass metaClass, boolean useSecurityConstraints, boolean loadDynamicAttributes) {
         return null;
     }
 

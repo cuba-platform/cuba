@@ -16,9 +16,9 @@ import com.haulmont.cuba.gui.components.filter.addcondition.ConditionDescriptors
 import com.haulmont.cuba.gui.components.filter.condition.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.descriptor.AbstractConditionDescriptor;
 import com.haulmont.cuba.gui.components.filter.descriptor.CustomConditionCreator;
-import com.haulmont.cuba.gui.components.filter.descriptor.RuntimePropConditionCreator;
+import com.haulmont.cuba.gui.components.filter.descriptor.DynamicAttributesConditionCreator;
 import com.haulmont.cuba.gui.components.filter.edit.CustomConditionEditor;
-import com.haulmont.cuba.gui.components.filter.edit.RuntimePropConditionEditor;
+import com.haulmont.cuba.gui.components.filter.edit.DynamicAttributesConditionEditor;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 
@@ -100,11 +100,11 @@ public class AddConditionHelper {
                     }
                 }
             });
-        } else if (descriptor instanceof RuntimePropConditionCreator) {
-            WindowInfo windowInfo = windowConfig.getWindowInfo("runtimePropConditionEditor");
+        } else if (descriptor instanceof DynamicAttributesConditionCreator) {
+            WindowInfo windowInfo = windowConfig.getWindowInfo("dynamicAttributeConditionEditor");
             Map<String, Object> params = new HashMap<>();
             params.put("condition", condition);
-            final RuntimePropConditionEditor window = windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
+            final DynamicAttributesConditionEditor window = windowManager.openWindow(windowInfo, WindowManager.OpenType.DIALOG, params);
             window.addListener(new Window.CloseListener() {
                 @Override
                 public void windowClosed(String actionId) {
