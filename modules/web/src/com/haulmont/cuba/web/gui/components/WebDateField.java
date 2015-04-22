@@ -228,8 +228,7 @@ public class WebDateField extends WebAbstractField<CubaDateFieldWrapper> impleme
     protected void setValueToFields(Date value) {
         updatingInstance = true;
         try {
-            dateField.setCheckReadOnlyOnNextSetValue(false);
-            dateField.setValue(value);
+            dateField.setValueIgnoreReadOnly(value);
 
             timeField.setValue(value);
         } finally {

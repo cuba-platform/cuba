@@ -128,11 +128,12 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field> extends We
     @Override
     public void setValue(Object value) {
         if (component instanceof AbstractField) {
-            ((AbstractField) component).setCheckReadOnlyOnNextSetValue(false);
+            //noinspection unchecked
+            ((AbstractField) component).setValueIgnoreReadOnly(value);
+        } else {
+            //noinspection unchecked
+            component.setValue(value);
         }
-
-        //noinspection unchecked
-        component.setValue(value);
     }
 
     @Override
