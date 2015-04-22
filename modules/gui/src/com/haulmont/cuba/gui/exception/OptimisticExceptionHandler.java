@@ -1,35 +1,38 @@
 /*
- * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Copyright (c) 2008-2015 Haulmont. All rights reserved.
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
+package com.haulmont.cuba.gui.exception;
 
-package com.haulmont.cuba.desktop.exception;
-
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.desktop.App;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.IFrame;
+import org.springframework.core.Ordered;
 
+import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * Handles a JPA optimistic lock exception.
- * <p/>
- * <p>$Id$</p>
  *
- * @author artamonov
+ * @author krivopustov
  * @version $Id$
  */
-public class OptimisticExceptionHandler extends AbstractExceptionHandler {
+@ManagedBean("cuba_OptimisticExceptionHandler")
+public class OptimisticExceptionHandler extends AbstractGenericExceptionHandler implements Ordered {
+
+    @Inject
+    protected Messages messages;
 
     public OptimisticExceptionHandler() {
         super("org.springframework.orm.jpa.JpaOptimisticLockingFailureException", "org.apache.openjpa.persistence.OptimisticLockException");
     }
 
     @Override
-    protected void doHandle(Thread thread, String className, String message, @Nullable Throwable throwable) {
+    protected void doHandle(String className, String message, @Nullable Throwable throwable, WindowManager windowManager) {
         Pattern pattern = Pattern.compile("\\[([^-]*)-");
         Matcher matcher = pattern.matcher(message);
         String entityClassName = "";
@@ -37,7 +40,6 @@ public class OptimisticExceptionHandler extends AbstractExceptionHandler {
             entityClassName = matcher.group(1);
         }
 
-        Messages messages = AppBeans.get(Messages.NAME);
         String msg;
 
         if (entityClassName.contains(".")) {
@@ -50,6 +52,11 @@ public class OptimisticExceptionHandler extends AbstractExceptionHandler {
         } else {
             msg = messages.getMessage(messages.getMainMessagePack(), "optimisticExceptionUnknownObject.message");
         }
-        App.getInstance().getMainFrame().showNotification(msg, IFrame.NotificationType.ERROR);
+        windowManager.showNotification(msg, IFrame.NotificationType.ERROR);
+    }
+
+    @Override
+    public int getOrder() {
+        return HIGHEST_PLATFORM_PRECEDENCE + 40;
     }
 }

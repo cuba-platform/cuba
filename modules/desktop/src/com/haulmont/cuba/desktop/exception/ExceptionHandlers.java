@@ -7,8 +7,12 @@ package com.haulmont.cuba.desktop.exception;
 
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
+import com.haulmont.cuba.gui.exception.GenericExceptionHandler;
+import com.haulmont.cuba.gui.exception.SilentExceptionHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.core.OrderComparator;
 
 import javax.annotation.ManagedBean;
 import java.util.*;
@@ -27,7 +31,9 @@ import java.util.*;
 @ManagedBean("cuba_ExceptionHandlers")
 public class ExceptionHandlers {
 
-    protected LinkedList<ExceptionHandler> handlers = new LinkedList<ExceptionHandler>();
+    protected LinkedList<ExceptionHandler> handlers = new LinkedList<>();
+
+    protected LinkedList<GenericExceptionHandler> genericHandlers = new LinkedList<>();
 
     protected ExceptionHandler defaultHandler;
 
@@ -54,7 +60,7 @@ public class ExceptionHandlers {
     }
 
     /**
-     * Adds new handler if it is not yet registered.
+     * Adds new Web-level handler if it is not yet registered.
      * @param handler   handler instance
      */
     public void addHandler(ExceptionHandler handler) {
@@ -63,9 +69,19 @@ public class ExceptionHandlers {
     }
 
     /**
+     * Adds new GUI-level handler if it is not yet registered.
+     * @param handler   handler instance
+     */
+    private void addHandler(GenericExceptionHandler handler) {
+        if (!genericHandlers.contains(handler))
+            genericHandlers.add(handler);
+    }
+
+    /**
      * Return all registered handlers.
      * @return  modifiable handlers list
      */
+    @Deprecated
     public LinkedList<ExceptionHandler> getHandlers() {
         return handlers;
     }
@@ -74,20 +90,28 @@ public class ExceptionHandlers {
      * Delegates exception handling to registered handlers.
      * @param thread    current thread
      * @param exception exception instance
+     * @param windowManager
      */
-    public void handle(Thread thread, Throwable exception) {
+    public void handle(Thread thread, Throwable exception, DesktopWindowManager windowManager) {
         for (ExceptionHandler handler : handlers) {
             if (handler.handle(thread, exception))
+                return;
+        }
+        for (GenericExceptionHandler handler : genericHandlers) {
+            if (handler.handle(exception, windowManager))
                 return;
         }
         defaultHandler.handle(thread, exception);
     }
 
     /**
-     * Create all handlers defined by <code>ExceptionHandlersConfiguration</code> beans in spring.xml.
+     * Create all handlers defined by <code>ExceptionHandlersConfiguration</code> beans in spring.xml and
+     * GUI handlers defined as Spring-beans.
      */
     public void createByConfiguration() {
-        handlers.clear();
+        removeAll();
+
+        // Desktop handlers
         Map<String, ExceptionHandlersConfiguration> map = AppBeans.getAll(ExceptionHandlersConfiguration.class);
 
         // Project-level handlers must run before platform-level
@@ -103,13 +127,23 @@ public class ExceptionHandlers {
                 }
             }
         }
+
+        // GUI handlers
+        Map<String, GenericExceptionHandler> handlerMap = AppBeans.getAll(GenericExceptionHandler.class);
+
+        List<GenericExceptionHandler> handlers = new ArrayList<>(handlerMap.values());
+        Collections.sort(handlers, new OrderComparator());
+
+        for (GenericExceptionHandler handler : handlers) {
+            addHandler(handler);
+        }
     }
 
     /**
      * Create a minimal set of handlers for disconnected client.
      */
     public void createMinimalSet() {
-        handlers.clear();
+        removeAll();
         addHandler(new SilentExceptionHandler());
         addHandler(new EntitySerializationExceptionHandler());
         addHandler(new ConnectExceptionHandler());
@@ -121,5 +155,6 @@ public class ExceptionHandlers {
      */
     public void removeAll() {
         handlers.clear();
+        genericHandlers.clear();
     }
 }

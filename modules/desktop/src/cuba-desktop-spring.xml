@@ -68,24 +68,14 @@
         </property>
     </bean>
 
-    <!-- Exception handlers -->
+    <!-- Web-level exception handlers -->
 
     <bean id="cuba_exceptionHandlersConf" class="com.haulmont.cuba.desktop.exception.ExceptionHandlersConfiguration">
         <property name="handlerClasses">
             <list>
                 <value>com.haulmont.cuba.desktop.exception.NoUserSessionHandler</value>
-                <value>com.haulmont.cuba.desktop.exception.SilentExceptionHandler</value>
                 <value>com.haulmont.cuba.desktop.exception.EntitySerializationExceptionHandler</value>
                 <value>com.haulmont.cuba.desktop.exception.ConnectExceptionHandler</value>
-                <value>com.haulmont.cuba.desktop.exception.UniqueConstraintViolationHandler</value>
-                <value>com.haulmont.cuba.desktop.exception.AccessDeniedHandler</value>
-                <value>com.haulmont.cuba.desktop.exception.NoSuchScreenHandler</value>
-                <value>com.haulmont.cuba.desktop.exception.DeletePolicyHandler</value>
-                <value>com.haulmont.cuba.desktop.exception.NumericOverflowExceptionHandler</value>
-                <value>com.haulmont.cuba.desktop.exception.OptimisticExceptionHandler</value>
-                <value>com.haulmont.cuba.desktop.exception.FileStorageExceptionHandler</value>
-                <value>com.haulmont.cuba.desktop.exception.EntityAccessExceptionHandler</value>
-                <value>com.haulmont.cuba.desktop.exception.MssqlDateOutOfRangeExceptionHandler</value>
                 <value>com.haulmont.cuba.desktop.exception.IllegalComponentStateExceptionHandler</value>
             </list>
         </property>

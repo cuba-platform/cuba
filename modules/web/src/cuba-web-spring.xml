@@ -86,23 +86,13 @@
         </property>
     </bean>
 
-    <!-- Exception handlers -->
+    <!-- Desktop-level exception handlers -->
 
     <bean id="cuba_exceptionHandlersConf" class="com.haulmont.cuba.web.exception.ExceptionHandlersConfiguration">
         <property name="handlerClasses">
             <list>
                 <value>com.haulmont.cuba.web.exception.NoUserSessionHandler</value>
-                <value>com.haulmont.cuba.web.exception.SilentExceptionHandler</value>
-                <value>com.haulmont.cuba.web.exception.UniqueConstraintViolationHandler</value>
-                <value>com.haulmont.cuba.web.exception.AccessDeniedHandler</value>
-                <value>com.haulmont.cuba.web.exception.NoSuchScreenHandler</value>
-                <value>com.haulmont.cuba.web.exception.DeletePolicyHandler</value>
-                <value>com.haulmont.cuba.web.exception.NumericOverflowExceptionHandler</value>
-                <value>com.haulmont.cuba.web.exception.OptimisticExceptionHandler</value>
-                <value>com.haulmont.cuba.web.exception.FileStorageExceptionHandler</value>
                 <value>com.haulmont.cuba.web.exception.InvalidValueExceptionHandler</value>
-                <value>com.haulmont.cuba.web.exception.EntityAccessExceptionHandler</value>
-                <value>com.haulmont.cuba.web.exception.MssqlDateOutOfRangeExceptionHandler</value>
             </list>
         </property>
     </bean>

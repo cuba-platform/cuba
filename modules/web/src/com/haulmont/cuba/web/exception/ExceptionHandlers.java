@@ -6,10 +6,12 @@ package com.haulmont.cuba.web.exception;
 
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.gui.exception.GenericExceptionHandler;
 import com.haulmont.cuba.web.App;
 import com.vaadin.server.ErrorEvent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.core.OrderComparator;
 
 import java.util.*;
 
@@ -31,6 +33,8 @@ public class ExceptionHandlers {
     protected App app;
 
     protected LinkedList<ExceptionHandler> handlers = new LinkedList<>();
+
+    protected LinkedList<GenericExceptionHandler> genericHandlers = new LinkedList<>();
 
     protected ExceptionHandler defaultHandler;
 
@@ -57,7 +61,7 @@ public class ExceptionHandlers {
     }
 
     /**
-     * Adds new handler if it is not yet registered.
+     * Adds new Web-level handler if it is not yet registered.
      * @param handler   handler instance
      */
     public void addHandler(ExceptionHandler handler) {
@@ -66,9 +70,19 @@ public class ExceptionHandlers {
     }
 
     /**
-     * Return all registered handlers.
+     * Adds new GUI-level handler if it is not yet registered.
+     * @param handler   handler instance
+     */
+    public void addHandler(GenericExceptionHandler handler) {
+        if (!genericHandlers.contains(handler))
+            genericHandlers.add(handler);
+    }
+
+    /**
+     * Return all registered Web handlers.
      * @return  modifiable handlers list
      */
+    @Deprecated
     public LinkedList<ExceptionHandler> getHandlers() {
         return handlers;
     }
@@ -82,13 +96,21 @@ public class ExceptionHandlers {
             if (handler.handle(event, app))
                 return;
         }
+        for (GenericExceptionHandler handler : genericHandlers) {
+            if (handler.handle(event.getThrowable(), app.getWindowManager()))
+                return;
+        }
         defaultHandler.handle(event, app);
     }
 
     /**
-     * Create all handlers defined by <code>ExceptionHandlersConfiguration</code> beans in spring.xml.
+     * Create all Web handlers defined by <code>ExceptionHandlersConfiguration</code> beans in spring.xml and
+     * GUI handlers defined as Spring-beans.
      */
     public void createByConfiguration() {
+        removeAll();
+
+        // Web handlers
         Map<String, ExceptionHandlersConfiguration> map = AppBeans.getAll(ExceptionHandlersConfiguration.class);
 
         // Project-level handlers must run before platform-level
@@ -104,6 +126,16 @@ public class ExceptionHandlers {
                 }
             }
         }
+
+        // GUI handlers
+        Map<String, GenericExceptionHandler> handlerMap = AppBeans.getAll(GenericExceptionHandler.class);
+
+        List<GenericExceptionHandler> handlers = new ArrayList<>(handlerMap.values());
+        Collections.sort(handlers, new OrderComparator());
+
+        for (GenericExceptionHandler handler : handlers) {
+            addHandler(handler);
+        }
     }
 
     /**
@@ -111,5 +143,6 @@ public class ExceptionHandlers {
      */
     public void removeAll() {
         handlers.clear();
+        genericHandlers.clear();
     }
 }

@@ -579,7 +579,7 @@ public class App implements ConnectionListener {
         }
 
         ExceptionHandlers handlers = AppBeans.get("cuba_ExceptionHandlers", ExceptionHandlers.class);
-        handlers.handle(thread, throwable);
+        handlers.handle(thread, throwable, app.getMainFrame().getWindowManager());
     }
 
     /**

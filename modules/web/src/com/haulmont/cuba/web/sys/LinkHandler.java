@@ -17,6 +17,9 @@ import com.haulmont.cuba.gui.components.DialogAction;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.gui.exception.AccessDeniedHandler;
+import com.haulmont.cuba.gui.exception.EntityAccessExceptionHandler;
+import com.haulmont.cuba.gui.exception.NoSuchScreenHandler;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserSubstitution;
 import com.haulmont.cuba.security.global.UserSession;
@@ -24,9 +27,6 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.actions.ChangeSubstUserAction;
 import com.haulmont.cuba.web.actions.DoNotChangeSubstUserAction;
 import com.haulmont.cuba.web.app.folders.Folders;
-import com.haulmont.cuba.web.exception.AccessDeniedHandler;
-import com.haulmont.cuba.web.exception.EntityAccessExceptionHandler;
-import com.haulmont.cuba.web.exception.NoSuchScreenHandler;
 import com.vaadin.server.Page;
 import com.vaadin.ui.JavaScript;
 import org.apache.commons.lang.BooleanUtils;
@@ -72,6 +72,13 @@ public class LinkHandler {
 
     @Inject
     protected Metadata metadata;
+
+    @Inject
+    protected AccessDeniedHandler accessDeniedHandler;
+    @Inject
+    protected NoSuchScreenHandler noSuchScreenHandler;
+    @Inject
+    protected EntityAccessExceptionHandler entityAccessExceptionHandler;
 
     protected App app;
     protected String action;
@@ -126,11 +133,11 @@ public class LinkHandler {
                 openWindow(windowInfo, requestParams);
             }
         } catch (AccessDeniedException e) {
-            new AccessDeniedHandler().handle(e, app);
+            accessDeniedHandler.handle(e, app.getWindowManager());
         } catch (NoSuchScreenException e) {
-            new NoSuchScreenHandler().handle(e, app);
+            noSuchScreenHandler.handle(e, app.getWindowManager());
         } catch (EntityAccessException e) {
-            new EntityAccessExceptionHandler().handle(e, app);
+            entityAccessExceptionHandler.handle(e, app.getWindowManager());
         } finally {
             requestParams.clear();
         }

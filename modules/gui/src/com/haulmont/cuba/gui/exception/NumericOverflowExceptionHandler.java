@@ -1,26 +1,28 @@
 /*
- * Copyright (c) 2008-2013 Haulmont. All rights reserved.
+ * Copyright (c) 2008-2015 Haulmont. All rights reserved.
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-package com.haulmont.cuba.desktop.exception;
+package com.haulmont.cuba.gui.exception;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.desktop.App;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.IFrame;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.lib.jdbc.ReportingSQLException;
 
+import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
 
 /**
  * Handles database "numeric overflow" exception.
  *
- * @author devyatkin
+ * @author degtyarjov
  * @version $Id$
  */
-public class NumericOverflowExceptionHandler extends AbstractExceptionHandler {
+@ManagedBean("cuba_NumericOverflowExceptionHandler")
+public class NumericOverflowExceptionHandler extends AbstractGenericExceptionHandler {
 
     public NumericOverflowExceptionHandler() {
         super(ReportingSQLException.class.getName());
@@ -32,9 +34,9 @@ public class NumericOverflowExceptionHandler extends AbstractExceptionHandler {
     }
 
     @Override
-    protected void doHandle(Thread thread, String className, String message, @Nullable Throwable throwable) {
+    protected void doHandle(String className, String message, @Nullable Throwable throwable, WindowManager windowManager) {
         Messages messages = AppBeans.get(Messages.NAME);
-        String msg = messages.getMainMessage("numericFieldOverflow.message");
-        App.getInstance().getMainFrame().showNotification(msg, IFrame.NotificationType.ERROR);
+        String msg = messages.getMessage(getClass(), "numericFieldOverflow.message");
+        windowManager.showNotification(msg, IFrame.NotificationType.ERROR);
     }
 }
