@@ -38,6 +38,9 @@ public class DynamicAttributesGuiTools {
     @Inject
     protected MetadataTools metadataTools;
 
+    /**
+     * Enforce the datasource to change modified status if dynamic attribute is changed
+     */
     @SuppressWarnings("unchecked")
     public void listenDynamicAttributesChanges(final Datasource datasource) {
         if (datasource != null && datasource.getLoadDynamicAttributes()) {
@@ -52,7 +55,11 @@ public class DynamicAttributesGuiTools {
         }
     }
 
-    public Set<CategoryAttribute> getAttributesToShowOnTheScreen(MetaClass metaClass, String screen, String component) {
+    /**
+     * Get attributes which should be added automatically to the screen and component.
+     * Based on visibility settings from category attribute editor.
+     */
+    public Set<CategoryAttribute> getAttributesToShowOnTheScreen(MetaClass metaClass, String screen, @Nullable String component) {
         Collection<CategoryAttribute> attributesForMetaClass =
                 dynamicAttributesService.getAttributesForMetaClass(metaClass);
         Set<CategoryAttribute> categoryAttributes = new HashSet<>();

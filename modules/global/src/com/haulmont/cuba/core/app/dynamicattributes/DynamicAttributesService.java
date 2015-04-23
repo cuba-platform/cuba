@@ -19,12 +19,24 @@ import java.util.Collection;
 public interface DynamicAttributesService {
     String NAME = "cuba_DynamicAttributesService";
 
+    /**
+     * Reload dynamic attributes cache from database
+     */
     void loadCache();
 
+    /**
+     * Get all categories linked with metaClass from cache
+     */
     Collection<Category> getCategoriesForMetaClass(MetaClass metaClass);
 
+    /**
+     * Get all categories attributes for metaClass from cache
+     */
     Collection<CategoryAttribute> getAttributesForMetaClass(MetaClass metaClass);
 
+    /**
+     * Get certain category attribute for metaClass by attribute's code
+     */
     @Nullable
     CategoryAttribute getAttributeForMetaClass(MetaClass metaClass, String code);
 }

@@ -25,37 +25,54 @@ public final class DynamicAttributesUtils {
     private DynamicAttributesUtils() {
     }
 
+    /**
+     * Get special meta property path object for dynamic attribute
+     */
     public static MetaPropertyPath getMetaPropertyPath(MetaClass metaClass, CategoryAttribute attribute) {
         MetaProperty metaProperty = new DynamicAttributesMetaProperty(metaClass, attribute);
         return new MetaPropertyPath(metaClass, metaProperty);
     }
 
+    /**
+     * Get special meta property path object for dynamic attribute by code
+     */
     @Nullable
     public static MetaPropertyPath getMetaPropertyPath(MetaClass metaClass, String attributeCode) {
         attributeCode = decodeAttributeCode(attributeCode);
-        CategoryAttribute attribute =
-                AppBeans.get(DynamicAttributesService.class).getAttributeForMetaClass(metaClass, attributeCode);
+        CategoryAttribute attribute = AppBeans.get(DynamicAttributesService.NAME, DynamicAttributesService.class)
+                .getAttributeForMetaClass(metaClass, attributeCode);
 
         if (attribute != null) {
-            MetaProperty metaProperty = new DynamicAttributesMetaProperty(metaClass, attribute);
-            return new MetaPropertyPath(metaClass, metaProperty);
+            return getMetaPropertyPath(metaClass, attribute);
         } else {
             return null;
         }
     }
 
+    /**
+     * Remove dynamic attribute marker (+) from attribute code (if exists)
+     */
     public static String decodeAttributeCode(String attributeCode) {
         return attributeCode.startsWith("+") ? attributeCode.substring(1) : attributeCode;
     }
 
+    /**
+     * Add dynamic attribute marker (+) to attribute code (if does not exist)
+     */
     public static String encodeAttributeCode(String attributeCode) {
         return attributeCode.startsWith("+") ? attributeCode : "+" + attributeCode;
     }
 
+    /**
+     * Check if the name has dynamic attribute marker
+     */
     public static boolean isDynamicAttribute(String name) {
         return name.startsWith("+");
     }
 
+    /**
+     * Resolve attribute value's Java class
+     */
     public static Class getAttributeClass(CategoryAttribute attribute) {
 
         if (BooleanUtils.isTrue(attribute.getIsEntity())) {

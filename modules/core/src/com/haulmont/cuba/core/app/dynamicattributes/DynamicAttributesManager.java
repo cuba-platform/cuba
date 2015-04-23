@@ -112,13 +112,13 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
     }
 
     @Override
-    public Collection<Category> getCategoriesForMetaClass(@Nullable MetaClass metaClass) {
+    public Collection<Category> getCategoriesForMetaClass(MetaClass metaClass) {
         MetaClass targetMetaClass = resolveTargetMetaClass(metaClass);
         return new ArrayList<>(categories().get(targetMetaClass));
     }
 
     @Override
-    public Collection<CategoryAttribute> getAttributesForMetaClass(@Nullable MetaClass metaClass) {
+    public Collection<CategoryAttribute> getAttributesForMetaClass(MetaClass metaClass) {
         MetaClass targetMetaClass = resolveTargetMetaClass(metaClass);
         Collection<Category> categories = categories().get(targetMetaClass);
         List<CategoryAttribute> categoryAttributes = new ArrayList<>();
@@ -135,7 +135,7 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
 
     @Nullable
     @Override
-    public CategoryAttribute getAttributeForMetaClass(@Nullable MetaClass metaClass, String code) {
+    public CategoryAttribute getAttributeForMetaClass(MetaClass metaClass, String code) {
         MetaClass targetMetaClass = resolveTargetMetaClass(metaClass);
         Map<String, CategoryAttribute> attributes = attributes().get(targetMetaClass);
         if (attributes != null) {
@@ -179,7 +179,7 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
         }
     }
 
-    protected MetaClass resolveTargetMetaClass(@Nullable MetaClass metaClass) {
+    protected MetaClass resolveTargetMetaClass(MetaClass metaClass) {
         if (metaClass == null) {
             return null;
         }
