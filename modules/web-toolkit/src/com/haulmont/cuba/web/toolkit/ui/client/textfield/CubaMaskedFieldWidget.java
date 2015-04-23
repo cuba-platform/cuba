@@ -605,6 +605,7 @@ public class CubaMaskedFieldWidget extends VTextField {
                     || e.getNativeEvent().getCtrlKey()
                     || e.getNativeEvent().getMetaKey()) {
                 //pressed tab in firefox or ctrl. because FF fires keyPressEvents on CTRL+C
+                // MetaKey for Mac OS X for Cmd + key commands
                 return;
             }
             if (getCursorPos() < maskTest.size()) {
