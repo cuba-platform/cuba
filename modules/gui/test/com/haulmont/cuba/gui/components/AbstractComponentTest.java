@@ -21,8 +21,6 @@ import org.junit.Before;
 public abstract class AbstractComponentTest extends CubaClientTestCase {
     protected ComponentsFactory factory;
 
-    protected DynamicAttributesGuiTools daGuiTools = new DynamicAttributesGuiTools();
-
     @Before
     public void setUp() throws Exception {
         addEntityPackage("com.haulmont.cuba");
@@ -34,12 +32,6 @@ public abstract class AbstractComponentTest extends CubaClientTestCase {
     }
 
     protected void initExpectations() {
-        new NonStrictExpectations() {
-            {
-                AppBeans.get(DynamicAttributesGuiTools.NAME); result = daGuiTools;
-                AppBeans.get(DynamicAttributesGuiTools.class); result = daGuiTools;
-                AppBeans.get(DynamicAttributesGuiTools.NAME, DynamicAttributesGuiTools.class); result = daGuiTools;
-            }
-        };
+
     }
 }

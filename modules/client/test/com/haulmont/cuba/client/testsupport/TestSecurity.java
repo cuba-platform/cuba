@@ -19,6 +19,7 @@ public class TestSecurity extends SecurityImpl {
     public TestSecurity(UserSessionSource sessionSource, Metadata metadata, ExtendedEntities extendedEntities) {
         this.userSessionSource = sessionSource;
         this.metadata = metadata;
+        this.metadataTools = metadata.getTools();
         this.extendedEntities = extendedEntities;
     }
 }
