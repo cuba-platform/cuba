@@ -60,12 +60,10 @@ public class CategoryEditor extends AbstractEditor<Category> {
         Map<String, Object> options = new HashMap<>();
         MetaClass entityType = null;
         for (MetaClass metaClass : metadataTools.getAllPersistentMetaClasses()) {
-            if (CategorizedEntity.class.isAssignableFrom(metaClass.getJavaClass())) {
                 options.put(messageTools.getDetailedEntityCaption(metaClass), metaClass);
                 if (hasValue && metaClass.getName().equals(category.getEntityType())) {
                     entityType = metaClass;
                 }
-            }
         }
         categoryEntityTypeField.setOptionsMap(options);
         categoryEntityTypeField.setValue(entityType);
