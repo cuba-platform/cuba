@@ -6,12 +6,11 @@
 package com.haulmont.cuba.gui.categories;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.entity.CategorizedEntity;
 import com.haulmont.cuba.core.entity.Category;
 import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.MessageTools;
-import com.haulmont.cuba.core.global.MetadataTools;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.CheckBox;
 import com.haulmont.cuba.gui.components.LookupField;
@@ -35,7 +34,7 @@ public class CategoryEditor extends AbstractEditor<Category> {
     protected DataSupplier dataSupplier;
 
     @Inject
-    protected MetadataTools metadataTools;
+    protected Metadata metadata;
 
     @Inject
     protected MessageTools messageTools;
@@ -59,18 +58,20 @@ public class CategoryEditor extends AbstractEditor<Category> {
         LookupField categoryEntityTypeField = getComponent("entityType");
         Map<String, Object> options = new HashMap<>();
         MetaClass entityType = null;
-        for (MetaClass metaClass : metadataTools.getAllPersistentMetaClasses()) {
-                options.put(messageTools.getDetailedEntityCaption(metaClass), metaClass);
-                if (hasValue && metaClass.getName().equals(category.getEntityType())) {
-                    entityType = metaClass;
-                }
+        for (MetaClass metaClass : metadata.getTools().getAllPersistentMetaClasses()) {
+            options.put(messageTools.getDetailedEntityCaption(metaClass), metaClass);
+            if (hasValue && metaClass.getName().equals(category.getEntityType())) {
+                entityType = metaClass;
+            }
         }
         categoryEntityTypeField.setOptionsMap(options);
         categoryEntityTypeField.setValue(entityType);
         categoryEntityTypeField.addListener(new ValueListener() {
             @Override
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                category.setEntityType(((MetaClass) value).getName());
+                MetaClass metaClass = (MetaClass) value;
+                MetaClass originalClass = metadata.getExtendedEntities().getOriginalMetaClass(metaClass);
+                category.setEntityType(originalClass == null ? metaClass.getName() : originalClass.getName());
             }
         });
     }

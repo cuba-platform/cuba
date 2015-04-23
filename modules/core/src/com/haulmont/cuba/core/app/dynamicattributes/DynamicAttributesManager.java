@@ -88,7 +88,7 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
             Map<MetaClass, Map<String, CategoryAttribute>> attributesCache = new HashMap<>();
 
             for (Category category : resultList) {
-                MetaClass metaClass = metadata.getSession().getClass(category.getEntityType());
+                MetaClass metaClass = resolveTargetMetaClass(metadata.getSession().getClass(category.getEntityType()));
                 categoriesCache.put(metaClass, category);
                 Map<String, CategoryAttribute> attributes = attributesCache.get(metaClass);
                 if (attributes == null) {
@@ -112,13 +112,15 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
     }
 
     @Override
-    public Collection<Category> getCategoriesForMetaClass(MetaClass metaClass) {
-        return new ArrayList<>(categories().get(metaClass));
+    public Collection<Category> getCategoriesForMetaClass(@Nullable MetaClass metaClass) {
+        MetaClass targetMetaClass = resolveTargetMetaClass(metaClass);
+        return new ArrayList<>(categories().get(targetMetaClass));
     }
 
     @Override
-    public Collection<CategoryAttribute> getAttributesForMetaClass(MetaClass metaClass) {
-        Collection<Category> categories = categories().get(metaClass);
+    public Collection<CategoryAttribute> getAttributesForMetaClass(@Nullable MetaClass metaClass) {
+        MetaClass targetMetaClass = resolveTargetMetaClass(metaClass);
+        Collection<Category> categories = categories().get(targetMetaClass);
         List<CategoryAttribute> categoryAttributes = new ArrayList<>();
         for (Category category : categories) {
             categoryAttributes.addAll(Collections2.filter(category.getCategoryAttrs(), new Predicate<CategoryAttribute>() {
@@ -133,15 +135,15 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
 
     @Nullable
     @Override
-    public CategoryAttribute getAttributeForMetaClass(MetaClass metaClass, String code) {
-        Map<String, CategoryAttribute> attributes = attributes().get(metaClass);
+    public CategoryAttribute getAttributeForMetaClass(@Nullable MetaClass metaClass, String code) {
+        MetaClass targetMetaClass = resolveTargetMetaClass(metaClass);
+        Map<String, CategoryAttribute> attributes = attributes().get(targetMetaClass);
         if (attributes != null) {
             return attributes.get(code);
         }
 
         return null;
     }
-
 
     protected Multimap<MetaClass, Category> categories() {
         this.lock.readLock().lock();
@@ -176,4 +178,17 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
             lock.readLock().unlock();
         }
     }
+
+    protected MetaClass resolveTargetMetaClass(@Nullable MetaClass metaClass) {
+        if (metaClass == null) {
+            return null;
+        }
+
+        MetaClass targetMetaClass = metadata.getExtendedEntities().getOriginalMetaClass(metaClass);
+        if (targetMetaClass == null) {
+            targetMetaClass = metaClass;
+        }
+        return targetMetaClass;
+    }
+
 }

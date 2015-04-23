@@ -154,29 +154,31 @@ public abstract class AbstractTableLoader extends ComponentLoader {
     }
 
     protected void addDynamicAttributes(Table component, Datasource ds, List<Table.Column> availableColumns) {
-        DynamicAttributesGuiTools dynamicAttributesGuiTools = AppBeans.get(DynamicAttributesGuiTools.class);
-        Set<CategoryAttribute> attributesToShow =
-                dynamicAttributesGuiTools.getAttributesToShowOnTheScreen(ds.getMetaClass(), context.getFullFrameId(), component.getId());
-        if (CollectionUtils.isNotEmpty(attributesToShow)) {
-            ds.setLoadDynamicAttributes(true);
-            for (CategoryAttribute attribute : attributesToShow) {
-                final MetaPropertyPath metaPropertyPath = DynamicAttributesUtils.getMetaPropertyPath(ds.getMetaClass(), attribute);
+        if (metadataTools.isPersistent(ds.getMetaClass())) {
+            DynamicAttributesGuiTools dynamicAttributesGuiTools = AppBeans.get(DynamicAttributesGuiTools.class);
+            Set<CategoryAttribute> attributesToShow =
+                    dynamicAttributesGuiTools.getAttributesToShowOnTheScreen(ds.getMetaClass(), context.getFullFrameId(), component.getId());
+            if (CollectionUtils.isNotEmpty(attributesToShow)) {
+                ds.setLoadDynamicAttributes(true);
+                for (CategoryAttribute attribute : attributesToShow) {
+                    final MetaPropertyPath metaPropertyPath = DynamicAttributesUtils.getMetaPropertyPath(ds.getMetaClass(), attribute);
 
-                Object columnWithSameId = CollectionUtils.find(availableColumns, new org.apache.commons.collections.Predicate() {
-                    @Override
-                    public boolean evaluate(Object o) {
-                        return ((Table.Column) o).getId().equals(metaPropertyPath);
+                    Object columnWithSameId = CollectionUtils.find(availableColumns, new org.apache.commons.collections.Predicate() {
+                        @Override
+                        public boolean evaluate(Object o) {
+                            return ((Table.Column) o).getId().equals(metaPropertyPath);
+                        }
+                    });
+
+                    if (columnWithSameId != null) {
+                        continue;
                     }
-                });
 
-                if (columnWithSameId != null) {
-                    continue;
+                    final Table.Column column = new Table.Column(metaPropertyPath);
+                    column.setCaption(attribute.getName());
+                    column.setEditable(true);
+                    component.addColumn(column);
                 }
-
-                final Table.Column column = new Table.Column(metaPropertyPath);
-                column.setCaption(attribute.getName());
-                column.setEditable(true);
-                component.addColumn(column);
             }
         }
     }
