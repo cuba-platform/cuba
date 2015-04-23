@@ -686,7 +686,7 @@ create table SYS_CATEGORY_ATTR(
     SCREEN varchar(255),
     REQUIRED boolean,
     LOOKUP boolean,
-    TARGET_SCREENS varchar(10000),
+    TARGET_SCREENS varchar(4000),
     --
     primary key (ID)
 )^

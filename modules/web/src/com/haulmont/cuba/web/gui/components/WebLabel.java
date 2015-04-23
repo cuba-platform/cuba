@@ -213,7 +213,8 @@ public class WebLabel extends WebAbstractComponent<com.vaadin.ui.Label> implemen
     }
 
     protected void resolveMetaPropertyPath(MetaClass metaClass, String property) {
-        metaPropertyPath = AppBeans.get(DynamicAttributesGuiTools.class).resolveMetaPropertyPath(metaClass, property);
+        metaPropertyPath = AppBeans.get(MetadataTools.NAME, MetadataTools.class)
+                .resolveMetaPropertyPath(metaClass, property);
         Preconditions.checkNotNullArgument(metaPropertyPath, "Could not resolve property path '%s' in '%s'", property, metaClass);
         this.metaProperty = metaPropertyPath.getMetaProperty();
     }

@@ -67,6 +67,7 @@ public class RuntimePropsDatasourceImpl
                 }
             }
         });
+        mainDs.setLoadDynamicAttributes(true);
     }
 
     @Override

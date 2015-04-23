@@ -11,6 +11,7 @@ import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.DateTimeDatatype;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.*;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.Updatable;
@@ -526,5 +527,14 @@ public class MetadataTools {
             result.addAll(Arrays.asList(relatedProperties.split(",")));
         }
         return result;
+    }
+
+    @Nullable
+    public MetaPropertyPath resolveMetaPropertyPath(MetaClass metaClass, String property) {
+        MetaPropertyPath metaPropertyPath = metaClass.getPropertyPath(property);
+        if (metaPropertyPath == null && DynamicAttributesUtils.isDynamicAttribute(property)) {
+            metaPropertyPath = DynamicAttributesUtils.getMetaPropertyPath(metaClass, property);
+        }
+        return metaPropertyPath;
     }
 }

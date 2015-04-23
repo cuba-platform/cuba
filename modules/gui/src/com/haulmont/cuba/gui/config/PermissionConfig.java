@@ -8,12 +8,13 @@ import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.datastruct.Tree;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.*;
-import com.haulmont.cuba.core.global.ClientType;
-import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.Resources;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesService;
+import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
+import com.haulmont.cuba.core.entity.CategoryAttribute;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.security.entity.AttributeTarget;
 import com.haulmont.cuba.gui.security.entity.BasicPermissionTarget;
 import com.haulmont.cuba.gui.security.entity.MultiplePermissionTarget;
@@ -43,6 +44,12 @@ import java.util.*;
  */
 @ManagedBean("cuba_PermissionConfig")
 public class PermissionConfig {
+
+    @Inject
+    protected DynamicAttributesService dynamicAttributesService;
+
+    @Inject
+    protected MetadataTools metadataTools;
 
     public static final String PERMISSION_CONFIG_XML_PROP = "cuba.permissionConfig";
 
@@ -164,6 +171,13 @@ public class PermissionConfig {
                                 "entity:" + entityName, caption, entityName);
 
                         List<MetaProperty> propertyList = new ArrayList<>(metaClass.getProperties());
+                        Collection<CategoryAttribute> dynamicAttributes = dynamicAttributesService.getAttributesForMetaClass(metaClass);
+                        for (CategoryAttribute dynamicAttribute : dynamicAttributes) {
+                            MetaPropertyPath metaPropertyPath =
+                                    metadataTools.resolveMetaPropertyPath(metaClass,
+                                            DynamicAttributesUtils.encodeAttributeCode(dynamicAttribute.getCode()));
+                            propertyList.add(metaPropertyPath.getMetaProperty());
+                        }
                         Collections.sort(propertyList, new MetadataObjectAlphabetComparator());
 
                         for (MetaProperty metaProperty : propertyList) {

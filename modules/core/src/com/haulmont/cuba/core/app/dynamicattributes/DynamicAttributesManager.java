@@ -5,6 +5,8 @@
 
 package com.haulmont.cuba.core.app.dynamicattributes;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.haulmont.chile.core.model.MetaClass;
@@ -19,6 +21,7 @@ import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewRepository;
+import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
@@ -118,7 +121,12 @@ public class DynamicAttributesManager implements DynamicAttributesManagerAPI {
         Collection<Category> categories = categories().get(metaClass);
         List<CategoryAttribute> categoryAttributes = new ArrayList<>();
         for (Category category : categories) {
-            categoryAttributes.addAll(category.getCategoryAttrs());
+            categoryAttributes.addAll(Collections2.filter(category.getCategoryAttrs(), new Predicate<CategoryAttribute>() {
+                @Override
+                public boolean apply(@Nullable CategoryAttribute input) {
+                    return input != null && StringUtils.isNotBlank(input.getCode());
+                }
+            }));
         }
         return categoryAttributes;
     }

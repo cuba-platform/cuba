@@ -998,8 +998,8 @@ public abstract class DesktopAbstractTable<C extends JXTable>
             if (datasource == null)
                 throw new IllegalStateException("Table datasource is null");
 
-            MetaPropertyPath metaPropertyPath =
-                    AppBeans.get(DynamicAttributesGuiTools.class).resolveMetaPropertyPath(datasource.getMetaClass(), propertyId);
+            MetaPropertyPath metaPropertyPath = AppBeans.get(MetadataTools.NAME, MetadataTools.class)
+                    .resolveMetaPropertyPath(datasource.getMetaClass(), propertyId);
             Column columnConf = columns.get(metaPropertyPath);
 
             final DsContext dsContext = datasource.getDsContext();

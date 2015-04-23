@@ -7,6 +7,10 @@
         class="com.haulmont.cuba.gui.components.RuntimePropertiesFrame"
         messagesPack="com.haulmont.cuba.gui">
     <layout width="100%" spacing="true">
-       <vbox id="contentPane" spacing="true" width="100%"/>
+        <hbox id="categoryFieldBox" width="100%" expand="categoryField" spacing="true">
+            <label id="categoryFieldLabel" value="msg://dynamicAttributes.category" align="MIDDLE_LEFT"/>
+            <lookupField id="categoryField" captionProperty="name"/>
+        </hbox>
+        <!-- FieldGroup with dynamic attributes placed here -->
     </layout>
 </window>

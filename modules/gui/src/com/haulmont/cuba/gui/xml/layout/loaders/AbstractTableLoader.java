@@ -284,8 +284,8 @@ public abstract class AbstractTableLoader extends ComponentLoader {
     protected Table.Column loadColumn(Element element, Datasource ds) {
         final String id = element.attributeValue("id");
 
-        final MetaPropertyPath metaPropertyPath =
-                AppBeans.get(DynamicAttributesGuiTools.class).resolveMetaPropertyPath(ds.getMetaClass(), id);
+        final MetaPropertyPath metaPropertyPath = AppBeans.get(MetadataTools.NAME, MetadataTools.class)
+                        .resolveMetaPropertyPath(ds.getMetaClass(), id);
 
         final Table.Column column = new Table.Column(metaPropertyPath != null ? metaPropertyPath : id);
 

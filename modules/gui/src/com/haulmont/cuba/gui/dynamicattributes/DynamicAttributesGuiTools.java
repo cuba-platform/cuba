@@ -11,6 +11,8 @@ import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesService;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
@@ -33,6 +35,9 @@ public class DynamicAttributesGuiTools {
     @Inject
     protected DynamicAttributesService dynamicAttributesService;
 
+    @Inject
+    protected MetadataTools metadataTools;
+
     @SuppressWarnings("unchecked")
     public void listenDynamicAttributesChanges(final Datasource datasource) {
         if (datasource != null && datasource.getLoadDynamicAttributes()) {
@@ -45,14 +50,6 @@ public class DynamicAttributesGuiTools {
                 }
             });
         }
-    }
-
-    public MetaPropertyPath resolveMetaPropertyPath(MetaClass metaClass, String property) {
-        MetaPropertyPath metaPropertyPath = metaClass.getPropertyPath(property);
-        if (metaPropertyPath == null && DynamicAttributesUtils.isDynamicAttribute(property)) {
-            metaPropertyPath = DynamicAttributesUtils.getMetaPropertyPath(metaClass, property);
-        }
-        return metaPropertyPath;
     }
 
     public Set<CategoryAttribute> getAttributesToShowOnTheScreen(MetaClass metaClass, String screen, String component) {

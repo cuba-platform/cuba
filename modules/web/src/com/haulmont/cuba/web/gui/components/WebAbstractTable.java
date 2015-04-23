@@ -791,7 +791,6 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
 
         setVisibleColumns(getPropertyColumns());
 
-        Security security = AppBeans.get(Security.NAME);
         if (security.isSpecificPermitted(ShowInfoAction.ACTION_PERMISSION)) {
             ShowInfoAction action = (ShowInfoAction) getAction(ShowInfoAction.ACTION_ID);
             if (action == null) {
@@ -1850,8 +1849,8 @@ public abstract class WebAbstractTable<T extends com.vaadin.ui.Table & CubaEnhan
             if (datasource == null)
                 throw new IllegalStateException("Table datasource is null");
 
-            MetaPropertyPath metaPropertyPath =
-                    AppBeans.get(DynamicAttributesGuiTools.class).resolveMetaPropertyPath(datasource.getMetaClass(), propertyId);
+            MetaPropertyPath metaPropertyPath = AppBeans.get(MetadataTools.NAME, MetadataTools.class)
+                            .resolveMetaPropertyPath(datasource.getMetaClass(), propertyId);
             Column columnConf = columns.get(metaPropertyPath);
             final DsContext dsContext = datasource.getDsContext();
 

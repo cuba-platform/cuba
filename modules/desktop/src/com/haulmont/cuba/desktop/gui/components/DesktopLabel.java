@@ -13,6 +13,7 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Formatter;
@@ -258,7 +259,8 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
     }
 
     protected void resolveMetaPropertyPath(MetaClass metaClass, String property) {
-        metaPropertyPath = AppBeans.get(DynamicAttributesGuiTools.class).resolveMetaPropertyPath(metaClass, property);
+        metaPropertyPath = AppBeans.get(MetadataTools.NAME, MetadataTools.class)
+                .resolveMetaPropertyPath(metaClass, property);
         Preconditions.checkNotNullArgument(metaPropertyPath, "Could not resolve property path '%s' in '%s'", property, metaClass);
         this.metaProperty = metaPropertyPath.getMetaProperty();
     }

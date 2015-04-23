@@ -742,7 +742,7 @@ create table SYS_CATEGORY_ATTR (
     SCREEN varchar(255),
     REQUIRED tinyint,
     LOOKUP tinyint,
-    TARGET_SCREENS varchar(10000),
+    TARGET_SCREENS varchar(4000),
     --
     primary key nonclustered (ID),
     constraint SYS_CATEGORY_ATTR_CATEGORY_ID foreign key (CATEGORY_ID) references SYS_CATEGORY(ID)

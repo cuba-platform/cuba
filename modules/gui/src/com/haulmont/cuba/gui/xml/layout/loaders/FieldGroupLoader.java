@@ -11,6 +11,7 @@ import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageTools;
+import com.haulmont.cuba.core.global.MetadataTools;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Field;
@@ -133,12 +134,15 @@ public class FieldGroupLoader extends AbstractFieldLoader {
 
         final List<FieldGroup.FieldConfig> fields = component.getFields();
         for (final FieldGroup.FieldConfig field : fields) {
-            if (!field.isCustom() && !DynamicAttributesUtils.isDynamicAttribute(field.getId())) {
-                loadValidators(component, field);
-                loadRequired(component, field);
+            if (!field.isCustom()) {
+                if (!DynamicAttributesUtils.isDynamicAttribute(field.getId())) {//the following does not make sense for dynamic attrs
+                    loadValidators(component, field);
+                    loadRequired(component, field);
+                    loadEnable(component, field);
+                    loadVisible(component, field);
+                }
+
                 loadEditable(component, field);
-                loadEnable(component, field);
-                loadVisible(component, field);
             }
         }
 
@@ -268,7 +272,8 @@ public class FieldGroupLoader extends AbstractFieldLoader {
 
         if (ds != null) {
             final MetaClass metaClass = ds.getMetaClass();
-            metaPropertyPath = AppBeans.get(DynamicAttributesGuiTools.class).resolveMetaPropertyPath(ds.getMetaClass(), id);
+            metaPropertyPath = AppBeans.get(MetadataTools.NAME, MetadataTools.class)
+                    .resolveMetaPropertyPath(ds.getMetaClass(), id);
             if (metaPropertyPath == null) {
                 if (!customField) {
                     throw new GuiDevelopmentException(String.format("Property '%s' is not found in entity '%s'",
@@ -438,7 +443,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
                     boolean visible = security.isEntityAttrReadPermitted(metaClass, propertyPath.toString());
 
                     component.setVisible(field, visible);
-                } else {
+                } else if (!DynamicAttributesUtils.isDynamicAttribute(propertyPath.toString())) {
                     Element element = field.getXmlDescriptor();
                     final String editable = element.attributeValue("editable");
                     if (!StringUtils.isEmpty(editable)) {
