@@ -47,6 +47,9 @@ public class CubaMaskedFieldWidget extends VTextField {
 
     protected boolean focused = false;
 
+    protected boolean shiftPressed = false;
+    protected int shiftPressPos = -1;
+
     public CubaMaskedFieldWidget() {
         setStylePrimaryName(CLASSNAME);
         setStyleName(CLASSNAME);
@@ -92,6 +95,8 @@ public class CubaMaskedFieldWidget extends VTextField {
     public void onBlur(BlurEvent event) {
         super.onBlur(event);
 
+        this.shiftPressed = false;
+        this.shiftPressPos = -1;
         this.focused = false;
     }
 
@@ -462,9 +467,6 @@ public class CubaMaskedFieldWidget extends VTextField {
     }
 
     public class MaskedKeyHandler implements KeyDownHandler, KeyUpHandler, KeyPressHandler {
-
-        protected boolean shiftPressed = false;
-        protected int shiftPressPos = -1;
 
         protected int getCursorPosSelection() {
             return getCursorPos() + getSelectionLength();
