@@ -613,7 +613,7 @@ public class CubaMaskedFieldWidget extends VTextField {
             if (getCursorPos() < maskTest.size()) {
                 Mask m = maskTest.get(getCursorPos());
                 if (m != null) {
-                    if (m.isValid(e.getCharCode())) {
+                    if (m.isValid(e.getCharCode()) && e.getCharCode() != PLACE_HOLDER) {
                         int pos = getCursorPos();
                         valueBuilder.setCharAt(pos, m.getChar(e.getCharCode()));
                         setValue(valueBuilder.toString());
