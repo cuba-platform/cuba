@@ -3,7 +3,7 @@
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
 
-package com.haulmont.cuba.gui.aggregation;
+package com.haulmont.cuba.gui.data.aggregation;
 
 import java.util.Collection;
 

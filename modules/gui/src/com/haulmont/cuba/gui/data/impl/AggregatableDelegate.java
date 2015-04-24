@@ -7,8 +7,8 @@ package com.haulmont.cuba.gui.data.impl;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
-import com.haulmont.cuba.gui.aggregation.Aggregation;
-import com.haulmont.cuba.gui.aggregation.Aggregations;
+import com.haulmont.cuba.gui.data.aggregation.Aggregation;
+import com.haulmont.cuba.gui.data.aggregation.Aggregations;
 import com.haulmont.cuba.gui.components.AggregationInfo;
 
 import java.util.*;
@@ -36,11 +36,13 @@ public abstract class AggregatableDelegate<K> {
 
             String formattedValue;
             if (aggregationInfo.getFormatter() != null) {
+                //noinspection unchecked
                 formattedValue = aggregationInfo.getFormatter().format(value);
             } else {
                 MetaPropertyPath propertyPath = aggregationInfo.getPropertyPath();
                 final Range range = propertyPath.getRange();
                 if (range.isDatatype() && aggregationInfo.getType() != AggregationInfo.Type.COUNT) {
+                    //noinspection unchecked
                     formattedValue = Datatypes.getNN(aggregation.getJavaClass()).format(value);
                 } else {
                     formattedValue = value.toString();

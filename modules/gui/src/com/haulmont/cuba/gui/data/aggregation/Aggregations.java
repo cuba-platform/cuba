@@ -2,11 +2,11 @@
  * Copyright (c) 2008-2013 Haulmont. All rights reserved.
  * Use is subject to license terms, see http://www.cuba-platform.com/license for details.
  */
-package com.haulmont.cuba.gui.aggregation;
+package com.haulmont.cuba.gui.data.aggregation;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.cuba.gui.aggregation.impl.*;
+import com.haulmont.cuba.gui.data.aggregation.impl.*;
 
 import java.math.BigDecimal;
 import java.util.Date;
